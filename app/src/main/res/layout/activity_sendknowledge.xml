@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgrey"
+    android:orientation="vertical" >
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/green">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:layout_centerInParent="true"
+            android:text="@string/Knowledge_Base"
+            android:textColor="@color/white"
+            android:textSize="18sp"/>
+        
+        <TextView
+            android:id="@+id/tv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentLeft="true"
+            android:gravity="center"
+            android:drawableLeft="@drawable/return_arrow"
+            android:text="@string/Back"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+        
+        
+    </RelativeLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        
+        <TextView 
+            android:id="@+id/tv_all_l"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="10dp"
+            android:drawableRight="@drawable/select_d2"
+            android:textColor="@color/darkgrey"
+            android:textSize="12sp"
+            android:text="@string/All_large_categories"/>
+        
+        <TextView 
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/grey"/>
+        
+        <TextView 
+            android:id="@+id/tv_all_s"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="10dp"
+            android:drawableRight="@drawable/select_d2"
+            android:textColor="@color/darkgrey"
+            android:textSize="12sp"
+            android:text="@string/All_small_categories"/>
+        
+        <TextView 
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/grey"/>
+        
+        <TextView 
+            android:id="@+id/tv_all_f"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="10dp"
+            android:drawableRight="@drawable/select_d2"
+            android:textColor="@color/darkgrey"
+            android:textSize="12sp"
+            android:text="@string/All_concerns"/>
+    </LinearLayout>
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        
+        <LinearLayout
+            android:id="@+id/lin_show"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <include layout="@layout/searchcontact" />
+
+            <ListView
+                android:id="@+id/lv_knowledge"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@color/lightgrey"
+                android:dividerHeight="5dp" >
+            </ListView>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/fl_pop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" >
+            
+            <ListView
+                android:id="@+id/lv_pop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@color/lightgrey"
+                android:dividerHeight="1dp" >
+            </ListView>
+
+        </FrameLayout>
+    </RelativeLayout>
+
+</LinearLayout>

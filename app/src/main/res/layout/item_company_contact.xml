@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:padding="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/image_contact"
+            android:layout_width="43dp"
+            android:layout_height="43dp"
+            android:layout_margin="8dp"
+            fresco:fadeDuration="500"
+            fresco:failureImage="@drawable/hello"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/hello"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:roundAsCircle="true" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_toRightOf="@+id/image_contact"
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txt_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="14sp"
+                android:textColor="#4a4a4a"
+                android:text="ddd" />
+
+            <TextView
+                android:textColor="@color/txt_color1"
+                android:textSize="12sp"
+                android:id="@+id/txt_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_toRightOf="@+id/image_contact"
+                android:layout_below="@id/txt_name"
+                android:text="" />
+        </LinearLayout>
+
+
+        <CheckBox
+            android:button="@android:color/transparent"
+            android:background="@drawable/rc_message_checkbox"
+            android:id="@+id/checkbox"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="right"
+            android:layout_marginRight="12dp"
+            android:src="@drawable/more_favor" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:background="@color/grey" />
+
+
+</LinearLayout>

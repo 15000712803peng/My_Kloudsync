@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/rc_white_bg_shape"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/tv0"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:background="@color/white"
+            android:minWidth="100dp"
+            android:text="Compatible Inkjet Cartridge Which One Will You Choose"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+
+        <ImageView
+            android:id="@+id/img0"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/tv0"
+            android:src="@drawable/pen_favor"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/img1"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/close" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/ss"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sync status: "
+            android:layout_centerVertical="true"
+            android:textColor="@color/darkgrey"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_toRightOf="@+id/ss"
+            android:id="@+id/duration"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Synced at 12:22 11/12/2018"
+            android:textColor="@color/skyblue"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+
+            <CheckBox
+                android:id="@+id/isPublic"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/bg_box"
+                android:button="@android:color/transparent"
+                android:checked="false"
+                android:visibility="visible" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="IsPublic"
+                android:textColor="@color/skyblue"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/grey" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:text="Background audio"
+        android:textColor="@color/black"
+        android:textSize="12sp" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Audio: Lession1.mp3"
+            android:textColor="@color/darkgrey"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/img2"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/trash_favor"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Time: "
+        android:textColor="@color/darkgrey"
+        android:textSize="12sp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/tv4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:gravity="center_vertical"
+            android:text="+ Add an audio"
+            android:textColor="@color/skyblue"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/img4"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/trash_favor" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="5dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/grey" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Enable voice"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="Voice: test.mp3"
+                android:textColor="@color/darkgrey"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/img3"
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/trash_favor"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Time:"
+            android:textColor="@color/darkgrey"
+            android:textSize="12sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:id="@+id/tv7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_vertical"
+                android:text="+ Add record voice"
+                android:textColor="@color/skyblue"
+                android:textSize="12sp" />
+
+
+            <ImageView
+                android:id="@+id/img5"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/trash_favor" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/tv8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:drawableLeft="@drawable/syncing"
+            android:gravity="center_vertical"
+            android:text="Record new voice"
+            android:textColor="@color/skyblue"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv11"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/bg_create_sync"
+            android:gravity="center"
+            android:text="Resync"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tv12"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:background="@drawable/blue_cycle_bg"
+            android:gravity="center"
+            android:text="Save Change"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/RelativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+
+        <ImageView
+            android:id="@+id/tv_back"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="30dp"
+            android:src="@drawable/arrow_back2"/>
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="Change Primary Phone"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/pc_white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="3"
+            android:text="Current"
+            android:textColor="@color/pc_black_text" />
+
+        <TextView
+            android:id="@+id/pc_fist_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:background="@color/nocolor"
+            android:text="188888888"
+            android:gravity="center_vertical|right"
+            android:textColor="@color/pc_black_text"
+            android:textSize="13dp" />
+    </LinearLayout>
+
+
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="15dp"
+        android:background="@color/pc_line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/pc_white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="3"
+            android:text="New"
+            android:textColor="@color/pc_black_text" />
+
+        <EditText
+            android:id="@+id/pc_last_name_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:background="@color/nocolor"
+            android:gravity="center_vertical|right"
+            android:hint="Please input new ohone number"
+            android:inputType="textPassword"
+            android:textColor="@color/pi_bg_change_phone"
+            android:textSize="13dp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="15dp"
+        android:background="@color/pc_line" />
+
+    <RelativeLayout
+        android:id="@+id/rl_pi_secondary_phone"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/pc_white">
+
+        <!--        <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:text="Verify"
+                    android:textColor="@color/pc_black_text"
+                    android:textSize="14sp" />-->
+
+        <EditText
+            android:id="@+id/pi_tv_secondaryphone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:textSize="14sp"
+            android:textColor="@color/pi_bg_change_phone"
+            android:background="@color/nocolor"
+            android:hint="Input Vertification Code"/>
+        <TextView
+            android:id="@+id/tv_cn_line"
+            android:layout_width="0.5dp"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_toLeftOf="@+id/imageView4"
+            android:layout_marginRight="20dp"
+            android:background="@color/pc_line" />
+        <TextView
+            android:id="@+id/imageView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="@string/Send_code"
+            android:textColor="@color/blue1"/>
+    </RelativeLayout>
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="15dp"
+        android:background="@color/pc_line" />
+    <TextView
+        android:id="@+id/tv_pc_done"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/pi_bg_change"
+        android:gravity="center_horizontal|center_vertical"
+        android:text="Change"
+        android:textColor="@color/white"
+        android:textSize="18dp" />
+
+
+
+</LinearLayout>

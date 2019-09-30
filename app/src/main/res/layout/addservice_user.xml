@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgrey"
+    android:orientation="vertical">
+
+    <include layout="@layout/common_title" />
+
+    <FrameLayout
+        android:id="@+id/framelayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#fff">
+
+        <ListView
+            android:id="@+id/friends_myfriends"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:background="#fff"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@null" />
+
+        <TextView
+            android:id="@+id/friends_dialog"
+            android:layout_width="80.0dip"
+            android:layout_height="80.0dip"
+            android:layout_gravity="center"
+            android:background="#1496d2"
+            android:gravity="center"
+            android:textColor="#ffffffff"
+            android:textSize="30dp"
+            android:visibility="invisible" />
+
+        <!-- 字母序列 -->
+        <com.ub.techexcel.view.SideBar
+            android:id="@+id/friends_sidrbar"
+            android:layout_width="30.0dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center" />
+
+        <TextView
+            android:id="@+id/contacts_catalog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#f4f4f4"
+            android:gravity="center_horizontal"
+            android:padding="3dp"
+            android:text="A"
+            android:textColor="#85589a"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/pb_contacts"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:visibility="visible" />
+    </FrameLayout>
+
+</LinearLayout>

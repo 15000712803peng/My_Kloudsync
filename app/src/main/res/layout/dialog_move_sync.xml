@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rc_white_bg_shape"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:background="@color/white"
+        android:gravity="center"
+        android:text="@string/move_sync"
+        android:textColor="@color/txt_color1"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="当前位置"
+        android:textColor="@color/txt_color1"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txt_path"
+        android:gravity="center"
+        android:text="from_sync/space2"
+        android:textColor="#ff9b9b9b"
+        android:textSize="12sp" />
+
+
+    <TextView
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="选择团队"
+        android:textColor="@color/txt_color1"
+        android:textSize="14sp" />
+
+    <RelativeLayout
+        android:padding="2dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:background="@drawable/bg_edit_line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.kloudsync.techexcel.view.spinner.NiceSpinner
+            android:layout_centerInParent="true"
+            android:id="@+id/spinner_team"
+
+            android:layout_width="match_parent"
+            android:hint="选择团队"
+            android:textSize="12dp"
+            android:textColorHint="#ff9b9b9b"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+
+    <TextView
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="选择空间"
+        android:textColor="@color/txt_color1"
+        android:textSize="12sp" />
+
+    <RelativeLayout
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/bg_edit_line"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="2dp"
+        android:layout_height="wrap_content">
+
+        <com.kloudsync.techexcel.view.spinner.NiceSpinner
+            android:id="@+id/spinner_space"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:hint="选择空间"
+            android:textSize="12dp"
+            android:textColorHint="#ff9b9b9b"
+            android:background="@drawable/bg_edit_line"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+
+    <View
+        android:layout_marginTop="76dp"
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:background="@color/grey" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:textSize="14sp"
+            android:padding="12dp"
+            android:id="@+id/cancel"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/Cancel"
+            android:textColor="#4a4a4a" />
+
+        <View
+            android:layout_width="1.5px"
+            android:layout_height="match_parent"
+            android:background="@color/grey" />
+
+        <TextView
+            android:padding="12dp"
+            android:id="@+id/ok"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/OK"
+            android:textColor="#007bff" />
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/lightgrey"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <include layout="@layout/common_title" />
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="32dp"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_marginLeft="8dp"
+            android:textColor="@color/txt_color1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/name_upper" />
+
+        <EditText
+            android:layout_marginRight="16dp"
+            android:gravity="right|center_vertical"
+            android:layout_marginLeft="12dp"
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:textColorHint="#9B9B9B"
+            android:textColor="#3E3F42"
+            android:background="@color/white"
+            android:hint="@string/input_organization_name"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/tv_submit"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="26dp"
+        android:layout_marginRight="26dp"
+        android:layout_marginTop="38dp"
+        android:gravity="center"
+        android:background="@drawable/button_jianbian"
+        android:text="@string/create_and_switch"
+        android:textSize="15sp"
+        android:textColor="@color/white"/>
+
+</LinearLayout>

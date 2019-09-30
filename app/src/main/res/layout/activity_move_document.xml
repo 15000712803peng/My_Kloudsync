@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/common_title" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:paddingLeft="20dp"
+            android:paddingTop="12dp"
+            android:textSize="12sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/Team"
+            android:textColor="#9b9b9b" />
+
+        <RelativeLayout
+            android:paddingBottom="12dp"
+            android:paddingTop="10dp"
+            android:paddingLeft="20dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout_switch_team"
+            android:layout_width="match_parent">
+
+            <ImageView
+                android:id="@+id/switchteam"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/switch_gray" />
+
+
+            <TextView
+                android:id="@+id/txt_team_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:textSize="15sp"
+                android:layout_toRightOf="@id/switchteam"
+                android:textColor="#3e3f42" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+    <View
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:background="@color/divider" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:textSize="12sp"
+                android:paddingTop="12dp"
+                android:paddingLeft="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/select_space"
+                android:textColor="#9b9b9b" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/list_space"
+                android:paddingLeft="18dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/btn_move"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_margin="20dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/chat_back"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:text="Move to this space"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+</LinearLayout>

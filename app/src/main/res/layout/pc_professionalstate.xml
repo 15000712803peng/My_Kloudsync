@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eeeff1"
+    android:orientation="vertical" >
+
+    <include layout="@layout/page_description_top" />
+
+      <EditText
+        android:id="@+id/edit_selfgoodat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="100dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:hint="添加自己擅长的领域介绍"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/grey" />
+
+    <EditText
+        android:id="@+id/selfdescription_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="100dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:hint="详细描述个人简介(包括学历、工作经验、奖励情况等)"
+        android:textSize="14sp" />
+
+</LinearLayout>

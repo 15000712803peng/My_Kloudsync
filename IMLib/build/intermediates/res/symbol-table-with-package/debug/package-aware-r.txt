@@ -1,0 +1,15 @@
+io.rong.imlib
+array rc_reconnect_interval
+bool rc_extension_history
+bool rc_typing_status
+integer rc_audio_encoding_bit_rate
+integer rc_image_quality
+integer rc_image_size
+string rc_heartbeat_timer
+string rc_init_failed
+string rc_location_sharing_ended
+string rc_media_message_default_save_path
+string rc_notification_new_msg
+string rc_notification_new_plural_msg
+string rc_notification_ticker_text
+string rc_quit_custom_service

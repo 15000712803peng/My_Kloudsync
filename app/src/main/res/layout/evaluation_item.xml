@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:id="@+id/img_head"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_margin="5dp"
+        android:src="@drawable/health1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="王大锤"
+                    android:textColor="@color/green"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tv_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1天前"
+                    android:textColor="@color/newgrey"
+                    android:textSize="10sp" />
+            </LinearLayout>
+            
+            <RelativeLayout 
+                android:layout_width="match_parent"
+            	android:layout_height="wrap_content">
+                
+                <ImageView
+                    android:id="@+id/img_star"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/star_s" />
+
+            </RelativeLayout>
+        </LinearLayout>
+        
+        <TextView
+            android:id="@+id/tv_evaluation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="服务态度非常好，专业水平高。亲自给我上门诊断，并解答了很多慢病管理的疑惑。感谢您的健康服务！"
+            android:textColor="@color/darkgrey"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+</LinearLayout>

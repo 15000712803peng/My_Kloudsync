@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgrey"
+    android:orientation="vertical">
+
+    <include layout="@layout/common_title" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:textColor="#007BFF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Team name" />
+
+        <EditText
+            android:layout_marginLeft="12dp"
+            android:id="@+id/inputname"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:textColorHint="#9B9B9B"
+            android:textColor="#3E3F42"
+            android:background="@color/white"
+            android:hint="Input space name"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/createbtn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/blue_left_bg"
+        android:gravity="center"
+        android:text="@string/OK"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+</LinearLayout>

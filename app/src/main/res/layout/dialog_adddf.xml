@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/whiteback"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="@string/Choice"
+            android:textColor="@color/newgrey"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tv_favour"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:background="@drawable/whiteblue_back"
+            android:textColor="@color/text_bw"
+            android:text="Add to favourite"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tv_document"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:background="@drawable/whiteblue_back"
+            android:textColor="@color/text_bw"
+            android:text="Add to document"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/tv_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:background="@drawable/whiteblue_back"
+        android:textColor="@color/text_bw"
+        android:text="@string/Cancel"
+        android:textSize="15sp" />
+
+
+
+</LinearLayout>

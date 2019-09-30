@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:padding="6dp"
+    android:id="@+id/layout_item"
+    android:orientation="horizontal">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/simpledraweeview"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="8dp"
+        fresco:fadeDuration="500"
+        fresco:failureImage="@drawable/hello"
+        fresco:failureImageScaleType="centerInside"
+        fresco:placeholderImage="@drawable/hello"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:roundAsCircle="true" />
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/simpledraweeview"
+        android:text="ddd" />
+
+    <TextView
+
+        android:gravity="center_vertical"
+        android:background="@drawable/member_admin_bg"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:textSize="12sp"
+        android:textColor="#02859D"
+        android:id="@+id/txt_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/tv_name"
+        android:text="Admin" />
+
+    <ImageView
+        android:id="@+id/moreOpation"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="right"
+        android:padding="7dp"
+        android:visibility="gone"
+        android:src="@drawable/more_favor" />
+
+    <View
+        android:layout_below="@id/simpledraweeview"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider" />
+
+
+</RelativeLayout>

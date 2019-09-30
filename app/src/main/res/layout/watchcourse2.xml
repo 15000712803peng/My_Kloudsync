@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+
+
+
+        <LinearLayout
+            android:id="@+id/lin_bo"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/teacherrecycleview"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_weight="1" />
+
+
+            <LinearLayout
+                android:id="@+id/addauditor"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text=""
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/addauditor" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/auditorrecycleview"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_weight="1" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycleview2"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/changedocuoruserll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="90dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/changedocu"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/documento" />
+
+        <ImageView
+            android:id="@+id/changeadd"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/documentadd2" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

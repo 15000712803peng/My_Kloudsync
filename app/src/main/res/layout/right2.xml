@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="10dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/select240"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:textColor="@color/txt_color1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Webcam240p"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/right21"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/choosen"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
+
+    <RelativeLayout
+        android:id="@+id/select360"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:textColor="@color/txt_color1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Webcam360p"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/right22"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/choosen"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
+
+    <RelativeLayout
+        android:id="@+id/select480"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:textColor="@color/txt_color1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Webcam480p"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/right23"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/choosen"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
+
+    <RelativeLayout
+        android:id="@+id/select720"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:textColor="@color/txt_color1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Webcam720p"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/right24"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/choosen"
+            android:visibility="visible" />
+    </RelativeLayout>
+
+</LinearLayout>

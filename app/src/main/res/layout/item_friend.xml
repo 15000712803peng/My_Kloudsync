@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:background="@color/white"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:id="@+id/layout_item"
+    android:layout_height="wrap_content">
+
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="14sp"
+        android:layout_marginBottom="14dp"
+        android:layout_centerVertical="true"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:scaleType="center"
+        fresco:fadeDuration="500"
+        android:id="@+id/image_friend_icon"
+        fresco:failureImage="@drawable/hello"
+        fresco:failureImageScaleType="centerInside"
+        fresco:placeholderImage="@drawable/hello"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:roundAsCircle="true" />
+
+    <TextView
+        android:id="@+id/txt_name"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/image_friend_icon"
+        android:layout_marginLeft="16dp"
+        android:textColor="#3E3F42"
+        android:text=""
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:button="@android:color/transparent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="24dp"
+        android:background="@drawable/rc_message_checkbox"
+        android:layout_width="20dp"
+        android:layout_height="20dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:background="@color/divider"
+        android:layout_below="@id/image_friend_icon" />
+
+</RelativeLayout>

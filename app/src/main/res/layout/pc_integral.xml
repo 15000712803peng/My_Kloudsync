@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android_custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pc_background"
+    android:orientation="vertical" >
+
+    <include layout="@layout/page_detail_top" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/pc_white" >
+
+        <com.kloudsync.techexcel.view.RoundProgressBar
+            android:id="@+id/roundProgressBar"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android_custom:roundColor="@color/pc_gray_text"
+            android_custom:roundProgressColor="#65E267"
+            android_custom:roundWidth="14dp"
+            android_custom:textIsDisplayable="false" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/tv_pc_integral_number"
+            android:layout_alignParentLeft="true"
+            android:gravity="center"
+            android:text="@string/myIntegral"
+            android:textColor="@color/pc_black_text"
+            android:textSize="18dp" />
+
+        <com.kloudsync.techexcel.view.CountView
+            android:id="@+id/tv_pc_integral_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:textColor="@color/pc_black_text"
+            android:textSize="27dp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/pc_white"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="积分明细"
+            android:textColor="@color/pc_black_text" />
+
+        
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/pc_line" />
+    <ListView
+        android:id="@+id/lv_pc_integral"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/pc_white"
+        android:divider="@null"
+        android:scrollbars="none" >
+    </ListView>
+</LinearLayout>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/layout_header"
+
+    >
+
+
+    <RelativeLayout
+        android:id="@+id/layout_add_header"
+        android:padding="6dp"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_height="wrap_content">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:layout_width="43dp"
+            android:id="@+id/image_add_new"
+            android:layout_height="43dp"
+            android:layout_margin="8dp"
+            fresco:fadeDuration="500"
+            fresco:failureImage="@drawable/icon_invite_new"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/icon_invite_new"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:roundAsCircle="true" />
+
+        <TextView
+            android:textColor="@color/txt_blue"
+            android:id="@+id/txt_header_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/image_add_new"
+            android:text="Add team admin" />
+    </RelativeLayout>
+
+    <View
+        android:background="@color/grey"
+        android:layout_width="match_parent"
+        android:layout_height="1.5px" />
+
+</LinearLayout>
+
+
+

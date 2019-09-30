@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/whiteback"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:id="@+id/lin_album1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/whiteblue_back"
+        android:gravity="center|left"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/upload1" />
+
+        <TextView
+            android:id="@+id/tv_album"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="@string/Albums"
+            android:textColor="@color/text_bw"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lin_album2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/whiteblue_back"
+        android:gravity="center|left"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/upload2" />
+
+        <TextView
+            android:id="@+id/tv_album2"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:background="@drawable/whiteblue_back"
+            android:gravity="center"
+            android:text="@string/Albums2"
+            android:textColor="@color/text_bw"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lin_album3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/whiteblue_back"
+        android:visibility="gone"
+        android:gravity="center|left"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/upload3" />
+
+        <TextView
+            android:id="@+id/tv_album3"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:background="@drawable/whiteblue_back"
+            android:gravity="center"
+            android:text="Dropbox"
+            android:textColor="@color/text_bw"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lin_album4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/whiteblue_back"
+        android:gravity="center|left"
+        android:visibility="gone"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/upload4" />
+
+        <TextView
+            android:id="@+id/tv_album4"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:background="@drawable/whiteblue_back"
+            android:gravity="center"
+            android:text="Google drive"
+            android:textColor="@color/text_bw"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

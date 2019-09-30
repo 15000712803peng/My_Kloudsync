@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_gray">
+
+    <include
+        layout="@layout/common_title"
+        android:id="@+id/layout_title" />
+
+    <ImageView
+        android:id="@+id/iv_logo_icon"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_below="@+id/layout_title"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="31dp"
+        android:src="@drawable/login_icon" />
+
+    <TextView
+        android:id="@+id/tv_login_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_logo_icon"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        android:inputType="phone"
+        android:text="@string/KloudSync"
+        android:textColor="@color/txt_color1"
+        android:textSize="20sp" />
+
+
+    <RelativeLayout
+        android:id="@+id/layout_edit_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_login_info"
+        android:layout_marginLeft="39dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginRight="39dp"
+        android:background="@drawable/bg_edit_line">
+
+        <TextView
+            android:id="@+id/tv_cphone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/area_code"
+            android:textSize="14sp"
+            android:textColor="@color/newgrey"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="17dp" />
+
+        <View
+            android:id="@+id/v_line"
+            android:layout_width="1.5px"
+            android:layout_height="17dp"
+            android:background="#ffd3d3d3"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="17dp"
+            android:layout_toRightOf="@+id/tv_cphone"
+            android:layout_marginStart="17dp" />
+
+        <EditText
+            android:layout_toRightOf="@id/v_line"
+            android:layout_centerVertical="true"
+            android:id="@+id/et_telephone"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:background="@android:color/transparent"
+            android:hint="@string/Mobile_phone"
+            android:inputType="phone"
+            android:maxLength="11"
+            android:maxLines="1"
+            android:paddingLeft="19dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/newgrey"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:background="@drawable/bg_edit_line"
+        android:id="@+id/rl_password"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_below="@id/layout_edit_phone"
+        android:layout_marginLeft="39dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginRight="39dp">
+
+
+        <EditText
+            android:layout_marginLeft="8dp"
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:background="@android:color/transparent"
+            android:hint="@string/Password_hint"
+            android:inputType="textPassword"
+            android:maxLines="1"
+
+            android:textColor="@color/black"
+            android:textColorHint="@color/newgrey"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/iv_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="12dp"
+            android:src="@drawable/check" />
+
+
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/tv_login"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/rl_password"
+        android:layout_marginLeft="39dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginRight="39dp"
+        android:background="@drawable/bluewhite_back"
+        android:gravity="center"
+        android:text="@string/Login"
+        android:textColor="@color/white"
+        android:textSize="13sp" />
+
+    <TextView
+        android:layout_marginLeft="37dp"
+        android:id="@+id/tv_atjoin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_login"
+        android:paddingTop="15dp"
+        android:text="@string/Sign_up"
+        android:textColor="@color/darkgrey"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_marginRight="37dp"
+        android:layout_alignParentRight="true"
+        android:id="@+id/txt_forget_pwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_login"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="15dp"
+        android:text="@string/Forget_Password"
+        android:textColor="@color/darkgrey"
+        android:textSize="14sp" />
+
+    <FrameLayout
+        android:id="@+id/fl_login"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="#55a2a8b6">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateDrawable="@drawable/progress_color" />
+    </FrameLayout>
+
+
+</RelativeLayout>

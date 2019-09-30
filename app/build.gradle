@@ -1,0 +1,196 @@
+apply plugin: 'com.android.application'
+
+repositories {
+    mavenLocal()
+    maven {
+        url 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2'
+    }
+    flatDir {
+        dirs 'libs'
+    }
+
+
+}
+
+dependencies {
+//    compile 'org.xwalk:xwalk_core_library:15.44.384.13'
+    //    compile 'org.xwalk:xwalk_core_library:23.53.589.4'
+    //    compile 'org.xwalk:xwalk_core_library:18.48.477.13'
+    compile ('org.xwalk:xwalk_core_library:23.53.589.4'){
+        exclude group: 'com.android.support'
+    }
+    compile project(':CallKit')
+    compile project(':IMKit')
+    compile files('libs/pinyin4j-2.5.0.jar')
+    compile files('libs/zxing.jar')
+    compile files('libs/aws-android-sdk-s3-2.13.0.jar')
+    compile files('libs/aws-android-sdk-cognito-2.13.0.jar')
+    compile files('libs/aws-android-sdk-mobile-client-2.13.0-sources.jar')
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion '26.+'
+            }
+        }
+    }
+}
+
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion "25.0.3"
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
+
+    defaultConfig {
+        applicationId "com.kloudsync.techexcel"
+        minSdkVersion 17
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0.0"
+        flavorDimensions "versionCode"
+        multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters "armeabi-v7a", "x86"
+        }
+
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4096M"
+    }
+
+
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        /*debug {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro','Proguard-project.txt'
+
+        }*/
+
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    signingConfigs {
+        debug {
+            keyAlias 'mykeystore'
+            keyPassword 'aaaaaa'
+            storePassword 'aaaaaa'
+            storeFile file('kloudphone.keystore')
+        }
+
+        release {
+            keyAlias 'mykeystore'
+            keyPassword 'aaaaaa'
+            storePassword 'aaaaaa'
+            storeFile file('kloudphone.keystore')
+        }
+    }
+//    android.applicationVariants.all { variant ->
+//        variant.outputs.all { output ->
+//            def outputFile = output.outputFile
+//            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+//                def fileName = "Kloudsync" +
+//                        "-${defaultConfig.versionCode}-${defaultConfig.versionName}.apk"
+//                outputFileName = fileName
+//            }
+//        }
+//    }
+
+
+
+
+    useLibrary 'org.apache.http.legacy'
+
+    //BuildConfig.class
+
+//    productFlavors {
+//        armv7 {
+//            versionCode defaultConfig.versionCode + 2
+//            ndk {
+//                abiFilters "armeabi-v7a", ""
+//            }
+//        }
+//        x86 {
+//            versionCode defaultConfig.versionCode + 4
+//            ndk {
+//                abiFilters "x86", ""
+//            }
+//        }
+//    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:design:23.3.0'
+    testCompile 'junit:junit:4.12'
+    compile project(':IMKit')
+    compile project(':librarypullrefresh')
+    compile files('libs/MiPush_SDK_Client_3_2_2.jar')
+    compile files('libs/MiPush_SDK_Client_3_2_2.jar')
+    compile files('libs/Amap_2DMap_V5.2.0_20170627.jar')
+    compile files('libs/AMap_Channel_Location_V1.4.0_20160708.jar')
+    compile files('libs/AMap_Search_V6.5.0_20180930.jar')
+    compile files('libs/Android_Map3D_SDK_V6.5.0_20180930.jar')
+    compile 'com.github.barteksc:android-pdf-viewer:2.4.0'
+    compile 'org.xutils:xutils:3.3.40'
+    compile project(':CallKit')
+    compile files('libs/sun.misc.BASE64Decoder.jar')
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile project(':libvideoprp')
+    compile 'org.java-websocket:Java-WebSocket:1.3.4'
+    compile 'com.github.aohanyao:bouncing-jelly-view:1.0.0'
+    compile 'me.imid.swipebacklayout.lib:library:1.0.0'
+    compile('com.facebook.fresco:fresco:0.12.0') {
+        // Already present in NumberPickerCompat
+        exclude group: 'com.nineoldandroids'
+    }
+    compile 'org.greenrobot:eventbus:3.1.1'
+    // Okhttp库
+    compile 'com.squareup.okhttp3:okhttp:3.1.2'
+    // Retrofit库
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+//    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
+
+    // Android 支持 Rxjava
+    compile 'io.reactivex.rxjava2:rxjava:2.0.1'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compile 'com.wuyr:rippleanimation:1.0.0'
+    compile ('com.amazonaws:aws-android-sdk-mobile-client:2.7.+@aar') { transitive = true }
+    compile 'com.facebook.network.connectionclass:connectionclass:1.0.1'
+    compile 'com.android.support:cardview-v7:27.1.1'
+    compile files ('libs/pgyer_sdk_3.0.7.jar')
+}
+
+dependencies {
+    compile 'com.aliyun.dpa:oss-android-sdk:+'
+}
+
+dependencies {
+    compile 'com.android.support.constraint:constraint-layout:+'
+}

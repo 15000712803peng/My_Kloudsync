@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/c6"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/c7"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/img_selected"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/unselect" />
+
+            <LinearLayout
+                android:id="@+id/entercustomer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <com.kloudsync.techexcel.view.CircleImageView
+                    android:id="@+id/image"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/hello" />
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:singleLine="true"
+                    android:text="晨晨妈"
+                    android:textColor="@color/c5" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/concerValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/fenghan"
+                android:text="关注点"
+                android:textColor="@color/c1" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:text="进行中"
+            android:textColor="@color/qianred" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/c7"
+        android:orientation="horizontal" >
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="0.8dp"
+            android:layout_marginLeft="45dp"
+            android:background="@color/c3" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lineitems"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/c7"
+        android:minHeight="10dp"
+        android:orientation="vertical"
+        android:paddingLeft="35dp" >
+    </LinearLayout>
+
+</LinearLayout>

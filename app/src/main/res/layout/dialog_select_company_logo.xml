@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:textSize="14sp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="选择"
+            android:textColor="@color/newgrey" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1.5px"
+            android:background="@color/divider_line" />
+
+        <TextView
+            android:textSize="14sp"
+            android:id="@+id/txt_select_phone"
+            android:padding="12dp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+
+            android:text="相机拍照"
+            android:textColor="@color/skyblue" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1.5px"
+            android:background="@color/divider_line" />
+
+
+        <TextView
+            android:textSize="14sp"
+            android:id="@+id/txt_select_album"
+            android:padding="12dp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="从相册中选择"
+            android:textColor="@color/skyblue" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1.5px"
+            android:background="@color/divider_line" />
+
+
+        <TextView
+            android:textSize="14sp"
+            android:padding="12dp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:id="@+id/txt_cancel"
+            android:text="取消"
+            android:textColor="@color/skyblue" />
+
+    </LinearLayout>
+
+</LinearLayout>

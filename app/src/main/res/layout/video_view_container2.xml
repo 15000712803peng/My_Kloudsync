@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_view_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/darkblack2"
+    android:layout_alignParentTop="true">
+
+</FrameLayout>
+
+
+

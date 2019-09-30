@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgrey"
+    android:orientation="vertical" >
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/green">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:layout_centerInParent="true"
+            android:text="@string/Chat_Detail"
+            android:textColor="@color/white"
+            android:textSize="18sp"/>
+        
+        <TextView
+            android:id="@+id/tv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentLeft="true"
+            android:drawableLeft="@drawable/return_arrow"
+            android:gravity="center"
+            android:text="@string/Back"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+        
+        
+    </RelativeLayout>
+    
+    <ScrollView 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            
+            <GridView
+                android:id="@+id/gv_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:listSelector="@android:color/transparent"
+                android:numColumns="4" >
+            </GridView>
+
+            <LinearLayout
+                android:id="@+id/lin_chatname"
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:text="@string/Group_Name"
+                    android:textColor="@color/darkgrey"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawableRight="@drawable/arrow2"
+                    android:gravity="right"
+                    android:paddingRight="10dp"
+                    android:textColor="@color/newgrey"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey" />
+            
+            <LinearLayout
+                android:id="@+id/lin_empty"
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:background="@color/white"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:text="@string/Emptys_Chat"
+                    android:textColor="@color/darkgrey"
+                    android:textSize="14sp" />
+                    
+                <TextView
+                    android:id="@+id/tv_empty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawableRight="@drawable/arrow2"
+                    android:gravity="right"
+                    android:paddingRight="10dp"
+                    android:textColor="@color/newgrey"
+                    android:textSize="14sp" />
+            </LinearLayout>
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey" />
+            
+            <LinearLayout
+                android:id="@+id/lin_report"
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:background="@color/white"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:text="@string/Report"
+                    android:textColor="@color/darkgrey"
+                    android:textSize="14sp" />
+                    
+                <TextView
+                    android:id="@+id/tv_report"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawableRight="@drawable/arrow2"
+                    android:gravity="right"
+                    android:paddingRight="10dp"
+                    android:textColor="@color/newgrey"
+                    android:textSize="14sp" />
+            </LinearLayout>
+            
+            <TextView 
+	            android:id="@+id/tv_delete"
+	            android:layout_width="match_parent"
+	            android:layout_height="45dp"
+	            android:layout_margin="30dp"
+	            android:gravity="center"
+	            android:background="@drawable/login_greenback"
+	            android:textColor="@color/white"
+	            android:textSize="18sp"
+	            android:text="@string/Exit_group_chat"/>
+             
+        </LinearLayout>
+        
+        
+    </ScrollView>
+    
+
+</LinearLayout>

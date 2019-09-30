@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pc_white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp" >
+
+        <com.kloudsync.techexcel.view.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/img_pc_evaluation"	
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/icons_portrait"
+            app:border_color="@color/pc_green"
+            app:border_width="1dp" />
+
+        <TextView
+            android:id="@+id/tv_pc_evaluation_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/pc_green"
+            android:layout_toRightOf="@+id/img_pc_evaluation"
+            android:text="张大宝" />
+
+        <TextView
+            android:id="@+id/tv_pc_evaluation_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_pc_evaluation_name"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/pc_gray_text"
+            android:layout_toRightOf="@+id/img_pc_evaluation"
+            android:text="一天前" />
+
+        <ImageView
+            android:id="@+id/stars1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/arrow2" />
+
+        <ImageView
+            android:id="@+id/stars2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/stars1"
+            android:src="@drawable/arrow2" />
+
+        <ImageView
+            android:id="@+id/stars3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/stars2"
+            android:src="@drawable/arrow2" />
+
+        <ImageView
+            android:id="@+id/stars4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/stars3"
+            android:src="@drawable/arrow2" />
+        <ImageView
+            android:id="@+id/stars5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/stars4"
+            android:src="@drawable/arrow2" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="10dp"
+        android:textColor="@color/pc_black_text"
+        android:text="到两发简历到司法局拉萨到房间里斯蒂芬尽量少的房间里水电费加拉斯的客服及鲁大师看风景拉萨的解放路圣诞节饭老师的福建省电缆附件是电缆附件可是电缆附件是电缆附件是电缆附件两到三卡就分" />
+	<TextView
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/pc_line" />
+</LinearLayout>

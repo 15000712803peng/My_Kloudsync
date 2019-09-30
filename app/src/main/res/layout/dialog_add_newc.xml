@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/whiteback"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Invite new"
+            android:textSize="12sp"
+            android:textColor="@color/darkgrey"/>
+
+        <ImageView
+            android:id="@+id/img_close"
+            android:layout_width="30dp"
+            android:layout_height="40dp"
+            android:padding="10dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/god_close"/>
+    </RelativeLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:padding="5dp"
+            android:drawableLeft="@drawable/reddian2"
+            android:text="Phone:"
+            android:textSize="12sp"
+            android:textColor="@color/darkgrey"
+            />
+
+        <TextView
+            android:id="@+id/tv_cphone"
+            android:layout_width="50dp"
+            android:layout_height="45dp"
+            android:gravity="center"
+            android:textColor="@color/darkgrey"
+            android:textSize="14sp"
+            android:text="+86"/>
+
+        <EditText
+            android:id="@+id/et_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/inviteuserleft"
+            android:inputType="number"
+            android:padding="5dp"
+            android:textSize="12sp"
+            android:textColor="@color/black"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:padding="5dp"
+            android:text="Email:"
+            android:textSize="12sp"
+            android:textColor="@color/darkgrey"
+            />
+
+
+        <EditText
+            android:id="@+id/et_email"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/inviteuserleft"
+            android:padding="5dp"
+            android:textSize="12sp"
+            android:textColor="@color/black"/>
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="10dp">
+
+        <CheckBox
+            android:id="@+id/cb_rc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/darkgrey"
+            android:textSize="12sp"
+            android:text="Request to chat"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_margin="30dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/whiteblue_back"
+            android:text="@string/Cancel"
+            android:textSize="15sp"
+            android:textColor="@color/text_bw"
+            android:layout_marginRight="15dp"/>
+
+        <Button
+            android:id="@+id/btn_ok"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/bluewhite_back"
+            android:text="@string/OK"
+            android:textSize="15sp"
+            android:textColor="@color/text_wb"/>
+    </LinearLayout>
+
+</LinearLayout>

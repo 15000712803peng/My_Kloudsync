@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/document_name"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:singleLine="true"
+        android:text="File Name"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/bgisshow2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="2dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/course_bg3"
+        android:orientation="horizontal"
+        android:padding="1.4dp"
+        android:visibility="visible">
+
+        <com.kloudsync.techexcel.view.RoundProgressBar
+            android:id="@+id/rpb_update"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            app:roundColor="@color/qiangrey"
+            app:roundProgressColor="@color/skyblue"
+            app:roundWidth="3dp"
+            app:textColor="@color/white"
+            app:textSize="12sp" />
+    </LinearLayout>
+
+    <TextView
+
+        android:id="@+id/uploadstatus"
+        android:layout_width="wrap_content"
+        android:layout_height="15dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/bgisshow2"
+        android:layout_marginRight="3dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="Uploading"
+        android:textColor="@color/black"
+        android:textSize="12sp" />
+
+
+</RelativeLayout>

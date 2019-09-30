@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/videoname"
+        android:layout_width="wrap_content"
+        android:text=""
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:layout_height="wrap_content" />
+
+
+    <RelativeLayout
+        android:id="@+id/item_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iv1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/icon_command_mic_disable" />
+
+        <ImageView
+            android:id="@+id/iv2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/iv1"
+            android:src="@drawable/icon_command_webcam_enable" />
+        <ImageView
+            android:id="@+id/voiceuseridopen"
+            android:layout_width="40dp"
+            android:visibility="gone"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/iv2"
+            android:src="@drawable/voiceuseridopen" />
+
+
+        <ImageView
+            android:id="@+id/iv3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="11dp"
+            android:src="@drawable/icon_fullscreen"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/voiceuseridopen"
+            android:layout_toEndOf="@+id/voiceuseridopen"
+            android:layout_marginStart="11dp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

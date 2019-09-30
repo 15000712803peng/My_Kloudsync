@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+    <!-- 分类显示的背景颜色 -->
+    <color name="typecontentcolor">#1d221c</color>
+    <color name="darkblack">#0A0A0A</color>
+    <!-- 深黑色 -->
+    <color name="black">#000000</color>
+    <color name="darkblack2">#000000</color>
+    <!-- 黑色 -->
+    <color name="lightblack">#45333333</color>
+    <!-- 黑色 -->
+    <color name="brunette">#333333</color>
+    <!-- 黑色 -->
+    <color name="white">#FFFFFF</color>
+    <color name="defaulttextcolor">#8A000000</color>
+    <!-- 白色 -->
+    <color name="antiquewhite">#CCCCCC</color>
+    <!-- 古典白色 -->
+    <color name="yellow">#FFFF00</color>
+    <!-- 黄色 -->
+    <color name="gold">#FFD700</color>
+    <!-- 金色 -->
+    <color name="pink">#FFC0CB</color>
+    <!-- 粉色 -->
+    <color name="orange">#f17b0d</color>
+    <!-- 橙色 -->
+    <color name="red">#af0808</color>
+    <color name="red2">#f00</color>
+    <!-- 红色 -->
+    <color name="blue">#0000FF</color>
+    <!-- 蓝色 -->
+    <color name="green">#17bea5</color>
+    <!-- 绿色 -->
+    <color name="Turquoise">#40E0D0</color>
+    <!-- 绿宝石 -->
+    <color name="darkgreen">#009966</color>
+    <!-- 墨绿色 -->
+    <color name="lightblue">#b0e0e6</color>
+    <!-- 浅蓝色 -->
+    <color name="lightblue2">#add8e6</color>
+    <!-- 亮蓝色 -->
+    <color name="lightblue3">#87ceeb</color>
+    <!-- 浅天蓝色 -->
+    <color name="skyblue">#0078F9</color>
+    <!-- 天蓝色 -->
+    <color name="deepblue">#2b4486</color>
+    <!-- 深蓝色 -->
+    <color name="darkblue">#000033</color>
+    <!-- 暗蓝色 -->
+    <color name="newgrey">#9b9b9b</color>
+    <!-- 中灰色 -->
+    <color name="grey">#e2e3e4</color>
+    <!-- 浅中灰色 -->
+    <color name="lightgrey">#eeeff1</color>
+    <!-- 浅灰 -->
+    <color name="darkgrey">#3E3F42</color>
+    <!-- 暗灰色 -->
+    <color name="purple">#8558A9</color>
+    <!-- 紫色 -->
+    <color name="nocolor">#00000000</color>
+    <!-- 透明 -->
+    <color name="main_color">#57687c</color>
+    <!-- 项目主项目主色 -->
+
+    <color name="bgColor">#ebebeb</color>
+
+    <color name="start1">#87b2e5</color>
+    <!-- 起始页1 -->
+    <color name="start2">#e7a969</color>
+    <!-- 起始页2 -->
+    <color name="start3">#97c961</color>
+    <!-- 起始页3 -->
+
+    <color name="detail_top">#f0eef5</color>
+
+    <!--二维码-->
+    <color name="result_view">#b0000000</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="possible_result_points">#c0ffff00</color>
+
+
+    <!-- 雄风 王 -->
+
+    <color name="c1">#17bea5</color>
+    <color name="c2">#f17b0d</color>
+    <color name="c3">#e2e3e4</color>
+    <color name="c4">#a2a8b6</color>
+    <color name="c5">#404751</color>
+    <color name="c6">#eeeff1</color>
+    <color name="c7">#ffffff</color>
+    <color name="qianblue">#dfefed</color>
+    <color name="qianred">#f17b0d</color>
+    <color name="qiangrey">#a2a8b6</color>
+
+    <!-- 迪凯 余 -->
+    <!-- 左拉回复 -->
+    <color name="evaluation_orange">#FF9300</color>
+    <!-- 左拉举报 -->
+    <color name="evaluation_red">#FD3F34</color>
+    <!-- 主题绿 -->
+    <color name="pc_green">#17bea5</color>
+    <!-- 分割线 -->
+    <color name="pc_line">#e2e3e4</color>
+    <!-- 浅灰色文字 -->
+    <color name="pc_gray_text">#a2a8b6</color>
+    <!-- 个人设置黑色字体 -->
+    <color name="pc_black_text">#3E3F42</color>
+    <!-- 个人设置灰色字体 -->
+    <color name="pi_gray_text">#4A4A4A</color>
+    <!-- 个人设置附属号码灰色字体 -->
+    <color name="pi_phone_text">#4A4A4A</color>
+    <!-- 背景灰 -->
+    <color name="pc_background">#eeeff1</color>
+    <!-- 白色 -->
+    <color name="pc_white">#ffffff</color>
+    <!-- 个人设置红色字体 -->
+    <color name="pi_red">#f00</color>
+    <!-- 个人设置名字修改字体 -->
+    <color name="pi_changename">#9B9B9B</color>
+    <!-- 更换背景颜色 -->
+    <color name="pi_bg_change">#007BFF</color>
+    <!-- 新号码灰色颜色 -->
+    <color name="pi_bg_change_phone">#FF9B9B9B</color>
+    <!-- 新建课堂字体颜色 -->
+    <color name="schedule">#FF3E3F42</color>
+    <!-- 新建课堂边框颜色 -->
+    <color name="schedule_line">#FFD3D3D3</color>
+    <!-- 新建课堂背景颜色 -->
+    <color name="schedule_bg">#FFF6F8F9</color>
+    <!-- 新建课堂字体颜色 -->
+    <color name="schedule_select">#FF4A4A4A</color>
+
+    <!-- 俊瑞 张 -->
+    <color name="divider_line">#f5f5f5</color>
+    <color name="back_main">#35a936</color>
+    <color name="bottom_bg">#4A4A4A</color>
+    <color name="keyword_bg">#72AEFF</color>
+    <color name="divider">#d3d3d3</color>
+    <color name="txt_color1">#3e3f42</color>
+    <color name="txt_owner_color">#0050A6</color>
+    <color name="txt_admin_color">#02859D</color>
+    <color name="txt_blue">#0078F9</color>
+    <color name="bg_gray">#F6F8F9</color>
+    <color name="blue1">#108EE9</color>
+
+
+</resources>

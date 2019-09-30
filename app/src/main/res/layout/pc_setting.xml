@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pc_background"
+    android:orientation="vertical" >
+
+    <include layout="@layout/page_detail_top" />
+
+    <RelativeLayout
+        android:id="@+id/rl_pc_account"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/pc_white" >
+
+        <TextView
+            android:id="@+id/tv_pc_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="账户"
+            android:textColor="@color/pc_black_text" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/arrow2" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_pc_protocol"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/pc_white" >
+
+        <TextView
+            android:id="@+id/tv_pc_protocol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="用户协议"
+            android:textColor="@color/pc_black_text" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/arrow2" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="15dp"
+        android:background="@color/pc_line" />
+
+    <RelativeLayout
+        android:id="@+id/rl_pc_about"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/pc_white" >
+
+        <TextView
+            android:id="@+id/tv_pc_about"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="关于优葆"
+            android:textColor="@color/pc_black_text" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/arrow2" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="15dp"
+        android:background="@color/pc_line" />
+
+    <RelativeLayout
+        android:id="@+id/rl_pc_help_feedback"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/pc_white" >
+
+        <TextView
+            android:id="@+id/tv_pc_help_feedback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="帮助与反馈"
+            android:textColor="@color/pc_black_text" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/arrow2" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="15dp"
+        android:background="@color/pc_line" />
+
+    <RelativeLayout
+        android:id="@+id/rl_pc_go_evaluation"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/pc_white" >
+
+        <TextView
+            android:id="@+id/tv_pc_go_evaluation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="去评价"
+            android:textColor="@color/pc_black_text" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/arrow2" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_pc_clear_buffer"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/pc_white" >
+
+        <TextView
+            android:id="@+id/tv_pc_clear_buffer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="清除缓存"
+            android:textColor="@color/pc_black_text" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/arrow2" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_pc_log_off"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/pc_white" >
+
+        <TextView
+            android:id="@+id/tv_pc_log_off"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="退出登录"
+            android:textColor="@color/pc_black_text" />
+    </RelativeLayout>
+
+</LinearLayout>

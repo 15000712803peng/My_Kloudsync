@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+    
+   <!-- <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/green">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:layout_centerInParent="true"
+            android:text="@string/Add_Group"
+            android:textColor="@color/white"
+            android:textSize="18sp"/>
+        
+        <TextView
+            android:id="@+id/tv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentLeft="true"
+            android:gravity="center"
+            android:drawableLeft="@drawable/return_arrow"
+            android:text="@string/Back"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+        
+        <TextView
+            android:id="@+id/tv_sure"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:text="@string/Yes"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+    </RelativeLayout>
+-->
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="15sp"
+            android:text="@string/Add_Group"
+            android:textColor="@color/black"/>
+
+        <RelativeLayout
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true">
+
+            <ImageView
+                android:id="@+id/tv_back"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:padding="15dp"
+                android:src="@drawable/arrow_back2" />
+        </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_sure"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:textColor="@color/pc_black_text"
+            android:text="@string/Yes"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+
+
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/green"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:text="@string/Participants"/>
+        
+        <ImageView 
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/search"/>
+        
+        <EditText 
+            android:id="@+id/et_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:hint="@string/Search_Contact"
+            android:textColor="@color/darkgrey"
+            android:textSize="13sp"/>
+    </LinearLayout>
+    
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"/>
+    
+    <RelativeLayout
+        android:descendantFocusability="afterDescendants"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ListView
+            android:id="@+id/lv_group"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/grey"
+            android:dividerHeight="1dp"
+            android:listSelector="@drawable/list_selector"></ListView>
+        <FrameLayout
+            android:layout_width="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_height="match_parent" >
+
+            <com.kloudsync.techexcel.help.SideBar
+                android:id="@+id/sidebar"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="right|center"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp" />
+        </FrameLayout>
+    </RelativeLayout>
+    
+
+</LinearLayout>

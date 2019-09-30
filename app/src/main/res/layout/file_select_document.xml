@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:paddingLeft="22dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/layout_doc_select_team"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txt_promp"
+                android:background="@drawable/dark_gray_shape"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:text="T"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:id="@+id/txt_doc_team_name"
+                android:layout_marginLeft="12dp"
+                android:gravity="center"
+                android:textColor="@color/txt_color1"
+                android:textSize="14sp"
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_centerVertical="true" />
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/image_arrow"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:src="@drawable/arrow2"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/layout_doc_select_team"
+            android:layout_width="14dp"
+            android:layout_height="14dp" />
+
+        <LinearLayout
+            android:layout_toRightOf="@id/image_arrow"
+            android:id="@+id/layout_doc_select_space"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:background="@drawable/dark_gray_shape"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:text="S"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:id="@+id/txt_doc_space_name"
+                android:layout_marginLeft="12dp"
+                android:gravity="center"
+                android:textColor="@color/blue1"
+                android:textSize="14sp"
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_centerVertical="true" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_marginRight="10dp"
+            android:id="@+id/doc_img_close"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="12dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/close" />
+    </RelativeLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:background="@color/grey" />
+
+    <LinearLayout
+        android:padding="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bgColor"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+
+            android:text="File Name"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/size"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+
+            android:text="size"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_weight="1"
+            android:id="@+id/time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Time"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list_document"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"></android.support.v7.widget.RecyclerView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/cancel"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:background="@drawable/peertimeselect_bg"
+                android:gravity="center"
+                android:text="@string/Cancel"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/save"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/peertimeselect_bg2"
+                android:gravity="center"
+                android:text="@string/OK"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+</LinearLayout>
+
+
+

@@ -1,0 +1,78 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical">
+
+    <include layout="@layout/common_title" />
+
+
+    <RelativeLayout
+        android:id="@+id/teamrl"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:paddingBottom="5dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp">
+
+
+        <ImageView
+            android:id="@+id/selecticon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/avtar_5" />
+
+        <TextView
+            android:id="@+id/teamspacename"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/selecticon"
+            android:text="Medical team of Beijing hospital"
+            android:textColor="@color/darkgrey" />
+
+        <ImageView
+            android:id="@+id/moreOpation"
+            android:layout_width="30dp"
+            android:padding="7dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/arrow2" />
+
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/tv_invite"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:visibility="gone"
+        android:layout_centerVertical="true"
+        android:drawablePadding="10dp"
+        android:drawableLeft="@drawable/blue_circle"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="10dp"
+        android:text="Invate new"
+        android:textColor="@color/skyblue" />
+
+    <TextView
+        android:id="@+id/txt_top"
+        android:background="@color/lightgrey"
+        android:padding="12sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Team members"
+        android:textColor="@color/newgrey"
+        android:textSize="12sp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list_member"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+
+</LinearLayout>

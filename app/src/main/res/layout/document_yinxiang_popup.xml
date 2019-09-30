@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rc_white_bg_shape"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:padding="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:text="@string/rename"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
+    <TextView
+        android:lineSpacingExtra="2dp"
+        android:padding="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="when share sync,the sync subtitle will show\nbelow sync title"
+        android:textColor="#4a4a4a"
+        android:textSize="12sp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+
+            <EditText
+                android:id="@+id/edittext"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@drawable/rename_edit_bg"
+                android:gravity="center_vertical"
+                android:hint="Sync subtitle here "
+                android:paddingLeft="10dp"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <View
+        android:layout_marginTop="16dp"
+        android:background="@color/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1.5px" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:padding="12dp"
+            android:id="@+id/cancel"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/Cancel" />
+
+        <View
+            android:background="@color/divider"
+            android:layout_width="1.5px"
+            android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/ok"
+            android:padding="12dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/OK"
+            android:textColor="@color/skyblue" />
+    </LinearLayout>
+
+</LinearLayout>

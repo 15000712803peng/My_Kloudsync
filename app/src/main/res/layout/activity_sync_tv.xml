@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgrey"
+    android:orientation="vertical">
+
+    <include layout="@layout/common_title" />
+
+
+    <RelativeLayout
+        android:id="@+id/layout_enable_sync"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_marginTop="36dp"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:text="Sync TV APP"
+            android:textColor="@color/darkgrey"
+            android:textSize="12sp" />
+
+
+        <Switch
+            android:id="@+id/switch_sync_tv"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:checked="false"
+            android:theme="@style/Color1SwitchStyle" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="18dp"
+        android:text="AutoSync enables content be displayed on your TV devices"
+        android:textColor="@color/red"
+        android:textSize="11sp" />
+
+    <RelativeLayout
+        android:layout_marginTop="30dp"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <LinearLayout
+            android:id="@+id/layout_devices"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginRight="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="设备名称"
+                    android:textColor="@color/black"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="登录时间"
+                    android:textColor="@color/black"
+                    android:textSize="13sp" />
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_marginTop="6dp"
+                android:id="@+id/list_device"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"></android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+
+        <TextView
+            android:visibility="gone"
+            android:textSize="14sp"
+            android:textColor="@color/txt_color1"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:id="@+id/txt_no_devices"
+            android:text="no tv devices found"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/txt_scan"
+        android:textSize="15sp"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        android:text="扫描电视设备"
+        android:gravity="center"
+        android:background="@drawable/bottom_blue_bg"
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

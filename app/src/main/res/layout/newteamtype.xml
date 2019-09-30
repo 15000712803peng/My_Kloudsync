@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <TextView
+            android:id="@+id/cancel"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:gravity="center_vertical"
+            android:text="@string/cancel"
+            android:textColor="@color/skyblue"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="10dp"
+            android:gravity="center_vertical"
+            android:text="Team Type"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+
+        <TextView
+            android:id="@+id/ok"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical|right"
+            android:text="@string/OK"
+            android:textColor="@color/skyblue"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
+
+    <TextView
+        android:id="@+id/bothdocument"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:textColor="@color/qiangrey"
+        android:singleLine="true"
+        android:text="Both document team and topic team" />
+
+    <TextView
+
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
+
+    <TextView
+        android:id="@+id/documentonly"
+        android:layout_width="match_parent"
+        android:textColor="@color/qiangrey"
+        android:layout_height="40dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="Document team only" />
+
+
+</LinearLayout>

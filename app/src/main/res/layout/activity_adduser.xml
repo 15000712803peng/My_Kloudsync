@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgrey"
+    android:orientation="vertical" >
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/green">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:layout_centerInParent="true"
+            android:text="@string/Create_User"
+            android:textColor="@color/white"
+            android:textSize="18sp"/>
+        
+        
+        <TextView
+            android:id="@+id/tv_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:text="@string/Cancel_Create"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+    </RelativeLayout>
+    
+    <LinearLayout 
+        android:id="@+id/lin_phone"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="14sp"
+            android:text="@string/Write_Phone"/>
+        
+        
+        <EditText 
+            android:id="@+id/et_phone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right|center_vertical"
+            android:paddingRight="10dp"
+            android:inputType="phone"
+            android:background="@null"
+            android:textColor="@color/newgrey"
+            android:textSize="14sp"
+            />
+        
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/tv_care"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:visibility="gone"
+        android:textColor="@color/red"
+        android:textSize="12sp"
+        android:text="@string/Care_User" />
+    
+    <RelativeLayout 
+        android:id="@+id/rl_head"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_marginTop="10dp"
+        android:layout_height="70dp">
+        
+        <com.kloudsync.techexcel.view.CircleImageView
+            android:id="@+id/cimg_head"
+            android:layout_width="50dp"
+            android:layout_height="50dp"  
+            android:layout_alignParentLeft="true"
+            android:layout_margin="10dp"     
+            android:src="@drawable/hello"/>
+        
+        <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:src="@drawable/arrow2"/>
+        
+    </RelativeLayout>
+    
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"/>
+    
+    <LinearLayout 
+        android:id="@+id/lin_name"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="14sp"
+            android:text="@string/Name"/>
+        
+        <com.kloudsync.techexcel.tool.ContainsEmojiEditText
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right|center_vertical"
+            android:paddingRight="10dp"
+            android:background="@null"
+            android:maxLength="10"
+            android:singleLine="true"
+            android:textColor="@color/newgrey"
+            android:textSize="14sp"
+            />
+        
+    </LinearLayout>
+    
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"/>
+    
+    <LinearLayout 
+        android:id="@+id/lin_local"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="14sp"
+            android:text="@string/Write_Local"/>
+        
+        <TextView 
+            android:id="@+id/tv_local"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="10dp"
+            android:drawableRight="@drawable/arrow2"
+            android:textColor="@color/newgrey"
+            android:textSize="14sp"
+            />
+        
+    </LinearLayout>
+    
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"/>
+    
+    <LinearLayout 
+        android:id="@+id/lin_ub_man"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="14sp"
+            android:text="我的优葆人"/>
+        
+        <TextView 
+            android:id="@+id/tv_ub_man"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="10dp"
+            android:drawableRight="@drawable/arrow2"
+            android:textColor="@color/newgrey"
+            android:textSize="14sp"
+            />
+        
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:id="@+id/lin_sex"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="14sp"
+            android:text="@string/Write_Sex"/>
+        
+        <TextView 
+            android:id="@+id/tv_sex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="10dp"
+            android:textColor="@color/newgrey"
+            android:textSize="14sp"
+            />
+        
+    </LinearLayout>
+
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"/>
+    
+    <LinearLayout 
+        android:id="@+id/lin_height"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="14sp"
+            android:text="@string/Write_Height"/>
+        
+        <TextView 
+            android:id="@+id/tv_height"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="10dp"
+            android:textColor="@color/newgrey"
+            android:textSize="14sp"
+            />
+        
+    </LinearLayout>
+    
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"/>
+    
+    <LinearLayout 
+        android:id="@+id/lin_weight"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="14sp"
+            android:text="体重（kg）"/>
+        
+        <EditText 
+            android:id="@+id/et_weight"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right|center_vertical"
+            android:paddingRight="10dp"
+            android:background="@null"
+            android:inputType="numberDecimal"
+            android:textColor="@color/newgrey"
+            android:textSize="14sp"
+            />
+        
+    </LinearLayout>
+    
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"/>
+    
+    <LinearLayout 
+        android:id="@+id/lin_birth"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="14sp"
+            android:text="@string/Birthday"/>
+        
+        <TextView 
+            android:id="@+id/tv_birth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="10dp"
+            android:textColor="@color/newgrey"
+            android:textSize="14sp"
+            />
+        
+    </LinearLayout>
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        <TextView 
+            android:id="@+id/tv_create"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:background="@drawable/login_greenback"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:text="确认创建"/>
+        
+    </RelativeLayout>
+    
+    
+</LinearLayout>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tv_sort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lightgrey"
+        android:paddingLeft="15dp"
+        android:text="F"
+        android:textColor="@color/green"
+        android:textStyle="bold" />
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:orientation="horizontal">
+        
+        <LinearLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+            
+            <com.kloudsync.techexcel.view.CircleImageView
+                android:id="@+id/img_head"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+       			android:layout_margin="5dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/hello"
+                />
+            
+            <!-- <ImageView 
+                android:id="@+id/img_new"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/new1"
+                /> -->
+            
+            
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:orientation="vertical" >
+            
+            <LinearLayout 
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                
+                <TextView 
+                    android:id="@+id/tv_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/darkgrey"
+                    android:textSize="15sp"/>
+                
+                <ImageView 
+                    android:id="@+id/img_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:src="@drawable/teacher_green"/>
+                
+                <TextView 
+                    android:id="@+id/tv_gender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="bottom"
+                    android:textColor="@color/darkgrey"
+                    android:textSize="13sp"/>
+                
+                <TextView 
+                    android:id="@+id/tv_age"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="bottom"
+                    android:textColor="@color/darkgrey"
+                    android:textSize="13sp"/>
+                
+                <TextView 
+                    android:id="@+id/tv_serviceTimes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="bottom"
+                    android:textColor="@color/darkgrey"
+                    android:textSize="13sp"/>
+                
+                <TextView 
+                    android:id="@+id/tv_distance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_gravity="bottom"
+                    android:gravity="right"
+                    android:textColor="@color/green"
+                    android:textSize="12sp"/>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:id="@+id/lin_problem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                
+            </LinearLayout>
+            
+            <TextView 
+                android:id="@+id/tv_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="@color/newgrey"
+                android:textSize="13sp"/>
+            
+            
+        </LinearLayout>
+        
+        
+    </LinearLayout>
+
+</LinearLayout>

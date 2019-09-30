@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/lin_favour"
+    android:orientation="vertical"
+    android:descendantFocusability="afterDescendants"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/image_friend_icon"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_gravity="center"
+            android:scaleType="center"
+            fresco:fadeDuration="500"
+            android:layout_centerVertical="true"
+            fresco:failureImage="@drawable/hello"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/hello"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:roundAsCircle="true" />
+
+        <TextView
+            android:layout_marginLeft="6dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/image_friend_icon"
+            android:textColor="@color/txt_color1"
+            android:textSize="13sp"
+            android:id="@+id/txt_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </RelativeLayout>
+
+    <TextView
+
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:background="@color/divider_line" />
+</LinearLayout>

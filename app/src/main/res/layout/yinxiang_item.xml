@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/operation"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/ttrel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:maxLines="2"
+            android:text="5 Reasons to purchase desktop(02:23)"
+            android:textColor="@color/txt_color1" />
+
+        <ImageView
+            android:id="@+id/operationmore"
+            android:visibility="visible"
+            android:layout_marginRight="5dp"
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/more_favor" />
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/sss"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ttrel"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="3dp"
+
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="8dp">
+
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/image"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:scaleType="center"
+            fresco:fadeDuration="500"
+            fresco:failureImage="@drawable/hello"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/hello"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:roundAsCircle="true" />
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/image"
+            android:text="Bella"
+            android:textColor="@color/txt_color1" />
+
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/username"
+            android:text="(02:23)" />
+
+        <ImageView
+            android:id="@+id/morepopup"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:padding="5dp"
+            android:src="@drawable/more_favor"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/sss"
+        android:background="@color/divider_line" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/line" />
+</RelativeLayout>

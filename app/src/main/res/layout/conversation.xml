@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="@color/white"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="42dp">
+
+        <RelativeLayout
+            android:id="@+id/layout_back"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true">
+
+            <ImageView
+                android:layout_centerInParent="true"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/arrow_back2" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@color/white"
+            android:gravity="center"
+            android:text="@string/select_a_space"
+            android:textColor="@color/darkgrey"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/img_add"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:visibility="gone"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/chat_personal" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:background="@color/grey" />
+
+
+    <fragment
+        android:id="@+id/conversation"
+        android:name="io.rong.imkit.fragment.ConversationFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></fragment>
+    <!--<fragment-->
+    <!--android:name="io.rong.app.fragment.language.RongSettingFragment"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"></fragment>-->
+</LinearLayout>

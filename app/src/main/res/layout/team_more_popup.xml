@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            />
+
+        <ImageView
+            android:id="@+id/img_close"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="12dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/close"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:background="@color/grey"/>
+
+    <LinearLayout
+        android:padding="12dp"
+        android:id="@+id/lin_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/editdddd" />
+
+        <TextView
+            android:id="@+id/tv_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:text="@string/Edit"
+            android:textColor="@color/txt_color1"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:layout_marginLeft="15dp"
+        android:background="@color/grey"/>
+
+    <LinearLayout
+        android:padding="12dp"
+        android:id="@+id/lin_rename"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/rename" />
+
+        <TextView
+            android:id="@+id/rename"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:text="@string/rename"
+            android:textSize="14sp"
+            android:textColor="@color/txt_color1" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:layout_marginLeft="15dp"
+        android:background="@color/grey"/>
+
+    <LinearLayout
+        android:padding="12dp"
+        android:id="@+id/lin_quit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/quit" />
+
+        <TextView
+            android:id="@+id/quitteam"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:text="@string/quit_team"
+            android:textColor="@color/txt_color1"
+            android:textSize="14sp" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:layout_marginLeft="15dp"
+        android:background="@color/grey"/>
+
+    <LinearLayout
+        android:padding="12dp"
+        android:id="@+id/lin_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/trash_favor" />
+
+        <TextView
+            android:id="@+id/deleteTeam"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:textSize="14sp"
+            android:text="@string/Delete"
+            android:textColor="@color/red2"/>
+    </LinearLayout>
+
+</LinearLayout>

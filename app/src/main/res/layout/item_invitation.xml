@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/item_divider"
+        android:layout_width="match_parent"
+        android:layout_height="6dp" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_item"
+        android:layout_width="wrap_content"
+        android:background="@color/white"
+        fresco:cardCornerRadius="4dp"
+        fresco:cardElevation="1dp"
+        fresco:cardPreventCornerOverlap="false"
+        fresco:cardUseCompatPadding="true"
+        android:layout_marginBottom="16dp"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:background="@color/white"
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/image_company_icon"
+                    android:src="@drawable/login_icon"
+                    android:layout_width="40dp"
+                    android:layout_marginBottom="9dp"
+                    android:layout_height="40dp" />
+
+                <TextView
+                    android:textColor="#4A90E2"
+                    android:textSize="16sp"
+                    android:layout_alignParentRight="true"
+                    android:text="Invitation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_marginBottom="12dp"
+                    android:id="@+id/txt_company_name"
+                    android:text="KloudSynnc"
+                    android:textSize="16dp"
+                    android:textColor="#4a4a4a"
+                    android:layout_below="@id/image_company_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <View
+                    android:id="@+id/divider"
+                    android:background="#D8D8D8"
+                    android:layout_below="@id/txt_company_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="1.5px" />
+
+                <RelativeLayout
+                    android:paddingTop="16dp"
+                    android:layout_below="@id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:textSize="12sp"
+                        android:textColor="#4A4A4A"
+                        android:text="Invite you to join"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <CheckBox
+                        android:id="@+id/checkbox"
+                        android:background="@drawable/rc_message_checkbox"
+                        android:button="@android:color/transparent"
+                        android:layout_alignParentRight="true"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp" />
+
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+</LinearLayout>

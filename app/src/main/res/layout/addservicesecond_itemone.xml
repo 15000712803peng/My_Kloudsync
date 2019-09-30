@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="5dp"
+            android:layout_height="20dp"
+            android:background="@drawable/addservicetwo" />
+
+        <TextView
+            android:id="@+id/tv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="什么是风寒感冒"
+            android:textColor="@color/c1"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="俗话说一图胜千言，所以图片最直观。Instagram出现之前，大家其实已经感觉到了在社交网络上自己对图片的喜爱，因为看图片获取到的直观信息很轻松，当然这只是instagram能获得如此大成功的原因之一，接下来我还会讲解它那迷人的滤镜。"
+        android:textColor="@color/c5"
+        android:textSize="16sp" />
+
+</LinearLayout>

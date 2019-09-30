@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        android:layout_height="match_parent"
+        android:background="@color/detail_top"
+        android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Account setting"
+            android:textColor="@color/black"/>
+
+        <RelativeLayout
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true">
+
+            <ImageView
+                android:id="@+id/img_notice"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:padding="15dp"
+                android:src="@drawable/arrow_back2" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/as_ll_logo"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:text="@string/as_logo"
+            android:textSize="16sp" />
+    <RelativeLayout
+        android:id="@+id/as_rl_logo"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal" >
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/as_img_logo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:layout_toLeftOf="@+id/as_logo"
+            android:contentDescription="@string/head"
+            android:scaleType="center"
+            fresco:fadeDuration="500"
+            fresco:failureImage="@drawable/hello"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/hello"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:roundAsCircle="true" />
+        <ImageView
+            android:id="@+id/as_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/arrow2" />
+
+    </RelativeLayout>
+</LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="20dp"
+        android:background="@color/grey" />
+
+    <LinearLayout
+        android:id="@+id/ll_name"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical|left"
+            android:text="@string/as_name"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal" >
+
+            <com.kloudsync.techexcel.tool.ContainsEmojiEditText
+                android:id="@+id/as_et_name"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/radio"
+                android:drawablePadding="5dp"
+                android:gravity="right|center"
+                android:maxLength="20"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:singleLine="true"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="20dp"
+        android:background="@color/grey" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical|left"
+            android:text="@string/as_address"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal" >
+
+            <com.kloudsync.techexcel.tool.ContainsEmojiEditText
+                android:id="@+id/as__et_webaddress"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/radio"
+                android:drawablePadding="5dp"
+                android:gravity="right|center"
+                android:paddingLeft="5dp"
+                android:maxLength="10"
+                android:singleLine="true"
+                android:paddingRight="5dp"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="20dp"
+        android:background="@color/grey" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical|left"
+            android:text="@string/as_email"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal" >
+
+            <com.kloudsync.techexcel.tool.ContainsEmojiEditText
+                android:id="@+id/as_et_email"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/radio"
+                android:drawablePadding="5dp"
+                android:gravity="right|center"
+                android:paddingLeft="5dp"
+                android:maxLength="10"
+                android:singleLine="true"
+                android:paddingRight="5dp"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/grey" />
+
+    <RelativeLayout
+        android:id="@+id/layout_enable_sync"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="12sp"
+            android:text="@string/as_sync" />
+
+
+        <Switch
+            android:layout_marginRight="16dp"
+            android:layout_centerVertical="true"
+            android:id="@+id/switch_sync"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:checked="true"
+            android:theme="@style/Color1SwitchStyle" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/as_rl_admin"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="12sp"
+            android:text="@string/as_admin"
+            />
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/as_img_admin_one"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/as_admin"
+            android:contentDescription="@string/head"
+            android:scaleType="center"
+            fresco:fadeDuration="500"
+            fresco:failureImage="@drawable/hello"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/hello"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:roundAsCircle="true" />
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/as_img_admin_two"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="30dp"
+            android:layout_toLeftOf="@+id/as_admin"
+            android:contentDescription="@string/head"
+            android:scaleType="center"
+            fresco:fadeDuration="500"
+            fresco:failureImage="@drawable/hello"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/hello"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:roundAsCircle="true" />
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/as_img_admin_three"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="50dp"
+            android:layout_toLeftOf="@+id/as_admin"
+            android:contentDescription="@string/head"
+            android:scaleType="center"
+            fresco:fadeDuration="500"
+            fresco:failureImage="@drawable/hello"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/hello"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:roundAsCircle="true" />
+
+        <ImageView
+            android:id="@+id/as_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/arrow2" />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/as_rl_contact"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="12sp"
+            android:text="@string/as_contact_list"
+            />
+
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/as_img_contact_one"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/as_contact"
+            android:contentDescription="@string/head"
+            android:scaleType="center"
+            fresco:fadeDuration="500"
+            fresco:failureImage="@drawable/hello"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/hello"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:roundAsCircle="true" />
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/as_img_contact_two"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="30dp"
+            android:layout_toLeftOf="@+id/as_contact"
+            android:contentDescription="@string/head"
+            android:scaleType="center"
+            fresco:fadeDuration="500"
+            fresco:failureImage="@drawable/hello"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/hello"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:roundAsCircle="true" />
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/as_img_contact_three"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="50dp"
+            android:layout_toLeftOf="@+id/as_contact"
+            android:contentDescription="@string/head"
+            android:scaleType="center"
+            fresco:fadeDuration="500"
+            fresco:failureImage="@drawable/hello"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/hello"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:roundAsCircle="true" />
+        <ImageView
+            android:id="@+id/as_contact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/arrow2" />
+
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/as_tv_save"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/skyblue"
+        android:gravity="center_horizontal|center_vertical"
+        android:text="@string/as_save"
+        android:textColor="@color/white"
+        android:textSize="18dp" />
+</LinearLayout>
+

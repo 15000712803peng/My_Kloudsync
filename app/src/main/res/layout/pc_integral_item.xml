@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android_custom="http://schemas.android.com/apk/res/com.example.text"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pc_white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/rl_pc_article"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:background="@color/pc_white" >
+
+        <ImageView
+            android:id="@+id/img_pc_article"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/integral_i" />
+
+        <TextView
+            android:id="@+id/tv_pc_integral_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/img_pc_article"
+            android:textColor="@color/pc_black_text"
+            android:text="积分进账：" />
+        
+         <TextView
+            android:id="@+id/tv_pc_integral_porint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/tv_pc_integral_type"
+            android:textColor="@color/evaluation_orange"
+            android:text="2000" />
+         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/tv_pc_integral_porint"
+            android:textColor="@color/pc_black_text"
+            android:text="积分" />
+
+         <TextView
+            android:id="@+id/tv_pc_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+           	android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/img_pc_article"
+            android:layout_below="@+id/tv_pc_integral_type"
+            android:text="状态" />
+
+         <TextView
+             android:id="@+id/pc_integral_time"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_alignBaseline="@+id/tv_pc_state"
+             android:layout_alignBottom="@+id/tv_pc_state"
+             android:layout_alignParentRight="true"
+             android:layout_marginRight="14dp"
+             android:text="2015-11-27" />
+
+    </RelativeLayout>
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="15dp"
+        android:background="@color/pc_line" />
+</LinearLayout>

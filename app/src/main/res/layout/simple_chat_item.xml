@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@color/white">
+
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:layout_centerVertical="true"
+        android:id="@+id/image_avatar"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_gravity="center"
+        app:fadeDuration="500"
+        android:layout_marginLeft="16dp"
+        app:failureImage="@drawable/rc_default_portrait"
+        app:failureImageScaleType="centerInside"
+        app:placeholderImage="@drawable/rc_default_portrait"
+        app:placeholderImageScaleType="fitCenter"
+        app:roundAsCircle="true" />
+
+    <TextView
+        android:id="@+id/txt_name"
+        android:layout_marginLeft="12dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/image_avatar"
+        android:textSize="14sp"
+        android:textColor="@color/txt_color1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <View
+        android:layout_marginLeft="12dp"
+        android:background="@color/divider_line"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/image_avatar"
+        android:layout_width="match_parent"
+        android:layout_height="1.5px" />
+
+
+</RelativeLayout>

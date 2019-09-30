@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/detail_top"
+    android:orientation="vertical">
+
+    <include layout="@layout/common_title" />
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/image_logo"
+        android:layout_width="78dp"
+        android:layout_marginTop="18dp"
+        android:layout_height="78dp"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/imageView1"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@string/head"
+        android:scaleType="center"
+        fresco:fadeDuration="500"
+        fresco:failureImage="@drawable/login_icon"
+        fresco:failureImageScaleType="centerInside"
+        fresco:placeholderImage="@drawable/login_icon"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:roundAsCircle="false" />
+
+    <TextView
+        android:id="@+id/txt_version"
+        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="16sp"
+        android:textColor="@color/txt_color1"
+        android:text="V1.0.0"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_ps"
+
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:layout_marginTop="48dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/darkgrey"
+            android:textSize="14sp"
+            android:text="@string/privacy_statement"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/arrow2" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_marginBottom="48dp"
+        android:layout_weight="1"
+        android:gravity="bottom|center_horizontal"
+        android:textSize="10dp"
+        android:text="Copyright 2019 Kloud.com All rights reserved."
+        android:textColor="@color/txt_color1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
+</LinearLayout>

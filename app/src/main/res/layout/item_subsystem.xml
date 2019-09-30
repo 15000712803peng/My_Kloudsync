@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="afterDescendants"
+    android:id="@+id/layout_item"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:background="#f1f5ff"
+        android:layout_width="match_parent"
+        android:layout_height="58dp">
+
+        <ImageView
+            android:id="@+id/image_company_avatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="16dp"
+            android:src="@drawable/avatar_organization"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/image_company_avatar"
+            android:id="@+id/txt_company_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="50dp"
+            android:ellipsize="end"
+            android:gravity="left|fill_vertical"
+            android:maxLines="1"
+            android:textColor="#4A4A4A"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:layout_centerVertical="true"
+            android:id="@+id/imge_selected"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/unchecked2"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+
+</LinearLayout>

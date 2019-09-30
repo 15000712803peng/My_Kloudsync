@@ -1,0 +1,57 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/lightgrey"
+    android:orientation="horizontal" >
+
+    <include
+        android:id="@+id/include1"
+        layout="@layout/pi_page_description_top" />
+
+    <TextView
+        android:id="@+id/spin_province"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/include1"
+        android:background="@color/white"
+        android:gravity="center"
+        android:hint="@string/province"
+        android:textColor="@color/black" >
+    </TextView>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="20dp"
+        android:background="@color/grey" />
+
+    <TextView
+        android:id="@+id/spin_city"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/spin_province"
+        android:background="@color/white"
+        android:gravity="center"
+        android:hint="@string/city"
+        android:textColor="@color/black" >
+    </TextView>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="20dp"
+        android:background="@color/grey" />
+
+    <com.kloudsync.techexcel.view.ClearEditText
+        android:id="@+id/editstreet"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/spin_city"
+        android:layout_gravity="center"
+        android:background="@color/white"
+        android:gravity="center"
+        android:hint="@string/street"
+        android:textSize="16sp" />
+
+</RelativeLayout>

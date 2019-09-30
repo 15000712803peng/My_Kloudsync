@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgrey"
+    android:orientation="vertical" >
+
+    <include layout="@layout/page_description_top" />
+
+    <LinearLayout
+        android:id="@+id/editdescription"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:minHeight="100dp"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/description"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="编辑..."
+            android:background="@color/white" />
+    </LinearLayout>
+
+</LinearLayout>

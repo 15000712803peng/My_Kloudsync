@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/common_title" />
+
+    <RelativeLayout
+        android:paddingTop="20dp"
+        android:paddingBottom="32dp"
+        android:background="#F6F8F9"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/layout_logo"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:scaleType="fitXY"
+                android:src="@drawable/login_icon"
+                android:layout_width="52dp"
+                android:layout_height="52dp" />
+
+            <TextView
+                android:layout_marginLeft="12dp"
+                android:textSize="18sp"
+                android:textColor="#3E3F42"
+                android:text="KloudSync"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_welcome"
+            android:layout_centerHorizontal="true"
+            android:textSize="16sp"
+            android:layout_marginTop="20dp"
+            android:textColor="#3E3F42"
+            android:text="Nice to have you as one of us"
+            android:layout_below="@id/layout_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/txt_promp_join"
+            android:layout_centerHorizontal="true"
+            android:textSize="13sp"
+            android:layout_marginTop="6dp"
+            android:textColor="#4A4A4A"
+            android:text="WOW,Some one had invited you,click to join"
+            android:layout_below="@id/txt_welcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.RecyclerView
+            android:paddingTop="20dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="22dp"
+            android:id="@+id/list_invitation"
+            android:layout_below="@id/txt_promp_join"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/txt_next"
+            android:gravity="center"
+            android:layout_alignParentBottom="true"
+            android:textSize="13sp"
+            android:textColor="@color/white"
+            android:text="next"
+            android:paddingTop="11dp"
+            android:paddingBottom="11dp"
+            android:layout_marginLeft="38dp"
+            android:layout_marginRight="38dp"
+            android:background="@drawable/bottom_blue_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F8F9">
+
+    <include
+        android:id="@+id/layout_title"
+        layout="@layout/common_title" />
+
+    <TextView
+        android:id="@+id/txt_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_title"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="26dp"
+        android:text=""
+        android:textColor="#4a4a4a"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+
+    <RelativeLayout
+        android:id="@+id/layout_promp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txt_welcome"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="24dp">
+
+        <TextView
+            android:id="@+id/txt_promp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="21dp"
+            android:lineSpacingExtra="2dp"
+            android:text=""
+            android:textColor="#4a4a4a"
+            android:textSize="14sp" />
+
+
+        <TextView
+            android:id="@+id/txt_no_friends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginRight="21dp"
+            android:lineSpacingExtra="2dp"
+            android:text="Hi,KloudSync公司的用户没有好友请求"
+            android:textColor="#4a4a4a"
+            android:textSize="14sp"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list_friends"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_promp"
+        android:layout_marginTop="24dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/txt_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="36dp"
+        android:background="@drawable/bottom_blue_bg"
+        android:gravity="center"
+        android:paddingTop="12sp"
+        android:paddingBottom="12sp"
+        android:text="@string/Next"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+
+
+</RelativeLayout>

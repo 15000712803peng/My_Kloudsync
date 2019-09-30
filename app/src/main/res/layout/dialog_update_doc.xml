@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/whiteback"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_gravity="center"
+        android:textColor="@color/darkgrey"
+        android:textSize="16sp"
+        android:text="@string/Uploading" />
+
+
+    <com.kloudsync.techexcel.view.RoundProgressBar
+        android:id="@+id/rpb_update"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        app:roundWidth="3dp"
+        app:textSize="12sp"
+        android:layout_marginTop="16dp"
+        app:roundColor="@color/grey"
+        app:roundProgressColor="@color/skyblue"
+        app:textColor="@color/grey" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:layout_marginTop="16dp"
+        android:background="@color/grey" />
+
+
+    <TextView
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:layout_gravity="center"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:background="@drawable/gray_border"
+        android:id="@+id/txt_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/grey"
+        android:text="@string/Cancel"
+        android:textSize="15sp" />
+
+
+</LinearLayout>

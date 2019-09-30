@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:background="@drawable/rc_white_bg_shape"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/lightgrey"
+            android:paddingLeft="20dp"
+            android:paddingTop="6dp"
+            android:orientation="horizontal"
+            android:paddingRight="20dp"
+            android:paddingBottom="6dp">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_centerVertical="true"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Invite  user"
+                android:textColor="@color/skyblue"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:padding="9dp"
+                android:id="@+id/closebtn"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/close" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textColor="@color/txt_color1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Share this link:"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/htmlurl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="5dp"
+                android:text="https://peertime.cn/schedule"
+                android:textColor="@color/blue" />
+
+            <TextView
+                android:textColor="@color/txt_color1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Or share these steps:"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="12dp"
+                android:text="1.Open PeerTime App and login" />
+
+            <TextView
+                android:id="@+id/idstring"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="12dp"
+                android:text="2.Enter meeting ID:MC123" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:minWidth="360dp"
+            android:orientation="horizontal"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp">
+
+            <LinearLayout
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/copylink"
+                    android:paddingLeft="42dp"
+                    android:paddingRight="42dp"
+                    android:layout_width="wrap_content"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/blue_cycle_bg"
+                    android:gravity="center"
+                    android:text="Copy Link"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:singleLine="true"
+                    android:layout_marginLeft="22dp"
+                    android:id="@+id/email"
+                    android:layout_width="wrap_content"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="38dp"
+                    android:paddingRight="38dp"
+                    android:background="@drawable/gray_border_cycle_bg"
+                    android:gravity="center"
+                    android:textColor="@color/inviteuserright"
+                    android:text="Email Invitation" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>
+

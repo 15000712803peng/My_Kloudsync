@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/RelativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+
+        <ImageView
+            android:id="@+id/tv_back"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="30dp"
+            android:src="@drawable/arrow_back2"/>
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/change_name"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/pc_white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="85dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="15dp"
+            android:text="@string/pi_fname"
+            android:textColor="@color/pc_black_text" />
+
+        <EditText
+            android:id="@+id/pc_fist_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:background="@color/nocolor"
+            android:gravity="center_vertical|right"
+            android:hint="@string/pi_pfname"
+            android:textColor="@color/pi_changename"
+            android:textSize="13dp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="15dp"
+        android:background="@color/pc_line" />
+
+    <LinearLayout
+        android:id="@+id/pi_ll_mname"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/pc_white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="85dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="15dp"
+            android:text="@string/pi_mname"
+            android:textColor="@color/pc_black_text" />
+
+        <EditText
+            android:id="@+id/pc_middle_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:background="@color/nocolor"
+            android:gravity="center_vertical|right"
+            android:hint="@string/pi_pmname"
+            android:textColor="@color/pi_changename"
+            android:textSize="13dp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="15dp"
+        android:background="@color/pc_line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/pc_white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="85dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="15dp"
+            android:text="@string/pi_lname"
+            android:textColor="@color/pc_black_text" />
+
+
+        <EditText
+            android:id="@+id/pc_last_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:background="@color/nocolor"
+            android:gravity="center_vertical|right"
+            android:hint="@string/pi_plname"
+            android:textColor="@color/pi_changename"
+            android:textSize="13dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_pc_done"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/skyblue"
+        android:gravity="center_horizontal|center_vertical"
+        android:text="@string/as_save"
+        android:textColor="@color/white"
+        android:textSize="18dp" />
+
+</LinearLayout>

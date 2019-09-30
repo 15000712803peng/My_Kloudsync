@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Kloudsync</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
+
+    <string name="ContactMap">ContactMap</string>
+
+    <string name="dialogue">Chat</string>
+    <string name="service">Document</string>
+    <string name="contact">Contact</string>
+    <string name="community">SyncRoom</string>
+    <string name="personal_center">Me</string>
+    <string name="Meeting">Meeting</string>
+    <string name="Topic">Topic</string>
+
+    <string-array name="tabname">
+        <item>Document</item>
+        <item>Chat</item>
+        <item>Meeting</item>
+        <item>SyncRoom</item>
+        <item>Me</item>
+    </string-array>
+
+    <string-array name="tabname_four">
+        <item>Document</item>
+        <item>Chat</item>
+        <item>Meeting</item>
+        <item>Me</item>
+    </string-array>
+
+    <string-array name="tabname2">
+        <item>Document</item>
+        <item>Chat</item>
+        <item>Meeting</item>
+        <item>SyncRoom</item>
+        <item>Me</item>
+    </string-array>
+
+    <string name="UserDetail">Personal Info</string>
+    <string name="MemberDetail">老师详情</string>
+
+    <string name="Published_Papers">Published Papers</string>
+    <string name="Success_Case">成功案例</string>
+    <string name="Evaluation">评价</string>
+    <string name="ALLEvaluation">所有评价</string>
+
+    <string name="Map_mode">地图模式</string>
+    <string name="Customer">用户</string>
+    <string name="Health_Consultant">好友</string>
+    <string name="Phone">Phone</string>
+    <string name="Address">Address</string>
+    <string name="See_Info">See Info</string>
+    <string name="Fouce_point">Fouce_point：</string>
+    <string name="Descriptions">Descriptions：</string>
+    <string name="Remarks">Add Remarks</string>
+    <string name="Send_Message">Chat</string>
+    <string name="Telephone">Telephone</string>
+
+    <string name="Health_Dashboard">健康仪表盘</string>
+    <string name="Personal_Information">个人资料</string>
+    <string name="Medical_Report">体检报告</string>
+    <string name="Users_Daily">用户日常</string>
+
+    <string name="Healthy_exercise">健康操</string>
+    <string name="All">总计</string>
+
+    <string name="No_Medical_Report">他/她没有任何体检报告</string>
+    <string name="Upload_Medical_Report">帮他/她上传</string>
+
+    <string name="Search_Contact">Search</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Back">Back</string>
+
+
+    <string name="Reservation_information">Reservation information</string>
+    <string name="Appointment">Appointment</string>
+    <string name="See_Details">See Details</string>
+
+    <string name="Consulting_Information">Consulting Information</string>
+    <string name="Add_Group">Add member</string>
+    <string name="Participants">Participants:</string>
+
+    <string name="Common_used">Send File</string>
+    <string name="Send_knowledge">Send knowledge</string>
+    <string name="Send_File">Share favorite</string>
+    <string name="New_Service">New Course</string>
+    <string name="Send_Service">Send Course</string>
+    <string name="Setting">Setting</string>
+    <string name="Knowledge_Base">Knowledge Base</string>
+
+    <string name="All_large_categories">All large categories</string>
+    <string name="All_small_categories">All small categories</string>
+    <string name="All_concerns">All concerns</string>
+
+    <string name="Knowledge_Detail">Knowledge Detail</string>
+    <string name="Edit_Send">Edit Send</string>
+    <string name="Send_Link">Send Link</string>
+
+
+
+    <string name="Input_Telephone">Please input your telephone number</string>
+    <string name="Input_Password">Password, 6-16 characters, letters are case sensitive</string>
+
+    <string name="Input_new_Password">Please input the new password</string>
+
+    <string name="Apply_To_Join">Apply To Join</string>
+    <string name="Forget_Password">Forget Password</string>
+    <string name="Login_Bottom">User License Agreement | Privacy Policy</string>
+
+    <string name="Reset_Password">Reset Password</string>
+    <string name="Send_CheckCode">Send code</string>
+    <string name="Resend_CheckCode">Resend CheckCode</string>
+    <string name="Ensure_Reset">Ensure Reset</string>
+
+    <string name="Sign_Up_Close">暂未开发注册请登录我们的网站www.youbao99.com,进入“健康顾问入口”提交资料，我们将第一时间进行资料审核</string>
+
+    <string name="No_Data">No Data</string>
+    <string name="No_networking">No_networking，please check the network connection</string>
+    <string name="NETWORK_ERROR">NETWORK ERROR</string>
+
+    <string name="Yes">Yes</string>
+    <string name="No">No</string>
+
+    <string name="Forwarding">Forwarding</string>
+    <string name="Sure">Sure</string>
+
+
+    <string name="Create_User">创建用户</string>
+    <string name="Care_User">此用户已有私人健康顾问，不允许创建</string>
+    <string name="Cancel_Create">取消创建</string>
+
+    <string name="Exit_group_chat">Quit group chat</string>
+    <string name="Disbanded_group">Disbanded group</string>
+    <string name="unnamed">unnamed</string>
+    <string name="Modify_Group_Name">Modify Group Name</string>
+
+    <string name="Write_Phone">Phone number (required)）</string>
+    <string name="Name">Name（required）</string>
+    <string name="Write_Local">Area（required）</string>
+    <string name="Write_Sex">Sex</string>
+    <string name="Write_Height">Height</string>
+    <string name="Birthday">Birthday</string>
+
+    <string name="Gallery">Gallery</string>
+    <string name="Photo">Photo</string>
+
+    <string name="Chat_Detail">Chat Detail</string>
+    <string name="Group_Name">Group Name</string>
+    <string name="Emptys_Chat">Clear chat history</string>
+    <string name="Report">Report</string>
+    <string name="group_chat">group chat</string>
+    <string name="delete_friend">Delete contact</string>
+    <string name="data_seeting">Data setting</string>
+    <string name="delete_friend_prompt">Deleting contact will clear your chat history with contect</string>
+
+
+    <string name="Become_UbaoMan">申请成为康人</string>
+    <string name="Add_Service_Pop">抱歉，只有康人有创建服务单特权。申请成为康人，享受更多权益</string>
+    <string name="Add_Customer_Pop">该用户将会在2周后被分配给其他康人。在2周内成为康人，您就可以拥有该用户了</string>
+    <string name="Become_Success">你现在是康人了</string>
+
+    <string name="Change_Remark_Success">Change Remark Success</string>
+    <string name="Country_Code">Country Code</string>
+
+    <string name="Course_invite">You are invited to join the meeting</string>
+    <string name="Share_invite">Shared document message</string>
+
+    <string name="Receive_Spectator">You have the ability to grab a man,
+        you have the ability to open the door ah! Do not hide there, I know you are at home.</string>
+    <string name="Receive_Course">天之道，损有余而补不足，是故虚胜实，不足胜有余。其意博，其理奥，其趣深，天地之象分，阴阳之候列，变化之由表，死生之兆彰，不谋而遗迹自同，勿约而幽明斯契，稽其言有微，验之事不忒，诚可谓至道之宗，奉生之始矣。假若天机迅发，妙识玄通，成谋虽属乎生知，标格亦资于治训，未尝有行不由送，出不由产者亦。然刻意研精，探微索隐，或识契真要，则目牛无全，故动则有成，犹鬼神幽赞，而命世奇杰，时时间出焉。</string>
+
+    <string name="Chinese">中文</string>
+    <string name="English">English</string>
+
+    <string name="To_Chat">Select to Chat</string>
+    <string name="To_Chat_Top">No avaliable chat</string>
+
+    <string name="language">Language</string>
+    <string name="language2">Language</string>
+    <string name="course">My course Template</string>
+    <string name="course2">System course Template</string>
+    <string name="credit">Activity</string>
+    <string name="saved">My Saved File</string>
+    <string name="areas">Areas</string>
+    <string name="about_me">About me</string>
+    <string name="valid_membership">Valid membership</string>
+    <string name="change_password">Change password</string>
+    <string name="login_out">Log out</string>
+    <string name="sync_tv">Sync TV</string>
+
+    <string name="course_list">Your course list</string>
+    <string name="create_group"> create_group</string>
+
+    <string name="Modify">Modify</string>
+    <string name="Register">Register</string>
+    <string name="Next">Next</string>
+
+    <string name="Register_success">Register success</string>
+    <string name="nl_No_null">Name and area can not be null</string>
+    <string name="Perfact_info">Perfact info</string>
+
+    <string name="New_List">New friend</string>
+
+    <string name="Start_chat">Start Chat</string>
+    <string name="Create_Group">Create Group</string>
+    <string name="Add_Friend">Add Friend</string>
+
+    <string name="Is_exit">Whether to exit the current account</string>
+    <string name="confirm_exit">confirm exit</string>
+    <string name="clear">Clear</string>
+
+    <string name="notify1">Join With Room ID</string>
+    <string name="notify2">Join With Invite</string>
+
+    <string name="ask_update_out">Whether to upload to my collection</string>
+
+    <string name="ask_delete">Whether to delete </string>
+
+    <string name="File">File</string>
+    <string name="Save_File">Save File</string>
+    <string name="Save_Success">Save Success</string>
+
+    <string name="Klassroom_ID">Meeting room ID</string>
+    <string name="Schedule">New Meeting</string>
+    <string name="MyKlassroom">Meeting Room</string>
+    <string name="Input_ID">Input your course ID</string>
+    <string name="Class_unexist">The class you joined does not exist</string>
+    <string name="Modify_ID">Modify your klassroom Id</string>
+    <string name="classroomid_occupied">classroomId is already occupied</string>
+
+    <string name="start_peertime">Start</string>
+
+    <string name="update">Update</string>
+    <string name="update_message">Check to the new version, is updated？</string>
+
+    <string name="Peertime_ID">Peertime ID: </string>
+    <string name="Male">Male</string>
+    <string name="Female">Female</string>
+    <string name="Purchased_Courses">Purchased Courses</string>
+    <string name="Gender">Gender</string>
+
+    <string name="Head">Head</string>
+    <string name="Password">Password</string>
+    <string name="Confirm_password">Confirm password</string>
+    <string name="User_ID">User ID</string>
+    <string name="I">I am</string>
+    <string name="password_hint1">Please input password</string>
+    <string name="password_hint2">Please input password again</string>
+    <string name="name_hint">Please input name</string>
+    <string name="UserID_hint">Please input User ID</string>
+    <string name="password_warn">passwords must be the same and cannot be empty</string>
+    <string name="Perfect">Perfect</string>
+    <string name="Register_Success">Register Success</string>
+    <string name="Name_nn">Name cannot be empty</string>
+
+    <string-array name="Role">
+        <item>Student</item>
+        <item>Teacher</item>
+        <item>Parent</item>
+        <item>SchoolOwner</item>
+    </string-array>
+
+    <string name="Classroom">Classroom-</string>
+
+    <string name="CP_Success">Password changed successfully</string>
+    <string name="Finish">Finish</string>
+    <string name="et_contact_remark">Edit contact remark</string>
+    <string name="contact_remark">Contact remark</string>
+
+    <string name="HasExisted">Account already exists. Please sign in directly.</string>
+    <string name="UserNotExist">User not exist.</string>
+
+    <string name="Choice">Choice</string>
+    <string name="Albums">From albums</string>
+    <string name="Albums2">From Video</string>
+
+    <string name="Uploading">Uploading</string>
+
+    <string name="has_account">has accpunt？</string>
+    <string name="login_now">Login now</string>
+
+    <string name="scan_text">Put the QR code in the box and you can scan it automatically.</string>
+    <string name="QR_codescan">QR code scan</string>
+    <string name="Scan">Scan</string>
+    <string name="Scan_failed">Scan failed!</string>
+
+    <string name="Select_school">Switch organization</string>
+    <string name="My_School">My School</string>
+
+    <string name="Create_Organization">Create Organization</string>
+
+    <string name="Switch_School">Switch school</string>
+    <string name="SS1">You are switching current school to</string>
+    <string name="SS2">your role at this school is</string>
+    <string name="Teacher">Teacher</string>
+
+    <string name="C_School">Current Organization</string>
+    <string name="Switch">Switch organization</string>
+
+    <string name="My_contact">My contact</string>
+    <string name="School_contact">School contact</string>
+
+    <string name="School_name">School profile</string>
+    <string name="Teacher_Profile">Teacher Profile</string>
+    <string name="My_account">Account setting</string>
+    <string name="CN_account">Create new account</string>
+
+    <string name="My_Friends">My Contact</string>
+    <string name="NA_friend">Newly Added My Contact</string>
+    <string name="AN_Contact">Add new contact</string>
+
+    <string name="Edit">Edit</string>
+    <string name="Delete">Delete</string>
+
+    <string name="Dialog_GunDan">Only one device can use the chat function at the same time. You have other devices that are using the chat function. This device will temporarily quit the chat.</string>
+
+    <string name="Upgrade">Upgrade</string>
+
+    <string name="Invite_New">Invite New</string>
+
+    <string name="About">About</string>
+    <string name="HelpCenter">Help center</string>
+    <string name="ShareKS">Share KloudSync</string>
+
+    <string name="Submit">Submit</string>
+
+
+    <string name="Team">Current team</string>
+    <string name="Space">Spaces of Current Team</string>
+    <string name="Create_Space">Create New Space</string>
+    <string name="Current_file">Documents of Current Team</string>
+    <string name="Swtich_team">Switch Team</string>
+    <string name="Swtich_space">Switch Space</string>
+    <string name="Create_team">Create New Team</string>
+
+
+    <string name="Select_at">Select a Team</string>
+    <string name="Select_af">Select a file</string>
+
+    <string name="in_hint">Invite phone number to invite</string>
+    <string name="in_fp_contact">Invite from phone contacts</string>
+
+    <!-- xfwang -->
+
+    <string name="selecttime">Please select Time</string>
+    <string name="select2">Select</string>
+    <string name="year">Y</string>
+    <string name="month">M</string>
+    <string name="day">D</string>    <string name="newService">New Course</string>
+    <string name="join">Join Course</string>
+    <string name="join2">Join Meeting</string>
+    <string name="joinroom">Enter meeting room ID</string>
+    <string name="joinmyclass">Enter My Classroom</string>
+    <string name="myklassid">ID:</string>
+    <string name="join3">Join a Meeting</string>
+    <string name="otherklassid">To connect to an online meeting,enter the meeting room ID provided by the organizer</string>
+    <string name="ongoninglesson">On-going lesson</string>
+    <string name="pendingcourse">Pending Lesson</string>
+
+
+    <!--安排会议-->
+    <string name="schStart">Start date:</string>
+    <string name="schName">Name:</string>
+    <string name="schEnd">End date:</string>
+    <string name="schDuration">Duration:</string>
+    <string name="schInvite">Invite attendees</string>
+    <string name="schMeeting">Schedule Meeting</string>
+    <string name="schnames">please select name</string>
+    <string name="schdate">please select date</string>
+    <!--进入弹出窗口-->
+    <string name="satOptions">Select Audio Tool Options</string>
+    <string name="satSystem">System</string>
+    <string name="kCall">KloudCall</string>
+    <string name="satExternal">External</string>
+    <string name="satOn">Turn On</string>
+    <string name="satOff">Turn Off</string>
+    <string name="satOk">Ok</string>
+    <!--进入页面显示-->
+    <string name="inAttendee">Invite attendee</string>
+    <string name="cbPage">Create blank page</string>
+    <string name="shDocument">Share  document</string>
+    <string name="shYcan">As host,you can</string>
+    <string name="shAcan">As attendee,you can</string>
+    <string name="miProgress">MEETING IN PROGRESS</string>
+    <!--右上侧按钮-->
+    <string name="mtMore">More</string>
+    <string name="saTv">Scan a TV</string>
+    <string name="mtInvite">Invite</string>
+    <string name="mtLeave">Leave</string>
+    <string name="mtEnd">End</string>
+    <!--右下侧按钮-->
+    <string name="mtFile">File</string>
+    <string name="mtAttendee">Attendee</string>
+    <string name="mtInvite2">Invite</string>
+    <string name="mtChat">Chat</string>
+    <string name="mtWebcam">Webcam</string>
+    <string name="mtSync">Sync</string>
+    <string name="mtSetting">Setting</string>
+
+    <string name="mtPlay">Play</string>
+    <string name="sMeeting">Start Meeting</string>
+    <string name="sProperty">Property</string>
+    <string name="mtSyncRoom">Share to SyncRoom</string>
+    <string name="mtClose">Close</string>
+    <string name="mtCallMe">Call me</string>
+    <string name="mtStart">Start</string>
+    <string name="mtJoin">Join</string>
+    <string name="mtRefresh">Refresh</string>
+    <string name="mtlesson">Please wait for your host to start the lesson</string>
+    <string name="mtNStart">LESSON IS NOT STARTED YET</string>
+    <string name="mtDelettLesson">Are you sure you want delete this lesson？</string>
+
+
+    <string name="mtJan">Jan</string>
+    <string name="mtFeb">Feb</string>
+    <string name="mtMar">Mar</string>
+    <string name="mtApr">Apr</string>
+    <string name="mtMay">May</string>
+    <string name="mtJun">Jun</string>
+    <string name="mtJul">Jul</string>
+    <string name="mtAug">Aug</string>
+    <string name="mtSept">Sept</string>
+    <string name="mtOct">Oct</string>
+    <string name="mtNov">Nov</string>
+    <string name="mtDec">Dec</string>
+    <!--meetingmorepopup界面-->
+    <string name="mtView">View</string>
+    <string name="mtEdit">Edit</string>
+    <string name="mtdelete">Delete</string>
+
+    <!--yinxiang_create_popup创建创建音想界面-->
+    <string name="mtEBAudio">Enable background audio</string>
+    <string name="mtANAudio">+    Add an audio</string>
+    <string name="mtVoice">Enable voice</string>
+    <string name="mtAddFile">+ Add a recorded voice file</string>
+    <string name="mtIsound">Input sound name here</string>
+    <string name="mtYxName">Name</string>
+    <string name="mtRNVoice">Record new voice</string>
+    <string name="mtSyncRecord">Sync</string>
+    <string name="mtCancel">Cancel</string>
+    <string name="mtRecordSync">Record &#038; Sync</string>
+
+
+    <!--yinxiangoperatorpopup界面-->
+    <string name="mtShareApp">Share in App</string>
+    <string name="mtShareWechat">Share Wechat</string>
+    <string name="mtCopyUrl">Copy URL</string>
+
+    <!--moreaction_popup界面-->
+    <!--    <string name="mtShareWechat">分享到微信</string>
+        <string name="mtCopyUrl">复制链接</string>-->
+    <string name="mtMuteAll">Mute all</string>
+    <string name="mtUnmuteAll">Unmute all</string>
+
+    <!--meeting退出弹窗-->
+    <string name="mtDoSaveMeeting">Do you want to save the meeting data?</string>
+    <string name="mtDoLeaveMeeting">Do you want to Leave meeting?</string>
+    <string name="mtSaveExit">Save an Exit</string>
+    <string name="mtExit">Exit</string>
+
+    <string name="mtDocuments">From Team Documents</string>
+    <string name="mtTPhoto">Take Photo</string>
+    <string name="mtLibrary">Import From Library</string>
+    <string name="mtSavedFiles">My Saved Files</string>
+
+    <!--个人设置-->
+    <string name="pi_avatar">Avatar</string>
+    <string name="pi_phone">Phone</string>
+    <string name="pi_sphone">Secondary Phone</string>
+    <string name="pi_biography">Biography</string>
+    <string name="pi_pbiography">Please input your Biography</string>
+    <string name="pi_fname">First name</string>
+    <string name="pi_mname">Middle Name</string>
+    <string name="pi_lname">Last name</string>
+
+    <string name="pi_pfname">Please input First Name</string>
+    <string name="pi_pmname">Please input Middle Name</string>
+    <string name="pi_plname">Please input Last Name</string>
+    <string name="change_name">Change name</string>
+    <string name="change_phone">Change Primary phone</string>
+    <string name="change_sphone">Change Secondary phone</string>
+
+    <!--淫荡分割线-->
+    <string name="house">H</string>
+    <string name="mintue">M</string>
+    <string name="syncroom">SyncRoom</string>
+
+
+    <string name="inprogress">In Progress</string>
+    <string name="Completed">Completed</string>
+    <string name="mycourse">My Courses</string>
+
+    <string name="message">Message</string>
+    <string name="modify">Modify</string>
+    <string name="start">Start</string>
+    <string name="publish">Publish</string>
+    <string name="details">Detail</string>
+    <string name="prepareview">View</string>
+    <string name="student">Student</string>
+    <string name="selectstudent">Please select student first</string>
+    <string name="selectcoursefirst">Please select course first</string>
+    <string name="success">Success</string>
+    <string name="laststep">Last Step</string>
+    <string name="basicinformation">Basic Info</string>
+    <string name="Contactinformation">Contact information</string>
+    <string name="sendcourse">Send Course</string>
+    <string name="search">Search: </string>
+    <string name="addteacher">Add Teacher</string>
+    <string name="addstudent">Add Student</string>
+    <string name="addteacher1">
+Please add a cell phone number to add the contact
+</string>
+    <string name="addstudent1">
+Please input the cell phone number to add the contact
+</string>
+    <string name="coursedetails">Course Detail</string>
+    <string name="newcontact">New Contact</string>
+    <string name="searchphone">Search Cell Phone</string>
+    <string name="inputdocumentname">Please input document name</string>
+    <string name="editdocumentname">Edit name</string>
+    <string name="selectcourse">Select Course</string>
+    <string name="searchbyusername">Please input user name search</string>
+
+
+    <string name="modify_success">Personal info is modified successfully</string>
+    <string name="province">province</string>
+    <string name="city">city</string>
+    <string name="street">street</string>
+
+    <string name="to">to</string>
+
+    <string name="default_contact">No contacts? \n add your friends and students</string>
+
+    <string name="password_bigthan6">The password needs to be greater than or equal to six digits</string>
+    <string name="password_notbe_null">password can not be null</string>
+    <string name="password_noequal">New password is inconsistent, please re-enter</string>
+    <string name="now_password">Current</string>
+    <string name="input_password">Please input current password</string>
+    <string name="new_password">New</string>
+    <string name="input_newpassword">Please input new password</string>
+    <string name="sure_password">Confirm</string>
+    <string name="input_again">Please input the new password</string>
+    <string name="OK">OK</string>
+    <string name="All_set">All set</string>
+    <string name="coursenotify">Notifications</string>
+    <string name="opencourse">Open Course</string>
+    <string name="viewcourse">View</string>
+    <string name="finishcourse">End</string>
+
+
+    <!-- 雄风 王 -->
+    <string name="allService">所有课程</string>
+    <string name="serviceStatus">服务状态</string>
+    <string name="allType">所有类型</string>
+    <string name="userNamelist">客户名单</string>
+    <string name="reservation">预约人：</string>
+    <string name="reservationAddress">预约地址：</string>
+    <string name="timeOfappointment">预约时间：</string>
+    <string name="promoter">服务发起人</string>
+    <string name="whoServe">为谁服务</string>
+    <string name="descriptionhint">详细描述用户主要症状及希望得到的帮助，这有助于后期的继续观察！（不多于200字）</string>
+    <string name="descriptionhint2">为用户提供详细的解决方案！</string>
+    <string name="communitySearch">搜索你感兴趣的话题</string>
+    <string name="communitycancel">取消</string>
+    <string name="informationPort">信息港</string>
+    <string name="communityActivity">社区活动</string>
+    <string name="onlineInteraction">在线互动</string>
+    <string name="advanced">我要进阶</string>
+    <string name="allmodular">全部模块</string>
+    <string name="back">Back</string>
+    <string name="select_plan">选择方案</string>
+    <string name="select_service">选择服务</string>
+
+    <string name="pullrefresh">Release begins to refresh</string>
+    <string name="pull">Refresh...</string>
+    <string name="pullsliding">Sliding refresh...</string>
+    <string name="pulldownre">Pull down refresh</string>
+
+    <string name="accept">Accept</string>
+    <string name="added">Added</string>
+    <string name="add">Add</string>
+    <string name="waitVerification">Verification</string>
+    <string name="addapply">You have sent to add a friend application,</string>
+    <string name="accetpit">Please wait for your friends to accept it.</string>
+    <string name="welcomeklassroom">Welcome to My Klassroom</string>
+    <string name="upcominglesson">Upcoming Lesson/Meetings</string>
+
+    <string name="netclose">Network not connected</string>
+    <string name="normalcourse">Standard course</string>
+    <string name="right3prompt">The selection of audio tool will take a few time to affect all attendees.</string>
+    <string name="addcontact">Add Contact</string>
+    <string name="nitiate_dialogue">The contact is your friend. Now you can send message</string>
+
+    <string name="addcontactprompt">Once you send the friends request,you need to wait until you friends accept your request.</string>
+
+    <string name="deviceprompt">The same account cannot enter the same room at the same time. Your other device has enter the current room, This device will temporarily quit the room.</string>
+    <string name="review">Review Course</string>
+
+    <string name="selectctype">Select Course Type</string>
+    <string name="onetoone">One to One</string>
+    <string name="onetomany">One to Many</string>
+    <string name="selectstudents">Select Student</string>
+    <string name="selectcoursee">Select Course</string>
+
+
+
+    <!-- 迪凯 余 -->
+    <string name="myIntegral">我的积分币</string>
+    <string name="enaluation_management_title">评价管理</string>
+    <string name="fauorites_title">我的收藏</string>
+    <string name="integral_title">我的积分</string>
+    <string name="published_article_title">我发布的文章</string>
+    <string name="uualifications_title">资格认证</string>
+    <string name="setting_title">设置</string>
+    <string name="effective_title">Member is valid</string>
+    <string name="about_title">关于康人</string>
+    <string name="agreement_title">康人协议</string>
+    <string name="account_title">账户</string>
+    <string name="pc_pomprt">此功能尚未开发完成，敬请期待！</string>
+
+    <string name="pc_sorganization">Select Organization</string>
+
+
+    <!--account setting 界面-->
+    <string name="as_setting">Account setting</string>
+    <string name="as_logo">Logo</string>
+    <string name="as_name">Name</string>
+    <string name="as_address">Web address</string>
+    <string name="as_email">Email</string>
+    <string name="as_admin">Admin user list</string>
+    <string name="as_sync">Enable SyncRoom</string>
+    <string name="as_contact_list">Contact list</string>
+    <string name="as_add_admin">Add admin user</string>
+    <string name="as_save">Save</string>
+
+    <!-- 俊瑞  张 -->
+    <string name="personInfo">My profile</string>
+    <string name="right">right</string>
+    <string name="save">save</string>
+    <string name="head">head</string>
+    <string name="phone">phone</string>
+    <string name="signature">signature</string>
+    <string name="name">name</string>
+    <string name="sex">sex</string>
+    <string name="occupation">occupation</string>
+    <string name="professional">professional</string>
+    <string name="description">description</string>
+    <string name="paper">paper</string>
+    <string name="cases">cases</string>
+    <string name="area">area</string>
+    <string name="birthday">Date of birth</string>
+    <string name="height">height(cm)</string>
+    <string name="user">user</string>
+    <string name="New_chat">New chat</string>
+    <string name="edit">edit</string>
+    <string name="editdescription">editdescription</string>
+    <string name="cancel">cancel</string>
+    <string name="nofile">nofile</string>
+    <string name="upload">upload</string>
+    <string name="uploadsuccess">uploadsuccess</string>
+    <string name="uploadfailure">uploadfailure</string>
+    <string name="downfailed">downfailed</string>
+    <string name="to_be_allocated">to be allocated</string>
+    <string name="weight">weight(kg)</string>
+
+    <string name="jiankangcao">健康操</string>
+    <string name="jiankangguwenjianyi">健康顾问建议</string>
+    <string name="jiankangcaojieshao">健康操是根据中医理论为了使人体活血通脉而设计，对于各个年龄段的人都有好处。尤其对于老人比较好，因为老人不像年轻人可以做许多激烈有难度的运动了，选择一些比较柔和的方式比较适宜。</string>
+    <string name="dianjitianjia">尚未连接到设备，请点击此处尝试连接</string>
+    <string name="manpaojieshao">跑步锻炼是人们最常采用的一种身体锻炼方式，这主要是因为跑步技术要求简单，无需特殊的场地、服装或器械。无论在运动场上或在马路上，甚至田野间、树林中均可进行跑步锻炼，适合各种年龄人士。</string>
+    <string name="chiyaotixing">开启"吃药提醒"功能，并设置提醒时间，闹铃就会在相应的时间提醒你准时服药！最多可以设置五个闹铃提醒</string>
+    <string name="zaoshanghewenyanshui">盐能"调和脏腑，消素食、令人健壮"，清晨空腹、小口、喝一小杯(100ml)、温热的淡盐水，有利于降火益肾、保持大便通畅。</string>
+    <string name="health_title">添加与管理</string>
+    <string name="agora_app_id">35e57a3e1425470b9532a66d5dcc10b7</string>
+    <string name="currentpath">Current Path :</string>
+    <string name="systemplate">System Course Templates</string>
+    <string name="title_activity_select_school">SelectSchoolActivity</string>
+    <string name="title_activity_school_profile">SchoolProfileActivity</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="pastdue">Past Due</string>
+    <string name="pastfinish">Finish</string>
+    <string name="currentsyncroom">SyncRoom of Current Team</string>
+    <string name="addnewdoc">Add new document</string>
+    <string name="title_join_as_audience">Join as audience</string>
+    <string name="msg_join_as_audience">The maximum number of panellists has\nbeen reached。You will be joining as a\n listen-only audience</string>
+    <string name="share">Share</string>
+    <string name="rename">Rename</string>
+    <string name="move">Move</string>
+    <string name="quit_team">Quit team</string>
+    <string name="spaces">Spaces</string>
+    <string name="documents">Documents</string>
+    <string name="move_to">Move to</string>
+    <string name="select_space">Select a space</string>
+    <string name="operate_failure">operate failure</string>
+    <string name="operate_success">operate success</string>
+    <string name="no_data">no data found</string>
+    <string name="select_a_space">Select a space</string>
+    <string name="from_favorite">From favorite</string>
+    <string name="current_space">current space</string>
+    <string name="docs_in_spaces">documents in current space</string>
+    <string name="team_memers">Team Members</string>
+    <string name="syncrooms_in_spaces">syncrooms in current space</string>
+
+    <string name="KloudSync">KloudSync</string>
+    <string name="Mobile_phone">Mobile phone</string>
+    <string name="Password_hint">Password (6-20 Characters)</string>
+    <string name="Name_info">Name</string>
+    <string name="area_code">+86</string>
+
+    <string name="Sign_up">Sign Up</string>
+    <string name="Send_code">Send code</string>
+    <string name="Vertification_Code">Verify Code</string>
+    <string name="Login">Login</string>
+    <string name="reset_pwd">Reset password</string>
+    <string name="create_and_switch">Create and Switch</string>
+    <string name="create_organization">Create Organization</string>
+    <string name="input_organization_name">Input organization name</string>
+    <string name="name_upper">Name</string>
+    <string name="create_success">Create success</string>
+    <string name="Send">Send</string>
+    <string name="meeting_id">Meeting ID</string>
+    <string name="input_new_meeing_id">input new meeting id</string>
+    <string name="modify_meeting_id">modify your meeting ID</string>
+    <string name="about">about</string>
+    <string name="privacy_statement">Privacy Statement</string>
+    <string name="create_new_sync">Create New Sync</string>
+    <string name="sync">Sync</string>
+    <string name="invite_new">invite new</string>
+    <string name="request_to_be_my_contact">Request to be my contact</string>
+    <string name="Invite_Now">Invite Now</string>
+    <string name="qrcode">qrcode</string>
+    <string name="downloading">downloading...</string>
+    <string name="move_sync">Move Sync</string>
+
+
+</resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/lin_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#EFF0F6"
+        android:orientation="vertical">
+
+        <include layout="@layout/common_title" />
+
+        <ExpandableListView
+            android:groupIndicator="@null"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:id="@+id/list_organization"
+            android:divider="@color/lightgrey"
+            android:dividerHeight="0px"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></ExpandableListView>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:id="@+id/txt_ok"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/blue_circle_bg"
+        android:gravity="center"
+        android:text="@string/OK"
+        android:textColor="@color/text_wb"
+        android:textSize="18sp"
+        android:visibility="invisible" />
+
+</RelativeLayout>

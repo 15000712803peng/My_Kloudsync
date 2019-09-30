@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/selectwebcam"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:textColor="@color/txt_color1"
+            android:id="@+id/right1value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Webcam720p"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/arrow2" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
+
+    <RelativeLayout
+        android:id="@+id/selectconnect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+
+        <TextView
+            android:textColor="@color/txt_color1"
+            android:id="@+id/right2value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Audio Connection tool selction"
+            android:textSize="16sp" />
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_alignParentRight="true"
+            android:src="@drawable/arrow2" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
+
+    <RelativeLayout
+
+        android:id="@+id/selectfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:textColor="@color/txt_color1"
+            android:id="@+id/right3value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Audio play video"
+            android:textSize="16sp" />
+
+
+        <Switch
+            android:id="@+id/switchbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/arrow2"
+            android:textOff="开"
+            android:textOn="关" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/selectsync"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:textColor="@color/txt_color1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Audio"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+</LinearLayout>

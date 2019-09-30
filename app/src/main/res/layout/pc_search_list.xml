@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pc_background"
+    android:orientation="vertical" >
+
+    <include layout="@layout/page_detail_top" />
+
+    <include layout="@layout/pc_searchevent" />
+
+    <ListView
+        android:id="@+id/lv_pc_published_article"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/pc_white"
+        android:divider="@null"
+        android:scrollbars="none" >
+    </ListView>
+
+</LinearLayout>

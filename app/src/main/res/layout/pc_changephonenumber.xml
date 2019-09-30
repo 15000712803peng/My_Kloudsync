@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white" >
+
+    <include layout="@layout/page_detail_top" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="100dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightgrey" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/tv_cphone"
+                android:layout_width="60dp"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="+86"
+                android:textColor="@color/darkgrey"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/et_telephone"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="@string/Input_Telephone"
+                android:inputType="phone"
+                android:singleLine="true"
+                android:textColor="@color/darkgrey"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightgrey" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:src="@drawable/shield" />
+
+            <EditText
+                android:id="@+id/et_checkcode"
+                android:layout_width="150dp"
+                android:layout_height="45dp"
+                android:background="@null"
+                android:inputType="number"
+                android:singleLine="true"
+                android:textColor="@color/darkgrey"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_sendcheckcode"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/Send_CheckCode"
+                android:textColor="@color/skyblue"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightgrey" />
+
+        <TextView
+            android:id="@+id/tv_reset"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="30dp"
+            android:alpha="0.6"
+            android:background="@drawable/login_greenback"
+            android:gravity="center"
+            android:text="完成"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</RelativeLayout>

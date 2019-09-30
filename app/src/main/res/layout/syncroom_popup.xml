@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp">
+
+    <RelativeLayout
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            android:id="@+id/teamname"
+            android:textColor="@color/darkblack"
+            android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:textSize="11sp"
+            android:layout_height="wrap_content"
+            android:text="Switch Team" />
+
+        <ImageView
+            android:id="@+id/selectimage"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="9dp"
+            android:layout_toRightOf="@+id/teamname"
+            android:src="@drawable/switchsyncroom" />
+
+
+        <ImageView
+            android:id="@+id/closebnt"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/icon_close2" />
+    </RelativeLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/spacerecycleview"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycleview"
+        android:layout_width="400dp"
+
+        android:layout_height="match_parent"
+        android:padding="10dp"></android.support.v7.widget.RecyclerView>
+
+
+
+
+
+</LinearLayout>

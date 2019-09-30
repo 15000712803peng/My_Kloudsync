@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/lin_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <include layout="@layout/common_title" />
+
+        <com.aohanyao.jelly.library.BouncingJellyView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_ss"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </android.support.v7.widget.RecyclerView>
+
+        </com.aohanyao.jelly.library.BouncingJellyView>
+
+        <TextView
+            android:id="@+id/tv_OK"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/chat_back"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="@string/OK"
+            android:textColor="@color/text_wb"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</RelativeLayout>
