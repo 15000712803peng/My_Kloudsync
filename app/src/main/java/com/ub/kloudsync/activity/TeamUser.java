@@ -48,4 +48,15 @@ public class TeamUser {
     public void setMemberType(int memberType) {
         MemberType = memberType;
     }
+
+    @Override
+    public String toString() {
+        return "TeamUser{" +
+                "memberID=" + memberID +
+                ", memberName='" + memberName + '\'' +
+                ", joinDate='" + joinDate + '\'' +
+                ", memberAvatar='" + memberAvatar + '\'' +
+                ", MemberType=" + MemberType +
+                '}';
+    }
 }

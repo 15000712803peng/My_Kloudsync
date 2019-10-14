@@ -231,7 +231,7 @@ public class MipcaActivityCapture extends Activity implements Callback, TextureV
 //		MipcaActivityCapture.this.finish();
     }
 
-    private void NoticeTV(String resultString) {
+    public void NoticeTV(String resultString) {
         final JSONObject jsonobject = format(resultString);
         if (jsonobject == null) {
             return;

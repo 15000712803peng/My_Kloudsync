@@ -28,10 +28,13 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.help.ApiTask;
+import com.kloudsync.techexcel.help.ThreadManager;
 import com.mining.app.zxing.camera.CameraManager;
 import com.mining.app.zxing.decoding.CaptureActivityHandler;
 import com.mining.app.zxing.decoding.InactivityTimer;
 import com.mining.app.zxing.view.ViewfinderView;
+import com.ub.techexcel.service.ConnectService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -227,7 +230,7 @@ public class BindTvCapture extends MipcaActivityCapture implements Callback, Tex
             intent.putExtra("result", resultString);
             setResult(RESULT_OK, intent);
             Log.e("duang", resultString + ":" + barcode);
-//            NoticeTV(resultString);
+            NoticeTV(resultString);
         }
         finish();
 //		MipcaActivityCapture.this.finish();
@@ -244,7 +247,7 @@ public class BindTvCapture extends MipcaActivityCapture implements Callback, Tex
             }
             jsonObject.put("TvID", results[0]);
             jsonObject.put("TvToken", results[1]);
-            jsonObject.put("Type", type);
+            jsonObject.put("Type", -1);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -274,6 +277,39 @@ public class BindTvCapture extends MipcaActivityCapture implements Callback, Tex
 
         }
     }
+
+    public void NoticeTV(String resultString) {
+        final JSONObject jsonobject = format(resultString);
+        if (jsonobject == null) {
+            return;
+        }
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Log.e("BindTV", jsonobject.toString() + "");
+                    JSONObject responsedata = ConnectService.submitDataByJson(
+                            AppConfig.URL_PUBLIC + "TV/BindTV",
+                            jsonobject);
+                    Log.e("BindTV", responsedata.toString() + "");
+                    String retcode = responsedata.getString("RetCode");
+                    Message msg = new Message();
+                    if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
+                        msg.what = AppConfig.SUCCESS;
+                        msg.obj = responsedata.toString();
+                    } else {
+                        msg.what = AppConfig.FAILED;
+                        msg.obj = responsedata.getString("ErrorMessage");
+                    }
+                    handler2.sendMessage(msg);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+
+    }
+
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {

@@ -39,4 +39,8 @@
 
     <item name="status_view" type="id" />
     <item name="translucent_view" type="id" />
+
+    <item name="node_header" type="id" />
+    <item name="node_items" type="id" />
+    <item name="tree_items" type="id" />
 </resources>

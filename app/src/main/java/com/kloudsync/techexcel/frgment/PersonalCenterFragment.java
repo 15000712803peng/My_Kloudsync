@@ -688,16 +688,10 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         try {
 
             JSONObject object = jsonObject.getJSONObject("RetData");
-
             AvatarUrl = object.getString("AvatarUrl");
             account_name = object.getString("FullName");
 
             PrimaryPhone = object.getString("PrimaryPhone");
-
-
-
-
-
 
             bean.setAvatarUrl(AvatarUrl);
             bean.setFullName(FullName);

@@ -252,4 +252,8 @@
         <attr name="entries" format="reference" />
     </declare-styleable>
 
+    <style name="TreeNodeStyle">
+        <item name="android:paddingLeft">20dp</item>
+    </style>
+
 </resources>

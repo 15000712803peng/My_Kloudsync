@@ -92,14 +92,14 @@
                 fresco:contentPadding="1px"
                 fresco:cardPreventCornerOverlap="false"
                 fresco:cardUseCompatPadding="true"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:id="@+id/lin_switch"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="80dp"
                     android:background="#F6F8F9"
                     android:orientation="vertical">

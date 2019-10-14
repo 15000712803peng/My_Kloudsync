@@ -64,4 +64,17 @@ public class CompanySubsystem {
     public void setIntegrationUrl(String integrationUrl) {
         this.integrationUrl = integrationUrl;
     }
+
+    @Override
+    public String toString() {
+        return "CompanySubsystem{" +
+                "companyId='" + companyId + '\'' +
+                ", subSystemId='" + subSystemId + '\'' +
+                ", subSystemName='" + subSystemName + '\'' +
+                ", type=" + type +
+                ", createDate='" + createDate + '\'' +
+                ", integrationUrl='" + integrationUrl + '\'' +
+                ", isSelected=" + isSelected +
+                '}';
+    }
 }

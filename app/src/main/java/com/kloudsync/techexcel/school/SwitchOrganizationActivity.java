@@ -75,7 +75,8 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
             switch (msg.what) {
                 case AppConfig.AddOrUpdateUserPreference:
                     String result = (String) msg.obj;
-                    SaveSchoolInfo();
+//                    SaveSchoolInfo();
+                    GetSchoolInfo();
                     break;
                 case AppConfig.FAILED:
                     result = (String) msg.obj;
@@ -89,6 +90,38 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         }
 
     };
+
+    private void GetSchoolInfo() {
+        editor = sharedPreferences.edit();
+        LoginGet lg = new LoginGet();
+        lg.setSchoolTeamGetListener(new LoginGet.SchoolTeamGetListener() {
+            @Override
+            public void getST(School school) {
+
+                Log.e("GetShoolInfo","school:" + school);
+
+                if (school != null) {
+                    TeamSpaceBean teamSpaceBean = school.getTeamSpaceBean();
+                    AppConfig.SchoolID = school.getSchoolID();
+                    editor.putInt("SchoolID", school.getSchoolID());
+                    editor.putString("SchoolName", school.getSchoolName());
+                    editor.putString("teamname", teamSpaceBean.getName());
+                    editor.putInt("teamid", teamSpaceBean.getItemID());
+                    editor.commit();
+                } else {
+                    editor.putString("SchoolName", "");
+                    editor.putString("teamname", "");
+                    editor.putInt("teamid", -1);
+                    editor.commit();
+                }
+                EventBus.getDefault().post(new TeamSpaceBean());
+                finish();
+//                initDatas();
+            }
+        });
+        lg.GetUserPreference(this, 10001 + "");
+
+    }
 
     private void SaveSchoolInfo() {
         editor = sharedPreferences.edit();
@@ -124,7 +157,11 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                 mlist = list;
                 sAdapter.setCompanies(mlist);
                 okText.setVisibility(View.VISIBLE);
-                sAdapter.setSelectCompany(GetSaveInfo());
+                int index = sAdapter.setSelectCompany(GetSaveInfo());
+                if(index > 0){
+//                    organiztionList.expandGroup(index);
+                    getCompanySubsystemsAndExpand(sAdapter.getSelectCompanyId(),index);
+                }
                 SetMySchool();
             }
         });
@@ -139,6 +176,20 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                 if (list != null && list.size() > 0) {
                     sAdapter.setSubsystems(list, Integer.parseInt(companyId));
 
+                }
+            }
+        });
+        loginGet.getCompanySubsystems(this, companyId);
+    }
+
+    private void getCompanySubsystemsAndExpand(final String companyId, final int index) {
+        LoginGet loginGet = new LoginGet();
+        loginGet.setMyCompanySubsystemsGetListener(new LoginGet.MyCompanySubsystemsGetListener() {
+            @Override
+            public void getCompanySubsystems(List<CompanySubsystem> list) {
+                if (list != null && list.size() > 0) {
+                    sAdapter.setSubsystems(list, Integer.parseInt(companyId));
+                    organiztionList.expandGroup(index);
                 }
             }
         });
@@ -173,8 +224,23 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                         sAdapter.clearSelectedSubsystem(Integer.parseInt(sAdapter.getSelectCompanyId()));
                     }
                     sAdapter.setSelectCompany(Integer.parseInt(id + ""));
+                    List<CompanySubsystem> subsystems = sAdapter.getSelectCompany().getSubsystems();
+                    if(subsystems != null && subsystems.size() > 0){
+                        for(CompanySubsystem subsystem : subsystems){
+                            subsystem.setSelected(false);
+                        }
+                    }
+                    sAdapter.notifyDataSetChanged();
                 } else {
 //                    organiztionList.
+                    List<CompanySubsystem> subsystems = sAdapter.getSelectCompany().getSubsystems();
+                    if(subsystems != null && subsystems.size() > 0){
+                        for(CompanySubsystem subsystem : subsystems){
+                            subsystem.setSelected(false);
+                        }
+                    }
+                    sAdapter.getSelectCompany().setSubSystemSelected(false);
+                    sAdapter.notifyDataSetChanged();
                 }
                 if (sAdapter.getGroup(groupPosition).getSubsystems() == null) {
                     getCompanySubsystems(id + "");
@@ -190,6 +256,7 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                         continue;
                     }
                     organiztionList.collapseGroup(i);
+
                 }
             }
         });
@@ -198,7 +265,11 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 Log.e("onChildClick", "clicked");
                 CompanySubsystem subsystem = sAdapter.getGroup(groupPosition).getSubsystems().get(childPosition);
+                for(CompanySubsystem subsystem1 : sAdapter.getGroup(groupPosition).getSubsystems()){
+                    subsystem1.setSelected(false);
+                }
                 subsystem.setSelected(!subsystem.isSelected());
+                sAdapter.getGroup(groupPosition).setSubSystemSelected(true);
                 sAdapter.notifyDataSetChanged();
                 return false;
             }
@@ -341,23 +412,7 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
 
     }
 
-    public void getMyTeamList(CompanySubsystem companySubsystem) {
 
-        TeamSpaceInterfaceTools.getinstance().getTeamSpaceList(AppConfig.URL_PUBLIC + "TeamSpace/List?companyID=" + school.getSchoolID() + "&type=1&parentID=0",
-                TeamSpaceInterfaceTools.GETTEAMSPACELIST, new TeamSpaceInterfaceListener() {
-                    @Override
-                    public void getServiceReturnData(Object object) {
-                        List<TeamSpaceBean> list = (List<TeamSpaceBean>) object;
-                        Log.e("ddddddd", list.size() + "");
-                        teamSpaceBean = new TeamSpaceBean();
-                        if (list.size() > 0) {
-                            teamSpaceBean = list.get(0);
-                        }
-                        AUUserInfo();
-                    }
-                });
-
-    }
 
     private void AUUserInfo() {
 
@@ -443,11 +498,20 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("SchoolID", school.getSchoolID());
-            jsonObject.put("TeamID", teamSpaceBean.getItemID());
             jsonObject.put("SchoolName", school.getSchoolName());
-            jsonObject.put("TeamName", TextUtils.isEmpty(teamSpaceBean.getName()) ? "" : teamSpaceBean.getName());
             if (companySubsystem != null) {
+                jsonObject.put("TeamID", -1);
+                jsonObject.put("TeamName", "");
                 jsonObject.put("SubSystemData", format3(companySubsystem));
+            }else {
+                if(teamSpaceBean != null){
+                    jsonObject.put("TeamId", teamSpaceBean.getItemID());
+                    jsonObject.put("TeamName", TextUtils.isEmpty(teamSpaceBean.getName()) ? "" : teamSpaceBean.getName());
+                }else {
+                    jsonObject.put("TeamID", -1);
+                    jsonObject.put("TeamName", "");
+                }
+
             }
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -461,6 +525,7 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         try {
             jsonObject.put("selectedSubSystemId", subsystem.getSubSystemId());
             jsonObject.put("selectedSubSystemType", subsystem.getType());
+            jsonObject.put("subSystemName", subsystem.getSubSystemName());
 
         } catch (JSONException e) {
             // TODO Auto-generated catch block

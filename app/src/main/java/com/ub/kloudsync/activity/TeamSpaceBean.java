@@ -147,4 +147,24 @@ public class TeamSpaceBean implements Serializable {
     public int hashCode() {
         return Objects.hash(ItemID, CompanyID, Type);
     }
+
+    @Override
+    public String toString() {
+        return "TeamSpaceBean{" +
+                "ItemID=" + ItemID +
+                ", Name='" + Name + '\'' +
+                ", CompanyID=" + CompanyID +
+                ", Type=" + Type +
+                ", ParentID=" + ParentID +
+                ", CreatedDate='" + CreatedDate + '\'' +
+                ", CreatedByName='" + CreatedByName + '\'' +
+                ", AttachmentCount=" + AttachmentCount +
+                ", TopicType=" + TopicType +
+                ", MemberCount=" + MemberCount +
+                ", SyncRoomCount=" + SyncRoomCount +
+                ", SpaceList=" + SpaceList +
+                ", MemberList=" + MemberList +
+                ", isSelect=" + isSelect +
+                '}';
+    }
 }

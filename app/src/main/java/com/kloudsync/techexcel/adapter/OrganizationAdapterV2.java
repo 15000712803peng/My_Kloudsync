@@ -1,6 +1,8 @@
 package com.kloudsync.techexcel.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.Company;
 import com.kloudsync.techexcel.bean.CompanySubsystem;
 import com.kloudsync.techexcel.info.School;
 
@@ -128,7 +131,7 @@ public class OrganizationAdapterV2 extends BaseExpandableListAdapter implements 
             companyHolder.divider.setVisibility(View.VISIBLE);
         }
         companyHolder.companyNameText.setText(company.getSchoolName());
-        if (company.isSelected()) {
+        if (company.isSelected() && !company.isSubSystemSelected()) {
             companyHolder.selectedImage.setImageResource(R.drawable.select_dy);
             companyHolder.groupItem.setBackgroundResource(R.drawable.corner_green_bg);
             companyHolder.companyNameText.setTextColor(context.getResources().getColor(R.color.pc_white));
@@ -159,15 +162,38 @@ public class OrganizationAdapterV2 extends BaseExpandableListAdapter implements 
     }
 
 
-    public void setSelectCompany(int companyId) {
+    public int setSelectCompany(int companyId) {
+        Log.e("setSelectCompany","companyId:" + companyId);
+        int parentId = -1;
         for (School company : this.companies) {
             if (company.getSchoolID() == companyId) {
                 company.setSelected(true);
+                parentId = companyId;
+                Log.e("setSelectCompany","company set selected true:" + companyId);
+
             } else {
                 company.setSelected(false);
+                company.setSubSystemSelected(false);
+            }
+
+            if(company.getSubsystems() != null){
+                for(CompanySubsystem subsystem : company.getSubsystems()){
+                    Log.e("setSelectCompany","subsystem:" + subsystem);
+                    if(subsystem.getSubSystemId().equals(companyId+"")){
+                        subsystem.setSelected(true);
+                        parentId = Integer.parseInt(subsystem.getCompanyId());
+                        Log.e("setSelectCompany","subsystem set selected true:" + parentId);
+
+                    }
+                }
             }
         }
+
         notifyDataSetChanged();
+        School c = new School();
+        c.setSchoolID(parentId);
+        return companies.indexOf(c);
+
     }
 
     public CompanySubsystem getSelectSubsystem() {

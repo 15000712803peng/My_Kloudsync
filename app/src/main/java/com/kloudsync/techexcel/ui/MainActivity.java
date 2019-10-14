@@ -279,6 +279,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             @Override
             public void getST(School school) {
 
+                Log.e("GetShoolInfo","school:" + school);
+
                 if (school != null) {
                     TeamSpaceBean teamSpaceBean = school.getTeamSpaceBean();
                     AppConfig.SchoolID = school.getSchoolID();
@@ -288,7 +290,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     editor.putInt("teamid", teamSpaceBean.getItemID());
                     editor.commit();
                 } else {
-                    editor.putString("SchoolName", null);
+                    editor.putString("SchoolName", "");
                     editor.putString("teamname", "");
                     editor.putInt("teamid", -1);
                     editor.commit();

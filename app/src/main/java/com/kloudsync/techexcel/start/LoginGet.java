@@ -1989,6 +1989,7 @@ public class LoginGet {
             JSONObject obj = new JSONObject(result);
             String RetCode = obj.getString("RetCode");
             ArrayList<School> sc_list = new ArrayList<School>();
+            Log.e("mJsonUSlist","result:" + result);
             if (RetCode.equals(AppConfig.RIGHT_RETCODE)) {
                 JSONArray RetDatas = obj.getJSONArray("RetData");
                 for (int i = 0; i < RetDatas.length(); i++) {
@@ -2270,15 +2271,33 @@ public class LoginGet {
     protected static void mJsonGUP(String result) {
         School school = null;
         try {
+            Log.e("mJsonGUP","result:" + result);
             JSONObject obj = new JSONObject(result);
             String RetCode = obj.getString("RetCode");
             if (RetCode.equals(AppConfig.RIGHT_RETCODE)) {
                 JSONObject RetData = obj.getJSONObject("RetData");
                 JSONObject pt = new JSONObject(RetData.getString("PreferenceText"));
                 int SchoolID = pt.getInt("SchoolID");
-                int TeamID = pt.getInt("TeamID");
+                int TeamID = -1;
+                if(pt.has("TeamID")){
+                    TeamID = pt.getInt("TeamID");
+                }else if(pt.has("TeamId")){
+                    TeamID = pt.getInt("TeamId");
+                }else {
+                    TeamID = -1;
+                }
                 String SchoolName = pt.getString("SchoolName");
                 String TeamName = pt.getString("TeamName");
+                if(pt.has("SubSystemData")){
+                    JSONObject subSystemData = pt.getJSONObject("SubSystemData");
+                    if(subSystemData.has("selectedSubSystemId")){
+                        SchoolID = subSystemData.getInt("selectedSubSystemId");
+                    }
+
+                    if(subSystemData.has("subSystemName")){
+                        SchoolName = subSystemData.getString("subSystemName") + "@" + SchoolName;
+                    }
+                }
 
                 school = new School();
                 TeamSpaceBean teamSpaceBean = new TeamSpaceBean();

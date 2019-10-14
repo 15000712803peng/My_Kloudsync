@@ -14,6 +14,15 @@ public class School implements Comparable<School> {
     public static int selectedId;
     private List<CompanySubsystem> subsystems;
     private boolean isSelected;
+    private boolean isSubSystemSelected;
+
+    public boolean isSubSystemSelected() {
+        return isSubSystemSelected;
+    }
+
+    public void setSubSystemSelected(boolean subSystemSelected) {
+        isSubSystemSelected = subSystemSelected;
+    }
 
     public boolean isSelected() {
         return isSelected;
@@ -64,5 +73,32 @@ public class School implements Comparable<School> {
             return 1;
         }
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "School{" +
+                "SchoolID=" + SchoolID +
+                ", SchoolName='" + SchoolName + '\'' +
+                ", teamSpaceBean=" + teamSpaceBean +
+                ", subsystems=" + subsystems +
+                ", isSelected=" + isSelected +
+                ", isSubSystemSelected=" + isSubSystemSelected +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        School school = (School) o;
+
+        return SchoolID == school.SchoolID;
+    }
+
+    @Override
+    public int hashCode() {
+        return SchoolID;
     }
 }

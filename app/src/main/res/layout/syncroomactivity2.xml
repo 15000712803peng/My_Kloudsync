@@ -254,7 +254,7 @@
                 android:layout_height="wrap_content">
 
                 <RelativeLayout
-                    android:id="@+id/syncdisplaydocument"
+                    android:id="@+id/syncdisplayoutline"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:orientation="horizontal"
@@ -273,7 +273,7 @@
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
                         android:layout_marginLeft="30dp"
-                        android:text="@string/mtFile"
+                        android:text="@string/outline"
                         android:textColor="@color/white"
                         android:textSize="14sp" />
 

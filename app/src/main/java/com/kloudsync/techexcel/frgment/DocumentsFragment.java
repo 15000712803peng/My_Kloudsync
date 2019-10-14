@@ -112,6 +112,7 @@ public class DocumentsFragment extends MyFragment implements View.OnClickListene
         return view;
     }
 
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refresh(TeamSpaceBean teamSpaceBean) {
         Log.e("event_bus", "document fragment refresh");

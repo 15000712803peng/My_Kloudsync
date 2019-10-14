@@ -735,5 +735,7 @@ Please input the cell phone number to add the contact
     <string name="downloading">downloading...</string>
     <string name="move_sync">Move Sync</string>
 
+    <string name="outline">outline</string>
+
 
 </resources>

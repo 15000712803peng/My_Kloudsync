@@ -201,18 +201,36 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
     }
 
     private void enterSyncroom(SyncRoomBean syncRoomBean) {
-        Intent intent = new Intent(getActivity(), SyncRoomActivity.class);
-        intent.putExtra("userid", AppConfig.UserID);
-        intent.putExtra("meetingId", "SR-" + AppConfig.UserID);
-        intent.putExtra("isTeamspace", true);
-        intent.putExtra("yinxiangmode", 0);
-        intent.putExtra("identity", 2);
-        intent.putExtra("lessionId", syncRoomBean.getItemID() + "");
-        intent.putExtra("syncRoomname", syncRoomBean.getName() + "");
-        intent.putExtra("isInstantMeeting", 0);
-        intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
-        intent.putExtra("isStartCourse", true);
-        startActivity(intent);
+        if(syncRoomBean.getTopicType() == 7){
+            //syncbook
+
+            Intent intent = new Intent(getActivity(), SyncRoomActivity.class);
+            intent.putExtra("userid", AppConfig.UserID);
+            intent.putExtra("meetingId", "SR-" + AppConfig.UserID);
+            intent.putExtra("isTeamspace", true);
+            intent.putExtra("yinxiangmode", 0);
+            intent.putExtra("identity", 2);
+            intent.putExtra("lessionId", syncRoomBean.getItemID() + "");
+            intent.putExtra("syncRoomname", syncRoomBean.getName() + "");
+            intent.putExtra("isInstantMeeting", 0);
+            intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
+            intent.putExtra("isStartCourse", true);
+            startActivity(intent);
+        }else {
+            Intent intent = new Intent(getActivity(), SyncRoomActivity.class);
+            intent.putExtra("userid", AppConfig.UserID);
+            intent.putExtra("meetingId", "SR-" + AppConfig.UserID);
+            intent.putExtra("isTeamspace", true);
+            intent.putExtra("yinxiangmode", 0);
+            intent.putExtra("identity", 2);
+            intent.putExtra("lessionId", syncRoomBean.getItemID() + "");
+            intent.putExtra("syncRoomname", syncRoomBean.getName() + "");
+            intent.putExtra("isInstantMeeting", 0);
+            intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
+            intent.putExtra("isStartCourse", true);
+            startActivity(intent);
+        }
+
     }
 
 
