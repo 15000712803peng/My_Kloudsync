@@ -922,7 +922,6 @@ public class LoginGet {
     }
 
     /**
-     *
      * 获取所有自己的群组消息
      *
      * @param context
@@ -1079,9 +1078,9 @@ public class LoginGet {
                     HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
                     conn.setReadTimeout(5 * 1000);
                     conn.setConnectTimeout(10 * 1000);
-                    conn.addRequestProperty("Authorization", "Bearer " +AppConfig.liveToken);
+                    conn.addRequestProperty("Authorization", "Bearer " + AppConfig.liveToken);
                     conn.setRequestMethod("GET");
-                    Log.e("haha11",conn.getResponseCode() + "");
+                    Log.e("haha11", conn.getResponseCode() + "");
                     if (conn.getResponseCode() == 200) {
                         //先将服务器得到的流对象 包装 存入缓冲区，忽略了正在缓冲时间
                         InputStream in = new BufferedInputStream(conn.getInputStream());
@@ -1185,7 +1184,7 @@ public class LoginGet {
 //						System.out.println("year="+year);
 //						byte[] bytes = readFromInput(in);	//封装的一个方法，通过指定的输入流得到其字节数据
                         result = NetWorkHelp.InputStreamTOString(in);
-                        Log.e("response","response raw:" + result);
+                        Log.e("response", "response raw:" + result);
                         in.close();
                         conn.disconnect();
                     }
@@ -1449,7 +1448,7 @@ public class LoginGet {
                     sortLetter = SideBarSortHelp.getAlpha(sortLetter);
                     String Phone = RetData.getString("Phone");
                     String SchoolName = RetData.getString("SchoolName");
-                    if(SchoolName.equals("My School")){
+                    if (SchoolName.equals("My School")) {
                         SchoolName = "My organization";
                     }
                     int Role = RetData.getInt("Role");
@@ -1989,7 +1988,7 @@ public class LoginGet {
             JSONObject obj = new JSONObject(result);
             String RetCode = obj.getString("RetCode");
             ArrayList<School> sc_list = new ArrayList<School>();
-            Log.e("mJsonUSlist","result:" + result);
+            Log.e("mJsonUSlist", "result:" + result);
             if (RetCode.equals(AppConfig.RIGHT_RETCODE)) {
                 JSONArray RetDatas = obj.getJSONArray("RetData");
                 for (int i = 0; i < RetDatas.length(); i++) {
@@ -2010,7 +2009,7 @@ public class LoginGet {
                 String ErrorMessage = obj.getString("ErrorMessage");
                 Toast.makeText(mContext, ErrorMessage, Toast.LENGTH_LONG).show();
             }
-            mySchoolGetListener. getSchool(sc_list);
+            mySchoolGetListener.getSchool(sc_list);
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -2271,42 +2270,50 @@ public class LoginGet {
     protected static void mJsonGUP(String result) {
         School school = null;
         try {
-            Log.e("mJsonGUP","result:" + result);
+            Log.e("mJsonGUP", "result:" + result);
             JSONObject obj = new JSONObject(result);
             String RetCode = obj.getString("RetCode");
             if (RetCode.equals(AppConfig.RIGHT_RETCODE)) {
                 JSONObject RetData = obj.getJSONObject("RetData");
+                school = new School();
                 JSONObject pt = new JSONObject(RetData.getString("PreferenceText"));
                 int SchoolID = pt.getInt("SchoolID");
+                school.setSchoolID(SchoolID);
                 int TeamID = -1;
-                if(pt.has("TeamID")){
+                if (pt.has("TeamID")) {
                     TeamID = pt.getInt("TeamID");
-                }else if(pt.has("TeamId")){
+                } else if (pt.has("TeamId")) {
                     TeamID = pt.getInt("TeamId");
-                }else {
+                } else {
                     TeamID = -1;
                 }
                 String SchoolName = pt.getString("SchoolName");
+                school.setSchoolName(SchoolName);
                 String TeamName = pt.getString("TeamName");
-                if(pt.has("SubSystemData")){
-                    JSONObject subSystemData = pt.getJSONObject("SubSystemData");
-                    if(subSystemData.has("selectedSubSystemId")){
-                        SchoolID = subSystemData.getInt("selectedSubSystemId");
-                    }
 
-                    if(subSystemData.has("subSystemName")){
-                        SchoolName = subSystemData.getString("subSystemName") + "@" + SchoolName;
-                    }
-                }
-
-                school = new School();
                 TeamSpaceBean teamSpaceBean = new TeamSpaceBean();
                 teamSpaceBean.setItemID(TeamID);
                 teamSpaceBean.setName(TeamName);
-                school.setSchoolID(SchoolID);
-                school.setSchoolName(SchoolName);
                 school.setTeamSpaceBean(teamSpaceBean);
 
+
+                if (pt.has("SubSystemData")) {
+
+                    List<CompanySubsystem> list = new ArrayList<>();
+                    CompanySubsystem companySubsystem = new CompanySubsystem();
+                    JSONObject subSystemData = pt.getJSONObject("SubSystemData");
+                    if (subSystemData.has("selectedSubSystemId")) {
+                        String selectedSubSystemId = subSystemData.getString("selectedSubSystemId");
+                        companySubsystem.setSubSystemId(selectedSubSystemId);
+                    }
+                    if (subSystemData.has("subSystemName")) {
+                        String subSystemName = subSystemData.getString("subSystemName");
+                        companySubsystem.setSubSystemName(subSystemName);
+                    }
+
+                    list.add(companySubsystem);
+                    school.setSubsystems(list);
+                }
 
             } else {
                 String ErrorMessage = obj.getString("ErrorMessage");

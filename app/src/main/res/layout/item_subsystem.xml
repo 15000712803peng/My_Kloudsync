@@ -7,6 +7,7 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/layout_group_item_item"
         android:background="#f1f5ff"
         android:layout_width="match_parent"
         android:layout_height="58dp">

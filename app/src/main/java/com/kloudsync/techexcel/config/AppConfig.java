@@ -107,6 +107,7 @@ public class AppConfig {
     public static int COUNTRY_CODE;
     public static int Role;
     public static int SchoolID;
+    public static String selectedSubSystemId;
 
     public static int Online;
     public static final int LOGIN = 1;

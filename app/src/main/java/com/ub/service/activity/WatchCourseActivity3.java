@@ -2530,12 +2530,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         isPlaying2 = false;
         audiosyncll.setVisibility(View.GONE);
         timeShow.setVisibility(View.GONE);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                wv_show.load("javascript:ClearPageAndAction()", null);
-            }
-        });
+        getPageObjectsAfterChange(currentAttachmentPage);
     }
 
 
@@ -3091,41 +3086,13 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         Log.e("webview-afterChangePage", pageNum + "  " + type);
         currentAttachmentPage = pageNum + "";
         AppConfig.currentPageNumber = currentAttachmentPage;
-        String url;
-        if (isTeamspace) {
-            url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=0"
-                    + "&itemID=0"
-                    + "&pageNumber=" + pageNum
-                    + "&attachmentID=" + currentAttachmentId
-                    + "&soundtrackID=0";
+        if (isPlaying2) {
+            getLineAction(pageNum, true);
         } else {
-            url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=" + lessonId + "&itemID=" + currentItemId +
-                    "&pageNumber=" + pageNum;
+            getPageObjectsAfterChange(pageNum);
         }
-        MeetingServiceTools.getInstance().getGetPageObjects(url, MeetingServiceTools.GETGETPAGEOBJECTS, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                final String ddd = (String) object;
-                Log.e("page_data", "data:" + ddd);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (wv_show != null) {
-                            if (!TextUtil.isEmpty(ddd)) {
-                                wv_show.load("javascript:PlayActionByArray(" + ddd + "," + 0 + ")", null);
-                            }
-                            if (isPlaying2) {
-                                wv_show.load("javascript:ClearPageAndAction()", null);
-                            }
-                        }
-                    }
-                });
-            }
-        });
         if (isChangePageNumber) {
             isChangePageNumber = false;
-            // 3 displayDrawingLine =0 展示所有的线
-//            getLineAction(currentAttachmentPage, !isPause);
             Message msg = Message.obtain();
             msg.what = 0x4010;
             msg.obj = actions;
@@ -3177,52 +3144,74 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 wv_show.load("javascript:ClearPageAndAction()", null);
             }
         });
-        new ApiTask(new Runnable() {
+        String url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=0"
+                + "&itemID=0"
+                + "&pageNumber=" + pageNum
+                + "&attachmentID=0"
+                + "&soundtrackID=" + (soundtrackID == -1 ? 0 : soundtrackID)
+                + "&displayDrawingLine=" + (isPlaying ? 0 : 1);
+        MeetingServiceTools.getInstance().getGetPageObjects(url, MeetingServiceTools.GETGETPAGEOBJECTS, new ServiceInterfaceListener() {
             @Override
-            public void run() {
-                try {
-                    JSONObject jsonObject;
-                    String url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=0"
-                            + "&itemID=0"
-                            + "&pageNumber=" + pageNum
-                            + "&attachmentID=0"
-                            + "&soundtrackID=" + (soundtrackID == -1 ? 0 : soundtrackID)
-                            + "&displayDrawingLine=" + (isPlaying ? 0 : 1);
-                    jsonObject = ConnectService.getIncidentbyHttpGet(url);
-                    Log.e("getLineAction", url + "     " + jsonObject.toString());
-                    int retCode = jsonObject.getInt("RetCode");
-                    switch (retCode) {
-                        case 0:
-                            JSONArray data = jsonObject.getJSONArray("RetData");
-                            String mmm = "";
-                            for (int i = 0; i < data.length(); i++) {
-                                JSONObject jsonObject1 = data.getJSONObject(i);
-                                String ddd = jsonObject1.getString("Data");
-                                if (!TextUtil.isEmpty(ddd)) {
-                                    String dd = "'" + Tools.getFromBase64(ddd) + "'";
-                                    if (i == 0) {
-                                        mmm += "[" + dd;
-                                    } else {
-                                        mmm += "," + dd;
-                                    }
-                                    if (i == data.length() - 1) {
-                                        mmm += "]";
-                                    }
-                                }
+            public void getServiceReturnData(Object object) {
+                final String ddd = (String) object;
+                Log.e("page_data", "data:" + ddd);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (wv_show != null) {
+                            if (!TextUtil.isEmpty(ddd)) {
+                                wv_show.load("javascript:PlayActionByArray(" + ddd + "," + 0 + ")", null);
                             }
-                            Message msg = Message.obtain();
-                            msg.what = 0x4010;
-                            msg.obj = mmm;
-                            handler.sendMessage(msg);
-                            break;
+                        }
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                });
             }
-        }).start(((App) getApplication()).getThreadMgr());
+        });
     }
 
+    /**
+     * 拿actions信息
+     *
+     * @param pageNum
+     * @param
+     */
+    private void getPageObjectsAfterChange(String pageNum) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {  //  清空当前页的线
+                wv_show.load("javascript:ClearPageAndAction()", null);
+            }
+        });
+        String url;
+        if (isTeamspace) {
+            url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=0"
+                    + "&itemID=0"
+                    + "&pageNumber=" + pageNum
+                    + "&attachmentID=" + currentAttachmentId
+                    + "&soundtrackID=0";
+        } else {
+            url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=" + lessonId + "&itemID=" + currentItemId +
+                    "&pageNumber=" + pageNum;
+        }
+        MeetingServiceTools.getInstance().getGetPageObjects(url, MeetingServiceTools.GETGETPAGEOBJECTS, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                final String ddd = (String) object;
+                Log.e("page_data", "data:" + ddd);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (wv_show != null) {
+                            if (!TextUtil.isEmpty(ddd)) {
+                                wv_show.load("javascript:PlayActionByArray(" + ddd + "," + 0 + ")", null);
+                            }
+
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     public String EncoderByMd5(String str) {
         try {
@@ -4162,9 +4151,9 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     command_active.setImageResource(R.drawable.icon_command);
                 } else if (activte_linearlayout.getVisibility() == View.GONE) {
                     activte_linearlayout.setVisibility(View.VISIBLE);
+                    menu_linearlayout.setVisibility(View.GONE);
                     findViewById(R.id.hiddenwalkview).setVisibility(View.VISIBLE);
                     command_active.setImageResource(R.drawable.icon_command_active);
-                    menu_linearlayout.setVisibility(View.GONE);
                     menu.setImageResource(R.drawable.icon_menu);
                 }
                 break;
