@@ -723,6 +723,6 @@
     <string name="Invite_Now">立即邀请</string>
     <string name="qrcode">二维码</string>
     <string name="downloading">下载中...</string>
-
     <string name="move_sync">移动音想</string>
+    <string name="outline">目录</string>
 </resources>

@@ -53,8 +53,8 @@ public class UISwitchButton extends CheckBox {
 	private float onBtnPos;// 按钮开启时位置
 	private float curBtnPos;// 按钮当前位置
 	private float startBtnPos;// 开始按钮位置
-	private final int COMMON_WIDTH_IN_PIXEL = 82;// 默认宽度
-	private final int COMMON_HEIGHT_IN_PIXEL = 50;// 默认高度
+	private final int COMMON_WIDTH_IN_PIXEL = 142;// 默认宽度
+	private final int COMMON_HEIGHT_IN_PIXEL = 78;// 默认高度
 
 	public UISwitchButton(Context context, AttributeSet attrs) {
 		this(context, attrs, android.R.attr.checkboxStyle);

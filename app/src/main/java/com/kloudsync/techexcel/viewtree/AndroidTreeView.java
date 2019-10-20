@@ -127,6 +127,11 @@ public class AndroidTreeView {
             }
 
             @Override
+            public void highlightText(TreeNode node) {
+
+            }
+
+            @Override
             public ViewGroup getNodeItemsView() {
                 return viewTreeItems;
             }
@@ -262,13 +267,14 @@ public class AndroidTreeView {
         nodeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (enableAutoToggle) {
+                    toggleNode(n);
+                }
                 if (n.getClickListener() != null) {
                     n.getClickListener().onClick(n, n.getValue());
                 } else if (nodeClickListener != null) {
                     nodeClickListener.onClick(n, n.getValue());
-                }
-                if (enableAutoToggle) {
-                    toggleNode(n);
                 }
             }
         });
@@ -276,13 +282,14 @@ public class AndroidTreeView {
         nodeView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+
+                if (enableAutoToggle) {
+                    toggleNode(n);
+                }
                 if (n.getLongClickListener() != null) {
                     return n.getLongClickListener().onLongClick(n, n.getValue());
                 } else if (nodeLongClickListener != null) {
                     return nodeLongClickListener.onLongClick(n, n.getValue());
-                }
-                if (enableAutoToggle) {
-                    toggleNode(n);
                 }
                 return false;
             }
@@ -349,6 +356,8 @@ public class AndroidTreeView {
         }
         return result;
     }
+
+
 
     public void selectAll(boolean skipCollapsed) {
         makeAllSelection(true, skipCollapsed);
@@ -481,6 +490,35 @@ public class AndroidTreeView {
                 final TreeNode.BaseNodeViewHolder parentViewHolder = getViewHolderForNode(parent);
                 parentViewHolder.getNodeItemsView().removeViewAt(index);
             }
+        }
+    }
+
+    private List<TreeNode> getChildNodes(TreeNode parent) {
+        List<TreeNode> result = new ArrayList<>();
+        for (TreeNode n : parent.getChildren()) {
+            result.addAll(getChildNodes(n));
+        }
+        return result;
+    }
+
+    public List<TreeNode> getAll(TreeNode parent) {
+        List<TreeNode> result = new ArrayList<>();
+        for (TreeNode n : parent.getChildren()) {
+            result.add(n);
+            result.addAll(getAll(n));
+        }
+        return result;
+    }
+
+    public void justHightOneNode(TreeNode root,String nodeValueId){
+        List<TreeNode> allNodes = getAll(root);
+        for(TreeNode node : allNodes){
+            if(node.getValueId().equals(nodeValueId)){
+                node.setHight(true);
+            }else {
+                node.setHight(false);
+            }
+            getViewHolderForNode(node).highlightText(node);
         }
     }
 }

@@ -6,6 +6,7 @@ import com.kloudsync.techexcel.bean.DocumentDetail;
 import com.kloudsync.techexcel.bean.FavoriteData;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.RongCloudData;
+import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.params.AcceptFriendsRequestParams;
 import com.kloudsync.techexcel.bean.params.AcceptInvitationsParams;
 import com.kloudsync.techexcel.bean.params.InviteMultipleParams;
@@ -189,6 +190,11 @@ public interface TempleteCourse_interface {
 
    @POST()
     Call<BindTvStatusResponse> changeBindTvStatus(@Url String url, @Header("UserToken") String userToken, @Query("status") int status);
+
+//    https://api.peertime.cn/peertime/V1/SyncRoom/GetSyncBookOutline?syncroomID=1895736
+
+    @GET("SyncRoom/GetSyncBookOutline")
+    Call<NetworkResponse<SyncBook>> getSyncbookOutline(@Header("UserToken") String userToken, @Query("syncroomID") String syncroomID);
 
 
 

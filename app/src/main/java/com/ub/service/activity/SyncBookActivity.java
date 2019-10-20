@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -80,6 +81,9 @@ import com.facebook.network.connectionclass.ConnectionQuality;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
+import com.kloudsync.techexcel.bean.OutlineChapterItem;
+import com.kloudsync.techexcel.bean.OutlineChildSectionItem;
+import com.kloudsync.techexcel.bean.OutlineSectionItem;
 import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
@@ -139,6 +143,7 @@ import com.ub.techexcel.tools.SpliteSocket;
 import com.ub.techexcel.tools.SyncRoomDocumentPopup;
 import com.ub.techexcel.tools.SyncRoomMeetingPopup;
 import com.ub.techexcel.tools.SyncRoomMemberPopup;
+import com.ub.techexcel.tools.SyncRoomOutlinePopup;
 import com.ub.techexcel.tools.SyncRoomPopup;
 import com.ub.techexcel.tools.SyncRoomPropertyPopup;
 import com.ub.techexcel.tools.Tools;
@@ -193,7 +198,7 @@ import retrofit2.Response;
  * Created by wang on 2017/6/16.
  */
 public class SyncBookActivity extends BaseActivity implements View.OnClickListener,
-        VideoGestureRelativeLayout.VideoGestureListener, YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener {
+        VideoGestureRelativeLayout.VideoGestureListener, YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,SyncRoomOutlinePopup.OnChapterClickedListener,SyncRoomOutlinePopup.OutlinePopupEventListener{
 
     private String targetUrl;
     private String newPath;
@@ -256,6 +261,17 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             }
         });
     }
+
+    @Override
+    public void onOutlinePopOpen() {
+        notifyOutlineOpenOrClose(1);
+    }
+
+    @Override
+    public void onOutlinePopClose() {
+        notifyOutlineOpenOrClose(0);
+    }
+
 
     public enum MenberRole {
         DEFULT(-1), AUDIENCE(3);
@@ -622,7 +638,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CheckLanguage();
-        setContentView(R.layout.syncroomactivity2);
+        setContentView(R.layout.syncbookactivity);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
         } else {
@@ -671,7 +687,6 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         openSaveVideoPopup();
         ((App) getApplication()).initWorkerThread();
         initUIandEvent();
-
         IntentFilter intentFilter2 = new IntentFilter();
         intentFilter2.addAction("com.cn.getGroupbroadcastReceiver");
         registerReceiver(getGroupbroadcastReceiver, intentFilter2);
@@ -874,7 +889,6 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-
     private int startYinxiangTime = 0;
 
     private void doJOIN_MEETING(String msg) {
@@ -997,6 +1011,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             }
             String msg = Tools.getFromBase64(message);
             String msg_action = getRetCodeByReturnData2("action", msg);
+            Log.e("broadcastReceiver","on receive:" + msg);
             if (msg_action.equals("JOIN_MEETING")) {
                 if (getRetCodeByReturnData2("retCode", msg).equals("0")) {
                     doJOIN_MEETING(msg);
@@ -1150,6 +1165,26 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                             if (lineItem.getAttachmentID().equals(deleteAttachmentId + "")) {
                                 documentList.remove(i1);
                                 break;
+                            }
+                        }
+                    }else if(jsonObject.getInt("actionType") == 1801){
+//                        if (jsonObject.getInt("stat") == 0) {
+//                            if(syncRoomOutlinePopup != null){
+//                                syncRoomOutlinePopup.dismiss();
+//                            }
+//                        } else if (jsonObject.getInt("stat") == 1) {
+//                            if(syncRoomOutlinePopup == null && !syncRoomOutlinePopup.isShowing()){
+//                                openOutlinePopup();
+//                            }
+//                        }
+                    }else if(jsonObject.getInt("actionType") == 1802){
+                        // toggle outline treenode
+                        String treeNodeId  = jsonObject.getString("treeNodeId");
+                        if(!TextUtils.isEmpty(treeNodeId)){
+                            if(syncRoomOutlinePopup != null){
+                                syncRoomOutlinePopup.toggleTreeNode(treeNodeId,jsonObject.getBoolean("isToggle"));
+                                syncRoomOutlinePopup.justHightOneNode(treeNodeId);
+
                             }
                         }
                     }
@@ -1344,6 +1379,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             JSONObject loginjson = new JSONObject();
             loginjson.put("action", action);
             loginjson.put("sessionId", sessionId);
+            // type
             loginjson.put("type", type);
             loginjson.put("userList", userlist);
             loginjson.put("data", data);
@@ -2093,7 +2129,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     @org.xwalk.core.JavascriptInterface
     public void afterLoadPageFunction() {
         crpage = (int) Float.parseFloat(currentAttachmentPage);
-        Log.e("当前文档信息", "url  " + targetUrl + "        " + crpage + "      newpath  " + newPath);
+        Log.e("JavascriptInterface", "afterLoadPageFunction,url  " + targetUrl + "        " + crpage + "      newpath  " + newPath);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -2262,6 +2298,8 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
     private boolean isDisplayInCenter = false;
 
+    private String fileLocalPath;
+
     private void downloadPdf(final String pdfurl, final int page) {
         // https://peertime.cn/CWDocs/P49/Attachment/D3191/test_<10>.pdf
         if (TextUtils.isEmpty(pdfurl)) {
@@ -2306,6 +2344,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 + xxx + page + houzui;   // --->  /ubao2/19999_xxxxx_1.pdf
         // show pdf 地址
         showpdfurl = fileUtils.getStorageDirectory2() + File.separator + xxx + sourceName.substring(sourceName.lastIndexOf("<"));  //--->  /ubao/xxxx_<10>.pdf
+        fileLocalPath = fileLocalUrl2;
         Log.e("webview-downloadPdf", "保存在本地的地址  " + fileLocalUrl2 + "   show pdf 地址  " + showpdfurl + "  downloadurl " + downloadurl);
         filedownprogress.setVisibility(View.GONE);
         if (fileUtils.isFileExists(fileLocalUrl2)) {
@@ -2315,7 +2354,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    wv_show.load("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ")", null);
+                    wv_show.load("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ",1)", null);
                     wv_show.load("javascript:Record()", null);
                     userSetting();
                 }
@@ -2343,7 +2382,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                                 int retcode = Tools.copyFileSdCard(fileLocalUrl, fileLocalUrl2);
                                 if (retcode == 0) {
                                     Message message = Message.obtain();
-                                    message.obj = "javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ")";
+                                    message.obj = "javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ",1)";
                                     message.what = 0x6115;
                                     handler.sendMessage(message);
                                 }
@@ -2716,6 +2755,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
     @org.xwalk.core.JavascriptInterface
     public void reflect(String result) {
+        Log.e("webview-reflect", result);
         if (isSync) {
             if (!TextUtils.isEmpty(result)) {
                 try {
@@ -2752,6 +2792,8 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
      */
     @org.xwalk.core.JavascriptInterface
     public void afterLoadFileFunction() {
+        Log.e("JavascriptInterface", "afterLoadFileFunction ");
+        scrollOutline();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -3181,9 +3223,11 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 break;
 
             case R.id.syncdisplayoutline:
-                openDocumentPopup();
+//                openDocumentPopup();
+                openOutlinePopup();
                 syncroomll.setVisibility(View.GONE);
                 menu.setImageResource(R.drawable.icon_menu);
+                wv_show.load("javascript:CheckZoom()", null);
                 break;
             case R.id.syncdisplaymembers:
                 openMemberPopup();
@@ -3503,6 +3547,12 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
 
     private SyncRoomDocumentPopup syncRoomDocumentPopup;
+    private SyncRoomOutlinePopup syncRoomOutlinePopup;
+
+    private void changeOutline(int index){
+        currentShowPdf = documentList.get(index);
+        changedocumentlabel(currentShowPdf);
+    }
 
     private void openDocumentPopup() {
         syncRoomDocumentPopup = new SyncRoomDocumentPopup();
@@ -3597,9 +3647,16 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void openOutlinePopup(){
+        syncRoomOutlinePopup = new SyncRoomOutlinePopup();
+        syncRoomOutlinePopup.getPopwindow(this);
+        syncRoomOutlinePopup.setSyncroomId(lessonId);
+        syncRoomOutlinePopup.setOnChapterClickedListener(this);
+        syncRoomOutlinePopup.setOutlinePopupEventListener(this);
+        syncRoomOutlinePopup.StartPop(wv_show,documentList);
+        syncroomll.setVisibility(View.GONE);
+        menu.setImageResource(R.drawable.icon_menu);
 
     }
-
 
     private void openMeetingPopup() {
         SyncRoomMeetingPopup syncRoomMeetingPopup = new SyncRoomMeetingPopup();
@@ -5731,6 +5788,173 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         if (wv_show != null) {
             wv_show.onNewIntent(intent);
         }
+    }
+
+    int currentChapterIndex;
+
+    @Override
+    public void onChapterClicked(OutlineChapterItem chapterItem, int currentChapterIndex) {
+//        Toast.makeText(this,"chapter click index:" + index,Toast.LENGTH_SHORT).show();
+        Log.e("chapter click","chapter item:" + chapterItem.getTreeNodeId());
+        notifyOutlineToggle(chapterItem.getTreeNodeId(),chapterItem.isToggle());
+        this.currentChapterIndex = currentChapterIndex;
+        if(currentChapterIndex != documentList.indexOf(currentShowPdf)){
+            currentAttachmentPage = "1";
+            changeOutline(currentChapterIndex);
+        }
+    }
+
+    OutlineSectionItem sectionItem;
+    OutlineChildSectionItem childSectionItem;
+
+    @Override
+    public void onSectionItemClicked(OutlineSectionItem sectionItem,int currentChapterIndex) {
+        this.sectionItem = sectionItem;
+        Log.e("onSectionItemClicked","item_id:" + sectionItem.getTreeNodeId());
+        notifyOutlineToggle(sectionItem.getTreeNodeId(),sectionItem.isToggle());
+        if(this.currentChapterIndex != currentChapterIndex){
+                currentAttachmentPage = sectionItem.getSectionPosition().getStartPageNo();
+                changeOutline(currentChapterIndex);
+
+        }else {
+            if(currentAttachmentPage != sectionItem.getSectionPosition().getStartPageNo()){
+                currentAttachmentPage = sectionItem.getSectionPosition().getStartPageNo();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String changePageAction = "{\"type\":2,\"page\":" + currentAttachmentPage + "}";
+                        wv_show.load("javascript:PlayActionByTxt('" + changePageAction + "','" + 1 + "')", null);
+                        wv_show.load("javascript:Record()", null);
+                        notifyMyAction(changePageAction);
+
+                    }
+                });
+
+                scrollOutline();
+
+            }
+        }
+
+
+    }
+
+    @Override
+    public void onChildSectionItemClicked(OutlineChildSectionItem childSectionItem,int currentChapterIndex) {
+        this.childSectionItem = childSectionItem;
+        notifyOutlineToggle(childSectionItem.getTreeNodeId(),childSectionItem.isToggle());
+        if(this.currentChapterIndex != currentChapterIndex){
+            currentAttachmentPage = childSectionItem.getSectionPosition().getStartPageNo();
+            changeOutline(currentChapterIndex);
+        }else {
+            if(currentAttachmentPage != childSectionItem.getSectionPosition().getStartPageNo()){
+                currentAttachmentPage = childSectionItem.getSectionPosition().getStartPageNo();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String changePageAction = "{\"type\":2,\"page\":" + currentAttachmentPage + "}";
+                        wv_show.load("javascript:PlayActionByTxt('" + changePageAction + "','" + 1 + "')", null);
+                        wv_show.load("javascript:Record()", null);
+                        notifyMyAction(changePageAction);
+
+                    }
+                });
+                scrollOutline();
+            }
+        }
+
+    }
+
+    private void scrollOutline(){
+        if(sectionItem == null && childSectionItem == null){
+            return;
+        }
+        float y = 0;
+        if(sectionItem != null){
+            y = Float.parseFloat(sectionItem.getSectionPosition().getStartY());
+        }
+
+        if(childSectionItem != null){
+            y = Float.parseFloat(childSectionItem.getSectionPosition().getStartY());
+        }
+        File file = new File(fileLocalPath);
+        if(file.exists()){
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+            int height = options.outHeight;
+            int width = options.outWidth;
+            int scrollY = (int)(height * y / 100);
+            final JSONObject scrollJson = new JSONObject();
+            try {
+                scrollJson.put("type",32);
+                scrollJson.put("page",currentAttachmentPage);
+                scrollJson.put("CW",width);
+                scrollJson.put("CH",height);
+                scrollJson.put("VW",width);
+                scrollJson.put("VH",height);
+                scrollJson.put("ST",scrollY);
+                scrollJson.put("SL",0);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    wv_show.load("javascript:PlayActionByTxt('" + scrollJson.toString() + "','" + 1 + "')", null);
+                    wv_show.load("javascript:Record()", null);
+                    notifyMyAction(scrollJson.toString());
+
+                }
+            });
+
+            sectionItem = null;
+            childSectionItem = null;
+        }
+
+    }
+
+    private void notifyMyAction(String action){
+        try {
+            JSONObject actionJson = new JSONObject();
+            actionJson.put("action", "ACT_FRAME");
+            actionJson.put("sessionId", AppConfig.UserToken);
+            actionJson.put("retCode", 1);
+            actionJson.put("data", Tools.getBase64(action).replaceAll("[\\s*\t\n\r]", ""));
+            actionJson.put("sequenceNumber", "3837");
+            actionJson.put("ideaType", "document");
+            actionJson.put("itemId", currentItemId);
+            String ss = actionJson.toString();
+            SpliteSocket.sendMesageBySocket(ss);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void notifyOutlineOpenOrClose(int type){
+        JSONObject actionJson = new JSONObject();
+        try {
+            actionJson.put("actionType",1801);
+            // 1表示打开 0表示关闭
+            actionJson.put("stat",type);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        send_message("SEND_MESSAGE",AppConfig.UserToken,0,null,Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
+    }
+
+    private void notifyOutlineToggle(String treeNodeId,boolean isToggle){
+        JSONObject actionJson = new JSONObject();
+        try {
+            actionJson.put("actionType",1802);
+            // 1表示打开 0表示关闭
+            actionJson.put("stat",1);
+            actionJson.put("treeNodeId",treeNodeId);
+            actionJson.put("isToggle",isToggle);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        send_message("SEND_MESSAGE",AppConfig.UserToken,0,null,Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
     }
 
 }

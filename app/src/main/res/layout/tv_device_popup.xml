@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
     android:layout_width="350dp"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/bg_gray"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingTop="10dp">
+    >
 
     <RelativeLayout
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -15,6 +20,7 @@
         android:paddingRight="10dp">
 
         <ImageView
+            android:padding="3dp"
             android:id="@+id/back"
             android:layout_width="20dp"
             android:layout_height="20dp"
@@ -29,13 +35,17 @@
             android:textColor="@color/black"
             android:textSize="16sp" />
     </RelativeLayout>
+    <View
+        android:background="@color/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"/>
 
 
     <RelativeLayout
         android:id="@+id/layout_enable_sync"
         android:layout_width="match_parent"
         android:layout_height="42dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="32dp"
         android:background="@color/white">
 
         <TextView
@@ -44,43 +54,32 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
-            android:text="@string/as_sync"
+            android:text="@string/sync_tv"
             android:textColor="@color/darkgrey"
             android:textSize="12sp" />
 
-        <Switch
+        <com.kloudsync.techexcel.view.UISwitchButton
             android:id="@+id/switch_sync"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
+            android:layout_width="72dp"
+            android:layout_height="42dp"
+            android:layout_marginRight="12dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
-            android:checked="false"
 
-            android:theme="@style/Color1SwitchStyle"
-            android:visibility="gone" />
+            />
 
-        <CheckBox
-            android:id="@+id/isPublic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="14dp"
-            android:background="@drawable/bg_box"
-            android:button="@android:color/transparent"
-            android:checked="false"
-            android:visibility="visible" />
+
 
     </RelativeLayout>
 
     <TextView
+        android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:text="当前您的账号下绑定过的电视设备"
-        android:textColor="@color/black"
-        android:textSize="13sp" />
+        android:text="AutoSync enables content be displayed on your TV devices"
+        android:textColor="@color/red"
+        android:textSize="11sp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -116,11 +115,16 @@
                     android:textSize="13sp" />
             </RelativeLayout>
 
+            <View
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:background="@color/divider"
+                android:layout_height="1px"/>
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/list_device"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginTop="10dp"
                 android:layout_weight="1"></android.support.v7.widget.RecyclerView>
         </LinearLayout>
 

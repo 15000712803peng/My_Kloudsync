@@ -14,9 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by Bogdan Melnychuk on 2/10/15.
- */
+
 public class TreeNode {
     public static final String NODES_ID_SEPARATOR = ":";
 
@@ -31,6 +29,24 @@ public class TreeNode {
     private TreeNodeLongClickListener mLongClickListener;
     private Object mValue;
     private boolean mExpanded;
+    private String valueId;
+    private boolean isHight;
+
+    public boolean isHight() {
+        return isHight;
+    }
+
+    public void setHight(boolean hight) {
+        isHight = hight;
+    }
+
+    public String getValueId() {
+        return valueId;
+    }
+
+    public void setValueId(String valueId) {
+        this.valueId = valueId;
+    }
 
     public static TreeNode root() {
         TreeNode root = new TreeNode(null);
@@ -259,6 +275,10 @@ public class TreeNode {
             return createNodeView(mNode, (E) mNode.getValue());
         }
 
+        public E getNodeValue(){
+            return (E)mNode.getValue();
+        }
+
         public ViewGroup getNodeItemsView() {
             return (ViewGroup) getView().findViewById(R.id.node_items);
         }
@@ -273,6 +293,8 @@ public class TreeNode {
 
 
         public abstract View createNodeView(TreeNode node, E value);
+
+        public abstract void highlightText(TreeNode node);
 
         public void toggle(boolean active) {
             // empty

@@ -19,6 +19,24 @@ public class OutlineChapterItem {
     String KeyWords;
     String DownLoadURL;
     List<OutlineSectionItem> SectionItems;
+    boolean isToggle;
+    String treeNodeId;
+
+    public String getTreeNodeId() {
+        return treeNodeId;
+    }
+
+    public void setTreeNodeId(String treeNodeId) {
+        this.treeNodeId = treeNodeId;
+    }
+
+    public boolean isToggle() {
+        return isToggle;
+    }
+
+    public void setToggle(boolean toggle) {
+        isToggle = toggle;
+    }
 
     public String getIdeaID() {
         return IdeaID;
@@ -106,5 +124,23 @@ public class OutlineChapterItem {
 
     public void setSectionItems(List<OutlineSectionItem> sectionItems) {
         SectionItems = sectionItems;
+    }
+
+    @Override
+    public String toString() {
+        return "OutlineChapterItem{" +
+                "IdeaID='" + IdeaID + '\'' +
+                ", ChapterTitle='" + ChapterTitle + '\'' +
+                ", ChapterType=" + ChapterType +
+                ", TotalPageCount=" + TotalPageCount +
+                ", Order=" + Order +
+                ", OutLineID=" + OutLineID +
+                ", Expanded=" + Expanded +
+                ", ParentOutLineID=" + ParentOutLineID +
+                ", KeyWords='" + KeyWords + '\'' +
+                ", DownLoadURL='" + DownLoadURL + '\'' +
+                ", SectionItems=" + SectionItems +
+                ", isToggle=" + isToggle +
+                '}';
     }
 }

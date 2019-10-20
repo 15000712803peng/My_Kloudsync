@@ -44,4 +44,14 @@ public class SyncbookInfo {
     public void setChapterItems(List<OutlineChapterItem> chapterItems) {
         ChapterItems = chapterItems;
     }
+
+    @Override
+    public String toString() {
+        return "SyncbookInfo{" +
+                "BookTitle='" + BookTitle + '\'' +
+                ", Type=" + Type +
+                ", BookIdentifier='" + BookIdentifier + '\'' +
+                ", ChapterItems=" + ChapterItems +
+                '}';
+    }
 }

@@ -16,6 +16,25 @@ public class OutlineChildSectionItem {
     String KeyWord;
     OutlineSectionPisition SectionPosition;
     List<OutlineChildSectionItem> ChildSectionItems;
+    String treeNodeId;
+
+    public String getTreeNodeId() {
+        return treeNodeId;
+    }
+
+    public void setTreeNodeId(String treeNodeId) {
+        this.treeNodeId = treeNodeId;
+    }
+
+    boolean isToggle;
+
+    public boolean isToggle() {
+        return isToggle;
+    }
+
+    public void setToggle(boolean toggle) {
+        isToggle = toggle;
+    }
 
     public String getIdeaID() {
         return IdeaID;
@@ -79,5 +98,19 @@ public class OutlineChildSectionItem {
 
     public void setChildSectionItems(List<OutlineChildSectionItem> childSectionItems) {
         ChildSectionItems = childSectionItems;
+    }
+
+    @Override
+    public String toString() {
+        return "OutlineChildSectionItem{" +
+                "IdeaID='" + IdeaID + '\'' +
+                ", SectionTitle='" + SectionTitle + '\'' +
+                ", OutLineID=" + OutLineID +
+                ", Expanded=" + Expanded +
+                ", ParentOutLineID=" + ParentOutLineID +
+                ", KeyWord='" + KeyWord + '\'' +
+                ", SectionPosition=" + SectionPosition +
+                ", ChildSectionItems=" + ChildSectionItems +
+                '}';
     }
 }

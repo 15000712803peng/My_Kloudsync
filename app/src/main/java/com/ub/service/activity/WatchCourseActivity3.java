@@ -4148,6 +4148,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 break;
             case R.id.prepareScanTV:
                 openTvDevicesList();
+                menu_linearlayout.setVisibility(View.GONE);
+                menu.setImageResource(R.drawable.icon_menu);
                 break;
             case R.id.yinxiang:
                 openYinxiangList(yinxiangmode);
@@ -4242,6 +4244,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 break;
             case R.id.scanll:
                 openTvDevicesList();
+                activte_linearlayout.setVisibility(View.GONE);
+                command_active.setImageResource(R.drawable.icon_command);
                 break;
             case R.id.inviteuser:
                 flipInviteUserPopupWindow();
@@ -4475,6 +4479,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                                             });
                                 }
                             });
+
                             tvDevicesListPopup.StartPop(wv_show, devices, enable);
                             activte_linearlayout.setVisibility(View.GONE);
                             menu.setImageResource(R.drawable.icon_menu);
@@ -4498,10 +4503,19 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
 
     private void gotoScanTv() {
+
         if(!isCameraCanUse()){
             Toast.makeText(getApplicationContext(),"相机不可用",Toast.LENGTH_SHORT).show();
             return;
         }
+        String url = "https://wss.peertime.cn/MeetingServer/tv/change_bind_tv_status?status= 1";
+        ServiceInterfaceTools.getinstance().changeBindTvStatus(url, ServiceInterfaceTools.CHANGEBINDTVSTATUS,
+                true, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+
+                    }
+                });
         closeAlbum();
         new Handler().postDelayed(new Runnable() {
             @Override

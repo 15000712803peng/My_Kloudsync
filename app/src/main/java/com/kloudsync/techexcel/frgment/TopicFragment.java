@@ -36,6 +36,7 @@ import com.ub.kloudsync.activity.TeamPropertyActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
+import com.ub.service.activity.SyncBookActivity;
 import com.ub.service.activity.SyncRoomActivity;
 import com.ub.techexcel.adapter.SpaceAdapter;
 import com.ub.techexcel.adapter.SyncRoomAdapter;
@@ -203,8 +204,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
     private void enterSyncroom(SyncRoomBean syncRoomBean) {
         if(syncRoomBean.getTopicType() == 7){
             //syncbook
-
-            Intent intent = new Intent(getActivity(), SyncRoomActivity.class);
+            Intent intent = new Intent(getActivity(), SyncBookActivity.class);
             intent.putExtra("userid", AppConfig.UserID);
             intent.putExtra("meetingId", "SR-" + AppConfig.UserID);
             intent.putExtra("isTeamspace", true);

@@ -23,6 +23,9 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.OutlineChapterItem;
+import com.kloudsync.techexcel.bean.OutlineChildSectionItem;
+import com.kloudsync.techexcel.bean.OutlineSectionItem;
 import com.ub.techexcel.bean.LineItem;
 
 import java.text.SimpleDateFormat;
@@ -39,6 +42,8 @@ public class SyncRoomDocumentPopup implements View.OnClickListener {
     private ImageView adddocument;
     private RecyclerView recycleview;
     private SyncRoomTeamAdapter syncRoomTeamAdapter;
+
+
 
     public void getPopwindow(Context context) {
         this.mContext = context;

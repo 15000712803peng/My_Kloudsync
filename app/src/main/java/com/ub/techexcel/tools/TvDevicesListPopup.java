@@ -1,6 +1,7 @@
 package com.ub.techexcel.tools;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
@@ -32,6 +34,7 @@ import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.view.CircleImageView;
+import com.kloudsync.techexcel.view.UISwitchButton;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.techexcel.bean.SyncRoomMember;
@@ -50,7 +53,7 @@ public class TvDevicesListPopup implements View.OnClickListener {
 
     public Context mContext;
     public int width;
-    public PopupWindow mPopupWindow;
+    public Dialog mPopupWindow;
     private View view;
     private RecyclerView deviceList;
     private TextView scantv;
@@ -58,7 +61,7 @@ public class TvDevicesListPopup implements View.OnClickListener {
     private ArrayList<TvDevice> mlist = new ArrayList();
     private LinearLayout devicesLayout;
     private TextView noDeviceText;
-    private CheckBox isChangeStatus;
+    private UISwitchButton isChangeStatus;
 
     public void getPopwindow(Context context) {
         this.mContext = context;
@@ -88,39 +91,35 @@ public class TvDevicesListPopup implements View.OnClickListener {
         deviceList.setAdapter(adapter);
         devicesLayout = (LinearLayout) view.findViewById(R.id.layout_devices);
         noDeviceText = (TextView) view.findViewById(R.id.txt_no_devices);
-        isChangeStatus = (CheckBox) view.findViewById(R.id.isPublic);
-        isChangeStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.e("Tvdeviceslist", isChecked + "");
-                webCamPopupListener.changeBindStatus(isChecked);
-            }
-        });
+        isChangeStatus = (UISwitchButton) view.findViewById(R.id.switch_sync);
 
         ImageView back = (ImageView) view.findViewById(R.id.back);
         back.setOnClickListener(this);
-
-        mPopupWindow = new PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.MATCH_PARENT, false);
-        mPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-
-            }
-        });
-        mPopupWindow.setFocusable(true);
-        mPopupWindow.setOutsideTouchable(true);
-        mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        mPopupWindow.update();
-        mPopupWindow.setAnimationStyle(R.style.anination3);
+        mPopupWindow = new Dialog(mContext, R.style.my_dialog);
+        mPopupWindow.setContentView(view);
+        mPopupWindow.getWindow().setGravity(Gravity.RIGHT);
+        View root = ((Activity) mContext).getWindow().getDecorView();
+        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
+        params.height = root.getMeasuredHeight();
+        mPopupWindow.getWindow().setAttributes(params);
+        mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        mPopupWindow.getWindow().setWindowAnimations(R.style.anination3);
     }
 
 
     @SuppressLint("NewApi")
     public void StartPop(View v, List<TvDevice> devices, boolean enable) {
         if (mPopupWindow != null) {
-            mPopupWindow.showAtLocation(v, Gravity.RIGHT, 0, 0);
             getBindTvs(devices, enable);
+            isChangeStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    webCamPopupListener.changeBindStatus(isChecked);
+                }
+            });
+
+            mPopupWindow.show();
         }
     }
 

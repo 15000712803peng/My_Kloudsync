@@ -18,6 +18,7 @@ import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.PhoneItem;
 import com.kloudsync.techexcel.bean.RoleInTeam;
 import com.kloudsync.techexcel.bean.RongCloudData;
+import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.params.AcceptFriendsRequestParams;
 import com.kloudsync.techexcel.bean.params.AcceptInvitationsParams;
 import com.kloudsync.techexcel.bean.params.InviteMultipleParams;
@@ -1441,6 +1442,10 @@ public class ServiceInterfaceTools {
 
     public Call<BindTvStatusResponse> changeBindTvStatus(int status){
         return request.changeBindTvStatus("https://wss.peertime.cn/MeetingServer/tv/change_bind_tv_status",AppConfig.UserToken,status);
+    }
+
+    public Call<NetworkResponse<SyncBook>> getSyncbookOutline(String syncroomId){
+        return request.getSyncbookOutline(AppConfig.UserToken,syncroomId);
     }
 
     @SuppressLint("NewApi")

@@ -164,6 +164,11 @@
         <item name="android:windowExitAnimation">@anim/yinrightout</item>
     </style>
 
+    <style name="anination4">
+        <item name="android:windowEnterAnimation">@anim/yinleftin</item>
+        <item name="android:windowExitAnimation">@anim/yinleftout</item>
+    </style>
+
     <style name="FullscreenTheme" parent="AppTheme">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
@@ -255,5 +260,6 @@
     <style name="TreeNodeStyle">
         <item name="android:paddingLeft">20dp</item>
     </style>
+
 
 </resources>

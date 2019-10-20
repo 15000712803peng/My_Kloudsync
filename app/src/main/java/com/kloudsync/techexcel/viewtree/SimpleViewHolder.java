@@ -21,6 +21,11 @@ public class SimpleViewHolder extends TreeNode.BaseNodeViewHolder<Object> {
     }
 
     @Override
+    public void highlightText(TreeNode node) {
+
+    }
+
+    @Override
     public void toggle(boolean active) {
 
     }
