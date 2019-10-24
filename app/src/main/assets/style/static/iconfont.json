@@ -601,6 +601,13 @@
       "unicode_decimal": 58994
     },
     {
+      "icon_id": "5806754",
+      "name": "1 Notebook",
+      "font_class": "Notebook",
+      "unicode": "e894",
+      "unicode_decimal": 59540
+    },
+    {
       "icon_id": "6285748",
       "name": "deparment",
       "font_class": "deparment",
@@ -1509,6 +1516,13 @@
       "font_class": "gongju1",
       "unicode": "e6d7",
       "unicode_decimal": 59095
+    },
+    {
+      "icon_id": "11362016",
+      "name": "笔记",
+      "font_class": "biji",
+      "unicode": "e6d8",
+      "unicode_decimal": 59096
     }
   ]
 }

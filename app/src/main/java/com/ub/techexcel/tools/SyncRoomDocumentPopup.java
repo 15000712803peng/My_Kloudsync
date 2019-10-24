@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -22,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.googlecode.mp4parser.authoring.tracks.TextTrackImpl;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.OutlineChapterItem;
 import com.kloudsync.techexcel.bean.OutlineChildSectionItem;
@@ -44,6 +46,16 @@ public class SyncRoomDocumentPopup implements View.OnClickListener {
     private SyncRoomTeamAdapter syncRoomTeamAdapter;
 
 
+    public interface DocumentPopupEventListener{
+        void onDocumentPopOpen();
+        void onDocumentPopClose();
+    }
+
+    private DocumentPopupEventListener documentPopupEventListener;
+
+    public void setDocumentPopupEventListener(DocumentPopupEventListener documentPopupEventListener) {
+        this.documentPopupEventListener = documentPopupEventListener;
+    }
 
     public void getPopwindow(Context context) {
         this.mContext = context;
@@ -145,6 +157,23 @@ public class SyncRoomDocumentPopup implements View.OnClickListener {
         View root = ((Activity) mContext).getWindow().getDecorView();
         params.height = root.getMeasuredHeight();
         mPopupWindow.getWindow().setAttributes(params);
+        mPopupWindow.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                if(documentPopupEventListener != null){
+                    documentPopupEventListener.onDocumentPopClose();
+                }
+            }
+        });
+
+        mPopupWindow.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if(documentPopupEventListener != null){
+                    documentPopupEventListener.onDocumentPopClose();
+                }
+            }
+        });
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         mPopupWindow.getWindow().setWindowAnimations(R.style.anination3);
 
@@ -156,6 +185,9 @@ public class SyncRoomDocumentPopup implements View.OnClickListener {
     public void StartPop(View v, List<LineItem> list) {
         if (mPopupWindow != null) {
             webCamPopupListener.open();
+            if(documentPopupEventListener != null){
+                documentPopupEventListener.onDocumentPopOpen();
+            }
             mPopupWindow.show();
             syncRoomTeamAdapter = new SyncRoomTeamAdapter(mContext, list);
             recycleview.setAdapter(syncRoomTeamAdapter);
@@ -176,7 +208,7 @@ public class SyncRoomDocumentPopup implements View.OnClickListener {
 
     public interface WebCamPopupListener {
 
-        void changeOptions(LineItem syncRoomBean);
+        void changeOptions(LineItem syncRoomBean,int position);
 
         void teamDocument();
 
@@ -232,6 +264,17 @@ public class SyncRoomDocumentPopup implements View.OnClickListener {
 
         private List<LineItem> list = new ArrayList<>();
 
+        private void setSelectedFile(LineItem file){
+            for(LineItem fileItem : list){
+                if(file.equals(fileItem)){
+                    fileItem.setSelect(true);
+                }else {
+                    fileItem.setSelect(false);
+                }
+            }
+            notifyDataSetChanged();
+        }
+
         public SyncRoomTeamAdapter(Context context, List<LineItem> list) {
             this.context = context;
             this.list = list;
@@ -246,7 +289,7 @@ public class SyncRoomDocumentPopup implements View.OnClickListener {
 
 
         @Override
-        public void onBindViewHolder(RecycleHolder2 holder, int position) {
+        public void onBindViewHolder(RecycleHolder2 holder, final int position) {
             final LineItem lineItem = list.get(position);
             holder.title.setText(lineItem.getFileName());
             holder.synccount.setText("Sync:" + lineItem.getSyncRoomCount());
@@ -260,7 +303,8 @@ public class SyncRoomDocumentPopup implements View.OnClickListener {
             holder.img_url.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    webCamPopupListener.changeOptions(lineItem);
+                    setSelectedFile(lineItem);
+                    webCamPopupListener.changeOptions(lineItem,position);
                 }
             });
             holder.more.setOnClickListener(new View.OnClickListener() {
@@ -290,6 +334,13 @@ public class SyncRoomDocumentPopup implements View.OnClickListener {
                     imageUri = Uri.parse(url);
                 }
                 holder.img_url.setImageURI(imageUri);
+            }
+
+            if(lineItem.isSelect()){
+                holder.ll.setBackgroundColor(mContext.getResources().getColor(R.color.lightgrey));
+            }else {
+                holder.ll.setBackgroundColor(mContext.getResources().getColor(R.color.white));
+
             }
         }
 

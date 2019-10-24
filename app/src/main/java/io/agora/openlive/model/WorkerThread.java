@@ -164,6 +164,7 @@ public class WorkerThread extends Thread {
         ensureRtcEngineReadyLock();
         mRtcEngine.joinChannel(null, channel, "OpenLive", uid);
 
+
         mEngineConfig.mChannel = channel;
 
         enablePreProcessor();

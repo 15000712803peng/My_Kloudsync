@@ -745,7 +745,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
         if (mWebSocketClient.getReadyState() == WebSocket.READYSTATE.OPEN) {
             if (identity == 2) {
-                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting);
+                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting,3);
             } else {
                 getOnstageMemberCount(meetingId);
             }
@@ -1391,7 +1391,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void sendStringBySocket2(String action, String sessionId, String username, String meetingId2,
-                                     String itemId, boolean isPresenter, String clientVersion, boolean isLogin, int role, int isInstantMeeting) {
+                                     String itemId, boolean isPresenter, String clientVersion, boolean isLogin, int role, int isInstantMeeting,int type) {
         try {
             JSONObject loginjson = new JSONObject();
             loginjson.put("action", action);
@@ -1399,7 +1399,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             loginjson.put("meetingId", meetingId2);
             loginjson.put("meetingPassword", "");
             loginjson.put("role", role);
-            loginjson.put("type", 1);
+            loginjson.put("type", type);
             loginjson.put("mode", 1);
             loginjson.put("isInstantMeeting", 0);
             if (isTeamspace) {
@@ -2258,7 +2258,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 int Status = js.getInt("Status");
                 if (Status == 2) {  //正在转换
                     JSONObject syncDetail = js.getJSONObject("SyncDetail");
-                    final int finishPercent = syncDetail.getInt("FinishPercent");
+                    final int finishPercent  = syncDetail.getInt("FinishPercent");
                     fileprogress.setProgress(finishPercent);
                     progressbartv.setText(finishPercent + "%   File Converting,pls wait");
                     return 2;
@@ -2354,7 +2354,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    wv_show.load("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ",1)", null);
+                    wv_show.load("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ")", null);
                     wv_show.load("javascript:Record()", null);
                     userSetting();
                 }
@@ -2382,7 +2382,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                                 int retcode = Tools.copyFileSdCard(fileLocalUrl, fileLocalUrl2);
                                 if (retcode == 0) {
                                     Message message = Message.obtain();
-                                    message.obj = "javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ",1)";
+                                    message.obj = "javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ")";
                                     message.what = 0x6115;
                                     handler.sendMessage(message);
                                 }
@@ -3559,7 +3559,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         syncRoomDocumentPopup.getPopwindow(this);
         syncRoomDocumentPopup.setWebCamPopupListener(new SyncRoomDocumentPopup.WebCamPopupListener() {
             @Override
-            public void changeOptions(LineItem syncRoomBean) { //切换文档
+            public void changeOptions(LineItem syncRoomBean,int position) { //切换文档
                 if (isHavePresenter()) {
                     currentAttachmentPage = "0";
                     AppConfig.currentPageNumber = "0";
@@ -3833,7 +3833,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void getServiceReturnData(Object object) {
                 int role = (int) object;
-                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, role, isInstantMeeting);
+                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, role, isInstantMeeting,3);
             }
         });
     }
@@ -5956,6 +5956,8 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
         send_message("SEND_MESSAGE",AppConfig.UserToken,0,null,Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
     }
+
+
 
 }
 

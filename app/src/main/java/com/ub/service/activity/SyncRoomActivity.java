@@ -194,7 +194,7 @@ import retrofit2.Response;
  * Created by wang on 2017/6/16.
  */
 public class SyncRoomActivity extends BaseActivity implements View.OnClickListener,
-        VideoGestureRelativeLayout.VideoGestureListener, YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener {
+        VideoGestureRelativeLayout.VideoGestureListener, YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,SyncRoomDocumentPopup.DocumentPopupEventListener{
 
     private String targetUrl;
     private String newPath;
@@ -256,6 +256,16 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 new CenterToast.Builder(SyncRoomActivity.this).setSuccess(true).setMessage("operate success").create().show();
             }
         });
+    }
+
+    @Override
+    public void onDocumentPopOpen() {
+        notifyDocumentPopupOpenOrClose(1);
+    }
+
+    @Override
+    public void onDocumentPopClose() {
+        notifyDocumentPopupOpenOrClose(0);
     }
 
     public enum MenberRole {
@@ -419,7 +429,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                                 }
                             }
                         }
-                        activity3.getServiceDetail();
+                        activity3.getSyncRoomDetail();
                         break;
                     case 0x3102:
                         activity3.mProgressBar.setVisibility(View.GONE);
@@ -1164,7 +1174,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                     JSONObject jsonObject = new JSONObject(Tools.getFromBase64(d));
                     if (jsonObject.getInt("actionType") == 11) {
                         lessonId = jsonObject.getString("incidentID");
-                        getServiceDetail();
+                        getSyncRoomDetail();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1196,7 +1206,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
             //通知上传文档了
             if (msg_action.equals("ATTACHMENT_UPLOADED")) {
-                getServiceDetail();
+                getSyncRoomDetail();
             }
             //获得课程Action
             if (msg_action.equals("BROADCAST_FRAME")) {
@@ -3489,7 +3499,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         });
     }
 
-
     private void gotoScanTv() {
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -3508,10 +3517,12 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     private void openDocumentPopup() {
         syncRoomDocumentPopup = new SyncRoomDocumentPopup();
         syncRoomDocumentPopup.getPopwindow(this);
+        syncRoomDocumentPopup.setDocumentPopupEventListener(this);
         syncRoomDocumentPopup.setWebCamPopupListener(new SyncRoomDocumentPopup.WebCamPopupListener() {
             @Override
-            public void changeOptions(LineItem syncRoomBean) { //切换文档
+            public void changeOptions(LineItem syncRoomBean,int position) { //切换文档
                 if (isHavePresenter()) {
+                    notifySelectedFileIndex(position);
                     currentAttachmentPage = "0";
                     AppConfig.currentPageNumber = "0";
                     for (int i = 0; i < documentList.size(); i++) {
@@ -3644,7 +3655,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                             int retcode = jsonObject.getInt("RetCode");
                             switch (retcode) {
                                 case 0:
-                                    getServiceDetail();
+                                    getSyncRoomDetail();
                                     break;
 
                             }
@@ -3700,7 +3711,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                             int retcode = jsonObject.getInt("RetCode");
                             switch (retcode) {
                                 case 0:
-                                    getServiceDetail();
+                                    getSyncRoomDetail();
                                     break;
 
                             }
@@ -4932,12 +4943,12 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     /**
      * 获得PDF文档
      */
-    private void getServiceDetail() {
+    private void getSyncRoomDetail() {
         if (lessonId.equals("-1")) {
             return;
         }
-        String url = AppConfig.URL_PUBLIC + "TopicAttachment/List?topicID=" + lessonId + "&type=0&searchText=";
-        MeetingServiceTools.getInstance().getTopicAttachment(url, MeetingServiceTools.GETTOPICATTACHMENT, new ServiceInterfaceListener() {
+        String url = AppConfig.URL_PUBLIC + "SyncRoom/Item?itemId=" + lessonId;
+        MeetingServiceTools.getInstance().getSyncroomDetail(url, MeetingServiceTools.GETTOPICATTACHMENT, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
                 List<LineItem> list = (List<LineItem>) object;
@@ -5256,7 +5267,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                             JSONObject responsedata = (JSONObject) object;
                             String retcode = responsedata.getString("RetCode");
                             if (retcode.equals(AppConfig.RIGHT_RETCODE)) {  //刷新
-                                getServiceDetail();
+                                getSyncRoomDetail();
                             } else if (retcode.equals(AppConfig.Upload_NoExist + "")) { // 添加
                                 JSONObject jsonObject = responsedata.getJSONObject("RetData");
                                 targetFolderKey = jsonObject.getString("Path");
@@ -5564,7 +5575,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                         @Override
                         public void getServiceReturnData(Object object) {
                             Log.e("hhh", "uploadNewFileuploadNewFileuploadNewFile");
-                            getServiceDetail();
+                            getSyncRoomDetail();
                             Toast.makeText(SyncRoomActivity.this, "upload success", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -5728,6 +5739,31 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         if (wv_show != null) {
             wv_show.onNewIntent(intent);
         }
+    }
+
+    private void notifyDocumentPopupOpenOrClose(int type){
+        JSONObject actionJson = new JSONObject();
+        try {
+            actionJson.put("actionType",1803);
+            // 1表示打开 0表示关闭
+            actionJson.put("stat",type);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        send_message("SEND_MESSAGE",AppConfig.UserToken,0,null,Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
+    }
+
+    private void notifySelectedFileIndex(int position){
+        JSONObject actionJson = new JSONObject();
+        try {
+            actionJson.put("actionType",1804);
+            // 1表示打开 0表示关闭
+            actionJson.put("stat",1);
+            actionJson.put("position",position);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        send_message("SEND_MESSAGE",AppConfig.UserToken,0,null,Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
     }
 
 }

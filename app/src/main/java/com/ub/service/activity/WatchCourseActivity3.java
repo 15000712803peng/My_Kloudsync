@@ -202,6 +202,7 @@ import io.agora.openlive.ui.BaseActivity;
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
+import io.agora.rtc.internal.RtcEngineImpl;
 import io.agora.rtc.video.VideoCanvas;
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
@@ -3509,20 +3510,13 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     private boolean isCameraCanUse() {
 
-        Camera mCamera = null;
-        try {
-            mCamera = Camera.open();
-        } catch (Exception e) {
-            return false;
-        }
-        if(mCamera == null){
-            return false;
-        }
+//        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)
+//                && !getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
+//            return false;
+//        } else {
+            return true;
+//        }
 
-        if(mCamera != null){
-            mCamera.release();
-        }
-        return true;
     }
 
     /**
@@ -4517,15 +4511,24 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     }
                 });
         closeAlbum();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent1 = new Intent(WatchCourseActivity3.this, MipcaActivityCapture.class);
-                intent1.putExtra("isHorization", true);
-                intent1.putExtra("type", 0);
-                startActivity(intent1);
-            }
-        }, 10);
+
+        if(worker().getRtcEngine() != null){
+            RtcEngineImpl engine = (RtcEngineImpl) worker().getRtcEngine();
+            engine.setVideoCamera(0);
+
+        }
+
+        Intent intent1 = new Intent(WatchCourseActivity3.this, MipcaActivityCapture.class);
+        intent1.putExtra("isHorization", true);
+        intent1.putExtra("type", 0);
+        startActivity(intent1);
+
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        }, 10);
     }
 
     private void getOnstageMemberCount(final String meetingId) {
@@ -7456,7 +7459,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             wv_show.pauseTimers();
             wv_show.onHide();
         }
-        Log.e("onPPPause", "onPPPause");
+
         if (isJoinChannel) {
             if (togglelinearlayout.getVisibility() == View.VISIBLE) {
                 isJoinChannel = false;
@@ -7466,7 +7469,11 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 togglelinearlayout.setVisibility(View.GONE);
             }
         }
+
+
     }
+
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -7479,6 +7486,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         worker().leaveChannel(config().mChannel);
         if (isBroadcaster()) {
             worker().preview(false, null, 0);
+
         }
     }
 

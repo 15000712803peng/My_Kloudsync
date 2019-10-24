@@ -242,6 +242,8 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
         spaceAdapter = new SpaceAdapter(getActivity(), spacesList, true,false);
         spaceRecycleView.setAdapter(spaceAdapter);
         spaceAdapter.setOnItemLectureListener(this);
+        syncroomRecyclerView.setNestedScrollingEnabled(false);
+        spaceRecycleView.setNestedScrollingEnabled(false);
         teamRl = (RelativeLayout) view.findViewById(R.id.teamrl);
         createNewSpace = (RelativeLayout) view.findViewById(R.id.createnewspace);
         switchTeam = (ImageView) view.findViewById(R.id.switchteam);

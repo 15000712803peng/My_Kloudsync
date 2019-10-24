@@ -50,8 +50,8 @@ android {
         applicationId "com.kloudsync.techexcel"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 5
-        versionName "1.5.0"
+        versionCode 6
+        versionName "1.6.0"
         flavorDimensions "versionCode"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

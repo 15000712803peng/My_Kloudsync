@@ -281,5 +281,56 @@ public class MeetingServiceTools {
 
     }
 
+    public void getSyncroomDetail(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                Log.e("meetingservicrtools", url + returnJson.toString());
+                try {
+                    if (returnJson.getInt("RetCode") == 0) {
+                        JSONArray lineitems = returnJson.getJSONObject("RetData").getJSONArray("FileList");
+                        List<LineItem> items = new ArrayList<LineItem>();
+                        for (int j = 0; j < lineitems.length(); j++) {
+                            JSONObject lineitem = lineitems.getJSONObject(j);
+                            LineItem item = new LineItem();
+                            item.setTopicId(lineitem.getInt("TopicID"));
+                            item.setSyncRoomCount(lineitem.getInt("SyncCount"));
+                            item.setFileName(lineitem.getString("Title"));
+                            item.setUrl(lineitem.getString("AttachmentUrl"));
+                            item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                            item.setHtml5(false);
+                            item.setItemId(lineitem.getString("ItemID"));
+                            item.setAttachmentID(lineitem.getString("AttachmentID"));
+                            item.setCreatedDate(lineitem.getString("CreatedDate"));
+                            String attachmentUrl = lineitem.getString("AttachmentUrl");
+                            if (!TextUtils.isEmpty(attachmentUrl)) {
+                                String newPath = attachmentUrl.substring(attachmentUrl.indexOf(".com") + 5, attachmentUrl.lastIndexOf("/"));
+                                item.setNewPath(newPath);
+                            }
+                            item.setFlag(0);
+                            if (lineitem.getInt("Status") == 0) {
+                                items.add(item);
+                            }
+                        }
+                        Message msg = Message.obtain();
+                        msg.obj = items;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnJson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
 
 }

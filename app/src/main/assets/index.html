@@ -56,9 +56,11 @@
 
             InitPage();
             initializeControlWindow();
+            toolBarCheck();
             window.onresize = function onresize()
             {
                 CheckZoom();
+                toolBarCheck();
             };
            
             if (location.href.toLowerCase().indexOf("http") == 0)
@@ -186,7 +188,7 @@
                 CanScroll = false;
                 //docview.ShowDocument("test url");
                 ResetTools($("#div_btn_drawline"));
-                CloseTools();
+                CloseToolsEx();
                 return false;
             });
             $("#div_btn_drawbrush").click(function (e) {
@@ -199,7 +201,7 @@
                 whiteboard.SetDrawTool("ToolBrush");
                 CanScroll = false;
                 ResetTools($("#div_btn_drawbrush"));
-                CloseTools();
+                CloseToolsEx();
                 return false;
             });
             $("#div_btn_drawrect").click(function (e) {
@@ -211,7 +213,7 @@
                 whiteboard.SetDrawTool("ToolLine");
                 CanScroll = false;
                 ResetTools($("#div_btn_drawrect"));
-                CloseTools();
+                CloseToolsEx();
                 return false;
             });
             $("#div_btn_text").click(function (e) {
@@ -228,10 +230,35 @@
                 whiteboard.SetDrawTool("ToolText");
                 CanScroll = false;
                 ResetTools($("#div_btn_text"));
-                CloseTools();
+                CloseToolsEx();
                 return false;
             });
-            $("#div_btn_drawrectangle").click(function (e) {      
+            $("#div_btn_drawrectangle").click(function (e) {
+                ResetTools($("#div_btn_drawrectangle"));
+                if(TYPECOUNT!=0){
+                    if($(".addText").css("display")=="none"){
+                        $(".addText").show()
+                    }else{
+                        $(".addText").hide();
+                    }
+                }else{
+                CloseToolsEx();
+                if(whiteboard.ShowSelectToolSetting("ToolNote"))
+                {
+                    _cancelBubble(e);
+                    _cancelDefault(e);
+                    return false;
+                }
+                if ($("#div_btn_drawrectangle").hasClass("selected")) {
+                    whiteboard.ShowSetting(true);
+                    return;
+                }
+                whiteboard.SetDrawTool("ToolNote");
+                CanScroll = false;
+                return false;
+            }  
+            });
+            $("#stickyNote").click(function(e){
                 if(whiteboard.ShowSelectToolSetting("ToolNote"))
                 {
                     _cancelBubble(e);
@@ -245,9 +272,12 @@
                 whiteboard.SetDrawTool("ToolNote");
                 CanScroll = false;
                 ResetTools($("#div_btn_drawrectangle"));
-                CloseTools();
+                CloseToolsEx();
                 return false;
-            });
+            })
+            $("#myNote").click(function(e){
+
+            })
             $("#liveActionDraw").click(function (e) {
                 _activeButton("#liveActionDraw");
                 //DrawInlineBoard();
@@ -258,10 +288,11 @@
                 whiteboard.SetDrawTool("ToolBoard");
                 CanScroll = false;
                 ResetTools($("#div_btn_whiteboard"));
-                CloseTools();
+                CloseToolsEx();
                 return false;
             });
             $("#div_btn_video").click(function (e) {
+                ResetTools($("#div_btn_video"));
                 if(TYPECOUNT!=0){
                     if($(".video-choose").css('display')=='none'){
                         $(".video-choose").show();
@@ -272,8 +303,6 @@
                     CloseToolsEx();
                     whiteboard.SetDrawTool("ToolVideo");
                     CanScroll = false;
-                    ResetTools($("#div_btn_video"));
-                    CloseTools();
                     return false;
                 }
                 
@@ -306,7 +335,6 @@
                 whiteboard.SetDrawTool("ToolSync");
                 CanScroll = false;
                 ResetTools($("#div_btn_video"));
-                CloseTools();
                 return false;
             })
             $("#addLocalVideo").click(function(e){
@@ -314,7 +342,6 @@
                 whiteboard.SetDrawTool("ToolVideo");
                 CanScroll = false;
                 ResetTools($("#div_btn_video"));
-                CloseTools();
                 return false;
             })
             $("#addWebVideo").click(function(e){
@@ -322,9 +349,19 @@
                 whiteboard.SetDrawTool("ToolVideoLink");
                 CanScroll = false;
                 ResetTools($("#div_btn_video"));
-                CloseTools();
                 return false;
             })
+        }
+        function toolBarCheck(){
+            let _height=$(document).height();
+            let count=parseInt((_height-12)/11);
+            if(count<20){
+                count=20
+            }
+            if(count>46){
+                count=46
+            }
+            $('.navigatelist li').height(count)
         }
         function Record_view() {
             whiteboard.TriggerViewChange();
@@ -534,7 +571,7 @@
         }
         function Record()
         {
-            CloseTools();
+            CloseToolsEx();
             //$("#li_record").hide();
             //$("#li_playrecord").hide();
             //$("#li_stoprecord").show();
@@ -895,7 +932,7 @@
         function ToPointer(evt)
         {
             //console.log("ToPointer");            
-            CloseTools();
+            CloseToolsEx();
             ClearTools();
             ResetTools($("#div_btn_pointer"));
             UnbindMainTouch();
@@ -1004,7 +1041,7 @@
         {
             whiteboard.Clear();
             
-            CloseTools();
+            CloseToolsEx();
         }
         function ClearTools()
         {
@@ -1083,7 +1120,7 @@
                 ShowMsg(log);
             }
         }
-        function CloseToolSetting()
+        function CloseToolsExetting()
         {
             $("#main").css({ "margin-bottom": "0px" });
             $("#toolssetting").css({ "visibility": "hidden" });
@@ -1092,29 +1129,16 @@
         {
             //console.log("CloseToolsEx");
             //$('#maintools').panel('close');
+            $("#div_btn_toobar").animate({right:"0px"},100)
             $("#maintools").stop().animate({ right: '-46px'}, 100, 'swing', function ()
             {
                 FLAG=true;
-                // $("#maintools").hide();
-                $(".navigatelist").hide();
-                $(".video-choose").hide()
+                $("#maintools").hide();
+                $(".video-choose").hide();
+                $(".addText").hide();
                 //$("#div_btn_toobar").css("opacity", '0').show().animate({ opacity: 1 }, 500);
             });
 
-        }
-        function CloseTools()
-        {
-            //console.log("CloseTools");
-            //$("#maintools").hide();
-            if (!IsToolBarShow || !IsToolBarShowOnly)
-            {
-                // $("#div_btn_toobar").hide();
-            }
-            else
-            {                
-                // $("#div_btn_toobar").show();
-                //ToPointer();
-            }
         }
         function AfterLoadPDF(pageNum)
         {
@@ -1141,7 +1165,7 @@
             {
                 setTimeout(function () { $("#div_btn_log").removeClass("selected"); }, 500);
             }
-            //CloseTools();
+            //CloseToolsEx();
         }
         function CheckZoom()
         {
@@ -1316,7 +1340,7 @@
             {
                 // $("#div_btn_toobar").hide();
                 //ToPointer();
-                setTimeout(function () {$("#div_btn_toobar").hide(); },500);
+                // setTimeout(function () {$("#div_btn_toobar").hide(); },500);
             }
         }
         function GetCurrentPageNumber() {
@@ -1446,8 +1470,8 @@
             //}, 5000);
             //return
         if(FLAG){
+            $("#div_btn_toobar").animate({right:"46px"},100)
             _cancelBubble(evt);
-            $(".navigatelist").show()
             $("#maintools").stop().show().animate({ right: '0px' }, 100,function(){
                 FLAG=false;
             });
@@ -1461,7 +1485,7 @@
             //debugger;
             //PlayActionByTxt('{"type":2,"page":' + (PageNumber+1)+'}')
             //return;
-            CloseTools();
+            CloseToolsEx();
             try
             {
                 if (ISANDROID)
@@ -1480,7 +1504,7 @@
         }
         function RotateScreen()
         {
-            CloseTools();
+            CloseToolsEx();
             try
             {
                 window.webkit.messageHandlers.RotationFunction.postMessage(null);
@@ -1492,7 +1516,7 @@
             whiteboard.SetRecord(false);
             if (IsRecord)
             {
-                CloseTools();
+                CloseToolsEx();
                 IsRecord = false;
                 //$("#li_record").show();
                 //$("#li_playrecord").show();
@@ -1556,11 +1580,6 @@
             position:relative;
         }
 
-        .toolspanel > div:first-child {
-            padding: 0px;
-            height: 100%;
-        }
-
         .toolspanel h4 {
             padding: 0px;
         }
@@ -1573,16 +1592,11 @@
                 width: 20%;
             }
 
-        .navigatelist {
-
+        .navigatelist li{
+            min-height: 20px;
+            max-height: 46px;
         }
-
-            .navigatelist li {
-                padding: 2px 0;
-            }
-
                 .navigatelist li div {
-                    margin: 0.1em 0;
                     width: 100%;
                     display: flex;
                     align-items: center;
@@ -1714,8 +1728,8 @@
         }
 
         .btn-icon-container {
-            height: 29px;
-            width: 36px;
+            height:100%;
+            width: 100%;
             padding: 0px;
             border: 0px;
         }
@@ -1914,34 +1928,17 @@
                 <img src="img/right_blue.svg" style="width:50px;height:50px;" />
             </div>
         </div>
-        <div style="z-index:2; position:fixed; top:3px; right:3px;display: none " id="div_btn_toobar">
-            <div style="border:1px solid #b2b2b2; border-radius:50%; cursor:pointer;width:26px;height:26px;line-height: 26px;text-align: center; margin:0px; background-color:#efefef;">
-                <span class="icon icon-leftarrow" onclick="ShowToolBarItem(event);return false;" ontouchstart="ShowToolBarItem(event);return false;"></span>
-            </div>
+        <div onclick="ShowToolBarItem(event);return false;" style="z-index:99;display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50px 0 0 50px;background-image: linear-gradient(rgb(75,150,249),rgb(147,192,251));position:fixed;right:0;top:20px;box-shadow:0 4px 10px rgba(4, 42, 128, 0.2)   " id="div_btn_toobar">
+            <span class="icon icon-gongju1"  style="color:white;font-size: 20px"></span> 
         </div>
         <div style="z-index:2; position:fixed; top:0px; right:70px;display:none;">
             <div class="ui-input-btn ui-btn ui-icon-fullscreen ui-btn-icon-notext ui-corner-all">
                 <input type="button" data-enhanced="true" value="Enhanced - Icon only" onclick="FullScreen();">
             </div>
         </div>
-        <div id="maintools" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a" class="toolspanel" style="z-index:99;color:white;background-color:#44444f; border-radius:6px 0 0 6px;z-index:3; width:46px; right:-46px; padding:0px; position:fixed;box-shadow: -3px 0px 10px rgba(218, 216, 216,.3);  top:0px; height:100%; " onclick="">
-            <div onclick="ShowToolBarItem(event)" class="toolbar-flag" style="z-index:99;display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50px 0 0 50px;background-image: linear-gradient(rgb(75,150,249),rgb(147,192,251));position:absolute;right:46px;top:20px;box-shadow:0 4px 10px rgba(4, 42, 128, 0.2)">
-                <span class="icon icon-gongju1" style="font-size: 20px"></span>    
-            </div>
-            <div class="video-choose"  style="display: none; box-shadow:-3px 3px 20px rgba(98, 114, 148, 0.14);width:44px;height:122px;background-color:white;border-radius:6px;position:absolute;right:50px;bottom:72px;">
-                <ul style="padding:10px 0;margin:0">
-                    <li id="addSync" style="display:flex;align-items:center;justify-content: center;margin:0 auto;width: 30px;height:30px;border-radius:10px;background-color:#3D78FA">
-                        <span class="icon icon-yinxiang1"></span>
-                    </li>
-                    <li id="addLocalVideo" style="display:flex;align-items:center;justify-content: center;margin:7px auto;width: 30px;height:30px;border-radius:10px;background-color:#5553CE">
-                        <span class="icon icon-shipin"></span>
-                    </li>
-                    <li id="addWebVideo" style="display:flex;align-items:center;justify-content: center;margin:0 auto;width: 30px;height:30px;border-radius:10px;background-color:#53CEB6">
-                        <span class="icon icon-shipinlink"></span>
-                    </li>
-                </ul>
-            </div>
-            <ul class="navigatelist" style="list-style: none; padding: 10px 0px; margin: 0px; float:left; margin:0px; text-align:center; width:100%;">
+        <div id="maintools" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a" class="toolspanel" style="color:white;background-color:#44444f; border-radius:6px 0 0 6px;z-index:3; width:46px; right:-46px; padding:0px; position:fixed;box-shadow: -3px 0px 10px rgba(218, 216, 216,.3);  top:0px; height:100%; " onclick="">
+           
+            <ul class="navigatelist" style="list-style: none; padding: 6px 0px; margin: 0px; float:left; margin:0px; text-align:center; width:100%;">
                 <li id="li_pointer">
                     <div id="div_btn_pointer" class="btn-icon-container selected" style="text-align:center;">
                         <!--<input type="button" data-enhanced="true" value="Enhanced - Icon only" onclick="ToPointer();">-->
@@ -1977,10 +1974,20 @@
                         <span class="icon icon-wenben"></span>
                     </div>
                 </li>
-                <li id="li_btn_drawrectangle">
+                <li id="li_btn_drawrectangle" style="position: relative">
                     <div id="div_btn_drawrectangle" class="btn-icon-container" isdraw="0" style="text-align:center;">
                         <!--<input type="button" data-enhanced="true" value="Enhanced - Icon only" onclick="DrawRectangle();">-->
                         <span class="icon icon-pizhu" ></span>
+                    </div>
+                    <div class="addText" style="display: none; box-shadow:-3px 3px 20px rgba(98, 114, 148, 0.14);width:44px;background-color:white;border-radius:6px;position:absolute;right:50px;top:50%;transform:translateY(-50%)">
+                        <ul style="padding:10px 0;margin:0">
+                            <li id="stickyNote" style="display:flex;align-items:center;justify-content: center;margin:0 auto;width: 30px;height:30px;border-radius:10px;background-color:#3D78FA">
+                                <span class="icon icon-pizhu"></span>
+                            </li>
+                            <li id="myNote" style="display:flex;align-items:center;justify-content: center;margin:7px auto 0;width: 30px;height:30px;border-radius:10px;background-color:#5553CE">
+                                <span class="icon icon-Notebook" style="font-size:18px;"></span>
+                            </li>
+                        </ul>
                     </div>
                 </li>
                 <li id="li_btn_whiteboard">
@@ -1989,9 +1996,22 @@
                         <span class="icon icon-baiban" ></span>
                     </div>
                 </li>
-                <li id="li_btn_video">
+                <li id="li_btn_video" style="position: relative">
                     <div id="div_btn_video" class="btn-icon-container" isdraw="0" style="text-align:center;">
                         <span class="icon icon-meiti"></span>
+                    </div>
+                    <div class="video-choose"  style="display: none; box-shadow:-3px 3px 20px rgba(98, 114, 148, 0.14);width:44px;background-color:white;border-radius:6px;position:absolute;right:50px;top:50%;transform: translateY(-50%)">
+                        <ul style="padding:10px 0;margin:0">
+                            <li id="addSync" style="display:flex;align-items:center;justify-content: center;margin:0 auto;width: 30px;height:30px;border-radius:10px;background-color:#3D78FA">
+                                <span class="icon icon-yinxiang1"></span>
+                            </li>
+                            <li id="addLocalVideo" style="display:flex;align-items:center;justify-content: center;margin:7px auto;width: 30px;height:30px;border-radius:10px;background-color:#5553CE">
+                                <span class="icon icon-shipin"></span>
+                            </li>
+                            <li id="addWebVideo" style="display:flex;align-items:center;justify-content: center;margin:0 auto;width: 30px;height:30px;border-radius:10px;background-color:#53CEB6">
+                                <span class="icon icon-shipinlink"></span>
+                            </li>
+                        </ul>
                     </div>
                 </li>
                 <!--<li id="li_btn_addpage">
