@@ -5,6 +5,17 @@ public class TvDevice {
     private String deviceSessionId;
     private String loginTime;
     private boolean enableBind;
+    private boolean isSelect;
+    private String UserID;
+    private boolean isOpenVoice;
+
+    public boolean isOpenVoice() {
+        return isOpenVoice;
+    }
+
+    public void setOpenVoice(boolean openVoice) {
+        isOpenVoice = openVoice;
+    }
 
     public String getDeviceName() {
         return deviceName;
@@ -36,5 +47,22 @@ public class TvDevice {
 
     public void setEnableBind(boolean enableBind) {
         this.enableBind = enableBind;
+    }
+
+
+    public boolean isSelect() {
+        return isSelect;
+    }
+
+    public void setSelect(boolean select) {
+        isSelect = select;
+    }
+
+    public String getUserID() {
+        return UserID;
+    }
+
+    public void setUserID(String userID) {
+        UserID = userID;
     }
 }

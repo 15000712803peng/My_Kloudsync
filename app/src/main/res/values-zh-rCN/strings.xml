@@ -186,7 +186,7 @@
     <string name="valid_membership">会员有效期</string>
     <string name="change_password">修改密码</string>
     <string name="login_out">退出登录</string>
-    <string name="sync_tv">同步电视</string>
+    <string name="sync_tv">同步TV APP</string>
 
     <string name="course_list">您的课程单</string>
     <string name="create_group">创建了群聊</string>
@@ -333,7 +333,13 @@
     <string name="Swtich_team">切换团队</string>
     <string name="Swtich_space">切换空间</string>
     <string name="Create_team">创建新的团队</string>
-
+    <string name="autosync">自动同步允许将内容显示在您的电视设备上</string>
+    <string name="tvappname">TV APP 名称</string>
+    <string name="tvapplogintime">登录时间</string>
+    <string name="tvapplogin">扫描新电视</string>
+    <string name="opentrans">打开传送声音</string>
+    <string name="closetrans">关闭传送声音</string>
+    <string name="tvlogout">设备登出</string>
 
     <string name="Select_at">选团队</string>
     <string name="Select_af">选文件</string>
@@ -451,6 +457,9 @@
     <string name="mtlesson">请等待主持人开始课程</string>
     <string name="mtNStart">课程未开始</string>
     <string name="mtDelettLesson">你确认要删除课程吗？</string>
+    <string name="sharemeeting">分享会议</string>
+    <string name="nocontent">没有可用的内容</string>
+    <string name="notvdevices">没有Tv设备</string>
 
 
     <string name="mtJan">1月</string>
@@ -667,6 +676,10 @@
     <string name="downfailed">下载头像失败</string>
     <string name="to_be_allocated">待分配</string>
     <string name="weight">体重(kg)</string>
+    <string name="deletemeetingok">刪除</string>
+    <string name="deletemeetingcancel">取消</string>
+    <string name="deletemeetingtext">你确认要删除课程吗？</string>
+
 
     <string name="jiankangcao">健康操</string>
     <string name="jiankangguwenjianyi">健康顾问建议</string>

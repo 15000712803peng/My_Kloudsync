@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.frgment;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -167,6 +169,11 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                                 public void open() {
                                 }
 
+                                @Override
+                                public void property() {
+
+                                }
+
                             });
                             meetingMoreOperationPopup.StartPop(mViewPager, bean, 0);
                         }
@@ -217,6 +224,11 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                                 public void open() {
                                 }
 
+                                @Override
+                                public void property() {
+
+                                }
+
                             });
                             meetingMoreOperationPopup.StartPop(mViewPager, bean, 1);
                         }
@@ -262,10 +274,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                                 }
 
                                 @Override
-                                public void startMeeting() {  //PROPERTY
-                                    Intent intent = new Intent(getActivity(), MeetingPropertyActivity.class);
-                                    intent.putExtra("servicebean", bean);
-                                    getActivity().startActivity(intent);
+                                public void startMeeting() {
+
                                 }
 
                                 @Override
@@ -274,6 +284,13 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
                                 @Override
                                 public void open() {
+                                }
+
+                                @Override
+                                public void property() {
+                                    Intent intent = new Intent(getActivity(), MeetingPropertyActivity.class);
+                                    intent.putExtra("servicebean", bean);
+                                    getActivity().startActivity(intent);
                                 }
 
                             });
@@ -350,7 +367,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     /**
      * 确认结束课程
      */
-    private AlertDialog dialog;
+    private Dialog dialog;
 
     private void deleteMeeting(final ServiceBean bean) {
         final LayoutInflater inflater = LayoutInflater
@@ -383,15 +400,26 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
             }
         });
-        dialog = new AlertDialog.Builder(getActivity()).show();
-        Window dialogWindow = dialog.getWindow();
-        WindowManager m = getActivity().getWindowManager();
-        Display d = m.getDefaultDisplay();
-        WindowManager.LayoutParams p = dialogWindow.getAttributes();
-        p.width = (int) (d.getWidth() * 0.8);
-        dialogWindow.setAttributes(p);
-        dialog.setCanceledOnTouchOutside(true);
+//        dialog = new AlertDialog.Builder(getActivity()).show();
+//        Window dialogWindow = dialog.getWindow();
+//        WindowManager m = getActivity().getWindowManager();
+//        Display d = m.getDefaultDisplay();
+//        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+//        p.width = (int) (d.getWidth() * 0.8);
+//        dialogWindow.setAttributes(p);
+//        dialog.setCanceledOnTouchOutside(true);
+//        dialog.setContentView(windov);
+
+
+        dialog = new Dialog(getActivity(), R.style.bottom_dialog);
+
         dialog.setContentView(windov);
+        dialog.getWindow().setWindowAnimations(R.style.dialogwindowAnim);
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        params.width = getActivity().getResources().getDisplayMetrics().widthPixels;
+        dialog.getWindow().setAttributes(params);
+        dialog.show();
     }
 
     private List<ServiceBean> sortBydata(List<ServiceBean> serviceBeanList) {
@@ -521,7 +549,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
         ExecutorService executorService = Executors.newFixedThreadPool(pjList.size());
         for (int i = 0; i < pjList.size(); i++) {
-            executorService.execute(new ServiceTool(i, pjList.get(i),""));
+            executorService.execute(new ServiceTool(i, pjList.get(i), ""));
         }
         executorService.shutdown();
         while (true) {
@@ -784,7 +812,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 break;
             case R.id.search_layout:
                 Intent searchIntnt = new Intent(getActivity(), MeetingSearchResultsActivity.class);
-                searchIntnt.putExtra("type", mViewPager.getCurrentItem() );
+                searchIntnt.putExtra("type", mViewPager.getCurrentItem());
                 startActivity(searchIntnt);
                 break;
             case R.id.lin_myroom:

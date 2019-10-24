@@ -100,7 +100,6 @@
     <string name="Send_Link">Send Link</string>
 
 
-
     <string name="Input_Telephone">Please input your telephone number</string>
     <string name="Input_Password">Password, 6-16 characters, letters are case sensitive</string>
 
@@ -189,7 +188,7 @@
     <string name="valid_membership">Valid membership</string>
     <string name="change_password">Change password</string>
     <string name="login_out">Log out</string>
-    <string name="sync_tv">Sync TV</string>
+    <string name="sync_tv">Sync TV APP</string>
 
     <string name="course_list">Your course list</string>
     <string name="create_group"> create_group</string>
@@ -335,6 +334,14 @@
     <string name="Swtich_team">Switch Team</string>
     <string name="Swtich_space">Switch Space</string>
     <string name="Create_team">Create New Team</string>
+    <string name="autosync">AutoSync enables content be displayed on your TV devices</string>
+    <string name="tvappname">TV APP Name</string>
+    <string name="tvapplogintime">Login Time</string>
+    <string name="tvapplogin">Scan New TV</string>
+
+    <string name="opentrans">Open Transfer Voice</string>
+    <string name="closetrans">Close Transfer Voice</string>
+    <string name="tvlogout">Device Logout</string>
 
 
     <string name="Select_at">Select a Team</string>
@@ -349,7 +356,8 @@
     <string name="select2">Select</string>
     <string name="year">Y</string>
     <string name="month">M</string>
-    <string name="day">D</string>    <string name="newService">New Course</string>
+    <string name="day">D</string>
+    <string name="newService">New Course</string>
     <string name="join">Join Course</string>
     <string name="join2">Join Meeting</string>
     <string name="joinroom">Enter meeting room ID</string>
@@ -412,6 +420,9 @@
     <string name="mtlesson">Please wait for your host to start the lesson</string>
     <string name="mtNStart">LESSON IS NOT STARTED YET</string>
     <string name="mtDelettLesson">Are you sure you want delete this lesson？</string>
+    <string name="sharemeeting">Share Meeting</string>
+    <string name="nocontent">No available soundtrack</string>
+    <string name="notvdevices">No Tv Devices</string>
 
 
     <string name="mtJan">Jan</string>
@@ -606,7 +617,6 @@ Please input the cell phone number to add the contact
     <string name="selectcoursee">Select Course</string>
 
 
-
     <!-- 迪凯 余 -->
     <string name="myIntegral">我的积分币</string>
     <string name="enaluation_management_title">评价管理</string>
@@ -665,6 +675,9 @@ Please input the cell phone number to add the contact
     <string name="downfailed">downfailed</string>
     <string name="to_be_allocated">to be allocated</string>
     <string name="weight">weight(kg)</string>
+    <string name="deletemeetingok">Delete</string>
+    <string name="deletemeetingcancel">Cancel</string>
+    <string name="deletemeetingtext">Are you sure you want delete this lesson?</string>
 
     <string name="jiankangcao">健康操</string>
     <string name="jiankangguwenjianyi">健康顾问建议</string>

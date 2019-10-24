@@ -105,6 +105,11 @@ public class MeetingSearchResultsActivity extends Activity implements View.OnCli
                                 public void open() {
                                 }
 
+                                @Override
+                                public void property() {
+
+                                }
+
                             });
                             meetingMoreOperationPopup.StartPop(listView, bean, type);
                         }

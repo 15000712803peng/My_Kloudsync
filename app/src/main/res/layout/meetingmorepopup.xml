@@ -43,41 +43,7 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider_line" />
-
-        <RelativeLayout
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="20dp"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/eyeblack" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="30dp"
-                android:text="@string/mtView"
-                android:textColor="@color/darkgrey"
-                android:textSize="14sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:layout_alignParentBottom="true"
-                android:background="@color/white" />
-        </RelativeLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.5dp"
             android:background="@color/divider_line" />
 
         <RelativeLayout
@@ -108,13 +74,69 @@
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:layout_alignParentBottom="true"
-                android:background="@color/white" />
+                android:background="@color/divider_line" />
         </RelativeLayout>
 
-        <TextView
+
+        <RelativeLayout
+            android:id="@+id/view"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider_line" />
+            android:layout_height="35dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/eyeblack" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="30dp"
+                android:text="@string/mtView"
+                android:textColor="@color/darkgrey"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/divider_line" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/property"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/editdddd" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="30dp"
+                android:text="@string/sProperty"
+                android:textColor="@color/darkgrey"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/divider_line" />
+        </RelativeLayout>
+
 
         <RelativeLayout
             android:id="@+id/editmeeting"
@@ -143,13 +165,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:layout_alignParentBottom="true"
-                android:background="@color/white" />
+                android:background="@color/divider_line" />
         </RelativeLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider_line" />
 
         <RelativeLayout
             android:id="@+id/delete"
@@ -178,7 +196,6 @@
 
 
     </LinearLayout>
-
 
 
 </LinearLayout>

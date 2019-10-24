@@ -87,7 +87,7 @@
             android:foreground="?android:attr/selectableItemBackground"
             app:cardBackgroundColor="@color/grey"
             app:cardCornerRadius="4dp"
-            app:cardElevation="8dp"
+            app:cardElevation="2dp"
             app:contentPadding="1px"
             app:cardPreventCornerOverlap="false"
             app:cardUseCompatPadding="true"
@@ -123,6 +123,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/icon_join"
                     android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"
                     android:text="@string/join2"
                     android:textColor="@color/white"
@@ -135,7 +136,7 @@
             app:contentPadding="1px"
             app:cardBackgroundColor="@color/grey"
             app:cardCornerRadius="4dp"
-            app:cardElevation="8dp"
+            app:cardElevation="2dp"
             app:cardPreventCornerOverlap="false"
             app:cardUseCompatPadding="true"
             android:layout_width="wrap_content"
@@ -171,6 +172,7 @@
                     android:layout_below="@+id/meeting_join"
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
                     android:text="@string/MyKlassroom"
                     android:textColor="@color/white"
                     android:textSize="12sp" />
@@ -182,7 +184,7 @@
             app:contentPadding="1px"
             app:cardBackgroundColor="@color/grey"
             app:cardCornerRadius="4dp"
-            app:cardElevation="8dp"
+            app:cardElevation="2dp"
             app:cardPreventCornerOverlap="false"
             app:cardUseCompatPadding="true"
             android:layout_width="wrap_content"
@@ -217,7 +219,7 @@
                     android:layout_below="@+id/new_join"
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
-
+                    android:layout_marginTop="10dp"
                     android:singleLine="true"
 
                     android:text="@string/schMeeting"
@@ -265,15 +267,12 @@
 
     </LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider_line" />
+
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@color/lightgrey"
+        android:background="@color/white"
         android:orientation="horizontal"
         android:visibility="visible">
 
@@ -337,6 +336,10 @@
         android:layout_height="1dp"
         android:visibility="visible">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/divider_line" />
         <TextView
             android:id="@+id/inprogressunderline"
             android:layout_width="match_parent"

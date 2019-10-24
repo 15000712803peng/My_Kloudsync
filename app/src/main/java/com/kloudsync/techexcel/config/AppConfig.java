@@ -48,6 +48,7 @@ public class AppConfig {
 //    public static String COURSE_SOCKET = "ws://wss.peertime.cn:8080/MeetingServer/websocket";
 
     public static String COURSE_SOCKET = "wss://wss.peertime.cn:8443/MeetingServer/websocket";
+//    public static String COURSE_SOCKET = "wss://testwss.peertime.cn:8443/MeetingServer/websocket";
 
     // 访问的endpoint地址
     public static  String OSS_ENDPOINT = "oss-cn-shanghai.aliyuncs.com";

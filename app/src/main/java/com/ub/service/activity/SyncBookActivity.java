@@ -3510,8 +3510,23 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                                                 }
                                             });
                                 }
+
+                                @Override
+                                public void openTransfer(TvDevice tvDevice) {
+
+                                }
+
+                                @Override
+                                public void closeTransfer(TvDevice tvDevice) {
+
+                                }
+
+                                @Override
+                                public void logout(TvDevice tvDevice) {
+
+                                }
                             });
-                            tvDevicesListPopup.StartPop(wv_show, devices, enable);
+                            tvDevicesListPopup.StartPop(wv_show, devices, enable,isTeamspace);
                             activte_linearlayout.setVisibility(View.GONE);
                             menu.setImageResource(R.drawable.icon_menu);
                         } else {

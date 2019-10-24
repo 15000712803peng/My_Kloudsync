@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
@@ -323,7 +324,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     private ProgressBar fileprogress;
     private TextView progressbartv;
 
-    private  class MyHandler extends Handler {
+    private class MyHandler extends Handler {
 
         private WeakReference<SyncRoomActivity> watchCourseActivity3WeakReference;
 
@@ -406,6 +407,9 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                         final String m3 = (String) msg.obj;
                         activity3.wv_show.load("javascript:PlayActionByTxt('" + m3 + "','" + 1 + "')", null);
                         activity3.zoomInfo = null;
+                        break;
+                    case 0x1111: //离开
+                        activity3.changeAllVisible(activity3.leaveUserid);
                         break;
                     case AppConfig.SUCCESS:
                         activity3.mProgressBar.setVisibility(View.GONE);
@@ -602,6 +606,17 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
     }
 
+    private void changeAllVisible(String leaveUserid) {
+        //更新老师学生列表
+        for (int j = 0; j < teacorstudentList.size(); j++) {
+            Customer c = teacorstudentList.get(j);
+            if (c.getUserID().equals(leaveUserid)) {
+                teacorstudentList.remove(j);
+                j--;
+            }
+        }
+        resetTvDevices();
+    }
 
     public void CheckLanguage() {
         if (AppConfig.LANGUAGEID > 0) {
@@ -873,7 +888,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         send_message("SEND_MESSAGE", AppConfig.UserToken, 0, "", Tools.getBase64(json.toString()).replaceAll("[\\s*\t\n\r]", ""));
         send_message("SEND_MESSAGE", AppConfig.UserToken, 1, AppConfig.UserID, Tools.getBase64(json.toString()).replaceAll("[\\s*\t\n\r]", ""));
     }
-
 
 
     private int startYinxiangTime = 0;
@@ -2017,6 +2031,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 auditorList.add(a);
             }
         }
+        resetTvDevices();
     }
 
 
@@ -2525,6 +2540,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         });
     }
 
+
     /**
      * 获取每一页上的 Action
      */
@@ -2549,7 +2565,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         if (type == 3 || type == 4) { //手动翻页
             reflectPage(pageNum);
         }
-
 
     }
 
@@ -2616,13 +2631,14 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             }
         });
     }
+
     /**
      * 拿actions信息
      *
      * @param pageNum
      * @param
      */
-    private void getPageObjectsAfterChange(String pageNum){
+    private void getPageObjectsAfterChange(String pageNum) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {  //  清空当前页的线
@@ -2751,7 +2767,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                     wv_show.load("javascript:ShowToolbar(" + false + ")", null);
                     wv_show.load("javascript:StopRecord()", null);
                 }
-
                 isWebViewLoadFinish = true;
             }
         });
@@ -2815,7 +2830,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 }
             });
         }
-
     }
 
 
@@ -3217,6 +3231,8 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.scanll:
                 openTvDevicesList();
+                activte_linearlayout.setVisibility(View.GONE);
+                command_active.setImageResource(R.drawable.icon_command);
                 break;
             case R.id.inviteuser:
                 flipInviteUserPopupWindow();
@@ -3303,17 +3319,17 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
     private void startMeeting() {
         try {
-            JSONObject jsonObject=new JSONObject();
-            jsonObject.put("CompanyID",AppConfig.SchoolID);
-            jsonObject.put("SyncRoomID",lessonId);
-            JSONArray jsonArray=new JSONArray();
-            JSONObject member=new JSONObject();
-            member.put("MemberID",AppConfig.UserID);
-            member.put("Role",2);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("CompanyID", AppConfig.SchoolID);
+            jsonObject.put("SyncRoomID", lessonId);
+            JSONArray jsonArray = new JSONArray();
+            JSONObject member = new JSONObject();
+            member.put("MemberID", AppConfig.UserID);
+            member.put("Role", 2);
             jsonArray.put(member);
-            jsonObject.put("MemberList",jsonArray);
+            jsonObject.put("MemberList", jsonArray);
             String url = AppConfig.URL_PUBLIC + "SyncRoom/CreateMeetingFromSyncRoom";
-            ServiceInterfaceTools.getinstance().createMeetingFromSyncRoom(url, ServiceInterfaceTools.CREATEMEETINGFROMSYNCROOM,jsonObject, new ServiceInterfaceListener() {
+            ServiceInterfaceTools.getinstance().createMeetingFromSyncRoom(url, ServiceInterfaceTools.CREATEMEETINGFROMSYNCROOM, jsonObject, new ServiceInterfaceListener() {
                 @Override
                 public void getServiceReturnData(Object object) {
                     String lessonId = (String) object;
@@ -3416,6 +3432,8 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
 
+    private TvDevicesListPopup tvDevicesListPopup;
+
     private void openTvDevicesList() {
 
         ServiceInterfaceTools.getinstance().getBindTvs().enqueue(new Callback<DevicesResponse>() {
@@ -3424,9 +3442,18 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 if (response != null && response.isSuccessful() && response.body() != null) {
                     if (response.body().getData() != null) {
                         List<TvDevice> devices = response.body().getData().getDeviceList();
+                        for (TvDevice device : devices) {
+                            for (Customer customer : teacorstudentList) {
+                                if (customer.getName().equals(device.getDeviceName())) { //根据用户名设置TV的userid
+                                    device.setUserID(customer.getUserID());
+                                    break;
+                                }
+                            }
+                            Log.e("devices", device.getDeviceName() + "  " + device.getDeviceSessionId() + "  " + device.getLoginTime() + " " + device.getUserID());
+                        }
                         boolean enable = response.body().getData().isEnableBind();
                         if (devices != null && devices.size() > 0) {
-                            TvDevicesListPopup tvDevicesListPopup = new TvDevicesListPopup();
+                            tvDevicesListPopup = new TvDevicesListPopup();
                             tvDevicesListPopup.getPopwindow(SyncRoomActivity.this);
                             tvDevicesListPopup.setWebCamPopupListener(new TvDevicesListPopup.WebCamPopupListener() {
                                 @Override
@@ -3445,10 +3472,23 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                                                 }
                                             });
                                 }
+
+                                @Override
+                                public void openTransfer(TvDevice tvDevice) {
+                                    tvVoice(1, tvDevice);
+                                }
+
+                                @Override
+                                public void closeTransfer(TvDevice tvDevice) {
+                                    tvVoice(0, tvDevice);
+                                }
+
+                                @Override
+                                public void logout(TvDevice tvDevice) {
+                                    tvlogout(0, tvDevice);
+                                }
                             });
-                            tvDevicesListPopup.StartPop(wv_show, devices, enable);
-                            activte_linearlayout.setVisibility(View.GONE);
-                            menu.setImageResource(R.drawable.icon_menu);
+                            tvDevicesListPopup.StartPop(wv_show, devices, enable, isTeamspace);
                         } else {
                             gotoScanTv();
                         }
@@ -3467,19 +3507,110 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         });
     }
 
+    private void resetTvDevices() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ServiceInterfaceTools.getinstance().getBindTvs().enqueue(new Callback<DevicesResponse>() {
+                    @Override
+                    public void onResponse(Call<DevicesResponse> call, Response<DevicesResponse> response) {
+                        if (response != null && response.isSuccessful() && response.body() != null) {
+                            if (response.body().getData() != null) {
+                                List<TvDevice> devices = response.body().getData().getDeviceList();
+                                if (devices != null && devices.size() > 0) {
+                                    for (TvDevice device : devices) {
+                                        for (Customer customer : teacorstudentList) {
+                                            if (customer.getName().equals(device.getDeviceName())) { //根据用户名设置TV的userid
+                                                device.setUserID(customer.getUserID());
+                                                break;
+                                            }
+                                        }
+                                        Log.e("devices", device.getDeviceName() + "  " + device.getDeviceSessionId() + "  " + device.getLoginTime() + " " + device.getUserID());
+                                    }
+                                    if (tvDevicesListPopup != null) {
+                                        tvDevicesListPopup.setTvDevices(devices);
+                                        tvDevicesListPopup.Hidden();
+                                    }
+                                } else {
+                                    if (tvDevicesListPopup != null) {
+                                        tvDevicesListPopup.setVisible();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DevicesResponse> call, Throwable t) {
+                    }
+                });
+            }
+        }, 3000);
+    }
+
+
+    private void tvVoice(int stat, TvDevice tvDevice) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("stat", stat);
+            json.put("actionType", 22);
+            json.put("sourceUserId", AppConfig.UserID);
+            json.put("isTvDevice", 1);
+            json.put("tvName", tvDevice.getDeviceName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        send_message("SEND_MESSAGE", AppConfig.UserToken, 1, tvDevice.getUserID() + "", Tools.getBase64(json.toString()).replaceAll("[\\s*\t\n\r]", ""));
+    }
+
+    private void tvlogout(int stat, TvDevice tvDevice) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("stat", stat);
+            json.put("actionType", 27);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        send_message("SEND_MESSAGE", AppConfig.UserToken, 1, tvDevice.getUserID() + "", Tools.getBase64(json.toString()).replaceAll("[\\s*\t\n\r]", ""));
+    }
+
 
     private void gotoScanTv() {
+        if (tvDevicesListPopup != null) {
+            tvDevicesListPopup.dismiss();
+        }
+        if (!isCameraCanUse()) {
+            Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
+            return;
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent intent1 = new Intent(SyncRoomActivity.this, MipcaActivityCapture.class);
                 intent1.putExtra("isHorization", true);
-                intent1.putExtra("type", 1);
+                intent1.putExtra("type", 0);
                 startActivity(intent1);
             }
         }, 10);
     }
 
+    private boolean isCameraCanUse() {
+
+        Camera mCamera = null;
+        try {
+            mCamera = Camera.open();
+        } catch (Exception e) {
+            return false;
+        }
+        if (mCamera == null) {
+            return false;
+        }
+
+        if (mCamera != null) {
+            mCamera.release();
+        }
+        return true;
+    }
 
     private SyncRoomDocumentPopup syncRoomDocumentPopup;
 

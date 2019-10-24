@@ -4390,8 +4390,23 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                                                 }
                                             });
                                 }
+
+                                @Override
+                                public void openTransfer(TvDevice tvDevice) {
+
+                                }
+
+                                @Override
+                                public void closeTransfer(TvDevice tvDevice) {
+
+                                }
+
+                                @Override
+                                public void logout(TvDevice tvDevice) {
+
+                                }
                             });
-                            tvDevicesListPopup.StartPop(wv_show, devices, enable);
+                            tvDevicesListPopup.StartPop(wv_show, devices, enable,isPrepare);
                             activte_linearlayout.setVisibility(View.GONE);
                             menu.setImageResource(R.drawable.icon_menu);
                         } else {

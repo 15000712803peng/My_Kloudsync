@@ -230,7 +230,7 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                     if (!TextUtils.isEmpty(sAdapter.getSelectCompanyId())) {
                         sAdapter.clearSelectedSubsystem(Integer.parseInt(sAdapter.getSelectCompanyId()));
                     }
-                    sAdapter.setSelectCompany(Integer.parseInt(id + ""),AppConfig.selectedSubSystemId);
+                    sAdapter.setSelectCompany(Integer.parseInt(id + ""),"");
                     List<CompanySubsystem> subsystems = sAdapter.getSelectCompany().getSubsystems();
                     if (subsystems != null && subsystems.size() > 0) {
                         for (CompanySubsystem subsystem : subsystems) {

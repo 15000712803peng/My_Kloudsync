@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -25,6 +26,7 @@ public class MeetingShareActivity extends Activity implements View.OnClickListen
     private RecyclerView mRecyclerView;
     private ServiceBean bean;
     private SharedAdapter sharedAdapter;
+    private LinearLayout nodataprompt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +43,13 @@ public class MeetingShareActivity extends Activity implements View.OnClickListen
                 ServiceInterfaceTools.LESSONSOUNDTRACK, new ServiceInterfaceListener() {
                     @Override
                     public void getServiceReturnData(Object object) {
+
                         List<SoundtrackBean> soundtrackBeanList = (List<SoundtrackBean>) object;
+
+                        if(soundtrackBeanList==null&&soundtrackBeanList.size()==0){
+                            nodataprompt.setVisibility(View.GONE);
+                        }
+
                         sharedAdapter = new SharedAdapter(MeetingShareActivity.this, soundtrackBeanList);
                         sharedAdapter.setOnItemClickListener3(new SharedAdapter.OnItemClickListener3() {
                             @Override
@@ -101,6 +109,8 @@ public class MeetingShareActivity extends Activity implements View.OnClickListen
 
     private void initView() {
 
+        nodataprompt = (LinearLayout) findViewById(R.id.nodataprompt);
+        nodataprompt.setVisibility(View.VISIBLE);
         mBack = (ImageView) findViewById(R.id.back_iv);
         mBack.setOnClickListener(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycleview);
