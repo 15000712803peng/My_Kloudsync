@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout"
-    android:background="@color/white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <SurfaceView
         android:id="@+id/surface_view"
@@ -690,6 +690,7 @@
                     android:text="@string/mtSetting"
                     android:textColor="@color/white"
                     android:textSize="14sp" />
+
                 <TextView
                     android:id="@+id/videoline"
                     android:layout_width="match_parent"
@@ -1124,9 +1125,9 @@
                     android:layout_alignParentLeft="true">
 
                     <ImageView
-                        android:layout_centerInParent="true"
                         android:layout_width="15dp"
                         android:layout_height="15dp"
+                        android:layout_centerInParent="true"
                         android:scaleType="fitXY"
                         android:src="@drawable/arrow_back2" />
                 </RelativeLayout>
@@ -1226,10 +1227,6 @@
 
 
     <LinearLayout
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
         android:id="@+id/audiosyncll"
         android:layout_width="360dp"
         android:layout_height="wrap_content"
@@ -1237,36 +1234,40 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
         android:alpha="0.7"
-        android:orientation="vertical"
         android:background="@drawable/audioplaystop"
+        android:orientation="vertical"
+        android:paddingBottom="16dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="16dp"
         android:visibility="gone">
 
         <SeekBar
-            android:thumbOffset="0dp"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:thumb="@drawable/seek_bar_thumb"
-            android:progressDrawable="@drawable/progress_drawable"
-            android:maxHeight="3dp"
-            android:minHeight="3dp"
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:max="100"
-            android:progress="0" />
+            android:maxHeight="3dp"
+            android:minHeight="3dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:progress="0"
+            android:progressDrawable="@drawable/progress_drawable"
+            android:thumb="@drawable/seek_bar_thumb"
+            android:thumbOffset="0dp" />
 
         <LinearLayout
-            android:layout_marginTop="6dp"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_marginTop="6dp"
             android:gravity="center"
             android:orientation="horizontal">
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/timehidden"
@@ -1286,16 +1287,16 @@
             </LinearLayout>
 
             <View
-                android:layout_marginLeft="16dp"
-                android:layout_gravity="center_vertical"
-                android:background="@color/white"
                 android:layout_width="1.5px"
-                android:layout_height="18dp" />
+                android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:background="@color/white" />
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <ImageView
 
@@ -1318,11 +1319,11 @@
             </LinearLayout>
 
             <View
-                android:layout_marginLeft="22dp"
-                android:layout_gravity="center_vertical"
-                android:background="@color/white"
                 android:layout_width="1.5px"
-                android:layout_height="18dp" />
+                android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="22dp"
+                android:background="@color/white" />
 
             <TextView
                 android:id="@+id/audiotime"
@@ -1334,18 +1335,18 @@
                 android:textColor="@color/white" />
 
             <View
-                android:layout_gravity="center_vertical"
-                android:background="@color/white"
                 android:layout_width="1.5px"
-                android:layout_height="18dp" />
+                android:layout_height="18dp"
+                android:layout_gravity="center_vertical"
+                android:background="@color/white" />
 
 
             <ImageView
-                android:layout_marginLeft="18dp"
                 android:id="@+id/syncicon"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="18dp"
                 android:layout_marginRight="20dp"
                 android:src="@drawable/syncing"
                 android:visibility="visible" />
@@ -1437,25 +1438,41 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:layout_marginTop="15dp"
         android:background="@drawable/fileprogressbarbg"
         android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="10dp"
         android:visibility="gone">
 
         <TextView
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="网络慢，文档下载中"
             android:textColor="@color/white" />
 
-
     </RelativeLayout>
+
+
+    <com.ub.techexcel.view.CustomVideoView
+        android:id="@+id/recordscreenvideo"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginRight="150dp"
+        android:visibility="gone" />
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recordinglistvideo"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/black"
+        android:visibility="visible"></android.support.v7.widget.RecyclerView>
 
 
 </RelativeLayout>

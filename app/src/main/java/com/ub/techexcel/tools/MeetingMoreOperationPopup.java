@@ -24,11 +24,11 @@ public class MeetingMoreOperationPopup implements View.OnClickListener {
     public int width;
     public Dialog mPopupWindow;
     private View viewroot;
-    private RelativeLayout view, delete, startMeeting, edit;
+    private RelativeLayout view, delete, startMeeting, edit, property;
     private FavoritePoPListener mFavoritePoPListener;
     private TextView title;
     private ImageView closebnt;
-    private TextView startmeetingContext,editContext;
+    private TextView startmeetingContext, editContext;
 
     public interface FavoritePoPListener {
 
@@ -41,6 +41,8 @@ public class MeetingMoreOperationPopup implements View.OnClickListener {
         void startMeeting();
 
         void open();
+
+        void property();
 
         void dismiss();
 
@@ -74,18 +76,19 @@ public class MeetingMoreOperationPopup implements View.OnClickListener {
         view = (RelativeLayout) viewroot.findViewById(R.id.view);
         delete = (RelativeLayout) viewroot.findViewById(R.id.delete);
         startMeeting = (RelativeLayout) viewroot.findViewById(R.id.satrtmeeting);
+        property = (RelativeLayout) viewroot.findViewById(R.id.property);
         edit = (RelativeLayout) viewroot.findViewById(R.id.editmeeting);
-        startmeetingContext=(TextView) viewroot.findViewById(R.id.startmeetingcontext);
-        editContext=(TextView) viewroot.findViewById(R.id.editcontext);;
+        startmeetingContext = (TextView) viewroot.findViewById(R.id.startmeetingcontext);
+        editContext = (TextView) viewroot.findViewById(R.id.editcontext);
         title = (TextView) viewroot.findViewById(R.id.title);
         closebnt = (ImageView) viewroot.findViewById(R.id.closebnt);
         closebnt.setOnClickListener(this);
         view.setOnClickListener(this);
         delete.setOnClickListener(this);
         startMeeting.setOnClickListener(this);
+        property.setOnClickListener(this);
         edit.setOnClickListener(this);
         mPopupWindow = new Dialog(mContext, R.style.bottom_dialog);
-
         mPopupWindow.setContentView(viewroot);
         mPopupWindow.getWindow().setWindowAnimations(R.style.dialogwindowAnim);
         mPopupWindow.getWindow().setGravity(Gravity.BOTTOM);
@@ -95,25 +98,25 @@ public class MeetingMoreOperationPopup implements View.OnClickListener {
     }
 
     @SuppressLint("NewApi")
-    public void StartPop(View v, ServiceBean syncRoomBean,int isShow) {
+    public void StartPop(View v, ServiceBean syncRoomBean, int isShow) {
         if (mPopupWindow != null) {
-            title.setText(syncRoomBean.getName()+"");
-            if(isShow==0){
+            title.setText(syncRoomBean.getName() + "");
+            if (isShow == 0) {
                 startmeetingContext.setText(mContext.getResources().getString(R.string.sMeeting));
                 editContext.setText(mContext.getResources().getString(R.string.Edit));
                 startMeeting.setVisibility(View.VISIBLE);
                 edit.setVisibility(View.VISIBLE);
-            }else if(isShow==1){
+                property.setVisibility(View.GONE);
+            } else if (isShow == 1) {
                 startMeeting.setVisibility(View.GONE);
                 edit.setVisibility(View.GONE);
-
-            } else if (isShow==2) {
-                startmeetingContext.setText(mContext.getResources().getString(R.string.sProperty));
+                property.setVisibility(View.GONE);
+            } else if (isShow == 2) {
                 editContext.setText(mContext.getResources().getString(R.string.share));
-                startMeeting.setVisibility(View.VISIBLE);
+                startMeeting.setVisibility(View.GONE);
                 edit.setVisibility(View.VISIBLE);
+                property.setVisibility(View.VISIBLE);
             }
-
             mPopupWindow.show();
             mFavoritePoPListener.open();
         }
@@ -151,6 +154,10 @@ public class MeetingMoreOperationPopup implements View.OnClickListener {
             case R.id.editmeeting:
                 dismiss();
                 mFavoritePoPListener.edit();
+                break;
+            case R.id.property:
+                dismiss();
+                mFavoritePoPListener.property();
                 break;
             default:
                 break;

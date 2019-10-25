@@ -78,6 +78,7 @@
     <ListView
         android:id="@+id/list_doc"
         android:layout_width="match_parent"
+        android:divider="@color/white"
         android:layout_height="wrap_content"></ListView>
 
 

@@ -47,11 +47,11 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
     private ImageView cancel;
     private TextView submit;
     private EditText meetingname;
-    private TextView meetingstartdate,tv_p_start;
-    private TextView meetingenddate,tv_p_end;
-    private TextView meetingduration,tv_p_schedule,tv_p_schedule_size;
+    private TextView meetingstartdate, tv_p_start;
+    private TextView meetingenddate, tv_p_end;
+    private TextView meetingduration, tv_p_schedule, tv_p_schedule_size;
 
-    private RelativeLayout as_rl_contact,startdaterl,enddaterl;
+    private RelativeLayout as_rl_contact, startdaterl, enddaterl;
     private TextView invitecontact;
     //private RecyclerView mRecyclerView;
     private NewMeetingContactAdapter newMeetingContactAdapter;
@@ -84,35 +84,35 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 0x1101 && resultCode == 3){
+        if (requestCode == 0x1101 && resultCode == 3) {
 
             customerList = (List<Customer>) data.getSerializableExtra("customerList");
             /*newMeetingContactAdapter = new NewMeetingContactAdapter(this, customerList);
             mRecyclerView.setAdapter(newMeetingContactAdapter);*/
             if (customerList.size() >= 3) {
                 tv_p_schedule.setVisibility(View.GONE);
-                as_img_contact_one .setVisibility(View.VISIBLE);
-                as_img_contact_two .setVisibility(View.VISIBLE);
-                as_img_contact_three .setVisibility(View.VISIBLE);
+                as_img_contact_one.setVisibility(View.VISIBLE);
+                as_img_contact_two.setVisibility(View.VISIBLE);
+                as_img_contact_three.setVisibility(View.VISIBLE);
                 tv_p_schedule_size.setVisibility(View.VISIBLE);
-                tv_p_schedule_size.setText(customerList.size()+"total");
+                tv_p_schedule_size.setText(customerList.size() + "total");
                 as_img_contact_one.setImageURI(Uri.parse(customerList.get(0).getUrl()));
                 as_img_contact_two.setImageURI(Uri.parse(customerList.get(1).getUrl()));
                 as_img_contact_three.setImageURI(Uri.parse(customerList.get(2).getUrl()));
             } else if (customerList.size() >= 2) {
                 tv_p_schedule.setVisibility(View.GONE);
-                as_img_contact_one .setVisibility(View.VISIBLE);
-                as_img_contact_two .setVisibility(View.VISIBLE);
+                as_img_contact_one.setVisibility(View.VISIBLE);
+                as_img_contact_two.setVisibility(View.VISIBLE);
                 tv_p_schedule_size.setVisibility(View.VISIBLE);
-                tv_p_schedule_size.setText(customerList.size()+"total");
+                tv_p_schedule_size.setText(customerList.size() + "total");
                 as_img_contact_one.setImageURI(Uri.parse(customerList.get(0).getUrl()));
                 as_img_contact_two.setImageURI(Uri.parse(customerList.get(1).getUrl()));
                 as_img_contact_three.setVisibility(View.GONE);
             } else if (customerList.size() >= 1) {
                 tv_p_schedule.setVisibility(View.GONE);
-                as_img_contact_one .setVisibility(View.VISIBLE);
+                as_img_contact_one.setVisibility(View.VISIBLE);
                 tv_p_schedule_size.setVisibility(View.VISIBLE);
-                tv_p_schedule_size.setText(customerList.size()+"total");
+                tv_p_schedule_size.setText(customerList.size() + "total");
                 as_img_contact_one.setImageURI(Uri.parse(customerList.get(0).getUrl()));
                 as_img_contact_two.setVisibility(View.GONE);
                 as_img_contact_three.setVisibility(View.GONE);
@@ -126,6 +126,7 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
 
         }
     }
+
     @Override
     protected void onDestroy() {
  /*       if (EventBus.getDefault().isRegistered(this)) {
@@ -195,7 +196,7 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             case R.id.as_rl_contact:
                 Intent intent3 = new Intent(this,
                         AddGroupActivity2.class);
-                startActivityForResult(intent3,0x1101);
+                startActivityForResult(intent3, 0x1101);
                 break;
             case R.id.submit:
                 submit();
@@ -224,7 +225,7 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             public void handle(String time) {
                 try {
                     endsecond = formatter.parse(time).getTime();
-                    if(endsecond !=0){
+                    if (endsecond != 0) {
                         tv_p_end.setVisibility(View.GONE);
                         meetingenddate.setVisibility(View.VISIBLE);
                         if (endsecond > startsecond) {
@@ -242,7 +243,7 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                             meetingenddate.setVisibility(View.GONE);
                             Toast.makeText(NewMeetingActivity.this, "结束时间不能大于开始时间!", Toast.LENGTH_LONG).show();
                         }
-                    }else {
+                    } else {
                         tv_p_end.setVisibility(View.VISIBLE);
                         meetingenddate.setVisibility(View.GONE);
                     }
@@ -283,7 +284,7 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             public void handle(String time) {
                 try {
                     startsecond = formatter.parse(time).getTime();
-                    if(startsecond != 0){
+                    if (startsecond != 0) {
                         tv_p_start.setVisibility(View.GONE);
                         meetingstartdate.setVisibility(View.VISIBLE);
                         if (endsecond != 0) {
@@ -302,11 +303,10 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                         } else {
                             meetingstartdate.setText(time);
                         }
-                    }else {
+                    } else {
                         tv_p_start.setVisibility(View.VISIBLE);
                         meetingstartdate.setVisibility(View.GONE);
                     }
-
 
 
                 } catch (Exception e) {

@@ -74,8 +74,6 @@ public class FavouriteDocAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         String createData = new SimpleDateFormat("YYYY-MM-dd HH:MM:SS").format(Long.parseLong(favorite.getCreatedDate()));
         holder.time.setText("" + createData);
         holder.itemView.setTag(favorite);
-
-
     }
 
     @Override

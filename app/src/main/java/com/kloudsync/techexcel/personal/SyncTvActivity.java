@@ -121,7 +121,7 @@ public class SyncTvActivity extends Activity implements View.OnClickListener, Co
         deviceList = (RecyclerView) findViewById(R.id.list_device);
         final LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         deviceList.setLayoutManager(manager);
-        adapter = new TvDeviceAdapter(mlist);
+        adapter = new TvDeviceAdapter(this,mlist,true);
         deviceList.setAdapter(adapter);
         devicesLayout = (LinearLayout) findViewById(R.id.layout_devices);
         noDeviceText = (TextView) findViewById(R.id.txt_no_devices);
@@ -167,7 +167,7 @@ public class SyncTvActivity extends Activity implements View.OnClickListener, Co
         ServiceInterfaceTools.getinstance().changeBindTvStatus(status).enqueue(new Callback<BindTvStatusResponse>() {
             @Override
             public void onResponse(Call<BindTvStatusResponse> call, Response<BindTvStatusResponse> response) {
-                Log.e("requestChangeBindTvStatus","response:" + response);
+                Log.e("requestChangeBs","response:" + response);
                 if (response != null && response.isSuccessful() && response.body() != null) {
                     if (response.body().getCode() == 0) {
                         handler.obtainMessage(MESSAGE_TOAST_SUCC).sendToTarget();

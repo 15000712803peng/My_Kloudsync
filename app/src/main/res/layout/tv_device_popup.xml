@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
 
     android:layout_width="350dp"
     android:layout_height="match_parent"
     android:background="@color/bg_gray"
     android:gravity="center_horizontal"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <RelativeLayout
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:paddingBottom="12dp"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp">
+        android:paddingRight="10dp"
+        android:paddingTop="12dp">
 
         <ImageView
-            android:padding="3dp"
             android:id="@+id/back"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerVertical="true"
+            android:padding="3dp"
             android:src="@drawable/arrow_back2" />
 
         <TextView
@@ -35,14 +33,18 @@
             android:textColor="@color/black"
             android:textSize="16sp" />
     </RelativeLayout>
+
     <View
-        android:background="@color/divider"
         android:layout_width="match_parent"
-        android:layout_height="1px"/>
+        android:layout_height="1px"
+        android:background="@color/divider" />
+
+
+
 
 
     <RelativeLayout
-        android:id="@+id/layout_enable_sync"
+        android:id="@+id/hah1"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:layout_marginTop="32dp"
@@ -55,33 +57,34 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
             android:text="@string/sync_tv"
-            android:textColor="@color/darkgrey"
+            android:textColor="@color/black"
             android:textSize="12sp" />
 
         <com.kloudsync.techexcel.view.UISwitchButton
             android:id="@+id/switch_sync"
             android:layout_width="72dp"
             android:layout_height="42dp"
-            android:layout_marginRight="12dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:layout_marginRight="12dp"
 
             />
-
-
 
     </RelativeLayout>
 
     <TextView
-        android:layout_marginTop="12dp"
+        android:id="@+id/hah2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:text="AutoSync enables content be displayed on your TV devices"
+        android:layout_marginTop="12dp"
+        android:text="@string/autosync"
         android:textColor="@color/red"
         android:textSize="11sp" />
 
     <RelativeLayout
+        android:id="@+id/hah3"
+        android:layout_marginTop="5dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -102,7 +105,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="设备名称"
+                    android:text="TV APP名称"
                     android:textColor="@color/black"
                     android:textSize="13sp" />
 
@@ -116,16 +119,18 @@
             </RelativeLayout>
 
             <View
-                android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
-                android:background="@color/divider"
-                android:layout_height="1px"/>
+                android:layout_height="1px"
+                android:layout_marginTop="8dp"
+                android:background="@color/divider" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/list_device"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"></android.support.v7.widget.RecyclerView>
+                android:layout_weight="1"
+                android:background="@color/white"></android.support.v7.widget.RecyclerView>
+
         </LinearLayout>
 
         <TextView
@@ -139,6 +144,36 @@
             android:textSize="14sp"
             android:visibility="gone" />
     </RelativeLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/nodataprompt"
+        android:layout_margin="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/service_d" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/notvdevices" />
+    </LinearLayout>
+
+
+
+
+
 
 
     <TextView

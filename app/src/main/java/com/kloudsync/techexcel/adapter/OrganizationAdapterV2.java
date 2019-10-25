@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,9 +42,17 @@ public class OrganizationAdapterV2 extends BaseExpandableListAdapter implements 
         return companies;
     }
 
-    public void setSubsystems(List<CompanySubsystem> subsystems, int companyId) {
+    public void setSubsystems(List<CompanySubsystem> subsystems, int companyId, String selectedSubSystemId) {
         for (School company : this.companies) {
             if (company.getSchoolID() == companyId) {
+
+                for (CompanySubsystem companySubsystem : subsystems) {
+                    if (companySubsystem.getSubSystemId().equals(selectedSubSystemId)) {
+                        companySubsystem.setSelected(true);
+                        company.setSubSystemSelected(true);
+                    }
+                }
+
                 company.setSubsystems(subsystems);
                 break;
             }
@@ -162,27 +171,30 @@ public class OrganizationAdapterV2 extends BaseExpandableListAdapter implements 
     }
 
 
-    public int setSelectCompany(int companyId) {
-        Log.e("setSelectCompany","companyId:" + companyId);
+    public int setSelectCompany(int companyId, String selectedSubSystemId) {
+        Log.e("setSelectCompany", "companyId:" + companyId);
         int parentId = -1;
         for (School company : this.companies) {
             if (company.getSchoolID() == companyId) {
                 company.setSelected(true);
                 parentId = companyId;
-                Log.e("setSelectCompany","company set selected true:" + companyId);
+
+
+                Log.e("setSelectCompany", "company set selected true:" + companyId);
 
             } else {
                 company.setSelected(false);
                 company.setSubSystemSelected(false);
             }
 
-            if(company.getSubsystems() != null){
-                for(CompanySubsystem subsystem : company.getSubsystems()){
-                    Log.e("setSelectCompany","subsystem:" + subsystem);
-                    if(subsystem.getSubSystemId().equals(companyId+"")){
+            if (company.getSubsystems() != null) {
+                for (CompanySubsystem subsystem : company.getSubsystems()) {
+                    Log.e("setSelectCompany", "subsystem:" + subsystem);
+                    if (subsystem.getSubSystemId().equals(selectedSubSystemId + "")) {
                         subsystem.setSelected(true);
+                        company.setSubSystemSelected(true);
                         parentId = Integer.parseInt(subsystem.getCompanyId());
-                        Log.e("setSelectCompany","subsystem set selected true:" + parentId);
+                        Log.e("setSelectCompany", "subsystem set selected true:" + parentId);
 
                     }
                 }
@@ -274,6 +286,7 @@ public class OrganizationAdapterV2 extends BaseExpandableListAdapter implements 
             subsystemHolder.selectedImage = convertView.findViewById(R.id.imge_selected);
             subsystemHolder.systemAvatar = convertView.findViewById(R.id.image_company_avatar);
             subsystemHolder.systemNameText = convertView.findViewById(R.id.txt_company_name);
+            subsystemHolder.layout_group_item_item = convertView.findViewById(R.id.layout_group_item_item);
             convertView.setTag(subsystemHolder);
         } else {
             subsystemHolder = (SubsystemHolder) convertView.getTag();
@@ -281,8 +294,15 @@ public class OrganizationAdapterV2 extends BaseExpandableListAdapter implements 
         subsystemHolder.systemNameText.setText(subsystem.getSubSystemName());
         if (subsystem.isSelected()) {
             subsystemHolder.selectedImage.setImageResource(R.drawable.select_dy);
+
+            subsystemHolder.layout_group_item_item.setBackgroundResource(R.drawable.corner_green_bg);
+            subsystemHolder.systemNameText.setTextColor(context.getResources().getColor(R.color.pc_white));
+
         } else {
             subsystemHolder.selectedImage.setImageResource(R.drawable.unchecked2);
+
+            subsystemHolder.layout_group_item_item.setBackgroundResource(R.drawable.rc_white_bg_shape);
+            subsystemHolder.systemNameText.setTextColor(context.getResources().getColor(R.color.pi_phone_text));
         }
         return convertView;
     }
@@ -304,5 +324,6 @@ public class OrganizationAdapterV2 extends BaseExpandableListAdapter implements 
         TextView systemNameText;
         ImageView selectedImage;
         ImageView systemAvatar;
+        RelativeLayout layout_group_item_item;
     }
 }

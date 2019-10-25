@@ -49,8 +49,11 @@ import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.techexcel.bean.AudioActionBean;
+import com.ub.techexcel.bean.ChannelVO;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.PageActionBean;
+import com.ub.techexcel.bean.RecordingBean;
+import com.ub.techexcel.bean.SectionVO;
 import com.ub.techexcel.bean.SoundtrackBean;
 
 import org.feezu.liuli.timeselector.Utils.TextUtil;
@@ -108,6 +111,13 @@ public class ServiceInterfaceTools {
     public static final int CHANGEBINDTVSTATUS = 0x1129;
     public static final int ADDTEMPLESSONWITHORIGINALDOCUMENT = 0x1130;
     public static final int CREATEMEETINGFROMSYNCROOM = 0x1131;
+    public static final int STARTRECORDING = 0x1132;
+    public static final int ENDRECORDING = 0x1133;
+    public static final int STARTAGORARECORDING = 0x1134;
+    public static final int ENDAAGORARRECORDING = 0x1135;
+    public static final int GETRECORDINGLIST = 0x1136;
+    public static final int GETRECORDINGITEM = 0x1137;
+    public static final int GETBINDTVS = 0x1138;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -159,7 +169,7 @@ public class ServiceInterfaceTools {
             @Override
             public void run() {
                 JSONObject jsonObject1 = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
-                Log.e("hhh", jsonObject1.toString());
+                Log.e("hhh", url+"    "+jsonObject1.toString());
                 try {
                     if (jsonObject1.getInt("RetCode") == 0) {
                         JSONObject retdata = jsonObject1.getJSONObject("RetData");
@@ -741,7 +751,7 @@ public class ServiceInterfaceTools {
                     Log.e("hhh", url + "  " + jsonObject.toString() + "   " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         Message msg3 = Message.obtain();
-                        String lessonid= returnjson.getString("RetData");
+                        String lessonid = returnjson.getString("RetData");
                         msg3.what = code;
                         msg3.obj = lessonid;
                         handler.sendMessage(msg3);
@@ -1287,8 +1297,263 @@ public class ServiceInterfaceTools {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public void getBindTvs(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        try {
+            new ApiTask(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("Tvdeviceslist2", url + "     " + returnjson.toString());
+                    Message msg3 = Message.obtain();
+                    msg3.what = code;
+                    msg3.obj = returnjson.toString();
+                    handler.sendMessage(msg3);
+                }
+            }).start(ThreadManager.getManager());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+
+    /**
+     * 开始录制Meeting
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void startRecording(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        try {
+            final JSONObject jsonObject = new JSONObject();
+            new ApiTask(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("Recording start", url + "    " + jsonObject.toString() + "     " + returnjson.toString());
+                    Message msg3 = Message.obtain();
+                    msg3.what = code;
+                    msg3.obj = returnjson.toString();
+                    handler.sendMessage(msg3);
+                }
+            }).start(ThreadManager.getManager());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 结束录制Meeting
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void endRecording(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        try {
+            final JSONObject jsonObject = new JSONObject();
+            new ApiTask(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("Recording end", url + "    " + jsonObject.toString() + "     " + returnjson.toString());
+                    Message msg3 = Message.obtain();
+                    msg3.what = code;
+                    msg3.obj = returnjson.toString();
+                    handler.sendMessage(msg3);
+                }
+            }).start(ThreadManager.getManager());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 开始录制音频视频
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void startAgoraRecording(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        try {
+            final JSONObject jsonObject = new JSONObject();
+            new ApiTask(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("Recording  agora start", url + "    " + jsonObject.toString() + "     " + returnjson.toString());
+                    Message msg3 = Message.obtain();
+                    msg3.what = code;
+                    msg3.obj = returnjson.toString();
+                    handler.sendMessage(msg3);
+                }
+            }).start(ThreadManager.getManager());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 结束录制音频视频
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void endAgoraRecording(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        try {
+            final JSONObject jsonObject = new JSONObject();
+            new ApiTask(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("Recording agora end", url + "    " + jsonObject.toString() + "     " + returnjson.toString());
+                    Message msg3 = Message.obtain();
+                    msg3.what = code;
+                    msg3.obj = returnjson.toString();
+                    handler.sendMessage(msg3);
+                }
+            }).start(ThreadManager.getManager());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 根据lessonid  获取 录课的列表
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void getRecordingList(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("Recording list", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("code") == 0) {
+                        JSONArray data = returnjson.getJSONArray("data");
+                        List<RecordingBean> list = new ArrayList<>();
+                        for (int i = 0; i < data.length(); i++) {
+                            JSONObject jsonObject = data.getJSONObject(i);
+                            RecordingBean recordingBean = new RecordingBean();
+                            recordingBean.setRecordingId(jsonObject.getInt("recordingId"));
+                            recordingBean.setTitle(jsonObject.getString("title"));
+                            recordingBean.setCreateDate(jsonObject.getLong("createDate"));
+                            recordingBean.setDuration(jsonObject.getLong("duration"));
+                            list.add(recordingBean);
+                        }
+                        Message msg3 = Message.obtain();
+                        msg3.what = code;
+                        msg3.obj = list;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+
+    /**
+     * 根据lessonid  获取 录课的信息
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void getRecordingItem(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("Recording item", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("code") == 0) {
+
+
+                        JSONObject data = returnjson.getJSONObject("data");
+
+                        RecordingBean recordingBean = new RecordingBean();
+                        recordingBean.setRecordingId(data.getInt("recordingId"));
+                        recordingBean.setTitle(data.getString("title"));
+                        recordingBean.setCreateDate(data.getLong("createDate"));
+                        recordingBean.setDuration(data.getLong("duration"));
+                        JSONArray channelVOListjs = data.getJSONArray("channelVOList");
+
+                        List<ChannelVO> channelVOList = new ArrayList<>();
+                        for (int i = 0; i < channelVOListjs.length(); i++) {
+                            ChannelVO channelVO = new ChannelVO();
+
+                            JSONObject channelVOJS = channelVOListjs.getJSONObject(i);
+                            channelVO.setChannelId(channelVOJS.getInt("channelId"));
+                            channelVO.setType(channelVOJS.getInt("type"));
+                            channelVO.setUserId(channelVOJS.getInt("userId"));
+                            JSONArray sectionVOListjs = channelVOJS.getJSONArray("sectionVOList");
+
+                            List<SectionVO> sectionVOList = new ArrayList<>();
+                            for (int j = 0; j < sectionVOListjs.length(); j++) {
+                                SectionVO sectionVO = new SectionVO();
+                                JSONObject sectionVOjs = sectionVOListjs.getJSONObject(j);
+                                sectionVO.setId(sectionVOjs.getInt("id"));
+                                sectionVO.setType(sectionVOjs.getInt("type"));
+                                sectionVO.setSectionId(sectionVOjs.getInt("sectionId"));
+                                sectionVO.setUserId(sectionVOjs.getInt("userId"));
+                                sectionVO.setStartTime(sectionVOjs.getInt("startTime"));
+                                sectionVO.setEndTime(sectionVOjs.getInt("endTime"));
+                                sectionVO.setFileName(sectionVOjs.getString("fileName"));
+                                sectionVO.setStatus(sectionVOjs.getInt("status"));
+                                sectionVO.setCreateDate(sectionVOjs.getLong("createDate"));
+                                sectionVO.setFileUrl(sectionVOjs.getString("fileUrl"));
+                                sectionVO.setSid(sectionVOjs.getString("sid"));
+                                sectionVOList.add(sectionVO);
+                            }
+                            channelVO.setSectionVOList(sectionVOList);
+                            channelVOList.add(channelVO);
+                        }
+                        recordingBean.setChannelVOList(channelVOList);
+
+
+                        Message msg3 = Message.obtain();
+                        msg3.what = code;
+                        msg3.obj = recordingBean;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
 
     }
+
 
     public Call<TeamAndSpaceSearchResponse> searchSpacesAndDocs(int companyID, int teamID, String keyword) {
         return request.searchSpacesAndDocs(AppConfig.UserToken, companyID, teamID, Base64.encodeToString(keyword.trim().getBytes(), 0));
@@ -1440,8 +1705,8 @@ public class ServiceInterfaceTools {
         return request.getBindTvs("https://wss.peertime.cn/MeetingServer/tv/current_user_bind_tv_info", AppConfig.UserToken);
     }
 
-    public Call<BindTvStatusResponse> changeBindTvStatus(int status){
-        return request.changeBindTvStatus("https://wss.peertime.cn/MeetingServer/tv/change_bind_tv_status",AppConfig.UserToken,status);
+    public Call<BindTvStatusResponse> changeBindTvStatus(int status) {
+        return request.changeBindTvStatus("https://wss.peertime.cn/MeetingServer/tv/change_bind_tv_status", AppConfig.UserToken, status);
     }
 
     public Call<NetworkResponse<SyncBook>> getSyncbookOutline(String syncroomId){
