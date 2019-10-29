@@ -8358,18 +8358,23 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     //---- for note
     @org.xwalk.core.JavascriptInterface
     public void editBookNoteFunction(final String note) {
+        // select
+
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void editBookNoteLocalFunction(String note){
+        // edit
         Log.e("JavascriptInterface","editBookNoteFunction:" + note);
         if(DeviceManager.getDeviceType(this) == SupportDevice.PHONE){
             Toast.makeText(getApplicationContext(),"该设备不支持本地笔记" ,Toast.LENGTH_SHORT).show();
             return;
         }
 
-
         if(TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")){
             openNote(null);
             return;
         }
-
         try {
             JSONObject jsonObject = new JSONObject(note);
             String id = "";
@@ -8383,6 +8388,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             e.printStackTrace();
         }
     }
+
 
     private void openNote(String noteId){
         BookNote bookNote = null;
@@ -8532,6 +8538,23 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     private int spaceId;
 
+    private void loadWebIndex(){
+        int deviceType = DeviceManager.getDeviceType(this);
+        String indexUrl = "file:///android_asset/index.html";
+        if(deviceType == SupportDevice.BOOK){
+            indexUrl += "?devicetype=4";
+        }
+        final String url = indexUrl;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (wv_show == null) {
+                    return;
+                }
+                wv_show.load(url, null);
+            }
+        });
+    }
 
 }
 
