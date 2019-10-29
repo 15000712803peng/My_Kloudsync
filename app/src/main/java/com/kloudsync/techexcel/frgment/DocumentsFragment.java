@@ -782,6 +782,7 @@ public class DocumentsFragment extends MyFragment implements View.OnClickListene
         intent.putExtra("isTeamspace", true);
         intent.putExtra("yinxiangmode", 0);
         intent.putExtra("identity", 2);
+        intent.putExtra("spaceId", itemID);
         intent.putExtra("lessionId", lesson.getLessonId());
         intent.putExtra("type", 2);
         intent.putExtra("isInstantMeeting", 0);

@@ -213,6 +213,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
             intent.putExtra("lessionId", syncRoomBean.getItemID() + "");
             intent.putExtra("syncRoomname", syncRoomBean.getName() + "");
             intent.putExtra("isInstantMeeting", 0);
+            intent.putExtra("spaceId", teamSpaceBean.getItemID());
             intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
             intent.putExtra("isStartCourse", true);
             startActivity(intent);
@@ -225,6 +226,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
             intent.putExtra("identity", 2);
             intent.putExtra("lessionId", syncRoomBean.getItemID() + "");
             intent.putExtra("syncRoomname", syncRoomBean.getName() + "");
+            intent.putExtra("spaceId", teamSpaceBean.getItemID());
             intent.putExtra("isInstantMeeting", 0);
             intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
             intent.putExtra("isStartCourse", true);

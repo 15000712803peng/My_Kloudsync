@@ -98,19 +98,11 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
             @Override
             public void getST(School school) {
 
-                Log.e("GetShoolInfo", "school:" + school);
+                Log.e("GetShoolInfo","school:" + school);
 
                 if (school != null) {
                     TeamSpaceBean teamSpaceBean = school.getTeamSpaceBean();
                     AppConfig.SchoolID = school.getSchoolID();
-
-                    List<CompanySubsystem> companySubsystems = school.getSubsystems();
-                    if (companySubsystems == null || companySubsystems.size() == 0) {
-                        AppConfig.selectedSubSystemId = "";
-                    } else {
-                        AppConfig.selectedSubSystemId = school.getSubsystems().get(0).getSubSystemId();
-                    }
-
                     editor.putInt("SchoolID", school.getSchoolID());
                     editor.putString("SchoolName", school.getSchoolName());
                     editor.putString("teamname", teamSpaceBean.getName());
@@ -165,10 +157,10 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                 mlist = list;
                 sAdapter.setCompanies(mlist);
                 okText.setVisibility(View.VISIBLE);
-                int index = sAdapter.setSelectCompany(GetSaveInfo(),AppConfig.selectedSubSystemId);
-                if (index > 0) {
+                int index = sAdapter.setSelectCompany(GetSaveInfo());
+                if(index > 0){
 //                    organiztionList.expandGroup(index);
-                    getCompanySubsystemsAndExpand(sAdapter.getSelectCompanyId(), index);
+                    getCompanySubsystemsAndExpand(sAdapter.getSelectCompanyId(),index);
                 }
                 SetMySchool();
             }
@@ -182,7 +174,8 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
             @Override
             public void getCompanySubsystems(List<CompanySubsystem> list) {
                 if (list != null && list.size() > 0) {
-                    sAdapter.setSubsystems(list, Integer.parseInt(companyId),AppConfig.selectedSubSystemId);
+                    sAdapter.setSubsystems(list, Integer.parseInt(companyId));
+
                 }
             }
         });
@@ -195,7 +188,7 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
             @Override
             public void getCompanySubsystems(List<CompanySubsystem> list) {
                 if (list != null && list.size() > 0) {
-                    sAdapter.setSubsystems(list, Integer.parseInt(companyId),AppConfig.selectedSubSystemId);
+                    sAdapter.setSubsystems(list, Integer.parseInt(companyId));
                     organiztionList.expandGroup(index);
                 }
             }
@@ -230,10 +223,10 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                     if (!TextUtils.isEmpty(sAdapter.getSelectCompanyId())) {
                         sAdapter.clearSelectedSubsystem(Integer.parseInt(sAdapter.getSelectCompanyId()));
                     }
-                    sAdapter.setSelectCompany(Integer.parseInt(id + ""),"");
+                    sAdapter.setSelectCompany(Integer.parseInt(id + ""));
                     List<CompanySubsystem> subsystems = sAdapter.getSelectCompany().getSubsystems();
-                    if (subsystems != null && subsystems.size() > 0) {
-                        for (CompanySubsystem subsystem : subsystems) {
+                    if(subsystems != null && subsystems.size() > 0){
+                        for(CompanySubsystem subsystem : subsystems){
                             subsystem.setSelected(false);
                         }
                     }
@@ -241,8 +234,8 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                 } else {
 //                    organiztionList.
                     List<CompanySubsystem> subsystems = sAdapter.getSelectCompany().getSubsystems();
-                    if (subsystems != null && subsystems.size() > 0) {
-                        for (CompanySubsystem subsystem : subsystems) {
+                    if(subsystems != null && subsystems.size() > 0){
+                        for(CompanySubsystem subsystem : subsystems){
                             subsystem.setSelected(false);
                         }
                     }
@@ -272,13 +265,12 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 Log.e("onChildClick", "clicked");
                 CompanySubsystem subsystem = sAdapter.getGroup(groupPosition).getSubsystems().get(childPosition);
-                for (CompanySubsystem subsystem1 : sAdapter.getGroup(groupPosition).getSubsystems()) {
+                for(CompanySubsystem subsystem1 : sAdapter.getGroup(groupPosition).getSubsystems()){
                     subsystem1.setSelected(false);
                 }
                 subsystem.setSelected(!subsystem.isSelected());
                 sAdapter.getGroup(groupPosition).setSubSystemSelected(true);
                 sAdapter.notifyDataSetChanged();
-
                 return false;
             }
         });
@@ -421,6 +413,39 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
     }
 
 
+
+    private void AUUserInfo() {
+
+        final JSONObject jsonObject = format(null);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject responsedata = ConnectService.submitDataByJson(
+                            AppConfig.URL_PUBLIC
+                                    + "User/AddOrUpdateUserPreference", jsonObject);
+                    Log.e("返回的jsonObject", jsonObject.toString() + "");
+                    Log.e("返回的responsedata", responsedata.toString() + "");
+                    String retcode = responsedata.getString("RetCode");
+                    Message msg = new Message();
+                    if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
+                        msg.what = AppConfig.AddOrUpdateUserPreference;
+                        msg.obj = responsedata.toString();
+                    } else {
+                        msg.what = AppConfig.FAILED;
+                        String ErrorMessage = responsedata.getString("ErrorMessage");
+                        msg.obj = ErrorMessage;
+                    }
+                    handler.sendMessage(msg);
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+
+    }
+
     private void AUUserInfo(CompanySubsystem subsystem) {
 
         final JSONObject jsonObject = format(subsystem);
@@ -478,11 +503,11 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                 jsonObject.put("TeamID", -1);
                 jsonObject.put("TeamName", "");
                 jsonObject.put("SubSystemData", format3(companySubsystem));
-            } else {
-                if (teamSpaceBean != null) {
+            }else {
+                if(teamSpaceBean != null){
                     jsonObject.put("TeamId", teamSpaceBean.getItemID());
                     jsonObject.put("TeamName", TextUtils.isEmpty(teamSpaceBean.getName()) ? "" : teamSpaceBean.getName());
-                } else {
+                }else {
                     jsonObject.put("TeamID", -1);
                     jsonObject.put("TeamName", "");
                 }

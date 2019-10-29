@@ -118,6 +118,7 @@ public class ServiceInterfaceTools {
     public static final int GETRECORDINGLIST = 0x1136;
     public static final int GETRECORDINGITEM = 0x1137;
     public static final int GETBINDTVS = 0x1138;
+    public static final int GETNOTEBYLOCALFILEID = 0x1140;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -1702,11 +1703,11 @@ public class ServiceInterfaceTools {
     }
 
     public Call<DevicesResponse> getBindTvs() {
-        return request.getBindTvs("https://wss.peertime.cn/MeetingServer/tv/current_user_bind_tv_info", AppConfig.UserToken);
+        return request.getBindTvs(AppConfig.wssServer + "/tv/current_user_bind_tv_info", AppConfig.UserToken);
     }
 
     public Call<BindTvStatusResponse> changeBindTvStatus(int status) {
-        return request.changeBindTvStatus("https://wss.peertime.cn/MeetingServer/tv/change_bind_tv_status", AppConfig.UserToken, status);
+        return request.changeBindTvStatus(AppConfig.wssServer + "/tv/change_bind_tv_status", AppConfig.UserToken, status);
     }
 
     public Call<NetworkResponse<SyncBook>> getSyncbookOutline(String syncroomId){
@@ -1722,5 +1723,89 @@ public class ServiceInterfaceTools {
         return enToStr;
 
     }
+
+    public Call<ResponseBody> getBindTvs2() {
+        return request.getBindTvs2(AppConfig.wssServer + "/tv/current_user_bind_tv_info", AppConfig.UserToken);
+    }
+
+    public void getNoteByLocalFileId(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("getNoteList note", url + " " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        JSONObject lineitem = returnjson.getJSONObject("RetData");
+                        LineItem item = new LineItem();
+
+                        item.setLocalFileId(lineitem.getString("LocalFileID"));
+// item.setPageNumber(lineitem.getInt("PageNumber"));
+// item.setDocumentItemID(lineitem.getInt("DocumentItemID"));
+
+                        item.setFileName(lineitem.getString("Title"));
+                        item.setUrl(lineitem.getString("AttachmentUrl"));
+                        item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                        item.setItemId(lineitem.getString("ItemID"));
+                        item.setAttachmentID(lineitem.getString("AttachmentID"));
+// item.setNewPath(lineitem.getString("NewPath"));
+                        item.setFlag(0);
+                        Message msg = Message.obtain();
+                        msg.obj = item;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+    public void uploadLocalNoteFile(final String url, final int code, final String fileName,
+                                    final String Description,
+                                    final String key, final ConvertingResult convertingResult, final int fieldId, final String documentId,
+                                    final String pageNumber, final String noteId, final String syncroomId,ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    int page = (int)(Float.parseFloat(pageNumber));
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("Title", fileName);
+                    jsonObject.put("Description", Description);
+                    jsonObject.put("Hash", key);
+                    jsonObject.put("FileID", fieldId);
+                    jsonObject.put("PageCount", convertingResult.getCount());
+                    jsonObject.put("FileName", convertingResult.getFileName());
+                    jsonObject.put("DocumentItemID", documentId);
+                    jsonObject.put("PageNumber", page);
+                    jsonObject.put("LocalFileId", noteId);
+                    jsonObject.put("syncRoomID", syncroomId);
+//                    jsonObject.put("SchoolID", AppConfig.SchoolID);
+//                    jsonObject.put("FolderID", convertingResult.getFileName());
+                    JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("addLocalNote", url + jsonObject.toString() + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.what = code;
+                        msg3.obj = "";
+                        handler.sendMessage(msg3);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
 
 }

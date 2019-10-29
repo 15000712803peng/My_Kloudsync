@@ -32,6 +32,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.bean.EventWxFilePath;
+import com.kloudsync.techexcel.bean.UserPath;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddDocToSpaceDialog;
 import com.kloudsync.techexcel.dialog.AddWxDocDialog;
@@ -53,7 +54,6 @@ import com.kloudsync.techexcel.frgment.TopicFragment;
 import com.kloudsync.techexcel.frgment.TwoToOneFragment;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ContactHelpInterface;
-import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.info.School;
 import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.NetworkResponse;
@@ -101,7 +101,7 @@ import retrofit2.Response;
 //import com.wuyr.rippleanimation.RippleAnimation;
 
 
-public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener {
+public class MainActivityV2 extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener {
 
     private List<TextView> tvs = new ArrayList<TextView>();
     private TextView tv_redcontact;
@@ -121,7 +121,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     float density;
 
     public static RongIMClient mRongIMClient;
-    public static MainActivity instance = null;
+    public static MainActivityV2 instance = null;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -132,8 +132,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     private boolean flag_update;
 
     private boolean flag_dialog;
-
-    private boolean flag_jinhua;
 
     Intent service;
 
@@ -168,7 +166,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     RongIM.getInstance().disconnect();
                     AppConfig.Online = 1;
                     flag_dialog = false;
-                    Toast.makeText(MainActivity.this,
+                    Toast.makeText(MainActivityV2.this,
                             getResources().getString(R.string.Dialog_GunDan), Toast.LENGTH_LONG).show();
                     break;
                 case AppConfig.UPLOADHEAD:
@@ -198,11 +196,12 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         systemTime = System.currentTimeMillis();
         instance = this;
         app = (App) getApplication();
-        app.setMainActivityInstance(instance);
+//        app.setMainActivityInstance(instance);
         app.CheckLanguage();
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
@@ -213,11 +212,12 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 //        PgyUpdateManager.register(this);
         initView();
         requestRongCloudOnlineStatus();
-        GetSchoolInfo();
+        getCompanyInfo();
         initUpdate();
         StartWBServiceHAHA();
         GetMaZhang();
         GetMyPermission();
+
         String wechatFilePath = getIntent().getStringExtra("wechat_data_path");
         if (!TextUtils.isEmpty(wechatFilePath)) {
             if (addWxDocDialog != null) {
@@ -274,20 +274,28 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
     }
 
-    private void GetSchoolInfo() {
+
+
+    UserPath userPath;
+    private void getCompanyInfo() {
         LoginGet lg = new LoginGet();
+        userPath = new UserPath();
         lg.setSchoolTeamGetListener(new LoginGet.SchoolTeamGetListener() {
             @Override
             public void getST(School school) {
                 Log.e("GetShoolInfo","school:" + school);
                 if (school != null) {
-                    TeamSpaceBean teamSpaceBean = school.getTeamSpaceBean();
+                    TeamSpaceBean team = school.getTeamSpaceBean();
                     AppConfig.SchoolID = school.getSchoolID();
                     editor.putInt("SchoolID", school.getSchoolID());
                     editor.putString("SchoolName", school.getSchoolName());
-                    editor.putString("teamname", teamSpaceBean.getName());
-                    editor.putInt("teamid", teamSpaceBean.getItemID());
+                    editor.putString("teamname", team.getName());
+                    editor.putInt("teamid", team.getItemID());
                     editor.commit();
+                    userPath.setCompanyName(school.getSchoolName());
+                    userPath.setCompanyId(school.getSchoolID());
+                    userPath.setTeamName(team.getName());
+                    userPath.setTeamId(team.getItemID());
                 } else {
                     editor.putString("SchoolName", "");
                     editor.putString("teamname", "");
@@ -306,7 +314,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     private void GetMaZhang() {
         WeiXinApi.getInstance().init(this);
 
-        api = WXAPIFactory.createWXAPI(MainActivity.this,
+        api = WXAPIFactory.createWXAPI(MainActivityV2.this,
                 AppConfig.WX_APP_ID, true);
         api.registerApp(AppConfig.WX_APP_ID);
         api.handleIntent(getIntent(), WeiXinApi.getInstance());
@@ -324,7 +332,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     private void UpOrNoOutInfo() {
         if (!TextUtils.isEmpty(AppConfig.OUTSIDE_PATH)) {
-            Intent service2 = new Intent(MainActivity.this, UploadService.class);
+            Intent service2 = new Intent(MainActivityV2.this, UploadService.class);
             service2.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startService(service2);
         } else {
@@ -359,7 +367,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
                         //调用以下方法，DownloadFileListener 才有效；如果完全使用自己的下载方法，不需要设置DownloadFileListener
 //
-                        new AlertDialog.Builder(MainActivity.this)
+                        new AlertDialog.Builder(MainActivityV2.this)
                                 .setTitle(getResources().getString(R.string.update))
                                 .setMessage(getResources().getString(R.string.update_message))
                                 .setPositiveButton(getResources().getString(R.string.No), new DialogInterface.OnClickListener() {
@@ -417,7 +425,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     public void onProgressUpdate(Integer... integers) {
                         Log.e("pgyer", "update download apk progress : " + integers[0]);
                         if (progressDialog == null) {
-                            progressDialog = new ProgressDialog(MainActivity.this);
+                            progressDialog = new ProgressDialog(MainActivityV2.this);
                             progressDialog.setProgressStyle(1);
                             progressDialog.setCancelable(false);
                             progressDialog.setMessage(getResources().getString(R.string.downloading));
@@ -957,7 +965,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     @Override
                     public void run() {
                         if (uploadFileDialog == null) {
-                            uploadFileDialog = new UploadFileDialog(MainActivity.this);
+                            uploadFileDialog = new UploadFileDialog(MainActivityV2.this);
                             uploadFileDialog.setTile("uploading");
                             uploadFileDialog.show();
 
@@ -1047,7 +1055,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                         if (uploadFileDialog != null) {
                             uploadFileDialog.cancel();
                         }
-                        uploadFileDialog = new UploadFileDialog(MainActivity.this);
+                        uploadFileDialog = new UploadFileDialog(MainActivityV2.this);
                         uploadFileDialog.setTile("uploading");
                         uploadFileDialog.show();
                     }
@@ -1089,7 +1097,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                         if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
                             uploadFileDialog.cancel();
                             Toast.makeText(getApplicationContext(), "add favorite success", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this, PersonalCollectionActivity.class);
+                            Intent intent = new Intent(MainActivityV2.this, PersonalCollectionActivity.class);
                             startActivity(intent);
 
                         }

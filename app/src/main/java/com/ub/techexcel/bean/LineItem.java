@@ -37,6 +37,16 @@ public class LineItem implements Serializable {
     private String sourceFileUrl;
     private boolean me;
 
+    private String localFileId;
+
+    public String getLocalFileId() {
+        return localFileId;
+    }
+
+    public void setLocalFileId(String localFileId) {
+        this.localFileId = localFileId;
+    }
+
     public boolean isMe() {
         return me;
     }

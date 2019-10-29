@@ -32,11 +32,21 @@ public class AppConfig {
 
     //上传专用
     public static String URL_LIVEDOC = "https://livedoc.peertime.cn/TxLiveDocumentApi/api/";
-
-
     public static String URL_PUBLIC_AUDIENCE = "https://api.peertime.cn/";
-    public static String URL_PUBLIC = "https://api.peertime.cn/peertime/V1/";
+
 //    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
+
+    // 正式
+    public static String URL_PUBLIC = "https://api.peertime.cn/peertime/V1/";
+    public static String COURSE_SOCKET = "wss://wss.peertime.cn:8443/MeetingServer/websocket";
+    public static String liveToken = "02912174-3dcb-49eb-b9fa-6d90b390d495";
+    public static String  wssServer = "https://wss.peertime.cn:8443/MeetingServer";
+
+    // 测试
+//    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
+//    public static String COURSE_SOCKET = "wss://testwss.peertime.cn:8443/MeetingServer/websocket";
+//    public static String liveToken = "01427aa4-396e-44b7-82ab-84d802099bb0";
+//    public static String  wssServer = "https://testwss.peertime.cn:8443/MeetingServer";
 
 
     public static String URL_IMAGE = "http://ub.servicewise.net.cn/CWKnowledgeWise/ImagePreview.aspx?ProjectID=49&FileID=";
@@ -47,7 +57,7 @@ public class AppConfig {
 
 //    public static String COURSE_SOCKET = "ws://wss.peertime.cn:8080/MeetingServer/websocket";
 
-    public static String COURSE_SOCKET = "wss://wss.peertime.cn:8443/MeetingServer/websocket";
+
 //    public static String COURSE_SOCKET = "wss://testwss.peertime.cn:8443/MeetingServer/websocket";
 
     // 访问的endpoint地址
@@ -70,7 +80,7 @@ public class AppConfig {
     public static String Authorization = "Bearer AtI_QF93Lyo.cwA.2Dg.bOhGvdCxY1Fo_kOs6ronW0cBuutC6ummvuje8QHfbr4";
     public static String conversationId = "3qprO91tUkgFRAZTdb6rPj";
     public static String Sharelive = "https://peertime.cn/live?share=";
-    public static String liveToken = "02912174-3dcb-49eb-b9fa-6d90b390d495";
+
     public static String RongUserID;
     public static String UserToken;
     public static String UserID;
@@ -109,6 +119,7 @@ public class AppConfig {
     public static int Role;
     public static int SchoolID;
     public static String selectedSubSystemId;
+    public static int deviceType;
 
     public static int Online;
     public static final int LOGIN = 1;

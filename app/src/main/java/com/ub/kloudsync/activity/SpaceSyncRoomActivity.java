@@ -15,6 +15,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DialogRename;
 import com.kloudsync.techexcel.linshi.LinshiActivity;
+import com.ub.service.activity.SyncBookActivity;
 import com.ub.service.activity.SyncRoomActivity;
 import com.ub.techexcel.adapter.SyncRoomAdapter;
 import com.ub.techexcel.bean.SyncRoomBean;
@@ -103,9 +104,37 @@ public class SpaceSyncRoomActivity extends Activity implements View.OnClickListe
 
                             @Override
                             public void item(SyncRoomBean syncRoomBean) {
-                                Intent intent=new Intent(SpaceSyncRoomActivity.this, LinshiActivity.class);
-                                intent.putExtra("syncRoomBean",(Serializable) syncRoomBean);
-                                startActivity(intent);
+                                if(syncRoomBean.getTopicType() == 7){
+                                    //syncbook
+                                    Intent intent = new Intent(SpaceSyncRoomActivity.this, SyncBookActivity.class);
+                                    intent.putExtra("userid", AppConfig.UserID);
+                                    intent.putExtra("meetingId", "SR-" + AppConfig.UserID);
+                                    intent.putExtra("isTeamspace", true);
+                                    intent.putExtra("yinxiangmode", 0);
+                                    intent.putExtra("identity", 2);
+                                    intent.putExtra("lessionId", syncRoomBean.getItemID() + "");
+                                    intent.putExtra("syncRoomname", syncRoomBean.getName() + "");
+                                    intent.putExtra("isInstantMeeting", 0);
+                                    intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
+                                    intent.putExtra("isStartCourse", true);
+                                    intent.putExtra("spaceId", spaceId);
+                                    intent.putExtra("isStartCourse", true);
+                                    startActivity(intent);
+                                }else {
+                                    Intent intent = new Intent(SpaceSyncRoomActivity.this, SyncRoomActivity.class);
+                                    intent.putExtra("userid", AppConfig.UserID);
+                                    intent.putExtra("meetingId", "SR-" + AppConfig.UserID);
+                                    intent.putExtra("isTeamspace", true);
+                                    intent.putExtra("yinxiangmode", 0);
+                                    intent.putExtra("identity", 2);
+                                    intent.putExtra("spaceId", spaceId);
+                                    intent.putExtra("lessionId", syncRoomBean.getItemID() + "");
+                                    intent.putExtra("syncRoomname", syncRoomBean.getName() + "");
+                                    intent.putExtra("isInstantMeeting", 0);
+                                    intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
+                                    intent.putExtra("isStartCourse", true);
+                                    startActivity(intent);
+                                }
                             }
 
                             @Override

@@ -5,4 +5,6 @@ package com.kloudsync.techexcel.bean;
  */
 
 public class SupportDevice {
+    public static final int PHONE = 1;
+    public static final int BOOK = 2;
 }

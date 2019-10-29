@@ -19,6 +19,7 @@ import android.util.Log;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.tool.SystemUtil;
 import com.umeng.analytics.MobclickAgent;
 
@@ -72,11 +73,12 @@ public class StartUbao extends Activity {
         countrycode = sharedPreferences.getInt("countrycode", 86);
 
         AppConfig.LANGUAGEID = getLocaleLanguage();
+        AppConfig.deviceType = DeviceManager.getDeviceType(this);
+        Log.e("deviceType","type:" + AppConfig.deviceType);
 
 		/*Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
 		finish();*/
-
 
         if (isFirst) {
             Log.e("StartUbao", "step three");
@@ -220,4 +222,8 @@ public class StartUbao extends Activity {
         MobclickAgent.onPageEnd("StartUbao");
         MobclickAgent.onPause(this);
     }
+
+
+
+
 }

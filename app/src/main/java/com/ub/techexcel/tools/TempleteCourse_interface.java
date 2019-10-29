@@ -12,6 +12,7 @@ import com.kloudsync.techexcel.bean.params.AcceptInvitationsParams;
 import com.kloudsync.techexcel.bean.params.InviteMultipleParams;
 import com.kloudsync.techexcel.bean.params.InviteTeamAdminParams;
 import com.kloudsync.techexcel.bean.params.InviteToCompanyParams;
+import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.MyFriend;
 import com.kloudsync.techexcel.response.BindTvStatusResponse;
 import com.kloudsync.techexcel.response.CompanyContactsResponse;
@@ -195,6 +196,11 @@ public interface TempleteCourse_interface {
 
     @GET("SyncRoom/GetSyncBookOutline")
     Call<NetworkResponse<SyncBook>> getSyncbookOutline(@Header("UserToken") String userToken, @Query("syncroomID") String syncroomID);
+
+    @GET()
+    Call<ResponseBody> getBindTvs2(@Url String url, @Header("UserToken") String userToken);
+
+
 
 
 

@@ -26,6 +26,7 @@ import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.kloudsync.techexcel.adapter.FavoriteAdapter;
+import com.kloudsync.techexcel.bean.NoteId;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.Popupdate;
@@ -649,6 +650,7 @@ public class DocumentUploadTool {
 
     private void uploadNewFile(final ConvertingResult convertingResult,
                                final LineItem attachmentBean) {
+        Log.e("addLocalNote", "step five  uploadNewFile,type:" + type);
         if (convertingResult.getCurrentStatus() == 0) {  // prepare
             attachmentBean.setProgress(0);
             if (uploadDetailLinstener != null) {
@@ -671,21 +673,36 @@ public class DocumentUploadTool {
                 timerTask1 = null;
             }
             if (type != 1) {
-
-                ServiceInterfaceTools.getinstance().uploadSpaceNewFile(AppConfig.URL_PUBLIC + "SpaceAttachment/UploadNewFile",
-                        ServiceInterfaceTools.UPLOADSPACENEWFILE,
-                        fileName, spaceID, "", MD5Hash,
-                        convertingResult, field, new ServiceInterfaceListener() {
-                            @Override
-                            public void getServiceReturnData(Object object) {
-                                Log.e("hhh", "SpaceAttachment/UploadNewFile");
-                                Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
-
-                                EventBus.getDefault().post(new TeamSpaceBean());
+                if(type == 10){
+                    Log.e("addLocalNote", "step six type:" + type);
+                    ServiceInterfaceTools.getinstance().uploadLocalNoteFile(AppConfig.URL_PUBLIC + "DocumentNote/UploadNewFile", ServiceInterfaceTools.UPLOADFAVORITENEWFILE, fileName, "",
+                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId,new ServiceInterfaceListener() {
+                                @Override
+                                public void getServiceReturnData(Object object) {
+                                    if(object != null){
+                                        NoteId _noteId = new NoteId();
+                                        _noteId.setNoteId(noteId);
+                                        EventBus.getDefault().post(_noteId);
+                                    }
+                                }
+                            });
+                }else {
+                    ServiceInterfaceTools.getinstance().uploadSpaceNewFile(AppConfig.URL_PUBLIC + "SpaceAttachment/UploadNewFile",
+                            ServiceInterfaceTools.UPLOADSPACENEWFILE,
+                            fileName, spaceID, "", MD5Hash,
+                            convertingResult, field, new ServiceInterfaceListener() {
+                                @Override
+                                public void getServiceReturnData(Object object) {
+                                    Log.e("hhh", "SpaceAttachment/UploadNewFile");
+                                    Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
+                                    EventBus.getDefault().post(new TeamSpaceBean());
+                                }
                             }
-                        }
-                );
+                    );
+                }
+
             } else {
+
                 ServiceInterfaceTools.getinstance().uploadFavoriteNewFile(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
                         ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
                         fileName, "", MD5Hash,
@@ -701,6 +718,8 @@ public class DocumentUploadTool {
                             }
                         }
                 );
+
+
             }
 
         } else if (convertingResult.getCurrentStatus() == 3) { // Failed
@@ -723,6 +742,7 @@ public class DocumentUploadTool {
     }
 
     private void uploadNewFile(final ConvertingResult convertingResult) {
+        Log.e("addLocalNote", "step five type:" + type + ",convertingResult:" + convertingResult.getCurrentStatus());
         if (convertingResult.getCurrentStatus() == 0) {  // prepare
             if (uploadDetailLinstener != null) {
                 uploadDetailLinstener.convertFile(0);
@@ -741,38 +761,53 @@ public class DocumentUploadTool {
                 timerTask1 = null;
             }
             if (type != 1) {
-                ServiceInterfaceTools.getinstance().uploadSpaceNewFile(AppConfig.URL_PUBLIC + "SpaceAttachment/UploadNewFile",
-                        ServiceInterfaceTools.UPLOADSPACENEWFILE,
-                        fileName, spaceID, "", MD5Hash,
-                        convertingResult, field, new ServiceInterfaceListener() {
-                            @Override
-                            public void getServiceReturnData(Object object) {
-                                Log.e("hhh", "SpaceAttachment/UploadNewFile");
-                                if (uploadDetailLinstener != null) {
-                                    uploadDetailLinstener.uploadFinished();
+
+                if(type == 10){
+                    Log.e("addLocalNote", "step six type:" + type);
+                    ServiceInterfaceTools.getinstance().uploadLocalNoteFile(AppConfig.URL_PUBLIC + "DocumentNote/UploadNewFile", ServiceInterfaceTools.UPLOADFAVORITENEWFILE, fileName, "",
+                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId,new ServiceInterfaceListener() {
+                                @Override
+                                public void getServiceReturnData(Object object) {
+
                                 }
-                                Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
-                                EventBus.getDefault().post(new TeamSpaceBean());
+                            });
+                }else {
+                    ServiceInterfaceTools.getinstance().uploadSpaceNewFile(AppConfig.URL_PUBLIC + "SpaceAttachment/UploadNewFile",
+                            ServiceInterfaceTools.UPLOADSPACENEWFILE,
+                            fileName, spaceID, "", MD5Hash,
+                            convertingResult, field, new ServiceInterfaceListener() {
+                                @Override
+                                public void getServiceReturnData(Object object) {
+                                    Log.e("hhh", "SpaceAttachment/UploadNewFile");
+                                    if (uploadDetailLinstener != null) {
+                                        uploadDetailLinstener.uploadFinished();
+                                    }
+                                    Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
+                                    EventBus.getDefault().post(new TeamSpaceBean());
+                                }
                             }
-                        }
-                );
+                    );
+                }
+
             } else {
+
+
                 ServiceInterfaceTools.getinstance().uploadFavoriteNewFile(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
                         ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
                         fileName, "", MD5Hash,
                         convertingResult, field, new ServiceInterfaceListener() {
                             @Override
                             public void getServiceReturnData(Object object) {
-//                                Log.e("hhh", "FavoriteAttachment/UploadNewFile");
-//                                Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show()
-//
+                                Log.e("hhh", "FavoriteAttachment/UploadNewFile");
+//                                Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
+//                                updateGetListener.Update();
                                 if (uploadDetailLinstener != null) {
                                     uploadDetailLinstener.uploadFinished();
                                 }
-
                             }
                         }
                 );
+
             }
             if (uploadDetailLinstener != null) {
                 uploadDetailLinstener.uploadFinished();
@@ -792,6 +827,40 @@ public class DocumentUploadTool {
             }
         }
 
+    }
+
+    private String noteId;
+    private String documentId;
+    private String pageIndex;
+    private String syncroomId;
+
+
+    public void uploadNote(final Context context, String targetFolderKey1, int field1,
+                           File file,String noteId,String documentId,String pageIndex,int spaceID,String syncroomId) {
+        this.mContext = context;
+        this.noteId = noteId;
+        this.documentId = documentId;
+        this.pageIndex = pageIndex;
+        this.targetFolderKey = targetFolderKey1;
+        this.field = field1;
+        this.mfile = file;
+        this.type = 10;
+        this.syncroomId = syncroomId;
+        this.fileName = file.getName();
+        this.spaceID = spaceID;
+        this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName()) + System.currentTimeMillis();
+        LoginGet lg = new LoginGet();
+        lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
+            @Override
+            public void getUD(Uploadao ud) {
+                if (1 == ud.getServiceProviderId()) {
+                    uploadWithTransferUtility(ud);
+                } else if (2 == ud.getServiceProviderId()) {
+                    initOSS(ud);
+                }
+            }
+        });
+        lg.GetprepareUploading(mContext);
     }
 
 }

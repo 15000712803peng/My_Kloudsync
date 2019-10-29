@@ -26,6 +26,9 @@ dependencies {
     compile files('libs/aws-android-sdk-s3-2.13.0.jar')
     compile files('libs/aws-android-sdk-cognito-2.13.0.jar')
     compile files('libs/aws-android-sdk-mobile-client-2.13.0-sources.jar')
+
+    implementation('com.onyx.android.sdk:onyxsdk-notedata:1.0.6@aar')
+    implementation "com.github.Raizlabs.DBFlow:dbflow:4.2.2"
 }
 
 configurations.all {

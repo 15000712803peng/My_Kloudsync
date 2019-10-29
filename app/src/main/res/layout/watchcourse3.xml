@@ -1475,4 +1475,16 @@
         android:visibility="visible"></android.support.v7.widget.RecyclerView>
 
 
+    <TextView
+        android:id="@+id/closenote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:visibility="gone"
+        android:background="@color/black"
+        android:alpha="0.8"
+        android:text="@string/back"
+        android:textColor="@color/black" />
+
+
 </RelativeLayout>

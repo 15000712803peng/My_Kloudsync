@@ -141,7 +141,7 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
 //                        uploadFile(file, spaceId);
                         AddDocumentTool.addDocumentToSpace(this, path, spaceId, new DocumentUploadTool.DocUploadDetailLinstener() {
                             @Override
-                            public void uploadStart() {
+                            public void uploadStart(){
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
