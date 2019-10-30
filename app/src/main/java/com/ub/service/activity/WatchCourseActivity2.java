@@ -162,6 +162,7 @@ import com.ub.techexcel.tools.NotificationPopup;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.SpliteSocket;
+import com.ub.techexcel.tools.SyncRoomNotePopup;
 import com.ub.techexcel.tools.SyncRoomPopup;
 import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.TvDevicesListPopup;
@@ -351,7 +352,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     private ImageView command_active;
     private LinearLayout activte_linearlayout;
     private LinearLayout menu_linearlayout;
-    private RelativeLayout displayAudience, displayFile, displaychat, displaywebcam, displayVideo, displayautocamera, setting, yinxiang, displayplay;
+    private RelativeLayout displayAudience, displayFile, syncdisplaynote, displaychat, displaywebcam, displayVideo, displayautocamera, setting, yinxiang, displayplay;
     private RelativeLayout prepareStart, prepareclose, prepareScanTV;
     private LinearLayout noprepare;
 
@@ -739,7 +740,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
      */
     private void changedocumentlabel(LineItem lineItem) {
         if (documentList.size() > 0) {
-            if (lineItem == null||TextUtils.isEmpty(lineItem.getItemId())||lineItem.getItemId().equals("0"))  {
+            if (lineItem == null || TextUtils.isEmpty(lineItem.getItemId()) || lineItem.getItemId().equals("0")) {
                 lineItem = documentList.get(0);
                 lineItem.setSelect(true);
             } else {
@@ -883,7 +884,6 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         fileMeetingId = getIntent().getStringExtra("filemeetingId");
         isFinishCourse = getIntent().getBooleanExtra("isFinished", false);
         meetingId = getIntent().getStringExtra("meetingId").toUpperCase();
-
         isStartCourse = getIntent().getBooleanExtra("isStartCourse", false);
         isPrepare = getIntent().getBooleanExtra("isPrepare", false);
         yinxiangmode = getIntent().getIntExtra("yinxiangmode", 2);
@@ -1883,6 +1883,8 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         displayAudience.setOnClickListener(this);
         displayFile = (RelativeLayout) findViewById(R.id.displayFile);
         displayFile.setOnClickListener(this);
+        syncdisplaynote = (RelativeLayout) findViewById(R.id.syncdisplaynote);
+        syncdisplaynote.setOnClickListener(this);
         yinxiang = (RelativeLayout) findViewById(R.id.yinxiang);
         yinxiang.setOnClickListener(this);
 
@@ -3095,7 +3097,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
      * @param pageNum
      * @param
      */
-    private void getPageObjectsAfterChange(String pageNum){
+    private void getPageObjectsAfterChange(String pageNum) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {  //  清空当前页的线
@@ -4140,6 +4142,11 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 menu.setImageResource(R.drawable.icon_menu);
                 findViewById(R.id.bottomrl).setVisibility(View.GONE);
                 break;
+            case R.id.syncdisplaynote:
+                openNotePopup();
+                menu_linearlayout.setVisibility(View.GONE);
+                menu.setImageResource(R.drawable.icon_menu);
+                break;
             case R.id.leavell:
                 closeCourse(0);
                 activte_linearlayout.setVisibility(View.GONE);
@@ -4370,10 +4377,56 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         }
     }
 
+    private SyncRoomNotePopup syncRoomNotePopup;
 
+    private void openNotePopup() {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&syncRoomID=" + 0;
+        syncRoomNotePopup = new SyncRoomNotePopup();
+        syncRoomNotePopup.getPopwindow(this);
+//        syncRoomNotePopup.setDocumentPopupEventListener(this);
+        syncRoomNotePopup.setWebCamPopupListener(new SyncRoomNotePopup.WebCamPopupListener() {
+            @Override
+            public void changeOptions(LineItem syncRoomBean, int position) { //打开笔记
+                displayNote(syncRoomBean);
 
+            }
 
+            @Override
+            public void teamDocument() {
 
+            }
+
+            @Override
+            public void takePhoto() {
+            }
+
+            @Override
+            public void importFromLibrary() {
+            }
+
+            @Override
+            public void savedFile() {
+            }
+
+            @Override
+            public void dismiss() {
+            }
+
+            @Override
+            public void open() {
+            }
+
+            @Override
+            public void delete(LineItem selectLineItem) {
+            }
+
+            @Override
+            public void edit(LineItem selectLineItem) {
+            }
+        });
+        syncRoomNotePopup.StartPop(wv_show, url);
+        menu.setImageResource(R.drawable.icon_menu);
+    }
 
 
     /**
@@ -4426,9 +4479,9 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             public void onClick(View v) {
                 closenote.setVisibility(View.GONE);
                 menu.setVisibility(View.VISIBLE);
-                if(isPrepare){
+                if (isPrepare) {
                     command_active.setVisibility(View.GONE);
-                }else{
+                } else {
                     command_active.setVisibility(View.VISIBLE);
                 }
                 for (int i = 0; i < documentList.size(); i++) {
@@ -4479,16 +4532,16 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
      * 笔记列表弹窗
      */
     private void selectNoteBook() {
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber="+currentAttachmentPage+"&syncRoomID="+0;
-        selectNoteDialog = new SelectNoteDialog(WatchCourseActivity2.this, url,0+"");
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&syncRoomID=" + 0;
+        selectNoteDialog = new SelectNoteDialog(WatchCourseActivity2.this, url, 0 + "");
         selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectNoteDialog.OnFavoriteDocSelectedListener() {
             @Override
             public void onFavoriteDocSelected(LineItem note) {
                 try {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("Id", note.getLocalFileID() + "");
-                    Log.e("selectNoteBook ",note.getLocalFileID()+" ");
-                    wv_show.load("javascript:AfterEditBookNote({'ID':'"+note.getLocalFileID()+"'})", null);
+                    Log.e("selectNoteBook ", note.getLocalFileID() + " ");
+                    wv_show.load("javascript:AfterEditBookNote({'ID':'" + note.getLocalFileID() + "'})", null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -4497,20 +4550,6 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         selectNoteDialog.show();
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     private void openTvDevicesList() {
@@ -4558,7 +4597,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
 
                                 }
                             });
-                            tvDevicesListPopup.StartPop(wv_show, devices, enable,isPrepare);
+                            tvDevicesListPopup.StartPop(wv_show, devices, enable, isPrepare);
                             activte_linearlayout.setVisibility(View.GONE);
                             menu.setImageResource(R.drawable.icon_menu);
                         } else {
@@ -4581,7 +4620,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
 
     private void gotoScanTv() {
         closeAlbum();
-        if(worker().getRtcEngine() != null){
+        if (worker().getRtcEngine() != null) {
             RtcEngineImpl engine = (RtcEngineImpl) worker().getRtcEngine();
             engine.setVideoCamera(0);
         }
@@ -6066,7 +6105,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                     }
                 }
             });
-            audioRecorder=null;
+            audioRecorder = null;
         }
     }
 
@@ -6456,11 +6495,11 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             updateVideo(path, title);
         }
 
-        if(requestCode == 100 && resultCode == RESULT_OK){
+        if (requestCode == 100 && resultCode == RESULT_OK) {
 //            Log.e("NoteBook","NoteBook return,data:" + data);
-            if(wv_show != null){
+            if (wv_show != null) {
                 String json = data.getStringExtra("OPEN_NOTE_BEAN_JSON");
-                BookNote note = new Gson().fromJson(json,BookNote.class);
+                BookNote note = new Gson().fromJson(json, BookNote.class);
                 uploadNote(note);
             }
         }
@@ -6587,7 +6626,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             try {
                 String url = AppConfig.URL_PUBLIC + "EventAttachment/UploadFileWithHash?LessonID=" + meetingId + "&Title="
                         + URLEncoder.encode(LoginGet.getBase64Password(title), "UTF-8") + "&Hash=" +
-                        Md5Tool.getMd5ByFile(file)+"&IsAddToFavorite="+(isAddToFavorite ? 1 : 0);
+                        Md5Tool.getMd5ByFile(file) + "&IsAddToFavorite=" + (isAddToFavorite ? 1 : 0);
                 MeetingServiceTools.getInstance().uploadFileWithHash(url, MeetingServiceTools.UPLOADFILEWITHHASH, new ServiceInterfaceListener() {
                     @Override
                     public void getServiceReturnData(Object object) {
@@ -7381,7 +7420,6 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         worker().getRtcEngine().enableVideo();
         Log.e("onAudioVolumeIndication", currentTime + ":");
     }
-
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -8271,10 +8309,10 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     };
 
 
-    private void loadWebIndex(){
+    private void loadWebIndex() {
         int deviceType = DeviceManager.getDeviceType(this);
         String indexUrl = "file:///android_asset/index.html";
-        if(deviceType == SupportDevice.BOOK){
+        if (deviceType == SupportDevice.BOOK) {
             indexUrl += "?devicetype=4";
         }
         final String url = indexUrl;
@@ -8291,8 +8329,8 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
 
 
     @org.xwalk.core.JavascriptInterface
-    public void viewBookNoteFunction(final String result){
-        Log.e("JavascriptInterface","viewBookNoteFunction,result:" + result);
+    public void viewBookNoteFunction(final String result) {
+        Log.e("JavascriptInterface", "viewBookNoteFunction,result:" + result);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -8315,24 +8353,24 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     }
 
     @org.xwalk.core.JavascriptInterface
-    public void editBookNoteLocalFunction(String note){
+    public void editBookNoteLocalFunction(String note) {
         // edit
-        Log.e("JavascriptInterface","editBookNoteFunction:" + note);
-        if(DeviceManager.getDeviceType(this) == SupportDevice.PHONE){
-            Toast.makeText(getApplicationContext(),"该设备不支持本地笔记" ,Toast.LENGTH_SHORT).show();
+        Log.e("JavascriptInterface", "editBookNoteFunction:" + note);
+        if (DeviceManager.getDeviceType(this) == SupportDevice.PHONE) {
+            Toast.makeText(getApplicationContext(), "该设备不支持本地笔记", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if(TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")){
+        if (TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")) {
             openNote(null);
             return;
         }
         try {
             JSONObject jsonObject = new JSONObject(note);
             String id = "";
-            if(jsonObject.has("id")){
+            if (jsonObject.has("id")) {
                 id = jsonObject.getString("id");
-            } else if(jsonObject.has("ID")){
+            } else if (jsonObject.has("ID")) {
                 id = jsonObject.getString("ID");
             }
             openNote(id);
@@ -8342,13 +8380,11 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     }
 
 
-
-
-    private void openNote(String noteId){
+    private void openNote(String noteId) {
         BookNote bookNote = null;
-        if(TextUtils.isEmpty(noteId)){
+        if (TextUtils.isEmpty(noteId)) {
             bookNote = new BookNote().setTitle("new note").setJumpBackToNote(false);
-        }else {
+        } else {
             bookNote = new BookNote().setDocumentId(noteId).setJumpBackToNote(false);
         }
 
@@ -8360,44 +8396,39 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     }
 
 
-
-
-
     LocalNoteManager noteManager;
 
-    private void uploadNote(BookNote note){
+    private void uploadNote(BookNote note) {
         JSONObject jsonObject = null;
         try {
             jsonObject = new JSONObject();
-            jsonObject.put("ID",note.documentId);
+            jsonObject.put("ID", note.documentId);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("AfterEditBookNote","jsonObject:" + jsonObject);
+        Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
         wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(WatchCourseActivity2.this);
-        String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId +".pdf";
-        noteManager.exportPdfAndUpload(WatchCourseActivity2.this,note,exportPath,currentAttachmentId,currentAttachmentPage,spaceId,"0");
+        String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
+        noteManager.exportPdfAndUpload(WatchCourseActivity2.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, "0");
     }
 
 
-
-
     @Subscribe
-    public void noteUploadSucess(NoteId noteId){
-        Log.e("noteUploadSucess","note id:" + noteId.getNoteId());
-        if(wv_show != null){
+    public void noteUploadSucess(NoteId noteId) {
+        Log.e("noteUploadSucess", "note id:" + noteId.getNoteId());
+        if (wv_show != null) {
 
             JSONObject jsonObject = null;
             try {
                 jsonObject = new JSONObject();
-                jsonObject.put("ID",noteId.getNoteId());
+                jsonObject.put("ID", noteId.getNoteId());
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.e("AfterEditBookNote","jsonObject:" + jsonObject);
+            Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
             wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         }
     }

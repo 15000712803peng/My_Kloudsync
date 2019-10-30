@@ -3531,19 +3531,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     private void startMeeting() {
         try {
             JSONObject jsonObject=new JSONObject();
@@ -3850,7 +3837,8 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
     private SyncRoomNotePopup syncRoomNotePopup;
     private void openNotePopup() {
-        String url = AppConfig.URL_PUBLIC+ "DocumentNote/List?documentItemID="+currentAttachmentId+"&pageNumber=0&userID=0";
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber="+currentAttachmentPage+"&syncRoomID="+lessonId;
+
         syncRoomNotePopup = new SyncRoomNotePopup();
         syncRoomNotePopup.getPopwindow(this);
 //        syncRoomNotePopup.setDocumentPopupEventListener(this);
