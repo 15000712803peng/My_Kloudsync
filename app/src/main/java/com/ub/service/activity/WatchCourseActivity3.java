@@ -168,6 +168,7 @@ import com.ub.techexcel.tools.NotificationPopup;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.SpliteSocket;
+import com.ub.techexcel.tools.SyncRoomNotePopup;
 import com.ub.techexcel.tools.SyncRoomPopup;
 import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.TvDevicesListPopup;
@@ -378,7 +379,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private LinearLayout activte_linearlayout;
     private LinearLayout menu_linearlayout;
 
-    private RelativeLayout displayAudience, displayFile, displaychat, displaywebcam, displayVideo, displayautocamera, setting, yinxiang;
+    private RelativeLayout displayAudience, displayFile,syncdisplaynote, displaychat, displaywebcam, displayVideo, displayautocamera, setting, yinxiang;
     private RelativeLayout prepareStart, prepareclose, prepareScanTV, displayattendee;
     private LinearLayout noprepare;
     private boolean isPrepare = false;  //是否备课
@@ -1996,6 +1997,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         displayattendee.setOnClickListener(this);
         displayFile = (RelativeLayout) findViewById(R.id.displayFile);
         displayFile.setOnClickListener(this);
+        syncdisplaynote = (RelativeLayout) findViewById(R.id.syncdisplaynote);
+        syncdisplaynote.setOnClickListener(this);
         yinxiang = (RelativeLayout) findViewById(R.id.yinxiang);
         yinxiang.setOnClickListener(this);
 
@@ -4339,7 +4342,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                         public void run() {
                             try {
                                 JSONObject jsonObject = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/UpgradeToNormalLesson?lessonID=" + lessonId, null);
-                                Log.e("sssss", jsonObject.toString());
+                                Log.e("sssss",AppConfig.URL_PUBLIC + "Lesson/UpgradeToNormalLesson?lessonID=" + lessonId+"  " + jsonObject.toString());
                                 if (jsonObject.getInt("RetCode") == 0) {
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -4438,6 +4441,11 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 getServiceDetail();
                 findViewById(R.id.bottomrl).setVisibility(View.GONE);
 
+                break;
+            case R.id.syncdisplaynote:
+                openNotePopup();
+                menu_linearlayout.setVisibility(View.GONE);
+                menu.setImageResource(R.drawable.icon_menu);
                 break;
             case R.id.prepareclose:
                 activte_linearlayout.setVisibility(View.GONE);
@@ -4679,6 +4687,54 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 break;
         }
     }
+
+
+    private SyncRoomNotePopup syncRoomNotePopup;
+    private void openNotePopup() {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber="+currentAttachmentPage+"&syncRoomID="+0;
+        syncRoomNotePopup = new SyncRoomNotePopup();
+        syncRoomNotePopup.getPopwindow(this);
+//        syncRoomNotePopup.setDocumentPopupEventListener(this);
+        syncRoomNotePopup.setWebCamPopupListener(new SyncRoomNotePopup.WebCamPopupListener() {
+            @Override
+            public void changeOptions(LineItem syncRoomBean,int position) { //打开笔记
+                displayNote(syncRoomBean);
+
+            }
+
+            @Override
+            public void teamDocument() {
+
+            }
+
+            @Override
+            public void takePhoto() {}
+
+            @Override
+            public void importFromLibrary() {}
+
+            @Override
+            public void savedFile() {}
+
+            @Override
+            public void dismiss() {
+            }
+
+            @Override
+            public void open() {
+            }
+
+            @Override
+            public void delete(LineItem selectLineItem) {}
+
+            @Override
+            public void edit(LineItem selectLineItem) {}
+        });
+        syncRoomNotePopup.StartPop(wv_show, url);
+        menu.setImageResource(R.drawable.icon_menu);
+    }
+
+
 
 
     private void loadWebIndex(){
