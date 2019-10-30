@@ -28,6 +28,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.ConvertingResult;
+import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.info.MyFriend;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.response.BindTvStatusResponse;
@@ -70,6 +71,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.rong.imkit.manager.InternalModuleManager;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -118,7 +120,10 @@ public class ServiceInterfaceTools {
     public static final int GETRECORDINGLIST = 0x1136;
     public static final int GETRECORDINGITEM = 0x1137;
     public static final int GETBINDTVS = 0x1138;
+    public static final int GETNOTELIST = 0x1139;
     public static final int GETNOTEBYLOCALFILEID = 0x1140;
+    public static final int GETNOTEBYNOTEID = 0x1141;
+    public static final int GETSYNCROOMUSERLIST = 0x1142;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -170,7 +175,7 @@ public class ServiceInterfaceTools {
             @Override
             public void run() {
                 JSONObject jsonObject1 = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
-                Log.e("hhh", url+"    "+jsonObject1.toString());
+                Log.e("hhh", url + "    " + jsonObject1.toString());
                 try {
                     if (jsonObject1.getInt("RetCode") == 0) {
                         JSONObject retdata = jsonObject1.getJSONObject("RetData");
@@ -1299,6 +1304,7 @@ public class ServiceInterfaceTools {
             e.printStackTrace();
         }
     }
+
     public void getBindTvs(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         try {
@@ -1317,10 +1323,6 @@ public class ServiceInterfaceTools {
             e.printStackTrace();
         }
     }
-
-
-
-
 
 
     /**
@@ -1463,6 +1465,243 @@ public class ServiceInterfaceTools {
                         msg3.what = code;
                         msg3.obj = list;
                         handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+
+    /**
+     * 根据lessonid  获取 笔记的列表
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void getNoteList(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("getNoteList", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        JSONArray lineitems = returnjson.getJSONArray("RetData");
+                        List<LineItem> items = new ArrayList<LineItem>();
+                        for (int j = 0; j < lineitems.length(); j++) {
+                            JSONObject lineitem = lineitems.getJSONObject(j);
+                            LineItem item = new LineItem();
+                            item.setLocalFileID(lineitem.getString("LocalFileID"));
+//                            item.setPageNumber(lineitem.getInt("PageNumber"));
+//                            item.setDocumentItemID(lineitem.getInt("DocumentItemID"));
+                            item.setFileName(lineitem.getString("Title"));
+                            item.setUrl(lineitem.getString("AttachmentUrl"));
+                            item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                            item.setItemId(lineitem.getString("ItemID"));
+                            item.setAttachmentID(lineitem.getString("AttachmentID"));
+//                            item.setNewPath(lineitem.getString("NewPath"));
+                            item.setFlag(0);
+                            items.add(item);
+                        }
+                        Message msg = Message.obtain();
+                        msg.obj = items;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+
+    /**
+     * 根据localFileID获取Note
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void getNoteByLocalFileId(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("getNoteList note", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        JSONObject lineitem = returnjson.getJSONObject("RetData");
+                        LineItem item = new LineItem();
+
+                        item.setLocalFileID(lineitem.getString("LocalFileID"));
+//                        item.setPageNumber(lineitem.getInt("PageNumber"));
+//                        item.setDocumentItemID(lineitem.getInt("DocumentItemID"));
+
+                        item.setFileName(lineitem.getString("Title"));
+                        item.setUrl(lineitem.getString("AttachmentUrl"));
+                        item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                        item.setItemId(lineitem.getString("ItemID"));
+                        item.setAttachmentID(lineitem.getString("AttachmentID"));
+//                        item.setNewPath(lineitem.getString("NewPath"));
+                        item.setFlag(0);
+                        Message msg = Message.obtain();
+                        msg.obj = item;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+    /**
+     * 根据NoteId获取Note
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void getNoteByNoteId(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("getNoteList note ", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        JSONObject lineitem = returnjson.getJSONObject("RetData");
+                        LineItem item = new LineItem();
+                        item.setLocalFileID(lineitem.getString("LocalFileID"));
+//                        item.setPageNumber(lineitem.getInt("PageNumber"));
+//                        item.setDocumentItemID(lineitem.getInt("DocumentItemID"));
+                        item.setFileName(lineitem.getString("Title"));
+                        item.setUrl(lineitem.getString("AttachmentUrl"));
+                        item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                        item.setItemId(lineitem.getString("ItemID"));
+                        item.setAttachmentID(lineitem.getString("AttachmentID"));
+//                        item.setNewPath(lineitem.getString("NewPath"));
+                        item.setFlag(0);
+                        Message msg = Message.obtain();
+                        msg.obj = item;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+
+
+    /**
+     * 获取SyncRoom中的用户的Note数量
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void getSyncRoomUserList(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("getNoteList note count ", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        JSONArray userArray = returnjson.getJSONArray("RetData");
+                        List<Customer> list=new ArrayList<>();
+                        for(int i=0;i<userArray.length();i++){
+                            JSONObject userJson=userArray.getJSONObject(i);
+                            Customer customer=new Customer();
+                            customer.setUserID(userJson.getInt("UserID")+"");
+                            customer.setName(userJson.getString("UserName"));
+                            customer.setNoteCount(userJson.getInt("NoteCount"));
+                            list.add(customer);
+                        }
+                        Message msg = Message.obtain();
+                        msg.obj = list;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+
+
+    /**
+     * 获取用户的Note列表
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void getUserNoteList(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("getNoteList", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        JSONArray lineitems = returnjson.getJSONArray("RetData");
+                        List<LineItem> items = new ArrayList<LineItem>();
+                        for (int j = 0; j < lineitems.length(); j++) {
+                            JSONObject lineitem = lineitems.getJSONObject(j);
+                            LineItem item = new LineItem();
+                            item.setLocalFileID(lineitem.getString("LocalFileID"));
+                            item.setFileName(lineitem.getString("Title"));
+                            item.setUrl(lineitem.getString("AttachmentUrl"));
+                            item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                            item.setItemId(lineitem.getString("ItemID"));
+                            item.setAttachmentID(lineitem.getString("AttachmentID"));
+                            items.add(item);
+                        }
+                        Message msg = Message.obtain();
+                        msg.obj = items;
+                        msg.what = code;
+                        handler.sendMessage(msg);
                     } else {
                         Message msg3 = Message.obtain();
                         msg3.what = ERRORMESSAGE;
@@ -1710,8 +1949,8 @@ public class ServiceInterfaceTools {
         return request.changeBindTvStatus(AppConfig.wssServer + "/tv/change_bind_tv_status", AppConfig.UserToken, status);
     }
 
-    public Call<NetworkResponse<SyncBook>> getSyncbookOutline(String syncroomId){
-        return request.getSyncbookOutline(AppConfig.UserToken,syncroomId);
+    public Call<NetworkResponse<SyncBook>> getSyncbookOutline(String syncroomId) {
+        return request.getSyncbookOutline(AppConfig.UserToken, syncroomId);
     }
 
     @SuppressLint("NewApi")
@@ -1728,45 +1967,6 @@ public class ServiceInterfaceTools {
         return request.getBindTvs2(AppConfig.wssServer + "/tv/current_user_bind_tv_info", AppConfig.UserToken);
     }
 
-    public void getNoteByLocalFileId(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
-        putInterface(code, serviceInterfaceListener);
-        new ApiTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
-                    Log.e("getNoteList note", url + " " + returnjson.toString());
-                    if (returnjson.getInt("RetCode") == 0) {
-                        JSONObject lineitem = returnjson.getJSONObject("RetData");
-                        LineItem item = new LineItem();
-
-                        item.setLocalFileId(lineitem.getString("LocalFileID"));
-// item.setPageNumber(lineitem.getInt("PageNumber"));
-// item.setDocumentItemID(lineitem.getInt("DocumentItemID"));
-
-                        item.setFileName(lineitem.getString("Title"));
-                        item.setUrl(lineitem.getString("AttachmentUrl"));
-                        item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
-                        item.setItemId(lineitem.getString("ItemID"));
-                        item.setAttachmentID(lineitem.getString("AttachmentID"));
-// item.setNewPath(lineitem.getString("NewPath"));
-                        item.setFlag(0);
-                        Message msg = Message.obtain();
-                        msg.obj = item;
-                        msg.what = code;
-                        handler.sendMessage(msg);
-                    } else {
-                        Message msg3 = Message.obtain();
-                        msg3.what = ERRORMESSAGE;
-                        msg3.obj = returnjson.getString("ErrorMessage");
-                        handler.sendMessage(msg3);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start(ThreadManager.getManager());
-    }
 
     public void uploadLocalNoteFile(final String url, final int code, final String fileName,
                                     final String Description,

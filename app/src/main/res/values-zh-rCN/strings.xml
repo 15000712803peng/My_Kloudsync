@@ -438,6 +438,7 @@
     <string name="mtEnd">结束</string>
     <!--右下侧按钮-->
     <string name="mtFile">文件</string>
+    <string name="mtNote">我的笔记</string>
     <string name="mtAttendee">成员</string>
     <string name="mtInvite2">邀请</string>
     <string name="mtChat">聊天</string>

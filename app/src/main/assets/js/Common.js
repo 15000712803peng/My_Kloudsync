@@ -98,6 +98,33 @@ function FindItemInArr(arr, str) {
     }
     return -1;
 }
+function GetParamFormUrl(url, key, defaultvalue) {
+    url = url.substr(url.indexOf("?"));
+    var index = url.toLowerCase().indexOf(key.toLowerCase());
+    if (index == -1) {
+        if (typeof (defaultvalue) != "undefined") return defaultvalue;
+        return "";
+    }
+    index = url.toLowerCase().indexOf("?" + key.toLowerCase());
+    if (index > -1) {
+        url = url.substr(index + key.length + 2);
+    }
+    else {
+        index = url.toLowerCase().indexOf("&" + key.toLowerCase());
+        if (index > -1) {
+            url = url.substr(index + key.length + 2);
+        }
+        else {
+            if (typeof (defaultvalue) != "undefined") return defaultvalue;
+            return "";
+        }
+    }
+    index = url.indexOf("&")
+    if (index > -1) {
+        url = url.substr(0, index);
+    }
+    return url;
+}
 var base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 var base64DecodeChars = new Array(
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,

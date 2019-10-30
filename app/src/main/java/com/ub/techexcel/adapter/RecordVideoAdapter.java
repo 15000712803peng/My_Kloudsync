@@ -55,6 +55,14 @@ public class RecordVideoAdapter extends RecyclerView.Adapter<RecordVideoAdapter.
     }
 
 
+    public void  notifyDataChanged(){
+        for (SectionVO mData : mDatas) {
+           mData.setClose(true);
+        }
+        notifyDataSetChanged();
+    }
+
+
     @Override
     public int getItemCount() {
         return mDatas.size();
@@ -83,6 +91,13 @@ public class RecordVideoAdapter extends RecyclerView.Adapter<RecordVideoAdapter.
         if (!holder.customVideoView.isPlaying()) {
             holder.customVideoView.start();
         }
+
+
+        if(sectionVO.isClose()){
+            holder.customVideoView.suspend();
+            holder.customVideoView.setVisibility(View.GONE);
+        }
+
         MediaController mc = new MediaController(context);
         mc.setVisibility(View.INVISIBLE);
         holder.customVideoView.setMediaController(mc);

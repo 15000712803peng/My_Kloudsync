@@ -102,6 +102,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
+import com.kloudsync.techexcel.dialog.SelectNoteDialog;
 import com.kloudsync.techexcel.dialog.ShareSyncDialog;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DeviceManager;
@@ -4369,6 +4370,149 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         }
     }
 
+
+
+
+
+
+
+    /**
+     * 文档每一页上  展示 新的PDF文件（笔记）
+     *
+     * @param lineItem
+     */
+
+    private String currentAttachmentPage2;
+    private LineItem currentShowPdf2 = new LineItem();
+    private TextView closenote;
+
+    /**
+     * 展示笔记列表  (切换文档)
+     */
+    private void displayNoteBook(String json) {
+        String id = "";
+        if (json != null) {
+            try {
+                JSONObject jsonObject = new JSONObject(json);
+                id = jsonObject.getString("id");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=ab3a05cb-f813-4cb7-b029-e6faffcb5586";
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=" + id;
+        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                LineItem note = (LineItem) object;
+                displayNote(note);
+            }
+        });
+
+    }
+
+
+    /**
+     * @param note
+     */
+    private void displayNote(LineItem note) {
+        closenote = findViewById(R.id.closenote);
+        closenote.setVisibility(View.VISIBLE);
+        //两个按钮
+        menu.setVisibility(View.GONE);
+        command_active.setVisibility(View.GONE);
+        closenote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closenote.setVisibility(View.GONE);
+                menu.setVisibility(View.VISIBLE);
+                if(isPrepare){
+                    command_active.setVisibility(View.GONE);
+                }else{
+                    command_active.setVisibility(View.VISIBLE);
+                }
+                for (int i = 0; i < documentList.size(); i++) {
+                    documentList.get(i).setSelect(false);
+                }
+                currentAttachmentPage = currentAttachmentPage2;
+                AppConfig.currentPageNumber = currentAttachmentPage2;
+                currentShowPdf.setSelect(true);
+                currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
+                currentShowPdf.setUrl(currentShowPdf2.getUrl());
+                currentShowPdf.setItemId(currentShowPdf2.getItemId());
+                currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
+                myRecyclerAdapter2.notifyDataSetChanged();
+                currentAttachmentId = currentShowPdf.getAttachmentID();
+                currentItemId = currentShowPdf.getItemId();
+                targetUrl = currentShowPdf.getUrl();
+                newPath = currentShowPdf.getNewPath();
+                notifySwitchDocumentSocket(currentShowPdf, "1");
+                wv_show.load("file:///android_asset/index.html", null);
+            }
+        });
+
+        currentAttachmentPage2 = currentAttachmentPage;
+        currentShowPdf2.setNewPath(newPath);
+        currentShowPdf2.setUrl(targetUrl);
+        currentShowPdf2.setItemId(currentItemId);
+        currentShowPdf2.setAttachmentID(currentAttachmentId);
+
+        currentAttachmentPage = "0";
+        AppConfig.currentPageNumber = "0";
+        for (int i = 0; i < documentList.size(); i++) {
+            documentList.get(i).setSelect(false);
+        }
+        currentShowPdf = note;
+        currentShowPdf.setSelect(true);
+        myRecyclerAdapter2.notifyDataSetChanged();
+        currentAttachmentId = currentShowPdf.getAttachmentID();
+        currentItemId = currentShowPdf.getItemId();
+        targetUrl = currentShowPdf.getUrl();
+        newPath = currentShowPdf.getNewPath();
+        notifySwitchDocumentSocket(currentShowPdf, "1");
+        wv_show.load("file:///android_asset/index.html", null);
+    }
+
+    private SelectNoteDialog selectNoteDialog;
+
+    /**
+     * 笔记列表弹窗
+     */
+    private void selectNoteBook() {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber="+currentAttachmentPage+"&syncRoomID="+0;
+        selectNoteDialog = new SelectNoteDialog(WatchCourseActivity2.this, url,0+"");
+        selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectNoteDialog.OnFavoriteDocSelectedListener() {
+            @Override
+            public void onFavoriteDocSelected(LineItem note) {
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("Id", note.getLocalFileID() + "");
+                    Log.e("selectNoteBook ",note.getLocalFileID()+" ");
+                    wv_show.load("javascript:AfterEditBookNote({'ID':'"+note.getLocalFileID()+"'})", null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        selectNoteDialog.show();
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private void openTvDevicesList() {
 
         ServiceInterfaceTools.getinstance().getBindTvs().enqueue(new Callback<DevicesResponse>() {
@@ -8127,21 +8271,62 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     };
 
 
-    //---- for note
+    private void loadWebIndex(){
+        int deviceType = DeviceManager.getDeviceType(this);
+        String indexUrl = "file:///android_asset/index.html";
+        if(deviceType == SupportDevice.BOOK){
+            indexUrl += "?devicetype=4";
+        }
+        final String url = indexUrl;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (wv_show == null) {
+                    return;
+                }
+                wv_show.load(url, null);
+            }
+        });
+    }
+
+
     @org.xwalk.core.JavascriptInterface
-    public void editBookNoteFunction(final String note) {
+    public void viewBookNoteFunction(final String result){
+        Log.e("JavascriptInterface","viewBookNoteFunction,result:" + result);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                displayNoteBook(result);
+            }
+        });
+    }
+
+
+    @org.xwalk.core.JavascriptInterface
+    public void editBookNoteFunction(final String noteinfo) {
+        Log.e("当前文档信息", "editBookNoteFunction  " + noteinfo);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                selectNoteBook();
+            }
+        });
+
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void editBookNoteLocalFunction(String note){
+        // edit
         Log.e("JavascriptInterface","editBookNoteFunction:" + note);
         if(DeviceManager.getDeviceType(this) == SupportDevice.PHONE){
             Toast.makeText(getApplicationContext(),"该设备不支持本地笔记" ,Toast.LENGTH_SHORT).show();
             return;
         }
 
-
         if(TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")){
             openNote(null);
             return;
         }
-
         try {
             JSONObject jsonObject = new JSONObject(note);
             String id = "";
@@ -8155,6 +8340,9 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             e.printStackTrace();
         }
     }
+
+
+
 
     private void openNote(String noteId){
         BookNote bookNote = null;
@@ -8171,38 +8359,9 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         startActivityForResult(intent, 100);
     }
 
-    @org.xwalk.core.JavascriptInterface
-    public void viewBookNoteFunction(String result){
-        Log.e("JavascriptInterface","viewBookNoteFunction,result:" + result);
-        viewNote(result);
-    }
 
-    private void viewNote(String json) {
-        String id = "";
-        if (json != null) {
-            try {
 
-                JSONObject jsonObject = new JSONObject(json);
-                if(jsonObject.has("id")){
-                    id = jsonObject.getString("id");
-                }else if(jsonObject.has("ID")){
-                    id = jsonObject.getString("ID");
-                }
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=" + id;
-        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                LineItem note = (LineItem) object;
-                displayNote(note);
-            }
-        });
-    }
 
     LocalNoteManager noteManager;
 
@@ -8223,62 +8382,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     }
 
 
-    private String currentAttachmentPage2;
-    private LineItem currentShowPdf2 = new LineItem();
-    private TextView closenote;
 
-    private void displayNote(LineItem note) {
-        closenote = findViewById(R.id.closenote);
-        closenote.setVisibility(View.VISIBLE);
-        //两个按钮
-        menu.setVisibility(View.GONE);
-        command_active.setVisibility(View.GONE);
-        closenote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closenote.setVisibility(View.GONE);
-                menu.setVisibility(View.VISIBLE);
-                command_active.setVisibility(View.VISIBLE);
-                for (int i = 0; i < documentList.size(); i++) {
-                    documentList.get(i).setSelect(false);
-                }
-                currentAttachmentPage = currentAttachmentPage2;
-                AppConfig.currentPageNumber = currentAttachmentPage2;
-                currentShowPdf.setSelect(true);
-                currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
-                currentShowPdf.setUrl(currentShowPdf2.getUrl());
-                currentShowPdf.setItemId(currentShowPdf2.getItemId());
-                currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
-
-                currentAttachmentId = currentShowPdf.getAttachmentID();
-                currentItemId = currentShowPdf.getItemId();
-                targetUrl = currentShowPdf.getUrl();
-                newPath = currentShowPdf.getNewPath();
-                notifySwitchDocumentSocket(currentShowPdf, "1");
-                wv_show.load("file:///android_asset/index.html", null);
-            }
-        });
-
-        currentAttachmentPage2 = currentAttachmentPage;
-        currentShowPdf2.setNewPath(newPath);
-        currentShowPdf2.setUrl(targetUrl);
-        currentShowPdf2.setItemId(currentItemId);
-        currentShowPdf2.setAttachmentID(currentAttachmentId);
-
-        currentAttachmentPage = "0";
-        AppConfig.currentPageNumber = "0";
-        for (int i = 0; i < documentList.size(); i++) {
-            documentList.get(i).setSelect(false);
-        }
-        currentShowPdf = note;
-        currentShowPdf.setSelect(true);
-        currentAttachmentId = currentShowPdf.getAttachmentID();
-        currentItemId = currentShowPdf.getItemId();
-        targetUrl = currentShowPdf.getUrl();
-        newPath = currentShowPdf.getNewPath();
-        notifySwitchDocumentSocket(currentShowPdf, "1");
-        wv_show.load("file:///android_asset/index.html", null);
-    }
 
     @Subscribe
     public void noteUploadSucess(NoteId noteId){

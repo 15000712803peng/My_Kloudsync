@@ -14,6 +14,17 @@ public class SectionVO {
     private String fileUrl;
     private String sid;
 
+    private boolean isClose;
+
+
+    public boolean isClose() {
+        return isClose;
+    }
+
+    public void setClose(boolean close) {
+        isClose = close;
+    }
+
     public int getId() {
         return id;
     }

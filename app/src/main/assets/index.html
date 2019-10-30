@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -99,7 +99,10 @@
         function InitPage()
         {
             //whiteboard.SetSizeMode(1);
-            whiteboard.SetDeviceType(ISANDROID?2:1);//0:web,1:ios,2:android
+            var devicetype = ISANDROID ? 2 : 1;
+            devicetype = GetParamFormUrl(location.href, "devicetype", devicetype);
+            console.log("devicetype:" + devicetype);
+            whiteboard.SetDeviceType(devicetype);//0:web,1:ios,2:android, 3: touch tv 4:boox
             //whiteboard.SetRecord(true);
             whiteboard.SetCanEdit(true);
             whiteboard.OnToolReset(function(res) {
@@ -176,6 +179,11 @@
                 BOOKEDITID = id;
                 BOOKEDITCALLBACK = afterEditBookNote;
                 EditBookNote(info);
+            });
+            whiteboard.OnBookNoteEditLocal(function (id, info, afterEditBookNote) {
+                BOOKEDITID = id;
+                BOOKEDITCALLBACK = afterEditBookNote;
+                EditBookNoteLocal(info);
             });
             whiteboard.OnBookNoteView(function (id, info) {               
                 ViewBookNote(info);
@@ -675,6 +683,27 @@
                 if (ISANDROID)
                 {
                     window.AnalyticsWebInterface.editBookNoteFunction(JSON.stringify(info));
+                }
+                else
+                {
+                    window.webkit.messageHandlers.EditBookNoteFunction.postMessage(info);
+                }
+            }
+            catch (ex) { }
+        }
+        function EditBookNoteLocal(info)
+        {
+            console.log("EditBookNoteLocal:" + JSON.stringify(info));
+            if (ISPC)
+            {
+                
+                return;
+            }
+            try
+            {
+                if (ISANDROID)
+                {
+                    window.AnalyticsWebInterface.editBookNoteLocalFunction(JSON.stringify(info));
                 }
                 else
                 {

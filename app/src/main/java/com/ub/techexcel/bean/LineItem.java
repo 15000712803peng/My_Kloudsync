@@ -37,6 +37,34 @@ public class LineItem implements Serializable {
     private String sourceFileUrl;
     private boolean me;
 
+    private String localFileID;
+    private int pageNumber;
+    private int documentItemID;
+
+    public int getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
+    public int getDocumentItemID() {
+        return documentItemID;
+    }
+
+    public void setDocumentItemID(int documentItemID) {
+        this.documentItemID = documentItemID;
+    }
+
+    public String getLocalFileID() {
+        return localFileID;
+    }
+
+    public void setLocalFileID(String localFileID) {
+        this.localFileID = localFileID;
+    }
+
     private String localFileId;
 
     public String getLocalFileId() {

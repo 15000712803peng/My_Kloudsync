@@ -94,6 +94,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
+import com.kloudsync.techexcel.dialog.SelectNoteDialog;
 import com.kloudsync.techexcel.dialog.ShareSyncDialog;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DeviceManager;
@@ -206,7 +207,7 @@ import retrofit2.Response;
  * Created by wang on 2017/6/16.
  */
 public class SyncBookActivity extends BaseActivity implements View.OnClickListener,
-        VideoGestureRelativeLayout.VideoGestureListener, YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,SyncRoomOutlinePopup.OnChapterClickedListener,SyncRoomOutlinePopup.OutlinePopupEventListener{
+        VideoGestureRelativeLayout.VideoGestureListener, YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener, SyncRoomOutlinePopup.OnChapterClickedListener, SyncRoomOutlinePopup.OutlinePopupEventListener {
 
     private String targetUrl;
     private String newPath;
@@ -346,7 +347,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private ProgressBar fileprogress;
     private TextView progressbartv;
 
-    private  class MyHandler extends Handler {
+    private class MyHandler extends Handler {
 
         private WeakReference<SyncBookActivity> watchCourseActivity3WeakReference;
 
@@ -675,7 +676,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         isInClassroom = getIntent().getBooleanExtra("isInClassroom", false);
         ishavedefaultpage = getIntent().getBooleanExtra("ishavedefaultpage", false);
         isTeamspace = getIntent().getBooleanExtra("isTeamspace", false);
-        spaceId = getIntent().getIntExtra("spaceId",0);
+        spaceId = getIntent().getIntExtra("spaceId", 0);
 
         Log.e("-------", targetUrl + "  " + "  meetingId: " + meetingId + "  identity : " + identity + "    isInstantMeeting :" + isInstantMeeting + "   lession: " + lessonId);
         if (meetingId.contains(",")) {
@@ -754,7 +755,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
         if (mWebSocketClient.getReadyState() == WebSocket.READYSTATE.OPEN) {
             if (identity == 2) {
-                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting,3);
+                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting, 3);
             } else {
                 getOnstageMemberCount(meetingId);
             }
@@ -1020,7 +1021,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             }
             String msg = Tools.getFromBase64(message);
             String msg_action = getRetCodeByReturnData2("action", msg);
-            Log.e("broadcastReceiver","on receive:" + msg);
+            Log.e("broadcastReceiver", "on receive:" + msg);
             if (msg_action.equals("JOIN_MEETING")) {
                 if (getRetCodeByReturnData2("retCode", msg).equals("0")) {
                     doJOIN_MEETING(msg);
@@ -1176,7 +1177,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                                 break;
                             }
                         }
-                    }else if(jsonObject.getInt("actionType") == 1801){
+                    } else if (jsonObject.getInt("actionType") == 1801) {
 //                        if (jsonObject.getInt("stat") == 0) {
 //                            if(syncRoomOutlinePopup != null){
 //                                syncRoomOutlinePopup.dismiss();
@@ -1186,12 +1187,12 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 //                                openOutlinePopup();
 //                            }
 //                        }
-                    }else if(jsonObject.getInt("actionType") == 1802){
+                    } else if (jsonObject.getInt("actionType") == 1802) {
                         // toggle outline treenode
-                        String treeNodeId  = jsonObject.getString("treeNodeId");
-                        if(!TextUtils.isEmpty(treeNodeId)){
-                            if(syncRoomOutlinePopup != null){
-                                syncRoomOutlinePopup.toggleTreeNode(treeNodeId,jsonObject.getBoolean("isToggle"));
+                        String treeNodeId = jsonObject.getString("treeNodeId");
+                        if (!TextUtils.isEmpty(treeNodeId)) {
+                            if (syncRoomOutlinePopup != null) {
+                                syncRoomOutlinePopup.toggleTreeNode(treeNodeId, jsonObject.getBoolean("isToggle"));
                                 syncRoomOutlinePopup.justHightOneNode(treeNodeId);
 
                             }
@@ -1400,7 +1401,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void sendStringBySocket2(String action, String sessionId, String username, String meetingId2,
-                                     String itemId, boolean isPresenter, String clientVersion, boolean isLogin, int role, int isInstantMeeting,int type) {
+                                     String itemId, boolean isPresenter, String clientVersion, boolean isLogin, int role, int isInstantMeeting, int type) {
         try {
             JSONObject loginjson = new JSONObject();
             loginjson.put("action", action);
@@ -2267,7 +2268,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 int Status = js.getInt("Status");
                 if (Status == 2) {  //正在转换
                     JSONObject syncDetail = js.getJSONObject("SyncDetail");
-                    final int finishPercent  = syncDetail.getInt("FinishPercent");
+                    final int finishPercent = syncDetail.getInt("FinishPercent");
                     fileprogress.setProgress(finishPercent);
                     progressbartv.setText(finishPercent + "%   File Converting,pls wait");
                     return 2;
@@ -3375,19 +3376,82 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
+
+    /**
+     * 文档每一页上  展示 新的PDF文件（笔记）
+     *
+     * @param lineItem
+     */
+
+    private String currentAttachmentPage2;
+    private LineItem currentShowPdf2 = new LineItem();
+    private TextView closenote;
+
+    /**
+     * 展示笔记列表  (切换文档)
+     */
+    private void displayNoteBook(String json) {
+        String id = "";
+        if (json != null) {
+            try {
+                JSONObject jsonObject = new JSONObject(json);
+                id = jsonObject.getString("id");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=ab3a05cb-f813-4cb7-b029-e6faffcb5586";
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=" + id;
+        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                LineItem note = (LineItem) object;
+                displayNote(note);
+            }
+        });
+
+    }
+
+
+    private SelectNoteDialog selectNoteDialog;
+
+    /**
+     * 笔记列表弹窗
+     */
+    private void selectNoteBook() {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&syncRoomID=" + lessonId;
+        selectNoteDialog = new SelectNoteDialog(SyncBookActivity.this, url, lessonId);
+        selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectNoteDialog.OnFavoriteDocSelectedListener() {
+            @Override
+            public void onFavoriteDocSelected(LineItem note) {
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("Id", note.getLocalFileID() + "");
+                    Log.e("selectNoteBook ", note.getLocalFileID() + " ");
+                    wv_show.load("javascript:AfterEditBookNote({'ID':'" + note.getLocalFileID() + "'})", null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        selectNoteDialog.show();
+
+    }
+
+
     private void startMeeting() {
         try {
-            JSONObject jsonObject=new JSONObject();
-            jsonObject.put("CompanyID",AppConfig.SchoolID);
-            jsonObject.put("SyncRoomID",lessonId);
-            JSONArray jsonArray=new JSONArray();
-            JSONObject member=new JSONObject();
-            member.put("MemberID",AppConfig.UserID);
-            member.put("Role",2);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("CompanyID", AppConfig.SchoolID);
+            jsonObject.put("SyncRoomID", lessonId);
+            JSONArray jsonArray = new JSONArray();
+            JSONObject member = new JSONObject();
+            member.put("MemberID", AppConfig.UserID);
+            member.put("Role", 2);
             jsonArray.put(member);
-            jsonObject.put("MemberList",jsonArray);
+            jsonObject.put("MemberList", jsonArray);
             String url = AppConfig.URL_PUBLIC + "SyncRoom/CreateMeetingFromSyncRoom";
-            ServiceInterfaceTools.getinstance().createMeetingFromSyncRoom(url, ServiceInterfaceTools.CREATEMEETINGFROMSYNCROOM,jsonObject, new ServiceInterfaceListener() {
+            ServiceInterfaceTools.getinstance().createMeetingFromSyncRoom(url, ServiceInterfaceTools.CREATEMEETINGFROMSYNCROOM, jsonObject, new ServiceInterfaceListener() {
                 @Override
                 public void getServiceReturnData(Object object) {
                     String lessonId = (String) object;
@@ -3535,7 +3599,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
                                 }
                             });
-                            tvDevicesListPopup.StartPop(wv_show, devices, enable,isTeamspace);
+                            tvDevicesListPopup.StartPop(wv_show, devices, enable, isTeamspace);
                             activte_linearlayout.setVisibility(View.GONE);
                             menu.setImageResource(R.drawable.icon_menu);
                         } else {
@@ -3570,7 +3634,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 });
 
 
-        if(worker().getRtcEngine() != null){
+        if (worker().getRtcEngine() != null) {
             RtcEngineImpl engine = (RtcEngineImpl) worker().getRtcEngine();
             engine.setVideoCamera(0);
 
@@ -3591,7 +3655,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private SyncRoomDocumentPopup syncRoomDocumentPopup;
     private SyncRoomOutlinePopup syncRoomOutlinePopup;
 
-    private void changeOutline(int index){
+    private void changeOutline(int index) {
         currentShowPdf = documentList.get(index);
         changedocumentlabel(currentShowPdf);
     }
@@ -3601,7 +3665,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         syncRoomDocumentPopup.getPopwindow(this);
         syncRoomDocumentPopup.setWebCamPopupListener(new SyncRoomDocumentPopup.WebCamPopupListener() {
             @Override
-            public void changeOptions(LineItem syncRoomBean,int position) { //切换文档
+            public void changeOptions(LineItem syncRoomBean, int position) { //切换文档
                 if (isHavePresenter()) {
                     currentAttachmentPage = "0";
                     AppConfig.currentPageNumber = "0";
@@ -3688,13 +3752,13 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         menu.setImageResource(R.drawable.icon_menu);
     }
 
-    private void openOutlinePopup(){
+    private void openOutlinePopup() {
         syncRoomOutlinePopup = new SyncRoomOutlinePopup();
         syncRoomOutlinePopup.getPopwindow(this);
         syncRoomOutlinePopup.setSyncroomId(lessonId);
         syncRoomOutlinePopup.setOnChapterClickedListener(this);
         syncRoomOutlinePopup.setOutlinePopupEventListener(this);
-        syncRoomOutlinePopup.StartPop(wv_show,documentList);
+        syncRoomOutlinePopup.StartPop(wv_show, documentList);
         syncroomll.setVisibility(View.GONE);
         menu.setImageResource(R.drawable.icon_menu);
 
@@ -3875,7 +3939,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void getServiceReturnData(Object object) {
                 int role = (int) object;
-                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, role, isInstantMeeting,3);
+                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, role, isInstantMeeting, 3);
             }
         });
     }
@@ -5232,11 +5296,11 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             UpdateVideo(path, title);
         }
 
-        if(requestCode == 100 && resultCode == RESULT_OK){
+        if (requestCode == 100 && resultCode == RESULT_OK) {
 //            Log.e("NoteBook","NoteBook return,data:" + data);
-            if(wv_show != null){
+            if (wv_show != null) {
                 String json = data.getStringExtra("OPEN_NOTE_BEAN_JSON");
-                BookNote note = new Gson().fromJson(json,BookNote.class);
+                BookNote note = new Gson().fromJson(json, BookNote.class);
                 uploadNote(note);
             }
         }
@@ -5847,10 +5911,10 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     @Override
     public void onChapterClicked(OutlineChapterItem chapterItem, int currentChapterIndex) {
 //        Toast.makeText(this,"chapter click index:" + index,Toast.LENGTH_SHORT).show();
-        Log.e("chapter click","chapter item:" + chapterItem.getTreeNodeId());
-        notifyOutlineToggle(chapterItem.getTreeNodeId(),chapterItem.isToggle());
+        Log.e("chapter click", "chapter item:" + chapterItem.getTreeNodeId());
+        notifyOutlineToggle(chapterItem.getTreeNodeId(), chapterItem.isToggle());
         this.currentChapterIndex = currentChapterIndex;
-        if(currentChapterIndex != documentList.indexOf(currentShowPdf)){
+        if (currentChapterIndex != documentList.indexOf(currentShowPdf)) {
             currentAttachmentPage = "1";
             changeOutline(currentChapterIndex);
         }
@@ -5860,16 +5924,16 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     OutlineChildSectionItem childSectionItem;
 
     @Override
-    public void onSectionItemClicked(OutlineSectionItem sectionItem,int currentChapterIndex) {
+    public void onSectionItemClicked(OutlineSectionItem sectionItem, int currentChapterIndex) {
         this.sectionItem = sectionItem;
-        Log.e("onSectionItemClicked","item_id:" + sectionItem.getTreeNodeId());
-        notifyOutlineToggle(sectionItem.getTreeNodeId(),sectionItem.isToggle());
-        if(this.currentChapterIndex != currentChapterIndex){
-                currentAttachmentPage = sectionItem.getSectionPosition().getStartPageNo();
-                changeOutline(currentChapterIndex);
+        Log.e("onSectionItemClicked", "item_id:" + sectionItem.getTreeNodeId());
+        notifyOutlineToggle(sectionItem.getTreeNodeId(), sectionItem.isToggle());
+        if (this.currentChapterIndex != currentChapterIndex) {
+            currentAttachmentPage = sectionItem.getSectionPosition().getStartPageNo();
+            changeOutline(currentChapterIndex);
 
-        }else {
-            if(currentAttachmentPage != sectionItem.getSectionPosition().getStartPageNo()){
+        } else {
+            if (currentAttachmentPage != sectionItem.getSectionPosition().getStartPageNo()) {
                 currentAttachmentPage = sectionItem.getSectionPosition().getStartPageNo();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -5891,14 +5955,14 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Override
-    public void onChildSectionItemClicked(OutlineChildSectionItem childSectionItem,int currentChapterIndex) {
+    public void onChildSectionItemClicked(OutlineChildSectionItem childSectionItem, int currentChapterIndex) {
         this.childSectionItem = childSectionItem;
-        notifyOutlineToggle(childSectionItem.getTreeNodeId(),childSectionItem.isToggle());
-        if(this.currentChapterIndex != currentChapterIndex){
+        notifyOutlineToggle(childSectionItem.getTreeNodeId(), childSectionItem.isToggle());
+        if (this.currentChapterIndex != currentChapterIndex) {
             currentAttachmentPage = childSectionItem.getSectionPosition().getStartPageNo();
             changeOutline(currentChapterIndex);
-        }else {
-            if(currentAttachmentPage != childSectionItem.getSectionPosition().getStartPageNo()){
+        } else {
+            if (currentAttachmentPage != childSectionItem.getSectionPosition().getStartPageNo()) {
                 currentAttachmentPage = childSectionItem.getSectionPosition().getStartPageNo();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -5916,36 +5980,36 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
     }
 
-    private void scrollOutline(){
-        if(sectionItem == null && childSectionItem == null){
+    private void scrollOutline() {
+        if (sectionItem == null && childSectionItem == null) {
             return;
         }
         float y = 0;
-        if(sectionItem != null){
+        if (sectionItem != null) {
             y = Float.parseFloat(sectionItem.getSectionPosition().getStartY());
         }
 
-        if(childSectionItem != null){
+        if (childSectionItem != null) {
             y = Float.parseFloat(childSectionItem.getSectionPosition().getStartY());
         }
         File file = new File(fileLocalPath);
-        if(file.exists()){
+        if (file.exists()) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(file.getAbsolutePath(), options);
             int height = options.outHeight;
             int width = options.outWidth;
-            int scrollY = (int)(height * y / 100);
+            int scrollY = (int) (height * y / 100);
             final JSONObject scrollJson = new JSONObject();
             try {
-                scrollJson.put("type",32);
-                scrollJson.put("page",currentAttachmentPage);
-                scrollJson.put("CW",width);
-                scrollJson.put("CH",height);
-                scrollJson.put("VW",width);
-                scrollJson.put("VH",height);
-                scrollJson.put("ST",scrollY);
-                scrollJson.put("SL",0);
+                scrollJson.put("type", 32);
+                scrollJson.put("page", currentAttachmentPage);
+                scrollJson.put("CW", width);
+                scrollJson.put("CH", height);
+                scrollJson.put("VW", width);
+                scrollJson.put("VH", height);
+                scrollJson.put("ST", scrollY);
+                scrollJson.put("SL", 0);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -5965,7 +6029,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
     }
 
-    private void notifyMyAction(String action){
+    private void notifyMyAction(String action) {
         try {
             JSONObject actionJson = new JSONObject();
             actionJson.put("action", "ACT_FRAME");
@@ -5982,54 +6046,77 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    private void notifyOutlineOpenOrClose(int type){
+    private void notifyOutlineOpenOrClose(int type) {
         JSONObject actionJson = new JSONObject();
         try {
-            actionJson.put("actionType",1801);
+            actionJson.put("actionType", 1801);
             // 1表示打开 0表示关闭
-            actionJson.put("stat",type);
+            actionJson.put("stat", type);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        send_message("SEND_MESSAGE",AppConfig.UserToken,0,null,Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
+        send_message("SEND_MESSAGE", AppConfig.UserToken, 0, null, Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
     }
 
-    private void notifyOutlineToggle(String treeNodeId,boolean isToggle){
+    private void notifyOutlineToggle(String treeNodeId, boolean isToggle) {
         JSONObject actionJson = new JSONObject();
         try {
-            actionJson.put("actionType",1802);
+            actionJson.put("actionType", 1802);
             // 1表示打开 0表示关闭
-            actionJson.put("stat",1);
-            actionJson.put("treeNodeId",treeNodeId);
-            actionJson.put("isToggle",isToggle);
+            actionJson.put("stat", 1);
+            actionJson.put("treeNodeId", treeNodeId);
+            actionJson.put("isToggle", isToggle);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        send_message("SEND_MESSAGE",AppConfig.UserToken,0,null,Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
+        send_message("SEND_MESSAGE", AppConfig.UserToken, 0, null, Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
     }
 
-    //---- for note
+
     @org.xwalk.core.JavascriptInterface
-    public void editBookNoteFunction(final String note) {
-        Log.e("JavascriptInterface","editBookNoteFunction:" + note);
-        if(DeviceManager.getDeviceType(this) == SupportDevice.PHONE){
-            Toast.makeText(getApplicationContext(),"该设备不支持本地笔记" ,Toast.LENGTH_SHORT).show();
+    public void viewBookNoteFunction(final String result) {
+        Log.e("JavascriptInterface", "viewBookNoteFunction,result:" + result);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                viewNote(result);
+            }
+        });
+    }
+
+
+    @org.xwalk.core.JavascriptInterface
+    public void editBookNoteFunction(final String noteinfo) {
+        Log.e("当前文档信息", "editBookNoteFunction  " + noteinfo);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                selectNoteBook();
+            }
+        });
+    }
+
+
+    @org.xwalk.core.JavascriptInterface
+    public void editBookNoteLocalFunction(String note) {
+        // edit
+        Log.e("JavascriptInterface", "editBookNoteFunction:" + note);
+        if (DeviceManager.getDeviceType(this) == SupportDevice.PHONE) {
+            Toast.makeText(getApplicationContext(), "该设备不支持本地笔记", Toast.LENGTH_SHORT).show();
             return;
         }
 
-
-        if(TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")){
+        if (TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")) {
             openNote(null);
             return;
         }
-
         try {
             JSONObject jsonObject = new JSONObject(note);
             String id = "";
-            if(jsonObject.has("id")){
+            if (jsonObject.has("id")) {
                 id = jsonObject.getString("id");
-            } else if(jsonObject.has("ID")){
+            } else if (jsonObject.has("ID")) {
                 id = jsonObject.getString("ID");
             }
             openNote(id);
@@ -6038,11 +6125,12 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    private void openNote(String noteId){
+
+    private void openNote(String noteId) {
         BookNote bookNote = null;
-        if(TextUtils.isEmpty(noteId)){
+        if (TextUtils.isEmpty(noteId)) {
             bookNote = new BookNote().setTitle("new note").setJumpBackToNote(false);
-        }else {
+        } else {
             bookNote = new BookNote().setDocumentId(noteId).setJumpBackToNote(false);
         }
 
@@ -6053,11 +6141,6 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         startActivityForResult(intent, 100);
     }
 
-    @org.xwalk.core.JavascriptInterface
-    public void viewBookNoteFunction(String result){
-        Log.e("JavascriptInterface","viewBookNoteFunction,result:" + result);
-        viewNote(result);
-    }
 
     private void viewNote(String json) {
         String id = "";
@@ -6065,9 +6148,9 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             try {
 
                 JSONObject jsonObject = new JSONObject(json);
-                if(jsonObject.has("id")){
+                if (jsonObject.has("id")) {
                     id = jsonObject.getString("id");
-                }else if(jsonObject.has("ID")){
+                } else if (jsonObject.has("ID")) {
                     id = jsonObject.getString("ID");
                 }
 
@@ -6088,26 +6171,22 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
     LocalNoteManager noteManager;
 
-    private void uploadNote(BookNote note){
+    private void uploadNote(BookNote note) {
         JSONObject jsonObject = null;
         try {
             jsonObject = new JSONObject();
-            jsonObject.put("ID",note.documentId);
+            jsonObject.put("ID", note.documentId);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("AfterEditBookNote","jsonObject:" + jsonObject);
+        Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
         wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(SyncBookActivity.this);
-        String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId +".pdf";
-        noteManager.exportPdfAndUpload(SyncBookActivity.this,note,exportPath,currentAttachmentId,currentAttachmentPage,spaceId,lessonId);
+        String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
+        noteManager.exportPdfAndUpload(SyncBookActivity.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, lessonId);
     }
 
-
-    private String currentAttachmentPage2;
-    private LineItem currentShowPdf2 = new LineItem();
-    private TextView closenote;
 
     private void displayNote(LineItem note) {
         closenote = findViewById(R.id.closenote);
@@ -6120,9 +6199,9 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             public void onClick(View v) {
                 closenote.setVisibility(View.GONE);
                 menu.setVisibility(View.VISIBLE);
-                if(isTeamspace){
+                if (isTeamspace) {
                     command_active.setVisibility(View.GONE);
-                }else {
+                } else {
                     command_active.setVisibility(View.VISIBLE);
                 }
                 for (int i = 0; i < documentList.size(); i++) {
@@ -6167,26 +6246,24 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Subscribe
-    public void noteUploadSucess(NoteId noteId){
-        Log.e("noteUploadSucess","note id:" + noteId.getNoteId());
-        if(wv_show != null){
+    public void noteUploadSucess(NoteId noteId) {
+        Log.e("noteUploadSucess", "note id:" + noteId.getNoteId());
+        if (wv_show != null) {
 
             JSONObject jsonObject = null;
             try {
                 jsonObject = new JSONObject();
-                jsonObject.put("ID",noteId.getNoteId());
+                jsonObject.put("ID", noteId.getNoteId());
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.e("AfterEditBookNote","jsonObject:" + jsonObject);
+            Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
             wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         }
     }
 
     private int spaceId;
-
-
 
 
 }

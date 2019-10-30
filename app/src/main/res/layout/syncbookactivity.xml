@@ -1307,7 +1307,6 @@
 
     </RelativeLayout>
 
-
     <TextView
         android:id="@+id/closenote"
         android:layout_width="wrap_content"
@@ -1317,7 +1316,5 @@
         android:background="@color/black"
         android:alpha="0.8"
         android:text="@string/back"
-        android:textColor="@color/black" />
-
-
+        android:textColor="@color/white" />
 </RelativeLayout>

@@ -102,6 +102,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
+import com.kloudsync.techexcel.dialog.SelectNoteDialog;
 import com.kloudsync.techexcel.dialog.ShareSyncDialog;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DeviceManager;
@@ -139,11 +140,15 @@ import com.ub.techexcel.adapter.ChatAdapter;
 import com.ub.techexcel.adapter.LeftAgoraAdapter;
 import com.ub.techexcel.adapter.MyRecyclerAdapter;
 import com.ub.techexcel.adapter.MyRecyclerAdapter2;
+import com.ub.techexcel.adapter.RecordVideoAdapter;
 import com.ub.techexcel.adapter.TeacherRecyclerAdapter;
 import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AudioActionBean;
+import com.ub.techexcel.bean.ChannelVO;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.PageActionBean;
+import com.ub.techexcel.bean.RecordingBean;
+import com.ub.techexcel.bean.SectionVO;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.bean.SyncRoomBean;
@@ -566,9 +571,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                             activity3.setting.setVisibility(View.GONE);
                             activity3.findViewById(R.id.videoline).setVisibility(View.GONE);
                         }
-                        if (activity3.isAgoraRecord) {
-                            activity3.stopAgoraRecording(false);
-                        }
+
                         break;
                     case 0x1111: //离开
                         activity3.changeAllVisible(activity3.leaveUserid);
@@ -863,6 +866,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             }
         }
         myRecyclerAdapter.notifyDataSetChanged();
+
+        resetTvDevices();
     }
 
 
@@ -916,7 +921,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         ishavedefaultpage = getIntent().getBooleanExtra("ishavedefaultpage", false);
         isTeamspace = getIntent().getBooleanExtra("isTeamspace", false);
         roomType = getIntent().getIntExtra("type", 0);
-        spaceId = getIntent().getIntExtra("spaceId",0);
         if (isTeamspace) {
             isPrepare = true;
         }
@@ -929,6 +933,16 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         if (!cache.exists()) {
             cache.mkdirs();
         }
+
+
+        //测试录课   -----------------------
+//        meetingId = "43981";
+//        lessonId = "43981";
+//        isPrepare = true;
+//        isTeamspace = true;
+        //测试录课   -----------------------
+
+
         SpliteSocket.init(getApplicationContext());
         initView();
         //初始化老师学生列表
@@ -2248,6 +2262,54 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         });
     }
 
+
+    /**
+     * 根据进度判断是否播放音频（play）
+     *
+     * @param tttime
+     */
+    private void judgeMedidaPlayer(int tttime) {   // 频繁调用
+        if (mediaPlayer2 != null) {
+            if (voiceSectionVO.getStartTime() <= tttime && voiceSectionVO.getEndTime() >= tttime) { //播放到指定位置
+                int chai = tttime - voiceSectionVO.getStartTime();  //应该播放到的位置
+                if (mediaPlayer2.isPlaying()) {
+                    if (chai - mediaPlayer2.getCurrentPosition() > 3000) {
+                        Log.e("judgeMedidaPlayer", "seek " + tttime + "   " + mediaPlayer2.getCurrentPosition());
+                        mediaPlayer2.seekTo(chai); //音频跟上进度条
+                    }
+                } else {
+                    Log.e("judgeMedidaPlayer", "start " + tttime);
+                    mediaPlayer2.start();
+                    mediaPlayer2.seekTo(chai); //音频跟上进度条
+                }
+            } else {
+                if (mediaPlayer2.isPlaying()) {
+                    Log.e("judgeMedidaPlayer", " end   " + tttime);
+                    mediaPlayer2.pause();
+                }
+            }
+        }
+    }
+
+
+    private void mediaPlayer2Seekto() {   // 偶尔调用
+        if (mediaPlayer2 != null) {
+            if (isPlayRecordInfo) { //处理录课音频
+                if (voiceSectionVO.getStartTime() <= tttime && voiceSectionVO.getEndTime() >= tttime) { //播放到指定位置
+                    mediaPlayer2.seekTo(tttime - voiceSectionVO.getStartTime());
+                    if (mediaPlayer2.isPlaying()) {
+                    } else {
+                        mediaPlayer2.pause();
+                    }
+                } else {
+                    mediaPlayer2.pause();
+                }
+            } else { //处理音想音频
+                mediaPlayer2.seekTo(tttime);
+            }
+        }
+    }
+
     private void StopMedia2() {
         if (mediaPlayer2 != null) {
             mediaPlayer2.stop();
@@ -2265,7 +2327,16 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     private void resumeMedia2() {
         if (mediaPlayer2 != null) {
-            mediaPlayer2.start();
+            if (isPlayRecordInfo) { //处理录课音频
+                if (voiceSectionVO.getStartTime() <= tttime && voiceSectionVO.getEndTime() >= tttime) { //播放到指定位置
+                    mediaPlayer2.start();
+                    mediaPlayer2.seekTo(tttime - voiceSectionVO.getStartTime());
+                } else {
+                    mediaPlayer2.pause();
+                }
+            } else { //处理音想音频
+                mediaPlayer2.start();
+            }
         }
     }
 
@@ -2324,6 +2395,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             close.setEnabled(true);
             mSeekBar.setEnabled(true);
         }
+
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -2410,12 +2482,127 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         } else { // 播放音想
             refreshPlayTime();
         }
+
         audiosyncll.setVisibility(View.VISIBLE);
 
         if (startYinxiangTime > 0 && isPlaying) {
             startYinxiangTime = 0;
             seekToTime(startYinxiangTime);
         }
+
+    }
+
+
+    /**
+     * 播放录课信息进度条
+     *
+     * @param isPlaying
+     * @param duration
+     */
+    private void openAudioSync2(final boolean isPlaying, long duration) {
+        Log.e("openAudioSync ", "   " + isPlaying + "     " + duration + "");
+        isPlaying2 = isPlaying;
+        isPause = false;
+        playstop = (ImageView) findViewById(R.id.playstop);
+        playstop.setImageResource(R.drawable.video_stop);
+        syncicon = (ImageView) findViewById(R.id.syncicon);
+        close = (ImageView) findViewById(R.id.close);
+        isStatus = (TextView) findViewById(R.id.isStatus);
+        audiotime = (TextView) findViewById(R.id.audiotime);
+        mSeekBar = (SeekBar) findViewById(R.id.seekBar);
+        mSeekBar.setVisibility(View.VISIBLE);
+
+        int ss = Integer.parseInt(duration + "");  //毫秒作单位
+        mSeekBar.setMax(ss);
+        isStatus.setText("Playing");
+        syncicon.setVisibility(View.GONE);
+
+        if (!isHavePresenter()) {
+            playstop.setEnabled(false);
+            close.setEnabled(false);
+            mSeekBar.setEnabled(false);
+        } else {
+            playstop.setEnabled(true);
+            close.setEnabled(true);
+            mSeekBar.setEnabled(true);
+        }
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                tttime = progress;
+                String time = new SimpleDateFormat("mm:ss").format(tttime);
+                audiotime.setText(time);
+                timeShow.setText(time);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                sendAudioSocket(5, soundtrackID);  // 通知学生拖动进度条
+                seekToTime(tttime);
+            }
+        });
+
+        playstop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isPause) {
+                    resumeMedia();
+                    resumeMedia2();
+                    if (isHavePresenter()) {
+                        if (isPlaying) {
+                            sendAudioSocket(3, soundtrackID);
+                        }
+                    }
+                } else {
+                    pauseMedia();
+                    pauseMedia2();
+                    if (isHavePresenter()) {
+                        if (isPlaying) {
+                            sendAudioSocket(2, soundtrackID);
+                        }
+                    }
+                }
+            }
+        });
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeRecordListview();
+                closeAudioSync();
+                StopMedia();
+                StopMedia2();
+                if (isHavePresenter()) { // 通知結束播放
+                    if (isPlaying) {
+                        sendAudioSocket(0, soundtrackID);
+                    }
+                }
+            }
+        });
+        if (isHavePresenter()) {
+            if (!isSync) {
+                if (audiotimer != null) {
+                    audiotimer.cancel();
+                    audiotimer = null;
+                }
+                audiotimer = new Timer();
+                audiotimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (isPlaying) {
+                            sendAudioSocket(4, soundtrackID);
+                        }
+                    }
+                }, 0, 3000);
+            }
+        }
+        audiosyncll.setVisibility(View.VISIBLE);
+        refreshPlayTime2();
 
     }
 
@@ -2426,7 +2613,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             mediaPlayer.seekTo(time);
         }
         if (mediaPlayer2 != null) {
-            mediaPlayer2.seekTo(time);
+            mediaPlayer2Seekto();
         }
         if (mSeekBar != null) {
             mSeekBar.setProgress(time);
@@ -2439,7 +2626,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 final String pagenumber = pageActionBean.getPageNumber();
                 actions = pageActionBean.getActions();
                 Log.e("pagenumber", currentAttachmentPage + "  " + pagenumber);
-                if (currentAttachmentPage.equals(pagenumber)) {  //后退到当前页
+                if (currentAttachmentPage.equals(pagenumber)) {  //后退或前进到当前页
                     // 3 displayDrawingLine =0 展示所有的线
                     getLineAction(currentAttachmentPage, !isPause);
                     Message msg = Message.obtain();
@@ -2467,9 +2654,40 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private ImageView timeHidden;
 
     /**
-     * 每隔100毫秒拿播放进度
+     * 每隔100毫秒拿播放进度  不安音频文件的进度
      */
+    private void refreshPlayTime2() {
+        Log.e("Recording Time", isPause + "");
+        mSeekBar.setProgress(tttime);
+        tttime = 0;
+        if (audioplaytimer != null) {
+            audioplaytimer.cancel();
+            audioplaytimer = null;
+        }
+        audioplaytimer = new Timer();
+        audioplaytimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!isPause) {
+                            tttime += 100;
+                            mSeekBar.setProgress(tttime);
+                            //处理action的展示
+                            newAudioActionTime(tttime);
+                            judgeMedidaPlayer(tttime);
+
+                        }
+                    }
+                });
+            }
+        }, 0, 100);
+    }
+
+
     private void refreshPlayTime() {
+        Log.e("Recording Time", isPause + "");
         mSeekBar.setProgress(tttime);
         tttime = 0;
         if (audioplaytimer != null) {
@@ -2490,7 +2708,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                                     mSeekBar.setProgress(tttime);
                                 }
                                 //录音文件长度大于音想长度
-
                                 //处理action的展示
                                 newAudioActionTime(tttime);
                             }
@@ -2540,12 +2757,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         isPlaying2 = false;
         audiosyncll.setVisibility(View.GONE);
         timeShow.setVisibility(View.GONE);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                wv_show.load("javascript:ClearPageAndAction()", null);
-            }
-        });
+        getPageObjectsAfterChange(currentAttachmentPage);
     }
 
 
@@ -2583,6 +2795,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         if (teacorstudentList.size() > 0) {
             teacherRecyclerAdapter.Update(teacorstudentList);
         }
+        resetTvDevices();
     }
 
 
@@ -2877,9 +3090,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(wv_show == null){
-                        return;
-                    }
                     wv_show.load("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ")", null);
                     wv_show.load("javascript:Record()", null);
                     userSetting();
@@ -3104,41 +3314,13 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         Log.e("webview-afterChangePage", pageNum + "  " + type);
         currentAttachmentPage = pageNum + "";
         AppConfig.currentPageNumber = currentAttachmentPage;
-        String url;
-        if (isTeamspace) {
-            url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=0"
-                    + "&itemID=0"
-                    + "&pageNumber=" + pageNum
-                    + "&attachmentID=" + currentAttachmentId
-                    + "&soundtrackID=0";
+        if (isPlaying2) {
+            getLineAction(pageNum, true);
         } else {
-            url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=" + lessonId + "&itemID=" + currentItemId +
-                    "&pageNumber=" + pageNum;
+            getPageObjectsAfterChange(pageNum);
         }
-        MeetingServiceTools.getInstance().getGetPageObjects(url, MeetingServiceTools.GETGETPAGEOBJECTS, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                final String ddd = (String) object;
-                Log.e("page_data", "data:" + ddd);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (wv_show != null) {
-                            if (!TextUtil.isEmpty(ddd)) {
-                                wv_show.load("javascript:PlayActionByArray(" + ddd + "," + 0 + ")", null);
-                            }
-                            if (isPlaying2) {
-                                wv_show.load("javascript:ClearPageAndAction()", null);
-                            }
-                        }
-                    }
-                });
-            }
-        });
         if (isChangePageNumber) {
             isChangePageNumber = false;
-            // 3 displayDrawingLine =0 展示所有的线
-//            getLineAction(currentAttachmentPage, !isPause);
             Message msg = Message.obtain();
             msg.what = 0x4010;
             msg.obj = actions;
@@ -3147,8 +3329,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         if (type == 3 || type == 4) { //手动翻页
             reflectPage(pageNum);
         }
-
-
     }
 
     private void reflectPage(String page) {
@@ -3166,7 +3346,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     }
 //                    getLineAction(currentAttachmentPage, !isPause);
                     if (mediaPlayer2 != null) {
-                        mediaPlayer2.seekTo(tttime);
+                        mediaPlayer2Seekto();
                     }
                     if (mediaPlayer != null) {
                         mediaPlayer.seekTo(tttime);
@@ -3190,52 +3370,74 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 wv_show.load("javascript:ClearPageAndAction()", null);
             }
         });
-        new ApiTask(new Runnable() {
+        String url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=0"
+                + "&itemID=0"
+                + "&pageNumber=" + pageNum
+                + "&attachmentID=0"
+                + "&soundtrackID=" + (soundtrackID == -1 ? 0 : soundtrackID)
+                + "&displayDrawingLine=" + (isPlaying ? 0 : 1);
+        MeetingServiceTools.getInstance().getGetPageObjects(url, MeetingServiceTools.GETGETPAGEOBJECTS, new ServiceInterfaceListener() {
             @Override
-            public void run() {
-                try {
-                    JSONObject jsonObject;
-                    String url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=0"
-                            + "&itemID=0"
-                            + "&pageNumber=" + pageNum
-                            + "&attachmentID=0"
-                            + "&soundtrackID=" + (soundtrackID == -1 ? 0 : soundtrackID)
-                            + "&displayDrawingLine=" + (isPlaying ? 0 : 1);
-                    jsonObject = ConnectService.getIncidentbyHttpGet(url);
-                    Log.e("getLineAction", url + "     " + jsonObject.toString());
-                    int retCode = jsonObject.getInt("RetCode");
-                    switch (retCode) {
-                        case 0:
-                            JSONArray data = jsonObject.getJSONArray("RetData");
-                            String mmm = "";
-                            for (int i = 0; i < data.length(); i++) {
-                                JSONObject jsonObject1 = data.getJSONObject(i);
-                                String ddd = jsonObject1.getString("Data");
-                                if (!TextUtil.isEmpty(ddd)) {
-                                    String dd = "'" + Tools.getFromBase64(ddd) + "'";
-                                    if (i == 0) {
-                                        mmm += "[" + dd;
-                                    } else {
-                                        mmm += "," + dd;
-                                    }
-                                    if (i == data.length() - 1) {
-                                        mmm += "]";
-                                    }
-                                }
+            public void getServiceReturnData(Object object) {
+                final String ddd = (String) object;
+                Log.e("page_data", "data:" + ddd);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (wv_show != null) {
+                            if (!TextUtil.isEmpty(ddd)) {
+                                wv_show.load("javascript:PlayActionByArray(" + ddd + "," + 0 + ")", null);
                             }
-                            Message msg = Message.obtain();
-                            msg.what = 0x4010;
-                            msg.obj = mmm;
-                            handler.sendMessage(msg);
-                            break;
+                        }
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                });
             }
-        }).start(((App) getApplication()).getThreadMgr());
+        });
     }
 
+    /**
+     * 拿actions信息
+     *
+     * @param pageNum
+     * @param
+     */
+    private void getPageObjectsAfterChange(String pageNum) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {  //  清空当前页的线
+                wv_show.load("javascript:ClearPageAndAction()", null);
+            }
+        });
+        String url;
+        if (isTeamspace) {
+            url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=0"
+                    + "&itemID=0"
+                    + "&pageNumber=" + pageNum
+                    + "&attachmentID=" + currentAttachmentId
+                    + "&soundtrackID=0";
+        } else {
+            url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=" + lessonId + "&itemID=" + currentItemId +
+                    "&pageNumber=" + pageNum;
+        }
+        MeetingServiceTools.getInstance().getGetPageObjects(url, MeetingServiceTools.GETGETPAGEOBJECTS, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                final String ddd = (String) object;
+                Log.e("page_data", "data:" + ddd);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (wv_show != null) {
+                            if (!TextUtil.isEmpty(ddd)) {
+                                wv_show.load("javascript:PlayActionByArray(" + ddd + "," + 0 + ")", null);
+                            }
+
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     public String EncoderByMd5(String str) {
         try {
@@ -3522,13 +3724,20 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     private boolean isCameraCanUse() {
 
-//        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)
-//                && !getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
-//            return false;
-//        } else {
-            return true;
-//        }
+        Camera mCamera = null;
+        try {
+            mCamera = Camera.open();
+        } catch (Exception e) {
+            return false;
+        }
+        if (mCamera == null) {
+            return false;
+        }
 
+        if (mCamera != null) {
+            mCamera.release();
+        }
+        return true;
     }
 
     /**
@@ -3582,8 +3791,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     Toast.makeText(WatchCourseActivity3.this, "请插入SD卡", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(!isCameraCanUse()){
-                    Toast.makeText(getApplicationContext(),"相机不可用",Toast.LENGTH_SHORT).show();
+                if (!isCameraCanUse()) {
+                    Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 closeAlbum();
@@ -4151,6 +4360,17 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     }).start(((App) getApplication()).getThreadMgr());
                     yinxiangmode = 2;
                 }
+
+
+                //测试录课   -----------------------
+//                startAgoraRecording();
+                //测试录课   -----------------------
+
+                // pdf 上弹出pdf
+
+//                displayNote();
+
+
                 break;
             case R.id.prepareScanTV:
                 openTvDevicesList();
@@ -4168,9 +4388,9 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     command_active.setImageResource(R.drawable.icon_command);
                 } else if (activte_linearlayout.getVisibility() == View.GONE) {
                     activte_linearlayout.setVisibility(View.VISIBLE);
+                    menu_linearlayout.setVisibility(View.GONE);
                     findViewById(R.id.hiddenwalkview).setVisibility(View.VISIBLE);
                     command_active.setImageResource(R.drawable.icon_command_active);
-                    menu_linearlayout.setVisibility(View.GONE);
                     menu.setImageResource(R.drawable.icon_menu);
                 }
                 break;
@@ -4213,6 +4433,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 menu.setImageResource(R.drawable.icon_menu);
                 getServiceDetail();
                 findViewById(R.id.bottomrl).setVisibility(View.GONE);
+
                 break;
             case R.id.prepareclose:
                 activte_linearlayout.setVisibility(View.GONE);
@@ -4455,23 +4676,205 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         }
     }
 
-    private void openTvDevicesList() {
 
-        ServiceInterfaceTools.getinstance().getBindTvs2().enqueue(new Callback<ResponseBody>() {
+    @org.xwalk.core.JavascriptInterface
+    public void viewBookNoteFunction(final String noteinfo) {
+        Log.e("当前文档信息", "viewBookNoteFunction  "+noteinfo);
+        runOnUiThread(new Runnable() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void run() {
+                displayNoteBook(noteinfo);
+            }
+        });
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void editBookNoteFunction(final String noteinfo) {
+        Log.e("当前文档信息", "editBookNoteFunction  " + noteinfo);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                selectNoteBook();
+            }
+        });
+    }
+
+
+    @org.xwalk.core.JavascriptInterface
+    public void editBookNoteLocalFunction(String note){
+        // edit
+        Log.e("JavascriptInterface","editBookNoteFunction:" + note);
+        if(DeviceManager.getDeviceType(this) == SupportDevice.PHONE){
+            Toast.makeText(getApplicationContext(),"该设备不支持本地笔记" ,Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")){
+            openNote(null);
+            return;
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(note);
+            String id = "";
+            if(jsonObject.has("id")){
+                id = jsonObject.getString("id");
+            } else if(jsonObject.has("ID")){
+                id = jsonObject.getString("ID");
+            }
+            openNote(id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void openNote(String noteId){
+        BookNote bookNote = null;
+        if(TextUtils.isEmpty(noteId)){
+            bookNote = new BookNote().setTitle("new note").setJumpBackToNote(false);
+        }else {
+            bookNote = new BookNote().setDocumentId(noteId).setJumpBackToNote(false);
+        }
+
+        Intent intent = new Intent();
+        intent.putExtra("OPEN_NOTE_BEAN", new Gson().toJson(bookNote));
+        ComponentName comp = new ComponentName("com.onyx.android.note", "com.onyx.android.note.note.ui.ScribbleActivity");
+        intent.setComponent(comp);
+        startActivityForResult(intent, 100);
+    }
+
+
+
+    /**
+     * 文档每一页上  展示 新的PDF文件（笔记）
+     *
+     * @param lineItem
+     */
+
+    private String currentAttachmentPage2;
+    private LineItem currentShowPdf2 = new LineItem();
+    private TextView closenote;
+
+    /**
+     * 展示笔记列表  (切换文档)
+     */
+    private void displayNoteBook(String json) {
+        String id = "";
+        if (json != null) {
+            try {
+                JSONObject jsonObject = new JSONObject(json);
+                id = jsonObject.getString("id");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=ab3a05cb-f813-4cb7-b029-e6faffcb5586";
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=" + id;
+        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                LineItem note = (LineItem) object;
+                displayNote(note);
+            }
+        });
+    }
+
+
+    /**
+     * @param note
+     */
+    private void displayNote(LineItem note) {
+        closenote = findViewById(R.id.closenote);
+        closenote.setVisibility(View.VISIBLE);
+        //两个按钮
+        menu.setVisibility(View.GONE);
+        command_active.setVisibility(View.GONE);
+        closenote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closenote.setVisibility(View.GONE);
+                menu.setVisibility(View.VISIBLE);
+
+                if(isPrepare){
+                    command_active.setVisibility(View.GONE);
+                }else{
+                    command_active.setVisibility(View.VISIBLE);
+                }
+
+
+
+                for (int i = 0; i < documentList.size(); i++) {
+                    documentList.get(i).setSelect(false);
+                }
+
+                currentAttachmentPage = currentAttachmentPage2;
+                AppConfig.currentPageNumber = currentAttachmentPage2;
+                currentShowPdf.setSelect(true);
+                currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
+                currentShowPdf.setUrl(currentShowPdf2.getUrl());
+                currentShowPdf.setItemId(currentShowPdf2.getItemId());
+                currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
+
+
+                myRecyclerAdapter2.notifyDataSetChanged();
+                currentAttachmentId = currentShowPdf.getAttachmentID();
+                currentItemId = currentShowPdf.getItemId();
+                targetUrl = currentShowPdf.getUrl();
+                newPath = currentShowPdf.getNewPath();
+                notifySwitchDocumentSocket(currentShowPdf, "1");
+                wv_show.load("file:///android_asset/index.html", null);
+            }
+        });
+
+        currentAttachmentPage2 = currentAttachmentPage;
+        currentShowPdf2.setNewPath(newPath);
+        currentShowPdf2.setUrl(targetUrl);
+        currentShowPdf2.setItemId(currentItemId);
+        currentShowPdf2.setAttachmentID(currentAttachmentId);
+
+        currentAttachmentPage = "0";
+        AppConfig.currentPageNumber = "0";
+        for (int i = 0; i < documentList.size(); i++) {
+            documentList.get(i).setSelect(false);
+        }
+        currentShowPdf = note;
+        currentShowPdf.setSelect(true);
+        myRecyclerAdapter2.notifyDataSetChanged();
+        currentAttachmentId = currentShowPdf.getAttachmentID();
+        currentItemId = currentShowPdf.getItemId();
+        targetUrl = currentShowPdf.getUrl();
+        newPath = currentShowPdf.getNewPath();
+        notifySwitchDocumentSocket(currentShowPdf, "1");
+        wv_show.load("file:///android_asset/index.html", null);
+    }
+
+    private SelectNoteDialog selectNoteDialog;
+
+    /**
+     * 笔记列表弹窗
+     */
+    private void selectNoteBook() {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber="+currentAttachmentPage+"&syncRoomID="+0;
+        selectNoteDialog = new SelectNoteDialog(WatchCourseActivity3.this, url,0+"");
+        selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectNoteDialog.OnFavoriteDocSelectedListener() {
+            @Override
+            public void onFavoriteDocSelected(LineItem note) {
                 try {
-                    Log.e("devices","respose:" + new String(response.body().bytes()));
-                } catch (IOException e) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("ID", note.getLocalFileID() + "");
+                    Log.e("selectNoteBook ",note.getLocalFileID()+" ");
+                    wv_show.load("javascript:AfterEditBookNote({'ID':'"+note.getLocalFileID()+"'})", null);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
         });
+        selectNoteDialog.show();
+    }
+
+
+    private TvDevicesListPopup tvDevicesListPopup;
+
+    private void openTvDevicesList() {
 
         ServiceInterfaceTools.getinstance().getBindTvs().enqueue(new Callback<DevicesResponse>() {
             @Override
@@ -4479,9 +4882,18 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 if (response != null && response.isSuccessful() && response.body() != null) {
                     if (response.body().getData() != null) {
                         List<TvDevice> devices = response.body().getData().getDeviceList();
+                        for (TvDevice device : devices) {
+                            for (Customer customer : teacorstudentList) {
+                                if (customer.getName().equals(device.getDeviceName())) { //根据用户名设置TV的userid
+                                    device.setUserID(customer.getUserID());
+                                    break;
+                                }
+                            }
+                            Log.e("devices", device.getDeviceName() + "  " + device.getDeviceSessionId() + "  " + device.getLoginTime() + " " + device.getUserID());
+                        }
                         boolean enable = response.body().getData().isEnableBind();
                         if (devices != null && devices.size() > 0) {
-                            TvDevicesListPopup tvDevicesListPopup = new TvDevicesListPopup();
+                            tvDevicesListPopup = new TvDevicesListPopup();
                             tvDevicesListPopup.getPopwindow(WatchCourseActivity3.this);
                             tvDevicesListPopup.setWebCamPopupListener(new TvDevicesListPopup.WebCamPopupListener() {
                                 @Override
@@ -4491,7 +4903,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
                                 @Override
                                 public void changeBindStatus(boolean isCheck) {
-                                    String url = AppConfig.wssServer + "/tv/change_bind_tv_status?status=" + (isCheck ? 1 : 0);
+                                    String url = "https://wss.peertime.cn/MeetingServer/tv/change_bind_tv_status?status=" + (isCheck ? 1 : 0);
                                     ServiceInterfaceTools.getinstance().changeBindTvStatus(url, ServiceInterfaceTools.CHANGEBINDTVSTATUS,
                                             isCheck, new ServiceInterfaceListener() {
                                                 @Override
@@ -4503,23 +4915,20 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
                                 @Override
                                 public void openTransfer(TvDevice tvDevice) {
-
+                                    tvVoice(1, tvDevice);
                                 }
 
                                 @Override
                                 public void closeTransfer(TvDevice tvDevice) {
-
+                                    tvVoice(0, tvDevice);
                                 }
 
                                 @Override
                                 public void logout(TvDevice tvDevice) {
-
+                                    tvlogout(0, tvDevice);
                                 }
                             });
-
-                            tvDevicesListPopup.StartPop(wv_show, devices, enable,true);
-                            activte_linearlayout.setVisibility(View.GONE);
-                            menu.setImageResource(R.drawable.icon_menu);
+                            tvDevicesListPopup.StartPop(wv_show, devices, enable, isTeamspace);
                         } else {
                             gotoScanTv();
                         }
@@ -4538,13 +4947,92 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         });
     }
 
+    private void resetTvDevices() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ServiceInterfaceTools.getinstance().getBindTvs().enqueue(new Callback<DevicesResponse>() {
+                    @Override
+                    public void onResponse(Call<DevicesResponse> call, Response<DevicesResponse> response) {
+                        if (response != null && response.isSuccessful() && response.body() != null) {
+                            if (response.body().getData() != null) {
+                                List<TvDevice> devices = response.body().getData().getDeviceList();
+                                if (devices != null && devices.size() > 0) {
+                                    for (TvDevice device : devices) {
+                                        for (Customer customer : teacorstudentList) {
+                                            if (customer.getName().equals(device.getDeviceName())) { //根据用户名设置TV的userid
+                                                device.setUserID(customer.getUserID());
+                                                break;
+                                            }
+                                        }
+                                        Log.e("devices", device.getDeviceName() + "  " + device.getDeviceSessionId() + "  " + device.getLoginTime() + " " + device.getUserID());
+                                    }
+                                    if (tvDevicesListPopup != null) {
+                                        tvDevicesListPopup.setTvDevices(devices);
+                                        tvDevicesListPopup.Hidden();
+                                    }
+                                } else {
+                                    if (tvDevicesListPopup != null) {
+                                        tvDevicesListPopup.setVisible();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DevicesResponse> call, Throwable t) {
+                    }
+                });
+            }
+        }, 3000);
+    }
+
+
+    private void tvVoice(int stat, TvDevice tvDevice) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("stat", stat);
+            json.put("actionType", 22);
+            json.put("sourceUserId", AppConfig.UserID);
+            json.put("isTvDevice", 1);
+            json.put("tvName", tvDevice.getDeviceName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        send_message("SEND_MESSAGE", AppConfig.UserToken, 1, tvDevice.getUserID() + "", Tools.getBase64(json.toString()).replaceAll("[\\s*\t\n\r]", ""));
+    }
+
+    private void tvlogout(int stat, TvDevice tvDevice) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("stat", stat);
+            json.put("actionType", 27);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        send_message("SEND_MESSAGE", AppConfig.UserToken, 1, tvDevice.getUserID() + "", Tools.getBase64(json.toString()).replaceAll("[\\s*\t\n\r]", ""));
+    }
+
 
     private void gotoScanTv() {
-
-        if(!isCameraCanUse()){
-            Toast.makeText(getApplicationContext(),"相机不可用",Toast.LENGTH_SHORT).show();
+        if (tvDevicesListPopup != null) {
+            tvDevicesListPopup.dismiss();
+        }
+        if (!isCameraCanUse()) {
+            Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
             return;
         }
+        closeAlbum();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent1 = new Intent(WatchCourseActivity3.this, MipcaActivityCapture.class);
+                intent1.putExtra("isHorization", true);
+                intent1.putExtra("type", 0);
+                startActivity(intent1);
+            }
+        }, 10);
         String url = AppConfig.wssServer + "/tv/change_bind_tv_status?status=1";
         ServiceInterfaceTools.getinstance().changeBindTvStatus(url, ServiceInterfaceTools.CHANGEBINDTVSTATUS,
                 true, new ServiceInterfaceListener() {
@@ -6128,6 +6616,9 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         });
     }
 
+    /**
+     * @param locateTime
+     */
     private void newAudioActionTime(int locateTime) {
         Log.e("newAudioActionTime", audioActionBeanList.size() + "    当前播放器的位置 " + locateTime);
         for (int i1 = 0; i1 < audioActionBeanList.size(); i1++) {
@@ -6483,16 +6974,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             String title = path.substring(path.lastIndexOf("/") + 1);
             UpdateVideo(path, title);
         }
-
-        if(requestCode == 100 && resultCode == RESULT_OK){
-//            Log.e("NoteBook","NoteBook return,data:" + data);
-            if(wv_show != null){
-                String json = data.getStringExtra("OPEN_NOTE_BEAN_JSON");
-                BookNote note = new Gson().fromJson(json,BookNote.class);
-                uploadNote(note);
-            }
-        }
-
         if (wv_show != null) {
             wv_show.onActivityResult(requestCode, resultCode, data);
         }
@@ -7512,7 +7993,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             wv_show.pauseTimers();
             wv_show.onHide();
         }
-
+        Log.e("onPPPause", "onPPPause");
         if (isJoinChannel) {
             if (togglelinearlayout.getVisibility() == View.VISIBLE) {
                 isJoinChannel = false;
@@ -7522,11 +8003,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 togglelinearlayout.setVisibility(View.GONE);
             }
         }
-
-
     }
-
-
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -7539,7 +8016,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         worker().leaveChannel(config().mChannel);
         if (isBroadcaster()) {
             worker().preview(false, null, 0);
-
         }
     }
 
@@ -7613,68 +8089,133 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     openVideoByViewType();
                 }
                 Log.e("RRRRRRRRRRRRRRRRRR", isPrepare + "");
-                if (!isPrepare) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-//                            startAgoraRecording();
-                        }
-                    }, 5000);
-                }
             }
         });
     }
 
-    String mAudioWavPath;
+    private String mAudioWavPath;
     private long startTime;
+
     /**
      * 是否录课
      */
     private boolean isAgoraRecord = false;
+    private CustomVideoView recordscreenvideoview;
+    private RecyclerView recordlistvideorecyclerview;
+
 
     private void startAgoraRecording() {
-        if (isHavePresenter()) {  // presenter
-            String url = AppConfig.URL_PUBLIC + "Soundtrack/CreateSoundtrack";
-            if (TextUtils.isEmpty(currentAttachmentId)) {
-                return;
+        recordscreenvideoview = findViewById(R.id.recordscreenvideo);
+        recordlistvideorecyclerview = findViewById(R.id.recordinglistvideo);
+        LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
+        linearLayoutManager3.setOrientation(LinearLayoutManager.VERTICAL);
+        recordlistvideorecyclerview.setLayoutManager(linearLayoutManager3);
+
+        // https://testapi.peertime.cn/MeetingServer/recording/recording_list?lessonId=43496
+        String recordListurl = "https://testapi.peertime.cn/MeetingServer/recording/recording_list?lessonId=" + lessonId;
+        ServiceInterfaceTools.getinstance().getRecordingList(recordListurl, ServiceInterfaceTools.GETRECORDINGLIST, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                List<RecordingBean> recordingBeanList = new ArrayList<>();
+                recordingBeanList.addAll((List<RecordingBean>) object);
+                if (recordingBeanList.size() > 0) {
+                    RecordingBean recordingBean = recordingBeanList.get(0);
+                    getRecordingItem(recordingBean);
+                }
             }
-            ServiceInterfaceTools.getinstance().createYinxiang(url, ServiceInterfaceTools.CREATESOUNDTOLESSON, currentAttachmentId, recordingId,
-                    new ServiceInterfaceListener() {
-                        @Override
-                        public void getServiceReturnData(Object object) {
-                            SoundtrackBean soundtrackBean = (SoundtrackBean) object;
-                            soundtrackID = soundtrackBean.getSoundtrackID();
-                            fieldId = soundtrackBean.getFileId();
-                            fieldNewPath = soundtrackBean.getPath();
-                            String AUDIO_WAV_BASEPATH = "/" + "pauseRecordDemo" + "/wav/";
-                            String fileBasePath = Environment.getExternalStorageDirectory().getAbsolutePath() + AUDIO_WAV_BASEPATH;
-                            File file = new File(fileBasePath);
-                            if (!file.exists()) {
-                                file.mkdirs();
-                            }
-                            String fileName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date()) + ".wav";
-                            mAudioWavPath = fileBasePath + fileName;
-                            int issuccess = worker().getRtcEngine().startAudioRecording(mAudioWavPath, 2);
-                            Log.e("Agora", issuccess + "      " + mAudioWavPath + "  " + soundtrackID);
-                            if (issuccess == 0) {
-                                isAgoraRecord = true;
-                                sendSync("AUDIO_SYNC", AppConfig.UserToken, 1, soundtrackID);
-                            }
-                        }
-                    });
-        }
+        });
+
     }
 
-    private void stopAgoraRecording(boolean isClose) {
-        sendSync("AUDIO_SYNC", AppConfig.UserToken, 0, soundtrackID);
-        int d = worker().getRtcEngine().stopAudioRecording();
-        //上传
-        File file2 = new File(mAudioWavPath);
-        if (file2.exists()) {
-            Log.e("Agora", file2.getAbsolutePath() + "  " + d);
-            uploadAudioFile(file2, soundtrackID, true, isClose);
-        }
+
+    private SectionVO voiceSectionVO = new SectionVO();
+    private boolean isPlayRecordInfo = false;
+
+    private void getRecordingItem(final RecordingBean recordingBean) {
+        String url = "https://testapi.peertime.cn/MeetingServer/recording/recording_item?recordingId=" + recordingBean.getRecordingId();
+        ServiceInterfaceTools.getinstance().getRecordingItem(url, ServiceInterfaceTools.GETRECORDINGITEM, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                RecordingBean recordingBean1 = (RecordingBean) object;
+                List<SectionVO> list = new ArrayList<>();
+                for (ChannelVO channelVO : recordingBean1.getChannelVOList()) {
+                    List<SectionVO> ll = channelVO.getSectionVOList();
+                    for (SectionVO ss : ll) {
+                        list.add(ss);
+
+                    }
+                }
+                int recordingId = recordingBean1.getRecordingId();
+                soundtrackID = recordingId;
+                // 拿actions信息
+                getAudioAction(recordingId, 0);
+                // 加载进度条
+                String duration = recordingBean1.getDuration() + "";
+                openAudioSync2(true, TextUtils.isEmpty(duration) ? 0 : Long.parseLong(duration));
+                // 预加载音频频信息
+                for (SectionVO vo : list) {
+                    if (vo.getType() == 1) { //音频
+                        voiceSectionVO = vo;
+                        break;
+                    }
+                }
+                Log.e("Recording audiourl", voiceSectionVO.getFileUrl() + "  ");
+                if (mediaPlayer2 != null) {
+                    mediaPlayer2.stop();
+                    mediaPlayer2.reset();
+                    mediaPlayer2.release();
+                    mediaPlayer2 = null;
+                }
+                mediaPlayer2 = new MediaPlayer();
+                try {
+                    mediaPlayer2.setDataSource(voiceSectionVO.getFileUrl());
+                    mediaPlayer2.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    mediaPlayer2.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mediaPlayer2.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        isPlayRecordInfo = true;
+                        mediaPlayer2.start();
+                    }
+                });
+                // 预加载视频信息
+                setRecordListview(list);
+
+            }
+        });
     }
+
+    private RecordVideoAdapter recordVideoAdapter;
+
+    private void setRecordListview(List<SectionVO> list) {
+
+        recordlistvideorecyclerview.setVisibility(View.VISIBLE);
+        List<SectionVO> newlist = new ArrayList<>();
+        for (SectionVO vo : list) {
+            if (vo.getType() != 1 && vo.getType() != 2) { //音频
+                newlist.add(vo);
+            }
+        }
+        recordVideoAdapter = new RecordVideoAdapter(WatchCourseActivity3.this, newlist);
+        recordlistvideorecyclerview.setAdapter(recordVideoAdapter);
+    }
+
+
+    private void closeRecordListview() {
+
+        recordVideoAdapter.notifyDataChanged();
+        Log.e("recording", "closerecording");
+        recordlistvideorecyclerview.setVisibility(View.GONE);
+    }
+
+
+    private void stopAgoraRecording(boolean isClose) {
+        finish();
+    }
+
 
     /**
      * 视频列表按user排序
@@ -8340,220 +8881,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             roleAudienceDialog = new DialogRoleAudience();
         }
         roleAudienceDialog.showDialog(this);
-    }
-
-    private void loadWebPdf(int deviceType,int page){
-        if(deviceType == SupportDevice.PHONE){
-            wv_show.load("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ")", null);
-
-        }else if(deviceType == SupportDevice.BOOK){
-            wv_show.load("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ",1)", null);
-
-        }
-        wv_show.load("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ")", null);
-        wv_show.load("javascript:Record()", null);
-    }
-
-
-    //---- for note
-    @org.xwalk.core.JavascriptInterface
-    public void editBookNoteFunction(final String note) {
-        // select
-
-    }
-
-    @org.xwalk.core.JavascriptInterface
-    public void editBookNoteLocalFunction(String note){
-        // edit
-        Log.e("JavascriptInterface","editBookNoteFunction:" + note);
-        if(DeviceManager.getDeviceType(this) == SupportDevice.PHONE){
-            Toast.makeText(getApplicationContext(),"该设备不支持本地笔记" ,Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if(TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")){
-            openNote(null);
-            return;
-        }
-        try {
-            JSONObject jsonObject = new JSONObject(note);
-            String id = "";
-            if(jsonObject.has("id")){
-                id = jsonObject.getString("id");
-            } else if(jsonObject.has("ID")){
-                id = jsonObject.getString("ID");
-            }
-            openNote(id);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void openNote(String noteId){
-        BookNote bookNote = null;
-        if(TextUtils.isEmpty(noteId)){
-            bookNote = new BookNote().setTitle("new note").setJumpBackToNote(false);
-        }else {
-            bookNote = new BookNote().setDocumentId(noteId).setJumpBackToNote(false);
-        }
-
-        Intent intent = new Intent();
-        intent.putExtra("OPEN_NOTE_BEAN", new Gson().toJson(bookNote));
-        ComponentName comp = new ComponentName("com.onyx.android.note", "com.onyx.android.note.note.ui.ScribbleActivity");
-        intent.setComponent(comp);
-        startActivityForResult(intent, 100);
-    }
-
-    @org.xwalk.core.JavascriptInterface
-    public void viewBookNoteFunction(String result){
-        Log.e("JavascriptInterface","viewBookNoteFunction,result:" + result);
-        viewNote(result);
-    }
-
-    private void viewNote(String json) {
-        String id = "";
-        if (json != null) {
-            try {
-
-                JSONObject jsonObject = new JSONObject(json);
-                if(jsonObject.has("id")){
-                    id = jsonObject.getString("id");
-                }else if(jsonObject.has("ID")){
-                    id = jsonObject.getString("ID");
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=" + id;
-        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                LineItem note = (LineItem) object;
-                displayNote(note);
-            }
-        });
-    }
-
-    LocalNoteManager noteManager;
-
-    private void uploadNote(BookNote note){
-        JSONObject jsonObject = null;
-        try {
-            jsonObject = new JSONObject();
-            jsonObject.put("ID",note.documentId);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Log.e("AfterEditBookNote","jsonObject:" + jsonObject);
-        wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
-        noteManager = LocalNoteManager.getMgr(WatchCourseActivity3.this);
-        String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId +".pdf";
-        noteManager.exportPdfAndUpload(WatchCourseActivity3.this,note,exportPath,currentAttachmentId,currentAttachmentPage,spaceId,lessonId);
-    }
-
-
-    private String currentAttachmentPage2;
-    private LineItem currentShowPdf2 = new LineItem();
-    private TextView closenote;
-
-    private void displayNote(LineItem note) {
-        closenote = findViewById(R.id.closenote);
-        closenote.setVisibility(View.VISIBLE);
-        //两个按钮
-        menu.setVisibility(View.GONE);
-        command_active.setVisibility(View.GONE);
-        closenote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closenote.setVisibility(View.GONE);
-                menu.setVisibility(View.VISIBLE);
-                if(isTeamspace){
-                    command_active.setVisibility(View.GONE);
-                }else {
-                    command_active.setVisibility(View.VISIBLE);
-                }
-                for (int i = 0; i < documentList.size(); i++) {
-                    documentList.get(i).setSelect(false);
-                }
-                currentAttachmentPage = currentAttachmentPage2;
-                AppConfig.currentPageNumber = currentAttachmentPage2;
-                currentShowPdf.setSelect(true);
-                currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
-                currentShowPdf.setUrl(currentShowPdf2.getUrl());
-                currentShowPdf.setItemId(currentShowPdf2.getItemId());
-                currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
-
-                currentAttachmentId = currentShowPdf.getAttachmentID();
-                currentItemId = currentShowPdf.getItemId();
-                targetUrl = currentShowPdf.getUrl();
-                newPath = currentShowPdf.getNewPath();
-                notifySwitchDocumentSocket(currentShowPdf, "1");
-                wv_show.load("file:///android_asset/index.html", null);
-            }
-        });
-
-        currentAttachmentPage2 = currentAttachmentPage;
-        currentShowPdf2.setNewPath(newPath);
-        currentShowPdf2.setUrl(targetUrl);
-        currentShowPdf2.setItemId(currentItemId);
-        currentShowPdf2.setAttachmentID(currentAttachmentId);
-
-        currentAttachmentPage = "0";
-        AppConfig.currentPageNumber = "0";
-        for (int i = 0; i < documentList.size(); i++) {
-            documentList.get(i).setSelect(false);
-        }
-        currentShowPdf = note;
-        currentShowPdf.setSelect(true);
-        currentAttachmentId = currentShowPdf.getAttachmentID();
-        currentItemId = currentShowPdf.getItemId();
-        targetUrl = currentShowPdf.getUrl();
-        newPath = currentShowPdf.getNewPath();
-        notifySwitchDocumentSocket(currentShowPdf, "1");
-        wv_show.load("file:///android_asset/index.html", null);
-    }
-
-    @Subscribe
-    public void noteUploadSucess(NoteId noteId){
-        Log.e("noteUploadSucess","note id:" + noteId.getNoteId());
-        if(wv_show != null){
-
-            JSONObject jsonObject = null;
-            try {
-                jsonObject = new JSONObject();
-                jsonObject.put("ID",noteId.getNoteId());
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            Log.e("AfterEditBookNote","jsonObject:" + jsonObject);
-            wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
-        }
-    }
-
-    private int spaceId;
-
-    private void loadWebIndex(){
-        int deviceType = DeviceManager.getDeviceType(this);
-        String indexUrl = "file:///android_asset/index.html";
-        if(deviceType == SupportDevice.BOOK){
-            indexUrl += "?devicetype=4";
-        }
-        final String url = indexUrl;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (wv_show == null) {
-                    return;
-                }
-                wv_show.load(url, null);
-            }
-        });
     }
 
 }

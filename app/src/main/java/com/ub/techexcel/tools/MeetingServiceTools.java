@@ -73,6 +73,13 @@ public class MeetingServiceTools {
     };
 
 
+    /**
+     *
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
     public void getPdfList(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         new Thread(new Runnable() {

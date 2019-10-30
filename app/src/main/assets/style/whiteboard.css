@@ -238,7 +238,7 @@ div:focus {
     font-size: 20px !important;
 }
 
-.live-video-tool-edit, .live-video-tool-play {
+.live-video-tool-edit, .live-video-tool-play, .live-video-tool-select {
     padding: 3px 20px;
     cursor: pointer;
     border-radius: 8px;
@@ -247,7 +247,7 @@ div:focus {
     align-items: center;
 }
 
-    .live-video-tool-play:hover, .live-video-tool-edit:hover {
+    .live-video-tool-play:hover, .live-video-tool-edit:hover, .live-video-tool-select:hover {
         background-color: #D8E4FD;
     }
 /* .live-video-tool-container:hover {
