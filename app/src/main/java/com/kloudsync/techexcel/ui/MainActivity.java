@@ -32,6 +32,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.bean.EventWxFilePath;
+import com.kloudsync.techexcel.bean.UserPath;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddDocToSpaceDialog;
 import com.kloudsync.techexcel.dialog.AddWxDocDialog;
@@ -117,7 +118,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             R.drawable.tab_d_05};
     private int draw_selectIDs[] = {R.drawable.tab_c_02, R.drawable.tab_c_01,
             R.drawable.tab_c_03, R.drawable.tab_c_04, R.drawable.tab_c_05};
-
     float density;
 
     public static RongIMClient mRongIMClient;
@@ -274,7 +274,10 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
     }
 
+    UserPath userPath;
+
     private void GetSchoolInfo() {
+
         LoginGet lg = new LoginGet();
         lg.setSchoolTeamGetListener(new LoginGet.SchoolTeamGetListener() {
             @Override

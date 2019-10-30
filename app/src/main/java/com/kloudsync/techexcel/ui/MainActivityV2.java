@@ -3,6 +3,7 @@ package com.kloudsync.techexcel.ui;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -55,6 +56,9 @@ import com.kloudsync.techexcel.frgment.TwoToOneFragment;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ContactHelpInterface;
 import com.kloudsync.techexcel.info.School;
+import com.kloudsync.techexcel.mvp.BaseActivity;
+import com.kloudsync.techexcel.mvp.presenter.MainPresenter;
+import com.kloudsync.techexcel.mvp.view.IMainActivityView;
 import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.service.UploadService;
@@ -101,7 +105,7 @@ import retrofit2.Response;
 //import com.wuyr.rippleanimation.RippleAnimation;
 
 
-public class MainActivityV2 extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener {
+public class MainActivityV2 extends BaseActivity<MainPresenter<IMainActivityView>> implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener,IMainActivityView{
 
     private List<TextView> tvs = new ArrayList<TextView>();
     private TextView tv_redcontact;
@@ -117,8 +121,6 @@ public class MainActivityV2 extends FragmentActivity implements AddWxDocDialog.O
             R.drawable.tab_d_05};
     private int draw_selectIDs[] = {R.drawable.tab_c_02, R.drawable.tab_c_01,
             R.drawable.tab_c_03, R.drawable.tab_c_04, R.drawable.tab_c_05};
-
-    float density;
 
     public static RongIMClient mRongIMClient;
     public static MainActivityV2 instance = null;
@@ -138,6 +140,8 @@ public class MainActivityV2 extends FragmentActivity implements AddWxDocDialog.O
     App app;
 
     private static ContactHelpInterface chi;
+
+    MainPresenter mainPresenter;
 
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
@@ -196,40 +200,36 @@ public class MainActivityV2 extends FragmentActivity implements AddWxDocDialog.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        systemTime = System.currentTimeMillis();
+//        PgyUpdateManager.register(this);
+        requestRongCloudOnlineStatus();
+        getCompanyInfo();
+        initUpdate();
+        StartWBServiceHAHA();
+        GetMaZhang();
+    }
+
+    @Override
+    protected void initData() {
+        mainPresenter = new MainPresenter();
         instance = this;
         app = (App) getApplication();
-//        app.setMainActivityInstance(instance);
         app.CheckLanguage();
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         editor = sharedPreferences.edit();
         EventBus.getDefault().register(this);
         editor.putBoolean("isLogIn", true).commit();
-        setContentView(R.layout.activity_main);
-//        PgyUpdateManager.register(this);
-        initView();
-        requestRongCloudOnlineStatus();
-        getCompanyInfo();
-        initUpdate();
-        StartWBServiceHAHA();
-        GetMaZhang();
-        GetMyPermission();
-
+        checkPermission();
         String wechatFilePath = getIntent().getStringExtra("wechat_data_path");
         if (!TextUtils.isEmpty(wechatFilePath)) {
-            if (addWxDocDialog != null) {
-                addWxDocDialog.dismiss();
-                addWxDocDialog = null;
-            }
-
-            addWxDocDialog = new AddWxDocDialog(this, wechatFilePath);
-            addWxDocDialog.setSavedListener(this);
-            addWxDocDialog.show();
+            showWxAddDocumentDialog(wechatFilePath);
         }
+    }
 
+    @Override
+    protected void initPresenter() {
+        mPresenter = mainPresenter;
     }
 
     private void requestRongCloudOnlineStatus() {
@@ -253,7 +253,7 @@ public class MainActivityV2 extends FragmentActivity implements AddWxDocDialog.O
         Log.e("user_token", "user_token:" + AppConfig.UserToken);
     }
 
-    private void GetMyPermission() {
+    private void checkPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.LOCATION_HARDWARE)
@@ -440,20 +440,22 @@ public class MainActivityV2 extends FragmentActivity implements AddWxDocDialog.O
                 }).register();
     }
 
-    private void initView() {
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-        density = dm.density;
-
+    @Override
+    public void initView() {
         rl_update = (RelativeLayout) findViewById(R.id.rl_update);
         vp = (CustomViewPager) findViewById(R.id.vp);
         tv_redcontact = (TextView) findViewById(R.id.tv_redcontact);
         tv_community = (TextView) findViewById(R.id.tv_community);
-        GetTvShow();
-        GetTabName();
+//
+//        GetTvShow();
+//        GetTabName();
+//        RongConnect();
 
-        RongConnect();
+    }
 
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_main;
     }
 
     private void GetTabName() {
@@ -542,6 +544,44 @@ public class MainActivityV2 extends FragmentActivity implements AddWxDocDialog.O
             }
         });
 //		getToken();
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void dismissLoading() {
+
+    }
+
+    @Override
+    public void toast(String msg) {
+
+    }
+
+    @Override
+    public Context getContext() {
+        return null;
+    }
+
+    @Override
+    public void initBottomTabs() {
+
+    }
+
+    @Override
+    public void showWxAddDocumentDialog(String wxPath) {
+        if (addWxDocDialog != null) {
+            addWxDocDialog.dismiss();
+            addWxDocDialog = null;
+        }
+
+        addWxDocDialog = new AddWxDocDialog(this, wxPath);
+        addWxDocDialog.setSavedListener(this);
+        addWxDocDialog.show();
+
     }
 
 
@@ -906,50 +946,6 @@ public class MainActivityV2 extends FragmentActivity implements AddWxDocDialog.O
         addWxDocDialog.show();
 
     }
-
-//    public  String getTopActivity(Activity context) {
-//        ActivityManager manager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
-//        List<ActivityManager.RunningTaskInfo> runningTaskInfos = manager.getRunningTasks(1);
-//        ComponentName componentName;
-//        if (runningTaskInfos != null) {
-//            componentName = runningTaskInfos.get(0).topActivity;
-//            String result = componentName.getPackageName() + "." + componentName.getClassName();
-//            return result;
-//        } else {
-//            return null;
-//        }
-//    }
-
-
-//    boolean isShow = false;
-//    WindowManager windowManager;
-//    WindowManager.LayoutParams params ;
-//    View contentView;
-//    private void showWindow() {
-//        if (windowManager == null) {
-//            windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-//            params = new WindowManager.LayoutParams();
-//            //窗口类型
-//            if (Build.VERSION.SDK_INT > 25) {
-//                params.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-//            } else {
-//                params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-//            }
-//            params.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-//                    | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-//            params.gravity = Gravity.BOTTOM;
-//            // 设置图片格式，效果为背景透明
-////            lp.format = PixelFormat.RGBA_8888;
-//            params.width = WindowManager.LayoutParams.MATCH_PARENT;
-//            params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-//            contentView = LayoutInflater.from(this).inflate(R.layout.dialog_adddf, null);
-//            //设置监听
-//        }
-//        if (!isShow) {
-//            windowManager.addView(contentView, params);
-//            isShow = true;
-//        }
-//    }
 
 
     private UploadFileDialog uploadFileDialog;

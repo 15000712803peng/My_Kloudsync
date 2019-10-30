@@ -200,6 +200,9 @@ public interface TempleteCourse_interface {
     @GET()
     Call<ResponseBody> getBindTvs2(@Url String url, @Header("UserToken") String userToken);
 
+    @GET
+    Call<ResponseBody> getUserPreference(@Header("UserToken") String userToken);
+
 
 
 
