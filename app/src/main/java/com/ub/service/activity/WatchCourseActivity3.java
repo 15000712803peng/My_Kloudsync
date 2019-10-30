@@ -1371,16 +1371,20 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 poornetworkll.setVisibility(View.GONE);
                 return;
             }
+
             String msg = Tools.getFromBase64(message);
             String msg_action = getRetCodeByReturnData2("action", msg);
 
             if (msg_action.equals("JOIN_MEETING")) {
+                //收到别人join_meeting的消息
                 if (getRetCodeByReturnData2("retCode", msg).equals("0")) {
                     doJOIN_MEETING(msg);
+                    return;
                 } else if (getRetCodeByReturnData2("retCode", msg).equals("-1")) {
 //                    initdefault();  // 重新 JOIN_MEETING
                 }
             }
+
             if (msg_action.equals("USER_JOIN_MEETING_ON_OTHER_DEVICE")) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -1390,6 +1394,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     }
                 });
             }
+
             if (msg_action.equals("OFFLINE_MODE") || msg_action.equals("ONLINE_MODE")) {
                 try {
                     List<Customer> joinlist = new ArrayList<>();

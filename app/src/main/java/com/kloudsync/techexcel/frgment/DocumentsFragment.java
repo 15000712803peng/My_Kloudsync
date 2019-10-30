@@ -749,9 +749,6 @@ public class DocumentsFragment extends MyFragment implements View.OnClickListene
                 case AppConfig.AddTempLesson:
                     GoToVIew((Document) msg.obj);
                     break;
-                case AppConfig.LOAD_FINISH:
-                    GoToVIew();
-                    break;
                 case AppConfig.DELETESUCCESS:
                     EventBus.getDefault().post(new TeamSpaceBean());
                     break;
@@ -761,19 +758,6 @@ public class DocumentsFragment extends MyFragment implements View.OnClickListene
         }
     };
 
-    private void GoToVIew() {
-        Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
-        intent.putExtra("userid", bean.getUserId());
-        intent.putExtra("meetingId", bean.getId() + "");
-        intent.putExtra("teacherid", bean.getTeacherId());
-        intent.putExtra("yinxiangmode", 0);
-        intent.putExtra("identity", bean.getRoleinlesson());
-        intent.putExtra("isStartCourse", true);
-        intent.putExtra("isPrepare", true);
-        intent.putExtra("isInstantMeeting", 0);
-        intent.putExtra("yinxiangmode", 0);
-        startActivity(intent);
-    }
 
     private void GoToVIew(Document lesson) {
         Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
@@ -791,56 +775,10 @@ public class DocumentsFragment extends MyFragment implements View.OnClickListene
         startActivity(intent);
     }
 
-    private void ViewdoHaha(final String meetingID) {
-        new ApiTask(new Runnable() {
-            @Override
-            public void run() {
-                JSONObject returnjson = ConnectService
-                        .getIncidentbyHttpGet(AppConfig.URL_PUBLIC
-                                + "Lesson/Item?lessonID=" + meetingID);
-                formatServiceData(returnjson);
-            }
-        }).start(ThreadManager.getManager());
-    }
+
 
     private ServiceBean bean = new ServiceBean();
 
-    private void formatServiceData(JSONObject returnJson) {
-        Log.e("returnJson", returnJson.toString());
-        try {
-            int retCode = returnJson.getInt("RetCode");
-            switch (retCode) {
-                case AppConfig.RETCODE_SUCCESS:
-                    JSONObject service = returnJson.getJSONObject("RetData");
-                    bean = new ServiceBean();
-
-                    bean.setId(service.getInt("LessonID"));
-                    String des = service.getString("Description");
-                    bean.setDescription(des);
-                    int statusID = service.getInt("StatusID");
-                    bean.setStatusID(statusID);
-                    bean.setRoleinlesson(service.getInt("RoleInLesson"));
-                    JSONArray memberlist = service.getJSONArray("MemberInfoList");
-                    for (int i = 0; i < memberlist.length(); i++) {
-                        JSONObject jsonObject = memberlist.getJSONObject(i);
-                        int role = jsonObject.getInt("Role");
-                        if (role == 2) { //teacher
-                            bean.setTeacherName(jsonObject.getString("MemberName"));
-                            bean.setTeacherId(jsonObject.getString("MemberID"));
-                        } else if (role == 1) {
-                            bean.setUserName(jsonObject.getString("MemberName"));
-                            bean.setUserId(jsonObject.getString("MemberID"));
-                        }
-                    }
-                    handler.obtainMessage(AppConfig.LOAD_FINISH).sendToTarget();
-                    break;
-                default:
-                    break;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onItem(TeamSpaceBean teamSpaceBean) {

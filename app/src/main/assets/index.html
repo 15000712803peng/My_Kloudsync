@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -1488,14 +1488,20 @@
             if (direction == 1) {//up
                 var mh = $("#main").height();
                 var ch = $("#pageContainer" + PageNumber).height();
-                if (ch > mh) {
+                if ($("#main").scrollTop() == 0) {
+                    PrevPage(true);
+                }
+                else if (ch > mh) {
                     $("#main").scrollTop(Math.max( $("#main").scrollTop()-50,0));
                 }
             }
             else if (direction == 2) {//down
                 var mh = $("#main").height();
                 var ch = $("#pageContainer" + PageNumber).height();
-                if (ch > mh) {
+                if ($("#main").scrollTop() == ch - mh) {
+                    NextPage(true);
+                }
+                else if (ch > mh) {
                     $("#main").scrollTop(Math.min( $("#main").scrollTop()+50,ch-mh));
                 }
                 
