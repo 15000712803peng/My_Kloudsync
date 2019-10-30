@@ -3393,17 +3393,15 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
     @org.xwalk.core.JavascriptInterface
-    public void viewBookNoteFunction(String result){
+    public void viewBookNoteFunction(final String result){
         Log.e("JavascriptInterface","viewBookNoteFunction,result:" + result);
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                selectNoteBook();
+                displayNoteBook(result);
             }
         });
     }
-
 
     @org.xwalk.core.JavascriptInterface
     public void editBookNoteFunction(final String noteinfo) {

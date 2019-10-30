@@ -2275,8 +2275,10 @@ public class LoginGet {
             String RetCode = obj.getString("RetCode");
             if (RetCode.equals(AppConfig.RIGHT_RETCODE)) {
                 JSONObject RetData = obj.getJSONObject("RetData");
+                school = new School();
                 JSONObject pt = new JSONObject(RetData.getString("PreferenceText"));
                 int SchoolID = pt.getInt("SchoolID");
+                school.setSchoolID(SchoolID);
                 int TeamID = -1;
                 if(pt.has("TeamID")){
                     TeamID = pt.getInt("TeamID");
@@ -2286,25 +2288,32 @@ public class LoginGet {
                     TeamID = -1;
                 }
                 String SchoolName = pt.getString("SchoolName");
+                school.setSchoolName(SchoolName);
                 String TeamName = pt.getString("TeamName");
-                if(pt.has("SubSystemData")){
-                    JSONObject subSystemData = pt.getJSONObject("SubSystemData");
-                    if(subSystemData.has("selectedSubSystemId")){
-                        SchoolID = subSystemData.getInt("selectedSubSystemId");
-                    }
 
-                    if(subSystemData.has("subSystemName")){
-                        SchoolName = subSystemData.getString("subSystemName") + "@" + SchoolName;
-                    }
-                }
-                school = new School();
                 TeamSpaceBean teamSpaceBean = new TeamSpaceBean();
                 teamSpaceBean.setItemID(TeamID);
                 teamSpaceBean.setName(TeamName);
-                school.setSchoolID(SchoolID);
-                school.setSchoolName(SchoolName);
                 school.setTeamSpaceBean(teamSpaceBean);
 
+
+                if(pt.has("SubSystemData")){
+
+                    List<CompanySubsystem> list = new ArrayList<>();
+                    CompanySubsystem companySubsystem = new CompanySubsystem();
+                    JSONObject subSystemData = pt.getJSONObject("SubSystemData");
+                    if(subSystemData.has("selectedSubSystemId")){
+                        String selectedSubSystemId = subSystemData.getString("selectedSubSystemId");
+                        companySubsystem.setSubSystemId(selectedSubSystemId);
+                    }
+                    if(subSystemData.has("subSystemName")){
+                        String subSystemName = subSystemData.getString("subSystemName");
+                        companySubsystem.setSubSystemName(subSystemName);
+                    }
+
+                    list.add(companySubsystem);
+                    school.setSubsystems(list);
+                }
 
             } else {
                 String ErrorMessage = obj.getString("ErrorMessage");
