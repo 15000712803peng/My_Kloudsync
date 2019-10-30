@@ -764,7 +764,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    wv_show.load("file:///android_asset/index.html", null);
+                    loadWebIndex();
                 }
             });
             if (isHavePresenter()) {
@@ -3324,7 +3324,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    wv_show.load("file:///android_asset/index.html", null);
+                    loadWebIndex();
                 }
             });
         }
@@ -4447,7 +4447,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 targetUrl = currentShowPdf.getUrl();
                 newPath = currentShowPdf.getNewPath();
                 notifySwitchDocumentSocket(currentShowPdf, "1");
-                wv_show.load("file:///android_asset/index.html", null);
+                loadWebIndex();
             }
         });
 
@@ -4470,7 +4470,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
         notifySwitchDocumentSocket(currentShowPdf, "1");
-        wv_show.load("file:///android_asset/index.html", null);
+        loadWebIndex();
     }
 
     private SelectNoteDialog selectNoteDialog;
@@ -6281,7 +6281,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                         newPath = currentShowPdf.getNewPath();
                         isHtml = currentShowPdf.isHtml5();
                         notifySwitchDocumentSocket(currentShowPdf, "1");
-                        wv_show.load("file:///android_asset/index.html", null);
+                        loadWebIndex();
                     }
                 }
             });

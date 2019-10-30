@@ -793,7 +793,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     if (wv_show == null) {
                         return;
                     }
-                    wv_show.load("file:///android_asset/index.html", null);
+                    loadWebIndex();
                 }
             });
             if (isHavePresenter()) {
@@ -3603,7 +3603,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    wv_show.load("file:///android_asset/index.html", null);
+                    loadWebIndex();
                 }
             });
         }
@@ -4677,6 +4677,24 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     }
 
 
+    private void loadWebIndex(){
+        int deviceType = DeviceManager.getDeviceType(this);
+        String indexUrl = "file:///android_asset/index.html";
+        if(deviceType == SupportDevice.BOOK){
+            indexUrl += "?devicetype=4";
+        }
+        final String url = indexUrl;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (wv_show == null) {
+                    return;
+                }
+                wv_show.load(url, null);
+            }
+        });
+    }
+
     @org.xwalk.core.JavascriptInterface
     public void viewBookNoteFunction(final String noteinfo) {
         Log.e("当前文档信息", "viewBookNoteFunction  "+noteinfo);
@@ -4821,7 +4839,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 targetUrl = currentShowPdf.getUrl();
                 newPath = currentShowPdf.getNewPath();
                 notifySwitchDocumentSocket(currentShowPdf, "1");
-                wv_show.load("file:///android_asset/index.html", null);
+                loadWebIndex();
             }
         });
 
@@ -4844,7 +4862,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
         notifySwitchDocumentSocket(currentShowPdf, "1");
-        wv_show.load("file:///android_asset/index.html", null);
+        loadWebIndex();
     }
 
     private SelectNoteDialog selectNoteDialog;
@@ -6793,7 +6811,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     newPath = currentShowPdf.getNewPath();
                     isHtml = currentShowPdf.isHtml5();
                     notifySwitchDocumentSocket(currentShowPdf, "1");
-                    wv_show.load("file:///android_asset/index.html", null);
+                    loadWebIndex();
                 }
             }
         });

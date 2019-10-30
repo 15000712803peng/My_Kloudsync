@@ -611,7 +611,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                     if (wv_show == null) {
                         return;
                     }
-                    wv_show.load("file:///android_asset/index.html", null);
+                    loadWebIndex();
                 }
             });
             if (isHavePresenter()) {
@@ -649,7 +649,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                     if (wv_show == null) {
                         return;
                     }
-                    wv_show.load("file:///android_asset/index.html", null);
+                    loadWebIndex();
                 }
             });
 
@@ -2897,7 +2897,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    wv_show.load("file:///android_asset/index.html", null);
+                    loadWebIndex();
                 }
             });
         }
@@ -3392,6 +3392,24 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
+
+    private void loadWebIndex(){
+        int deviceType = DeviceManager.getDeviceType(this);
+        String indexUrl = "file:///android_asset/index.html";
+        if(deviceType == SupportDevice.BOOK){
+            indexUrl += "?devicetype=4";
+        }
+        final String url = indexUrl;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (wv_show == null) {
+                    return;
+                }
+                wv_show.load(url, null);
+            }
+        });
+    }
     @org.xwalk.core.JavascriptInterface
     public void viewBookNoteFunction(final String result){
         Log.e("JavascriptInterface","viewBookNoteFunction,result:" + result);
@@ -3756,7 +3774,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                     targetUrl = currentShowPdf.getUrl();
                     newPath = currentShowPdf.getNewPath();
                     notifySwitchDocumentSocket(currentShowPdf, "1");
-                    wv_show.load("file:///android_asset/index.html", null);
+                    loadWebIndex();
                 }
             }
 
@@ -3853,7 +3871,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 //                    targetUrl = currentShowPdf.getUrl();
 //                    newPath = currentShowPdf.getNewPath();
 //                    notifySwitchDocumentSocket(currentShowPdf, "1");
-//                    wv_show.load("file:///android_asset/index.html", null);
+//                    loadWebIndex();
 //                }
 
                 displayNote(syncRoomBean);
@@ -6161,7 +6179,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 targetUrl = currentShowPdf.getUrl();
                 newPath = currentShowPdf.getNewPath();
                 notifySwitchDocumentSocket(currentShowPdf, "1");
-                wv_show.load("file:///android_asset/index.html", null);
+                loadWebIndex();
             }
         });
 
@@ -6183,7 +6201,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
         notifySwitchDocumentSocket(currentShowPdf, "1");
-        wv_show.load("file:///android_asset/index.html", null);
+        loadWebIndex();
     }
 
     @Subscribe
