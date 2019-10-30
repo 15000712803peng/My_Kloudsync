@@ -560,6 +560,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                                 }
                             }
                         });
+                        // --- test
                         activity3.teacherRecyclerAdapter.Update(activity3.teacorstudentList);
                         activity3.videoPopuP.setPresenter(activity3.identity,
                                 activity3.currentPresenterId,
