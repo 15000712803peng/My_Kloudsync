@@ -274,6 +274,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     private int roomType;
 
+    private int spaceId;
+
     @Override
     public void shareDocumentToFriend(SoundtrackBean soundtrackBean) {
         shareSyncDialog = new ShareSyncDialog(this);
@@ -921,6 +923,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         isInClassroom = getIntent().getBooleanExtra("isInClassroom", false);
         ishavedefaultpage = getIntent().getBooleanExtra("ishavedefaultpage", false);
         isTeamspace = getIntent().getBooleanExtra("isTeamspace", false);
+        spaceId = getIntent().getIntExtra("spaceId",0);
         roomType = getIntent().getIntExtra("type", 0);
         if (isTeamspace) {
             isPrepare = true;
@@ -4698,7 +4701,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     @org.xwalk.core.JavascriptInterface
     public void viewBookNoteFunction(final String noteinfo) {
-        Log.e("当前文档信息", "viewBookNoteFunction  "+noteinfo);
+        Log.e("JavascriptInterface", "viewBookNoteFunction  "+noteinfo);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -4709,7 +4712,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     @org.xwalk.core.JavascriptInterface
     public void editBookNoteFunction(final String noteinfo) {
-        Log.e("当前文档信息", "editBookNoteFunction  " + noteinfo);
+        Log.e("JavascriptInterface", "editBookNoteFunction  " + noteinfo);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -6993,6 +6996,16 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             String title = path.substring(path.lastIndexOf("/") + 1);
             UpdateVideo(path, title);
         }
+
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+//            Log.e("NoteBook","NoteBook return,data:" + data);
+            if (wv_show != null) {
+                String json = data.getStringExtra("OPEN_NOTE_BEAN_JSON");
+                BookNote note = new Gson().fromJson(json, BookNote.class);
+                uploadNote(note);
+            }
+        }
+
         if (wv_show != null) {
             wv_show.onActivityResult(requestCode, resultCode, data);
         }
@@ -8900,6 +8913,25 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             roleAudienceDialog = new DialogRoleAudience();
         }
         roleAudienceDialog.showDialog(this);
+    }
+
+
+    LocalNoteManager noteManager;
+
+    private void uploadNote(BookNote note) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject();
+            jsonObject.put("ID", note.documentId);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
+        wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
+        noteManager = LocalNoteManager.getMgr(WatchCourseActivity3.this);
+        String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
+        noteManager.exportPdfAndUpload(WatchCourseActivity3.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, "0");
     }
 
 }
