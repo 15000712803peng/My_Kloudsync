@@ -689,14 +689,14 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             if (i == s) {
                 // 必须设置图片大小，否则不显示ad
                 Drawable d = getResources().getDrawable(draw_selectIDs[s]);
-                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 22),
-                        DensityUtil.dp2px(getApplicationContext(), 22)); // 必须设置图片大小，否则不显示
+                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 18),
+                        DensityUtil.dp2px(getApplicationContext(), 18)); // 必须设置图片大小，否则不显示
                 tvs.get(s).setTextColor(getResources().getColor(R.color.tab_blue));
                 tvs.get(s).setCompoundDrawables(null, d, null, null);
             } else {
                 Drawable d = getResources().getDrawable(drawIDs[i]);
-                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 22),
-                        DensityUtil.dp2px(getApplicationContext(), 22));  // 必须设置图片大小，否则不显示
+                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 18),
+                        DensityUtil.dp2px(getApplicationContext(), 18));  // 必须设置图片大小，否则不显示
                 tvs.get(i).setTextColor(getResources().getColor(R.color.tab_gray));
                 tvs.get(i).setCompoundDrawables(null, d, null, null);
             }

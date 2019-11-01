@@ -3387,6 +3387,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 wv_show.load("javascript:ClearPageAndAction()", null);
             }
         });
+
         String url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=0"
                 + "&itemID=0"
                 + "&pageNumber=" + pageNum
@@ -9126,7 +9127,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             public void onFavoriteDocSelected(Note note) {
                 String url = AppConfig.URL_PUBLIC + "DocumentNote/ImportNote";
                 ServiceInterfaceTools.getinstance().importNote(url, ServiceInterfaceTools.IMPORTNOTE, meetingId,
-                        note.getAttachmentID() + "", currentAttachmentPage, note.getNoteID(), linkProperty.toString(),
+                        currentAttachmentId + "", currentAttachmentPage, note.getNoteID(), linkProperty.toString(),
                         new ServiceInterfaceListener() {
                             @Override
                             public void getServiceReturnData(Object object) {
