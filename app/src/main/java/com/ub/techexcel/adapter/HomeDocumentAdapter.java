@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,6 +100,21 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
         return holder;
     }
 
+    private void setDocumentIcon(String name,ImageView documentIcon){
+        Log.e("check_name","name:" + name);
+        if(name.endsWith(".jpg") || name.endsWith(".JPG")){
+            documentIcon.setImageResource(R.drawable.icon_jpg);
+        }else if(name.endsWith(".ppt") || name.endsWith(".PPT") || name.endsWith(".pptx") || name.endsWith(".PPTX")){
+            documentIcon.setImageResource(R.drawable.icon_ppt);
+        }else if(name.endsWith(".pdf") || name.endsWith(".pdf")){
+            documentIcon.setImageResource(R.drawable.icon_pdf);
+        }else if(name.endsWith(".doc") || name.endsWith(".DOC") || name.endsWith(".docx") || name.endsWith(".DOCX")){
+            documentIcon.setImageResource(R.drawable.icon_doc);
+        }else{
+            documentIcon.setImageResource(R.drawable.file);
+        }
+    }
+
     @Override
     public void onBindViewHolder(final RecycleHolder holder, final int position) {
         final Document item = documents.get(position);
@@ -132,6 +148,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
         holder.listView.setVisibility(View.GONE);
         int syncCount = item.getSyncCount();
         holder.tv_num_value.setText(item.getSyncCount() + "");
+        setDocumentIcon(item.getTitle(),holder.documentIcon);
         if (syncCount == 0) {
             holder.syncll.setVisibility(View.GONE);
         } else {
@@ -190,6 +207,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
         ListView listView;
         ImageView morepopup;
         ImageView imageFolder;
+        ImageView documentIcon;
 
         public RecycleHolder(View itemView) {
             super(itemView);
@@ -202,6 +220,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
             lin_favour = (RelativeLayout) itemView.findViewById(R.id.lin_favour);
             syncll = (LinearLayout) itemView.findViewById(R.id.syncll);
             imageFolder = (ImageView) itemView.findViewById(R.id.image_folder);
+            documentIcon = (ImageView) itemView.findViewById(R.id.icon_document);
         }
     }
 

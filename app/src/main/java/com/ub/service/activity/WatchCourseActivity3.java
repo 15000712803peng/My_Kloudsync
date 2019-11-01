@@ -3763,7 +3763,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private AddFileFromFavoriteDialog addFileFromFavoriteDialog;
 
     private boolean isCameraCanUse() {
-
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)
                 && !getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
             return false;
@@ -8879,11 +8878,9 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 //    }
 
     private void openNote(String noteId) {
-
         BookNote bookNote = null;
         if (TextUtils.isEmpty(noteId)) {
             bookNote = new BookNote().setTitle("new note").setJumpBackToNote(false);
-
         } else {
             bookNote = new BookNote().setDocumentId(noteId).setJumpBackToNote(false);
             if (!QueryLocalNoteTool.noteIsExist(this, noteId)) {

@@ -10,11 +10,11 @@
         android:id="@+id/kk"
         android:layout_width="match_parent"
         android:layout_height="62dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="18dp"
         android:layout_marginRight="10dp">
 
         <ImageView
-            android:id="@+id/spaceicon2"
+            android:id="@+id/icon_document"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_centerVertical="true"
@@ -24,8 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/spaceicon2"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@id/icon_document"
             android:orientation="vertical">
 
             <TextView

@@ -11,51 +11,72 @@
         android:background="#fff"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:background="@color/white"
-            android:paddingRight="16dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="@string/service"
-                android:textColor="@color/darkgrey"
-                android:textSize="16sp" />
+                android:text="文档"
+                android:textColor="@color/brunette"
+                android:textSize="15sp"
+                />
 
-            <ImageView
-                android:id="@+id/addService"
-                android:layout_width="16dp"
-                android:layout_height="20dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="5dp"
-                android:src="@drawable/add_w" />
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true">
+            <LinearLayout
+                android:id="@+id/search_layout"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:paddingLeft="13dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:background="@drawable/seach_bg_v2"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="36dp">
 
                 <ImageView
-                    android:id="@+id/img_notice"
-                    android:layout_width="17dp"
-                    android:layout_height="19dp"
-                    android:padding="10dp"
-                    android:src="@drawable/home_page_notice_icon_unchecked" />
+                    android:padding="2dp"
+                    android:scaleType="fitCenter"
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_marginRight="4dp"
+                    android:background="@drawable/searchicon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Search_Contact"
+                    android:textColor="@color/newgrey"
+                    android:textSize="13sp" />
+
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:background="@drawable/gray_circle"
+                android:layout_marginLeft="20dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp">
+                <ImageView
+                    android:padding="4dp"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/addService"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/top_add_doc" />
             </RelativeLayout>
-        </RelativeLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/grey" />
-
-        <include layout="@layout/searchcontact" />
-
+        </LinearLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -66,65 +87,76 @@
             android:paddingBottom="5dp">
 
             <TextView
-                android:layout_marginTop="5dp"
-                android:textSize="13sp"
+                android:layout_marginTop="15dp"
+                android:textSize="18sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="12dp"
+                android:layout_marginLeft="18dp"
                 android:text="@string/Team"
-                android:textColor="@color/newgrey" />
+                android:textColor="@color/brunette" />
 
 
         </RelativeLayout>
 
         <RelativeLayout
+            android:layout_marginTop="5dp"
+            android:background="@drawable/team_bg"
             android:gravity="center_vertical"
             android:layout_gravity="center_vertical"
             android:id="@+id/teamrl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="18dp"
             android:layout_marginBottom="10dp"
-            android:paddingTop="2dp">
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp">
 
             <ImageView
                 android:id="@+id/switchteam"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:padding="2dp"
-                android:src="@drawable/switch_gray" />
+                android:layout_marginLeft="25dp"
+                android:src="@drawable/team_switch" />
+
+            <ImageView
+                android:id="@+id/icon_white_switch"
+                android:src="@drawable/switch_white"
+                android:layout_marginLeft="12dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/switchteam"
+                android:layout_width="26dp"
+                android:layout_height="26dp" />
 
 
             <TextView
+                android:singleLine="true"
+                android:textSize="17sp"
                 android:paddingBottom="1dp"
-                android:layout_marginLeft="3dp"
+                android:layout_marginLeft="8dp"
                 android:id="@+id/teamspacename"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/switchteam"
+                android:layout_toRightOf="@id/icon_white_switch"
                 android:text=""
-                android:textColor="@color/black" />
+                android:textColor="@color/white" />
 
             <ImageView
+                android:layout_marginRight="8dp"
                 android:id="@+id/moreOpation"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:padding="6dp"
-                android:src="@drawable/more_favor" />
+                android:src="@drawable/more_white" />
 
         </RelativeLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1.5px"
-            android:background="@color/divider_line" />
+
 
         <android.support.v4.widget.NestedScrollView
 
@@ -138,29 +170,45 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="5dp" />
+                    android:layout_height="15dp" />
 
                 <RelativeLayout
+                    android:gravity="center_vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:layout_centerVertical="true"
-                        android:textSize="13sp"
+                        android:layout_marginTop="15dp"
+                        android:textSize="15sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="18dp"
                         android:text="@string/Space"
-                        android:textColor="@color/newgrey" />
+                        android:textColor="@color/brunette" />
+
+                    <TextView
+                        android:layout_toLeftOf="@+id/image_filter_space"
+                        android:layout_centerVertical="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="筛选空间"
+                        android:textColor="#ff999999"
+                        android:textSize="12sp"
+                        android:layout_marginRight="4dp"
+                        />
+
+
 
                     <ImageView
+
                         android:id="@+id/image_filter_space"
                         android:layout_marginRight="10dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:padding="3dp"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:padding="8dp"
                         android:src="@drawable/icon_filter" />
                 </RelativeLayout>
 
@@ -169,14 +217,14 @@
                     android:visibility="gone"
                     android:id="@+id/createnewspace"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="66dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp">
 
                     <ImageView
                         android:id="@+id/spaceicon"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:layout_centerVertical="true"
                         android:src="@drawable/new_space" />
 
@@ -185,16 +233,34 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="18dp"
+                        android:textSize="15sp"
                         android:layout_toRightOf="@id/spaceicon"
                         android:text="@string/Create_Space"
-                        android:textColor="@color/skyblue" />
+                        android:textColor="#ff333333" />
 
                     <TextView
+                        android:layout_marginLeft="56dp"
+                        android:layout_marginTop="16dp"
                         android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
+                        android:layout_height="1.5dp"
                         android:layout_alignParentBottom="true"
                         android:background="@color/divider_line" />
+
+                    <RelativeLayout
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/gray_circle"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp">
+
+                        <ImageView
+                            android:padding="5dp"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/add_space"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </RelativeLayout>
 
                 </RelativeLayout>
 
@@ -203,14 +269,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
 
+
                 <TextView
-                    android:textSize="13sp"
-                    android:layout_width="match_parent"
+                    android:layout_marginTop="15dp"
+                    android:textSize="15sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="18dp"
                     android:text="@string/Current_file"
-                    android:textColor="@color/newgrey" />
+                    android:textColor="@color/brunette" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycleview"

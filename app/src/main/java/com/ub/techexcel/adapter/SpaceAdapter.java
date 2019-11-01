@@ -98,26 +98,26 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
             holder.tv_sort.setText("");
         }
 
-        holder.tv_sort.setBackgroundResource(R.drawable.circle_expand);
+//        holder.tv_sort.setBackgroundResource(R.drawable.circle_expand);
 
         holder.attachmentcount.setText(item.getAttachmentCount() == 0 ? "" : item.getAttachmentCount() + " documents");
-        holder.syncroomcount.setText(item.getSyncRoomCount() == 0 ? "" : item.getSyncRoomCount() + " SyncRooms");
+//        holder.syncroomcount.setText(item.getSyncRoomCount() == 0 ? "" : item.getSyncRoomCount() + " SyncRooms");
 
-        if (isSyncRoom) {
-            holder.attachmentcount.setVisibility(View.GONE);
-            if (item.getSyncRoomCount() == 0) {
-                holder.syncroomcount.setVisibility(View.GONE);
-            } else {
-                holder.syncroomcount.setVisibility(View.VISIBLE);
-            }
-        } else {
-            holder.syncroomcount.setVisibility(View.GONE);
-            if (item.getAttachmentCount() == 0) {
-                holder.attachmentcount.setVisibility(View.GONE);
-            } else {
-                holder.attachmentcount.setVisibility(View.VISIBLE);
-            }
-        }
+//        if (isSyncRoom) {
+//            holder.attachmentcount.setVisibility(View.GONE);
+//            if (item.getSyncRoomCount() == 0) {
+//                holder.syncroomcount.setVisibility(View.GONE);
+//            } else {
+//                holder.syncroomcount.setVisibility(View.VISIBLE);
+//            }
+//        } else {
+//            holder.syncroomcount.setVisibility(View.GONE);
+//            if (item.getAttachmentCount() == 0) {
+//                holder.attachmentcount.setVisibility(View.GONE);
+//            } else {
+//                holder.attachmentcount.setVisibility(View.VISIBLE);
+//            }
+//        }
 
 
         holder.spacerelativelayout.setOnClickListener(new View.OnClickListener() {

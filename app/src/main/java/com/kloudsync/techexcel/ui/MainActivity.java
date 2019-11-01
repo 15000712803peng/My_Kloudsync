@@ -113,11 +113,11 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     private TextView tv_community;
     private int tvIDs[] = {R.id.tv_service, R.id.tv_dialogue, R.id.tv_contact,
             R.id.tv_community, R.id.tv_personal_center};
-    private int drawIDs[] = {R.drawable.tab_d_02, R.drawable.tab_d_01,
-            R.drawable.tab_d_03, R.drawable.tab_d_04,
-            R.drawable.tab_d_05};
-    private int draw_selectIDs[] = {R.drawable.tab_c_02, R.drawable.tab_c_01,
-            R.drawable.tab_c_03, R.drawable.tab_c_04, R.drawable.tab_c_05};
+    private int drawIDs[] = {R.drawable.tab1_unselected, R.drawable.tab2_unselected,
+            R.drawable.tab3_unselected, R.drawable.tab4_unselected,
+            R.drawable.tab5_unselected};
+    private int draw_selectIDs[] = {R.drawable.tab1_selected, R.drawable.tab2_selected,
+            R.drawable.tab3_selected, R.drawable.tab4_selected, R.drawable.tab5_selected};
     float density;
 
     public static RongIMClient mRongIMClient;
@@ -689,15 +689,15 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             if (i == s) {
                 // 必须设置图片大小，否则不显示ad
                 Drawable d = getResources().getDrawable(draw_selectIDs[s]);
-                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 20),
-                        DensityUtil.dp2px(getApplicationContext(), 20)); // 必须设置图片大小，否则不显示
-                tvs.get(s).setTextColor(getResources().getColor(R.color.skyblue));
+                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 22),
+                        DensityUtil.dp2px(getApplicationContext(), 22)); // 必须设置图片大小，否则不显示
+                tvs.get(s).setTextColor(getResources().getColor(R.color.tab_blue));
                 tvs.get(s).setCompoundDrawables(null, d, null, null);
             } else {
                 Drawable d = getResources().getDrawable(drawIDs[i]);
-                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 20),
-                        DensityUtil.dp2px(getApplicationContext(), 20));  // 必须设置图片大小，否则不显示
-                tvs.get(i).setTextColor(getResources().getColor(R.color.darkgrey));
+                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 22),
+                        DensityUtil.dp2px(getApplicationContext(), 22));  // 必须设置图片大小，否则不显示
+                tvs.get(i).setTextColor(getResources().getColor(R.color.tab_gray));
                 tvs.get(i).setCompoundDrawables(null, d, null, null);
             }
         }
