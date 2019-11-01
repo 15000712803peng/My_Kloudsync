@@ -36,13 +36,13 @@ public class AppConfig {
 
 //    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
 
-    // 正式
+//     正式
     public static String URL_PUBLIC = "https://api.peertime.cn/peertime/V1/";
     public static String COURSE_SOCKET = "wss://wss.peertime.cn:8443/MeetingServer/websocket";
     public static String liveToken = "02912174-3dcb-49eb-b9fa-6d90b390d495";
     public static String  wssServer = "https://wss.peertime.cn:8443/MeetingServer";
 
-    // 测试
+//    // 测试
 //    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
 //    public static String COURSE_SOCKET = "wss://testwss.peertime.cn:8443/MeetingServer/websocket";
 //    public static String liveToken = "01427aa4-396e-44b7-82ab-84d802099bb0";

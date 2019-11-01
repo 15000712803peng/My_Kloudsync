@@ -41,6 +41,8 @@ import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -676,13 +678,21 @@ public class DocumentUploadTool {
                 if(type == 10){
                     Log.e("addLocalNote", "step six type:" + type);
                     ServiceInterfaceTools.getinstance().uploadLocalNoteFile(AppConfig.URL_PUBLIC + "DocumentNote/UploadNewFile", ServiceInterfaceTools.UPLOADFAVORITENEWFILE, fileName, "",
-                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId,new ServiceInterfaceListener() {
+                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId,this.noteLinkProperty,new ServiceInterfaceListener() {
                                 @Override
                                 public void getServiceReturnData(Object object) {
                                     if(object != null){
-                                        NoteId _noteId = new NoteId();
-                                        _noteId.setNoteId(noteId);
-                                        EventBus.getDefault().post(_noteId);
+                                        JSONObject response = (JSONObject) object;
+                                        try {
+                                            if(response.getInt("RetCode") == 0){
+                                                NoteId noteId = new NoteId();
+                                                noteId.setLinkID(response.getInt("RetData"));
+                                                Log.e("EventBus","post noteId:" + noteId.getLinkID());
+                                                EventBus.getDefault().post(noteId);
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }
                             });
@@ -765,10 +775,22 @@ public class DocumentUploadTool {
                 if(type == 10){
                     Log.e("addLocalNote", "step six type:" + type);
                     ServiceInterfaceTools.getinstance().uploadLocalNoteFile(AppConfig.URL_PUBLIC + "DocumentNote/UploadNewFile", ServiceInterfaceTools.UPLOADFAVORITENEWFILE, fileName, "",
-                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId,new ServiceInterfaceListener() {
+                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId,this.noteLinkProperty,new ServiceInterfaceListener() {
                                 @Override
                                 public void getServiceReturnData(Object object) {
-
+                                    if(object != null){
+                                        JSONObject response = (JSONObject) object;
+                                        try {
+                                            if(response.getInt("RetCode") == 0){
+                                                NoteId noteId = new NoteId();
+                                                noteId.setLinkID(response.getInt("RetData"));
+                                                Log.e("addLocalNote","post noteId:" + noteId.getLinkID());
+                                                EventBus.getDefault().post(noteId);
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
                                 }
                             });
                 }else {
@@ -833,6 +855,37 @@ public class DocumentUploadTool {
     private String documentId;
     private String pageIndex;
     private String syncroomId;
+    private String noteLinkProperty;
+
+
+    public void uploadNote(final Context context, String targetFolderKey1, int field1,
+                           File file,String noteId,String documentId,String pageIndex,int spaceID,String syncroomId,String noteLinkProperty) {
+        this.mContext = context;
+        this.noteId = noteId;
+        this.documentId = documentId;
+        this.pageIndex = pageIndex;
+        this.targetFolderKey = targetFolderKey1;
+        this.field = field1;
+        this.mfile = file;
+        this.type = 10;
+        this.syncroomId = syncroomId;
+        this.fileName = file.getName();
+        this.spaceID = spaceID;
+        this.noteLinkProperty = noteLinkProperty;
+        this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName()) + System.currentTimeMillis();
+        LoginGet lg = new LoginGet();
+        lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
+            @Override
+            public void getUD(Uploadao ud) {
+                if (1 == ud.getServiceProviderId()) {
+                    uploadWithTransferUtility(ud);
+                } else if (2 == ud.getServiceProviderId()) {
+                    initOSS(ud);
+                }
+            }
+        });
+        lg.GetprepareUploading(mContext);
+    }
 
 
     public void uploadNote(final Context context, String targetFolderKey1, int field1,

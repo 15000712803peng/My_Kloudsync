@@ -55,6 +55,7 @@
     <color name="lightgrey">#eeeff1</color>
     <!-- 浅灰 -->
     <color name="darkgrey">#3E3F42</color>
+    <color name="tab_gray">#ffa1a1a1</color>
     <!-- 暗灰色 -->
     <color name="purple">#8558A9</color>
     <!-- 紫色 -->
@@ -143,6 +144,8 @@
     <color name="txt_blue">#0078F9</color>
     <color name="bg_gray">#F6F8F9</color>
     <color name="blue1">#108EE9</color>
+
+    <color name="tab_blue">#3C77FB</color>
 
 
 </resources>

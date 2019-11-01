@@ -95,6 +95,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.BookNote;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
+import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.NoteId;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TvDevice;
@@ -3089,6 +3090,18 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 });
             }
         });
+
+        ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+                if (noteDetails != null && noteDetails.size() > 0) {
+//                    {"type":38,"LinkID":123,"LinkProperty":{"X":0.2683315621679065,"Y":0.37898089171974525}}
+                    notifyDrawNotes(noteDetails);
+
+                }
+            }
+        });
     }
 
     /**
@@ -3130,6 +3143,18 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                         }
                     }
                 });
+            }
+        });
+
+        ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+                if (noteDetails != null && noteDetails.size() > 0) {
+//                    {"type":38,"LinkID":123,"LinkProperty":{"X":0.2683315621679065,"Y":0.37898089171974525}}
+                    notifyDrawNotes(noteDetails);
+
+                }
             }
         });
     }
@@ -8411,28 +8436,159 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(WatchCourseActivity2.this);
         String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
-        noteManager.exportPdfAndUpload(WatchCourseActivity2.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, "0");
+        noteManager.exportPdfAndUpload(WatchCourseActivity2.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, "0",currentLinkProperty.toString());
     }
 
 
-    @Subscribe
-    public void noteUploadSucess(NoteId noteId) {
-        Log.e("noteUploadSucess", "note id:" + noteId.getNoteId());
-        if (wv_show != null) {
+//    @Subscribe
+//    public void noteUploadSucess(NoteId noteId) {
+//        Log.e("noteUploadSucess", "note id:" + noteId.getNoteId());
+//        if (wv_show != null) {
+//
+//            JSONObject jsonObject = null;
+//            try {
+//                jsonObject = new JSONObject();
+//                jsonObject.put("ID", noteId.getNoteId());
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//            Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
+//            wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
+//        }
+//    }
 
-            JSONObject jsonObject = null;
-            try {
-                jsonObject = new JSONObject();
-                jsonObject.put("ID", noteId.getNoteId());
+    private int spaceId = 0;
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
-            wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
+
+    NoteDetail currentNote;
+    JSONObject currentLinkProperty = new JSONObject();
+
+    @org.xwalk.core.JavascriptInterface
+    public void callAppFunction(String action, final String data) {
+        Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
+        JSONObject datas = null;
+        try {
+            datas = new JSONObject(data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        switch (action) {
+            case "BookNoteSelect":
+//            {"LinkID":0,"LinkProperty":{"X":0.29383634431455896,"Y":0.35509554140127386}}
+
+                break;
+            case "BookNoteView":
+                if(datas.has("LinkID")){
+                    try {
+                        displayNoteByLinkId(datas.getInt("LinkID"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case "BookNoteMove":
+                break;
+            case "BookNoteEdit":
+                if (datas != null) {
+                    if (datas.has("LinkID")) {
+                        try {
+                            int linkId = datas.getInt("LinkID");
+                            currentLinkProperty = datas.getJSONObject("LinkProperty");
+                            if (linkId == 0) {
+                                openNote(null);
+                            } else {
+                                ServiceInterfaceTools.getinstance().getNoteDetailByLinkId(AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID", linkId + "", new ServiceInterfaceTools.OnJsonResponseReceiver() {
+                                    @Override
+                                    public void jsonResponse(JSONObject jsonResponse) {
+                                        if (jsonResponse != null) {
+                                            try {
+                                                String data = jsonResponse.getString("RetData");
+                                                if (!TextUtils.isEmpty(data)) {
+                                                    currentNote = new Gson().fromJson(data, NoteDetail.class);
+                                                    if (currentLinkProperty != null) {
+                                                        currentNote.setLinkProperty(currentLinkProperty.toString());
+                                                    }
+                                                    openNote(currentNote.getLocalFileID());
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+
         }
     }
 
-    private int spaceId = 0;
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void uploadNodeSuccess(NoteId noteId){
+        Log.e("addLocalNote","draw note by id:" + noteId);
+        if(noteId.getLinkID() == 0){
+            return;
+        }
+        drawNote(noteId.getLinkID(),currentLinkProperty);
+    }
+
+    private void notifyDrawNotes(List<NoteDetail> notes) {
+        for (NoteDetail note : notes) {
+            final JSONObject noteData = new JSONObject();
+            try {
+                noteData.put("type", 38);
+                noteData.put("LinkID", note.getLinkID());
+                if(!TextUtils.isEmpty(note.getLinkProperty())){
+                    noteData.put("LinkProperty", new JSONObject(note.getLinkProperty()));
+                }
+                Log.e("draw_note", "data:" + noteData.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (wv_show != null) {
+                        wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+                    }
+                }
+            });
+        }
+    }
+
+    private void drawNote(int linkId,JSONObject linkProperty){
+        JSONObject noteData = new JSONObject();
+        try {
+            noteData.put("type", 38);
+            noteData.put("LinkID", linkId);
+            noteData.put("LinkProperty", linkProperty);
+            Log.e("addLocalNote","note:" + noteData.toString());
+            if (wv_show != null) {
+                wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void displayNoteByLinkId(int linkId) {
+
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID?linkID=" + linkId;
+        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                LineItem note = (LineItem) object;
+                displayNote(note);
+            }
+        });
+    }
+
+
 
 }

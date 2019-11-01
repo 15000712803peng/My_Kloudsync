@@ -184,7 +184,6 @@ public class ConnectService {
             if (conn.getResponseCode() == 200) {
                 InputStream is = conn.getInputStream();
                 String json = StringUtils.inputStreamTString(is);
-
                 jsonObject = new JSONObject(json);
                 is.close();
                 conn.disconnect();

@@ -29,6 +29,7 @@ dependencies {
 
     implementation('com.onyx.android.sdk:onyxsdk-notedata:1.0.6@aar')
     implementation "com.github.Raizlabs.DBFlow:dbflow:4.2.2"
+
 }
 
 configurations.all {
@@ -53,8 +54,8 @@ android {
         applicationId "com.kloudsync.techexcel"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 7
-        versionName "1.7.0"
+        versionCode 8
+        versionName "1.8.0"
         flavorDimensions "versionCode"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

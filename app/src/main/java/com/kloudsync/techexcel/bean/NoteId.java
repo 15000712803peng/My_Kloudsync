@@ -6,13 +6,13 @@ package com.kloudsync.techexcel.bean;
 
 public class NoteId {
 
-    private String noteId;
+    private int linkID;
 
-    public String getNoteId() {
-        return noteId;
+    public int getLinkID() {
+        return linkID;
     }
 
-    public void setNoteId(String noteId) {
-        this.noteId = noteId;
+    public void setLinkID(int linkID) {
+        this.linkID = linkID;
     }
 }

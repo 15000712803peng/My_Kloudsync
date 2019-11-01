@@ -33,6 +33,7 @@ public class LocalNoteManager {
     String pageIndex;
     int spaceId = 0;
     String syncroomId;
+    String noteLinkProperty;
 
     public void exportPdfAndUpload(Context context ,BookNote note, String exportPath,String documentId,String pageIndex,int spaceId,String syncroomId) {
 
@@ -44,6 +45,33 @@ public class LocalNoteManager {
         this.documentId = documentId;
         this.pageIndex = pageIndex;
         this.syncroomId = syncroomId;
+        initExportProgressReceiver(context,exportPath,note.documentId);
+        Intent intent = new Intent();
+        intent.setAction(NoteConstants.NOTE_SERVICE_ACTION);
+        intent.setPackage(NoteConstants.NOTE_PACKAGE_NAME);
+        intent.putExtra(NoteConstants.SERVICE_ACTION, NoteConstants.ACTION_EXPORT_NOTE);
+        intent.putExtra(NoteConstants.NOTE_MODEL_LIST, new NoteModelList(getNoteModelList(note)));
+        intent.putExtra(NoteConstants.EXPORT_PATH, exportPath);
+        Log.e("export_pdf","note:" + note + ",export path:" + exportPath);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+    }
+
+
+    public void exportPdfAndUpload(Context context ,BookNote note, String exportPath,String documentId,String pageIndex,int spaceId,String syncroomId,String noteLinkProperty) {
+
+        if (note == null || TextUtils.isEmpty(note.documentId)) {
+            return;
+        }
+        this.syncroomId = syncroomId;
+        this.spaceId = spaceId;
+        this.documentId = documentId;
+        this.pageIndex = pageIndex;
+        this.syncroomId = syncroomId;
+        this.noteLinkProperty = noteLinkProperty;
         initExportProgressReceiver(context,exportPath,note.documentId);
         Intent intent = new Intent();
         intent.setAction(NoteConstants.NOTE_SERVICE_ACTION);
@@ -94,7 +122,7 @@ public class LocalNoteManager {
                 } else if (result.isSuccess()) {
                     Log.e("export_pdf","isSuccess");
                     unregisterReceivers(context);
-                    AddDocumentTool.addLocalNote((Activity) context,exportPath,noteId,documentId,pageIndex,spaceId,syncroomId);
+                    AddDocumentTool.addLocalNote((Activity) context,exportPath,noteId,documentId,pageIndex,spaceId,syncroomId,noteLinkProperty);
                 } else if (result.isFail()) {
                     Log.e("export_pdf","isFail");
                     unregisterReceivers(context);

@@ -40,8 +40,6 @@
         var IsInlineWihteBoardShow = false;
         var PDFMAP = new JsMap();
         var FLAG=true;
-        var BOOKEDITID = "";
-        var BOOKEDITCALLBACK = null;
         var IsShowPageInfo = false;
        
 
@@ -95,6 +93,13 @@
             //    PlayActionByTxt('{"type":21,"page":1,"CW":706,"CH":3941,"VW":716,"VH":494,"id":"4650f0f4-e71c-ead2-e5b8-b1d20a4aad80","d":"M124,136 L137,136 L150,136 L172,134 L189,134 L208,134 L225,138 L240,144 L256,155 L268,165 L278,176 L288,197 L292,213 L297,232 L305,256 L317,283 L336,317 L355,338 L379,357 L402,370 L426,376 L454,382 L481,382 L518,382 L537,382 L548,380 L551,380","w":"1","color":"#ff0000","save":1,"tar":"","time":61610}');
             //}, 5000);
 
+
+            //setTimeout(function () {
+            //    PlayActionByTxt('{"type":38,"LinkID":123,"LinkProperty":{"X":0.2683315621679065,"Y":0.37898089171974525}}',0);
+            //}, 3000);
+            //setTimeout(function () {
+            //    whiteboard.TwinkleBookNote(123);
+            //}, 6000);
         }
         function InitPage()
         {
@@ -175,25 +180,27 @@
             whiteboard.OnSettingChange(function(set){
                  UserSettingChange(set);
              });
-            whiteboard.OnBookNoteEdit(function (id, info, afterEditBookNote) {
-                BOOKEDITID = id;
-                BOOKEDITCALLBACK = afterEditBookNote;
-                EditBookNote(info);
+
+            whiteboard.SetCallBack("BookNoteSelect",function(data){
+                CallApp("BookNoteSelect",data);
             });
-            whiteboard.OnBookNoteEditLocal(function (id, info, afterEditBookNote) {
-                BOOKEDITID = id;
-                BOOKEDITCALLBACK = afterEditBookNote;
-                EditBookNoteLocal(info);
+            whiteboard.SetCallBack("BookNoteView",function(data){
+                CallApp("BookNoteView",data);
             });
-            whiteboard.OnBookNoteView(function (id, info) {               
-                ViewBookNote(info);
+            whiteboard.SetCallBack("BookNoteMove",function(data){
+                CallApp("BookNoteMove",data);
             });
+            whiteboard.SetCallBack("BookNoteEdit",function(data){
+                CallApp("BookNoteEdit",data);
+            });
+
         }
         function initializeControlWindow() {
             $("#div_btn_pointer").click(function (e) {
                 ResetTools($("#div_btn_pointer"));
                 whiteboard.SetDrawTool("");
                 CanScroll = true;
+                iconChange("#div_btn_pointer")
                 return false;
             });
             $("#div_btn_drawline").click(function (e) {
@@ -206,6 +213,7 @@
                 //docview.ShowDocument("test url");
                 ResetTools($("#div_btn_drawline"));
                 CloseToolsEx();
+                iconChange("#div_btn_drawline")
                 return false;
             });
             $("#div_btn_drawbrush").click(function (e) {
@@ -219,6 +227,7 @@
                 CanScroll = false;
                 ResetTools($("#div_btn_drawbrush"));
                 CloseToolsEx();
+                iconChange("#div_btn_drawbrush")
                 return false;
             });
             $("#div_btn_drawrect").click(function (e) {
@@ -230,6 +239,7 @@
                 whiteboard.SetDrawTool("ToolLine");
                 CanScroll = false;
                 ResetTools($("#div_btn_drawrect"));
+                iconChange("#div_btn_drawrect")
                 CloseToolsEx();
                 return false;
             });
@@ -247,6 +257,7 @@
                 whiteboard.SetDrawTool("ToolText");
                 CanScroll = false;
                 ResetTools($("#div_btn_text"));
+                iconChange("#div_btn_text")
                 CloseToolsEx();
                 return false;
             });
@@ -274,12 +285,14 @@
                 whiteboard.SetDrawTool("ToolNote");
                 CanScroll = false;
                 ResetTools($("#div_btn_drawrectangle"));
+                iconChange("#stickyNote")
                 CloseToolsEx();
                 return false;
             })
             $("#myNote").click(function(e){
                 whiteboard.SetDrawTool("ToolBooksNote");
                 ResetTools($("#myNote"));
+                iconChange("#myNote")
                 CloseToolsEx();
                 return false;
             })
@@ -293,6 +306,7 @@
                 whiteboard.SetDrawTool("ToolBoard");
                 CanScroll = false;
                 ResetTools($("#div_btn_whiteboard"));
+                iconChange("#div_btn_whiteboard")
                 CloseToolsEx();
                 return false;
             });
@@ -318,6 +332,9 @@
                 //_activeButton("#li_btn_clear");
                 //ClearPath();
                 whiteboard.SetDrawTool("ToolClear");
+                var icon = $("#div_btn_toobar").find("span");
+                icon.removeClass();
+                icon.addClass("icon icon-gongju1")
                 return false;
             });
             $("#li_btn_undo").click(function (e) {
@@ -335,6 +352,7 @@
                 whiteboard.SetDrawTool("ToolSync");
                 CanScroll = false;
                 ResetTools($("#div_btn_video"));
+                iconChange("#addSync")
                 return false;
             })
             $("#addLocalVideo").click(function(e){
@@ -342,6 +360,7 @@
                 whiteboard.SetDrawTool("ToolVideo");
                 CanScroll = false;
                 ResetTools($("#div_btn_video"));
+                iconChange("#addLocalVideo")
                 return false;
             })
             $("#addWebVideo").click(function(e){
@@ -349,8 +368,19 @@
                 whiteboard.SetDrawTool("ToolVideoLink");
                 CanScroll = false;
                 ResetTools($("#div_btn_video"));
+                iconChange("#addWebVideo")
                 return false;
             })
+        }
+        function iconChange(id){
+           var icon = $("#div_btn_toobar").find(".icon");
+           icon.removeClass();
+            if(id=="#div_btn_pointer"){
+                icon.addClass("icon icon-gongju1")
+                return 
+            }
+           var _class=$(id).find('.icon').attr("class");
+           icon.addClass(_class)
         }
         function toolBarCheck(){
             let _height=$(document).height();
@@ -648,74 +678,37 @@
                 }
             }
             catch (ex) { }
-        }
-        function ViewBookNote(info)
+        }       
+        function CallApp(key,data)
         {
-            console.log("ViewBookNote:" + JSON.stringify(info));
+            console.log("CallApp:Key:" + key + ",Data:" + JSON.stringify(data));
             if (ISPC)
-            {
-                
+            {                
                 return;
             }
             try
             {
                 if (ISANDROID)
                 {
-                    window.AnalyticsWebInterface.viewBookNoteFunction(JSON.stringify(info));
+                    window.AnalyticsWebInterface.callAppFunction(key,JSON.stringify(data));
                 }
                 else
                 {
-                    window.webkit.messageHandlers.ViewBookNoteFunction.postMessage(info);
+                    window.webkit.messageHandlers.CallAppFunction.postMessage({Key:key,Data:data });
                 }
             }
             catch (ex) { }
         }
-        function EditBookNote(info)
-        {
-            console.log("EditBookNote:" + JSON.stringify(info));
-            if (ISPC)
-            {
-                
-                return;
+        function FromApp(key, data) {
+            console.log("FromApp:Key:" + key);
+            console.log(data);
+            if (key == "ClearBookNote") {
+                whiteboard.ClearBookNote();
             }
-            try
-            {
-                if (ISANDROID)
-                {
-                    window.AnalyticsWebInterface.editBookNoteFunction(JSON.stringify(info));
-                }
-                else
-                {
-                    window.webkit.messageHandlers.EditBookNoteFunction.postMessage(info);
-                }
+            else if (key == "TwinkleBookNote") {
+                whiteboard.TwinkleBookNote(data.LinkID);
             }
-            catch (ex) { }
-        }
-        function EditBookNoteLocal(info)
-        {
-            console.log("EditBookNoteLocal:" + JSON.stringify(info));
-            if (ISPC)
-            {
-                
-                return;
-            }
-            try
-            {
-                if (ISANDROID)
-                {
-                    window.AnalyticsWebInterface.editBookNoteLocalFunction(JSON.stringify(info));
-                }
-                else
-                {
-                    window.webkit.messageHandlers.EditBookNoteFunction.postMessage(info);
-                }
-            }
-            catch (ex) { }
-        }
-        function AfterEditBookNote(info) {
-            if (BOOKEDITCALLBACK && BOOKEDITID) {
-                BOOKEDITCALLBACK(BOOKEDITID,info);
-            }
+
         }
         function UserSettingChange(opt)
         {
@@ -1905,13 +1898,15 @@
                         <!--<input type="button" data-enhanced="true" value="Enhanced - Icon only" onclick="DrawRectangle();">-->
                         <span class="icon icon-pizhu" ></span>
                     </div>
-                    <div class="addText" style="display: none; box-shadow:-3px 3px 20px rgba(98, 114, 148, 0.14);width:44px;background-color:white;border-radius:6px;position:absolute;right:50px;top:50%;transform:translateY(-50%)">
-                        <ul style="padding:10px 0;margin:0">
-                            <li id="stickyNote" style="display:flex;align-items:center;justify-content: center;margin:0 auto;width: 30px;height:30px;border-radius:10px;background-color:#3D78FA">
-                                <span class="icon icon-pizhu"></span>
+                    <div class="addText" style="display: none; width:114px;background-color:#2f3a44;position:absolute;right:50px;top:50%;transform:translateY(-50%)">
+                        <ul style="padding:14px 8px;margin:0;width:100%">
+                            <li id="stickyNote" style="display:flex;align-items:center;margin:0 auto;">
+                                <span class="icon icon-pizhu" style="margin-right: 10px"></span>
+                                <span style="font-size: 13px">Sticky Note</span>
                             </li>
-                            <li id="myNote" style="display:flex;align-items:center;justify-content: center;margin:7px auto 0;width: 30px;height:30px;border-radius:10px;background-color:#5553CE">
-                                <span class="icon icon-Notebook" style="font-size:18px;"></span>
+                            <li id="myNote" style="display:flex;align-items:center;margin:10px auto 0;">
+                                <span class="icon icon-Notebook" style="margin-right: 10px;font-size:18px;"></span>
+                                <span style="font-size: 13px">My Note</span>
                             </li>
                         </ul>
                     </div>

@@ -158,7 +158,7 @@ public class AddDocumentTool {
                 int num = (int)(Float.parseFloat(pageNumber));
                 url = AppConfig.URL_PUBLIC + "DocumentNote/UploadFileWithHash?localFileID=" + noteId + "&documentItemID=" + documentId + "&pageNumber=" +num + "&title="
                         + URLEncoder.encode(LoginGet.getBase64Password(file.getName()), "UTF-8") +
-                        "&Hash=" + fileHash + "&syncRoomID=" + syncroomId;
+                        "&hash=" + fileHash + "&syncRoomID=" + syncroomId;
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -207,6 +207,78 @@ public class AddDocumentTool {
                     Toast.LENGTH_LONG).show();
         }
     }
+
+    public static void addLocalNote(final Activity activity, String filePath, final String noteId, final String documentId, final String pageNumber, final int spaceId, final String syncroomId, final String noteLinkProperty) {
+        final JSONObject jsonobject = new JSONObject();
+        String url = null;
+        final File file = new File(filePath);
+        final String fileHash = Md5Tool.getMd5ByFile(file);
+
+        if (file.exists()) {
+            Log.e("addLocalNote","step one,local file exist :" + file.getAbsolutePath());
+            try {
+                int num = (int)(Float.parseFloat(pageNumber));
+                try {
+                    jsonobject.put("LocalFileID",noteId);
+                    jsonobject.put("DocumentItemID",documentId);
+                    jsonobject.put("PageNumber",num);
+                    jsonobject.put("Title",URLEncoder.encode(LoginGet.getBase64Password(file.getName()), "UTF-8"));
+                    jsonobject.put("Hash",fileHash);
+                    jsonobject.put("SyncRoomID",syncroomId);
+                    jsonobject.put("LinkProperty",noteLinkProperty);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                url = AppConfig.URL_PUBLIC + "DocumentNote/UploadFileWithHash";
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            final String finalUrl = url;
+
+            new ApiTask(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        JSONObject responsedata = com.kloudsync.techexcel.service.ConnectService
+                                .submitDataByJson(finalUrl, jsonobject);
+                        Log.e("addLocalNote", "step two:" + responsedata.toString() + "   " + finalUrl);
+                        String retcode = responsedata.getString("RetCode");
+                        Message msg = new Message();
+                        final String errorMessage = responsedata
+                                .getString("ErrorMessage");
+                        if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
+
+                        } else if (retcode.equals(AppConfig.Upload_NoExist + "")) { // 添加
+                            JSONObject jsonObject = responsedata.getJSONObject("RetData");
+                            String targetFolderKey = jsonObject.getString("Path");
+                            int field = jsonObject.getInt("FileID");
+                            DocumentUploadTool uploadTool = new DocumentUploadTool(activity);
+                            uploadTool.uploadNote(activity, targetFolderKey, field, file,noteId,documentId,pageNumber,spaceId,syncroomId,noteLinkProperty);
+                        } else if (retcode.equals(AppConfig.Upload_Exist + "")) { //不要重复上传
+                            msg.what = AppConfig.FAILED;
+                            msg.obj = errorMessage;
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(activity, errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+
+                        }
+
+                    } catch (JSONException e) {
+
+                        e.printStackTrace();
+                    }
+                }
+            }).start(ThreadManager.getManager());
+        } else {
+            Toast.makeText(activity, activity.getString(R.string.nofile),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
 
 
 }

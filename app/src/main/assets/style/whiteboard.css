@@ -441,3 +441,29 @@ div:focus {
         stroke-width: 20;
     }
 }
+.WB_BookNoteTwinkle {
+    animation: WB_A_BookNoteTwinkle 800ms linear infinite normal;
+    animation-iteration-count: 1;
+}
+
+@keyframes WB_A_BookNoteTwinkle {
+    0% {
+        transform: rotate(0deg) scale(1);
+        transform-origin: 20px 16px;
+    }
+
+    25% {
+        transform: rotate(120deg) scale(3);
+        transform-origin: 20px 16px;
+    }
+
+    50% {
+        transform: rotate(240deg) scale(3);
+        transform-origin: 20px 16px;
+    }
+
+    100% {
+        transform: rotate(360deg) scale(1);
+        transform-origin: 20px 16px;
+    }
+}

@@ -142,6 +142,41 @@
                 />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.MainActivityV3"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/ThemeActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateHidden|adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="com.kloudsync.techexcel"
+                    android:pathPrefix="/conversationlist"
+                    android:scheme="rong" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!--
+                <data android:scheme="file" />
+                <data android:mimeType="image/*" />
+                <data android:mimeType="application/pdf" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                <data android:mimeType="application/vnd.ms-powerpoint" />
+                <data android:host="*" />
+                <data android:pathPattern=".*"
+                -->
+                />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.ReceiveWeChatDataActivity"
             android:label="@string/app_name"

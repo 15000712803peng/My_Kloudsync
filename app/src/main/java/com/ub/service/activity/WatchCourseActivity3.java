@@ -95,6 +95,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.BookNote;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
+import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.NoteId;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TvDevice;
@@ -123,9 +124,11 @@ import com.kloudsync.techexcel.tool.DocumentUploadUtil;
 import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.Md5Tool;
+import com.kloudsync.techexcel.tool.QueryLocalNoteTool;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.util.PreferencesCookieStore;
 import com.mining.app.zxing.MipcaActivityCapture;
+import com.onyx.android.sdk.scribble.provider.RemoteNoteProvider;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
@@ -379,7 +382,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private LinearLayout activte_linearlayout;
     private LinearLayout menu_linearlayout;
 
-    private RelativeLayout displayAudience, displayFile,syncdisplaynote, displaychat, displaywebcam, displayVideo, displayautocamera, setting, yinxiang;
+    private RelativeLayout displayAudience, displayFile, syncdisplaynote, displaychat, displaywebcam, displayVideo, displayautocamera, setting, yinxiang;
     private RelativeLayout prepareStart, prepareclose, prepareScanTV, displayattendee;
     private LinearLayout noprepare;
     private boolean isPrepare = false;  //是否备课
@@ -924,7 +927,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         isInClassroom = getIntent().getBooleanExtra("isInClassroom", false);
         ishavedefaultpage = getIntent().getBooleanExtra("ishavedefaultpage", false);
         isTeamspace = getIntent().getBooleanExtra("isTeamspace", false);
-        spaceId = getIntent().getIntExtra("spaceId",0);
+        spaceId = getIntent().getIntExtra("spaceId", 0);
         roomType = getIntent().getIntExtra("type", 0);
         if (isTeamspace) {
             isPrepare = true;
@@ -3405,6 +3408,18 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 });
             }
         });
+
+        ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+                if (noteDetails != null && noteDetails.size() > 0) {
+//                    {"type":38,"LinkID":123,"LinkProperty":{"X":0.2683315621679065,"Y":0.37898089171974525}}
+                    notifyDrawNotes(noteDetails);
+
+                }
+            }
+        });
     }
 
     /**
@@ -3449,7 +3464,21 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 });
             }
         });
+
+//        syncRoomID=1&documentItemID=1&pageNumber=1&userID=225016023
+        ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+                if (noteDetails != null && noteDetails.size() > 0) {
+//                    {"type":38,"LinkID":123,"LinkProperty":{"X":0.2683315621679065,"Y":0.37898089171974525}}
+                    notifyDrawNotes(noteDetails);
+
+                }
+            }
+        });
     }
+
 
     public String EncoderByMd5(String str) {
         try {
@@ -3733,23 +3762,14 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     private AddFileFromFavoriteDialog addFileFromFavoriteDialog;
 
-
     private boolean isCameraCanUse() {
 
-        Camera mCamera = null;
-        try {
-            mCamera = Camera.open();
-        } catch (Exception e) {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)
+                && !getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
             return false;
+        } else {
+            return true;
         }
-        if (mCamera == null) {
-            return false;
-        }
-
-        if (mCamera != null) {
-            mCamera.release();
-        }
-        return true;
     }
 
     /**
@@ -3794,6 +3814,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 }
             }
         });
+
         take_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -4347,7 +4368,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                         public void run() {
                             try {
                                 JSONObject jsonObject = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/UpgradeToNormalLesson?lessonID=" + lessonId, null);
-                                Log.e("sssss",AppConfig.URL_PUBLIC + "Lesson/UpgradeToNormalLesson?lessonID=" + lessonId+"  " + jsonObject.toString());
+                                Log.e("sssss", AppConfig.URL_PUBLIC + "Lesson/UpgradeToNormalLesson?lessonID=" + lessonId + "  " + jsonObject.toString());
                                 if (jsonObject.getInt("RetCode") == 0) {
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -4695,14 +4716,15 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
 
     private SyncRoomNotePopup syncRoomNotePopup;
+
     private void openNotePopup() {
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber="+currentAttachmentPage+"&syncRoomID="+0;
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&syncRoomID=" + 0;
         syncRoomNotePopup = new SyncRoomNotePopup();
         syncRoomNotePopup.getPopwindow(this);
 //        syncRoomNotePopup.setDocumentPopupEventListener(this);
         syncRoomNotePopup.setWebCamPopupListener(new SyncRoomNotePopup.WebCamPopupListener() {
             @Override
-            public void changeOptions(LineItem syncRoomBean,int position) { //打开笔记
+            public void changeOptions(LineItem syncRoomBean, int position) { //打开笔记
                 displayNote(syncRoomBean);
 
             }
@@ -4713,13 +4735,16 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             }
 
             @Override
-            public void takePhoto() {}
+            public void takePhoto() {
+            }
 
             @Override
-            public void importFromLibrary() {}
+            public void importFromLibrary() {
+            }
 
             @Override
-            public void savedFile() {}
+            public void savedFile() {
+            }
 
             @Override
             public void dismiss() {
@@ -4730,228 +4755,15 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             }
 
             @Override
-            public void delete(LineItem selectLineItem) {}
+            public void delete(LineItem selectLineItem) {
+            }
 
             @Override
-            public void edit(LineItem selectLineItem) {}
+            public void edit(LineItem selectLineItem) {
+            }
         });
         syncRoomNotePopup.StartPop(wv_show, url);
         menu.setImageResource(R.drawable.icon_menu);
-    }
-
-
-
-
-    private void loadWebIndex(){
-        int deviceType = DeviceManager.getDeviceType(this);
-        String indexUrl = "file:///android_asset/index.html";
-        if(deviceType == SupportDevice.BOOK){
-            indexUrl += "?devicetype=4";
-        }
-        final String url = indexUrl;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (wv_show == null) {
-                    return;
-                }
-                wv_show.load(url, null);
-            }
-        });
-    }
-
-    @org.xwalk.core.JavascriptInterface
-    public void viewBookNoteFunction(final String noteinfo) {
-        Log.e("JavascriptInterface", "viewBookNoteFunction  "+noteinfo);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                displayNoteBook(noteinfo);
-            }
-        });
-    }
-
-    @org.xwalk.core.JavascriptInterface
-    public void editBookNoteFunction(final String noteinfo) {
-        Log.e("JavascriptInterface", "editBookNoteFunction  " + noteinfo);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                selectNoteBook();
-            }
-        });
-    }
-
-
-    @org.xwalk.core.JavascriptInterface
-    public void editBookNoteLocalFunction(String note){
-        // edit
-        Log.e("JavascriptInterface","editBookNoteFunction:" + note);
-        if(DeviceManager.getDeviceType(this) == SupportDevice.PHONE){
-            Toast.makeText(getApplicationContext(),"该设备不支持本地笔记" ,Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if(TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")){
-            openNote(null);
-            return;
-        }
-        try {
-            JSONObject jsonObject = new JSONObject(note);
-            String id = "";
-            if(jsonObject.has("id")){
-                id = jsonObject.getString("id");
-            } else if(jsonObject.has("ID")){
-                id = jsonObject.getString("ID");
-            }
-            openNote(id);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openNote(String noteId){
-        BookNote bookNote = null;
-        if(TextUtils.isEmpty(noteId)){
-            bookNote = new BookNote().setTitle("new note").setJumpBackToNote(false);
-        }else {
-            bookNote = new BookNote().setDocumentId(noteId).setJumpBackToNote(false);
-        }
-
-        Intent intent = new Intent();
-        intent.putExtra("OPEN_NOTE_BEAN", new Gson().toJson(bookNote));
-        ComponentName comp = new ComponentName("com.onyx.android.note", "com.onyx.android.note.note.ui.ScribbleActivity");
-        intent.setComponent(comp);
-        startActivityForResult(intent, 100);
-    }
-
-
-
-    /**
-     * 文档每一页上  展示 新的PDF文件（笔记）
-     *
-     * @param lineItem
-     */
-
-    private String currentAttachmentPage2;
-    private LineItem currentShowPdf2 = new LineItem();
-    private TextView closenote;
-
-    /**
-     * 展示笔记列表  (切换文档)
-     */
-    private void displayNoteBook(String json) {
-        String id = "";
-        if (json != null) {
-            try {
-                JSONObject jsonObject = new JSONObject(json);
-                id = jsonObject.getString("id");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-//        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=ab3a05cb-f813-4cb7-b029-e6faffcb5586";
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=" + id;
-        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                LineItem note = (LineItem) object;
-                displayNote(note);
-            }
-        });
-    }
-
-
-    /**
-     * @param note
-     */
-    private void displayNote(LineItem note) {
-        closenote = findViewById(R.id.closenote);
-        closenote.setVisibility(View.VISIBLE);
-        //两个按钮
-        menu.setVisibility(View.GONE);
-        command_active.setVisibility(View.GONE);
-        closenote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closenote.setVisibility(View.GONE);
-                menu.setVisibility(View.VISIBLE);
-
-                if(isPrepare){
-                    command_active.setVisibility(View.GONE);
-                }else{
-                    command_active.setVisibility(View.VISIBLE);
-                }
-
-
-
-                for (int i = 0; i < documentList.size(); i++) {
-                    documentList.get(i).setSelect(false);
-                }
-
-                currentAttachmentPage = currentAttachmentPage2;
-                AppConfig.currentPageNumber = currentAttachmentPage2;
-                currentShowPdf.setSelect(true);
-                currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
-                currentShowPdf.setUrl(currentShowPdf2.getUrl());
-                currentShowPdf.setItemId(currentShowPdf2.getItemId());
-                currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
-
-
-                myRecyclerAdapter2.notifyDataSetChanged();
-                currentAttachmentId = currentShowPdf.getAttachmentID();
-                currentItemId = currentShowPdf.getItemId();
-                targetUrl = currentShowPdf.getUrl();
-                newPath = currentShowPdf.getNewPath();
-                notifySwitchDocumentSocket(currentShowPdf, "1");
-                loadWebIndex();
-            }
-        });
-
-        currentAttachmentPage2 = currentAttachmentPage;
-        currentShowPdf2.setNewPath(newPath);
-        currentShowPdf2.setUrl(targetUrl);
-        currentShowPdf2.setItemId(currentItemId);
-        currentShowPdf2.setAttachmentID(currentAttachmentId);
-
-        currentAttachmentPage = "0";
-        AppConfig.currentPageNumber = "0";
-        for (int i = 0; i < documentList.size(); i++) {
-            documentList.get(i).setSelect(false);
-        }
-        currentShowPdf = note;
-        currentShowPdf.setSelect(true);
-        myRecyclerAdapter2.notifyDataSetChanged();
-        currentAttachmentId = currentShowPdf.getAttachmentID();
-        currentItemId = currentShowPdf.getItemId();
-        targetUrl = currentShowPdf.getUrl();
-        newPath = currentShowPdf.getNewPath();
-        notifySwitchDocumentSocket(currentShowPdf, "1");
-        loadWebIndex();
-    }
-
-    private SelectNoteDialog selectNoteDialog;
-
-    /**
-     * 笔记列表弹窗
-     */
-    private void selectNoteBook() {
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber="+currentAttachmentPage+"&syncRoomID="+0;
-        selectNoteDialog = new SelectNoteDialog(WatchCourseActivity3.this, url,0+"");
-        selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectNoteDialog.OnFavoriteDocSelectedListener() {
-            @Override
-            public void onFavoriteDocSelected(LineItem note) {
-                try {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("ID", note.getLocalFileID() + "");
-                    Log.e("selectNoteBook ",note.getLocalFileID()+" ");
-                    wv_show.load("javascript:AfterEditBookNote({'ID':'"+note.getLocalFileID()+"'})", null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        selectNoteDialog.show();
     }
 
 
@@ -5126,7 +4938,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 });
         closeAlbum();
 
-        if(worker().getRtcEngine() != null){
+        if (worker().getRtcEngine() != null) {
             RtcEngineImpl engine = (RtcEngineImpl) worker().getRtcEngine();
             engine.setVideoCamera(0);
 
@@ -8977,6 +8789,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     }
 
 
+    //for note ------------------
+
     LocalNoteManager noteManager;
 
     private void uploadNote(BookNote note) {
@@ -8992,8 +8806,362 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(WatchCourseActivity3.this);
         String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
-        noteManager.exportPdfAndUpload(WatchCourseActivity3.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, "0");
+        noteManager.exportPdfAndUpload(WatchCourseActivity3.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, "0", currentLinkProperty.toString());
     }
+
+
+    private void loadWebIndex() {
+        int deviceType = DeviceManager.getDeviceType(this);
+        String indexUrl = "file:///android_asset/index.html";
+        if (deviceType == SupportDevice.BOOK) {
+            indexUrl += "?devicetype=4";
+        }
+        final String url = indexUrl;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (wv_show == null) {
+                    return;
+                }
+                wv_show.load(url, null);
+            }
+        });
+    }
+
+//    @org.xwalk.core.JavascriptInterface
+//    public void viewBookNoteFunction(final String noteinfo) {
+//        Log.e("JavascriptInterface", "viewBookNoteFunction  "+noteinfo);
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                displayNoteBook(noteinfo);
+//            }
+//        });
+//    }
+//
+//    @org.xwalk.core.JavascriptInterface
+//    public void editBookNoteFunction(final String noteinfo) {
+//        Log.e("JavascriptInterface", "editBookNoteFunction  " + noteinfo);
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                selectNoteBook();
+//            }
+//        });
+//    }
+//
+//
+//    @org.xwalk.core.JavascriptInterface
+//    public void editBookNoteLocalFunction(String note){
+//        // edit
+//        Log.e("JavascriptInterface","editBookNoteFunction:" + note);
+//        if(DeviceManager.getDeviceType(this) == SupportDevice.PHONE){
+//            Toast.makeText(getApplicationContext(),"该设备不支持本地笔记" ,Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        if(TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")){
+//            openNote(null);
+//            return;
+//        }
+//        try {
+//            JSONObject jsonObject = new JSONObject(note);
+//            String id = "";
+//            if(jsonObject.has("id")){
+//                id = jsonObject.getString("id");
+//            } else if(jsonObject.has("ID")){
+//                id = jsonObject.getString("ID");
+//            }
+//            openNote(id);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    private void openNote(String noteId) {
+
+        BookNote bookNote = null;
+        if (TextUtils.isEmpty(noteId)) {
+            bookNote = new BookNote().setTitle("new note").setJumpBackToNote(false);
+
+        } else {
+            bookNote = new BookNote().setDocumentId(noteId).setJumpBackToNote(false);
+            if (!QueryLocalNoteTool.noteIsExist(this, noteId)) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(WatchCourseActivity3.this, "笔记在本地设备不存在", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return;
+            }
+        }
+
+        Intent intent = new Intent();
+        intent.putExtra("OPEN_NOTE_BEAN", new Gson().toJson(bookNote));
+        ComponentName comp = new ComponentName("com.onyx.android.note", "com.onyx.android.note.note.ui.ScribbleActivity");
+        intent.setComponent(comp);
+        startActivityForResult(intent, 100);
+    }
+
+
+    /**
+     * 文档每一页上  展示 新的PDF文件（笔记）
+     *
+     * @param lineItem
+     */
+
+    private String currentAttachmentPage2;
+    private LineItem currentShowPdf2 = new LineItem();
+    private TextView closenote;
+
+    /**
+     * 展示笔记列表  (切换文档)
+     */
+    private void displayNoteBook(String json) {
+        String id = "";
+        if (json != null) {
+            try {
+                JSONObject jsonObject = new JSONObject(json);
+                id = jsonObject.getString("id");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=ab3a05cb-f813-4cb7-b029-e6faffcb5586";
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=" + id;
+        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                LineItem note = (LineItem) object;
+                displayNote(note);
+            }
+        });
+    }
+
+
+    /**
+     * @param note
+     */
+    private void displayNote(LineItem note) {
+        closenote = findViewById(R.id.closenote);
+        closenote.setVisibility(View.VISIBLE);
+        //两个按钮
+        menu.setVisibility(View.GONE);
+        command_active.setVisibility(View.GONE);
+        closenote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closenote.setVisibility(View.GONE);
+                menu.setVisibility(View.VISIBLE);
+
+                if (isPrepare) {
+                    command_active.setVisibility(View.GONE);
+                } else {
+                    command_active.setVisibility(View.VISIBLE);
+                }
+
+
+                for (int i = 0; i < documentList.size(); i++) {
+                    documentList.get(i).setSelect(false);
+                }
+
+                currentAttachmentPage = currentAttachmentPage2;
+                AppConfig.currentPageNumber = currentAttachmentPage2;
+                currentShowPdf.setSelect(true);
+                currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
+                currentShowPdf.setUrl(currentShowPdf2.getUrl());
+                currentShowPdf.setItemId(currentShowPdf2.getItemId());
+                currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
+
+
+                myRecyclerAdapter2.notifyDataSetChanged();
+                currentAttachmentId = currentShowPdf.getAttachmentID();
+                currentItemId = currentShowPdf.getItemId();
+                targetUrl = currentShowPdf.getUrl();
+                newPath = currentShowPdf.getNewPath();
+                notifySwitchDocumentSocket(currentShowPdf, "1");
+                loadWebIndex();
+            }
+        });
+
+        currentAttachmentPage2 = currentAttachmentPage;
+        currentShowPdf2.setNewPath(newPath);
+        currentShowPdf2.setUrl(targetUrl);
+        currentShowPdf2.setItemId(currentItemId);
+        currentShowPdf2.setAttachmentID(currentAttachmentId);
+
+        currentAttachmentPage = "0";
+        AppConfig.currentPageNumber = "0";
+        for (int i = 0; i < documentList.size(); i++) {
+            documentList.get(i).setSelect(false);
+        }
+        currentShowPdf = note;
+        currentShowPdf.setSelect(true);
+        myRecyclerAdapter2.notifyDataSetChanged();
+        currentAttachmentId = currentShowPdf.getAttachmentID();
+        currentItemId = currentShowPdf.getItemId();
+        targetUrl = currentShowPdf.getUrl();
+        newPath = currentShowPdf.getNewPath();
+        notifySwitchDocumentSocket(currentShowPdf, "1");
+        loadWebIndex();
+    }
+
+    private SelectNoteDialog selectNoteDialog;
+
+    /**
+     * 笔记列表弹窗
+     */
+    private void selectNoteBook() {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&syncRoomID=" + 0;
+        selectNoteDialog = new SelectNoteDialog(WatchCourseActivity3.this, url, 0 + "");
+        selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectNoteDialog.OnFavoriteDocSelectedListener() {
+            @Override
+            public void onFavoriteDocSelected(LineItem note) {
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("ID", note.getLocalFileID() + "");
+                    Log.e("selectNoteBook ", note.getLocalFileID() + " ");
+                    wv_show.load("javascript:AfterEditBookNote({'ID':'" + note.getLocalFileID() + "'})", null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        selectNoteDialog.show();
+    }
+
+
+    NoteDetail currentNote;
+    JSONObject currentLinkProperty = new JSONObject();
+
+    @org.xwalk.core.JavascriptInterface
+    public void callAppFunction(String action, final String data) {
+        Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
+        JSONObject datas = null;
+        try {
+            datas = new JSONObject(data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        switch (action) {
+            case "BookNoteSelect":
+//            {"LinkID":0,"LinkProperty":{"X":0.29383634431455896,"Y":0.35509554140127386}}
+
+                break;
+            case "BookNoteView":
+                if (datas.has("LinkID")) {
+                    try {
+                        displayNoteByLinkId(datas.getInt("LinkID"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case "BookNoteMove":
+                break;
+            case "BookNoteEdit":
+                if (datas != null) {
+                    if (datas.has("LinkID")) {
+                        try {
+                            int linkId = datas.getInt("LinkID");
+                            currentLinkProperty = datas.getJSONObject("LinkProperty");
+                            if (linkId == 0) {
+                                openNote(null);
+                            } else {
+                                ServiceInterfaceTools.getinstance().getNoteDetailByLinkId(AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID", linkId + "", new ServiceInterfaceTools.OnJsonResponseReceiver() {
+                                    @Override
+                                    public void jsonResponse(JSONObject jsonResponse) {
+                                        if (jsonResponse != null) {
+                                            try {
+                                                String data = jsonResponse.getString("RetData");
+                                                if (!TextUtils.isEmpty(data)) {
+                                                    currentNote = new Gson().fromJson(data, NoteDetail.class);
+                                                    if (currentLinkProperty != null && currentNote != null) {
+                                                        currentNote.setLinkProperty(currentLinkProperty.toString());
+                                                        openNote(currentNote.getLocalFileID());
+                                                    }
+
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void uploadNodeSuccess(NoteId noteId) {
+        Log.e("addLocalNote", "draw note by id:" + noteId);
+        if (noteId.getLinkID() == 0) {
+            return;
+        }
+        drawNote(noteId.getLinkID(), currentLinkProperty);
+    }
+
+    private void notifyDrawNotes(List<NoteDetail> notes) {
+        for (NoteDetail note : notes) {
+            final JSONObject noteData = new JSONObject();
+            try {
+                noteData.put("type", 38);
+                noteData.put("LinkID", note.getLinkID());
+                if (!TextUtils.isEmpty(note.getLinkProperty())) {
+                    noteData.put("LinkProperty", new JSONObject(note.getLinkProperty()));
+                }
+                Log.e("draw_note", "data:" + noteData.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (wv_show != null) {
+                        wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+                    }
+                }
+            });
+        }
+    }
+
+    private void drawNote(int linkId, JSONObject linkProperty) {
+        JSONObject noteData = new JSONObject();
+        try {
+            noteData.put("type", 38);
+            noteData.put("LinkID", linkId);
+            noteData.put("LinkProperty", linkProperty);
+            Log.e("addLocalNote", "note:" + noteData.toString());
+            if (wv_show != null) {
+                wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void displayNoteByLinkId(int linkId) {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID?linkID=" + linkId;
+        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                LineItem note = (LineItem) object;
+                displayNote(note);
+            }
+        });
+    }
+
 
 }
 

@@ -9,12 +9,14 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.kloudsync.techexcel.bean.CompanyContact;
 import com.kloudsync.techexcel.bean.DocumentData;
 import com.kloudsync.techexcel.bean.DocumentDetail;
 import com.kloudsync.techexcel.bean.FavoriteData;
 import com.kloudsync.techexcel.bean.InviteInfo;
 import com.kloudsync.techexcel.bean.LoginData;
+import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.PhoneItem;
 import com.kloudsync.techexcel.bean.RoleInTeam;
 import com.kloudsync.techexcel.bean.RongCloudData;
@@ -1530,6 +1532,40 @@ public class ServiceInterfaceTools {
     }
 
 
+    public void getNoteListV2(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("getNoteList", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        JSONArray lineitems = returnjson.getJSONArray("RetData");
+                        List<NoteDetail> items = new ArrayList<NoteDetail>();
+                        for (int j = 0; j < lineitems.length(); j++) {
+                            JSONObject lineitem = lineitems.getJSONObject(j);
+                            items.add(new Gson().fromJson(lineitem.toString(),NoteDetail.class));
+                        }
+                        Message msg = Message.obtain();
+                        msg.obj = items;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+
+
     /**
      * 根据localFileID获取Note
      *
@@ -1971,7 +2007,7 @@ public class ServiceInterfaceTools {
     public void uploadLocalNoteFile(final String url, final int code, final String fileName,
                                     final String Description,
                                     final String key, final ConvertingResult convertingResult, final int fieldId, final String documentId,
-                                    final String pageNumber, final String noteId, final String syncroomId,ServiceInterfaceListener serviceInterfaceListener) {
+                                    final String pageNumber, final String noteId, final String syncroomId,final String noteLinkProperty,ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         new ApiTask(new Runnable() {
             @Override
@@ -1989,6 +2025,7 @@ public class ServiceInterfaceTools {
                     jsonObject.put("PageNumber", page);
                     jsonObject.put("LocalFileId", noteId);
                     jsonObject.put("syncRoomID", syncroomId);
+                    jsonObject.put("LinkProperty", noteLinkProperty);
 //                    jsonObject.put("SchoolID", AppConfig.SchoolID);
 //                    jsonObject.put("FolderID", convertingResult.getFileName());
                     JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
@@ -1996,7 +2033,7 @@ public class ServiceInterfaceTools {
                     if (returnjson.getInt("RetCode") == 0) {
                         Message msg3 = Message.obtain();
                         msg3.what = code;
-                        msg3.obj = "";
+                        msg3.obj = returnjson;
                         handler.sendMessage(msg3);
                     }
 
@@ -2006,6 +2043,36 @@ public class ServiceInterfaceTools {
             }
         }).start(ThreadManager.getManager());
     }
+
+    public void getNoteDetailByLinkId(final String url , final String linkId, final OnJsonResponseReceiver jsonResponseReceiver){
+
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("linkID", linkId);
+                    JSONObject returnjson = ConnectService.getIncidentData(url + "?linkId="+linkId);
+                    Log.e("getNoteDetailByLinkId", url + jsonObject.toString() + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        if(jsonResponseReceiver != null){
+                            jsonResponseReceiver.jsonResponse(returnjson);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+
+    }
+
+    public interface OnJsonResponseReceiver{
+        void jsonResponse(JSONObject jsonResponse);
+    }
+
+
 
 
 }
