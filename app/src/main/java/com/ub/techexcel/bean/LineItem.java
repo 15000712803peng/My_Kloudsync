@@ -19,6 +19,7 @@ public class LineItem implements Serializable {
     private String attachmentID;  //itemId
     private String itemId;
     private boolean isSelect;
+    private int noteId;
 
     private boolean isHtml5;
     private String blankPageNumber;
