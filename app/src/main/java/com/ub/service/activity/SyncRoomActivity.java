@@ -91,6 +91,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
+import com.kloudsync.techexcel.dialog.SelectMyNoteDialog;
 import com.kloudsync.techexcel.dialog.SelectNoteDialog;
 import com.kloudsync.techexcel.dialog.ShareSyncDialog;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -128,6 +129,7 @@ import com.ub.techexcel.adapter.ChatAdapter;
 import com.ub.techexcel.adapter.MyRecyclerAdapter2;
 import com.ub.techexcel.bean.AudioActionBean;
 import com.ub.techexcel.bean.LineItem;
+import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.PageActionBean;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.bean.SoundtrackBean;
@@ -205,7 +207,7 @@ import retrofit2.Response;
  * Created by wang on 2017/6/16.
  */
 public class SyncRoomActivity extends BaseActivity implements View.OnClickListener,
-        VideoGestureRelativeLayout.VideoGestureListener, YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,SyncRoomDocumentPopup.DocumentPopupEventListener{
+        VideoGestureRelativeLayout.VideoGestureListener, YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener, SyncRoomDocumentPopup.DocumentPopupEventListener {
 
     private String targetUrl;
     private String newPath;
@@ -321,7 +323,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     private ImageView command_active;
     private LinearLayout activte_linearlayout;
     private LinearLayout syncroomll;
-    private RelativeLayout prepareStart, syncdisplaydocument,syncdisplaynote, syncdisplaymembers, syncdisplaymeeting, syncdisplaychat, syncdisplayproperty, syncdisplayshare, syncyinxiang, syncdisplayquit, prepareScanTV;
+    private RelativeLayout prepareStart, syncdisplaydocument, syncdisplaynote, syncdisplaymembers, syncdisplaymeeting, syncdisplaychat, syncdisplayproperty, syncdisplayshare, syncyinxiang, syncdisplayquit, prepareScanTV;
     public static boolean watch3instance = false;
     private TextView endtextview;
     private TextView prompt;
@@ -343,7 +345,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     private ProgressBar fileprogress;
     private TextView progressbartv;
 
-    private  class MyHandler extends Handler {
+    private class MyHandler extends Handler {
 
         private WeakReference<SyncRoomActivity> watchCourseActivity3WeakReference;
 
@@ -659,7 +661,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-
     public void CheckLanguage() {
         if (AppConfig.LANGUAGEID > 0) {
             switch (AppConfig.LANGUAGEID) {
@@ -709,7 +710,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         isInClassroom = getIntent().getBooleanExtra("isInClassroom", false);
         ishavedefaultpage = getIntent().getBooleanExtra("ishavedefaultpage", false);
         isTeamspace = getIntent().getBooleanExtra("isTeamspace", false);
-        spaceId = getIntent().getIntExtra("spaceId",0);
+        spaceId = getIntent().getIntExtra("spaceId", 0);
         Log.e("-------", targetUrl + "  " + "  meetingId: " + meetingId + "  identity : " + identity + "    isInstantMeeting :" + isInstantMeeting + "   lession: " + lessonId);
         if (meetingId.contains(",")) {
             isTeamspace = true;
@@ -932,7 +933,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-
     private int startYinxiangTime = 0;
 
     private void doJOIN_MEETING(String msg) {
@@ -1136,7 +1136,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
                     } else if (jsonObject.getInt("actionType") == 8) {
                         // 切换文档
-                        Log.e("switch_file","message:" + d);
+                        Log.e("switch_file", "message:" + d);
                         LineItem lineitem = new LineItem();
                         lineitem.setUrl(jsonObject.getString("attachmentUrl"));
                         lineitem.setHtml5(jsonObject.getBoolean("isH5"));
@@ -1147,7 +1147,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 //                        documentMsg.obj = lineitem;
 //                        documentMsg.what = 0x1205;
 //                        handler.sendMessage(documentMsg);
-                          followChangeFile(lineitem);
+                        followChangeFile(lineitem);
 
                     } else if (jsonObject.getInt("actionType") == 19) {
                         final int stat = jsonObject.getInt("stat");
@@ -3421,10 +3421,10 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-    private void loadWebIndex(){
+    private void loadWebIndex() {
         int deviceType = DeviceManager.getDeviceType(this);
         String indexUrl = "file:///android_asset/index.html";
-        if(deviceType == SupportDevice.BOOK){
+        if (deviceType == SupportDevice.BOOK) {
             indexUrl += "?devicetype=4";
         }
         final String url = indexUrl;
@@ -3438,9 +3438,10 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             }
         });
     }
+
     @org.xwalk.core.JavascriptInterface
-    public void viewBookNoteFunction(final String result){
-        Log.e("JavascriptInterface","viewBookNoteFunction,result:" + result);
+    public void viewBookNoteFunction(final String result) {
+        Log.e("JavascriptInterface", "viewBookNoteFunction,result:" + result);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -3462,24 +3463,24 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
 
     @org.xwalk.core.JavascriptInterface
-    public void editBookNoteLocalFunction(String note){
+    public void editBookNoteLocalFunction(String note) {
         // edit
-        Log.e("JavascriptInterface","editBookNoteFunction:" + note);
-        if(DeviceManager.getDeviceType(this) == SupportDevice.PHONE){
-            Toast.makeText(getApplicationContext(),"该设备不支持本地笔记" ,Toast.LENGTH_SHORT).show();
+        Log.e("JavascriptInterface", "editBookNoteFunction:" + note);
+        if (DeviceManager.getDeviceType(this) == SupportDevice.PHONE) {
+            Toast.makeText(getApplicationContext(), "该设备不支持本地笔记", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if(TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")){
+        if (TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")) {
             openNote(null);
             return;
         }
         try {
             JSONObject jsonObject = new JSONObject(note);
             String id = "";
-            if(jsonObject.has("id")){
+            if (jsonObject.has("id")) {
                 id = jsonObject.getString("id");
-            } else if(jsonObject.has("ID")){
+            } else if (jsonObject.has("ID")) {
                 id = jsonObject.getString("ID");
             }
             openNote(id);
@@ -3487,9 +3488,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             e.printStackTrace();
         }
     }
-
-
-
 
 
     /**
@@ -3538,16 +3536,16 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
      * 笔记列表弹窗
      */
     private void selectNoteBook() {
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber="+currentAttachmentPage+"&syncRoomID="+lessonId;
-        selectNoteDialog = new SelectNoteDialog(SyncRoomActivity.this, url,lessonId);
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&syncRoomID=" + lessonId;
+        selectNoteDialog = new SelectNoteDialog(SyncRoomActivity.this, url, lessonId);
         selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectNoteDialog.OnFavoriteDocSelectedListener() {
             @Override
             public void onFavoriteDocSelected(LineItem note) {
                 try {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("Id", note.getLocalFileID() + "");
-                    Log.e("selectNoteBook ",note.getLocalFileID()+" ");
-                    wv_show.load("javascript:AfterEditBookNote({'ID':'"+note.getLocalFileID()+"'})", null);
+                    Log.e("selectNoteBook ", note.getLocalFileID() + " ");
+                    wv_show.load("javascript:AfterEditBookNote({'ID':'" + note.getLocalFileID() + "'})", null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -3558,20 +3556,19 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-
     private void startMeeting() {
         try {
-            JSONObject jsonObject=new JSONObject();
-            jsonObject.put("CompanyID",AppConfig.SchoolID);
-            jsonObject.put("SyncRoomID",lessonId);
-            JSONArray jsonArray=new JSONArray();
-            JSONObject member=new JSONObject();
-            member.put("MemberID",AppConfig.UserID);
-            member.put("Role",2);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("CompanyID", AppConfig.SchoolID);
+            jsonObject.put("SyncRoomID", lessonId);
+            JSONArray jsonArray = new JSONArray();
+            JSONObject member = new JSONObject();
+            member.put("MemberID", AppConfig.UserID);
+            member.put("Role", 2);
             jsonArray.put(member);
-            jsonObject.put("MemberList",jsonArray);
+            jsonObject.put("MemberList", jsonArray);
             String url = AppConfig.URL_PUBLIC + "SyncRoom/CreateMeetingFromSyncRoom";
-            ServiceInterfaceTools.getinstance().createMeetingFromSyncRoom(url, ServiceInterfaceTools.CREATEMEETINGFROMSYNCROOM,jsonObject, new ServiceInterfaceListener() {
+            ServiceInterfaceTools.getinstance().createMeetingFromSyncRoom(url, ServiceInterfaceTools.CREATEMEETINGFROMSYNCROOM, jsonObject, new ServiceInterfaceListener() {
                 @Override
                 public void getServiceReturnData(Object object) {
                     String lessonId = (String) object;
@@ -3719,8 +3716,8 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
                                 }
                             });
-                            tvDevicesListPopup.StartPop(wv_show, devices, enable,isTeamspace);
-                            tvDevicesListPopup.StartPop(wv_show, devices, enable,true);
+                            tvDevicesListPopup.StartPop(wv_show, devices, enable, isTeamspace);
+                            tvDevicesListPopup.StartPop(wv_show, devices, enable, true);
                             activte_linearlayout.setVisibility(View.GONE);
                             menu.setImageResource(R.drawable.icon_menu);
                         } else {
@@ -3752,7 +3749,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                     }
                 });
 
-        if(worker().getRtcEngine() != null){
+        if (worker().getRtcEngine() != null) {
             RtcEngineImpl engine = (RtcEngineImpl) worker().getRtcEngine();
             engine.setVideoCamera(0);
 
@@ -3774,7 +3771,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         syncRoomDocumentPopup.setDocumentPopupEventListener(this);
         syncRoomDocumentPopup.setWebCamPopupListener(new SyncRoomDocumentPopup.WebCamPopupListener() {
             @Override
-            public void changeOptions(LineItem syncRoomBean,int position) { //切换文档
+            public void changeOptions(LineItem syncRoomBean, int position) { //切换文档
                 if (isHavePresenter()) {
                     notifySelectedFileIndex(position);
                     currentAttachmentPage = "0";
@@ -3864,15 +3861,16 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
 
     private SyncRoomNotePopup syncRoomNotePopup;
+
     private void openNotePopup() {
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber="+currentAttachmentPage+"&syncRoomID="+lessonId;
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&syncRoomID=" + lessonId;
 
         syncRoomNotePopup = new SyncRoomNotePopup();
         syncRoomNotePopup.getPopwindow(this);
 //        syncRoomNotePopup.setDocumentPopupEventListener(this);
         syncRoomNotePopup.setWebCamPopupListener(new SyncRoomNotePopup.WebCamPopupListener() {
             @Override
-            public void changeOptions(LineItem syncRoomBean,int position) { //打开笔记
+            public void changeOptions(LineItem syncRoomBean, int position) { //打开笔记
 //                if (isHavePresenter()) {
 //                    notifySelectedFileIndex(position);
 //                    currentAttachmentPage = "0";
@@ -3900,13 +3898,16 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             }
 
             @Override
-            public void takePhoto() {}
+            public void takePhoto() {
+            }
 
             @Override
-            public void importFromLibrary() {}
+            public void importFromLibrary() {
+            }
 
             @Override
-            public void savedFile() {}
+            public void savedFile() {
+            }
 
             @Override
             public void dismiss() {
@@ -3917,10 +3918,12 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             }
 
             @Override
-            public void delete(LineItem selectLineItem) {}
+            public void delete(LineItem selectLineItem) {
+            }
 
             @Override
-            public void edit(LineItem selectLineItem) {}
+            public void edit(LineItem selectLineItem) {
+            }
         });
         syncRoomNotePopup.StartPop(wv_show, url);
         syncroomll.setVisibility(View.GONE);
@@ -5460,11 +5463,11 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             UpdateVideo(path, title);
         }
 
-        if(requestCode == 100 && resultCode == RESULT_OK){
+        if (requestCode == 100 && resultCode == RESULT_OK) {
 //            Log.e("NoteBook","NoteBook return,data:" + data);
-            if(wv_show != null){
+            if (wv_show != null) {
                 String json = data.getStringExtra("OPEN_NOTE_BEAN_JSON");
-                BookNote note = new Gson().fromJson(json,BookNote.class);
+                BookNote note = new Gson().fromJson(json, BookNote.class);
                 uploadNote(note);
             }
         }
@@ -6070,40 +6073,40 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    private void notifyDocumentPopupOpenOrClose(int type){
+    private void notifyDocumentPopupOpenOrClose(int type) {
         JSONObject actionJson = new JSONObject();
         try {
-            actionJson.put("actionType",1803);
+            actionJson.put("actionType", 1803);
             // 1表示打开 0表示关闭
-            actionJson.put("stat",type);
+            actionJson.put("stat", type);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        send_message("SEND_MESSAGE",AppConfig.UserToken,0,null,Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
+        send_message("SEND_MESSAGE", AppConfig.UserToken, 0, null, Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
     }
 
-    private void notifySelectedFileIndex(int position){
+    private void notifySelectedFileIndex(int position) {
         JSONObject actionJson = new JSONObject();
         try {
-            actionJson.put("actionType",1804);
+            actionJson.put("actionType", 1804);
             // 1表示打开 0表示关闭
-            actionJson.put("stat",1);
-            actionJson.put("position",position);
+            actionJson.put("stat", 1);
+            actionJson.put("position", position);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        send_message("SEND_MESSAGE",AppConfig.UserToken,0,null,Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
+        send_message("SEND_MESSAGE", AppConfig.UserToken, 0, null, Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
     }
 
 
     //---- for note
 
 
-    private void openNote(String noteId){
+    private void openNote(String noteId) {
         BookNote bookNote = null;
-        if(TextUtils.isEmpty(noteId)){
+        if (TextUtils.isEmpty(noteId)) {
             bookNote = new BookNote().setTitle("new note").setJumpBackToNote(false);
-        }else {
+        } else {
             bookNote = new BookNote().setDocumentId(noteId).setJumpBackToNote(false);
         }
 
@@ -6115,16 +6118,15 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-
     private void viewNote(String json) {
         String id = "";
         if (json != null) {
             try {
 
                 JSONObject jsonObject = new JSONObject(json);
-                if(jsonObject.has("id")){
+                if (jsonObject.has("id")) {
                     id = jsonObject.getString("id");
-                }else if(jsonObject.has("ID")){
+                } else if (jsonObject.has("ID")) {
                     id = jsonObject.getString("ID");
                 }
 
@@ -6145,23 +6147,22 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
     LocalNoteManager noteManager;
 
-    private void uploadNote(BookNote note){
+    private void uploadNote(BookNote note) {
         JSONObject jsonObject = null;
         try {
             jsonObject = new JSONObject();
-            jsonObject.put("ID",note.documentId);
+            jsonObject.put("ID", note.documentId);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("AfterEditBookNote","jsonObject:" + jsonObject);
+        Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
         wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(SyncRoomActivity.this);
-        String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId +".pdf";
+        String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
 
-        noteManager.exportPdfAndUpload(SyncRoomActivity.this,note,exportPath,currentAttachmentId,currentAttachmentPage,spaceId,lessonId,currentLinkProperty.toString());
+        noteManager.exportPdfAndUpload(SyncRoomActivity.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, lessonId, currentLinkProperty.toString());
     }
-
 
 
     private void displayNote(LineItem note) {
@@ -6175,9 +6176,9 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             public void onClick(View v) {
                 closenote.setVisibility(View.GONE);
                 menu.setVisibility(View.VISIBLE);
-                if(isTeamspace){
+                if (isTeamspace) {
                     command_active.setVisibility(View.GONE);
-                }else {
+                } else {
                     command_active.setVisibility(View.VISIBLE);
                 }
                 for (int i = 0; i < documentList.size(); i++) {
@@ -6256,10 +6257,26 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         switch (action) {
             case "BookNoteSelect":
 //            {"LinkID":0,"LinkProperty":{"X":0.29383634431455896,"Y":0.35509554140127386}}
+                try {
 
+                    int linkId = datas.getInt("LinkID");
+                    final JSONObject linkProperty = datas.getJSONObject("LinkProperty");
+                    if (linkId == 0) {
+                        // 打开我的笔记列表
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                openMyNoteBook(linkProperty);
+                            }
+                        });
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
             case "BookNoteView":
-                if(datas.has("LinkID")){
+                if (datas.has("LinkID")) {
                     try {
                         displayNoteByLinkId(datas.getInt("LinkID"));
                     } catch (JSONException e) {
@@ -6308,13 +6325,40 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
+
+    /**
+     * 弹出我的笔记列表弹窗
+     */
+    private void openMyNoteBook(final JSONObject linkProperty) {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/UserNoteList?userID=" + AppConfig.UserID;
+        SelectMyNoteDialog selectNoteDialog = new SelectMyNoteDialog(SyncRoomActivity.this, 0 + "");
+        selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectMyNoteDialog.OnFavoriteDocSelectedListener() {
+            @Override
+            public void onFavoriteDocSelected(Note note) {
+                String url = AppConfig.URL_PUBLIC + "DocumentNote/ImportNote";
+                ServiceInterfaceTools.getinstance().importNote(url, ServiceInterfaceTools.IMPORTNOTE, lessonId,
+                        note.getAttachmentID() + "", currentAttachmentPage, note.getNoteID(), linkProperty.toString(),
+                        new ServiceInterfaceListener() {
+                            @Override
+                            public void getServiceReturnData(Object object) {
+                                int linkid = (int) object;
+                                drawNote(linkid, linkProperty);
+                            }
+                        });
+            }
+        });
+        selectNoteDialog.show(url);
+
+    }
+
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void uploadNodeSuccess(NoteId noteId){
-        Log.e("addLocalNote","draw note by id:" + noteId);
-        if(noteId.getLinkID() == 0){
+    public void uploadNodeSuccess(NoteId noteId) {
+        Log.e("addLocalNote", "draw note by id:" + noteId);
+        if (noteId.getLinkID() == 0) {
             return;
         }
-        drawNote(noteId.getLinkID(),currentLinkProperty);
+        drawNote(noteId.getLinkID(), currentLinkProperty);
     }
 
     private void notifyDrawNotes(List<NoteDetail> notes) {
@@ -6323,7 +6367,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             try {
                 noteData.put("type", 38);
                 noteData.put("LinkID", note.getLinkID());
-                if(!TextUtils.isEmpty(note.getLinkProperty())){
+                if (!TextUtils.isEmpty(note.getLinkProperty())) {
                     noteData.put("LinkProperty", new JSONObject(note.getLinkProperty()));
                 }
                 Log.e("draw_note", "data:" + noteData.toString());
@@ -6341,13 +6385,13 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    private void drawNote(int linkId,JSONObject linkProperty){
+    private void drawNote(int linkId, JSONObject linkProperty) {
         JSONObject noteData = new JSONObject();
         try {
             noteData.put("type", 38);
             noteData.put("LinkID", linkId);
             noteData.put("LinkProperty", linkProperty);
-            Log.e("addLocalNote","note:" + noteData.toString());
+            Log.e("addLocalNote", "note:" + noteData.toString());
             if (wv_show != null) {
                 wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
 

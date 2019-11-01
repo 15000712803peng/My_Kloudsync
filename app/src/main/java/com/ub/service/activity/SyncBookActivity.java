@@ -6169,6 +6169,11 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     }
 
 
+
+
+
+
+
     private void openNote(String noteId) {
         BookNote bookNote = null;
         if (TextUtils.isEmpty(noteId)) {

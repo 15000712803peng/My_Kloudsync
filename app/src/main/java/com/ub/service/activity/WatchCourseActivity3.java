@@ -103,6 +103,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
+import com.kloudsync.techexcel.dialog.SelectMyNoteDialog;
 import com.kloudsync.techexcel.dialog.SelectNoteDialog;
 import com.kloudsync.techexcel.dialog.ShareSyncDialog;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -149,6 +150,7 @@ import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AudioActionBean;
 import com.ub.techexcel.bean.ChannelVO;
 import com.ub.techexcel.bean.LineItem;
+import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.PageActionBean;
 import com.ub.techexcel.bean.RecordingBean;
 import com.ub.techexcel.bean.SectionVO;
@@ -9047,7 +9049,23 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         switch (action) {
             case "BookNoteSelect":
 //            {"LinkID":0,"LinkProperty":{"X":0.29383634431455896,"Y":0.35509554140127386}}
+                try {
 
+                    int linkId = datas.getInt("LinkID");
+                    final JSONObject linkProperty = datas.getJSONObject("LinkProperty");
+                    if (linkId == 0) {
+                        // 打开我的笔记列表
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                openMyNoteBook(linkProperty);
+                            }
+                        });
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
             case "BookNoteView":
                 if (datas.has("LinkID")) {
@@ -9098,6 +9116,31 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 break;
 
         }
+    }
+
+    /**
+     * 弹出我的笔记列表弹窗
+     */
+    private void openMyNoteBook(final JSONObject linkProperty) {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/UserNoteList?userID=" + AppConfig.UserID;
+        SelectMyNoteDialog selectNoteDialog = new SelectMyNoteDialog(WatchCourseActivity3.this, 0 + "");
+        selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectMyNoteDialog.OnFavoriteDocSelectedListener() {
+            @Override
+            public void onFavoriteDocSelected(Note note) {
+                String url = AppConfig.URL_PUBLIC + "DocumentNote/ImportNote";
+                ServiceInterfaceTools.getinstance().importNote(url, ServiceInterfaceTools.IMPORTNOTE, meetingId,
+                        note.getAttachmentID() + "", currentAttachmentPage, note.getNoteID(), linkProperty.toString(),
+                        new ServiceInterfaceListener() {
+                            @Override
+                            public void getServiceReturnData(Object object) {
+                                int linkid = (int) object;
+                                drawNote(linkid, linkProperty);
+                            }
+                        });
+            }
+        });
+        selectNoteDialog.show(url);
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
