@@ -218,7 +218,7 @@
                     android:id="@+id/createnewspace"
                     android:layout_width="match_parent"
                     android:layout_height="66dp"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="18dp"
                     android:layout_marginRight="10dp">
 
                     <ImageView
