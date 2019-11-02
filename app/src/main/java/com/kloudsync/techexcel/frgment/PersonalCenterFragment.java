@@ -154,7 +154,14 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         // TODO Auto-generated method stub
 
         super.onCreate(savedInstanceState);
-        view = inflater.inflate(R.layout.personal_center, container, false);
+        if(view == null){
+            view = inflater.inflate(R.layout.personal_center, container, false);
+            initView();
+
+        }
+        ShowLanguage();
+        GetSchoolInfo();
+
         return view;
     }
 
@@ -184,8 +191,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         if (isFirst && isVisibleToUser) {
             isKVisibleToUser = isVisibleToUser;
             isFirst = false;
-            initView();
-            getPersonInfo2();
+
         }
         if (isKVisibleToUser) {
             if (AppConfig.HASUPDATAINFO == true) {
@@ -288,7 +294,6 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         if (!TextUtils.isEmpty(AppConfig.ClassRoomID)) {
             tv_roomid.setText(AppConfig.ClassRoomID.replaceAll("-", ""));
         }
-
         sharedPreferences = getActivity().getSharedPreferences(
                 AppConfig.LOGININFO, Context.MODE_PRIVATE);
 
@@ -297,10 +302,6 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 
         tv_pc_account_name.setText(account_name);
         // tv_pc_account_number.setText(account_number);
-
-        ShowLanguage();
-
-        GetSchoolInfo();
 
         ll_pc_publish_article.setOnClickListener(this);
         ll_pc_collection.setOnClickListener(this);

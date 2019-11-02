@@ -65,15 +65,17 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
     private SyncRoomAdapter syncRoomAdapter;
     private ImageView moreOpation;
     RelativeLayout addSyncRoomLayout;
+    View view ;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.topicfragment, container, false);
-        EventBus.getDefault().register(this);
-        initView(view);
-        isPrepared = true;
-        lazyLoad();
+        if(view == null){
+            view = inflater.inflate(R.layout.topicfragment, container, false);
+            EventBus.getDefault().register(this);
+            initView(view);
+        }
+        load();
         handleRolePemission(KloudCache.getInstance(getActivity()).getUserInfo());
         return view;
     }
@@ -118,10 +120,14 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
         if (isPrepared && isVisible) {  //isPrepared 可见在onCreate之前执行
             if (!isLoadDataFinish) {
                 isLoadDataFinish = true;
-                getSpaceList();
+
 
             }
         }
+    }
+
+    private void load(){
+        getSpaceList();
     }
 
 

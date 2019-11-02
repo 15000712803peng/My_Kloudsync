@@ -8804,13 +8804,13 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
         wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(WatchCourseActivity3.this);
         String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
         noteManager.exportPdfAndUpload(WatchCourseActivity3.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, "0", currentLinkProperty.toString());
     }
-
 
     private void loadWebIndex() {
         int deviceType = DeviceManager.getDeviceType(this);

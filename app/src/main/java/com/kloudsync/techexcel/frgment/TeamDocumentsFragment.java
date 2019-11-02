@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.DocumentData;
+import com.kloudsync.techexcel.bean.EventSpaceFragment;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
 import com.kloudsync.techexcel.bean.MessageDocList;
 import com.kloudsync.techexcel.bean.MessageSpaceList;
@@ -82,7 +83,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DocumentsFragment extends MyFragment implements View.OnClickListener, SpaceAdapter.OnItemLectureListener, KloudCache.OnUserInfoChangedListener, FilterSpaceDialog.SpaceOptionsLinstener {
+public class TeamDocumentsFragment extends MyFragment implements View.OnClickListener, SpaceAdapter.OnItemLectureListener, KloudCache.OnUserInfoChangedListener, FilterSpaceDialog.SpaceOptionsLinstener {
 
     private RecyclerView mCurrentTeamRecyclerView;
     private RelativeLayout teamRl;
@@ -100,15 +101,16 @@ public class DocumentsFragment extends MyFragment implements View.OnClickListene
     private LinearLayout searchLayout;
     private static final int REQUEST_UPDATE_TEAM = 1;
     private ImageView filterSpaceImage;
-
+    private View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.documentfragment, container, false);
-        EventBus.getDefault().register(this);
-        initView(view);
-        isPrepared = true;
-        lazyLoad();
+        if(view == null){
+            view = inflater.inflate(R.layout.documentfragment, container, false);
+            EventBus.getDefault().register(this);
+            initView(view);
+        }
+        load();
         return view;
     }
 
@@ -157,11 +159,16 @@ public class DocumentsFragment extends MyFragment implements View.OnClickListene
         if (isPrepared && isVisible) {  //isPrepared 可见在onCreate之前执行
             if (!isLoadDataFinish) {
                 isLoadDataFinish = true;
-                getUserDetail();
-                getSpaceList();
-                getAllDocumentList();
+
             }
         }
+    }
+
+
+    private void load(){
+        getUserDetail();
+        getSpaceList();
+        getAllDocumentList();
     }
 
 
@@ -782,11 +789,16 @@ public class DocumentsFragment extends MyFragment implements View.OnClickListene
 
     @Override
     public void onItem(TeamSpaceBean teamSpaceBean) {
-        Intent intent = new Intent(getActivity(), SpaceDocumentsActivity.class);
-        intent.putExtra("ItemID", teamSpaceBean.getItemID());
-        intent.putExtra("space_name", teamSpaceBean.getName());
-        intent.putExtra("team_id", sharedPreferences.getInt("teamid", 0));
-        startActivity(intent);
+//        Intent intent = new Intent(getActivity(), SpaceDocumentsActivity.class);
+//        intent.putExtra("ItemID", teamSpaceBean.getItemID());
+//        intent.putExtra("space_name", teamSpaceBean.getName());
+//        intent.putExtra("team_id", sharedPreferences.getInt("teamid", 0));
+//        startActivity(intent);
+        EventSpaceFragment eventSpaceFragment = new EventSpaceFragment();
+        eventSpaceFragment.setItemID(teamSpaceBean.getItemID());
+        eventSpaceFragment.setSpaceName(teamSpaceBean.getName());
+        eventSpaceFragment.setTeamId(sharedPreferences.getInt("teamid",0));
+        EventBus.getDefault().post(eventSpaceFragment);
     }
 
     @Override

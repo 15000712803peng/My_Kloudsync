@@ -79,7 +79,6 @@
         </RelativeLayout>
 
 
-
         <ImageView
             android:id="@+id/selectimage"
             android:layout_width="15dp"
@@ -93,9 +92,9 @@
         <TextView
             android:layout_marginLeft="56dp"
             android:layout_width="match_parent"
-            android:layout_height="1.5dp"
+            android:layout_height="1dp"
             android:layout_alignParentBottom="true"
-            android:background="@color/divider_line" />
+            android:background="#fff7f7f7" />
 
     </RelativeLayout>
 

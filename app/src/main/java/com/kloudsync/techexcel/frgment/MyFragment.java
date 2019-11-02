@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.frgment;
 
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 public abstract class MyFragment extends Fragment {
 
@@ -13,6 +14,7 @@ public abstract class MyFragment extends Fragment {
 
 	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {
+		Log.e("MyFragment","setUserVisibleHint:" + isVisibleToUser);
 		super.setUserVisibleHint(isVisibleToUser);
 		if (getUserVisibleHint()) {
 			isVisible = true;
@@ -30,6 +32,7 @@ public abstract class MyFragment extends Fragment {
 	protected abstract void lazyLoad();
 
 	protected void onInvisible() {
+
 	}
 
 }

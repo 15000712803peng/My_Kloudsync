@@ -26,13 +26,32 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <com.kloudsync.techexcel.view.CustomViewPager
-            android:id="@+id/vp"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+        <!--<com.kloudsync.techexcel.view.CustomViewPager-->
+            <!--android:id="@+id/vp"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="1">-->
 
-        </com.kloudsync.techexcel.view.CustomViewPager>
+        <!--</com.kloudsync.techexcel.view.CustomViewPager>-->
+
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+
+            <FrameLayout
+                android:id="@+id/frame_tab_team"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></FrameLayout>
+
+            <FrameLayout
+                android:visibility="gone"
+                android:id="@+id/frame_tab_space"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></FrameLayout>
+        </RelativeLayout>
+
 
         <TextView
             android:layout_width="match_parent"
@@ -47,7 +66,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tv_service"
+                android:id="@+id/txt_tab_document"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -62,7 +81,7 @@
 
 
             <TextView
-                android:id="@+id/tv_dialogue"
+                android:id="@+id/txt_tab_chat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -82,7 +101,7 @@
                 android:layout_weight="1">
 
                 <TextView
-                    android:id="@+id/tv_contact"
+                    android:id="@+id/txt_tab_meeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
@@ -117,7 +136,7 @@
 
 
             <TextView
-                android:id="@+id/tv_community"
+                android:id="@+id/txt_tab_syncroom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -133,7 +152,7 @@
 
 
             <TextView
-                android:id="@+id/tv_personal_center"
+                android:id="@+id/txt_tab_personal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

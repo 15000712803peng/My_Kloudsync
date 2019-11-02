@@ -50,7 +50,7 @@ public class App extends Application {
         threadMgr = ThreadManager.getManager();
         mainHandler = new Handler(Looper.getMainLooper());
         instance = this;
-        getApplicationContext().startService(new Intent(getApplicationContext(), TransferService.class));
+//        getApplicationContext().startService(new Intent(getApplicationContext(), TransferService.class));
         asyncInit();
     }
 

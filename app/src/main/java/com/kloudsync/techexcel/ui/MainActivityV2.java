@@ -15,13 +15,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -48,7 +46,7 @@ import com.kloudsync.techexcel.dialog.message.ShareMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.SystemMessageItemProvider;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.kloudsync.techexcel.frgment.ContactFragment;
-import com.kloudsync.techexcel.frgment.DocumentsFragment;
+import com.kloudsync.techexcel.frgment.TeamDocumentsFragment;
 import com.kloudsync.techexcel.frgment.PersonalCenterFragment;
 import com.kloudsync.techexcel.frgment.ServiceFragment;
 import com.kloudsync.techexcel.frgment.TopicFragment;
@@ -622,7 +620,7 @@ public class MainActivityV2 extends BaseActivity<MainPresenter<IMainActivityView
 
     TopicFragment topicFragment = new TopicFragment();
     private void initDatas() {
-        DocumentsFragment documentsFragment = new DocumentsFragment();
+        TeamDocumentsFragment documentsFragment = new TeamDocumentsFragment();
         TwoToOneFragment twoToOneFragment = new TwoToOneFragment();
         ServiceFragment serviceFragment = new ServiceFragment();
 //        UpgradeFragment upgradeFragment = new UpgradeFragment();
@@ -663,7 +661,7 @@ public class MainActivityV2 extends BaseActivity<MainPresenter<IMainActivityView
     }
 
     private void initDatas2() {
-        DocumentsFragment documentsFragment = new DocumentsFragment();
+        TeamDocumentsFragment documentsFragment = new TeamDocumentsFragment();
         TwoToOneFragment twoToOneFragment = new TwoToOneFragment();
         ServiceFragment serviceFragment = new ServiceFragment();
         TopicFragment topicFragment = new TopicFragment();

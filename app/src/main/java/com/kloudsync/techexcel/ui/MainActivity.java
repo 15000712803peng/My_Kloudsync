@@ -16,7 +16,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -24,6 +23,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,8 +31,10 @@ import android.widget.Toast;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
+import com.kloudsync.techexcel.bean.EventSpaceFragment;
 import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.UserPath;
+import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddDocToSpaceDialog;
 import com.kloudsync.techexcel.dialog.AddWxDocDialog;
@@ -47,14 +49,14 @@ import com.kloudsync.techexcel.dialog.message.ShareMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.SystemMessageItemProvider;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.kloudsync.techexcel.frgment.ContactFragment;
-import com.kloudsync.techexcel.frgment.DocumentsFragment;
+import com.kloudsync.techexcel.frgment.SpaceDocumentsFragment;
+import com.kloudsync.techexcel.frgment.TeamDocumentsFragment;
 import com.kloudsync.techexcel.frgment.PersonalCenterFragment;
 import com.kloudsync.techexcel.frgment.ServiceFragment;
 import com.kloudsync.techexcel.frgment.TopicFragment;
 import com.kloudsync.techexcel.frgment.TwoToOneFragment;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ContactHelpInterface;
-import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.info.School;
 import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.NetworkResponse;
@@ -62,7 +64,6 @@ import com.kloudsync.techexcel.service.UploadService;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.DensityUtil;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
-import com.kloudsync.techexcel.view.CustomViewPager;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -84,7 +85,6 @@ import com.umeng.analytics.MobclickAgent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.java_websocket.client.WebSocketClient;
 
 import java.io.File;
 import java.net.URLEncoder;
@@ -99,20 +99,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-//import com.wuyr.rippleanimation.RippleAnimation;
-
-
-public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener {
+public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener, OnClickListener {
 
     private List<TextView> tvs = new ArrayList<TextView>();
     private TextView tv_redcontact;
-    private CustomViewPager vp;
     private RelativeLayout rl_update;
-    private FragmentPagerAdapter mAdapter;
     private List<Fragment> mTabs = new ArrayList<Fragment>();
     private TextView tv_community;
-    private int tvIDs[] = {R.id.tv_service, R.id.tv_dialogue, R.id.tv_contact,
-            R.id.tv_community, R.id.tv_personal_center};
+    private int tvIDs[] = {R.id.txt_tab_document, R.id.txt_tab_chat, R.id.txt_tab_meeting,
+            R.id.txt_tab_syncroom, R.id.txt_tab_personal};
     private int drawIDs[] = {R.drawable.tab1_unselected, R.drawable.tab2_unselected,
             R.drawable.tab3_unselected, R.drawable.tab4_unselected,
             R.drawable.tab5_unselected};
@@ -122,24 +117,18 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     public static RongIMClient mRongIMClient;
     public static MainActivity instance = null;
-
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-    private WebSocketClient mWebSocketClient;
+    private FrameLayout teamFrame;
+    private FrameLayout spaceFrame;
 
     public static boolean RESUME = false;
-
-    private boolean flag_update;
-
-    private boolean flag_dialog;
-
-    private boolean flag_jinhua;
-
     Intent service;
-
     App app;
 
     private static ContactHelpInterface chi;
+
+    private TextView documentTab, chatTab, meetingTab, syncroomTab, personalTab;
 
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
@@ -162,12 +151,11 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     finish();
                     break;
                 case AppConfig.OnlineGunDan:
-                    if (1 == vp.getCurrentItem()) {
-                        GoTOTab(0);
-                    }
+//                    if (1 == vp.getCurrentItem()) {
+//                        GoTOTab(0);
+//                    }
                     RongIM.getInstance().disconnect();
                     AppConfig.Online = 1;
-                    flag_dialog = false;
                     Toast.makeText(MainActivity.this,
                             getResources().getString(R.string.Dialog_GunDan), Toast.LENGTH_LONG).show();
                     break;
@@ -209,6 +197,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         editor = sharedPreferences.edit();
         EventBus.getDefault().register(this);
         editor.putBoolean("isLogIn", true).commit();
+        fragmentManager = getSupportFragmentManager();
         setContentView(R.layout.activity_main);
 //        PgyUpdateManager.register(this);
         initView();
@@ -282,7 +271,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         lg.setSchoolTeamGetListener(new LoginGet.SchoolTeamGetListener() {
             @Override
             public void getST(School school) {
-                Log.e("GetShoolInfo","school:" + school);
+                Log.e("GetShoolInfo", "school:" + school);
                 if (school != null) {
                     TeamSpaceBean teamSpaceBean = school.getTeamSpaceBean();
                     AppConfig.SchoolID = school.getSchoolID();
@@ -324,7 +313,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         api.handleIntent(intent, WeiXinApi.getInstance());
     }
 
-
     private void UpOrNoOutInfo() {
         if (!TextUtils.isEmpty(AppConfig.OUTSIDE_PATH)) {
             Intent service2 = new Intent(MainActivity.this, UploadService.class);
@@ -341,6 +329,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
     ProgressDialog progressDialog;
+
     private void initUpdate() {
         // TODO Auto-generated method stub
         new PgyUpdateManager.Builder()
@@ -439,52 +428,39 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         density = dm.density;
-
         rl_update = (RelativeLayout) findViewById(R.id.rl_update);
-        vp = (CustomViewPager) findViewById(R.id.vp);
         tv_redcontact = (TextView) findViewById(R.id.tv_redcontact);
-        tv_community = (TextView) findViewById(R.id.tv_community);
-        GetTvShow();
-        GetTabName();
-
+        teamFrame = findViewById(R.id.frame_tab_team);
+        spaceFrame = findViewById(R.id.frame_tab_space);
+        initTabs();
         RongConnect();
-
     }
 
-    private void GetTabName() {
+    private void initTabs() {
+        documentTab = findViewById(R.id.txt_tab_document);
+        chatTab = findViewById(R.id.txt_tab_chat);
+        meetingTab = findViewById(R.id.txt_tab_meeting);
+        syncroomTab = findViewById(R.id.txt_tab_syncroom);
+        personalTab = findViewById(R.id.txt_tab_personal);
+        documentTab.setOnClickListener(this);
+        chatTab.setOnClickListener(this);
+        meetingTab.setOnClickListener(this);
+        syncroomTab.setOnClickListener(this);
+        personalTab.setOnClickListener(this);
+        tvs.add(documentTab);
+        tvs.add(chatTab);
+        tvs.add(meetingTab);
+        tvs.add(syncroomTab);
+        tvs.add(personalTab);
+        setTabName();
+    }
+
+    private void setTabName() {
         String[] tab = getResources().getStringArray(R.array.tabname);
         for (int i = 0; i < tvIDs.length; i++) {
             tvs.get(i).setText(tab[i]);
         }
 
-    }
-
-    private void GetTabName2() {
-        String[] tab = getResources().getStringArray(R.array.tabname2);
-        for (int i = 0; i < tvIDs.length; i++) {
-            tvs.get(i).setText(tab[i]);
-        }
-    }
-
-    private void GetTvShow() {
-        for (int i = 0; i < tvIDs.length; i++) {
-            TextView tv = (TextView) findViewById(tvIDs[i]);
-            if (i == 0) {
-                Drawable d = getResources().getDrawable(draw_selectIDs[i]);
-                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 20),
-                        DensityUtil.dp2px(getApplicationContext(), 20)); // 必须设置图片大小，否则不显示
-                tv.setTextColor(getResources().getColor(R.color.skyblue));
-                tv.setCompoundDrawables(null, d, null, null);
-            } else {
-                Drawable d = getResources().getDrawable(drawIDs[i]);
-                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 20),
-                        DensityUtil.dp2px(getApplicationContext(), 20));  // 必须设置图片大小，否则不显示
-                tv.setTextColor(getResources().getColor(R.color.darkgrey));
-                tv.setCompoundDrawables(null, d, null, null);
-            }
-            tv.setOnClickListener(new myOnClick());
-            tvs.add(tv);
-        }
     }
 
     private void RongConnect() {
@@ -512,7 +488,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 RongIM.registerMessageTemplate(new ShareMessageItemProvider());
 
 //                initDatas();
-                flag_dialog = true;
                 if (RongIM.getInstance() != null
                         && RongIM.getInstance().getRongIMClient() != null) {
                     /**
@@ -526,7 +501,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 AppConfig.Online = 0;
             }
 
-
             @Override
             public void onTokenIncorrect() {
                 Log.e("Token Incorrect", "Token Incorrect");
@@ -539,6 +513,12 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 //		getToken();
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v instanceof TextView) {
+            changeTeamFragment((TextView) v);
+        }
+    }
 
     private class MyConnectionStatusListener implements
             RongIMClient.ConnectionStatusListener {
@@ -575,114 +555,30 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
     }
 
-    TopicFragment topicFragment = new TopicFragment();
+    TeamDocumentsFragment documentsFragment;
+    SpaceDocumentsFragment spaceDocumentsFragment;
+    TopicFragment topicFragment;
+    TwoToOneFragment twoToOneFragment;
+    ServiceFragment serviceFragment;
+    PersonalCenterFragment personalCenterFragment;
+
     private void initDatas() {
-        DocumentsFragment documentsFragment = new DocumentsFragment();
-        TwoToOneFragment twoToOneFragment = new TwoToOneFragment();
-        ServiceFragment serviceFragment = new ServiceFragment();
-//        UpgradeFragment upgradeFragment = new UpgradeFragment();
-//        CommunityFragment communityFragment = new CommunityFragment();
-        PersonalCenterFragment personalCenterFragment = new PersonalCenterFragment();
-
-        mTabs = new ArrayList<Fragment>();
-        mTabs.add(documentsFragment);
-        mTabs.add(twoToOneFragment);
-        mTabs.add(serviceFragment);
-        mTabs.add(topicFragment);
-//        mTabs.add(upgradeFragment);
+        documentsFragment = new TeamDocumentsFragment();
+        spaceDocumentsFragment = new SpaceDocumentsFragment();
+        twoToOneFragment = new TwoToOneFragment();
+        serviceFragment = new ServiceFragment();
+        topicFragment = new TopicFragment();
+        personalCenterFragment = new PersonalCenterFragment();
         if (sharedPreferences.getBoolean("enable_sync", false)) {
-            tv_community.setVisibility(View.VISIBLE);
+            syncroomTab.setVisibility(View.VISIBLE);
         } else {
-            tv_community.setVisibility(View.GONE);
+            syncroomTab.setVisibility(View.GONE);
         }
-
-        mTabs.add(personalCenterFragment);
-
-        mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-
-            @Override
-            public int getCount() {
-                return mTabs.size();
-            }
-
-            @Override
-            public Fragment getItem(int position) {
-                return mTabs.get(position);
-            }
-        };
-        vp.setAdapter(mAdapter);
-        vp.setOffscreenPageLimit(5);
-        GoTOTab(0);
+        changeTeamFragment(documentTab);
         Log.e("user_info", "user_token:" + AppConfig.UserToken + ",company_id:" + AppConfig.SchoolID);
 
     }
 
-    private void initDatas2() {
-        DocumentsFragment documentsFragment = new DocumentsFragment();
-        TwoToOneFragment twoToOneFragment = new TwoToOneFragment();
-        ServiceFragment serviceFragment = new ServiceFragment();
-        TopicFragment topicFragment = new TopicFragment();
-        PersonalCenterFragment personalCenterFragment = new PersonalCenterFragment();
-
-        mTabs = new ArrayList<Fragment>();
-        mTabs.add(documentsFragment);
-        mTabs.add(twoToOneFragment);
-        mTabs.add(serviceFragment);
-        mTabs.add(topicFragment);
-        mTabs.add(personalCenterFragment);
-
-        mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-
-            @Override
-            public int getCount() {
-                return mTabs.size();
-            }
-
-            @Override
-            public Fragment getItem(int position) {
-                return mTabs.get(position);
-            }
-        };
-        vp.setAdapter(mAdapter);
-        vp.setOffscreenPageLimit(4);
-//        GoTOTab(0);
-
-    }
-
-    protected class myOnClick implements OnClickListener {
-        @Override
-        public void onClick(View v) {
-            /*if(AppConfig.SOCKET!=null){
-                Log.e("lalala",AppConfig.SOCKET.isClosed() + ";" + AppConfig.SOCKET.isConnected());
-			}else{
-				Log.e("lalala","Socket null");
-			}*/
-            switch (v.getId()) {
-                case R.id.tv_dialogue:
-                    if (!flag_dialog) {
-                        RongConnect();
-                    }
-                    GoTOTab(1);
-                    break;
-                case R.id.tv_service:
-                    GoTOTab(0);
-                    break;
-                case R.id.tv_contact:
-                    GoTOTab(2);
-                    break;
-                case R.id.tv_community:
-                    GoTOTab(3);
-                    break;
-                case R.id.tv_personal_center:
-                    GoTOTab(4);
-                    break;
-                default:
-                    break;
-            }
-
-        }
-
-    }
 
     public void GoTOTab(int s) {
         for (int i = 0; i < tvs.size(); i++) {
@@ -701,9 +597,30 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 tvs.get(i).setCompoundDrawables(null, d, null, null);
             }
         }
-
-        vp.setCurrentItem(s, false);
     }
+
+
+    public void changeSelectedTab(int id) {
+        for (int i = 0; i < tvs.size(); i++) {
+            TextView tabText = tvs.get(i);
+            if (tabText.getId() == id) {
+                // 必须设置图片大小，否则不显示ad
+                Drawable d = getResources().getDrawable(draw_selectIDs[tvs.indexOf(tabText)]);
+                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 18),
+                        DensityUtil.dp2px(getApplicationContext(), 18)); // 必须设置图片大小，否则不显示
+                tabText.setTextColor(getResources().getColor(R.color.tab_blue));
+                tabText.setCompoundDrawables(null, d, null, null);
+            } else {
+
+                Drawable d = getResources().getDrawable(drawIDs[tvs.indexOf(tabText)]);
+                d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 18),
+                        DensityUtil.dp2px(getApplicationContext(), 18));  // 必须设置图片大小，否则不显示
+                tabText.setTextColor(getResources().getColor(R.color.tab_gray));
+                tabText.setCompoundDrawables(null, d, null, null);
+            }
+        }
+    }
+
 
     private void UpdateOutData() {
         RequestParams params = new RequestParams();
@@ -814,7 +731,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     public void onResume() {
         super.onResume();
-
         if (RESUME) {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
@@ -827,10 +743,10 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             ft.commitAllowingStateLoss();
             ft = null;
             fm.executePendingTransactions();
-
-            GetTabName();
-            initDatas();
-            GoTOTab(4);
+//
+//            GetTabName();
+//            initDatas();
+//            GoTOTab(4);
         }
 
         if (AppConfig.isRefreshRed) {
@@ -1027,6 +943,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
     String filePath;
+
     @Override
     public void onSaveSpace(String path) {
         this.filePath = path;
@@ -1118,6 +1035,115 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             }
         });
     }
+
+    private FragmentManager fragmentManager;
+    private TextView currentTabText;
+    private Fragment currentFragment;
+
+    private Fragment getTeamFragment(final int id) {
+        Fragment fragment = null;
+        Bundle bundle = new Bundle();
+        switch (id) {
+            case R.id.txt_tab_document:
+                fragment = documentsFragment;
+                fragment.setArguments(bundle);
+                break;
+            case R.id.txt_tab_chat:
+                fragment = twoToOneFragment;
+                fragment.setArguments(bundle);
+                break;
+
+            case R.id.txt_tab_meeting:
+                fragment = serviceFragment;
+                fragment.setArguments(bundle);
+                break;
+
+            case R.id.txt_tab_syncroom:
+                fragment = topicFragment;
+                fragment.setArguments(bundle);
+                break;
+
+            case R.id.txt_tab_personal:
+                fragment = personalCenterFragment;
+                fragment.setArguments(bundle);
+                break;
+        }
+
+        return fragment;
+    }
+
+    private Fragment getSpaceFragment() {
+        Fragment fragment = null;
+        Bundle bundle = new Bundle();
+        return fragment;
+    }
+    
+    public void changeTeamFragment(TextView v) {
+        teamFrame.setVisibility(View.VISIBLE);
+        spaceFrame.setVisibility(View.GONE);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment fragment = null;
+        fragment = fragmentManager.findFragmentByTag(String.valueOf(v.getId()));
+        Log.e("changeFragment", "fragment:" + fragment);
+        if (fragment == null) {
+
+            if (currentFragment != null) {
+                fragmentTransaction.hide(currentFragment);
+            }
+
+            fragment = getTeamFragment(v.getId());
+            fragmentTransaction.add(R.id.frame_tab_team, fragment, String.valueOf(v.getId()));
+
+        } else if (fragment == currentFragment) {
+
+        } else {
+            fragmentTransaction.hide(currentFragment);
+            fragmentTransaction.show(fragment);
+        }
+
+        fragmentTransaction.commitAllowingStateLoss();
+        currentFragment = fragment;
+        changeSelectedTab(v.getId());
+
+    }
+
+    @Subscribe
+    public void changeSpaceDocumentsFragment(EventSpaceFragment spaceFragment) {
+        Log.e("EventBus", "changeSpaceDocumentsFragment,space:" + spaceFragment);
+        changeSpaceFragment(1,spaceFragment);
+
+    }
+
+    @Subscribe
+    public void changeTeamDocumentsFragment(EventTeamFragment teamFragment) {
+        Log.e("EventBus", "changeTeamDocumentsFragment");
+        changeTeamFragment(documentTab);
+    }
+
+    public void changeSpaceFragment(int type,Object data) {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment fragment = null;
+
+        if(type == 1){
+            //go to space documents
+            teamFrame.setVisibility(View.GONE);
+            spaceFrame.setVisibility(View.VISIBLE);
+            fragment = new SpaceDocumentsFragment();
+            EventSpaceFragment spaceFragment = (EventSpaceFragment) data;
+            Bundle bundle = new Bundle();
+            bundle.putInt("ItemID",spaceFragment.getItemID());
+            bundle.putString("space_name",spaceFragment.getSpaceName());
+            bundle.putInt("team_id",spaceFragment.getTeamId());
+            fragment.setArguments(bundle);
+            fragmentTransaction.replace(R.id.frame_tab_space, fragment);
+            fragmentTransaction.commitAllowingStateLoss();
+        }else {
+
+        }
+        currentFragment = fragment;
+
+    }
+
 
 
 }

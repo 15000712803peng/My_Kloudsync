@@ -480,13 +480,15 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     }
 
 
+    View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.service, container, false);
-        initView(view);
-        isPrepared = true;
-        lazyLoad();
+        if(view == null){
+            view = inflater.inflate(R.layout.service, container, false);
+            initView(view);
+        }
+        GetSchoolInfo();
         return view;
     }
 
@@ -520,7 +522,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     @Override
     protected void lazyLoad() {
         if (isPrepared && isVisible) {
-            GetSchoolInfo();
+
         }
     }
 

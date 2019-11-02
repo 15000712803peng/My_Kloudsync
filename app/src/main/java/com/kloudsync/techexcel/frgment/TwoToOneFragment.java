@@ -62,15 +62,8 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
             view = inflater.inflate(R.layout.twotoone_fragment, container, false);
             initView();
         }
+        initFunction();
         return view;
-//        if (null != view) {
-//            ViewGroup parent = (ViewGroup) view.getParent();
-//            if (null != parent) {
-//                parent.removeView(view);
-//            }
-//        } else {
-//
-//        }
 
     }
 
@@ -96,7 +89,7 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
         isFragmentVisible = isVisibleToUser;
         if (isFirst && isVisibleToUser) {
             isFirst = false;
-            initFunction();
+
         }
     }
 

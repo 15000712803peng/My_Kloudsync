@@ -47,7 +47,7 @@ import com.kloudsync.techexcel.dialog.message.ShareMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.SystemMessageItemProvider;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.kloudsync.techexcel.frgment.ContactFragment;
-import com.kloudsync.techexcel.frgment.DocumentsFragment;
+import com.kloudsync.techexcel.frgment.TeamDocumentsFragment;
 import com.kloudsync.techexcel.frgment.PersonalCenterFragment;
 import com.kloudsync.techexcel.frgment.ServiceFragment;
 import com.kloudsync.techexcel.frgment.TopicFragment;
@@ -576,7 +576,7 @@ public class MainActivityV3 extends FragmentActivity implements AddWxDocDialog.O
 
     TopicFragment topicFragment = new TopicFragment();
     private void initDatas() {
-        DocumentsFragment documentsFragment = new DocumentsFragment();
+        TeamDocumentsFragment documentsFragment = new TeamDocumentsFragment();
         TwoToOneFragment twoToOneFragment = new TwoToOneFragment();
         ServiceFragment serviceFragment = new ServiceFragment();
 //        UpgradeFragment upgradeFragment = new UpgradeFragment();
@@ -617,7 +617,7 @@ public class MainActivityV3 extends FragmentActivity implements AddWxDocDialog.O
     }
 
     private void initDatas2() {
-        DocumentsFragment documentsFragment = new DocumentsFragment();
+        TeamDocumentsFragment documentsFragment = new TeamDocumentsFragment();
         TwoToOneFragment twoToOneFragment = new TwoToOneFragment();
         ServiceFragment serviceFragment = new ServiceFragment();
         TopicFragment topicFragment = new TopicFragment();
