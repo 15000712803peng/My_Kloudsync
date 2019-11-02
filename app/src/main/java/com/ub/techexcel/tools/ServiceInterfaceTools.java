@@ -1541,7 +1541,7 @@ public class ServiceInterfaceTools {
             public void run() {
                 try {
                     JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
-                    Log.e("getNoteList +", url + "  " + returnjson.toString());
+                    Log.e("TwinkleBookNote", url + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         JSONArray lineitems = returnjson.getJSONArray("RetData");
                         List<NoteDetail> items = new ArrayList<NoteDetail>();

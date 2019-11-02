@@ -166,6 +166,7 @@ import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.SpliteSocket;
 import com.ub.techexcel.tools.SyncRoomNotePopup;
+import com.ub.techexcel.tools.SyncRoomOtherNoteListPopup;
 import com.ub.techexcel.tools.SyncRoomPopup;
 import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.TvDevicesListPopup;
@@ -3049,6 +3050,28 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         } else {
             getPageObjectsAfterChange(pageNum);
         }
+        ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + meetingId + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+                if (noteDetails != null && noteDetails.size() > 0) {
+//                    {"type":38,"LinkID":123,"LinkProperty":{"X":0.2683315621679065,"Y":0.37898089171974525}}
+                    notifyDrawNotes(noteDetails);
+                    if (isTwinkleBookNote) {
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("LinkID", linkID);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        String key = "TwinkleBookNote";
+                        wv_show.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
+                    }
+                    isTwinkleBookNote = false;
+                }
+            }
+        });
+
         if (isChangePageNumber) {
             isChangePageNumber = false;
             Message msg = Message.obtain();
@@ -4405,54 +4428,92 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     }
 
     private SyncRoomNotePopup syncRoomNotePopup;
+    private String selectCusterId = "";
 
     private void openNotePopup() {
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&syncRoomID=" + 0;
+        if (TextUtils.isEmpty(selectCusterId)) {
+            gotosyncRoomNote(selectCusterId);
+        } else {
+            gotoOtherNoteList(selectCusterId);
+        }
+    }
+
+    private void gotosyncRoomNote(String id) {
         syncRoomNotePopup = new SyncRoomNotePopup();
         syncRoomNotePopup.getPopwindow(this);
-//        syncRoomNotePopup.setDocumentPopupEventListener(this);
         syncRoomNotePopup.setWebCamPopupListener(new SyncRoomNotePopup.WebCamPopupListener() {
-            @Override
-            public void changeOptions(LineItem syncRoomBean, int position) { //打开笔记
-                displayNote(syncRoomBean);
 
+            @Override
+            public void enter(Customer customer) {
+                gotoOtherNoteList(customer.getUserID());
             }
 
             @Override
-            public void teamDocument() {
-
-            }
-
-            @Override
-            public void takePhoto() {
-            }
-
-            @Override
-            public void importFromLibrary() {
-            }
-
-            @Override
-            public void savedFile() {
-            }
-
-            @Override
-            public void dismiss() {
-            }
-
-            @Override
-            public void open() {
-            }
-
-            @Override
-            public void delete(LineItem selectLineItem) {
-            }
-
-            @Override
-            public void edit(LineItem selectLineItem) {
+            public void selectCustomer(Customer customer) {
+                selectCusterId = customer.getUserID();
+                syncRoomNotePopup.notify2(selectCusterId);
             }
         });
-        syncRoomNotePopup.StartPop(wv_show, url);
-        menu.setImageResource(R.drawable.icon_menu);
+        syncRoomNotePopup.StartPop(wv_show, meetingId, id);
+    }
+
+
+    /**
+     * 进入别人的笔记列表
+     */
+    private SyncRoomOtherNoteListPopup syncRoomOtherNoteListPopup;
+
+    private void gotoOtherNoteList(String id) {
+        syncRoomOtherNoteListPopup = new SyncRoomOtherNoteListPopup();
+        syncRoomOtherNoteListPopup.getPopwindow(WatchCourseActivity2.this);
+        syncRoomOtherNoteListPopup.setWebCamPopupListener(new SyncRoomOtherNoteListPopup.WebCamPopupListener() {
+            @Override
+            public void select(NoteDetail noteDetail) {
+                select(noteDetail);
+            }
+
+            @Override
+            public void back() {
+                gotosyncRoomNote(selectCusterId);
+            }
+        });
+        syncRoomOtherNoteListPopup.StartPop(id, meetingId);
+
+    }
+
+    /**
+     * 切换带笔记对应的文档
+     */
+
+    private int linkID;
+    private boolean isTwinkleBookNote = false;
+
+    private void switchPdf(NoteDetail noteDetail) {
+        int attachmentid = noteDetail.getDocumentItemID();
+        int pagenumber = noteDetail.getPageNumber();
+        linkID = noteDetail.getLinkID();
+        if (documentList.size() > 0) {
+
+            for (LineItem lineItem : documentList) {
+
+                Log.e("switchPdf", attachmentid + "   " + lineItem.getAttachmentID());
+                if (lineItem.getAttachmentID().equals(attachmentid + "")) {
+                    Log.e("switchPdf22", attachmentid + "   " + lineItem.getAttachmentID());
+                    currentAttachmentPage = pagenumber + "";
+                    AppConfig.currentPageNumber = pagenumber + "";
+                    currentShowPdf = lineItem;
+                    currentShowPdf.setSelect(true);
+                    currentAttachmentId = currentShowPdf.getAttachmentID();
+                    currentItemId = currentShowPdf.getItemId();
+                    targetUrl = currentShowPdf.getUrl();
+                    newPath = currentShowPdf.getNewPath();
+                    isTwinkleBookNote = true;
+                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage);
+                    loadWebIndex();
+                    break;
+                }
+            }
+        }
     }
 
 
@@ -8557,7 +8618,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             public void onFavoriteDocSelected(Note note) {
                 String url = AppConfig.URL_PUBLIC + "DocumentNote/ImportNote";
                 ServiceInterfaceTools.getinstance().importNote(url, ServiceInterfaceTools.IMPORTNOTE, meetingId,
-                        note.getAttachmentID() + "", currentAttachmentPage, note.getNoteID(), linkProperty.toString(),
+                        currentAttachmentId+ "", currentAttachmentPage, note.getNoteID(), linkProperty.toString(),
                         new ServiceInterfaceListener() {
                             @Override
                             public void getServiceReturnData(Object object) {
