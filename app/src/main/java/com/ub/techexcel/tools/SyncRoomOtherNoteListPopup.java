@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -58,6 +60,7 @@ public class SyncRoomOtherNoteListPopup {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     public void initPopuptWindow() {
 
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
@@ -69,8 +72,8 @@ public class SyncRoomOtherNoteListPopup {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
+                dismiss();
+                webCamPopupListener.back();
             }
         });
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
@@ -83,7 +86,7 @@ public class SyncRoomOtherNoteListPopup {
         mPopupWindow.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                webCamPopupListener.back();
+                dismiss();
             }
         });
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -91,12 +94,34 @@ public class SyncRoomOtherNoteListPopup {
     }
 
 
+    private void setName(final String id, final String syncroomid) {
+        String url2 = AppConfig.URL_PUBLIC + "DocumentNote/SyncRoomUserList?syncRoomID=" + syncroomid;
+        ServiceInterfaceTools.getinstance().getSyncRoomUserList(url2, ServiceInterfaceTools.GETSYNCROOMUSERLIST, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                List<Customer> list = new ArrayList<>();
+                list.clear();
+                list.addAll((List<Customer>) object);
+                for (int i = 0; i < list.size(); i++) {
+                    Customer  ss= list.get(i);
+                    if (ss.getUserID().equals(id)) {
+                        name.setText(ss.getName() + "的笔记");
+                        break;
+                    }
+                }
+            }
+        });
+
+    }
+
     public void StartPop(String id, String syncroomid) {
         if (mPopupWindow != null) {
             mPopupWindow.show();
             name.setText("xxx的笔记");
+            setName(id, syncroomid);
+
             String url = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + syncroomid + "&documentItemID=0&pageNumber=0&userID=" + id;
-            ServiceInterfaceTools.getinstance().getNoteListV2(url, ServiceInterfaceTools.GETSYNCROOMUSERLIST, new ServiceInterfaceListener() {
+            ServiceInterfaceTools.getinstance().getNoteListV2(url, ServiceInterfaceTools.GETNOTELISTV2, new ServiceInterfaceListener() {
                 @Override
                 public void getServiceReturnData(Object object) {
                     List<NoteDetail> items = new ArrayList<NoteDetail>();

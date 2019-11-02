@@ -128,6 +128,8 @@ public class ServiceInterfaceTools {
     public static final int GETNOTEBYNOTEID = 0x1141;
     public static final int GETSYNCROOMUSERLIST = 0x1142;
     public static final int IMPORTNOTE = 0x1143;
+    public static final int GETNOTELISTV2 = 0x1144;
+    public static final int GETNOTELISTV3= 0x1145;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -1535,6 +1537,37 @@ public class ServiceInterfaceTools {
 
 
     public void getNoteListV2(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("TwinkleBookNote", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        JSONArray lineitems = returnjson.getJSONArray("RetData");
+                        List<NoteDetail> items = new ArrayList<NoteDetail>();
+                        for (int j = 0; j < lineitems.length(); j++) {
+                            JSONObject lineitem = lineitems.getJSONObject(j);
+                            items.add(new Gson().fromJson(lineitem.toString(), NoteDetail.class));
+                        }
+                        Message msg = Message.obtain();
+                        msg.obj = items;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+    public void getNoteListV3(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         new ApiTask(new Runnable() {
             @Override

@@ -36,7 +36,10 @@ public class SyncRoomNotePopup {
     private SyncRoomUserAdapter syncRoomUserAdapter;
     private TextView presenterusername;
     private TextView presenternoteNumber;
+    private TextView myynote;
     private RelativeLayout presenterll;
+
+   private ImageView back;
 
     public void getPopwindow(Context context) {
         this.mContext = context;
@@ -61,7 +64,15 @@ public class SyncRoomNotePopup {
         recycleview.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
 
         presenterusername = view.findViewById(R.id.presentername);
+        back = view.findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
         presenternoteNumber = view.findViewById(R.id.presenternumber);
+        myynote = view.findViewById(R.id.myynote);
         presenterll = view.findViewById(R.id.presenterll);
         presenterll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,12 +100,10 @@ public class SyncRoomNotePopup {
 
 
     private Customer presenter = new Customer();
-    private String syncroomId;
     private List<Customer> list = new ArrayList<>();
 
     public void StartPop(View v, String syncroomid, final String id) {
         if (mPopupWindow != null) {
-            this.syncroomId = syncroomid;
             mPopupWindow.show();
             String url = AppConfig.URL_PUBLIC + "DocumentNote/SyncRoomUserList?syncRoomID=" + syncroomid;
             ServiceInterfaceTools.getinstance().getSyncRoomUserList(url, ServiceInterfaceTools.GETSYNCROOMUSERLIST, new ServiceInterfaceListener() {
@@ -109,6 +118,14 @@ public class SyncRoomNotePopup {
                             list.remove(i);
                             i--;
                         }
+                    }
+
+                    if(TextUtils.isEmpty(presenter.getUserID())){
+                        presenterll.setVisibility(View.GONE);
+                        myynote.setVisibility(View.GONE);
+                    }else{
+                        presenterll.setVisibility(View.VISIBLE);
+                        myynote.setVisibility(View.VISIBLE);
                     }
 
                     for (int i = 0; i < list.size(); i++) {
@@ -188,8 +205,10 @@ public class SyncRoomNotePopup {
             holder.ll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    dismiss();
-                    webCamPopupListener.enter(customer);
+                    if (customer.isSelected()) {
+                        dismiss();
+                        webCamPopupListener.enter(customer);
+                    }
                 }
             });
             holder.username.setText(customer.getName());
@@ -197,14 +216,18 @@ public class SyncRoomNotePopup {
             holder.selectimg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     webCamPopupListener.selectCustomer(customer);
+
                 }
             });
 
             if (customer.isSelected()) {
                 holder.selectimg.setBackground(mContext.getResources().getDrawable(R.drawable.finish_a));
+                holder.arrow.setVisibility(View.VISIBLE);
             } else {
                 holder.selectimg.setBackground(mContext.getResources().getDrawable(R.drawable.finish_d));
+                holder.arrow.setVisibility(View.INVISIBLE);
             }
 
         }
@@ -219,6 +242,7 @@ public class SyncRoomNotePopup {
             TextView noteNumber;
             RelativeLayout ll;
             ImageView selectimg;
+            ImageView arrow;
 
             public RecycleHolder2(View itemView) {
                 super(itemView);
@@ -226,6 +250,7 @@ public class SyncRoomNotePopup {
                 noteNumber = itemView.findViewById(R.id.usernumber);
                 ll = itemView.findViewById(R.id.ll);
                 selectimg = itemView.findViewById(R.id.selectimg);
+                arrow = itemView.findViewById(R.id.arrow);
             }
         }
     }

@@ -2637,7 +2637,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             }
         });
 
-        ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + lessonId + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
+        ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + lessonId + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELISTV2, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
                 List<NoteDetail> noteDetails = (List<NoteDetail>) object;
@@ -2655,8 +2655,48 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                         Log.e("TwinkleBookNote", linkID + "");
                         wv_show.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
                     }
-                    isTwinkleBookNote = false;
                 }
+
+
+                if (!TextUtils.isEmpty(selectCusterId)) {
+                    ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + lessonId + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
+                        @Override
+                        public void getServiceReturnData(Object object) {
+                            List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+                            if (noteDetails != null && noteDetails.size() > 0) {
+
+                                for (NoteDetail note : noteDetails) {
+                                    final JSONObject noteData = new JSONObject();
+                                    try {
+                                        noteData.put("type", 38);
+                                        noteData.put("LinkID", note.getLinkID());
+                                        noteData.put("IsOther", 1);
+                                        if (!TextUtils.isEmpty(note.getLinkProperty())) {
+                                            noteData.put("LinkProperty", new JSONObject(note.getLinkProperty()));
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+                                }
+                                if (isTwinkleBookNote) {
+                                    JSONObject jsonObject = new JSONObject();
+                                    try {
+                                        jsonObject.put("LinkID", linkID);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    String key = "TwinkleBookNote";
+                                    Log.e("TwinkleBookNote", linkID + "");
+                                    wv_show.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
+                                }
+                            }
+                            isTwinkleBookNote=false;
+                        }
+                    });
+                }
+
+
             }
         });
 
@@ -2733,7 +2773,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
                     jsonObject = ConnectService.getIncidentbyHttpGet(url);
 
-                    ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + lessonId + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
+                    ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + lessonId + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELISTV2, new ServiceInterfaceListener() {
                         @Override
                         public void getServiceReturnData(Object object) {
                             List<NoteDetail> noteDetails = (List<NoteDetail>) object;
@@ -3917,7 +3957,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         syncRoomOtherNoteListPopup.setWebCamPopupListener(new SyncRoomOtherNoteListPopup.WebCamPopupListener() {
             @Override
             public void select(NoteDetail noteDetail) {
-                select(noteDetail);
+                switchPdf(noteDetail);
             }
 
             @Override

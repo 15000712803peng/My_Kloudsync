@@ -401,7 +401,7 @@
     <string name="mtEnd">End</string>
     <!--右下侧按钮-->
     <string name="mtFile">File</string>
-    <string name="mtNote">My Note</string>
+    <string name="mtNote">User Note</string>
     <string name="mtAttendee">Attendee</string>
     <string name="mtInvite2">Invite</string>
     <string name="mtChat">Chat</string>
