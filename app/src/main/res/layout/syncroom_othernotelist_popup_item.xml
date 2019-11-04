@@ -3,65 +3,89 @@
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ll"
     android:layout_width="350dp"
-    android:layout_height="100dp"
+    android:layout_height="wrap_content"
     android:background="@color/white"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-
-    <com.facebook.drawee.view.SimpleDraweeView
-        android:id="@+id/img_url"
-        android:layout_width="100dp"
-        android:layout_height="70dp"
-        android:layout_gravity="center_vertical"
+    <TextView
+        android:id="@+id/pagenumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:scaleType="fitXY"
-        fresco:fadeDuration="500"
-        fresco:failureImage="@drawable/placeholderimg"
-        fresco:failureImageScaleType="centerInside"
-        fresco:placeholderImage="@drawable/placeholderimg"
-        fresco:placeholderImageScaleType="fitCenter" />
+        android:layout_marginTop="10dp"
+        android:background="#D8E4FD"
+        android:paddingBottom="2dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="2dp"
+        android:text="Page 1"
+        android:textColor="#4B82FB"
+        android:textSize="14sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="10dp"
-        android:orientation="vertical">
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="新—树叶课"
-            android:textSize="14sp" />
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/img_url"
+            android:layout_width="100dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:scaleType="fitXY"
+            fresco:fadeDuration="500"
+            fresco:failureImage="@drawable/placeholderimg"
+            fresco:failureImageScaleType="centerInside"
+            fresco:placeholderImage="@drawable/placeholderimg"
+            fresco:placeholderImageScaleType="fitCenter" />
 
-
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/pdfaddress"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="100dp"
-                android:singleLine="true"
-                android:text="Sync:38"
-                android:textSize="12sp" />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="25dp"
+                    android:maxLines="2"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/operationmore"
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/more_favor" />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
+                android:layout_marginTop="15dp"
                 android:text="2019-10-12 21:09"
                 android:textSize="12sp" />
-        </RelativeLayout>
 
+        </LinearLayout>
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
 
 </LinearLayout>
