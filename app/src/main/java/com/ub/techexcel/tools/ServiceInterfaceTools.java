@@ -129,7 +129,8 @@ public class ServiceInterfaceTools {
     public static final int GETSYNCROOMUSERLIST = 0x1142;
     public static final int IMPORTNOTE = 0x1143;
     public static final int GETNOTELISTV2 = 0x1144;
-    public static final int GETNOTELISTV3= 0x1145;
+    public static final int GETNOTELISTV3 = 0x1145;
+    public static final int REMOVENOTE = 0x1146;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -1567,6 +1568,7 @@ public class ServiceInterfaceTools {
             }
         }).start(ThreadManager.getManager());
     }
+
     public void getNoteListV3(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         new ApiTask(new Runnable() {
@@ -1617,21 +1619,16 @@ public class ServiceInterfaceTools {
                     Log.e("getNoteList note", url + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         JSONObject lineitem = returnjson.getJSONObject("RetData");
-                        LineItem item = new LineItem();
-
-                        item.setLocalFileID(lineitem.getString("LocalFileID"));
-//                        item.setPageNumber(lineitem.getInt("PageNumber"));
-//                        item.setDocumentItemID(lineitem.getInt("DocumentItemID"));
-
-                        item.setFileName(lineitem.getString("Title"));
-                        item.setUrl(lineitem.getString("AttachmentUrl"));
-                        item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
-                        item.setItemId(lineitem.getString("ItemID"));
-                        item.setAttachmentID(lineitem.getString("AttachmentID"));
-//                        item.setNewPath(lineitem.getString("NewPath"));
-                        item.setFlag(0);
+                        Note note = new Note();
+                        note.setLocalFileID(lineitem.getString("LocalFileID"));
+                        note.setPageNumber(lineitem.getInt("PageNumber"));
+                        note.setDocumentItemID(lineitem.getInt("DocumentItemID"));
+                        note.setFileName(lineitem.getString("Title"));
+                        note.setAttachmentUrl(lineitem.getString("AttachmentUrl"));
+                        note.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                        note.setAttachmentID(lineitem.getInt("AttachmentID"));
                         Message msg = Message.obtain();
-                        msg.obj = item;
+                        msg.obj = note;
                         msg.what = code;
                         handler.sendMessage(msg);
                     } else {
@@ -1856,6 +1853,39 @@ public class ServiceInterfaceTools {
                         }
                         Message msg = Message.obtain();
                         msg.obj = items;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+    /**
+     * 根据LinkID删除Note信息
+     *
+     * @param url
+     * @param code
+     * @param serviceInterfaceListener
+     */
+    public void removeNote(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentDataattachment(url);
+                    Log.e("getNoteList", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        Message msg = Message.obtain();
+                        msg.obj = 0;
                         msg.what = code;
                         handler.sendMessage(msg);
                     } else {

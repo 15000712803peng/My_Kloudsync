@@ -143,8 +143,6 @@ public class YinxiangOperatorPopup implements View.OnClickListener {
                 yinxiangedit.setVisibility(View.VISIBLE);
             }
 //            mPopupWindow.showAtLocation(v, Gravity.RIGHT, 0, 0);
-
-
             int windowPos[] = PopupWindowUtil.calculatePopWindowPos(v, view , 50);
             int height = mContext.getResources().getDisplayMetrics().heightPixels;
 
@@ -152,7 +150,6 @@ public class YinxiangOperatorPopup implements View.OnClickListener {
             int xOff = 20; // 可以自己调整偏移
             windowPos[0] -= xOff;
             mPopupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
-
         }
     }
 

@@ -2622,7 +2622,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             }
         });
 
-        ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + lessonId + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
+        ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
                 List<NoteDetail> noteDetails = (List<NoteDetail>) object;
@@ -3432,7 +3432,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
-                LineItem note = (LineItem) object;
+                Note note = (Note) object;
                 displayNote(note);
             }
         });
@@ -6119,62 +6119,6 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         });
     }
 
-    @org.xwalk.core.JavascriptInterface
-    public void viewBookNoteFunction(final String result) {
-        Log.e("JavascriptInterface", "viewBookNoteFunction,result:" + result);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                viewNote(result);
-            }
-        });
-    }
-
-
-    @org.xwalk.core.JavascriptInterface
-    public void editBookNoteFunction(final String noteinfo) {
-        Log.e("当前文档信息", "editBookNoteFunction  " + noteinfo);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                selectNoteBook();
-            }
-        });
-    }
-
-
-    @org.xwalk.core.JavascriptInterface
-    public void editBookNoteLocalFunction(String note) {
-        // edit
-        Log.e("JavascriptInterface", "editBookNoteFunction:" + note);
-        if (DeviceManager.getDeviceType(this) == SupportDevice.PHONE) {
-            Toast.makeText(getApplicationContext(), "该设备不支持本地笔记", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (TextUtils.isEmpty(note) || note.equals("null") || note.equals("{}")) {
-            openNote(null);
-            return;
-        }
-        try {
-            JSONObject jsonObject = new JSONObject(note);
-            String id = "";
-            if (jsonObject.has("id")) {
-                id = jsonObject.getString("id");
-            } else if (jsonObject.has("ID")) {
-                id = jsonObject.getString("ID");
-            }
-            openNote(id);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-
-
-
 
     private void openNote(String noteId) {
         BookNote bookNote = null;
@@ -6191,33 +6135,6 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         startActivityForResult(intent, 100);
     }
 
-
-    private void viewNote(String json) {
-        String id = "";
-        if (json != null) {
-            try {
-
-                JSONObject jsonObject = new JSONObject(json);
-                if (jsonObject.has("id")) {
-                    id = jsonObject.getString("id");
-                } else if (jsonObject.has("ID")) {
-                    id = jsonObject.getString("ID");
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=" + id;
-        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                LineItem note = (LineItem) object;
-                displayNote(note);
-            }
-        });
-    }
 
     LocalNoteManager noteManager;
 
@@ -6238,7 +6155,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-    private void displayNote(LineItem note) {
+    private void displayNote(Note note) {
         closenote = findViewById(R.id.closenote);
         closenote.setVisibility(View.VISIBLE);
         //两个按钮
@@ -6274,23 +6191,29 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             }
         });
 
+        //保存
         currentAttachmentPage2 = currentAttachmentPage;
         currentShowPdf2.setNewPath(newPath);
         currentShowPdf2.setUrl(targetUrl);
         currentShowPdf2.setItemId(currentItemId);
         currentShowPdf2.setAttachmentID(currentAttachmentId);
-
-        currentAttachmentPage = "0";
-        AppConfig.currentPageNumber = "0";
         for (int i = 0; i < documentList.size(); i++) {
             documentList.get(i).setSelect(false);
         }
-        currentShowPdf = note;
-        currentShowPdf.setSelect(true);
+
+        //重新赋值
+        currentAttachmentPage = "0";
+        AppConfig.currentPageNumber = "0";
+        currentShowPdf=new LineItem();
+        currentShowPdf.setUrl(note.getAttachmentUrl());
+        currentShowPdf.setItemId(0+"");
+        currentShowPdf.setAttachmentID(note.getAttachmentID()+"");
+
         currentAttachmentId = currentShowPdf.getAttachmentID();
         currentItemId = currentShowPdf.getItemId();
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
+
         notifySwitchDocumentSocket(currentShowPdf, "1");
         loadWebIndex();
     }
@@ -6479,7 +6402,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
-                LineItem note = (LineItem) object;
+                Note note = (Note) object;
                 displayNote(note);
             }
         });

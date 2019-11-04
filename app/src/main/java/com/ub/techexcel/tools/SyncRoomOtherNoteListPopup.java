@@ -27,6 +27,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Customer;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.Note;
+import com.ub.techexcel.bean.SoundtrackBean;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,7 +44,8 @@ public class SyncRoomOtherNoteListPopup {
     private RecyclerView recycleview;
     private SyncRoomNoteListAdapter syncRoomNoteListAdapter;
     private TextView name;
-    private LinearLayout back;
+    private TextView swichuser;
+    private ImageView back;
 
     public void getPopwindow(Context context) {
         this.mContext = context;
@@ -69,11 +71,17 @@ public class SyncRoomOtherNoteListPopup {
         recycleview.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
         name = view.findViewById(R.id.name);
         back = view.findViewById(R.id.back);
+        swichuser = view.findViewById(R.id.swichuser);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
-                webCamPopupListener.back();
+            }
+        });
+        swichuser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotosyncRoomNote(selectId);
             }
         });
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
@@ -94,6 +102,46 @@ public class SyncRoomOtherNoteListPopup {
     }
 
 
+    /**
+     * 进入选择用户列表
+     *
+     * @param
+     */
+    private SyncRoomNotePopup syncRoomNotePopup;
+
+    private void gotosyncRoomNote(String userid) {
+        syncRoomNotePopup = new SyncRoomNotePopup();
+        syncRoomNotePopup.getPopwindow(mContext);
+        syncRoomNotePopup.setWebCamPopupListener(new SyncRoomNotePopup.WebCamPopupListener() {
+            @Override
+            public void selectCustomer(Customer customer) {
+                String userid = customer.getUserID();
+                selectId = userid;
+                webCamPopupListener.notifychangeUserid(userid);
+                setName(userid, syncroomid);
+                getNoteData(userid, syncroomid);
+
+            }
+        });
+        syncRoomNotePopup.StartPop(syncroomid, userid);
+    }
+
+
+    private String selectId;
+    private String syncroomid;
+
+    public void StartPop(String userid, String syncroomid) {
+        if (mPopupWindow != null) {
+            selectId = userid;
+            this.syncroomid = syncroomid;
+            mPopupWindow.show();
+            name.setText("XXX的笔记");
+            setName(userid, syncroomid);
+            getNoteData(userid, syncroomid);
+        }
+    }
+
+
     private void setName(final String id, final String syncroomid) {
         String url2 = AppConfig.URL_PUBLIC + "DocumentNote/SyncRoomUserList?syncRoomID=" + syncroomid;
         ServiceInterfaceTools.getinstance().getSyncRoomUserList(url2, ServiceInterfaceTools.GETSYNCROOMUSERLIST, new ServiceInterfaceListener() {
@@ -103,7 +151,7 @@ public class SyncRoomOtherNoteListPopup {
                 list.clear();
                 list.addAll((List<Customer>) object);
                 for (int i = 0; i < list.size(); i++) {
-                    Customer  ss= list.get(i);
+                    Customer ss = list.get(i);
                     if (ss.getUserID().equals(id)) {
                         name.setText(ss.getName() + "的笔记");
                         break;
@@ -111,28 +159,22 @@ public class SyncRoomOtherNoteListPopup {
                 }
             }
         });
-
     }
 
-    public void StartPop(String id, String syncroomid) {
-        if (mPopupWindow != null) {
-            mPopupWindow.show();
-            name.setText("xxx的笔记");
-            setName(id, syncroomid);
-
-            String url = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + syncroomid + "&documentItemID=0&pageNumber=0&userID=" + id;
-            ServiceInterfaceTools.getinstance().getNoteListV2(url, ServiceInterfaceTools.GETNOTELISTV2, new ServiceInterfaceListener() {
-                @Override
-                public void getServiceReturnData(Object object) {
-                    List<NoteDetail> items = new ArrayList<NoteDetail>();
-                    items.clear();
-                    items.addAll((List<NoteDetail>) object);
-                    syncRoomNoteListAdapter = new SyncRoomNoteListAdapter(mContext, items);
-                    recycleview.setAdapter(syncRoomNoteListAdapter);
-                }
-            });
-        }
+    private void getNoteData(String id, String syncroomid) {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + syncroomid + "&documentItemID=0&pageNumber=0&userID=" + id;
+        ServiceInterfaceTools.getinstance().getNoteListV2(url, ServiceInterfaceTools.GETNOTELISTV2, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                List<NoteDetail> items = new ArrayList<NoteDetail>();
+                items.clear();
+                items.addAll((List<NoteDetail>) object);
+                syncRoomNoteListAdapter = new SyncRoomNoteListAdapter(mContext, items);
+                recycleview.setAdapter(syncRoomNoteListAdapter);
+            }
+        });
     }
+
 
     public boolean isShowing() {
         return mPopupWindow.isShowing();
@@ -146,9 +188,10 @@ public class SyncRoomOtherNoteListPopup {
 
 
     public interface WebCamPopupListener {
+
         void select(NoteDetail noteDetail);
 
-        void back();
+        void notifychangeUserid(String userId);
     }
 
     public void setWebCamPopupListener(WebCamPopupListener webCamPopupListener) {
@@ -162,7 +205,6 @@ public class SyncRoomOtherNoteListPopup {
         private Context context;
 
         private List<NoteDetail> list = new ArrayList<>();
-
 
         public SyncRoomNoteListAdapter(Context context, List<NoteDetail> list) {
             this.context = context;
@@ -178,14 +220,13 @@ public class SyncRoomOtherNoteListPopup {
 
 
         @Override
-        public void onBindViewHolder(SyncRoomNoteListAdapter.RecycleHolder2 holder, final int position) {
+        public void onBindViewHolder(final SyncRoomNoteListAdapter.RecycleHolder2 holder, final int position) {
             final NoteDetail noteDetail = list.get(position);
             holder.title.setText(noteDetail.getTitle());
-            holder.pdfaddress.setText(noteDetail.getFileName() + "-> page" + noteDetail.getPageNumber());
             String date = noteDetail.getCreatedDate();
             if (!TextUtils.isEmpty(date)) {
                 long dd = Long.parseLong(date);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd  HH:mm:ss");
                 String haha = simpleDateFormat.format(dd);
                 holder.date.setText(haha);
             }
@@ -193,9 +234,9 @@ public class SyncRoomOtherNoteListPopup {
                 @Override
                 public void onClick(View v) {
                     webCamPopupListener.select(noteDetail);
-                    dismiss();
                 }
             });
+            holder.pagenumber.setText("Page " + noteDetail.getPageNumber());
             String url = noteDetail.getAttachmentUrl();
             if (!TextUtils.isEmpty(url)) {
                 url = url.substring(0, url.lastIndexOf("<")) + "1" + url.substring(url.lastIndexOf("."), url.length());
@@ -206,6 +247,20 @@ public class SyncRoomOtherNoteListPopup {
                 holder.img_url.setImageURI(imageUri);
             }
 
+            holder.operationmore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NoteOperatorPopup noteOperatorPopup = new NoteOperatorPopup();
+                    noteOperatorPopup.getPopwindow(mContext);
+                    noteOperatorPopup.setFavoritePoPListener(new NoteOperatorPopup.FavoritePoPListener() {
+                        @Override
+                        public void delete() {
+                            getNoteData(selectId, syncroomid);
+                        }
+                    });
+                    noteOperatorPopup.StartPop(holder.operationmore, noteDetail);
+                }
+            });
         }
 
         @Override
@@ -215,18 +270,20 @@ public class SyncRoomOtherNoteListPopup {
 
         class RecycleHolder2 extends RecyclerView.ViewHolder {
             TextView title;
-            TextView pdfaddress;
             LinearLayout ll;
             SimpleDraweeView img_url;
             TextView date;
+            TextView pagenumber;
+            ImageView operationmore;
 
             public RecycleHolder2(View itemView) {
                 super(itemView);
                 title = itemView.findViewById(R.id.title);
-                pdfaddress = itemView.findViewById(R.id.pdfaddress);
                 date = itemView.findViewById(R.id.date);
                 ll = itemView.findViewById(R.id.ll);
                 img_url = itemView.findViewById(R.id.img_url);
+                pagenumber = itemView.findViewById(R.id.pagenumber);
+                operationmore = itemView.findViewById(R.id.operationmore);
             }
         }
     }
