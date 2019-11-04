@@ -32,6 +32,9 @@ dependencies {
     compile "com.github.Raizlabs.DBFlow:dbflow-core:4.2.2"
     annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:4.2.2"
 //    compile('com.onyx.android.sdk:onyxsdk-base:1.5.2')
+//    compile('com.onyx.android.sdk:onyxsdk-data:1.1.4')
+
+
 
 
 

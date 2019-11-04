@@ -40,6 +40,7 @@ public class SpaceSyncRoomActivity extends Activity implements View.OnClickListe
     private RelativeLayout createnewsyncroom;
     private ImageView addImage;
 
+    private RelativeLayout backLayout;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +70,8 @@ public class SpaceSyncRoomActivity extends Activity implements View.OnClickListe
         addImage.setOnClickListener(this);
         img_back = (ImageView) findViewById(R.id.img_notice);
         teamRl = (RelativeLayout) findViewById(R.id.teamrl);
+        backLayout = findViewById(R.id.layout_back);
+        backLayout.setOnClickListener(this);
         teamRl.setOnClickListener(this);
         img_back.setOnClickListener(this);
     }
@@ -188,6 +191,9 @@ public class SpaceSyncRoomActivity extends Activity implements View.OnClickListe
                 break;
             case R.id.switchteam:
                 ShowMorePop();
+                break;
+            case R.id.layout_back:
+                finish();
                 break;
         }
     }

@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/service"
+            android:text="@string/syncroom"
             android:textColor="@color/darkgrey"
             android:textSize="16sp" />
 

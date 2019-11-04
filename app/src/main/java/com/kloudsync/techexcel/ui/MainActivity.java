@@ -27,7 +27,6 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
@@ -1077,7 +1076,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         Bundle bundle = new Bundle();
         return fragment;
     }
-    
+
     public void changeTeamFragment(TextView v) {
         teamFrame.setVisibility(View.VISIBLE);
         spaceFrame.setVisibility(View.GONE);
@@ -1086,13 +1085,13 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         fragment = fragmentManager.findFragmentByTag(String.valueOf(v.getId()));
         Log.e("changeFragment", "fragment:" + fragment);
         if (fragment == null) {
-
             if (currentFragment != null) {
                 fragmentTransaction.hide(currentFragment);
             }
-
             fragment = getTeamFragment(v.getId());
-            fragmentTransaction.add(R.id.frame_tab_team, fragment, String.valueOf(v.getId()));
+            if(!fragment.isAdded()){
+                fragmentTransaction.add(R.id.frame_tab_team, fragment, String.valueOf(v.getId()));
+            }
 
         } else if (fragment == currentFragment) {
 
