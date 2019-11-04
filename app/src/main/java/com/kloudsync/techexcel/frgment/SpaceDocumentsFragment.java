@@ -618,6 +618,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
                 selectSpace = (TeamSpaceBean) data.getSerializableExtra("selectSpace");
                 if (spaceId != selectSpace.getItemID()) {
                     spaceId = selectSpace.getItemID();
+                    titleText.setText(selectSpace.getName());
                     getTeamItem();
                 }
             } else if (requestCode == REQUEST_SELECT_DOC) {
