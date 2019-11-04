@@ -7,17 +7,21 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventSpaceData;
 import com.kloudsync.techexcel.bean.UserInCompany;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.search.ui.SpaceSearchActivity;
 import com.kloudsync.techexcel.tool.KloudCache;
 import com.ub.techexcel.adapter.SpaceAdapter;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,14 +32,14 @@ public class SwitchSpaceActivity extends Activity implements View.OnClickListene
     private RecyclerView mTeamRecyclerView;
     private List<TeamSpaceBean> spacesList = new ArrayList<>();
     private SpaceAdapter spaceAdapter;
-    private LinearLayout lin_add;
+    private RelativeLayout lin_add;
     private RelativeLayout backLayout;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private int spaceId;
     private int teamId;
     private boolean isSyncRoom;
-    private LinearLayout creatSpaceLayout;
+
     private static final int REQUEST_CREATE_NEW_SPACE = 1;
     private TextView titleText;
 
@@ -63,13 +67,13 @@ public class SwitchSpaceActivity extends Activity implements View.OnClickListene
 
         mTeamRecyclerView = (RecyclerView) findViewById(R.id.recycleview);
         mTeamRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        lin_add = (LinearLayout) findViewById(R.id.lin_add);
+        lin_add = (RelativeLayout) findViewById(R.id.lin_add);
         lin_add.setOnClickListener(this);
         titleText = (TextView) findViewById(R.id.tv_title);
         titleText.setText("switch space");
         backLayout = (RelativeLayout) findViewById(R.id.layout_back);
         backLayout.setOnClickListener(this);
-        creatSpaceLayout = findViewById(R.id.lin_add);
+
         searchLayout = findViewById(R.id.search_layout);
         searchLayout.setOnClickListener(this);
         spaceAdapter = new SpaceAdapter(SwitchSpaceActivity.this, spacesList, isSyncRoom, true);
@@ -93,6 +97,11 @@ public class SwitchSpaceActivity extends Activity implements View.OnClickListene
                 spaceAdapter.notifyDataSetChanged();
                 Intent intent = getIntent();
                 intent.putExtra("selectSpace", (Serializable) teamSpaceBean);
+                Log.e("space","space:" + teamSpaceBean);
+                EventSpaceData spaceData = new EventSpaceData();
+                spaceData.setSpaceId(teamSpaceBean.getItemID());
+                spaceData.setSpaceName(teamSpaceBean.getName());
+                EventBus.getDefault().post(spaceData);
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -157,15 +166,15 @@ public class SwitchSpaceActivity extends Activity implements View.OnClickListene
             return;
         }
         if (user.getRole() == 7 || user.getRole() == 8) {
-            creatSpaceLayout.setVisibility(View.VISIBLE);
+            lin_add.setVisibility(View.VISIBLE);
         } else {
             if (user.getRoleInTeam() == null) {
                 return;
             }
             if (user.getRoleInTeam().getTeamRole() == 0) {
-                creatSpaceLayout.setVisibility(View.GONE);
+                lin_add.setVisibility(View.GONE);
             } else if (user.getRoleInTeam().getTeamRole() > 0) {
-                creatSpaceLayout.setVisibility(View.VISIBLE);
+                lin_add.setVisibility(View.VISIBLE);
             }
         }
     }

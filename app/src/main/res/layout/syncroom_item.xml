@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/kk"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginLeft="10dp"
+        android:layout_height="62dp"
+        android:layout_marginLeft="18dp"
         android:layout_marginRight="10dp">
 
         <RelativeLayout
@@ -18,17 +19,12 @@
             android:layout_centerVertical="true"
             android:gravity="center">
             <ImageView
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp"
-                android:layout_width="36dp"
-                android:layout_height="46dp"
-                android:src="@drawable/bg_sync_room" />
-            <ImageView
-                android:layout_marginTop="18dp"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_centerHorizontal="true"
-                android:src="@drawable/syncroonmusic" />
+                android:layout_centerInParent="true"
+                android:id="@+id/icon_document"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_syncroom" />
         </RelativeLayout>
 
         <LinearLayout
@@ -100,8 +96,9 @@
         </LinearLayout>
 
         <TextView
+            android:layout_marginLeft="56dp"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
+            android:layout_height="1dp"
             android:layout_alignParentBottom="true"
             android:background="@color/divider_line" />
     </RelativeLayout>

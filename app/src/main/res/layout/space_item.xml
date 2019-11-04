@@ -68,14 +68,6 @@
                 android:layout_height="20dp" />
 
 
-            <TextView
-                android:visibility="gone"
-                android:id="@+id/syncroomcount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ddd"
-                android:textColor="@color/newgrey"
-                android:textSize="12sp" />
         </RelativeLayout>
 
 

@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
+import com.kloudsync.techexcel.bean.EventSpaceData;
 import com.kloudsync.techexcel.bean.EventSpaceFragment;
 import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.UserPath;
@@ -49,6 +50,7 @@ import com.kloudsync.techexcel.dialog.message.SystemMessageItemProvider;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.kloudsync.techexcel.frgment.ContactFragment;
 import com.kloudsync.techexcel.frgment.SpaceDocumentsFragment;
+import com.kloudsync.techexcel.frgment.SpaceSyncRoomFragment;
 import com.kloudsync.techexcel.frgment.TeamDocumentsFragment;
 import com.kloudsync.techexcel.frgment.PersonalCenterFragment;
 import com.kloudsync.techexcel.frgment.ServiceFragment;
@@ -515,7 +517,21 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Override
     public void onClick(View v) {
         if (v instanceof TextView) {
-            changeTeamFragment((TextView) v);
+            if(inSpace && spaceFragmentData != null){
+                if(v.getId() == R.id.txt_tab_document || v.getId() == R.id.txt_tab_syncroom){
+                    if(v.getId() == R.id.txt_tab_document){
+                        spaceFragmentData.setType(1);
+                    }else {
+                        spaceFragmentData.setType(2);
+                    }
+                    handleChangeSpaceFragment(spaceFragmentData);
+                }else {
+                    changeTeamFragment((TextView) v);
+                }
+            }else {
+                changeTeamFragment((TextView) v);
+            }
+
         }
     }
 
@@ -620,7 +636,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
     }
 
-
+    private boolean inSpace = false;
     private void UpdateOutData() {
         RequestParams params = new RequestParams();
         params.setHeader("UserToken", AppConfig.UserToken);
@@ -1037,7 +1053,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     private FragmentManager fragmentManager;
     private TextView currentTabText;
-    private Fragment currentFragment;
+    private Fragment currentTeamFragment;
+    private Fragment currentSpaceFragment;
 
     private Fragment getTeamFragment(final int id) {
         Fragment fragment = null;
@@ -1071,11 +1088,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         return fragment;
     }
 
-    private Fragment getSpaceFragment() {
-        Fragment fragment = null;
-        Bundle bundle = new Bundle();
-        return fragment;
-    }
 
     public void changeTeamFragment(TextView v) {
         teamFrame.setVisibility(View.VISIBLE);
@@ -1085,50 +1097,64 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         fragment = fragmentManager.findFragmentByTag(String.valueOf(v.getId()));
         Log.e("changeFragment", "fragment:" + fragment);
         if (fragment == null) {
-            if (currentFragment != null) {
-                fragmentTransaction.hide(currentFragment);
+            if (currentTeamFragment != null) {
+                fragmentTransaction.hide(currentTeamFragment);
             }
+
             fragment = getTeamFragment(v.getId());
             if(!fragment.isAdded()){
                 fragmentTransaction.add(R.id.frame_tab_team, fragment, String.valueOf(v.getId()));
             }
 
-        } else if (fragment == currentFragment) {
+        } else if (fragment == currentTeamFragment) {
 
         } else {
-            fragmentTransaction.hide(currentFragment);
+            fragmentTransaction.hide(currentTeamFragment);
+            Log.e("fragment_operation","hide fragment:" + currentTeamFragment);
             fragmentTransaction.show(fragment);
+            Log.e("fragment_operation","show fragment:" + fragment);
+
         }
 
         fragmentTransaction.commitAllowingStateLoss();
-        currentFragment = fragment;
+        currentTeamFragment = fragment;
         changeSelectedTab(v.getId());
-
     }
 
     @Subscribe
-    public void changeSpaceDocumentsFragment(EventSpaceFragment spaceFragment) {
+    public void changeSpaceFragment(EventSpaceFragment spaceFragment) {
         Log.e("EventBus", "changeSpaceDocumentsFragment,space:" + spaceFragment);
-        changeSpaceFragment(1,spaceFragment);
-
+        spaceFragmentData = spaceFragment;
+        inSpace = true;
+        handleChangeSpaceFragment(spaceFragmentData);
     }
+    EventSpaceFragment spaceFragmentData;
 
     @Subscribe
-    public void changeTeamDocumentsFragment(EventTeamFragment teamFragment) {
-        Log.e("EventBus", "changeTeamDocumentsFragment");
-        changeTeamFragment(documentTab);
+    public void changeTeamFragment(EventTeamFragment teamFragment) {
+        Log.e("EventBus", "changeTeamDocumentsFragment:" + teamFragment);
+        spaceFragmentData = null;
+        currentSpaceFragment = null;
+        inSpace = false;
+        if(teamFragment.getType() == 1){
+            changeTeamFragment(documentTab);
+        }else if(teamFragment.getType() == 2){
+            changeTeamFragment(syncroomTab);
+        }
+
     }
 
-    public void changeSpaceFragment(int type,Object data) {
+    public void handleChangeSpaceFragment(EventSpaceFragment spaceFragment) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment fragment = null;
+        Log.e("currentSpaceFragment","space:" + spaceFragment);
+        if(spaceFragment.getType() == 1){
 
-        if(type == 1){
             //go to space documents
             teamFrame.setVisibility(View.GONE);
             spaceFrame.setVisibility(View.VISIBLE);
             fragment = new SpaceDocumentsFragment();
-            EventSpaceFragment spaceFragment = (EventSpaceFragment) data;
+
             Bundle bundle = new Bundle();
             bundle.putInt("ItemID",spaceFragment.getItemID());
             bundle.putString("space_name",spaceFragment.getSpaceName());
@@ -1136,11 +1162,32 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             fragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.frame_tab_space, fragment);
             fragmentTransaction.commitAllowingStateLoss();
-        }else {
+            changeSelectedTab(R.id.txt_tab_document);
+        }else if(spaceFragment.getType() == 2){
 
+            // go to space syncrooms
+            teamFrame.setVisibility(View.GONE);
+            spaceFrame.setVisibility(View.VISIBLE);
+            fragment = new SpaceSyncRoomFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt("spaceid",spaceFragment.getItemID());
+            bundle.putString("spaceName",spaceFragment.getSpaceName());
+            bundle.putInt("teamid",spaceFragment.getTeamId());
+            fragment.setArguments(bundle);
+            fragmentTransaction.replace(R.id.frame_tab_space, fragment);
+            fragmentTransaction.commitAllowingStateLoss();
+            changeSelectedTab(R.id.txt_tab_syncroom);
         }
-        currentFragment = fragment;
+        currentSpaceFragment = fragment;
+    }
 
+    @Subscribe
+    public void eventSpaceChanged(EventSpaceData spaceData){
+        if(spaceFragmentData != null){
+            spaceFragmentData.setSpaceId(spaceData.getSpaceId());
+            spaceFragmentData.setItemID(spaceData.getSpaceId());
+            spaceFragmentData.setSpaceName(spaceData.getSpaceName());
+        }
     }
 
 

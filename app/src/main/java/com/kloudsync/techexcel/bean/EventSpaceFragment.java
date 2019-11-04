@@ -9,6 +9,24 @@ public class EventSpaceFragment {
     private int itemID;
     private String spaceName;
     private int teamId;
+    private int type;
+    private int spaceId;
+
+    public int getSpaceId() {
+        return spaceId;
+    }
+
+    public void setSpaceId(int spaceId) {
+        this.spaceId = spaceId;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public int getItemID() {
         return itemID;

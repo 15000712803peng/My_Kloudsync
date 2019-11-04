@@ -100,24 +100,24 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
 
 //        holder.tv_sort.setBackgroundResource(R.drawable.circle_expand);
 
-        holder.attachmentcount.setText(item.getAttachmentCount() == 0 ? "" : item.getAttachmentCount() + " documents");
-//        holder.syncroomcount.setText(item.getSyncRoomCount() == 0 ? "" : item.getSyncRoomCount() + " SyncRooms");
 
-//        if (isSyncRoom) {
-//            holder.attachmentcount.setVisibility(View.GONE);
-//            if (item.getSyncRoomCount() == 0) {
-//                holder.syncroomcount.setVisibility(View.GONE);
-//            } else {
-//                holder.syncroomcount.setVisibility(View.VISIBLE);
-//            }
-//        } else {
-//            holder.syncroomcount.setVisibility(View.GONE);
-//            if (item.getAttachmentCount() == 0) {
-//                holder.attachmentcount.setVisibility(View.GONE);
-//            } else {
-//                holder.attachmentcount.setVisibility(View.VISIBLE);
-//            }
-//        }
+
+        if (isSyncRoom) {
+            holder.attachmentcount.setText(item.getSyncRoomCount() == 0 ? "" : item.getSyncRoomCount() + " SyncRooms");
+            if (item.getSyncRoomCount() == 0) {
+                holder.attachmentcount.setVisibility(View.GONE);
+            } else {
+                holder.attachmentcount.setVisibility(View.VISIBLE);
+            }
+        } else {
+            holder.attachmentcount.setText(item.getAttachmentCount() == 0 ? "" : item.getAttachmentCount() + " documents");
+
+            if (item.getAttachmentCount() == 0) {
+                holder.attachmentcount.setVisibility(View.GONE);
+            } else {
+                holder.attachmentcount.setVisibility(View.VISIBLE);
+            }
+        }
 
 
         holder.spacerelativelayout.setOnClickListener(new View.OnClickListener() {
@@ -146,7 +146,7 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
 
     class RecycleHolder extends RecyclerView.ViewHolder {
 
-        TextView documetname, tv_sort, attachmentcount, syncroomcount;
+        TextView documetname, tv_sort, attachmentcount;
 
         RelativeLayout spacerelativelayout, countrl;
         ImageView selectimage;
@@ -156,7 +156,6 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
             documetname = (TextView) itemView.findViewById(R.id.name);
             tv_sort = (TextView) itemView.findViewById(R.id.tv_sort);
             attachmentcount = (TextView) itemView.findViewById(R.id.attachmentcount);
-            syncroomcount = (TextView) itemView.findViewById(R.id.syncroomcount);
             selectimage = (ImageView) itemView.findViewById(R.id.selectimage);
             spacerelativelayout = (RelativeLayout) itemView.findViewById(R.id.spacerelativelayout);
             countrl = (RelativeLayout) itemView.findViewById(R.id.countrl);

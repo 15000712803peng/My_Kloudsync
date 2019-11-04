@@ -6333,7 +6333,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             case "BookNoteSelect":
 //            {"LinkID":0,"LinkProperty":{"X":0.29383634431455896,"Y":0.35509554140127386}}
                 try {
-
                     int linkId = datas.getInt("LinkID");
                     final JSONObject linkProperty = datas.getJSONObject("LinkProperty");
                     if (linkId == 0) {

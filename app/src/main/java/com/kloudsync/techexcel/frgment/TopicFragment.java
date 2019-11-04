@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventSpaceFragment;
 import com.kloudsync.techexcel.bean.UserInCompany;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.docment.AddSyncRoomActivity;
@@ -470,11 +471,18 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
 
     @Override
     public void onItem(TeamSpaceBean teamSpaceBean2) {
-        Intent intent = new Intent(getActivity(), SpaceSyncRoomActivity.class);
-        intent.putExtra("teamid", teamSpaceBean.getItemID());
-        intent.putExtra("spaceid", teamSpaceBean2.getItemID());
-        intent.putExtra("spaceName", teamSpaceBean2.getName());
-        startActivity(intent);
+//        Intent intent = new Intent(getActivity(), SpaceSyncRoomActivity.class);
+//        intent.putExtra("teamid", teamSpaceBean.getItemID());
+//        intent.putExtra("spaceid", teamSpaceBean2.getItemID());
+//        intent.putExtra("spaceName", teamSpaceBean2.getName());
+//        startActivity(intent);
+        EventSpaceFragment eventSpaceFragment = new EventSpaceFragment();
+        eventSpaceFragment.setItemID(teamSpaceBean2.getItemID());
+        eventSpaceFragment.setSpaceId(teamSpaceBean2.getItemID());
+        eventSpaceFragment.setSpaceName(teamSpaceBean2.getName());
+        eventSpaceFragment.setType(2);
+        eventSpaceFragment.setTeamId(sharedPreferences.getInt("teamid",0));
+        EventBus.getDefault().post(eventSpaceFragment);
     }
 
     @Override

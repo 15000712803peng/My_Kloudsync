@@ -60,17 +60,22 @@ public class SpaceAdapter2 extends RecyclerView.Adapter<SpaceAdapter2.RecycleHol
             holder.tv_sort.setText("");
         }
 
-        holder.attachmentcount.setText(item.getAttachmentCount() == 0 ? "" : item.getAttachmentCount() + "");
-        holder.syncroomcount.setText(item.getSyncRoomCount() == 0 ? "" : item.getSyncRoomCount() + "");
-
         if (isSyncRoom) {
-            holder.syncroomcount.setVisibility(View.VISIBLE);
-            holder.attachmentcount.setVisibility(View.GONE);
+            holder.attachmentcount.setText(item.getSyncRoomCount() == 0 ? "" : item.getSyncRoomCount() + " SyncRooms");
+            if (item.getSyncRoomCount() == 0) {
+                holder.attachmentcount.setVisibility(View.GONE);
+            } else {
+                holder.attachmentcount.setVisibility(View.VISIBLE);
+            }
         } else {
-            holder.syncroomcount.setVisibility(View.GONE);
-            holder.attachmentcount.setVisibility(View.VISIBLE);
-        }
+            holder.attachmentcount.setText(item.getAttachmentCount() == 0 ? "" : item.getAttachmentCount() + " documents");
 
+            if (item.getAttachmentCount() == 0) {
+                holder.attachmentcount.setVisibility(View.GONE);
+            } else {
+                holder.attachmentcount.setVisibility(View.VISIBLE);
+            }
+        }
 
         holder.spacerelativelayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +96,7 @@ public class SpaceAdapter2 extends RecyclerView.Adapter<SpaceAdapter2.RecycleHol
 
     class RecycleHolder extends RecyclerView.ViewHolder {
 
-        TextView documetname, tv_sort, attachmentcount, syncroomcount;
+        TextView documetname, tv_sort, attachmentcount;
 
         RelativeLayout spacerelativelayout;
 
@@ -100,7 +105,6 @@ public class SpaceAdapter2 extends RecyclerView.Adapter<SpaceAdapter2.RecycleHol
             documetname = (TextView) itemView.findViewById(R.id.name);
             tv_sort = (TextView) itemView.findViewById(R.id.tv_sort);
             attachmentcount = (TextView) itemView.findViewById(R.id.attachmentcount);
-            syncroomcount = (TextView) itemView.findViewById(R.id.syncroomcount);
             spacerelativelayout = (RelativeLayout) itemView.findViewById(R.id.spacerelativelayout);
         }
 

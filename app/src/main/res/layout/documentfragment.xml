@@ -25,12 +25,12 @@
                 android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="文档"
+                android:text="@string/documents"
                 android:textColor="@color/brunette"
                 android:textSize="15sp"
                 />
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/search_layout"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="10dp"
@@ -43,14 +43,18 @@
                 android:layout_height="36dp">
 
                 <ImageView
-                    android:padding="2dp"
+                    android:id="@+id/icon_search"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_vertical"
                     android:scaleType="fitCenter"
-                    android:layout_width="13dp"
-                    android:layout_height="13dp"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
                     android:layout_marginRight="4dp"
                     android:background="@drawable/searchicon" />
 
                 <TextView
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/icon_search"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/Search_Contact"
@@ -58,7 +62,7 @@
                     android:textSize="13sp" />
 
 
-            </LinearLayout>
+            </RelativeLayout>
 
             <RelativeLayout
                 android:background="@drawable/gray_circle"
@@ -71,7 +75,6 @@
                     android:id="@+id/addService"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:src="@drawable/top_add_doc" />
             </RelativeLayout>

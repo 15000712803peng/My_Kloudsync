@@ -98,7 +98,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     private TeamSpaceBean teamSpaceBean = new TeamSpaceBean();
     private HomeDocumentAdapter documentAdapter;
     private SharedPreferences sharedPreferences;
-    private LinearLayout searchLayout;
+    private RelativeLayout searchLayout;
     private static final int REQUEST_UPDATE_TEAM = 1;
     private ImageView filterSpaceImage;
     private View view;
@@ -797,6 +797,8 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         EventSpaceFragment eventSpaceFragment = new EventSpaceFragment();
         eventSpaceFragment.setItemID(teamSpaceBean.getItemID());
         eventSpaceFragment.setSpaceName(teamSpaceBean.getName());
+        eventSpaceFragment.setSpaceId(teamSpaceBean.getItemID());
+        eventSpaceFragment.setType(1);
         eventSpaceFragment.setTeamId(sharedPreferences.getInt("teamid",0));
         EventBus.getDefault().post(eventSpaceFragment);
     }

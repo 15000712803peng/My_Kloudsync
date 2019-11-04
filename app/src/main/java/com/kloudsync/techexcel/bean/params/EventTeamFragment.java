@@ -9,6 +9,15 @@ public class EventTeamFragment {
     private int itemID;
     private String spaceName;
     private int teamId;
+    private int type;
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public int getItemID() {
         return itemID;
@@ -36,10 +45,11 @@ public class EventTeamFragment {
 
     @Override
     public String toString() {
-        return "EventSpaceFragment{" +
+        return "EventTeamFragment{" +
                 "itemID=" + itemID +
                 ", spaceName='" + spaceName + '\'' +
                 ", teamId=" + teamId +
+                ", type=" + type +
                 '}';
     }
 }

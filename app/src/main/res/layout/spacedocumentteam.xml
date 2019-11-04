@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
+    android:background="@color/bg_gray"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -25,22 +25,44 @@
         </RelativeLayout>
 
         <TextView
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginRight="36dp"
+            android:layout_marginLeft="36dp"
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/service"
-            android:textColor="@color/darkgrey"
-            android:textSize="16sp" />
+            android:textColor="#333333"
+            android:textSize="15sp" />
 
-        <ImageView
+        <!--<ImageView-->
+            <!--android:id="@+id/image_add"-->
+            <!--android:layout_width="16dp"-->
+            <!--android:layout_height="20dp"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_marginRight="5dp"-->
+            <!--android:src="@drawable/add_w" />-->
+
+
+        <RelativeLayout
             android:id="@+id/image_add"
-            android:layout_width="16dp"
-            android:layout_height="20dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
-            android:src="@drawable/add_w" />
+            android:background="@drawable/gray_circle"
+            android:layout_marginLeft="20dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp">
+            <ImageView
+                android:layout_centerInParent="true"
+                android:id="@+id/addService"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/top_add_doc" />
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -64,73 +86,96 @@
     <include layout="@layout/searchcontact" />
 
     <TextView
-        android:layout_marginTop="10dp"
-        android:layout_width="wrap_content"
+        android:paddingTop="18dp"
+        android:textSize="15sp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
+        android:paddingLeft="18dp"
         android:text="@string/current_space"
-        android:textSize="12sp"
-        android:textColor="@color/txt_color1" />
+        android:textColor="@color/brunette" />
+
+
 
     <RelativeLayout
+        android:layout_marginTop="10dp"
+        android:background="@drawable/space_bg"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
         android:id="@+id/teamrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
+        android:layout_marginBottom="10dp"
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp">
 
         <ImageView
-            android:id="@+id/img_switch"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:id="@+id/switchteam"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/switch_gray" />
+            android:layout_marginLeft="25dp"
+            android:src="@drawable/icon_space" />
+
+        <ImageView
+            android:id="@+id/icon_white_switch"
+            android:src="@drawable/switch_gray"
+            android:layout_marginLeft="12dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/switchteam"
+            android:layout_width="22dp"
+            android:layout_height="22dp" />
+
 
         <TextView
+            android:layout_marginRight="36dp"
+            android:singleLine="true"
+            android:textSize="17sp"
+            android:paddingBottom="1dp"
+
+            android:layout_marginLeft="8dp"
             android:id="@+id/teamspacename"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="6dp"
-            android:layout_toRightOf="@id/img_switch"
-            android:text=""
-            android:textColor="@color/black" />
-
+            android:layout_toRightOf="@id/icon_white_switch"
+            android:textColor="@color/brunette" />
 
         <ImageView
+            android:layout_marginRight="8dp"
             android:id="@+id/image_more_options"
-            android:layout_width="30dp"
-            android:layout_height="60dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:padding="7dp"
-            android:src="@drawable/more_favor" />
+            android:src="@drawable/gray_option_more" />
 
     </RelativeLayout>
 
 
+
     <TextView
-        android:layout_width="wrap_content"
+        android:paddingTop="18dp"
+        android:textSize="15sp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@id/selecticon"
+        android:paddingLeft="18dp"
         android:text="@string/docs_in_spaces"
-        android:textSize="12sp"
-        android:textColor="@color/txt_color1" />
+        android:textColor="@color/brunette" />
 
 
-    <com.aohanyao.jelly.library.BouncingJellyView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycleview"
+            android:background="@color/white"
+            android:layout_marginTop="12dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 
 
-    </com.aohanyao.jelly.library.BouncingJellyView>
 </LinearLayout>

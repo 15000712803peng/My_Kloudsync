@@ -112,7 +112,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
     private TextView teamspacename;
     //    private TextView tv_fs;
     private RelativeLayout backLayout;
-    private ImageView addDocImage;
+    private RelativeLayout addDocImage;
     private ImageView moreOptionsImage;
     private RelativeLayout teamRl;
     private HomeDocumentAdapter teamSpaceDocumentAdapter;
@@ -133,6 +133,8 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
 
 
     UploadFileDialog uploadFileDialog;
+
+    private TextView titleText;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -272,6 +274,8 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         spaceId = getArguments().getInt("ItemID", 0);
         spaceName = getArguments().getString("space_name");
         teamId = getArguments().getInt("team_id", 0);
+        titleText.setText(spaceName);
+        teamspacename.setText(spaceName);
         getTeamItem();
     }
 
@@ -279,9 +283,10 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         mTeamRecyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
         mTeamRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         teamspacename = (TextView) view.findViewById(R.id.teamspacename);
+        titleText = (TextView) view.findViewById(R.id.tv_title);
 //        tv_fs = (TextView) findViewById(R.id.tv_fs);
         backLayout = (RelativeLayout) view.findViewById(R.id.layout_back);
-        addDocImage = (ImageView) view.findViewById(R.id.image_add);
+        addDocImage = (RelativeLayout) view.findViewById(R.id.image_add);
         moreOptionsImage = (ImageView) view.findViewById(R.id.image_more_options);
         searchLayout = view.findViewById(R.id.search_layout);
         searchLayout.setOnClickListener(this);
@@ -886,7 +891,9 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
                 break;
             case R.id.layout_back:
 //                finish();
-                EventBus.getDefault().post(new EventTeamFragment());
+                EventTeamFragment teamFragment = new EventTeamFragment();
+                teamFragment.setType(1);
+                EventBus.getDefault().post(teamFragment);
                 break;
             case R.id.search_layout:
                 Intent intent = new Intent(getActivity(), DocumentSearchActivity.class);
