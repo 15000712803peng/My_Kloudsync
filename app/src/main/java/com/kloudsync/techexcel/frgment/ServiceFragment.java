@@ -648,16 +648,11 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         changeschool = (ImageView) view.findViewById(R.id.changeschool);
         changeschool.setOnClickListener(this);
         tv_title = (TextView) view.findViewById(R.id.tv_title);
-        addService = (ImageView) view.findViewById(R.id.addService);
         underline = (TextView) view.findViewById(R.id.underline);
         xxschool = (TextView) view.findViewById(R.id.xxschool);
 
-        addService.setOnClickListener(this);
-        addService.setVisibility(View.GONE);
-
         tv_ns = (TextView) view.findViewById(R.id.tv_ns);
-        img_notice = (ImageView) view.findViewById(R.id.img_notice);
-        img_notice.setOnClickListener(this);
+
 
         defaultPage = (LinearLayout) view.findViewById(R.id.defaultpage);
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
@@ -764,8 +759,11 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 sum++;
             }
         }
-        tv_ns.setText(sum + "");
-        tv_ns.setVisibility(sum == 0 ? View.GONE : View.VISIBLE);
+        if(tv_ns != null){
+            tv_ns.setText(sum + "");
+            tv_ns.setVisibility(sum == 0 ? View.GONE : View.VISIBLE);
+        }
+
     }
 
 

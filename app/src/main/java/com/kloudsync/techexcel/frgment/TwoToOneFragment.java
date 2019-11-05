@@ -41,10 +41,10 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
     private ImageView img_notice;
     private RelativeLayout addLayout;
     private TextView tv_ns;
-    private TextView tv_myc;
+    private ViewGroup chatSelected, contactSelected;
+    private TextView  chatUnselected,contactUnseleted;
     private TextView tv_sc;
     private CustomViewPager vp_contact;
-    private View view_lin1, view_lin2;
     BroadcastReceiver broadcastReceiver;
     private boolean isFragmentVisible = false;
     private boolean isFirst = true;
@@ -52,7 +52,7 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
     private int width;
     private List<Fragment> mTabs = new ArrayList<Fragment>();
     private FragmentPagerAdapter mAdapter;
-    private LinearLayout searchLayout;
+    private RelativeLayout searchLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,14 +71,14 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
         addLayout = (RelativeLayout) view.findViewById(R.id.layout_add);
         img_notice = (ImageView) view.findViewById(R.id.img_notice);
         tv_ns = (TextView) view.findViewById(R.id.tv_ns);
-        tv_myc = (TextView) view.findViewById(R.id.tv_myc);
-        tv_sc = (TextView) view.findViewById(R.id.tv_sc);
+        chatSelected = (ViewGroup) view.findViewById(R.id.tv_chat_selected);
+        contactSelected = (ViewGroup) view.findViewById(R.id.tv_contact_selected);
+        chatUnselected = view.findViewById(R.id.txt_chat_unselected);
+        contactUnseleted = view.findViewById(R.id.txt_contact_unselected);
         vp_contact = (CustomViewPager) view.findViewById(R.id.vp_contact);
         vp_contact.addOnPageChangeListener(this);
-        view_lin1 = view.findViewById(R.id.view_lin1);
-        view_lin2 = view.findViewById(R.id.view_lin2);
         vp_contact.setPagingEnabled(true);
-        searchLayout = (LinearLayout) view.findViewById(R.id.search_layout);
+        searchLayout = (RelativeLayout) view.findViewById(R.id.search_layout);
         searchLayout.setOnClickListener(this);
     }
 
@@ -98,8 +98,11 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
         initVP();
         addLayout.setOnClickListener(new myOnClick());
         img_notice.setOnClickListener(new myOnClick());
-        tv_myc.setOnClickListener(new myOnClick());
-        tv_sc.setOnClickListener(new myOnClick());
+        chatSelected.setOnClickListener(new myOnClick());
+        chatUnselected.setOnClickListener(new myOnClick());
+        contactUnseleted.setOnClickListener(new myOnClick());
+        contactSelected.setOnClickListener(new myOnClick());
+
 
     }
 
@@ -173,10 +176,10 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
                 case R.id.img_notice:
                     GoToNotice();
                     break;
-                case R.id.tv_myc:
+                case R.id.txt_chat_unselected:
                     ChangeList(0);
                     break;
-                case R.id.tv_sc:
+                case R.id.txt_contact_unselected:
                     ChangeList(1);
                     break;
                 default:
@@ -220,10 +223,19 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
     @SuppressLint("NewApi")
     public void ChangeList(int i) {
         isContact = (1 == i);
-        tv_myc.setTextColor(getResources().getColor(0 == i ? R.color.skyblue : R.color.darkgrey));
-        tv_sc.setTextColor(getResources().getColor(0 == i ? R.color.darkgrey : R.color.skyblue));
-        view_lin1.setVisibility(0 == i ? View.VISIBLE: View.INVISIBLE);
-        view_lin2.setVisibility(0 == i ? View.INVISIBLE: View.VISIBLE);
+        if(i == 0){
+            contactSelected.setVisibility(View.INVISIBLE);
+            contactUnseleted.setVisibility(View.VISIBLE);
+            chatSelected.setVisibility(View.VISIBLE);
+            chatUnselected.setVisibility(View.INVISIBLE);
+        }else if(i == 1){
+            contactSelected.setVisibility(View.VISIBLE);
+            contactUnseleted.setVisibility(View.INVISIBLE);
+            chatSelected.setVisibility(View.INVISIBLE);
+            chatUnselected.setVisibility(View.VISIBLE);
+        }
+//        view_lin1.setVisibility(0 == i ? View.VISIBLE: View.INVISIBLE);
+//        view_lin2.setVisibility(0 == i ? View.INVISIBLE: View.VISIBLE);
 //        tv_myc.setBackground(getActivity().getDrawable(0 == i ? R.drawable.blue_left_bg : R.drawable.white_left_bg));
 //        tv_sc.setBackground(getActivity().getDrawable(0 == i ? R.drawable.white_right_bg : R.drawable.blue_right_bg));
         vp_contact.setCurrentItem(i,false);

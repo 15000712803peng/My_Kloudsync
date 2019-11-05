@@ -63,6 +63,7 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
         if (!TextUtils.isEmpty(teamName)) {
             teamNameText.setText(teamName);
         }
+
         backLayout.setOnClickListener(this);
         spaceList = findViewById(R.id.list_space);
         spaceList.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));

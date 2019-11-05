@@ -8,7 +8,6 @@ public class Note implements Serializable {
      */
     private static final long serialVersionUID = 0x110;
 
-
     private int documentItemID;
     private int pageNumber;
     private String localFileID;

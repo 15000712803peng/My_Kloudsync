@@ -5,72 +5,26 @@
     android:background="#fff"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:background="@color/white">
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:paddingLeft="18dp"
+        android:paddingRight="18dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <TextView
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="18dp"
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/Meeting"
             android:textColor="@color/brunette"
-            android:textSize="16sp" />
-
-
-        <ImageView
-            android:id="@+id/addService"
-            android:layout_width="25dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="5dp"
-            android:src="@drawable/add_w"
-            android:visibility="gone" />
-
+            android:textSize="15sp"
+            />
 
         <RelativeLayout
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true">
-
-            <ImageView
-                android:id="@+id/img_notice"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:padding="10dp"
-                android:src="@drawable/home_page_notice_icon_unchecked"
-                android:visibility="gone" />
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true">
-
-                <TextView
-                    android:id="@+id/tv_ns"
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:layout_marginRight="12dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/home_page_red_icon"
-                    android:gravity="center"
-                    android:text="12"
-                    android:textColor="@color/white"
-                    android:textSize="5sp"
-                    android:visibility="gone" />
-
-            </FrameLayout>
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_marginRight="18dp"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/tv_title"
             android:id="@+id/search_layout"
             android:gravity="center_vertical"
             android:layout_marginLeft="10dp"
@@ -79,7 +33,7 @@
             android:paddingBottom="10dp"
             android:background="@drawable/seach_bg_v2"
             android:layout_weight="1"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="36dp">
 
             <ImageView
@@ -105,7 +59,9 @@
         </RelativeLayout>
 
 
-    </RelativeLayout>
+    </LinearLayout>
+
+
 
 
     <LinearLayout
