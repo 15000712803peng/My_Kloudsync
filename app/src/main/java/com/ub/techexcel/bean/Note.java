@@ -22,7 +22,15 @@ public class Note implements Serializable {
     private String sourceFileUrl;
     private String createdDate;
     private int status;
+    private int linkID;
 
+    public int getLinkID() {
+        return linkID;
+    }
+
+    public void setLinkID(int linkID) {
+        this.linkID = linkID;
+    }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;

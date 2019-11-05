@@ -131,6 +131,7 @@ public class ServiceInterfaceTools {
     public static final int GETNOTELISTV2 = 0x1144;
     public static final int GETNOTELISTV3 = 0x1145;
     public static final int REMOVENOTE = 0x1146;
+    public static final int GETNOTEBYLINKID = 0x1147;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -1503,21 +1504,22 @@ public class ServiceInterfaceTools {
                     Log.e("getNoteList", url + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         JSONArray lineitems = returnjson.getJSONArray("RetData");
-                        List<LineItem> items = new ArrayList<LineItem>();
+                        List<Note> items = new ArrayList<Note>();
                         for (int j = 0; j < lineitems.length(); j++) {
+
                             JSONObject lineitem = lineitems.getJSONObject(j);
-                            LineItem item = new LineItem();
+                            Note item = new Note();
+                            item.setLinkID(lineitem.getInt("LinkID"));
+                            item.setNoteID(lineitem.getInt("NoteID"));
                             item.setLocalFileID(lineitem.getString("LocalFileID"));
-//                            item.setPageNumber(lineitem.getInt("PageNumber"));
-//                            item.setDocumentItemID(lineitem.getInt("DocumentItemID"));
                             item.setFileName(lineitem.getString("Title"));
-                            item.setUrl(lineitem.getString("AttachmentUrl"));
+                            item.setFileID(lineitem.getInt("FileID"));
+                            item.setFileName(lineitem.getString("FileName"));
+                            item.setAttachmentUrl(lineitem.getString("AttachmentUrl"));
                             item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
-                            item.setItemId(lineitem.getString("ItemID"));
-                            item.setAttachmentID(lineitem.getString("AttachmentID"));
-//                            item.setNewPath(lineitem.getString("NewPath"));
-                            item.setFlag(0);
+                            item.setAttachmentID(lineitem.getInt("AttachmentID"));
                             items.add(item);
+
                         }
                         Message msg = Message.obtain();
                         msg.obj = items;
@@ -1661,19 +1663,16 @@ public class ServiceInterfaceTools {
                     Log.e("getNoteList note ", url + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         JSONObject lineitem = returnjson.getJSONObject("RetData");
-                        LineItem item = new LineItem();
-                        item.setLocalFileID(lineitem.getString("LocalFileID"));
-//                        item.setPageNumber(lineitem.getInt("PageNumber"));
-//                        item.setDocumentItemID(lineitem.getInt("DocumentItemID"));
-                        item.setFileName(lineitem.getString("Title"));
-                        item.setUrl(lineitem.getString("AttachmentUrl"));
-                        item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
-                        item.setItemId(lineitem.getString("ItemID"));
-                        item.setAttachmentID(lineitem.getString("AttachmentID"));
-//                        item.setNewPath(lineitem.getString("NewPath"));
-                        item.setFlag(0);
+                        Note note = new Note();
+                        note.setLocalFileID(lineitem.getString("LocalFileID"));
+                        note.setPageNumber(lineitem.getInt("PageNumber"));
+                        note.setDocumentItemID(lineitem.getInt("DocumentItemID"));
+                        note.setFileName(lineitem.getString("Title"));
+                        note.setAttachmentUrl(lineitem.getString("AttachmentUrl"));
+                        note.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                        note.setAttachmentID(lineitem.getInt("AttachmentID"));
                         Message msg = Message.obtain();
-                        msg.obj = item;
+                        msg.obj = note;
                         msg.what = code;
                         handler.sendMessage(msg);
                     } else {
@@ -1837,22 +1836,21 @@ public class ServiceInterfaceTools {
             public void run() {
                 try {
                     JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
-                    Log.e("getNoteList", url + "  " + returnjson.toString());
+                    Log.e("getNoteByLinkID", url + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
-                        JSONArray lineitems = returnjson.getJSONArray("RetData");
-                        List<LineItem> items = new ArrayList<LineItem>();
-                        for (int j = 0; j < lineitems.length(); j++) {
-                            JSONObject lineitem = lineitems.getJSONObject(j);
-                            LineItem item = new LineItem();
-                            item.setLocalFileID(lineitem.getString("LocalFileID"));
-                            item.setFileName(lineitem.getString("Title"));
-                            item.setUrl(lineitem.getString("AttachmentUrl"));
-                            item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
-                            item.setAttachmentID(lineitem.getString("AttachmentID"));
-                            items.add(item);
-                        }
+                        JSONObject lineitem = returnjson.getJSONObject("RetData");
+                        Note note = new Note();
+                        note.setLocalFileID(lineitem.getString("LocalFileID"));
+                        note.setNoteID(lineitem.getInt("NoteID"));
+                        note.setLinkID(lineitem.getInt("LinkID"));
+                        note.setPageNumber(lineitem.getInt("PageNumber"));
+                        note.setDocumentItemID(lineitem.getInt("DocumentItemID"));
+                        note.setFileName(lineitem.getString("Title"));
+                        note.setAttachmentUrl(lineitem.getString("AttachmentUrl"));
+                        note.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                        note.setAttachmentID(lineitem.getInt("AttachmentID"));
                         Message msg = Message.obtain();
-                        msg.obj = items;
+                        msg.obj = note;
                         msg.what = code;
                         handler.sendMessage(msg);
                     } else {
@@ -1882,7 +1880,7 @@ public class ServiceInterfaceTools {
             public void run() {
                 try {
                     JSONObject returnjson = ConnectService.getIncidentDataattachment(url);
-                    Log.e("getNoteList", url + "  " + returnjson.toString());
+                    Log.e("removeNote", url + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         Message msg = Message.obtain();
                         msg.obj = 0;

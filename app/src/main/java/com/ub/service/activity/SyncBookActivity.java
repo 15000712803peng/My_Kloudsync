@@ -2590,16 +2590,6 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         currentAttachmentPage = pageNum + "";
         AppConfig.currentPageNumber = currentAttachmentPage;
         String url;
-//        if (isTeamspace) {
-//            url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=0"
-//                    + "&itemID=0"
-//                    + "&pageNumber=" + pageNum
-//                    + "&attachmentID=" + currentAttachmentId
-//                    + "&soundtrackID=0";
-//        } else {
-//            url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=" + lessonId + "&itemID=" + currentItemId +
-//                    "&pageNumber=" + pageNum;
-//        }
         url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=" + lessonId + "&itemID=" + currentItemId +
                 "&pageNumber=" + pageNum;
         MeetingServiceTools.getInstance().getGetPageObjects(url, MeetingServiceTools.GETGETPAGEOBJECTS, new ServiceInterfaceListener() {
@@ -2627,13 +2617,10 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             public void getServiceReturnData(Object object) {
                 List<NoteDetail> noteDetails = (List<NoteDetail>) object;
                 if (noteDetails != null && noteDetails.size() > 0) {
-//                    {"type":38,"LinkID":123,"LinkProperty":{"X":0.2683315621679065,"Y":0.37898089171974525}}
-                    notifyDrawNotes(noteDetails);
-
+                    notifyDrawNotes(noteDetails, 0);
                 }
             }
         });
-//api.peertime.cn/peertime/V1/PageObject/GetPageObjects?lessonID=1893488&itemID=1886999&pageNumber=1
 
         if (isChangePageNumber) {
             isChangePageNumber = false;
@@ -2702,17 +2689,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                             + "&soundtrackID=" + (soundtrackID == -1 ? 0 : soundtrackID)
                             + "&displayDrawingLine=" + (isPlaying ? 0 : 1);
                     jsonObject = ConnectService.getIncidentbyHttpGet(url);
-                    ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + lessonId + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
-                        @Override
-                        public void getServiceReturnData(Object object) {
-                            List<NoteDetail> noteDetails = (List<NoteDetail>) object;
-                            if (noteDetails != null && noteDetails.size() > 0) {
-//                    {"type":38,"LinkID":123,"LinkProperty":{"X":0.2683315621679065,"Y":0.37898089171974525}}
-                                notifyDrawNotes(noteDetails);
 
-                            }
-                        }
-                    });
                     Log.e("getLineAction", url + "     " + jsonObject.toString());
                     int retCode = jsonObject.getInt("RetCode");
                     switch (retCode) {
@@ -3445,24 +3422,59 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     /**
      * 笔记列表弹窗
      */
-    private void selectNoteBook() {
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&syncRoomID=" + lessonId;
-        selectNoteDialog = new SelectNoteDialog(SyncBookActivity.this, url, lessonId);
-        selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectNoteDialog.OnFavoriteDocSelectedListener() {
-            @Override
-            public void onFavoriteDocSelected(LineItem note) {
-                try {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("Id", note.getLocalFileID() + "");
-                    Log.e("selectNoteBook ", note.getLocalFileID() + " ");
-                    wv_show.load("javascript:AfterEditBookNote({'ID':'" + note.getLocalFileID() + "'})", null);
-                } catch (Exception e) {
-                    e.printStackTrace();
+    private void selectNoteBook(final int linkID, final JSONObject linkProperty) {
+        if (linkID == 0) {
+            String url = AppConfig.URL_PUBLIC + "DocumentNote/UserNoteList?userID=" + AppConfig.UserID;
+            selectNoteDialog = new SelectNoteDialog(SyncBookActivity.this, lessonId);
+            selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectNoteDialog.OnFavoriteDocSelectedListener() {
+                @Override
+                public void onFavoriteDocSelected(Note note) {
+                    String url = AppConfig.URL_PUBLIC + "DocumentNote/ImportNote";
+                    ServiceInterfaceTools.getinstance().importNote(url, ServiceInterfaceTools.IMPORTNOTE, lessonId,
+                            currentAttachmentId + "", currentAttachmentPage, note.getNoteID(), linkProperty.toString(),
+                            new ServiceInterfaceListener() {
+                                @Override
+                                public void getServiceReturnData(Object object) {
+                                    int linkid = (int) object;
+                                    drawNote(linkid, linkProperty, 0);
+                                }
+                            });
                 }
-            }
-        });
-        selectNoteDialog.show();
+            });
+            selectNoteDialog.show(url);
+        } else {
+            String linkidurl = AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID?linkID=" + linkID;
+            ServiceInterfaceTools.getinstance().getNoteByLinkID(linkidurl, ServiceInterfaceTools.GETNOTEBYLINKID, new ServiceInterfaceListener() {
+                @Override
+                public void getServiceReturnData(Object object) {
+                    final Note note2 = (Note) object;
+                    String url = AppConfig.URL_PUBLIC + "DocumentNote/UserNoteList?userID=" + AppConfig.UserID;
+                    selectNoteDialog = new SelectNoteDialog(SyncBookActivity.this, lessonId);
+                    selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectNoteDialog.OnFavoriteDocSelectedListener() {
+                        @Override
+                        public void onFavoriteDocSelected(Note note) {
+                            Log.e("noterru", note.getNoteID() + "  " + note2.getNoteID());
+                            if (note.getNoteID() != note2.getNoteID()) {
+                                String url = AppConfig.URL_PUBLIC + "DocumentNote/ImportNote";
+                                ServiceInterfaceTools.getinstance().importNote(url, ServiceInterfaceTools.IMPORTNOTE, lessonId,
+                                        currentAttachmentId + "", currentAttachmentPage, note.getNoteID(), linkProperty.toString(),
+                                        new ServiceInterfaceListener() {
+                                            @Override
+                                            public void getServiceReturnData(Object object) {
+                                                int linkid = (int) object;
+                                                Log.e("noterru", "删除了 "+linkID + "  添加了 " + linkid);
+                                                deleteNote(linkID);
+                                                drawNote(linkid, linkProperty, 0);
+                                            }
+                                        });
+                            }
 
+                        }
+                    });
+                    selectNoteDialog.show(url);
+                }
+            });
+        }
     }
 
 
@@ -6101,10 +6113,10 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-    private void loadWebIndex(){
+    private void loadWebIndex() {
         int deviceType = DeviceManager.getDeviceType(this);
         String indexUrl = "file:///android_asset/index.html";
-        if(deviceType == SupportDevice.BOOK){
+        if (deviceType == SupportDevice.BOOK) {
             indexUrl += "?devicetype=4";
         }
         final String url = indexUrl;
@@ -6151,7 +6163,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(SyncBookActivity.this);
         String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
-        noteManager.exportPdfAndUpload(SyncBookActivity.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, lessonId,currentLinkProperty.toString());
+        noteManager.exportPdfAndUpload(SyncBookActivity.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, lessonId, currentLinkProperty.toString());
     }
 
 
@@ -6204,13 +6216,13 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         //重新赋值
         currentAttachmentPage = "0";
         AppConfig.currentPageNumber = "0";
-        currentShowPdf=new LineItem();
+        currentShowPdf = new LineItem();
         currentShowPdf.setUrl(note.getAttachmentUrl());
-        currentShowPdf.setItemId(0+"");
-        currentShowPdf.setAttachmentID(note.getAttachmentID()+"");
+        currentShowPdf.setItemId(note.getNoteID()+""); //同步笔记noteid
+        currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
 
         currentAttachmentId = currentShowPdf.getAttachmentID();
-        currentItemId = currentShowPdf.getItemId();
+        currentItemId = "0";
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
 
@@ -6255,25 +6267,21 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             case "BookNoteSelect":
 //            {"LinkID":0,"LinkProperty":{"X":0.29383634431455896,"Y":0.35509554140127386}}
                 try {
-
-                    int linkId = datas.getInt("LinkID");
+                    final int linkId = datas.getInt("LinkID");
                     final JSONObject linkProperty = datas.getJSONObject("LinkProperty");
-                    if (linkId == 0) {
-                        // 打开我的笔记列表
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                openMyNoteBook(linkProperty);
-                            }
-                        });
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            selectNoteBook(linkId, linkProperty);
+                        }
+                    });
 
-                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 break;
             case "BookNoteView":
-                if(datas.has("LinkID")){
+                if (datas.has("LinkID")) {
                     try {
                         displayNoteByLinkId(datas.getInt("LinkID"));
                     } catch (JSONException e) {
@@ -6282,6 +6290,31 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 }
                 break;
             case "BookNoteMove":
+                break;
+            case "BookNoteDelete":
+                String ss="";
+                try {
+                    final JSONArray linkIds = datas.getJSONArray("LinkIDs");
+                    for(int i=0;i<linkIds.length();i++){
+                        int link=linkIds.getInt(i);
+                        if(i==linkIds.length()-1){
+                            ss=ss+link;
+                        }else{
+                            ss=ss+link+",";
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.e("BookNoteDelete",ss);
+                String url=AppConfig.URL_PUBLIC+"DocumentNote/RemoveNote?linkIDs="+ss;
+                ServiceInterfaceTools.getinstance().removeNote(url, ServiceInterfaceTools.REMOVENOTE, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+
+                    }
+                });
                 break;
             case "BookNoteEdit":
                 if (datas != null) {
@@ -6322,84 +6355,81 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /**
-     * 弹出我的笔记列表弹窗
-     */
-    private void openMyNoteBook(final JSONObject linkProperty) {
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/UserNoteList?userID=" + AppConfig.UserID;
-        SelectMyNoteDialog selectNoteDialog = new SelectMyNoteDialog(SyncBookActivity.this, 0 + "");
-        selectNoteDialog.setOnFavoriteDocSelectedListener(new SelectMyNoteDialog.OnFavoriteDocSelectedListener() {
-            @Override
-            public void onFavoriteDocSelected(Note note) {
-                String url = AppConfig.URL_PUBLIC + "DocumentNote/ImportNote";
-                ServiceInterfaceTools.getinstance().importNote(url, ServiceInterfaceTools.IMPORTNOTE, lessonId,
-                        currentAttachmentId + "", currentAttachmentPage, note.getNoteID(), linkProperty.toString(),
-                        new ServiceInterfaceListener() {
-                            @Override
-                            public void getServiceReturnData(Object object) {
-                                int linkid = (int) object;
-                                drawNote(linkid, linkProperty);
-                            }
-                        });
-            }
-        });
-        selectNoteDialog.show(url);
-
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void uploadNodeSuccess(NoteId noteId){
-        Log.e("addLocalNote","draw note by id:" + noteId);
-        if(noteId.getLinkID() == 0){
+    public void uploadNodeSuccess(NoteId noteId) {
+        Log.e("addLocalNote", "draw note by id:" + noteId);
+        if (noteId.getLinkID() == 0) {
             return;
         }
-        drawNote(noteId.getLinkID(),currentLinkProperty);
+        drawNote(noteId.getLinkID(), currentLinkProperty, 0);
     }
 
-    private void notifyDrawNotes(List<NoteDetail> notes) {
+    private void notifyDrawNotes(List<NoteDetail> notes, int isother) {
         for (NoteDetail note : notes) {
-            final JSONObject noteData = new JSONObject();
+            JSONObject jsonObject = null;
             try {
-                noteData.put("type", 38);
-                noteData.put("LinkID", note.getLinkID());
-                if(!TextUtils.isEmpty(note.getLinkProperty())){
-                    noteData.put("LinkProperty", new JSONObject(note.getLinkProperty()));
-                }
-                Log.e("draw_note", "data:" + noteData.toString());
+                jsonObject = new JSONObject(note.getLinkProperty());
+                drawNote(note.getLinkID(), jsonObject, isother);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (wv_show != null) {
-                        wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
-                    }
-                }
-            });
         }
     }
 
-    private void drawNote(int linkId,JSONObject linkProperty){
+    private void deleteNote(int linkId) {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/RemoveNote?linkIDs=" + linkId;
+        ServiceInterfaceTools.getinstance().removeNote(url, ServiceInterfaceTools.REMOVENOTE, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+
+            }
+        });
         JSONObject noteData = new JSONObject();
         try {
-            noteData.put("type", 38);
-            noteData.put("LinkID", linkId);
-            noteData.put("LinkProperty", linkProperty);
-            Log.e("addLocalNote","note:" + noteData.toString());
+            noteData.put("type", 102);
+            noteData.put("id", "BooXNote_" + linkId);
+            Log.e("noteeeedelete", "note:" + noteData.toString());
             if (wv_show != null) {
                 wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
-
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
+    private void drawNote(int linkId, JSONObject linkProperty, int isOther) {
+        JSONObject noteData = new JSONObject();
+        try {
+            noteData.put("type", 38);
+            noteData.put("LinkID", linkId);
+            noteData.put("IsOther", isOther);
+            noteData.put("LinkProperty", linkProperty);
+            Log.e("noteeeeadd", "note:" + noteData.toString());
+            if (wv_show != null) {
+                wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void twinkleBookNote(int linkId) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("LinkID", linkId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String key = "TwinkleBookNote";
+        Log.e("TwinkleBookNote", linkId + "");
+        wv_show.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
+    }
+
     private void displayNoteByLinkId(int linkId) {
 
         String url = AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID?linkID=" + linkId;
-        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
+        ServiceInterfaceTools.getinstance().getNoteByLinkID(url, ServiceInterfaceTools.GETNOTEBYLINKID, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
                 Note note = (Note) object;

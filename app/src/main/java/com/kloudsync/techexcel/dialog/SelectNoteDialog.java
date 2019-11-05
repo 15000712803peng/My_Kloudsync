@@ -22,6 +22,7 @@ import com.ub.kloudsync.activity.Document;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.NewMeetingContactAdapter;
 import com.ub.techexcel.bean.LineItem;
+import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.InviteOthersPopup;
 import com.ub.techexcel.tools.NoteOthersPopup;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
@@ -47,7 +48,7 @@ public class SelectNoteDialog implements View.OnClickListener {
     private List<Customer> customerList = new ArrayList<>();
 
     public interface OnFavoriteDocSelectedListener {
-        void onFavoriteDocSelected(LineItem docId);
+        void onFavoriteDocSelected(Note docId);
     }
 
     OnFavoriteDocSelectedListener onFavoriteDocSelectedListener;
@@ -60,11 +61,10 @@ public class SelectNoteDialog implements View.OnClickListener {
 
     private String syncroomid;
 
-    public SelectNoteDialog(Context context, String url, String syncroomid) {
+    public SelectNoteDialog(Context context,  String syncroomid) {
         mContext = context;
         this.syncroomid = syncroomid;
         initDialog();
-        getDocumentList(url);
     }
 
     public void initDialog() {
@@ -116,7 +116,7 @@ public class SelectNoteDialog implements View.OnClickListener {
             case R.id.save:
                 if (onFavoriteDocSelectedListener != null) {
                     if (documentAdapter != null) {
-                        LineItem document = documentAdapter.getSelectFile();
+                        Note document = documentAdapter.getSelectFile();
                         if (document != null) {
                             onFavoriteDocSelectedListener.onFavoriteDocSelected(document);
                             dismiss();
@@ -148,22 +148,23 @@ public class SelectNoteDialog implements View.OnClickListener {
                         ServiceInterfaceTools.getinstance().getUserNoteList(url, ServiceInterfaceTools.GETSYNCROOMUSERLIST, new ServiceInterfaceListener() {
                             @Override
                             public void getServiceReturnData(Object object) {
-                                List<LineItem> list = new ArrayList<>();
-                                list.addAll((List<LineItem>) object);
+                                List<Note> list = new ArrayList<>();
+                                list.addAll((List<Note>) object);
                                 documentAdapter = new DocumentAdapter(mContext, list);
                                 documentList.setAdapter(documentAdapter);
                             }
                         });
                     }
                 });
-                noteOthersPopup.StartPop(view,syncroomid);
+                noteOthersPopup.StartPop(view, syncroomid);
                 break;
         }
     }
 
-    public void show() {
+    public void show(String url) {
         if (dialog != null && !dialog.isShowing()) {
             dialog.show();
+            getDocumentList(url);
         }
     }
 
@@ -171,13 +172,12 @@ public class SelectNoteDialog implements View.OnClickListener {
     RecyclerView documentList;
 
     private void getDocumentList(String url) {
-        String newurl = url + "&userID=" + AppConfig.UserID;
         selectuser.setText(AppConfig.UserName);
-        ServiceInterfaceTools.getinstance().getNoteList(newurl, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
+        ServiceInterfaceTools.getinstance().getUserNoteList(url, ServiceInterfaceTools.GETSYNCROOMUSERLIST, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
-                List<LineItem> list = new ArrayList<>();
-                list.addAll((List<LineItem>) object);
+                List<Note> list = new ArrayList<>();
+                list.addAll((List<Note>) object);
                 documentAdapter = new DocumentAdapter(mContext, list);
                 documentList.setAdapter(documentAdapter);
             }
@@ -205,11 +205,11 @@ public class SelectNoteDialog implements View.OnClickListener {
 
     public class DocumentAdapter extends RecyclerView.Adapter<DocHolder> {
         private Context mContext;
-        private List<LineItem> mDatas;
+        private List<Note> mDatas;
         int selectPosition = -1;
 
 
-        public DocumentAdapter(Context context, List<LineItem> mDatas) {
+        public DocumentAdapter(Context context, List<Note> mDatas) {
             this.mContext = context;
             this.mDatas = mDatas;
 
@@ -221,7 +221,7 @@ public class SelectNoteDialog implements View.OnClickListener {
             return mDatas.size();
         }
 
-        public LineItem getSelectFile() {
+        public Note getSelectFile() {
             if (selectPosition == -1) {
                 return null;
             }
