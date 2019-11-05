@@ -1,149 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
     android:layout_height="wrap_content">
 
     <LinearLayout
+
         android:id="@+id/morell"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:background="@color/white"
+        android:background="@drawable/bottom_dialog_border"
         android:orientation="vertical"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
+
         android:visibility="visible">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp">
-
-            <TextView
-                android:layout_marginLeft="6dp"
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:text=""
-                android:textColor="@color/darkgrey" />
-
-            <ImageView
-                android:id="@+id/closebnt"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:padding="8dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/close" />
-
-        </RelativeLayout>
-
         <TextView
+            android:layout_marginLeft="18dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp"
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:singleLine="true"
+            android:textColor="#999999"
+            android:textSize="14sp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            />
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/divider_line" />
+            android:background="#ffdadade"/>
 
-        <RelativeLayout
-            android:layout_marginLeft="10dp"
+        <LinearLayout
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:id="@+id/view"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="16dp"
-                android:layout_height="20dp"
-                android:layout_centerVertical="true"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="18dp"
                 android:src="@drawable/eyeblack" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="30dp"
-                android:text="View"
-                android:textColor="@color/darkgrey"
-                android:textSize="14sp" />
+                android:layout_gravity="center_vertical"
+                android:drawablePadding="5dp"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_marginLeft="8dp"
+                android:text="@string/mtView"
+                android:textColor="@color/darkgrey" />
+        </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:layout_alignParentBottom="true"
-                android:background="@color/white" />
-        </RelativeLayout>
 
-        <TextView
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/divider_line" />
+            android:background="#ffdadade"/>
 
-        <RelativeLayout
-            android:layout_marginLeft="10dp"
+        <LinearLayout
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:id="@+id/move"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageView
-
-                android:layout_width="17dp"
-                android:layout_height="20dp"
-                android:layout_centerVertical="true"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="18dp"
                 android:src="@drawable/move" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="30dp"
-                android:text="Move"
-                android:textColor="@color/darkgrey"
-                android:textSize="14sp" />
+                android:layout_gravity="center_vertical"
+                android:drawablePadding="5dp"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_marginLeft="8dp"
+                android:text="@string/move"
+                android:textColor="@color/darkgrey" />
+        </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:layout_alignParentBottom="true"
-                android:background="@color/white" />
-        </RelativeLayout>
 
-        <TextView
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/divider_line" />
+            android:background="#ffdadade"/>
 
-        <RelativeLayout
-            android:layout_marginLeft="10dp"
+        <LinearLayout
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:id="@+id/delete"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageView
-
-                android:layout_width="17dp"
-                android:layout_height="20dp"
-                android:layout_centerVertical="true"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="18dp"
                 android:src="@drawable/trash_favor" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="30dp"
-                android:text="Delete"
-                android:textColor="@color/red"
-                android:textSize="14sp" />
+                android:layout_gravity="center_vertical"
+                android:drawablePadding="5dp"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_marginLeft="8dp"
+                android:text="@string/Delete"
+                android:textColor="@color/darkgrey" />
+        </LinearLayout>
 
 
-        </RelativeLayout>
 
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="17sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:background="@drawable/bottom_dialog_border"
+        android:gravity="center"
+        android:text="@string/Cancel"
+        android:textColor="#3C77FB" />
 
 </LinearLayout>

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -24,10 +25,10 @@ public class SyncRoomOperatePopup implements View.OnClickListener {
     public int width;
     public Dialog mPopupWindow;
     private View view;
-    private RelativeLayout vieww, delete, move;
+    private LinearLayout vieww, delete, move;
     private static FavoritePoPListener mFavoritePoPListener;
     private TextView title;
-    private ImageView closebnt;
+    private TextView closebnt;
 
     public interface FavoritePoPListener {
 
@@ -67,11 +68,11 @@ public class SyncRoomOperatePopup implements View.OnClickListener {
     public void initPopuptWindow() {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         view = layoutInflater.inflate(R.layout.syncroomoperatepopup, null);
-        vieww = (RelativeLayout) view.findViewById(R.id.view);
-        delete = (RelativeLayout) view.findViewById(R.id.delete);
+        vieww = (LinearLayout) view.findViewById(R.id.view);
+        delete = (LinearLayout) view.findViewById(R.id.delete);
         title = (TextView) view.findViewById(R.id.title);
-        closebnt = (ImageView) view.findViewById(R.id.closebnt);
-        move = (RelativeLayout) view.findViewById(R.id.move);
+        closebnt = (TextView) view.findViewById(R.id.cancel);
+        move = (LinearLayout) view.findViewById(R.id.move);
         vieww.setOnClickListener(this);
         closebnt.setOnClickListener(this);
         delete.setOnClickListener(this);
@@ -123,7 +124,7 @@ public class SyncRoomOperatePopup implements View.OnClickListener {
                 dismiss();
                 mFavoritePoPListener.move();
                 break;
-            case R.id.closebnt:
+            case R.id.cancel:
                 dismiss();
                 break;
             default:

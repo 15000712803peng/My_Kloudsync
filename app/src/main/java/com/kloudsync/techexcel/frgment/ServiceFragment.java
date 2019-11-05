@@ -750,6 +750,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 RefreshNotify();
             }
         };
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(getString(R.string.Receive_Course));
         getActivity().registerReceiver(broadcastReceiver, filter);

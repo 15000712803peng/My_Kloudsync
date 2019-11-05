@@ -64,6 +64,7 @@ public class ServiceTool implements Runnable {
                 e.printStackTrace();
             }
         }
+
         JSONObject returnJson = ConnectService
                 .getIncidentbyHttpGet(url);
         Log.e("Lesson/List", url + "  " + returnJson.toString());

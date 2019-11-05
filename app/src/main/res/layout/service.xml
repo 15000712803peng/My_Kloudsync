@@ -121,7 +121,7 @@
         <com.kloudsync.techexcel.ui.MaskViewGroup
             app:containerCornerRadius="16dp"
             app:containerDeltaLength="5dp"
-            app:containerShadowColor="#B9C0E4"
+            app:containerShadowColor="#ffb9c0e4"
             app:deltaX="2dp"
             app:deltaY="2dp"
             app:enable="true"
@@ -173,7 +173,7 @@
             app:containerDeltaLength="5dp"
             app:containerShadowRadius="5dp"
 
-            app:containerShadowColor="#D0C7BD"
+            app:containerShadowColor="#ffd0c7bd"
             app:deltaX="2dp"
             app:deltaY="2dp"
             app:enable="true"
@@ -222,7 +222,7 @@
             app:containerCornerRadius="16dp"
             app:containerDeltaLength="5dp"
             app:containerShadowRadius="5dp"
-            app:containerShadowColor="#DCE4B9"
+            app:containerShadowColor="#ffdce4b9"
             app:deltaX="2dp"
             app:deltaY="2dp"
             app:enable="true"

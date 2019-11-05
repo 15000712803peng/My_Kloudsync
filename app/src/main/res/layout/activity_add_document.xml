@@ -17,13 +17,14 @@
         android:paddingBottom="5dp">
 
         <TextView
-            android:textSize="12sp"
+            android:layout_marginTop="22dp"
+            android:textSize="15sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="12dp"
+            android:layout_marginLeft="18dp"
             android:text="@string/Team"
-            android:textColor="@color/newgrey" />
+            android:textColor="#ff333333" />
 
 
     </RelativeLayout>
@@ -32,29 +33,47 @@
         android:id="@+id/layout_team"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="18dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
         android:paddingTop="5dp"
+        android:gravity="center_vertical"
         android:paddingBottom="5dp">
 
         <ImageView
             android:id="@+id/image_switch_team"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:padding="7dp"
-            android:src="@drawable/switch_gray" />
+            android:src="@drawable/icon_team" />
 
 
         <TextView
+            android:singleLine="true"
+            android:layout_marginRight="48dp"
+            android:textSize="15sp"
+            android:layout_marginLeft="14dp"
             android:id="@+id/txt_team_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/image_switch_team"
-            android:textColor="@color/black" />
+            android:textColor="#ff333333" />
+
+        <RelativeLayout
+            android:layout_marginRight="18dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/gray_circle"
+            android:layout_width="30dp"
+            android:layout_height="30dp">
+            
+            <ImageView
+                android:layout_centerInParent="true"
+                android:src="@drawable/switch_dark"
+                android:layout_width="18dp"
+                android:layout_height="18dp" />
+        </RelativeLayout>
 
     </RelativeLayout>
 
@@ -63,13 +82,17 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+
         <TextView
-            android:textSize="12sp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp"
+            android:textSize="15sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
             android:text="@string/select_a_space"
-            android:textColor="@color/newgrey" />
+            android:textColor="#ff333333" />
 
 
         <android.support.v7.widget.RecyclerView

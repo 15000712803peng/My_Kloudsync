@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="10dp"
     android:layout_height="wrap_content">
 
     <LinearLayout
@@ -8,10 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:background="@color/white"
+        android:background="@drawable/bottom_dialog_border"
         android:orientation="vertical"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
         android:visibility="visible">
 
         <LinearLayout
@@ -38,125 +40,137 @@
         </LinearLayout>
 
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginTop="10dp">
-
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:text="when Can You find unice.."
-                android:textColor="@color/darkgrey" />
-
-            <ImageView
-                android:id="@+id/closebnt"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:padding="8dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/close" />
-
-        </RelativeLayout>
-
-
         <TextView
+            android:layout_marginLeft="18dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp"
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:singleLine="true"
+            android:textColor="#999999"
+            android:textSize="14sp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            />
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/divider_line" />
-
+            android:background="#ffdadade"/>
         <LinearLayout
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:id="@+id/yinxiangshare"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:scaleType="fitXY"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="18dp"
                 android:src="@drawable/shareyinxiang" />
 
             <TextView
+                android:id="@+id/tv_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_gravity="center_vertical"
+                android:drawablePadding="5dp"
+                android:textSize="16sp"
                 android:gravity="center"
-                android:text="Share"
+                android:layout_marginLeft="8dp"
+                android:text="@string/share"
                 android:textColor="@color/darkgrey" />
         </LinearLayout>
 
-        <TextView
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/divider_line" />
+            android:background="#ffdadade"/>
+
 
         <LinearLayout
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:id="@+id/yinxiangedit"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:scaleType="fitXY"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="18dp"
                 android:src="@drawable/edityinixiang" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_gravity="center_vertical"
+                android:drawablePadding="5dp"
+                android:textSize="16sp"
                 android:gravity="center"
-                android:text="Edit"
+                android:layout_marginLeft="8dp"
+                android:text="@string/Edit"
                 android:textColor="@color/darkgrey" />
         </LinearLayout>
 
-        <TextView
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/divider_line" />
+            android:background="#ffdadade"/>
 
         <LinearLayout
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:id="@+id/yinxiangdelete"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:scaleType="fitXY"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="18dp"
                 android:src="@drawable/deleteyinxiang" />
 
             <TextView
-                android:id="@+id/tv_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_gravity="center_vertical"
+                android:drawablePadding="5dp"
+                android:textSize="16sp"
                 android:gravity="center"
-                android:text="Delete"
+                android:layout_marginLeft="8dp"
+                android:text="@string/Delete"
                 android:textColor="@color/darkgrey" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider_line" />
+
+
+
 
     </LinearLayout>
+
+
+
+    <TextView
+        android:id="@+id/cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="17sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:background="@drawable/bottom_dialog_border"
+        android:gravity="center"
+        android:text="@string/Cancel"
+        android:textColor="#3C77FB" />
 
 
 </LinearLayout>

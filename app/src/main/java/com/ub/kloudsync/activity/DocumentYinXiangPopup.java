@@ -29,7 +29,7 @@ public class DocumentYinXiangPopup implements View.OnClickListener {
     private LinearLayout yinxiangdelete;
     private LinearLayout yinxiangplay;
     private LinearLayout yinxiangshare;
-    private ImageView closebnt;
+    private TextView closebnt;
     private TextView title;
 
 
@@ -79,7 +79,7 @@ public class DocumentYinXiangPopup implements View.OnClickListener {
         yinxiangplay = (LinearLayout) view.findViewById(R.id.yinxiangplay);
         yinxiangshare = (LinearLayout) view.findViewById(R.id.yinxiangshare);
         title = (TextView) view.findViewById(R.id.title);
-        closebnt = (ImageView) view.findViewById(R.id.closebnt);
+        closebnt = (TextView) view.findViewById(R.id.cancel);
 
         yinxiangedit.setOnClickListener(this);
         yinxiangdelete.setOnClickListener(this);
@@ -143,7 +143,7 @@ public class DocumentYinXiangPopup implements View.OnClickListener {
                 dismiss();
                 mFavoritePoPListener.edit();
                 break;
-            case R.id.closebnt:
+            case R.id.cancel:
                 dismiss();
                 break;
             default:

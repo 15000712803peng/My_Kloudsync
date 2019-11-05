@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -24,10 +25,10 @@ public class MeetingMoreOperationPopup implements View.OnClickListener {
     public int width;
     public Dialog mPopupWindow;
     private View viewroot;
-    private RelativeLayout view, delete, startMeeting, edit, property;
+    private LinearLayout view, delete, startMeeting, edit, property;
     private FavoritePoPListener mFavoritePoPListener;
     private TextView title;
-    private ImageView closebnt;
+    private TextView closebnt;
     private TextView startmeetingContext, editContext;
 
     public interface FavoritePoPListener {
@@ -45,7 +46,6 @@ public class MeetingMoreOperationPopup implements View.OnClickListener {
         void property();
 
         void dismiss();
-
 
     }
 
@@ -73,15 +73,15 @@ public class MeetingMoreOperationPopup implements View.OnClickListener {
     public void initPopuptWindow() {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         viewroot = layoutInflater.inflate(R.layout.meetingmorepopup, null);
-        view = (RelativeLayout) viewroot.findViewById(R.id.view);
-        delete = (RelativeLayout) viewroot.findViewById(R.id.delete);
-        startMeeting = (RelativeLayout) viewroot.findViewById(R.id.satrtmeeting);
-        property = (RelativeLayout) viewroot.findViewById(R.id.property);
-        edit = (RelativeLayout) viewroot.findViewById(R.id.editmeeting);
+        view = (LinearLayout) viewroot.findViewById(R.id.view);
+        delete = (LinearLayout) viewroot.findViewById(R.id.delete);
+        startMeeting = (LinearLayout) viewroot.findViewById(R.id.satrtmeeting);
+        property = (LinearLayout) viewroot.findViewById(R.id.property);
+        edit = (LinearLayout) viewroot.findViewById(R.id.editmeeting);
         startmeetingContext = (TextView) viewroot.findViewById(R.id.startmeetingcontext);
         editContext = (TextView) viewroot.findViewById(R.id.editcontext);
         title = (TextView) viewroot.findViewById(R.id.title);
-        closebnt = (ImageView) viewroot.findViewById(R.id.closebnt);
+        closebnt = (TextView) viewroot.findViewById(R.id.cancel);
         closebnt.setOnClickListener(this);
         view.setOnClickListener(this);
         delete.setOnClickListener(this);
@@ -136,7 +136,7 @@ public class MeetingMoreOperationPopup implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.closebnt:
+            case R.id.cancel:
                 dismiss();
                 break;
             case R.id.view:
