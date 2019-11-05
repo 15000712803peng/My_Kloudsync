@@ -106,7 +106,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     private ImageView changeschool;
     private int lessionid;
     private TextView upcoming, pastdue, finished;
-    private LinearLayout search_layout;
+    private RelativeLayout search_layout;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -624,7 +624,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         lin_myroom.setOnClickListener(this);
         lin_join.setOnClickListener(this);
         lin_schedule.setOnClickListener(this);
-        search_layout = view.findViewById(R.id.search_layout);
+        search_layout = (RelativeLayout)view.findViewById(R.id.search_layout);
         search_layout.setOnClickListener(this);
 
         inprogressunderline = (TextView) view.findViewById(R.id.inprogressunderline);

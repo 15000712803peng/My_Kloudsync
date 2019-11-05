@@ -224,7 +224,7 @@
 
     <string name="Klassroom_ID">Meeting room ID</string>
     <string name="Schedule">New Meeting</string>
-    <string name="MyKlassroom">Meeting Room</string>
+    <string name="MyKlassroom">Start Meeting</string>
     <string name="Input_ID">Input your course ID</string>
     <string name="Class_unexist">The class you joined does not exist</string>
     <string name="Modify_ID">Modify your klassroom Id</string>
@@ -716,6 +716,7 @@ Please input the cell phone number to add the contact
     <string name="current_space">current space</string>
     <string name="docs_in_spaces">documents in current space</string>
     <string name="team_memers">Team Members</string>
+    <string name="space_memers">Team Members</string>
     <string name="syncrooms_in_spaces">syncrooms in current space</string>
 
     <string name="KloudSync">KloudSync</string>
@@ -750,6 +751,11 @@ Please input the cell phone number to add the contact
     <string name="move_sync">Move Sync</string>
 
     <string name="outline">Outline</string>
+
+    <string name="space_filter">Space filter</string>
+    <string name="show_all_spaces">Show all spaces</string>
+    <string name="show_only_my_spaces">Show my spaces only</string>
+
 
 
 </resources>

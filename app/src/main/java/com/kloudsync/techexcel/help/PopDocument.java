@@ -56,7 +56,7 @@ public class PopDocument {
     private LinearLayout lin_move;
     private LinearLayout lin_edit;
     private LinearLayout lin_delete;
-    private ImageView img_close;
+    private TextView img_close;
     private TextView tv_name;
     private View popupWindow;
 
@@ -69,7 +69,7 @@ public class PopDocument {
         lin_move = (LinearLayout) popupWindow.findViewById(R.id.lin_move);
         lin_edit = (LinearLayout) popupWindow.findViewById(R.id.lin_edit);
         lin_delete = (LinearLayout) popupWindow.findViewById(R.id.lin_delete);
-        img_close = (ImageView) popupWindow.findViewById(R.id.img_close);
+        img_close = (TextView) popupWindow.findViewById(R.id.cancel);
         tv_name = (TextView) popupWindow.findViewById(R.id.tv_name);
 
         tv_name.setText(document.getTitle());
@@ -122,7 +122,7 @@ public class PopDocument {
                     popDocumentListener.PopMove();
                     mPopupWindow.dismiss();
                     break;
-                case R.id.img_close:
+                case R.id.cancel:
                     mPopupWindow.dismiss();
                     break;
 

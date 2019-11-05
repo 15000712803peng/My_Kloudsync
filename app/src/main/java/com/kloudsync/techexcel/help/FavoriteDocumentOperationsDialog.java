@@ -92,7 +92,6 @@ public class FavoriteDocumentOperationsDialog implements OnClickListener {
     private ImageView img_close;
     private TextView tv_name;
     private View popupWindow;
-    private View moveDivider;
 
     @SuppressWarnings("deprecation")
     public void initPopuptWindow() {
@@ -105,8 +104,7 @@ public class FavoriteDocumentOperationsDialog implements OnClickListener {
         lin_delete = (LinearLayout) popupWindow.findViewById(R.id.lin_delete);
         img_close = (ImageView) popupWindow.findViewById(R.id.img_close);
         tv_name = (TextView) popupWindow.findViewById(R.id.tv_name);
-        moveDivider = popupWindow.findViewById(R.id.divider_move);
-        moveDivider.setVisibility(View.GONE);
+
         tv_name.setText(lesson.getTitle());
 
         mPopupWindow = new Dialog(mContext, R.style.bottom_dialog);

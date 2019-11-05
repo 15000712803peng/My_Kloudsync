@@ -15,13 +15,12 @@
         <TextView
             android:id="@+id/icon"
             android:textSize="18sp"
-            android:text="T"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:gravity="center"
             android:layout_centerVertical="true"
             android:textColor="@color/white"
-            android:background="@drawable/circle_expand" />
+            android:background="@drawable/icon_team" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -53,8 +52,8 @@
 
         <ImageView
             android:id="@+id/selectimage"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="12dp"
@@ -67,6 +66,7 @@
     <TextView
 
         android:layout_width="match_parent"
-        android:layout_height="1.5px"
-        android:background="@color/divider_line" />
+        android:layout_height="1dp"
+        android:layout_marginLeft="70dp"
+        android:background="#fff7f7f7" />
 </LinearLayout>

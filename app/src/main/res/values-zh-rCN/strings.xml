@@ -70,10 +70,11 @@
     <string name="All">总计</string>
 
     <string name="No_Medical_Report">他/她没有任何体检报告</string>
+
     <string name="Upload_Medical_Report">帮他/她上传</string>
 
     <string name="Search_Contact">搜索</string>
-    <string name="Cancel">关闭</string>
+    <string name="Cancel">取消</string>
     <string name="Back">返回</string>
 
 
@@ -709,7 +710,8 @@
     <string name="current_space">当前空间</string>
     <string name="docs_in_spaces">当前空间的文件</string>
     <string name="syncrooms_in_spaces">当前空间的音想房间</string>
-    <string name="team_memers">组成员</string>
+    <string name="team_memers">团队成员</string>
+    <string name="space_memers">团队成员</string>
 
     <string name="Mobile_phone">手机号</string>
     <string name="Password_hint">密码(6-20)</string>
@@ -739,4 +741,12 @@
     <string name="downloading">下载中...</string>
     <string name="move_sync">移动音想</string>
     <string name="outline">目录</string>
+
+    <string name="space_filter">筛选空间</string>
+    <string name="show_all_spaces">展示所有空间</string>
+    <string name="show_only_my_spaces">仅展示自己的空间</string>
+
+
+    展示所有空间
+
 </resources>

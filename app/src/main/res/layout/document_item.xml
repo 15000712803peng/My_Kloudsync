@@ -36,61 +36,85 @@
                 android:maxLines="2"
                 android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/createdata"
-                android:textColor="@color/newgrey"
-                android:layout_marginTop="5dp"
+
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp" />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_centerVertical="true"
+                    android:id="@+id/createdata"
+                    android:textColor="@color/newgrey"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_marginLeft="30dp"
+                    android:layout_toRightOf="@id/createdata"
+                    android:clickable="true"
+                    android:id="@+id/syncll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:padding="6dp"
+                    android:layout_centerVertical="true"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:background="@drawable/seach_bg_v2"
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_gravity="center_vertical"
+                            android:id="@+id/tv_num"
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:src="@drawable/teamusic" />
+
+                        <TextView
+                            android:layout_marginRight="3dp"
+                            android:id="@+id/tv_num_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="3dp"
+                            android:text=""
+                            android:textSize="11sp"
+                            android:textColor="#333333" />
+
+                        <ImageView
+                            android:layout_gravity="center_vertical"
+                            android:id="@+id/image_folder"
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:src="@drawable/arrow_down"
+                            android:scaleType="centerInside" />
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
         </LinearLayout>
 
 
         <LinearLayout
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:gravity="center_vertical"
+            android:gravity="center_vertical|bottom"
             android:orientation="horizontal">
 
-            <LinearLayout
-                android:clickable="true"
-                android:id="@+id/syncll"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:padding="6dp"
-                android:layout_centerVertical="true"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/tv_num"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:src="@drawable/teamusic" />
-
-                <TextView
-                    android:id="@+id/tv_num_value"
-                    android:layout_width="15dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="3dp"
-                    android:text="25"
-                    android:textSize="12sp"
-                    android:textColor="@color/red" />
-
-                <ImageView
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/image_folder"
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:src="@drawable/arrow_down"
-                    android:scaleType="fitStart" />
-
-            </LinearLayout>
 
 
 
@@ -119,7 +143,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:layout_below="@+id/kk"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="48dp"
         android:layout_marginRight="10dp"
         android:background="#ECF0F2"
         android:scrollbars="none"></ListView>

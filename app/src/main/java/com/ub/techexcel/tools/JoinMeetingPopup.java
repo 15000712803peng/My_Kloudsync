@@ -52,6 +52,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
     private String roomid;
     private int lessionid;
     private int teacherid;
+    private TextView cancelText;
     private UpcomingLesson lesson = null;
 
     private static FavoritePoPListener mFavoritePoPListener;
@@ -92,7 +93,8 @@ public class JoinMeetingPopup implements View.OnClickListener {
         joinroom2 = (TextView) view.findViewById(R.id.joinroom2);
         roomet = (EditText) view.findViewById(R.id.roomet);
         joinroom2.setOnClickListener(this);
-
+        cancelText = view.findViewById(R.id.cancel);
+        cancelText.setOnClickListener(this);
         mPopupWindow = new Dialog(mContext, R.style.bottom_dialog);
         mPopupWindow.setContentView(view);
         mPopupWindow.getWindow().setGravity(Gravity.BOTTOM);
@@ -138,6 +140,10 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         Toast.makeText(mContext, mContext.getString(R.string.joinroom), Toast.LENGTH_LONG).show();
                     }
                 }
+                dismiss();
+                break;
+
+            case R.id.cancel:
                 dismiss();
                 break;
 

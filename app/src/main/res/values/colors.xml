@@ -42,7 +42,7 @@
     <!-- 亮蓝色 -->
     <color name="lightblue3">#87ceeb</color>
     <!-- 浅天蓝色 -->
-    <color name="skyblue">#0078F9</color>
+    <color name="skyblue">#3D78FB</color>
     <!-- 天蓝色 -->
     <color name="deepblue">#2b4486</color>
     <!-- 深蓝色 -->
@@ -54,7 +54,7 @@
     <!-- 浅中灰色 -->
     <color name="lightgrey">#eeeff1</color>
     <!-- 浅灰 -->
-    <color name="darkgrey">#3E3F42</color>
+    <color name="darkgrey">#333333</color>
     <color name="tab_gray">#ffa1a1a1</color>
     <!-- 暗灰色 -->
     <color name="purple">#8558A9</color>
@@ -87,7 +87,7 @@
     <color name="c2">#f17b0d</color>
     <color name="c3">#e2e3e4</color>
     <color name="c4">#a2a8b6</color>
-    <color name="c5">#404751</color>
+    <color name="c5">#666666</color>
     <color name="c6">#eeeff1</color>
     <color name="c7">#ffffff</color>
     <color name="qianblue">#dfefed</color>

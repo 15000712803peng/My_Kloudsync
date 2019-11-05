@@ -19,6 +19,7 @@ public class FilterSpaceDialog implements OnClickListener {
     TextView showOnlyMineText;
     ImageView allSelectedImage;
     ImageView onlyMineSelectedImage;
+    TextView cancelText;
 
     public interface SpaceOptionsLinstener {
         void showAllOption();
@@ -50,6 +51,8 @@ public class FilterSpaceDialog implements OnClickListener {
         allSelectedImage = view.findViewById(R.id.img_choosen_all);
         onlyMineSelectedImage = view.findViewById(R.id.img_choosen_only);
         showAllText.setOnClickListener(this);
+        cancelText = view.findViewById(R.id.cancel);
+        cancelText.setOnClickListener(this);
         showOnlyMineText.setOnClickListener(this);
         WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
         params.width = mContext.getResources().getDisplayMetrics().widthPixels;
@@ -74,6 +77,10 @@ public class FilterSpaceDialog implements OnClickListener {
                     optionsLinstener.showOnlyMineOption();
 
                 }
+                dismiss();
+                break;
+
+            case R.id.cancel:
                 dismiss();
                 break;
             default:

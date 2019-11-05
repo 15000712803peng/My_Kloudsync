@@ -2,49 +2,94 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
     android:orientation="vertical"
-    android:paddingBottom="20dp"
+    android:paddingBottom="10dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     android:paddingTop="10dp">
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="@string/join3"
-        android:textColor="@color/black" />
+    <LinearLayout
+        android:background="@drawable/bottom_dialog_border"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="18dp"
+            android:textSize="14sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/join3"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_marginLeft="18dp"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="#999999"
+            android:text="@string/otherklassid"
+            android:textSize="12sp" />
+
+
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:paddingBottom="25dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:paddingLeft="18dp"
+                android:layout_marginLeft="16dp"
+                android:id="@+id/roomet"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/enter_meeting_bg"
+                android:hint="@string/joinroom"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/joinroom2"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="18dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:background="@drawable/join_bg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/join2"
+                android:textColor="#ffffffff"
+                android:textSize="15sp"
+                />
+        </LinearLayout>
+       
+    </LinearLayout>
+
+
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="@string/otherklassid"
-        android:textSize="14sp" />
-
-
-    <EditText
-        android:id="@+id/roomet"
+        android:id="@+id/cancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:background="@drawable/join_bg"
-        android:hint="@string/joinroom"
-        android:textSize="16sp" />
-
-
-    <TextView
-        android:id="@+id/joinroom2"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/blue_left_bg"
+        android:textSize="17sp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:background="@drawable/bottom_dialog_border"
         android:gravity="center"
-        android:text="@string/join2"
-        android:textColor="@color/white" />
+        android:text="@string/Cancel"
+        android:textColor="#3C77FB" />
 
 </LinearLayout>
 

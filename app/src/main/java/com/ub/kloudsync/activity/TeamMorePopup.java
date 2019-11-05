@@ -42,7 +42,7 @@ public class TeamMorePopup implements View.OnClickListener {
     private LinearLayout lin_edit;
     private TextView tv_name;
     private TextView rename;
-    private ImageView img_close;
+    private TextView img_close;
     private boolean isTeam;
     private String name;
     private int itemID;
@@ -150,14 +150,14 @@ public class TeamMorePopup implements View.OnClickListener {
         lin_delete = (LinearLayout) view.findViewById(R.id.lin_delete);
         tv_name = (TextView) view.findViewById(R.id.tv_name);
         rename = (TextView) view.findViewById(R.id.rename);
-        img_close = (ImageView) view.findViewById(R.id.img_close);
+        img_close = (TextView) view.findViewById(R.id.cancel);
         lin_delete.setOnClickListener(this);
         lin_quit.setOnClickListener(this);
         lin_rename.setOnClickListener(this);
         lin_edit.setOnClickListener(this);
         img_close.setOnClickListener(this);
         tv_name.setText(name);
-        rename.setText(isTeam ? "Team members" : "Space members");
+        rename.setText(isTeam ? mContext.getString(R.string.team_memers) : mContext.getString(R.string.space_memers));
 //        deleteTeam.setText(isTeam ? "Delete team" : "Delete space");
 //        quitteam.setText(isTeam ? "Quit team" : "Quit space");
 
@@ -211,7 +211,7 @@ public class TeamMorePopup implements View.OnClickListener {
                 dismiss();
                 mFavoritePoPListener.edit();
                 break;
-            case R.id.img_close:
+            case R.id.cancel:
                 dismiss();
                 break;
 

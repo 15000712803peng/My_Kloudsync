@@ -7,16 +7,17 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="42dp"
+        android:layout_height="50dp"
         android:background="@color/white">
 
         <TextView
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:text="@string/Meeting"
-            android:textColor="@color/black"
+            android:textColor="@color/brunette"
             android:textSize="16sp" />
 
 
@@ -66,148 +67,182 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_marginRight="18dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/tv_title"
+            android:id="@+id/search_layout"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:paddingLeft="13dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:background="@drawable/seach_bg_v2"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="36dp">
+
+            <ImageView
+                android:id="@+id/icon_search"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:scaleType="fitCenter"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/searchicon" />
+
+            <TextView
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/icon_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Search_Contact"
+                android:textColor="@color/newgrey"
+                android:textSize="13sp" />
+
+
+        </RelativeLayout>
+
+
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:background="@color/grey"
-        android:layout_height="1px" />
-
-    <include layout="@layout/searchcontact" />
 
     <LinearLayout
+        android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:layout_height="95dp"
+        android:layout_height="128dp"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.CardView
-            android:layout_weight="1"
-            android:foreground="?android:attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/grey"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="2dp"
-            app:contentPadding="1px"
-            app:cardPreventCornerOverlap="false"
-            app:cardUseCompatPadding="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
 
+
+        <com.kloudsync.techexcel.ui.MaskViewGroup
+            app:containerCornerRadius="16dp"
+            app:containerDeltaLength="5dp"
+            app:containerShadowColor="#B9C0E4"
+            app:deltaX="2dp"
+            app:deltaY="2dp"
+            app:enable="true"
+            app:containerShadowRadius="5dp"
+
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
             <RelativeLayout
                 android:id="@+id/lin_join"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
 
-                android:background="@drawable/joinmeeting_bg"
+                android:background="@drawable/bg_meeting_card1"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/bg_join" />
+
 
                 <ImageView
+                    android:layout_centerHorizontal="true"
                     android:id="@+id/icon_join"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="20dp"
                     android:src="@drawable/icon_join" />
 
                 <TextView
+                    android:layout_centerHorizontal="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/icon_join"
                     android:layout_gravity="center"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="17dp"
                     android:layout_marginLeft="10dp"
                     android:text="@string/join2"
                     android:textColor="@color/white"
-                    android:textSize="12sp" />
+                    android:textSize="15sp" />
             </RelativeLayout>
-        </android.support.v7.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        </com.kloudsync.techexcel.ui.MaskViewGroup>
+
+
+
+        <com.kloudsync.techexcel.ui.MaskViewGroup
+            app:containerCornerRadius="16dp"
+            app:containerDeltaLength="5dp"
+            app:containerShadowRadius="5dp"
+
+            app:containerShadowColor="#D0C7BD"
+            app:deltaX="2dp"
+            app:deltaY="2dp"
+            app:enable="true"
             android:layout_weight="1"
-            app:contentPadding="1px"
-            app:cardBackgroundColor="@color/grey"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="2dp"
-            app:cardPreventCornerOverlap="false"
-            app:cardUseCompatPadding="true"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:id="@+id/lin_myroom"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:background="@drawable/startmeeting_bg"
+                android:background="@drawable/bg_meeting_card2"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/bg_start" />
+
 
                 <ImageView
+                    android:layout_centerHorizontal="true"
                     android:id="@+id/meeting_join"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="10dp"
                     android:layout_marginTop="20dp"
                     android:src="@drawable/icon_startt" />
 
                 <TextView
+                    android:layout_centerHorizontal="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/meeting_join"
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="17dp"
+                    android:singleLine="true"
                     android:text="@string/MyKlassroom"
                     android:textColor="@color/white"
-                    android:textSize="12sp" />
+                    android:textSize="15sp" />
             </RelativeLayout>
-        </android.support.v7.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        </com.kloudsync.techexcel.ui.MaskViewGroup>
+
+
+
+        <com.kloudsync.techexcel.ui.MaskViewGroup
+            app:containerCornerRadius="16dp"
+            app:containerDeltaLength="5dp"
+            app:containerShadowRadius="5dp"
+            app:containerShadowColor="#DCE4B9"
+            app:deltaX="2dp"
+            app:deltaY="2dp"
+            app:enable="true"
             android:layout_weight="1"
-            app:contentPadding="1px"
-            app:cardBackgroundColor="@color/grey"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="2dp"
-            app:cardPreventCornerOverlap="false"
-            app:cardUseCompatPadding="true"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content">
-
             <RelativeLayout
                 android:id="@+id/lin_schedule"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:background="@drawable/schedulemeeting_bg"
+                android:background="@drawable/bg_meeting_card3"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/bg_schedule" />
 
                 <ImageView
+                    android:layout_centerHorizontal="true"
                     android:id="@+id/new_join"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="20dp"
@@ -219,14 +254,16 @@
                     android:layout_below="@+id/new_join"
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="17dp"
                     android:singleLine="true"
-
+                    android:layout_centerHorizontal="true"
                     android:text="@string/schMeeting"
                     android:textColor="@color/white"
-                    android:textSize="12sp" />
+                    android:textSize="15sp" />
             </RelativeLayout>
-        </android.support.v7.widget.CardView>
+
+        </com.kloudsync.techexcel.ui.MaskViewGroup>
+
 
 
     </LinearLayout>
@@ -270,6 +307,7 @@
 
 
     <LinearLayout
+        android:layout_marginTop="12dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -290,6 +328,7 @@
                 android:gravity="center"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:textSize="18dp"
                 android:text="@string/upcoming"
                 android:textColor="@color/skyblue" />
         </RelativeLayout>
@@ -309,6 +348,7 @@
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
                 android:text="@string/pastdue"
+                android:textSize="18sp"
                 android:textColor="@color/c5" />
         </RelativeLayout>
 
@@ -319,6 +359,7 @@
             android:gravity="center_vertical">
 
             <TextView
+                android:textSize="18sp"
                 android:id="@+id/finished"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -333,13 +374,10 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="1dp"
+        android:layout_height="4dp"
         android:visibility="visible">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/divider_line" />
+
         <TextView
             android:id="@+id/inprogressunderline"
             android:layout_width="match_parent"
