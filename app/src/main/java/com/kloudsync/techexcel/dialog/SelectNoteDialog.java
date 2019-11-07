@@ -61,7 +61,7 @@ public class SelectNoteDialog implements View.OnClickListener {
 
     private String syncroomid;
 
-    public SelectNoteDialog(Context context,  String syncroomid) {
+    public SelectNoteDialog(Context context, String syncroomid) {
         mContext = context;
         this.syncroomid = syncroomid;
         initDialog();
@@ -135,25 +135,29 @@ public class SelectNoteDialog implements View.OnClickListener {
                 noteOthersPopup.setFavoritePoPListener(new NoteOthersPopup.FavoritePoPListener() {
                     @Override
                     public void select(List<Customer> list) {
-                        customerList.clear();
-                        customerList.addAll(list);
-                        String use = "";
-                        String useid = "";
-                        for (Customer customer : customerList) {
-                            use += customer.getName() + " ";
-                            useid = customer.getUserID();
-                        }
-                        selectuser.setText(use);
-                        String url = AppConfig.URL_PUBLIC + "DocumentNote/UserNoteList?userID=" + useid;
-                        ServiceInterfaceTools.getinstance().getUserNoteList(url, ServiceInterfaceTools.GETSYNCROOMUSERLIST, new ServiceInterfaceListener() {
-                            @Override
-                            public void getServiceReturnData(Object object) {
-                                List<Note> list = new ArrayList<>();
-                                list.addAll((List<Note>) object);
-                                documentAdapter = new DocumentAdapter(mContext, list);
-                                documentList.setAdapter(documentAdapter);
+                        if (list == null || list.size() == 0) {
+
+                        } else {
+                            customerList.clear();
+                            customerList.addAll(list);
+                            String use = "";
+                            String useid = "";
+                            for (Customer customer : customerList) {
+                                use += customer.getName() + " ";
+                                useid = customer.getUserID();
                             }
-                        });
+                            selectuser.setText(use);
+                            String url = AppConfig.URL_PUBLIC + "DocumentNote/UserNoteList?userID=" + useid;
+                            ServiceInterfaceTools.getinstance().getUserNoteList(url, ServiceInterfaceTools.GETSYNCROOMUSERLIST, new ServiceInterfaceListener() {
+                                @Override
+                                public void getServiceReturnData(Object object) {
+                                    List<Note> list = new ArrayList<>();
+                                    list.addAll((List<Note>) object);
+                                    documentAdapter = new DocumentAdapter(mContext, list);
+                                    documentList.setAdapter(documentAdapter);
+                                }
+                            });
+                        }
                     }
                 });
                 noteOthersPopup.StartPop(view, syncroomid);
@@ -256,9 +260,6 @@ public class SelectNoteDialog implements View.OnClickListener {
                     notifyDataSetChanged();
                 }
             });
-
         }
-
-
     }
 }

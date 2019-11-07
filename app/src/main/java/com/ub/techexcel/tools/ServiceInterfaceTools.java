@@ -1763,6 +1763,7 @@ public class ServiceInterfaceTools {
                             item.setAttachmentUrl(lineitem.getString("AttachmentUrl"));
                             item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
                             item.setAttachmentID(lineitem.getInt("AttachmentID"));
+                            item.setCreatedDate(lineitem.getString("CreatedDate"));
                             items.add(item);
                         }
                         Message msg = Message.obtain();

@@ -11,14 +11,13 @@
         android:paddingLeft="12dp"
         android:paddingTop="6dp">
 
-
         <TextView
             android:id="@+id/txt_doc_space_name"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:layout_centerVertical="true"
             android:gravity="center"
-            android:text="My Notes"
+            android:text="@string/mtNote"
             android:textColor="@color/blue1"
             android:textSize="14sp" />
 
@@ -34,12 +33,12 @@
 
 
     <TextView
-        android:layout_margin="5dp"
         android:id="@+id/selectuser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:layout_margin="5dp"
         android:background="@drawable/noteuser_shape"
+        android:padding="10dp"
         android:text="Users" />
 
 
