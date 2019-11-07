@@ -267,7 +267,6 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
     String teamName = "";
 
     public void getTeamItem() {
-
         TeamSpaceInterfaceTools.getinstance().getTeamItem(AppConfig.URL_PUBLIC + "TeamSpace/Item?itemID=" + spaceId, TeamSpaceInterfaceTools.GETTEAMITEM, new TeamSpaceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
@@ -366,7 +365,6 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
     }
 
     private ArrayList<Customer> cuslist = new ArrayList<Customer>();
-
 
     private void moveDocument(final Document lesson) {
         Intent intent = new Intent(this, MoveDocumentActivity.class);

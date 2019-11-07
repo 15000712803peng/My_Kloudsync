@@ -583,12 +583,18 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         twoToOneFragment = new TwoToOneFragment();
         serviceFragment = new ServiceFragment();
         topicFragment = new TopicFragment();
+
         personalCenterFragment = new PersonalCenterFragment();
         if (sharedPreferences.getBoolean("enable_sync", false)) {
             syncroomTab.setVisibility(View.VISIBLE);
         } else {
             syncroomTab.setVisibility(View.GONE);
         }
+        mTabs.add(documentsFragment);
+        mTabs.add(twoToOneFragment);
+        mTabs.add(serviceFragment);
+        mTabs.add(topicFragment);
+        mTabs.add(personalCenterFragment);
         changeTeamFragment(documentTab);
         Log.e("user_info", "user_token:" + AppConfig.UserToken + ",company_id:" + AppConfig.SchoolID);
 
@@ -759,9 +765,12 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             ft = null;
             fm.executePendingTransactions();
 //
-//            GetTabName();
-//            initDatas();
+            initDatas();
+            setTabName();
+            initView();
 //            GoTOTab(4);
+            changeTeamFragment(personalTab);
+            RESUME = false;
         }
 
         if (AppConfig.isRefreshRed) {

@@ -344,8 +344,6 @@
             </com.kloudsync.techexcel.ui.MaskViewGroup>
 
 
-
-
             <RelativeLayout
                 android:id="@+id/rl_school_name"
                 android:layout_width="match_parent"

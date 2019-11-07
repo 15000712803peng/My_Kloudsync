@@ -115,6 +115,7 @@ public class LanguageActivity extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
+
 			switch (position) {
 			case 0:
 				updateLange(Locale.ENGLISH, 1);

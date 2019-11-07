@@ -203,7 +203,6 @@ public class StartUbao extends Activity {
         DisplayMetrics dm = res.getDisplayMetrics();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-
             config.setLocale(locale);
             LocaleList localeList = new LocaleList(locale);
             LocaleList.setDefault(localeList);
