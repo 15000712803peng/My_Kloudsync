@@ -217,7 +217,6 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
 //        getActivity().registerReceiver(broadcastReceiver, filter);
         //LocalBroadcastManager 是基于Handler实现的，拥有更高的效率与安全性。安全性主要体现在数据仅限于应用内部传输，避免广播被拦截、伪造、篡改的风险
         localBroadcastManager.registerReceiver(broadcastReceiver, filter);
-
     }
 
     private void RefreshNotify() {

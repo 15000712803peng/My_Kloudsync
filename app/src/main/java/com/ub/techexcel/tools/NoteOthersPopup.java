@@ -113,6 +113,9 @@ public class NoteOthersPopup implements View.OnClickListener {
                     }
                 });
 
+
+                Collections.reverse(mlist); //反转
+
                 for (int i = 0; i < mlist.size(); i++) {
                     mlist.get(i).setSelected(false);
                 }

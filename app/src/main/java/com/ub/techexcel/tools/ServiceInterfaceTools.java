@@ -1675,6 +1675,7 @@ public class ServiceInterfaceTools {
                         msg.obj = note;
                         msg.what = code;
                         handler.sendMessage(msg);
+
                     } else {
                         Message msg3 = Message.obtain();
                         msg3.what = ERRORMESSAGE;
@@ -1762,6 +1763,7 @@ public class ServiceInterfaceTools {
                             item.setAttachmentUrl(lineitem.getString("AttachmentUrl"));
                             item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
                             item.setAttachmentID(lineitem.getInt("AttachmentID"));
+                            item.setCreatedDate(lineitem.getString("CreatedDate"));
                             items.add(item);
                         }
                         Message msg = Message.obtain();
