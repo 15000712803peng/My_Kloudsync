@@ -1,4 +1,6 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,9 +9,10 @@
 
 
     <RelativeLayout
+        android:padding="22dp"
         android:id="@+id/rl_contacts_portrait"
         android:layout_width="match_parent"
-        android:layout_height="120dp">
+        android:layout_height="wrap_content">
 
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/contacts_portrait"
@@ -60,8 +63,8 @@
 
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
@@ -76,78 +79,271 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:orientation="vertical">
 
-
-            <android.support.v7.widget.CardView
-                android:layout_marginLeft="6dp"
-                android:layout_marginRight="6dp"
-                android:layout_weight="@integer/rc_image_quality"
-
-                android:foreground="?android:attr/selectableItemBackground"
-                fresco:cardBackgroundColor="@color/grey"
-                fresco:cardCornerRadius="4dp"
-                fresco:cardElevation="2dp"
-                fresco:contentPadding="1px"
-                fresco:cardPreventCornerOverlap="false"
-                fresco:cardUseCompatPadding="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
                 <LinearLayout
-                    android:paddingLeft="10dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="38dp"
                     android:paddingRight="10dp"
-                    android:id="@+id/lin_switch"
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
-                    android:background="#F6F8F9"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
                     <LinearLayout
-
-                        android:background="@drawable/bg_my"
                         android:gravity="center|left"
                         android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content">
 
                         <TextView
+                            android:singleLine="false"
+                            android:layout_marginRight="6dp"
+                            android:maxLines="2"
                             android:id="@+id/tv_sname"
-                            android:layout_width="wrap_content"
+                            android:gravity="left"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:text=""
+                            android:text="Medical team of Beijing long long text …"
                             android:textColor="@color/darkgrey"
-                            android:textSize="15sp" />
+                            android:textSize="17sp" />
 
-                        <LinearLayout
-                            android:paddingTop="3dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="horizontal">
+                    </LinearLayout>
 
-                            <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:src="@drawable/fanzhuang" />
+                    <LinearLayout
+                        android:layout_marginRight="8dp"
+                        android:id="@+id/lin_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <com.kloudsync.techexcel.ui.MaskViewGroup
+                            fresco:containerCornerRadius="16dp"
+                            fresco:containerDeltaLength="10dp"
+                            fresco:containerShadowColor="#ffb9c0e4"
+                            fresco:containerShadowRadius="6dp"
+                            fresco:deltaX="0dp"
+                            fresco:deltaY="3dp"
+                            fresco:enable="true"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
 
                             <TextView
+                                android:background="@drawable/bg_corner_blue"
                                 android:id="@+id/tv_switch"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:paddingLeft="4dp"
+                                android:paddingLeft="10dp"
+                                android:paddingRight="10dp"
                                 android:text="@string/Switch"
-                                android:textColor="@color/skyblue"
-                                android:textSize="12sp" />
-                        </LinearLayout>
+                                android:paddingTop="5dp"
+                                android:paddingBottom="5dp"
+                                android:textColor="@color/white"
+                                android:textSize="13sp" />
+                        </com.kloudsync.techexcel.ui.MaskViewGroup>
+
+
+
                     </LinearLayout>
 
 
                 </LinearLayout>
-            </android.support.v7.widget.CardView>
+
+            <com.kloudsync.techexcel.ui.MaskViewGroup
+                app:containerCornerRadius="17dp"
+                app:containerDeltaLength="12dp"
+                app:containerShadowColor="#1f27347d"
+                app:containerShadowRadius="6dp"
+                app:deltaX="3dp"
+                app:deltaY="3dp"
+                app:enable="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:background="@drawable/space_bg"
+                    android:layout_margin="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:gravity="center_vertical"
+                        android:background="@color/white"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:id="@+id/rl_pc_klassroomID"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:background="@drawable/personal_card1"
+                                android:layout_width="68dp"
+                                android:layout_height="58dp">
+                                <TextView
+                                    android:padding="2dp"
+                                    android:background="@drawable/corners_white"
+                                    android:id="@+id/tv_roomid"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="end"
+                                    android:text="H4226"
+                                    android:layout_centerInParent="true"
+                                    android:textSize="12sp"
+                                    android:gravity="center_vertical"
+                                    android:singleLine="true"
+                                    android:textColor="@color/blue1" />
+
+                            </LinearLayout>
+
+
+
+                        </LinearLayout>
+
+                        <View
+                            android:background="#ffdadada"
+                            android:layout_width="1dp"
+                            android:layout_height="32dp"/>
+
+                        <LinearLayout
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:id="@+id/rl_cn_account"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:background="@drawable/personal_card2"
+                                android:layout_width="68dp"
+                                android:layout_height="58dp">
+                                <ImageView
+                                    android:layout_marginTop="5dp"
+
+                                    android:background="@drawable/icon_personal_create_company"
+                                    android:layout_width="35dp"
+                                    android:layout_height="35dp" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <View
+                            android:background="#ffdadada"
+                            android:layout_width="1dp"
+                            android:layout_height="32dp"/>
+
+                        <LinearLayout
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:id="@+id/rl_cn_account_setting"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:background="@drawable/personal_card3"
+                                android:layout_width="68dp"
+                                android:layout_height="58dp">
+                                <ImageView
+                                    android:layout_marginTop="5dp"
+                                    android:background="@drawable/icon_personal_account_setting"
+                                    android:layout_width="35dp"
+                                    android:layout_height="35dp" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        
+                        <LinearLayout
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:textSize="12dp"
+                                android:gravity="center"
+                                android:layout_weight="1"
+                                android:singleLine="true"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:text="@string/Klassroom_ID"
+                                android:textColor="@color/pc_black_text"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:textSize="12dp"
+                                android:gravity="center"
+                                android:layout_weight="1"
+                                android:singleLine="true"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:text="@string/CN_account"
+                                android:textColor="@color/pc_black_text"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:textSize="12dp"
+                                android:gravity="center"
+                                android:layout_weight="1"
+                                android:singleLine="true"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:text="@string/as_setting"
+                                android:textColor="@color/pc_black_text"/>
+
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
+                </LinearLayout>
+
+            </com.kloudsync.techexcel.ui.MaskViewGroup>
+
+
 
 
             <RelativeLayout
@@ -184,60 +380,9 @@
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
-            <RelativeLayout
-                android:padding="12dp"
-                android:id="@+id/rl_pc_klassroomID"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:background="@color/pc_white">
-
-                <ImageView
-                    android:id="@+id/img_pc_professionalroomid"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:src="@drawable/icon_id" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@+id/img_pc_professionalroomid"
-                    android:text="@string/Klassroom_ID"
-                    android:textColor="@color/pc_black_text"/>
-
-                <TextView
-                    android:id="@+id/tv_roomid"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="10dp"
-                    android:layout_toLeftOf="@+id/arrow19"
-                    android:ellipsize="end"
-                    android:textSize="12sp"
-                    android:gravity="center_vertical"
-                    android:singleLine="true"
-                    android:textColor="@color/black" />
-
-                <ImageView
-                    android:id="@+id/arrow19"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="16dp"
-                    android:src="@drawable/arrow2" />
-            </RelativeLayout>
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1.5px"
-                android:layout_marginLeft="20dp"
-                android:background="@color/pc_background" />
+
             <!-- 专业领域 -->
 
             <RelativeLayout
@@ -324,78 +469,6 @@
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
-
-            <RelativeLayout
-                android:padding="12dp"
-                android:id="@+id/rl_cn_account"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/pc_white">
-
-                <ImageView
-                    android:id="@+id/img_cn_account"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:src="@drawable/icon_add" />
-
-                <TextView
-                    android:id="@+id/tv_cn_account"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@+id/img_cn_account"
-                    android:text="@string/CN_account"
-                    android:textColor="@color/pc_black_text"/>
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="16dp"
-                    android:src="@drawable/arrow2" />
-            </RelativeLayout>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1.5px"
-                android:layout_marginLeft="20dp"
-                android:background="@color/pc_background" />
-            <RelativeLayout
-                android:padding="12dp"
-                android:id="@+id/rl_cn_account_setting"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/pc_white">
-
-                <ImageView
-                    android:id="@+id/img_cn_account_setting"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:src="@drawable/icon_account_set" />
-
-                <TextView
-                    android:id="@+id/tv_cn_account_setting"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@+id/img_cn_account_setting"
-                    android:text="@string/as_setting"
-                    android:textColor="@color/pc_black_text" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="16dp"
-                    android:src="@drawable/arrow2" />
-            </RelativeLayout>
             <RelativeLayout
                 android:padding="12dp"
                 android:id="@+id/ll_pc_publish_article"
@@ -445,12 +518,6 @@
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1.5px"
-                android:layout_marginLeft="20dp"
-                android:background="@color/pc_background" />
-
             <RelativeLayout
                 android:padding="12dp"
                 android:id="@+id/ll_pc_integral"
@@ -499,6 +566,47 @@
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:padding="12dp"
+                android:id="@+id/rl_pc_synctv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/pc_white">
+
+                <ImageView
+                    android:id="@+id/img_pc_synctv"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/tv" />
+
+                <TextView
+                    android:id="@+id/tv_pc_synctv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@+id/img_pc_synctv"
+                    android:text="@string/sync_tv"
+                    android:textColor="@color/pc_black_text" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="16dp"
+                    android:src="@drawable/arrow2" />
+            </RelativeLayout>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1.5px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/pc_background" />
+
 
             <RelativeLayout
                 android:padding="12dp"
@@ -539,8 +647,8 @@
 
                 <ImageView
                     android:id="@+id/arrow15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
@@ -683,8 +791,8 @@
                     android:textColor="@color/pc_black_text"/>
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
@@ -698,46 +806,7 @@
                 android:layout_marginLeft="20dp"
                 android:background="@color/pc_background" />
 
-            <RelativeLayout
-                android:padding="12dp"
-                android:id="@+id/rl_pc_synctv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/pc_white">
 
-                <ImageView
-                    android:id="@+id/img_pc_synctv"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:src="@drawable/tv" />
-
-                <TextView
-                    android:id="@+id/tv_pc_synctv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@+id/img_pc_synctv"
-                    android:text="@string/sync_tv"
-                    android:textColor="@color/pc_black_text" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="16dp"
-                    android:src="@drawable/arrow2" />
-            </RelativeLayout>
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1.5px"
-                android:layout_marginLeft="20dp"
-                android:background="@color/pc_background" />
 
 
             <RelativeLayout
@@ -767,8 +836,8 @@
                     android:textColor="@color/pc_black_text" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
@@ -863,8 +932,8 @@
 
                 <ImageView
                     android:id="@+id/arrow123"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
@@ -911,8 +980,8 @@
                     />
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
@@ -926,6 +995,7 @@
                 android:background="@color/pc_background" />
 
             <RelativeLayout
+                android:visibility="gone"
                 android:padding="12dp"
                 android:id="@+id/rl_guide"
                 android:layout_width="match_parent"
@@ -960,6 +1030,7 @@
             </RelativeLayout>
 
             <TextView
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="1.5px"
                 android:layout_marginLeft="20dp"
@@ -981,13 +1052,13 @@
                     android:src="@drawable/icon_logout" />
 
                 <TextView
+                    android:text="@string/login_out"
                     android:layout_toRightOf="@id/img_logout"
                     android:id="@+id/tv_pc_loginout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="16dp"
-                    android:text="@string/login_out"
                     android:textColor="@color/red2"
                     />
             </RelativeLayout>

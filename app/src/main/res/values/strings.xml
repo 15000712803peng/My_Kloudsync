@@ -222,7 +222,7 @@
     <string name="Save_File">Save File</string>
     <string name="Save_Success">Save Success</string>
 
-    <string name="Klassroom_ID">Meeting room ID</string>
+    <string name="Klassroom_ID">Meeting ID</string>
     <string name="Schedule">New Meeting</string>
     <string name="MyKlassroom">Start Meeting</string>
     <string name="Input_ID">Input your course ID</string>
@@ -297,7 +297,7 @@
     <string name="Teacher">Teacher</string>
 
     <string name="C_School">Current Organization</string>
-    <string name="Switch">Switch organization</string>
+    <string name="Switch">Switch Organization</string>
 
     <string name="My_contact">My contact</string>
     <string name="School_contact">School contact</string>
@@ -327,13 +327,13 @@
     <string name="Submit">Submit</string>
 
 
-    <string name="Team">Current team</string>
-    <string name="Space">Spaces of Current Team</string>
-    <string name="Create_Space">Create New Space</string>
-    <string name="Current_file">Documents of Current Team</string>
-    <string name="Swtich_team">Switch Team</string>
-    <string name="Swtich_space">Switch Space</string>
-    <string name="Create_team">Create New Team</string>
+    <string name="Team">Current project</string>
+    <string name="Space">Spaces of Current project</string>
+    <string name="Create_Space">Create New Dirs</string>
+    <string name="Current_file">Documents of Current Project</string>
+    <string name="Swtich_team">Switch Project</string>
+    <string name="Swtich_space">Switch Dir</string>
+    <string name="Create_team">Create New Project</string>
     <string name="autosync">AutoSync enables content be displayed on your TV devices</string>
     <string name="tvappname">TV APP Name</string>
     <string name="tvapplogintime">Login Time</string>
@@ -696,7 +696,7 @@ Please input the cell phone number to add the contact
     <string name="upcoming">Upcoming</string>
     <string name="pastdue">Past Due</string>
     <string name="pastfinish">Finish</string>
-    <string name="currentsyncroom">SyncRoom of Current Team</string>
+    <string name="currentsyncroom">SyncRoom of Current Project</string>
     <string name="addnewdoc">Add new document</string>
     <string name="title_join_as_audience">Join as audience</string>
     <string name="msg_join_as_audience">The maximum number of panellists has\nbeen reached。You will be joining as a\n listen-only audience</string>

@@ -42,6 +42,15 @@ public class Document implements Serializable {
     private String FileDownloadURL;
     private int IncidentID;
     private boolean isSyncExpanded;
+    private String CreatedByName;
+
+    public String getCreatedByName() {
+        return CreatedByName;
+    }
+
+    public void setCreatedByName(String createdByName) {
+        CreatedByName = createdByName;
+    }
 
     public boolean isSyncExpanded() {
         return isSyncExpanded;

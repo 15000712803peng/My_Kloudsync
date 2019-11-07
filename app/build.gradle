@@ -33,6 +33,8 @@ dependencies {
     annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:4.2.2"
 //    compile('com.onyx.android.sdk:onyxsdk-base:1.5.2')
 //    compile('com.onyx.android.sdk:onyxsdk-data:1.1.4')
+//    compile('com.onyx.android.sdk:onyxsdk-pen:1.0.8')
+//    compile('com.onyx.android.sdk:onyxsdk-device:1.0.3')
 
 
 
@@ -46,7 +48,7 @@ configurations.all {
         def requested = details.requested
         if (requested.group == 'com.android.support') {
             if (!requested.name.startsWith("multidex")) {
-                details.useVersion '26.+'
+                details.useVersion '27.+'
             }
         }
     }
@@ -63,8 +65,8 @@ android {
         applicationId "com.kloudsync.techexcel"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 11
-        versionName "2.1.0"
+        versionCode 12
+        versionName "2.2.0"
         flavorDimensions "versionCode"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -157,8 +159,8 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'com.android.support:design:23.3.0'
+    compile 'com.android.support:appcompat-v7:27.3.0'
+    compile 'com.android.support:design:27.3.0'
     testCompile 'junit:junit:4.12'
     compile project(':IMKit')
     compile project(':librarypullrefresh')

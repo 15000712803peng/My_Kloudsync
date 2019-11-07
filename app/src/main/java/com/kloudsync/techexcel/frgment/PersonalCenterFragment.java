@@ -78,13 +78,16 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
     private View view;
     private RelativeLayout rl_pc_portrait,
             rl_pc_professionalField, rl_pc_effective, rl_pc_password,
-            rl_pc_loginout, rl_pc_language, rl_pc_klassroomID, rl_cn_account_setting, rl_pc_synctv;
+            rl_pc_loginout, rl_pc_language, rl_pc_synctv;
+
+    private LinearLayout rl_pc_klassroomID;
+    private LinearLayout rl_cn_account_setting;
     private RelativeLayout rl_pc_about;
     private RelativeLayout guideLayout;
     private RelativeLayout rl_pc_hc;
     private RelativeLayout rl_pc_sk;
     private RelativeLayout rl_contacts_portrait;
-    private RelativeLayout rl_cn_account;
+    private LinearLayout rl_cn_account;
     private RelativeLayout ll_pc_integral, ll_pc_collection,
             ll_pc_publish_article;
     private RelativeLayout rl_school_name, rl_teacher_profile;
@@ -246,7 +249,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         ll_pc_integral = (RelativeLayout) view.findViewById(R.id.ll_pc_integral);
         rl_school_name = (RelativeLayout) view.findViewById(R.id.rl_school_name);
         rl_teacher_profile = (RelativeLayout) view.findViewById(R.id.rl_teacher_profile);
-        rl_cn_account = (RelativeLayout) view.findViewById(R.id.rl_cn_account);
+        rl_cn_account = (LinearLayout) view.findViewById(R.id.rl_cn_account);
         ll_pc_integral = (RelativeLayout) view.findViewById(R.id.ll_pc_integral);
         pi_goodatfield = (TextView) view.findViewById(R.id.pi_goodatfield);
         rl_pc_professionalField = (RelativeLayout) view
@@ -262,11 +265,11 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                 .findViewById(R.id.rl_pc_loginout);
         rl_pc_language = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_language);
-        rl_pc_klassroomID = (RelativeLayout) view
+        rl_pc_klassroomID = (LinearLayout) view
                 .findViewById(R.id.rl_pc_klassroomID);
         rl_pc_about = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_about);
-        rl_cn_account_setting = (RelativeLayout) view
+        rl_cn_account_setting = (LinearLayout) view
                 .findViewById(R.id.rl_cn_account_setting);
         rl_pc_sk = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_sk);

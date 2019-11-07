@@ -146,6 +146,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
         String createData = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Long.parseLong(item.getCreatedDate()));
         holder.createdata.setText("" + createData);
         holder.listView.setVisibility(View.GONE);
+//        holder.documentOwner.setText(item.getCreatedByName());
         int syncCount = item.getSyncCount();
         holder.tv_num_value.setText(item.getSyncCount() + "");
         setDocumentIcon(item.getTitle(),holder.documentIcon);
@@ -208,6 +209,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
         ImageView morepopup;
         ImageView imageFolder;
         ImageView documentIcon;
+        TextView documentOwner;
 
         public RecycleHolder(View itemView) {
             super(itemView);
@@ -221,6 +223,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
             syncll = (LinearLayout) itemView.findViewById(R.id.syncll);
             imageFolder = (ImageView) itemView.findViewById(R.id.image_folder);
             documentIcon = (ImageView) itemView.findViewById(R.id.icon_document);
+            documentOwner = (TextView)itemView.findViewById(R.id.txt_document_owner);
         }
     }
 
