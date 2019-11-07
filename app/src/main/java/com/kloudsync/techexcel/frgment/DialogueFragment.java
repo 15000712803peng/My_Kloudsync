@@ -144,9 +144,9 @@ public class DialogueFragment extends Fragment {
         if (view == null) {
             view = inflater.inflate(R.layout.conversationlist, container, false);
             initView();
-            GetDMInfo();
-            GetCourseBroad();
         }
+        GetDMInfo();
+        GetCourseBroad();
 //        if (null != view) {
 //            ViewGroup parent = (ViewGroup) view.getParent();
 //            if (null != parent) {
@@ -391,12 +391,8 @@ public class DialogueFragment extends Fragment {
     private void SetMyDialogList() {
         SetUserProvider();
         main_viewpager = (ViewPager) view.findViewById(R.id.main_viewpager);
-        if (mDemoFragmentPagerAdapter == null) {
-            mDemoFragmentPagerAdapter = new DemoFragmentPagerAdapter(getActivity().getSupportFragmentManager());
-            main_viewpager.setAdapter(mDemoFragmentPagerAdapter);
-        } else {
-            mDemoFragmentPagerAdapter.notifyDataSetChanged();
-        }
+        mDemoFragmentPagerAdapter = new DemoFragmentPagerAdapter(getActivity().getSupportFragmentManager());
+        main_viewpager.setAdapter(mDemoFragmentPagerAdapter);
 
     }
 
@@ -1130,7 +1126,7 @@ public class DialogueFragment extends Fragment {
                     startActivity(i);
                     mPopupWindow.dismiss();
                     break;
-			/*case lin_addfriend:
+                        /*case lin_addfriend:
 				CreateNewUM(2);
 				mPopupWindow.dismiss();
 				break;*/
@@ -1159,7 +1155,7 @@ public class DialogueFragment extends Fragment {
         @Override
         public Fragment getItem(int i) {
             Fragment fragment = null;
-            Log.e("pager adapter","get item");
+            Log.e("pager adapter", "get item");
             switch (i) {
                 case 0:
                     //TODO
