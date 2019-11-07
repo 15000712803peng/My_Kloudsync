@@ -642,20 +642,27 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                     }
                 }
             }
-            currentAttachmentId = lineItem.getAttachmentID();
-            currentItemId = lineItem.getItemId();
-            targetUrl = lineItem.getUrl();
-            newPath = lineItem.getNewPath();
-            Log.e("dddddd", currentAttachmentId + "  " + currentItemId + "  " + targetUrl + "  " + newPath);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (wv_show == null) {
-                        return;
+
+            if(!lineItem.isSelect()){  //lineitem 不在pdf列表中
+
+                String noteid=lineItem.getItemId();
+                String url=AppConfig.URL_PUBLIC+"DocumentNote/Item?itemID="+noteid;
+                ServiceInterfaceTools.getinstance().getNoteByNoteId(url, ServiceInterfaceTools.GETNOTEBYNOTEID, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        Note note= (Note) object;
+                        displayNoteTv(note);
                     }
-                    loadWebIndex();
-                }
-            });
+                });
+            }else{
+                currentAttachmentId = lineItem.getAttachmentID();
+                currentItemId = lineItem.getItemId();
+                targetUrl = lineItem.getUrl();
+                newPath = lineItem.getNewPath();
+                Log.e("dddddd", currentAttachmentId + "  " + currentItemId + "  " + targetUrl + "  " + newPath);
+                loadWebIndex();
+
+            }
 
         }
 
@@ -6157,26 +6164,27 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         newPath = currentShowPdf.getNewPath();
         notifySwitchDocumentSocket(currentShowPdf, "1");
         loadWebIndex();
-
     }
 
-//    @Subscribe
-//    public void noteUploadSucess(NoteId noteId){
-//        Log.e("noteUploadSucess","note id:" + noteId.getNoteId());
-//        if(wv_show != null){
-//
-//            JSONObject jsonObject = null;
-//            try {
-//                jsonObject = new JSONObject();
-//                jsonObject.put("ID",noteId.getNoteId());
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//            Log.e("AfterEditBookNote","jsonObject:" + jsonObject);
-//            wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
-//        }
-//    }
+    private void displayNoteTv(Note note) {
+        closenote = findViewById(R.id.closenote);
+        closenote.setVisibility(View.GONE);
+
+        //重新赋值
+        currentAttachmentPage = "0";
+        AppConfig.currentPageNumber = "0";
+        currentShowPdf = new LineItem();
+        currentShowPdf.setUrl(note.getAttachmentUrl());
+        currentShowPdf.setItemId(note.getNoteID()+""); //同步笔记noteid
+        currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
+
+        currentAttachmentId = currentShowPdf.getAttachmentID();
+        currentItemId ="0";
+        targetUrl = currentShowPdf.getUrl();
+        newPath = currentShowPdf.getNewPath();
+        loadWebIndex();
+    }
+
 
     private int spaceId;
 

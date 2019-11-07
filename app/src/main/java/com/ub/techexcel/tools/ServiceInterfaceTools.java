@@ -1675,6 +1675,7 @@ public class ServiceInterfaceTools {
                         msg.obj = note;
                         msg.what = code;
                         handler.sendMessage(msg);
+
                     } else {
                         Message msg3 = Message.obtain();
                         msg3.what = ERRORMESSAGE;
