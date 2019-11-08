@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -46,6 +47,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventRefreshSpaceFragment;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
+import com.kloudsync.techexcel.bean.Team;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.UploadFileDialog;
@@ -104,6 +106,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class SpaceDocumentsFragment extends Fragment implements View.OnClickListener, DocChooseDialog.SelectedOptionListener, DocumentUploadTool.DocUploadDetailLinstener {
 
     private RecyclerView mTeamRecyclerView;
@@ -130,6 +134,10 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
     private static final int REQUEST_CODE_CHANGESPACE = 3;
     private static final int REQUEST_EDIT_SPACE = 4;
     private static final int REQUEST_MOVE_DOCUMENT = 5;
+
+    private TextView dirText;
+    private TextView projectText;
+    private String projectName;
 
 
     UploadFileDialog uploadFileDialog;
@@ -259,23 +267,29 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
     }
 
     View view;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if(view == null){
-            view = inflater.inflate(R.layout.spacedocumentteam,container,false);
+        if (view == null) {
+            view = inflater.inflate(R.layout.spacedocumentteam, container, false);
             initView(view);
         }
         load();
         return view;
     }
 
-    private void load(){
+    private void load() {
         spaceId = getArguments().getInt("ItemID", 0);
         spaceName = getArguments().getString("space_name");
         teamId = getArguments().getInt("team_id", 0);
-        titleText.setText(spaceName);
+//        titleText.setText(spaceName);
         teamspacename.setText(spaceName);
+        projectName = getArguments().getString("project_name", "");
+        projectText.setText(projectName);
+        if (!TextUtils.isEmpty(spaceName)) {
+            dirText.setText(spaceName.substring(0, 1).toUpperCase());
+        }
         getTeamItem();
     }
 
@@ -288,6 +302,8 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         backLayout = (RelativeLayout) view.findViewById(R.id.layout_back);
         addDocImage = (RelativeLayout) view.findViewById(R.id.image_add);
         moreOptionsImage = (ImageView) view.findViewById(R.id.image_more_options);
+        dirText = view.findViewById(R.id.switch_dir);
+        projectText = view.findViewById(R.id.txt_project_name);
         searchLayout = view.findViewById(R.id.search_layout);
         searchLayout.setOnClickListener(this);
         teamRl = (RelativeLayout) view.findViewById(R.id.teamrl);
@@ -296,6 +312,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         moreOptionsImage.setOnClickListener(this);
         backLayout.setOnClickListener(this);
     }
+
     String teamName = "";
 
     public void getTeamItem() {
@@ -304,8 +321,8 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
             @Override
             public void getServiceReturnData(Object object) {
                 TeamSpaceBean teamSpaceBean = (TeamSpaceBean) object;
-                teamName = teamSpaceBean.getName();
-                teamspacename.setText(teamName);
+//                teamName = teamSpaceBean.getName();
+//                teamspacename.setText(teamName);
                 getSpaceList();
             }
         });
@@ -517,7 +534,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
                     Message msg = new Message();
                     if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
                         msg.what = AppConfig.AddTempLesson;
-                        JSONObject jsonObject1=responsedata.getJSONObject("RetData");
+                        JSONObject jsonObject1 = responsedata.getJSONObject("RetData");
                         fa.setLessonId(jsonObject1.getString("LessonID"));
                         msg.obj = fa;
                     } else {
@@ -532,7 +549,6 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
             }
         }).start(ThreadManager.getManager());
     }
-
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -616,11 +632,24 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
                 });
             } else if (requestCode == REQUEST_CODE_CHANGESPACE) {
                 selectSpace = (TeamSpaceBean) data.getSerializableExtra("selectSpace");
-                if (spaceId != selectSpace.getItemID()) {
-                    spaceId = selectSpace.getItemID();
-                    titleText.setText(selectSpace.getName());
-                    getTeamItem();
+                projectName = data.getStringExtra("teamname");
+                if (!TextUtils.isEmpty(projectName)) {
+                    projectText.setText(projectName);
                 }
+
+                if (data.hasExtra("teamid")) {
+                    teamId = data.getIntExtra("teamid", 0);
+                }
+
+                spaceId = selectSpace.getItemID();
+                spaceName = selectSpace.getName();
+                if (!TextUtils.isEmpty(spaceName)) {
+                    dirText.setText(spaceName.substring(0, 1).toUpperCase());
+                }
+//                titleText.setText(selectSpace.getName());
+                teamspacename.setText(selectSpace.getName());
+                getTeamItem();
+
             } else if (requestCode == REQUEST_SELECT_DOC) {
                 EventBus.getDefault().post(new TeamSpaceBean());
                 getTeamItem();
@@ -900,6 +929,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
                 Intent intent = new Intent(getActivity(), DocumentSearchActivity.class);
                 intent.putExtra("space_id", spaceId);
                 intent.putExtra("team_name", teamName);
+
                 startActivity(intent);
                 break;
         }
@@ -910,6 +940,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         Intent intent = new Intent(getActivity(), SwitchSpaceActivity.class);
         intent.putExtra("ItemID", spaceId);
         intent.putExtra("team_id", teamId);
+        intent.putExtra("project_name", projectName);
         startActivityForResult(intent, REQUEST_CODE_CHANGESPACE);
     }
 
@@ -1080,6 +1111,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
     }
 
     DocChooseDialog dialog;
+
     private void AddDocument() {
         dialog = new DocChooseDialog(getActivity());
         dialog.setSelectedOptionListener(this);
@@ -1269,9 +1301,6 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
             }
         });
     }
-
-
-
 
 
 }

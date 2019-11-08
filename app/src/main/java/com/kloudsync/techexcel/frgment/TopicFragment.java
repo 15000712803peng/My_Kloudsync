@@ -481,6 +481,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
         eventSpaceFragment.setSpaceId(teamSpaceBean2.getItemID());
         eventSpaceFragment.setSpaceName(teamSpaceBean2.getName());
         eventSpaceFragment.setType(2);
+        eventSpaceFragment.setTeamName(sharedPreferences.getString("teamname",""));
         eventSpaceFragment.setTeamId(sharedPreferences.getInt("teamid",0));
         EventBus.getDefault().post(eventSpaceFragment);
     }

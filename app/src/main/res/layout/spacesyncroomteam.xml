@@ -63,66 +63,122 @@
 
     <include layout="@layout/searchcontact" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingTop="5dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:layout_marginTop="12dp"
+            android:textSize="12sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:text="@string/Team"
+            android:textColor="@color/brunette" />
+
+
+    </RelativeLayout>
+
     <TextView
-        android:layout_marginTop="10dp"
+        android:layout_marginLeft="18dp"
+        android:id="@+id/txt_project_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:text="@string/current_space"
+        android:text=""
+        android:textColor="#ff333333"
+        android:textSize="16sp"
+        />
+
+    <TextView
+        android:paddingTop="22dp"
         android:textSize="12sp"
-        android:textColor="@color/txt_color1" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:paddingLeft="18dp"
+        android:text="@string/current_space"
+        android:textColor="@color/brunette" />
+
 
     <RelativeLayout
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
         android:id="@+id/teamrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
-
-        <ImageView
-            android:id="@+id/img_switch"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/switch_gray" />
+        android:layout_margin="1dp"
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp">
 
         <TextView
+            android:textColor="@color/white"
+            android:textSize="9dp"
+            android:gravity="center"
+            android:paddingTop="1dp"
+            android:id="@+id/switch_dir"
+            android:layout_width="22dp"
+            android:layout_height="16dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:background="@drawable/icon_dir" />
+
+        <ImageView
+            android:id="@+id/icon_white_switch"
+            android:src="@drawable/switch_gray"
+            android:layout_marginLeft="12dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/switch_dir"
+            android:layout_width="22dp"
+            android:layout_height="22dp" />
+
+
+        <TextView
+            android:layout_marginRight="36dp"
+            android:singleLine="true"
+            android:textSize="17sp"
+            android:paddingBottom="1dp"
+
+            android:layout_marginLeft="8dp"
             android:id="@+id/teamspacename"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="6dp"
-            android:layout_toRightOf="@id/img_switch"
-            android:text=""
-            android:textColor="@color/black" />
-
+            android:layout_toRightOf="@id/icon_white_switch"
+            android:textColor="@color/brunette" />
 
         <ImageView
+            android:layout_marginRight="8dp"
             android:id="@+id/image_more_options"
-            android:layout_width="30dp"
-            android:layout_height="60dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:padding="7dp"
-            android:src="@drawable/more_favor" />
+            android:src="@drawable/gray_option_more" />
 
     </RelativeLayout>
 
 
+
     <TextView
-        android:layout_width="wrap_content"
+        android:paddingTop="10dp"
+        android:textSize="12sp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@id/selecticon"
+        android:paddingLeft="18dp"
         android:text="@string/syncrooms_in_spaces"
-        android:textSize="12sp"
-        android:textColor="@color/txt_color1" />
+        android:textColor="@color/brunette" />
+
 
 
     <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="12dp"
         android:id="@+id/recycleview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>

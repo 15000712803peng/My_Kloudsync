@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,10 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
     private ImageView addImage;
 
     private RelativeLayout backLayout;
+
+    private TextView dirText;
+    private TextView projectText;
+    private String projectName;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,10 +79,15 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
     }
 
     private void load(){
-        teamId = getArguments().getInt("teamid", 0);
-        spaceId = getArguments().getInt("spaceid", 0);
-        spaceName = getArguments().getString("spaceName");
+        spaceId = getArguments().getInt("ItemID", 0);
+        spaceName = getArguments().getString("space_name");
+        teamId = getArguments().getInt("team_id", 0);
         teamspacename.setText(spaceName);
+        projectName = getArguments().getString("project_name", "");
+        projectText.setText(projectName);
+        if (!TextUtils.isEmpty(spaceName)) {
+            dirText.setText(spaceName.substring(0, 1).toUpperCase());
+        }
         getSyncRoomList();
     }
 
@@ -92,11 +102,12 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
         syncroomRecyclerView = (RecyclerView) view.findViewById(R.id.recycleview);
         syncroomRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         teamspacename = (TextView) view.findViewById(R.id.teamspacename);
-
+        projectText = view.findViewById(R.id.txt_project_name);
         addImage = view.findViewById(R.id.image_add);
         addImage.setOnClickListener(this);
         img_back = (ImageView) view.findViewById(R.id.img_notice);
         teamRl = (RelativeLayout) view.findViewById(R.id.teamrl);
+        dirText = view.findViewById(R.id.switch_dir);
         backLayout = view.findViewById(R.id.layout_back);
         backLayout.setOnClickListener(this);
         teamRl.setOnClickListener(this);
@@ -212,6 +223,7 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
                 intent2.putExtra("ItemID", spaceId);
                 intent2.putExtra("team_id", teamId);
                 intent2.putExtra("isSyncRoom",true);
+                intent2.putExtra("project_name", projectName);
                 startActivityForResult(intent2, REQUEST_CODE_CHANGESPACE);
                 break;
             case R.id.img_notice:
@@ -238,12 +250,30 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
 
         if (requestCode == REQUEST_CODE_CHANGESPACE) {
             if (resultCode == RESULT_OK) {
+//                selectSpace = (TeamSpaceBean) data.getSerializableExtra("selectSpace");
+//                if (spaceId != selectSpace.getItemID()) {
+//                    spaceId = selectSpace.getItemID();
+//                    teamspacename.setText(selectSpace.getName());
+//
+//                }
+
                 selectSpace = (TeamSpaceBean) data.getSerializableExtra("selectSpace");
-                if (spaceId != selectSpace.getItemID()) {
-                    spaceId = selectSpace.getItemID();
-                    teamspacename.setText(selectSpace.getName());
-                    getSyncRoomList();
+                projectName = data.getStringExtra("teamname");
+                if (!TextUtils.isEmpty(projectName)) {
+                    projectText.setText(projectName);
                 }
+
+                if (data.hasExtra("teamid")) {
+                    teamId = data.getIntExtra("teamid", 0);
+                }
+
+                spaceId = selectSpace.getItemID();
+                spaceName = selectSpace.getName();
+                if (!TextUtils.isEmpty(spaceName)) {
+                    dirText.setText(spaceName.substring(0, 1).toUpperCase());
+                }
+                teamspacename.setText(selectSpace.getName());
+                getSyncRoomList();
             }
 
         }

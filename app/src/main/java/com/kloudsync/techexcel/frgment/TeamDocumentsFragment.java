@@ -799,6 +799,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         eventSpaceFragment.setSpaceName(teamSpaceBean.getName());
         eventSpaceFragment.setSpaceId(teamSpaceBean.getItemID());
         eventSpaceFragment.setType(1);
+        eventSpaceFragment.setTeamName(sharedPreferences.getString("teamname",""));
         eventSpaceFragment.setTeamId(sharedPreferences.getInt("teamid",0));
         EventBus.getDefault().post(eventSpaceFragment);
     }

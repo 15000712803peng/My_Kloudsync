@@ -178,6 +178,7 @@ public class DialogueFragment extends Fragment {
         tv_ns = (TextView) view.findViewById(R.id.tv_ns);
         tv_title = (TextView) view.findViewById(R.id.tv_title);
         et_search = (ClearEditText) view.findViewById(R.id.et_search);
+        main_viewpager = (ViewPager) view.findViewById(R.id.main_viewpager);
 //        img_notice = (ImageView) view.findViewById(R.id.img_notice);
 
         tv_startdialogue.setOnClickListener(new myOnClick());
@@ -390,9 +391,15 @@ public class DialogueFragment extends Fragment {
 
     private void SetMyDialogList() {
         SetUserProvider();
-        main_viewpager = (ViewPager) view.findViewById(R.id.main_viewpager);
-        mDemoFragmentPagerAdapter = new DemoFragmentPagerAdapter(getActivity().getSupportFragmentManager());
-        main_viewpager.setAdapter(mDemoFragmentPagerAdapter);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mDemoFragmentPagerAdapter = new DemoFragmentPagerAdapter(getActivity().getSupportFragmentManager());
+                Log.e("SetMyDialogList","set adapter");
+                main_viewpager.setAdapter(mDemoFragmentPagerAdapter);
+            }
+        },100);
+
 
     }
 
@@ -1156,34 +1163,36 @@ public class DialogueFragment extends Fragment {
         public Fragment getItem(int i) {
             Fragment fragment = null;
             Log.e("pager adapter", "get item");
-            switch (i) {
-                case 0:
-                    //TODO
-                    if (mConversationFragment == null) {
-//	                        ConversationListFragment listFragment = ConversationListFragment.getInstance();
-                        ConversationListFragment listFragment = new ConversationListFragment();
+//            switch (i) {
+//                case 0:
+//                    //TODO
+//                    if (mConversationFragment == null) {
+////	                        ConversationListFragment listFragment = ConversationListFragment.getInstance();
+//
+//                        fragment = listFragment;
+//                    } else {
+//                        fragment = mConversationFragment;
+//
+////	                        fragment = new TestFragment();
+//                    }
+//
+//                    break;
+//            }
+
+            ConversationListFragment listFragment = new ConversationListFragment();
 	                        /*listFragment.setAdapter(new ConversationListAdapterEx(RongContext
 	                				.getInstance()));*/
-                        Uri uri = Uri.parse("rong://" + getActivity().getApplicationInfo().packageName).buildUpon()
-                                .appendPath("conversationlist")
-                                .appendQueryParameter(ConversationType.PRIVATE.getName(), "false") //设置私聊会话是否聚合显示
-                                .appendQueryParameter(ConversationType.GROUP.getName(), "false")//群组
-                                .appendQueryParameter(ConversationType.DISCUSSION.getName(), "false")//讨论组
-                                .appendQueryParameter(ConversationType.APP_PUBLIC_SERVICE.getName(), "false")//应用公众服务。
-                                .appendQueryParameter(ConversationType.PUBLIC_SERVICE.getName(), "false")//公共服务号
-                                .appendQueryParameter(ConversationType.SYSTEM.getName(), "false")//系统
-                                .build();
-                        listFragment.setUri(uri);
-                        fragment = listFragment;
-                    } else {
-                        fragment = mConversationFragment;
-
-//	                        fragment = new TestFragment();
-                    }
-
-                    break;
-            }
-            return fragment;
+            Uri uri = Uri.parse("rong://" + getActivity().getApplicationInfo().packageName).buildUpon()
+                    .appendPath("conversationlist")
+                    .appendQueryParameter(ConversationType.PRIVATE.getName(), "false") //设置私聊会话是否聚合显示
+                    .appendQueryParameter(ConversationType.GROUP.getName(), "false")//群组
+                    .appendQueryParameter(ConversationType.DISCUSSION.getName(), "false")//讨论组
+                    .appendQueryParameter(ConversationType.APP_PUBLIC_SERVICE.getName(), "false")//应用公众服务。
+                    .appendQueryParameter(ConversationType.PUBLIC_SERVICE.getName(), "false")//公共服务号
+                    .appendQueryParameter(ConversationType.SYSTEM.getName(), "false")//系统
+                    .build();
+            listFragment.setUri(uri);
+            return listFragment;
         }
 
         @Override

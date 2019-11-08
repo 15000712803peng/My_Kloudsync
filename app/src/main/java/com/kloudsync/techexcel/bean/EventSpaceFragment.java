@@ -11,6 +11,15 @@ public class EventSpaceFragment {
     private int teamId;
     private int type;
     private int spaceId;
+    private String teamName;
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
 
     public int getSpaceId() {
         return spaceId;

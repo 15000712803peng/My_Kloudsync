@@ -714,8 +714,8 @@ Please input the cell phone number to add the contact
     <string name="no_data">no data found</string>
     <string name="select_a_space">Select a space</string>
     <string name="from_favorite">From favorite</string>
-    <string name="current_space">current space</string>
-    <string name="docs_in_spaces">documents in current space</string>
+    <string name="current_space">current dir</string>
+    <string name="docs_in_spaces">documents in current dir</string>
     <string name="team_memers">Team Members</string>
     <string name="space_memers">Team Members</string>
     <string name="syncrooms_in_spaces">syncrooms in current space</string>
@@ -756,6 +756,8 @@ Please input the cell phone number to add the contact
     <string name="space_filter">Space filter</string>
     <string name="show_all_spaces">Show all spaces</string>
     <string name="show_only_my_spaces">Show my spaces only</string>
+
+    <string name="select_a_dir">select a dir</string>
 
 
 

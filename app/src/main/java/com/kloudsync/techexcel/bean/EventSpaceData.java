@@ -7,6 +7,8 @@ package com.kloudsync.techexcel.bean;
 public class EventSpaceData {
     int spaceId;
     String spaceName;
+    int teamId;
+    String teamName;
 
     public int getSpaceId() {
         return spaceId;
@@ -22,5 +24,21 @@ public class EventSpaceData {
 
     public void setSpaceName(String spaceName) {
         this.spaceName = spaceName;
+    }
+
+    public int getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(int teamId) {
+        this.teamId = teamId;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
     }
 }

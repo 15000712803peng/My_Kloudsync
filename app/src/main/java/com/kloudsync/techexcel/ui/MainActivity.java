@@ -1163,11 +1163,11 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             teamFrame.setVisibility(View.GONE);
             spaceFrame.setVisibility(View.VISIBLE);
             fragment = new SpaceDocumentsFragment();
-
             Bundle bundle = new Bundle();
             bundle.putInt("ItemID",spaceFragment.getItemID());
             bundle.putString("space_name",spaceFragment.getSpaceName());
             bundle.putInt("team_id",spaceFragment.getTeamId());
+            bundle.putString("project_name",spaceFragment.getTeamName());
             fragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.frame_tab_space, fragment);
             fragmentTransaction.commitAllowingStateLoss();
@@ -1179,9 +1179,11 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             spaceFrame.setVisibility(View.VISIBLE);
             fragment = new SpaceSyncRoomFragment();
             Bundle bundle = new Bundle();
+            bundle.putInt("ItemID",spaceFragment.getItemID());
             bundle.putInt("spaceid",spaceFragment.getItemID());
-            bundle.putString("spaceName",spaceFragment.getSpaceName());
-            bundle.putInt("teamid",spaceFragment.getTeamId());
+            bundle.putString("space_name",spaceFragment.getSpaceName());
+            bundle.putInt("team_id",spaceFragment.getTeamId());
+            bundle.putString("project_name",spaceFragment.getTeamName());
             fragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.frame_tab_space, fragment);
             fragmentTransaction.commitAllowingStateLoss();
