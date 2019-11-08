@@ -2,9 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
+
     android:layout_height="wrap_content">
 
     <LinearLayout
@@ -18,134 +16,148 @@
 
         android:visibility="visible">
 
-        <TextView
-            android:layout_marginLeft="18dp"
-            android:paddingTop="18dp"
-            android:paddingBottom="18dp"
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:singleLine="true"
-            android:textColor="#999999"
-            android:textSize="14sp"
+        <LinearLayout
+
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#ffdadade"/>
+            android:background="@drawable/bottom_dialog_border"
+            android:orientation="vertical"
 
-        <LinearLayout
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="18dp"
-                android:src="@drawable/eyeblack" />
-
+            android:visibility="visible">
             <TextView
+                android:layout_marginLeft="18dp"
+                android:paddingTop="18dp"
+                android:paddingBottom="18dp"
+                android:id="@+id/title"
                 android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:textColor="#999999"
+                android:textSize="14sp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:drawablePadding="5dp"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:layout_marginLeft="8dp"
-                android:text="@string/mtView"
-                android:textColor="@color/darkgrey" />
+                android:layout_centerVertical="true"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#fff7f7f7"/>
+
+            <LinearLayout
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="18dp"
+                    android:src="@drawable/eyeblack" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="5dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/mtView"
+                    android:textColor="@color/darkgrey" />
+            </LinearLayout>
+
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#fff7f7f7"/>
+
+            <LinearLayout
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:id="@+id/move"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="18dp"
+                    android:src="@drawable/move" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="5dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/move"
+                    android:textColor="@color/darkgrey" />
+            </LinearLayout>
+
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#fff7f7f7"/>
+
+            <LinearLayout
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:id="@+id/delete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="18dp"
+                    android:src="@drawable/trash_favor" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="5dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/Delete"
+                    android:textColor="@color/darkgrey" />
+            </LinearLayout>
         </LinearLayout>
 
 
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#ffdadade"/>
-
-        <LinearLayout
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:id="@+id/move"
+        <TextView
+            android:id="@+id/cancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="18dp"
-                android:src="@drawable/move" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:drawablePadding="5dp"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:layout_marginLeft="8dp"
-                android:text="@string/move"
-                android:textColor="@color/darkgrey" />
-        </LinearLayout>
-
-
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#ffdadade"/>
-
-        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:textSize="17sp"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:id="@+id/delete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="18dp"
-                android:src="@drawable/trash_favor" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:drawablePadding="5dp"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:layout_marginLeft="8dp"
-                android:text="@string/Delete"
-                android:textColor="@color/darkgrey" />
-        </LinearLayout>
+            android:background="#e6ffffff"
+            android:gravity="center"
+            android:text="@string/Cancel"
+            android:textColor="#3C77FB" />
 
 
 
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/cancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textSize="17sp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:background="@drawable/bottom_dialog_border"
-        android:gravity="center"
-        android:text="@string/Cancel"
-        android:textColor="#3C77FB" />
+
 
 </LinearLayout>

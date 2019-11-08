@@ -2,9 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingBottom="10dp"
+
     android:orientation="vertical">
 
     <LinearLayout
@@ -14,6 +12,12 @@
         android:layout_height="wrap_content">
 
 
+        <LinearLayout
+            android:background="@drawable/bottom_dialog_border"
+
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <TextView
                 android:layout_marginLeft="18dp"
@@ -30,154 +34,161 @@
 
 
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#ffdadade"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#fff7f7f7"/>
 
-        <LinearLayout
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:id="@+id/lin_share"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="18dp"
-                android:src="@drawable/shareyinxiang" />
-
-            <TextView
-                android:id="@+id/tv_share"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:id="@+id/lin_share"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:drawablePadding="5dp"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:layout_marginLeft="8dp"
-                android:text="@string/share"
-                android:textColor="@color/darkgrey" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="18dp"
+                    android:src="@drawable/shareyinxiang" />
+
+                <TextView
+                    android:id="@+id/tv_share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="5dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/share"
+                    android:textColor="@color/darkgrey" />
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#fff7f7f7"/>
+            <LinearLayout
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:id="@+id/lin_move"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="18dp"
+                    android:src="@drawable/move" />
+
+                <TextView
+                    android:id="@+id/tv_move"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:drawablePadding="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/move"
+                    android:textColor="@color/darkgrey" />
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#fff7f7f7"/>
+
+            <LinearLayout
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:id="@+id/lin_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="18dp"
+                    android:src="@drawable/rename" />
+
+                <TextView
+                    android:id="@+id/tv_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="5dp"
+                    android:gravity="center"
+                    android:textSize="16sp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/rename"
+                    android:textColor="@color/darkgrey" />
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#fff7f7f7"/>
+
+            <LinearLayout
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:id="@+id/lin_delete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="18dp"
+                    android:src="@drawable/trash_favor" />
+
+                <TextView
+
+                    android:id="@+id/tv_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:textSize="16sp"
+                    android:text="@string/Delete"
+                    android:textColor="@color/red2" />
+            </LinearLayout>
         </LinearLayout>
 
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#ffdadade"/>
-        <LinearLayout
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:id="@+id/lin_move"
+            android:layout_height="10dp"/>
+
+        <TextView
+            android:background="#e6ffffff"
+            android:id="@+id/cancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="18dp"
-                android:src="@drawable/move" />
-
-            <TextView
-                android:id="@+id/tv_move"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:drawablePadding="5dp"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"
-                android:layout_marginLeft="8dp"
-                android:text="@string/move"
-                android:textColor="@color/darkgrey" />
-        </LinearLayout>
-
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#ffdadade"/>
-
-        <LinearLayout
+            android:textSize="17sp"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:id="@+id/lin_edit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="18dp"
-                android:src="@drawable/rename" />
-
-            <TextView
-                android:id="@+id/tv_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="5dp"
-                android:gravity="center"
-                android:textSize="16sp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="8dp"
-                android:text="@string/rename"
-                android:textColor="@color/darkgrey" />
-        </LinearLayout>
-
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#ffdadade"/>
-
-        <LinearLayout
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:id="@+id/lin_delete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="18dp"
-                android:src="@drawable/trash_favor" />
-
-            <TextView
-
-                android:id="@+id/tv_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="5dp"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"
-                android:layout_marginLeft="8dp"
-                android:textSize="16sp"
-                android:text="@string/Delete"
-                android:textColor="@color/red2" />
-        </LinearLayout>
+            android:gravity="center"
+            android:text="@string/Cancel"
+            android:textColor="#3C77FB" />
     </LinearLayout>
 
 
-    <TextView
-        android:id="@+id/cancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textSize="17sp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:background="@drawable/bottom_dialog_border"
-        android:gravity="center"
-        android:text="@string/Cancel"
-        android:textColor="#3C77FB" />
+
 
 </LinearLayout>
