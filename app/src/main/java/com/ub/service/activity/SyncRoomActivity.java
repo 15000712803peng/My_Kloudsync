@@ -646,7 +646,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             if(!lineItem.isSelect()){  //lineitem 不在pdf列表中
 
                 String noteid=lineItem.getItemId();
-                String url=AppConfig.URL_PUBLIC+"DocumentNote/Item?itemID="+noteid;
+                String url=AppConfig.URL_PUBLIC+"DocumentNote/Item?noteID="+noteid;
                 ServiceInterfaceTools.getinstance().getNoteByNoteId(url, ServiceInterfaceTools.GETNOTEBYNOTEID, new ServiceInterfaceListener() {
                     @Override
                     public void getServiceReturnData(Object object) {
@@ -6108,18 +6108,11 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         closenote = findViewById(R.id.closenote);
         closenote.setVisibility(View.VISIBLE);
         //两个按钮
-        menu.setVisibility(View.GONE);
-        command_active.setVisibility(View.GONE);
         closenote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closenote.setVisibility(View.GONE);
-                menu.setVisibility(View.VISIBLE);
-                if (isTeamspace) {
-                    command_active.setVisibility(View.GONE);
-                } else {
-                    command_active.setVisibility(View.VISIBLE);
-                }
+
                 for (int i = 0; i < documentList.size(); i++) {
                     documentList.get(i).setSelect(false);
                 }
@@ -6162,6 +6155,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         currentItemId ="0";
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
+
         notifySwitchDocumentSocket(currentShowPdf, "1");
         loadWebIndex();
     }

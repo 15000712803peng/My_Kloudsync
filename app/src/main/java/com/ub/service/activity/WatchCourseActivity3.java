@@ -809,6 +809,49 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     }
 
+    private void followChangeFile(LineItem lineItem) {
+        Log.e("dddddd", documentList.size() + "");
+        if (documentList.size() > 0) {
+            if (lineItem == null || TextUtils.isEmpty(lineItem.getItemId()) || lineItem.getItemId().equals("0")) {
+                lineItem = documentList.get(0);
+                lineItem.setSelect(true);
+            } else {
+                for (int i = 0; i < documentList.size(); i++) {
+                    LineItem lineItem1 = documentList.get(i);
+                    if (lineItem.getItemId().equals(lineItem1.getItemId())) {
+                        lineItem1.setSelect(true);
+                        lineItem = lineItem1;
+                    } else {
+                        lineItem1.setSelect(false);
+                    }
+                }
+            }
+
+            if(!lineItem.isSelect()){  //lineitem 不在pdf列表中
+
+                String noteid=lineItem.getItemId();
+                String url=AppConfig.URL_PUBLIC+"DocumentNote/Item?noteID="+noteid;
+                ServiceInterfaceTools.getinstance().getNoteByNoteId(url, ServiceInterfaceTools.GETNOTEBYNOTEID, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        Note note= (Note) object;
+                        displayNoteTv(note);
+                    }
+                });
+            }else{
+                currentAttachmentId = lineItem.getAttachmentID();
+                currentItemId = lineItem.getItemId();
+                targetUrl = lineItem.getUrl();
+                newPath = lineItem.getNewPath();
+                Log.e("dddddd", currentAttachmentId + "  " + currentItemId + "  " + targetUrl + "  " + newPath);
+                loadWebIndex();
+
+            }
+
+        }
+
+    }
+
     /**
      * invate meeting  设置收到旁听者的信息
      *
@@ -1477,10 +1520,11 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                         lineitem.setItemId(jsonObject.getString("itemId"));
                         currentAttachmentPage = jsonObject.getString("pageNumber");
                         AppConfig.currentPageNumber = jsonObject.getString("pageNumber");
-                        Message documentMsg = Message.obtain();
-                        documentMsg.obj = lineitem;
-                        documentMsg.what = 0x1205;
-                        handler.sendMessage(documentMsg);
+//                        Message documentMsg = Message.obtain();
+//                        documentMsg.obj = lineitem;
+//                        documentMsg.what = 0x1205;
+//                        handler.sendMessage(documentMsg);
+                        followChangeFile(lineitem);
 
                     } else if (jsonObject.getInt("actionType") == 9) { // 直播视频大小切换
                         Log.e("dddddddddddd", currentMode);
@@ -8913,19 +8957,11 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private void displayNote(Note note) {
         closenote = findViewById(R.id.closenote);
         closenote.setVisibility(View.VISIBLE);
-        //两个按钮
-        menu.setVisibility(View.GONE);
-        command_active.setVisibility(View.GONE);
         closenote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closenote.setVisibility(View.GONE);
-                menu.setVisibility(View.VISIBLE);
-                if (isPrepare) {
-                    command_active.setVisibility(View.GONE);
-                } else {
-                    command_active.setVisibility(View.VISIBLE);
-                }
+
                 for (int i = 0; i < documentList.size(); i++) {
                     documentList.get(i).setSelect(false);
                 }
@@ -8973,6 +9009,25 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         newPath = currentShowPdf.getNewPath();
 
         notifySwitchDocumentSocket(currentShowPdf, "1");
+        loadWebIndex();
+    }
+
+    private void displayNoteTv(Note note) {
+        closenote = findViewById(R.id.closenote);
+        closenote.setVisibility(View.GONE);
+
+        //重新赋值
+        currentAttachmentPage = "0";
+        AppConfig.currentPageNumber = "0";
+        currentShowPdf = new LineItem();
+        currentShowPdf.setUrl(note.getAttachmentUrl());
+        currentShowPdf.setItemId(note.getNoteID()+""); //同步笔记noteid
+        currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
+
+        currentAttachmentId = currentShowPdf.getAttachmentID();
+        currentItemId ="0";
+        targetUrl = currentShowPdf.getUrl();
+        newPath = currentShowPdf.getNewPath();
         loadWebIndex();
     }
 
