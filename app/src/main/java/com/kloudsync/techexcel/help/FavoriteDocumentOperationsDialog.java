@@ -39,8 +39,11 @@ public class FavoriteDocumentOperationsDialog implements OnClickListener {
                 popDocumentListener.PopShare();
                 mPopupWindow.dismiss();
                 break;
-            case R.id.img_close:
-                mPopupWindow.dismiss();
+            case R.id.cancel:
+                if(mPopupWindow != null){
+                    mPopupWindow.dismiss();
+                }
+
                 break;
 
             default:
@@ -89,7 +92,7 @@ public class FavoriteDocumentOperationsDialog implements OnClickListener {
     private LinearLayout lin_move;
     private LinearLayout lin_edit;
     private LinearLayout lin_delete;
-    private ImageView img_close;
+    private TextView img_close;
     private TextView tv_name;
     private View popupWindow;
 
@@ -102,7 +105,7 @@ public class FavoriteDocumentOperationsDialog implements OnClickListener {
         lin_move = (LinearLayout) popupWindow.findViewById(R.id.lin_move);
         lin_edit = (LinearLayout) popupWindow.findViewById(R.id.lin_edit);
         lin_delete = (LinearLayout) popupWindow.findViewById(R.id.lin_delete);
-        img_close = (ImageView) popupWindow.findViewById(R.id.img_close);
+        img_close = (TextView) popupWindow.findViewById(R.id.cancel);
         tv_name = (TextView) popupWindow.findViewById(R.id.tv_name);
 
         tv_name.setText(lesson.getTitle());

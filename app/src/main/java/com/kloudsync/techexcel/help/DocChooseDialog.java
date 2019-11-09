@@ -52,6 +52,8 @@ public class DocChooseDialog implements OnClickListener {
             lin_album3,
             lin_album4;
 
+    private TextView cancelText;
+
     @SuppressWarnings("deprecation")
     public void initPopuptWindow() {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
@@ -62,7 +64,9 @@ public class DocChooseDialog implements OnClickListener {
         lin_album2 = (LinearLayout) popupWindow.findViewById(R.id.lin_album2);
         lin_album3 = (LinearLayout) popupWindow.findViewById(R.id.lin_album3);
         lin_album4 = (LinearLayout) popupWindow.findViewById(R.id.lin_album4);
+        cancelText = (TextView) popupWindow.findViewById(R.id.cancel);
         mPopupWindow = new Dialog(mContext, R.style.bottom_dialog);
+        cancelText.setOnClickListener(this);
         mPopupWindow.setContentView(popupWindow);
         mPopupWindow.getWindow().setWindowAnimations(R.style.PopupAnimation5);
         mPopupWindow.getWindow().setGravity(Gravity.BOTTOM);
@@ -100,6 +104,11 @@ public class DocChooseDialog implements OnClickListener {
                 break;
             case R.id.lin_album4:
                 break;
+
+            case R.id.cancel:
+                if(mPopupWindow != null){
+                    mPopupWindow.dismiss();
+                }
 
             default:
                 break;

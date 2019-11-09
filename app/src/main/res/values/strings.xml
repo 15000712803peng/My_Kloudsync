@@ -276,6 +276,10 @@
     <string name="Choice">Choice</string>
     <string name="Albums">From albums</string>
     <string name="Albums2">From Video</string>
+    <string name="_Albums">Albums</string>
+    <string name="_File">File</string>
+    <string name="_Favorite">Favorite</string>
+    <string name="_Camera">Camera</string>
 
     <string name="Uploading">Uploading</string>
 
@@ -712,7 +716,7 @@ Please input the cell phone number to add the contact
     <string name="operate_failure">operate failure</string>
     <string name="operate_success">operate success</string>
     <string name="no_data">no data found</string>
-    <string name="select_a_space">Select a space</string>
+    <string name="select_a_space">Select a dir</string>
     <string name="from_favorite">From favorite</string>
     <string name="current_space">current dir</string>
     <string name="docs_in_spaces">documents in current dir</string>

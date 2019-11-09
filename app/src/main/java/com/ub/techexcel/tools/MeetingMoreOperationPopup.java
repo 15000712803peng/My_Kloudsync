@@ -98,20 +98,20 @@ public class MeetingMoreOperationPopup implements View.OnClickListener {
     }
 
     @SuppressLint("NewApi")
-    public void StartPop(View v, ServiceBean syncRoomBean, int isShow) {
+    public void StartPop(View v, ServiceBean syncRoomBean, int type) {
         if (mPopupWindow != null) {
             title.setText(syncRoomBean.getName() + "");
-            if (isShow == 0) {
+            if (type == 1) {
                 startmeetingContext.setText(mContext.getResources().getString(R.string.sMeeting));
                 editContext.setText(mContext.getResources().getString(R.string.Edit));
                 startMeeting.setVisibility(View.VISIBLE);
                 edit.setVisibility(View.VISIBLE);
                 property.setVisibility(View.GONE);
-            } else if (isShow == 1) {
+            } else if (type == 2) {
                 startMeeting.setVisibility(View.GONE);
                 edit.setVisibility(View.GONE);
                 property.setVisibility(View.GONE);
-            } else if (isShow == 2) {
+            } else if (type == 3) {
                 editContext.setText(mContext.getResources().getString(R.string.share));
                 startMeeting.setVisibility(View.GONE);
                 edit.setVisibility(View.VISIBLE);

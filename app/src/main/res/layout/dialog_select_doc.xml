@@ -1,127 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:background="@drawable/bottom_dialog_border"
+    >
+
+
 
     <LinearLayout
-        android:padding="8dp"
-        android:id="@+id/lin_album1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/whiteblue_back"
-        android:gravity="center|left"
-        android:orientation="horizontal">
+        android:background="@drawable/bottom_dialog_border"
 
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="8dp"
-            android:src="@drawable/upload1" />
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <TextView
-            android:layout_gravity="center"
-            android:id="@+id/tv_album"
-            android:layout_width="wrap_content"
+            android:padding="18dp"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:text="@string/addnewdoc"
+            android:textColor="#ff999999"
+            android:textSize="14sp"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#fff7f7f7" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="#e6ffffff"
+        android:padding="20dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+
+            android:id="@+id/lin_album1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/Albums"
-            android:textColor="@color/text_bw"
-            android:textSize="16sp" />
-    </LinearLayout>
+            android:orientation="vertical">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1.5px"
-        android:background="@color/grey" />
+            <ImageView
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:src="@drawable/add_from_alb" />
 
-    <LinearLayout
-        android:padding="8dp"
-        android:id="@+id/lin_album2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/whiteblue_back"
-        android:gravity="center|left"
-        android:orientation="horizontal">
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/tv_album"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/_Albums"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+        </LinearLayout>
 
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="8dp"
-            android:src="@drawable/upload2" />
 
-        <TextView
-            android:layout_gravity="center"
-            android:id="@+id/tv_album2"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:id="@+id/lin_album2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:background="@drawable/whiteblue_back"
             android:gravity="center"
-            android:text="@string/from_favorite"
-            android:textColor="@color/text_bw"
-            android:textSize="16sp" />
+            android:orientation="vertical">
 
+            <ImageView
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:src="@drawable/add_from_favorite" />
+
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/tv_album2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/_Favorite"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:gravity="center"
+            android:id="@+id/lin_album3"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:src="@drawable/add_from_file" />
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/tv_album3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/_File"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lin_album4"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:src="@drawable/add_from_camera" />
+
+
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/tv_album4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/_Camera"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+
+        </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/lin_album3"
+
+
+
+    <TextView
+        android:background="#e6ffffff"
+        android:layout_marginTop="10dp"
+        android:id="@+id/cancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/whiteblue_back"
-        android:visibility="gone"
-        android:gravity="center|left"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="5dp"
-            android:src="@drawable/upload3" />
-
-        <TextView
-            android:id="@+id/tv_album3"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:background="@drawable/whiteblue_back"
-            android:gravity="center"
-            android:text="Dropbox"
-            android:textColor="@color/text_bw"
-            android:textSize="15sp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/lin_album4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/whiteblue_back"
-        android:gravity="center|left"
-        android:visibility="gone"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="5dp"
-            android:src="@drawable/upload4" />
-
-        <TextView
-            android:id="@+id/tv_album4"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:background="@drawable/whiteblue_back"
-            android:gravity="center"
-            android:text="Google drive"
-            android:textColor="@color/text_bw"
-            android:textSize="15sp" />
-
-    </LinearLayout>
+        android:textSize="17sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:gravity="center"
+        android:text="@string/Cancel"
+        android:textColor="#3C77FB" />
 
 
 </LinearLayout>

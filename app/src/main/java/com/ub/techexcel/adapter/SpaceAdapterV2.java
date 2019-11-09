@@ -72,11 +72,15 @@ public class SpaceAdapterV2 extends RecyclerView.Adapter<SpaceAdapterV2.RecycleH
         } else {
             holder.tv_sort.setText("");
         }
-        holder.attachmentcount.setText(item.getAttachmentCount() == 0 ? "" : item.getAttachmentCount() + " documents");
+        holder.attachmentcount.setText(item.getAttachmentCount() + " documents");
         if (isSyncRoom) {
-            holder.attachmentcount.setVisibility(View.GONE);
+//            holder.attachmentcount.setVisibility(View.GONE);
+            holder.attachmentcount.setText(item.getAttachmentCount() + " " + context.getString(R.string.syncroom));
+
         } else {
-            holder.attachmentcount.setVisibility(View.VISIBLE);
+            holder.attachmentcount.setText(item.getAttachmentCount() + " " + context.getString(R.string.documents));
+//            holder.attachmentcount.setVisibility(View.VISIBLE);
+
         }
         if (item.isSelect()) {
             holder.selImage.setVisibility(View.VISIBLE);

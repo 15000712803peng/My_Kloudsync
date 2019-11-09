@@ -14,7 +14,6 @@
 
         <LinearLayout
             android:background="@drawable/bottom_dialog_border"
-
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -31,8 +30,6 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 />
-
-
 
             <View
                 android:layout_width="match_parent"

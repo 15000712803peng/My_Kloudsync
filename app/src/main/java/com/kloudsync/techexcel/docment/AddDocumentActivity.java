@@ -67,7 +67,7 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
         backLayout.setOnClickListener(this);
         spaceList = findViewById(R.id.list_space);
         spaceList.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        spaceAdapter = new SpaceAdapterV2(this, new ArrayList<TeamSpaceBean>());
+        spaceAdapter = new SpaceAdapterV2(this, new ArrayList<TeamSpaceBean>(),false);
         spaceList.setAdapter(spaceAdapter);
         spaceAdapter.setOnItemClickListener(this);
         teamLayout.setOnClickListener(this);

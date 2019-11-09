@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -98,7 +99,7 @@ public class ShareKloudSyncDialog {
     private LinearLayout lin_moment;
     private LinearLayout lin_Scan;
     private List<LinearLayout> lin_all = new ArrayList<>();
-    private ImageView closeImage;
+    private TextView cancelText;
 
 
     @SuppressWarnings("deprecation")
@@ -109,7 +110,7 @@ public class ShareKloudSyncDialog {
         lin_wechat = (LinearLayout) popupWindow.findViewById(R.id.lin_wechat);
         lin_moment = (LinearLayout) popupWindow.findViewById(R.id.lin_moment);
         lin_Scan = (LinearLayout) popupWindow.findViewById(R.id.lin_Scan);
-        closeImage = popupWindow.findViewById(R.id.image_close);
+        cancelText = popupWindow.findViewById(R.id.cancel);
         lin_all.add(lin_copy);
         lin_all.add(lin_wechat);
         lin_all.add(lin_moment);
@@ -128,14 +129,14 @@ public class ShareKloudSyncDialog {
         lin_wechat.setOnClickListener(new MyOnClick());
         lin_moment.setOnClickListener(new MyOnClick());
         lin_Scan.setOnClickListener(new MyOnClick());
-        closeImage.setOnClickListener(new MyOnClick());
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                EnterAnim();
-            }
-        }, 300);
+        cancelText.setOnClickListener(new MyOnClick());
+//
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                EnterAnim();
+//            }
+//        }, 300);
 
     }
 
@@ -196,7 +197,7 @@ public class ShareKloudSyncDialog {
                     goToShare(document, Syncid);
                     break;
 
-                case R.id.image_close:
+                case R.id.cancel:
                     if (mPopupWindow != null) {
                         mPopupWindow.dismiss();
                     }

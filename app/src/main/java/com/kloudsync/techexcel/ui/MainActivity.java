@@ -267,7 +267,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     UserPath userPath;
 
     private void GetSchoolInfo() {
-
         LoginGet lg = new LoginGet();
         lg.setSchoolTeamGetListener(new LoginGet.SchoolTeamGetListener() {
             @Override
@@ -524,6 +523,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     }else {
                         spaceFragmentData.setType(2);
                     }
+                    spaceFragmentData.setTeamId(sharedPreferences.getInt("teamid",0));
+                    spaceFragmentData.setTeamName(sharedPreferences.getString("teamname",""));
                     handleChangeSpaceFragment(spaceFragmentData);
                 }else {
                     changeTeamFragment((TextView) v);

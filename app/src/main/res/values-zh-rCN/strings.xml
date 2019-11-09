@@ -706,7 +706,7 @@
     <string name="operate_failure">操作失败</string>
     <string name="operate_success">操作成功</string>
     <string name="no_data">没有符合条件的数据</string>
-    <string name="select_a_space">选择一个空间</string>
+    <string name="select_a_space">选择一个文件夹</string>
     <string name="from_favorite">从我的收藏</string>
     <string name="current_space">当前文件夹</string>
     <string name="docs_in_spaces">当前文件夹的文件</string>
@@ -748,6 +748,11 @@
     <string name="show_only_my_spaces">仅展示自己的空间</string>
 
     <string name="select_a_dir">选择一个文件夹</string>
+
+    <string name="_Albums">相册</string>
+    <string name="_File">文件</string>
+    <string name="_Favorite">收藏</string>
+    <string name="_Camera">相机</string>
 
 
 </resources>

@@ -11,6 +11,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -80,7 +83,6 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     private List<ServiceBean> mList1 = new ArrayList<>();
     private List<ServiceBean> mList2 = new ArrayList<>();
     private List<ServiceBean> mList3 = new ArrayList<>();
-
     private List<List<ServiceBean>> mlist = new ArrayList<>();  //所有课程的list集合
 
     private ViewPager mViewPager;
@@ -96,7 +98,6 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     private BroadcastReceiver broadcastReceiver;
 
     private BroadcastReceiver broadcastReceiver_finish;
-    private LinearLayout defaultPage;
     private EventSchoolPopup eventSchoolPopup;
     private MenuEventPopup menuPopupWindow;
 
@@ -113,71 +114,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case AppConfig.LOAD_FINISH:
-                    defaultPage.setVisibility(View.GONE);
                     serviceAdapter1 = new ServiceAdapter2(getActivity(), mList1, true, 0);
                     serviceListView1.setAdapter(serviceAdapter1);
-                    serviceAdapter1.setOnModifyServiceListener(new ServiceAdapter2.OnModifyServiceListener() {
-                        @Override
-                        public void select(final ServiceBean bean) {
-                            MeetingMoreOperationPopup meetingMoreOperationPopup = new MeetingMoreOperationPopup();
-                            meetingMoreOperationPopup.getPopwindow(getActivity());
-                            meetingMoreOperationPopup.setFavoritePoPListener(new MeetingMoreOperationPopup.FavoritePoPListener() {
-                                @Override
-                                public void delete() {
-                                    deleteMeeting(bean);
-                                }
-
-                                @Override
-                                public void view() {
-                                    Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
-                                    intent.putExtra("userid", bean.getUserId());
-                                    intent.putExtra("meetingId", bean.getId() + "");
-                                    intent.putExtra("teacherid", bean.getTeacherId());
-                                    intent.putExtra("identity", bean.getRoleinlesson());
-                                    intent.putExtra("isInstantMeeting", 0);
-                                    intent.putExtra("isStartCourse", true);
-                                    intent.putExtra("isPrepare", true);
-                                    intent.putExtra("yinxiangmode", 1);
-                                    startActivity(intent);
-                                }
-
-                                @Override
-                                public void edit() {
-                                    Intent intent = new Intent(getActivity(), MeetingPropertyActivity.class);
-                                    intent.putExtra("servicebean", bean);
-                                    getActivity().startActivity(intent);
-                                }
-
-                                @Override
-                                public void startMeeting() {
-                                    Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
-                                    intent.putExtra("userid", bean.getUserId());
-                                    intent.putExtra("meetingId", bean.getId() + "");
-                                    intent.putExtra("filemeetingId", bean.getId() + "");
-                                    intent.putExtra("teacherid", bean.getTeacherId());
-                                    intent.putExtra("identity", bean.getRoleinlesson());
-                                    intent.putExtra("isInstantMeeting", 0);
-                                    intent.putExtra("isStartCourse", true);
-                                    startActivity(intent);
-                                }
-
-                                @Override
-                                public void dismiss() {
-                                }
-
-                                @Override
-                                public void open() {
-                                }
-
-                                @Override
-                                public void property() {
-
-                                }
-
-                            });
-                            meetingMoreOperationPopup.StartPop(mViewPager, bean, 0);
-                        }
-                    });
 
                     serviceAdapter2 = new ServiceAdapter2(getActivity(), mList2, true, 1);
                     serviceAdapter2.setOnModifyServiceListener(new ServiceAdapter2.OnModifyServiceListener() {
@@ -390,7 +328,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                         try {
                             int retcode = jsonObject.getInt("RetCode");
                             if (retcode == 0) {
-                                getAllServiceData(mlist);
+
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -422,62 +360,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         dialog.show();
     }
 
-    private List<ServiceBean> sortBydata(List<ServiceBean> serviceBeanList) {
-        Collections.sort(serviceBeanList, new Comparator<ServiceBean>() {
-            @Override
-            public int compare(ServiceBean s1, ServiceBean s2) {
-                String x1 = s1.getPlanedStartDate();
-                String x2 = s2.getPlanedStartDate();
-                if (TextUtils.isEmpty(x1)) {
-                    x1 = "0";
-                }
-                if (TextUtils.isEmpty(x2)) {
-                    x2 = "0";
-                }
-                if (Long.parseLong(x1) > Long.parseLong(x2)) {
-                    return 1;
-                }
-                if (Long.parseLong(x1) == Long.parseLong(x2)) {
-                    return 0;
-                }
-                return -1;
-            }
-        });
-        for (ServiceBean bean : serviceBeanList) {
-            String planedsatrtdate = bean.getPlanedStartDate();
-            if (TextUtils.isEmpty(planedsatrtdate)) {
-                bean.setDateType(4);
-            } else {
-                long today = System.currentTimeMillis();
-                long planed = Long.parseLong(planedsatrtdate);
-                long diff = diffTime();
-                long xx = planed - today;
-                if (xx < 0) {
-                    bean.setDateType(4);//今天之前的  已结束的
-                } else if (xx >= 0 && xx < diff) {
-                    bean.setDateType(1); //今天的
-                    bean.setMins((int) (xx / 1000 / 60));
-                } else if (xx >= diff && xx < 86400000 * 2) {
-                    bean.setDateType(2); //明天的
-                } else if (xx >= 86400000 * 2) {
-                    bean.setDateType(3);//后天及以后
-                }
-            }
-        }
-        return serviceBeanList;
 
-    }
-
-    private long diffTime() {
-        final Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) + 1);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        long diff = cal.getTimeInMillis() - System.currentTimeMillis();
-        return diff;
-    }
 
 
     View view;
@@ -488,7 +371,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
             view = inflater.inflate(R.layout.service, container, false);
             initView(view);
         }
-        GetSchoolInfo();
+//        GetSchoolInfo();
         return view;
     }
 
@@ -498,7 +381,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         broadcastReceiver_finish = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                getAllServiceData(mlist);
+
             }
         };
         IntentFilter filter_finish = new IntentFilter();
@@ -527,92 +410,21 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     }
 
 
-    /**
-     * 获得所有原始数据
-     *
-     * @param pjList
-     */
-    private void getAllServiceData(List<List<ServiceBean>> pjList) {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(AppConfig.LOGININFO,
-                getActivity().MODE_PRIVATE);
-        int schoolId = sharedPreferences.getInt("SchoolID", -1);
-
-        List<ServiceBean> list0 = new ArrayList<>();
-        List<ServiceBean> list1 = new ArrayList<>();
-        List<ServiceBean> list2 = new ArrayList<>();
-
-        pjList.clear();
-        pjList.add(list0); //即将开始
-        pjList.add(list1); //已过期
-        pjList.add(list2);  //已结束
-        mList1.clear();
-        mList2.clear();
-        mList3.clear();
-
-        ExecutorService executorService = Executors.newFixedThreadPool(pjList.size());
-        for (int i = 0; i < pjList.size(); i++) {
-            executorService.execute(new ServiceTool(i, pjList.get(i), ""));
-        }
-        executorService.shutdown();
-        while (true) {
-            if (executorService.isTerminated()) {
-                List<ServiceBean> serviceBeanList = sortBydata(list0);
-                for (ServiceBean bean : serviceBeanList) {
-                    mList1.add(bean);
-                }
-                List<ServiceBean> serviceBeanList1 = sortBydata(list1);
-                for (ServiceBean bean : serviceBeanList1) {
-                    mList2.add(bean);
-                }
-                List<ServiceBean> serviceBeanList2 = sortBydata(list2);
-                for (ServiceBean bean : serviceBeanList2) {
-                    mList3.add(bean);
-                }
-                Collections.reverse(mList1);
-                Collections.reverse(mList2);
-                Collections.reverse(mList3);
-                handler.sendEmptyMessage(AppConfig.LOAD_FINISH);
-                break;
-            }
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     @Override
     public void onResume() {
         super.onResume();
         if (AppConfig.newlesson) {  //新建课程刷新
             AppConfig.newlesson = false;
-            getAllServiceData(mlist);
         }
         if (tv_title != null) {  //切换schoolId刷新
-            GetSchoolInfo();
+//            GetSchoolInfo();
         }
     }
 
 
     private int schoolid = -1;
 
-    private void GetSchoolInfo() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(AppConfig.LOGININFO,
-                getActivity().MODE_PRIVATE);
-        int SchoolId = sharedPreferences.getInt("SchoolID", -1);
-        String schoolName = sharedPreferences.getString("SchoolName", null);
-        if (-1 == SchoolId || SchoolId == AppConfig.SchoolID) {
-            xxschool.setText(getResources().getString(R.string.My_School));
-        } else {
-            xxschool.setText(schoolName);
-        }
-        Log.e("SERVICEFRAGMENT", SchoolId + "  " + schoolid);
-        if (schoolid != SchoolId) {
-            schoolid = SchoolId;
-            getAllServiceData(mlist);
-        }
-    }
 
 
     private void initView(View view) {
@@ -653,8 +465,6 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
         tv_ns = (TextView) view.findViewById(R.id.tv_ns);
 
-
-        defaultPage = (LinearLayout) view.findViewById(R.id.defaultpage);
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
 
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
@@ -665,11 +475,11 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         serviceListView1 = (ListView) allView1.findViewById(R.id.serviceList);
         serviceListView2 = (ListView) allView2.findViewById(R.id.serviceList);
         serviceListView3 = (ListView) allView3.findViewById(R.id.serviceList);
-        viewList.add(allView1);
-        viewList.add(allView2);
-        viewList.add(allView3);
+//        viewList.add(allView1);
+//        viewList.add(allView2);
+//        viewList.add(allView3);
 
-        mViewPager.setAdapter(new ServicePagerAdapter());
+        mViewPager.setAdapter(new MeetingAdapter(getChildFragmentManager()));
 //        mViewPager.setCurrentItem(0);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -710,30 +520,26 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
     }
 
-    class ServicePagerAdapter extends PagerAdapter {
+
+    class MeetingAdapter extends FragmentPagerAdapter{
+
+        public MeetingAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Bundle bundle = new Bundle();
+            bundle.putInt("type",position + 1);
+            MeetingFragment fragment = new MeetingFragment();
+            fragment.setArguments(bundle);
+            return fragment;
+        }
 
         @Override
         public int getCount() {
-            return viewList.size();
+            return 3;
         }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            container.addView(viewList.get(position));
-            return viewList.get(position);
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView(viewList.get(position));
-
-        }
-
     }
 
 

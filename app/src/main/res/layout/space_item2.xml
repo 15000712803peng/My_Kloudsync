@@ -7,16 +7,7 @@
     android:id="@+id/layout_space_item"
     android:layout_height="wrap_content">
 
-    <com.kloudsync.techexcel.ui.MaskViewGroup
-        app:containerCornerRadius="12dp"
-        app:containerDeltaLength="10dp"
-        app:containerShadowColor="#1f27347d"
-        app:containerShadowRadius="3dp"
-        app:deltaX="0dp"
-        app:deltaY="3dp"
-        app:enable="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+
         <LinearLayout
             android:background="@drawable/space_bg"
             android:paddingTop="12dp"
@@ -30,15 +21,20 @@
             >
 
             <TextView
+                android:paddingTop="1dp"
+                android:textSize="9sp"
+                android:text="S"
                 android:id="@+id/tv_sort"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:gravity="center"
+                android:layout_width="22dp"
+                android:layout_height="16dp"
                 android:layout_centerVertical="true"
-                android:textColor="@color/white"
-                android:background="@drawable/icon_space" />
+                android:background="@drawable/icon_dir"
+                android:gravity="center"
+                android:textColor="@color/white" />
 
             <LinearLayout
+                android:layout_marginLeft="15dp"
+
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:layout_width="0dp"
@@ -50,7 +46,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
                     android:textSize="14sp"
                     android:layout_toRightOf="@id/tv_sort"
                     android:text="Sample space1"
@@ -62,13 +57,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@id/tv_sort"
-                    android:text="Sample space1"
+                    android:text=""
                     android:textColor="@color/newgrey" />
             </LinearLayout>
 
             <ImageView
+                android:padding="2dp"
+                android:layout_marginRight="22dp"
                 android:visibility="invisible"
                 android:id="@+id/image_sel"
                 android:src="@drawable/check"
@@ -77,9 +73,5 @@
 
 
         </LinearLayout>
-
-    </com.kloudsync.techexcel.ui.MaskViewGroup>
-
-
 
 </LinearLayout>
