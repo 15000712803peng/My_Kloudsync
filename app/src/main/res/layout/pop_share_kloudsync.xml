@@ -140,6 +140,34 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:gravity="center"
+            android:id="@+id/layout_qrcode"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:background="#fff7f7f7"
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
+
+            <ImageView
+                android:src="@drawable/qrcode"
+                android:layout_margin="15dp"
+                android:layout_width="82dp"
+                android:layout_height="82dp" />
+            <TextView
+                android:layout_marginBottom="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="扫描二维码，下载App"
+                android:textColor="#ff999999"
+                android:textSize="12sp"
+                />
+        </LinearLayout>
     </LinearLayout>
 
 

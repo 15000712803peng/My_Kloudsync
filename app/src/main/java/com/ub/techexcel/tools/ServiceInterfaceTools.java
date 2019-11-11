@@ -735,10 +735,14 @@ public class ServiceInterfaceTools {
                     Log.e("hhh", url + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         Message msg3 = Message.obtain();
+                        int itemId = 0;
                         JSONObject jsonObject1 = returnjson.getJSONObject("RetData");
                         String lessonid = jsonObject1.getString("LessonID");
+                        if(jsonObject1.has("ItemID")){
+                            itemId = jsonObject1.getInt("ItemID");
+                        }
                         msg3.what = code;
-                        msg3.obj = lessonid;
+                        msg3.obj = lessonid + "-" + itemId;
                         handler.sendMessage(msg3);
                     } else {
                         Message msg3 = Message.obtain();

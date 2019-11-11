@@ -751,10 +751,6 @@
             </RelativeLayout>
 
 
-
-
-
-
             <RelativeLayout
                 android:padding="12dp"
                 android:id="@+id/rl_pc_hc"
@@ -765,8 +761,8 @@
 
                 <ImageView
                     android:id="@+id/img_pc_hc"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
                     android:src="@drawable/icon_help" />
@@ -798,7 +794,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/pc_white"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <ImageView
                     android:id="@+id/img_pc_sk"
@@ -819,8 +815,9 @@
                     android:textColor="@color/pc_black_text" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
@@ -889,8 +886,8 @@
 
                 <ImageView
                     android:id="@+id/img_pc_about"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
                     android:src="@drawable/icon_about" />

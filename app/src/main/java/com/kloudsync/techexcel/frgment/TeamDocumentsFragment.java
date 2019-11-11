@@ -727,8 +727,10 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                     new ServiceInterfaceListener() {
                         @Override
                         public void getServiceReturnData(Object object) {
-                            String lessonid = (String) object;
-                            document.setLessonId(lessonid);
+                            String data = (String) object;
+                            String[] datas = data.split("-");
+                            document.setLessonId(datas[0]);
+                            document.setTempItemId(Integer.parseInt(datas[1]));
                             Message msg = Message.obtain();
                             msg.what = AppConfig.AddTempLesson;
                             msg.obj = document;
@@ -777,6 +779,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         intent.putExtra("lessionId", lesson.getLessonId());
         intent.putExtra("type", 2);
         intent.putExtra("isInstantMeeting", 0);
+        intent.putExtra("documentId", lesson.getTempItemId());
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
         startActivity(intent);

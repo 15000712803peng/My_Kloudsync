@@ -279,6 +279,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                         intent2.putExtra("isInstantMeeting", 1);
                         intent2.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
                         intent2.putExtra("isStartCourse", true);
+                        intent2.putExtra("isTeamspace", false);
                         startActivity(intent2);
                     }
                     break;
@@ -291,6 +292,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                     intent5.putExtra("ishavedefaultpage", true);
                     intent5.putExtra("lessionId", lessionid2 + "");
                     intent5.putExtra("isInstantMeeting", 1);
+                    intent5.putExtra("isTeamspace", false);
                     intent5.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
                     intent5.putExtra("isStartCourse", true);
                     startActivity(intent5);

@@ -47,12 +47,14 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.rong.imageloader.utils.L;
+
 public class PopShareKloudSync {
     public Context mContext;
     private Document document;
     int Syncid;
     boolean record;
-    private String linshiUrl = "https://www.baidu.com/";
+    private String linshiUrl = "https://www.pgyer.com/Dck1";
     private static PopShareKloudSyncDismissListener popShareKloudSyncDismissListener;
 
     public interface PopShareKloudSyncDismissListener {
@@ -79,6 +81,10 @@ public class PopShareKloudSync {
         mPopupWindow.getWindow().setWindowAnimations(R.style.PopupAnimation5);
     }
 
+    public void setQrcodeVisiable(){
+        lin_qrcode.setVisibility(View.VISIBLE);
+    }
+
     public void IsReCord() {
         record = true;
     }
@@ -98,6 +104,7 @@ public class PopShareKloudSync {
     private LinearLayout lin_wechat;
     private LinearLayout lin_moment;
     private LinearLayout lin_Scan;
+    private LinearLayout lin_qrcode;
     private List<LinearLayout> lin_all = new ArrayList<>();
     private TextView closeImage;
 
@@ -110,6 +117,7 @@ public class PopShareKloudSync {
         lin_wechat = (LinearLayout) popupWindow.findViewById(R.id.lin_wechat);
         lin_moment = (LinearLayout) popupWindow.findViewById(R.id.lin_moment);
         lin_Scan = (LinearLayout) popupWindow.findViewById(R.id.lin_Scan);
+        lin_qrcode = (LinearLayout) popupWindow.findViewById(R.id.layout_qrcode);
         closeImage = (TextView) popupWindow.findViewById(R.id.cancel);
         lin_all.add(lin_copy);
         lin_all.add(lin_wechat);

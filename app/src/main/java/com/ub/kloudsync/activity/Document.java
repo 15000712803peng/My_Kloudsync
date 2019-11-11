@@ -43,6 +43,15 @@ public class Document implements Serializable {
     private int IncidentID;
     private boolean isSyncExpanded;
     private String CreatedByName;
+    private int tempItemId;
+
+    public int getTempItemId() {
+        return tempItemId;
+    }
+
+    public void setTempItemId(int tempItemId) {
+        this.tempItemId = tempItemId;
+    }
 
     public String getCreatedByName() {
         return CreatedByName;

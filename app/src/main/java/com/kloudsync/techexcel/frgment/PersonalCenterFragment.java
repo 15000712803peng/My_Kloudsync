@@ -351,6 +351,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         document.setTitle("KloudSync - 让你的每个文档“动”起来");
         PopShareKloudSync psk = new PopShareKloudSync();
         psk.getPopwindow(getActivity(), document, -1);
+        psk.setQrcodeVisiable();
         psk.setPoPDismissListener(new PopShareKloudSync.PopShareKloudSyncDismissListener() {
             @Override
             public void CopyLink() {

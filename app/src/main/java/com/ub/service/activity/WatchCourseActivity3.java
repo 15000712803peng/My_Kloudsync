@@ -283,6 +283,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     private int spaceId;
 
+    private int documentId;
+
     @Override
     public void shareDocumentToFriend(SoundtrackBean soundtrackBean) {
         shareSyncDialog = new ShareSyncDialog(this);
@@ -918,6 +920,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         isSyncRoom = getIntent().getBooleanExtra("isPrepare", false);
         isInstantMeeting = getIntent().getIntExtra("isInstantMeeting", 1);
         lessonId = getIntent().getStringExtra("lessionId");
+        documentId = getIntent().getIntExtra("documentId",0);
         yinxiangmode = getIntent().getIntExtra("yinxiangmode", 2);
         isInClassroom = getIntent().getBooleanExtra("isInClassroom", false);
         ishavedefaultpage = getIntent().getBooleanExtra("ishavedefaultpage", false);
@@ -1858,6 +1861,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             loginjson.put("type", roomType);
             loginjson.put("isInstantMeeting", isInstantMeeting);
             if (isTeamspace) {
+                loginjson.put("itemId",documentId);
                 loginjson.put("lessonId", Integer.parseInt(lessonId));
             } else {
                 loginjson.put("lessonId", Integer.parseInt(lessonId));
@@ -4961,7 +4965,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
                     }
                 });
-        closeAlbum();
 
         if (worker().getRtcEngine() != null) {
             RtcEngineImpl engine = (RtcEngineImpl) worker().getRtcEngine();
@@ -4969,17 +4972,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
         }
 
-        Intent intent1 = new Intent(WatchCourseActivity3.this, MipcaActivityCapture.class);
-        intent1.putExtra("isHorization", true);
-        intent1.putExtra("type", 0);
-        startActivity(intent1);
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//            }
-//        }, 10);
     }
 
     private void getOnstageMemberCount(final String meetingId) {
