@@ -80,18 +80,18 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
             rl_pc_professionalField, rl_pc_effective, rl_pc_password,
             rl_pc_loginout, rl_pc_language, rl_pc_synctv;
 
-    private LinearLayout rl_pc_klassroomID;
-    private LinearLayout rl_cn_account_setting;
+    private RelativeLayout rl_pc_klassroomID;
+    private RelativeLayout rl_cn_account_setting;
     private RelativeLayout rl_pc_about;
     private RelativeLayout guideLayout;
     private RelativeLayout rl_pc_hc;
     private RelativeLayout rl_pc_sk;
     private RelativeLayout rl_contacts_portrait;
-    private LinearLayout rl_cn_account;
+    private RelativeLayout rl_cn_account;
     private RelativeLayout ll_pc_integral, ll_pc_collection,
             ll_pc_publish_article;
     private RelativeLayout rl_school_name, rl_teacher_profile;
-    private LinearLayout lin_switch;
+    private RelativeLayout lin_switch;
     private TextView tv_pc_account_name, tv_pc_account_level,
             pi_goodatfield, pc_tv_date, pc_tv_language;
     private TextView tv_roomid;
@@ -249,7 +249,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         ll_pc_integral = (RelativeLayout) view.findViewById(R.id.ll_pc_integral);
         rl_school_name = (RelativeLayout) view.findViewById(R.id.rl_school_name);
         rl_teacher_profile = (RelativeLayout) view.findViewById(R.id.rl_teacher_profile);
-        rl_cn_account = (LinearLayout) view.findViewById(R.id.rl_cn_account);
+        rl_cn_account = (RelativeLayout) view.findViewById(R.id.rl_cn_account);
         ll_pc_integral = (RelativeLayout) view.findViewById(R.id.ll_pc_integral);
         pi_goodatfield = (TextView) view.findViewById(R.id.pi_goodatfield);
         rl_pc_professionalField = (RelativeLayout) view
@@ -265,11 +265,11 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                 .findViewById(R.id.rl_pc_loginout);
         rl_pc_language = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_language);
-        rl_pc_klassroomID = (LinearLayout) view
+        rl_pc_klassroomID = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_klassroomID);
         rl_pc_about = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_about);
-        rl_cn_account_setting = (LinearLayout) view
+        rl_cn_account_setting = (RelativeLayout) view
                 .findViewById(R.id.rl_cn_account_setting);
         rl_pc_sk = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_sk);
@@ -291,7 +291,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         tv_roomid = (TextView) view
                 .findViewById(R.id.tv_roomid);
         tv_sname = (TextView) view.findViewById(R.id.tv_sname);
-        tv_switch = (TextView) view.findViewById(R.id.tv_switch);
+//        tv_switch = (TextView) view.findViewById(R.id.tv_switch);
         tv_teacher_profile = (TextView) view.findViewById(R.id.tv_teacher_profile);
         tv_pc_hc = (TextView) view.findViewById(R.id.tv_pc_hc);
         tv_pc_about = view.findViewById(R.id.tv_pc_about);
@@ -904,9 +904,6 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                 Log.e("effective", expirationDate + "");
                 intent.putExtra("effective", expirationDate);
                 startActivity(intent);
-                break;
-            case R.id.tv_switch:
-                GoToSelectSchool();
                 break;
                 //跟换组织
             case R.id.lin_switch:

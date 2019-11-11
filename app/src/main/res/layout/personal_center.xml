@@ -9,15 +9,18 @@
 
 
     <RelativeLayout
-        android:padding="22dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="16dp"
+        android:background="#e6ffffff"
+        android:paddingRight="18dp"
         android:id="@+id/rl_contacts_portrait"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/contacts_portrait"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="18dp"
             android:scaleType="center"
@@ -48,21 +51,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:textColor="@color/darkgrey" />
+                    android:textColor="#333333" />
 
             </LinearLayout>
 
             <TextView
-                android:textSize="12dp"
+                android:textSize="14dp"
                 android:id="@+id/tv_pc_account_level"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:textColor="@color/darkgrey" />
+                android:textColor="#999999" />
         </LinearLayout>
 
 
         <ImageView
+            android:padding="2dp"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_alignParentRight="true"
@@ -81,269 +85,224 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-                <LinearLayout
-                    android:gravity="center_vertical"
-                    android:paddingLeft="38dp"
-                    android:paddingRight="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+            <LinearLayout
+                android:background="#e6ffffff"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                    <LinearLayout
-                        android:gravity="center|left"
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content">
+                <com.kloudsync.techexcel.ui.MaskViewGroup
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="18dp"
+                    app:containerCornerRadius="16dp"
+                    app:containerDeltaLength="10dp"
+                    app:containerShadowColor="#B9C0E4"
+                    app:containerShadowRadius="6dp"
+                    app:deltaX="0dp"
+                    app:deltaY="3dp"
+                    app:enable="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RelativeLayout
+                        android:id="@+id/lin_switch"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:paddingBottom="12dp"
+                        android:paddingTop="12dp"
+                        android:background="@drawable/team_bg"
+                        android:gravity="center_vertical"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/switchteam"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="15dp"
+                            android:src="@drawable/icon_company" />
+
+
 
                         <TextView
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@id/switchteam"
                             android:singleLine="false"
-                            android:layout_marginRight="6dp"
+                            android:layout_marginLeft="10dp"
                             android:maxLines="2"
                             android:id="@+id/tv_sname"
                             android:gravity="left"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Medical team of Beijing long long text …"
-                            android:textColor="@color/darkgrey"
-                            android:textSize="17sp" />
+                            android:text="Medical team of Beijing long long"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
 
-                    </LinearLayout>
+                        <ImageView
+                            android:layout_marginRight="20dp"
+                            android:layout_alignParentRight="true"
+                            android:src="@drawable/switch_white"
+                            android:layout_marginLeft="6dp"
+                            android:layout_centerVertical="true"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp" />
 
-                    <LinearLayout
-                        android:layout_marginRight="8dp"
-                        android:id="@+id/lin_switch"
+
+
+
+                    </RelativeLayout>
+
+                </com.kloudsync.techexcel.ui.MaskViewGroup>
+
+
+
+                <RelativeLayout
+                    android:padding="12dp"
+                    android:id="@+id/rl_pc_klassroomID"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/pc_white">
+
+                    <ImageView
+                        android:id="@+id/img_pc_meeting_id"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/meeting_id" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@+id/img_pc_meeting_id"
+                        android:text="@string/Klassroom_ID"
+                        android:textColor="@color/pc_black_text" />
 
-                        <com.kloudsync.techexcel.ui.MaskViewGroup
-                            fresco:containerCornerRadius="16dp"
-                            fresco:containerDeltaLength="10dp"
-                            fresco:containerShadowColor="#ffb9c0e4"
-                            fresco:containerShadowRadius="6dp"
-                            fresco:deltaX="0dp"
-                            fresco:deltaY="3dp"
-                            fresco:enable="true"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                    <TextView
+                        android:padding="2dp"
+                        android:background="@drawable/corners_white"
+                        android:id="@+id/tv_roomid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:text="H4226"
+                        android:layout_toLeftOf="@+id/arrow_id_right"
+                        android:textSize="14sp"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"
+                        android:textColor="#999999" />
 
-                            <TextView
-                                android:background="@drawable/bg_corner_blue"
-                                android:id="@+id/tv_switch"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:paddingLeft="10dp"
-                                android:paddingRight="10dp"
-                                android:text="@string/Switch"
-                                android:paddingTop="5dp"
-                                android:paddingBottom="5dp"
-                                android:textColor="@color/white"
-                                android:textSize="13sp" />
-                        </com.kloudsync.techexcel.ui.MaskViewGroup>
-
-
-
-                    </LinearLayout>
+                    <ImageView
+                        android:padding="2dp"
+                        android:id="@+id/arrow_id_right"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="16dp"
+                        android:src="@drawable/arrow2" />
+                </RelativeLayout>
 
 
-                </LinearLayout>
 
-            <com.kloudsync.techexcel.ui.MaskViewGroup
-                app:containerCornerRadius="17dp"
-                app:containerDeltaLength="12dp"
-                app:containerShadowColor="#1f27347d"
-                app:containerShadowRadius="6dp"
-                app:deltaX="3dp"
-                app:deltaY="3dp"
-                app:enable="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:background="@drawable/space_bg"
-                    android:layout_margin="10dp"
-                    android:orientation="vertical"
+                <RelativeLayout
+                    android:padding="12dp"
+                    android:id="@+id/rl_cn_account"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:background="@color/pc_white">
 
-                    <LinearLayout
-                        android:gravity="center_vertical"
-                        android:background="@color/white"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/img_pc_account"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/icon_personal_create_company" />
 
-                        <LinearLayout
-                            android:gravity="center"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@+id/img_pc_account"
+                        android:text="@string/CN_account"
+                        android:textColor="@color/pc_black_text" />
 
-                            <LinearLayout
-                                android:id="@+id/rl_pc_klassroomID"
-                                android:gravity="center"
-                                android:orientation="vertical"
-                                android:background="@drawable/personal_card1"
-                                android:layout_width="68dp"
-                                android:layout_height="58dp">
-                                <TextView
-                                    android:padding="2dp"
-                                    android:background="@drawable/corners_white"
-                                    android:id="@+id/tv_roomid"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:ellipsize="end"
-                                    android:text="H4226"
-                                    android:layout_centerInParent="true"
-                                    android:textSize="12sp"
-                                    android:gravity="center_vertical"
-                                    android:singleLine="true"
-                                    android:textColor="@color/blue1" />
 
-                            </LinearLayout>
+                    <ImageView
+                        android:padding="2dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="16dp"
+                        android:src="@drawable/arrow2" />
+                </RelativeLayout>
 
 
 
-                        </LinearLayout>
+                <RelativeLayout
+                    android:padding="12dp"
+                    android:id="@+id/rl_cn_account_setting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/pc_white">
 
-                        <View
-                            android:background="#ffdadada"
-                            android:layout_width="1dp"
-                            android:layout_height="32dp"/>
+                    <ImageView
+                        android:id="@+id/img_pc_account_setting"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/icon_personal_account_setting" />
 
-                        <LinearLayout
-                            android:gravity="center"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content">
-
-                            <LinearLayout
-                                android:id="@+id/rl_cn_account"
-                                android:gravity="center"
-                                android:orientation="vertical"
-                                android:background="@drawable/personal_card2"
-                                android:layout_width="68dp"
-                                android:layout_height="58dp">
-                                <ImageView
-                                    android:layout_marginTop="5dp"
-
-                                    android:background="@drawable/icon_personal_create_company"
-                                    android:layout_width="35dp"
-                                    android:layout_height="35dp" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <View
-                            android:background="#ffdadada"
-                            android:layout_width="1dp"
-                            android:layout_height="32dp"/>
-
-                        <LinearLayout
-                            android:gravity="center"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content">
-
-                            <LinearLayout
-                                android:id="@+id/rl_cn_account_setting"
-                                android:gravity="center"
-                                android:orientation="vertical"
-                                android:background="@drawable/personal_card3"
-                                android:layout_width="68dp"
-                                android:layout_height="58dp">
-                                <ImageView
-                                    android:layout_marginTop="5dp"
-                                    android:background="@drawable/icon_personal_account_setting"
-                                    android:layout_width="35dp"
-                                    android:layout_height="35dp" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@+id/img_pc_account_setting"
+                        android:text="@string/as_setting"
+                        android:textColor="@color/pc_black_text" />
 
 
-                    </LinearLayout>
+                    <ImageView
+                        android:padding="2dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="16dp"
+                        android:src="@drawable/arrow2" />
+                </RelativeLayout>
 
-                    <LinearLayout
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="8dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        
-                        <LinearLayout
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content">
-                            <TextView
-                                android:textSize="12dp"
-                                android:gravity="center"
-                                android:layout_weight="1"
-                                android:singleLine="true"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:text="@string/Klassroom_ID"
-                                android:textColor="@color/pc_black_text"/>
+            </LinearLayout>
 
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content">
-                            <TextView
-                                android:textSize="12dp"
-                                android:gravity="center"
-                                android:layout_weight="1"
-                                android:singleLine="true"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:text="@string/CN_account"
-                                android:textColor="@color/pc_black_text"/>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:textSize="12dp"
-                                android:gravity="center"
-                                android:layout_weight="1"
-                                android:singleLine="true"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:text="@string/as_setting"
-                                android:textColor="@color/pc_black_text"/>
-
-                        </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="16dp"/>
 
 
 
-                    </LinearLayout>
-                </LinearLayout>
+            <View
+                android:background="#fff7f7f7"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
 
-            </com.kloudsync.techexcel.ui.MaskViewGroup>
 
 
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="16dp"/>
             <RelativeLayout
                 android:id="@+id/rl_school_name"
                 android:layout_width="match_parent"
@@ -590,6 +549,7 @@
                     android:textColor="@color/pc_black_text" />
 
                 <ImageView
+                    android:padding="2dp"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
@@ -599,11 +559,7 @@
             </RelativeLayout>
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1.5px"
-                android:layout_marginLeft="20dp"
-                android:background="@color/pc_background" />
+
 
 
             <RelativeLayout
@@ -644,6 +600,7 @@
                     android:textColor="@color/black" />
 
                 <ImageView
+                    android:padding="2dp"
                     android:id="@+id/arrow15"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
@@ -757,11 +714,6 @@
             </RelativeLayout>
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1.5px"
-                android:layout_marginLeft="20dp"
-                android:background="@color/pc_background" />
 
             <RelativeLayout
                 android:padding="12dp"
@@ -789,6 +741,7 @@
                     android:textColor="@color/pc_black_text"/>
 
                 <ImageView
+                    android:padding="2dp"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
@@ -798,11 +751,6 @@
             </RelativeLayout>
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1.5px"
-                android:layout_marginLeft="20dp"
-                android:background="@color/pc_background" />
 
 
 
@@ -834,6 +782,7 @@
                     android:textColor="@color/pc_black_text" />
 
                 <ImageView
+                    android:padding="2dp"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
@@ -842,11 +791,6 @@
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1.5px"
-                android:layout_marginLeft="20dp"
-                android:background="@color/pc_background" />
 
             <RelativeLayout
                 android:padding="12dp"
@@ -883,11 +827,6 @@
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0.5px"
-                android:layout_marginLeft="20dp"
-                android:background="@color/pc_background" />
 
             <RelativeLayout
                 android:padding="12dp"
@@ -929,6 +868,7 @@
                     android:textColor="@color/black" />
 
                 <ImageView
+                    android:padding="2dp"
                     android:id="@+id/arrow123"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
@@ -939,17 +879,6 @@
             </RelativeLayout>
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="1.5px"
-                android:background="@color/pc_white">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginLeft="20dp"
-                    android:background="@color/pc_background" />
-            </LinearLayout>
 
             <RelativeLayout
                 android:padding="12dp"
@@ -978,6 +907,7 @@
                     />
 
                 <ImageView
+                    android:padding="2dp"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
@@ -986,11 +916,6 @@
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1.5px"
-                android:layout_marginLeft="20dp"
-                android:background="@color/pc_background" />
 
             <RelativeLayout
                 android:visibility="gone"
@@ -1027,12 +952,6 @@
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
-            <TextView
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="1.5px"
-                android:layout_marginLeft="20dp"
-                android:background="@color/pc_background" />
 
             <RelativeLayout
                 android:padding="12dp"
@@ -1061,9 +980,7 @@
                     />
             </RelativeLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="58dp" />
+
 
         </LinearLayout>
     </ScrollView>

@@ -99,7 +99,7 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
         }
 
 //        holder.tv_sort.setBackgroundResource(R.drawable.circle_expand);
-        
+
         if (isSyncRoom) {
             holder.attachmentcount.setText(item.getSyncRoomCount() + " " + context.getString(R.string.syncroom));
 //            holder.attachmentcount.setText(item.getSyncRoomCount() == 0 ? "" : item.getSyncRoomCount() + " SyncRooms");
