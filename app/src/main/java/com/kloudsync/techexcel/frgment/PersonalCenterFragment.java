@@ -53,6 +53,7 @@ import com.kloudsync.techexcel.personal.CreateOrganizationActivityV2;
 import com.kloudsync.techexcel.personal.HelpCenterActivity;
 import com.kloudsync.techexcel.personal.LanguageActivity;
 import com.kloudsync.techexcel.personal.MyCourseTemplateActivity;
+import com.kloudsync.techexcel.personal.MyNoteActivity;
 import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.personal.SchoolProfileActivity;
 import com.kloudsync.techexcel.personal.SyncTvActivity;
@@ -88,7 +89,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
     private RelativeLayout rl_pc_sk;
     private RelativeLayout rl_contacts_portrait;
     private RelativeLayout rl_cn_account;
-    private RelativeLayout ll_pc_integral, ll_pc_collection,
+    private RelativeLayout ll_pc_integral, ll_pc_collection,ll_pc_note,
             ll_pc_publish_article;
     private RelativeLayout rl_school_name, rl_teacher_profile;
     private RelativeLayout lin_switch;
@@ -244,6 +245,8 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                 .findViewById(R.id.ll_pc_publish_article);
         ll_pc_collection = (RelativeLayout) view
                 .findViewById(R.id.ll_pc_collection);
+        ll_pc_note = (RelativeLayout) view
+                .findViewById(R.id.ll_pc_note);
         // rl_pc_description = (RelativeLayout) view
         // .findViewById(R.id.rl_pc_description);
         ll_pc_integral = (RelativeLayout) view.findViewById(R.id.ll_pc_integral);
@@ -309,6 +312,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 
         ll_pc_publish_article.setOnClickListener(this);
         ll_pc_collection.setOnClickListener(this);
+        ll_pc_note.setOnClickListener(this);
         ll_pc_integral.setOnClickListener(this);
         rl_pc_portrait.setOnClickListener(this);
         rl_pc_professionalField.setOnClickListener(this);
@@ -888,6 +892,13 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                 //我的收藏
             case R.id.ll_pc_collection:
                 intent = new Intent(getActivity(), PersonalCollectionActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.ll_pc_note:  //我的笔记
+//                intent = new Intent(getActivity(), PersonalCollectionActivity.class);
+//                startActivity(intent);
+//                Toast.makeText(getActivity(),"my note",Toast.LENGTH_LONG).show();
+                intent = new Intent(getActivity(), MyNoteActivity.class);
                 startActivity(intent);
                 break;
                 //切换语言

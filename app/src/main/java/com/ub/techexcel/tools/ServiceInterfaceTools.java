@@ -1759,7 +1759,7 @@ public class ServiceInterfaceTools {
                             Note item = new Note();
                             item.setNoteID(lineitem.getInt("NoteID"));
                             item.setLocalFileID(lineitem.getString("LocalFileID"));
-                            item.setFileName(lineitem.getString("Title"));
+                            item.setTitle(lineitem.getString("Title"));
                             item.setFileID(lineitem.getInt("FileID"));
                             item.setFileName(lineitem.getString("FileName"));
                             item.setAttachmentUrl(lineitem.getString("AttachmentUrl"));

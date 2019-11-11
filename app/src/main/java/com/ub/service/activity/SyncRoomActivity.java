@@ -1208,19 +1208,19 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
                     } else if (jsonObject.getInt("actionType") == 15) { //收到关闭自己的Video
 
-                    }else if (jsonObject.getInt("actionType") == 1820) {
-                        String userid=jsonObject.getString("useId");
+                    } else if (jsonObject.getInt("actionType") == 1820) {
+                        String userid = jsonObject.getString("useId");
                         if (jsonObject.getInt("stat") == 0) {
-                            if(syncRoomOtherNoteListPopup != null){
+                            if (syncRoomOtherNoteListPopup != null) {
                                 syncRoomOtherNoteListPopup.dismiss();
                             }
                         } else if (jsonObject.getInt("stat") == 1) {
-                            if(syncRoomOtherNoteListPopup == null && !syncRoomOtherNoteListPopup.isShowing()){
-                                selectCusterId=userid;
+                            if (syncRoomOtherNoteListPopup == null && !syncRoomOtherNoteListPopup.isShowing()) {
+                                selectCusterId = userid;
                                 openNotePopup();
                             }
                         }
-                    }  else if (jsonObject.getInt("actionType") == 21) {
+                    } else if (jsonObject.getInt("actionType") == 21) {
                     } else if (jsonObject.getInt("actionType") == 24) {
                         String newMeetingid = jsonObject.getString("meetingID");
                         enterTeacherOnGoingMeeting(newMeetingid);
@@ -2656,7 +2656,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 if (isTwinkleBookNote) {
                     twinkleBookNote(linkID);
                 }
-                if (!TextUtils.isEmpty(selectCusterId)) {
+                if (!TextUtils.isEmpty(selectCusterId) && !selectCusterId.equals(AppConfig.UserID)) {
                     ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
                         @Override
                         public void getServiceReturnData(Object object) {
@@ -3298,7 +3298,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.syncdisplaynote:
                 openNotePopup();
-                notifyTvNoteOpenOrClose(1,selectCusterId);
+                notifyTvNoteOpenOrClose(1, selectCusterId);
                 syncroomll.setVisibility(View.GONE);
                 menu.setImageResource(R.drawable.icon_menu);
                 break;
@@ -3822,7 +3822,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         menu.setImageResource(R.drawable.icon_menu);
     }
 
-
     private String selectCusterId;
 
     private void openNotePopup() {
@@ -3858,7 +3857,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
             @Override
             public void close() {
-                notifyTvNoteOpenOrClose(0,selectCusterId);
+                notifyTvNoteOpenOrClose(0, selectCusterId);
             }
 
         });
@@ -3866,7 +3865,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-    private void notifyTvNoteOpenOrClose(int type,String useid) {
+    private void notifyTvNoteOpenOrClose(int type, String useid) {
         JSONObject actionJson = new JSONObject();
         try {
             actionJson.put("actionType", 1820);
@@ -3887,9 +3886,31 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     private int linkID;
     private boolean isTwinkleBookNote = false;
 
-    private void switchPdf(NoteDetail noteDetail) {
+    private void switchPdf(final NoteDetail noteDetail) {
         int attachmentid = noteDetail.getDocumentItemID();
         int pagenumber = noteDetail.getPageNumber();
+
+//        if ((attachmentid + "").equals(currentAttachmentId) && (pagenumber + "").equals(currentAttachmentPage)) {
+//            if (selectCusterId.equals(AppConfig.UserID)) {
+//                //清除别人的日记
+//                clearBookNote(false,true);
+//            }
+//
+//            if (!TextUtils.isEmpty(selectCusterId)) {
+//                ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
+//                    @Override
+//                    public void getServiceReturnData(Object object) {
+//                        List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+//                        if (noteDetails != null && noteDetails.size() > 0) {
+//                            notifyDrawNotes(noteDetails, 1);
+//                        }
+//                        twinkleBookNote(noteDetail.getLinkID());
+//                    }
+//                });
+//            }
+//            return;
+//        }
+
         linkID = noteDetail.getLinkID();
         if (documentList.size() > 0) {
             for (LineItem lineItem : documentList) {
@@ -6373,6 +6394,22 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             e.printStackTrace();
         }
     }
+
+
+    private void clearBookNote(boolean clearme, boolean clearother) {
+        try {
+            JSONObject clearnote = new JSONObject();
+            clearnote.put("ClearMe", clearme);
+            clearnote.put("ClearOther", clearother);
+            Log.e("clearBookNote",clearnote.toString());
+            if (wv_show != null) {
+                wv_show.load("javascript:ClearBookNote(" + clearnote + ")", null);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void twinkleBookNote(int linkId) {
         JSONObject jsonObject = new JSONObject();

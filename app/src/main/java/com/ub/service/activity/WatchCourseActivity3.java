@@ -3399,7 +3399,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 if (isTwinkleBookNote) {
                     twinkleBookNote(linkID);
                 }
-                if (!TextUtils.isEmpty(selectCusterId)) {
+                if (!TextUtils.isEmpty(selectCusterId)&&!selectCusterId.equals(AppConfig.UserID)) {
                     ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
                         @Override
                         public void getServiceReturnData(Object object) {
@@ -4845,9 +4845,24 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private int linkID;
     private boolean isTwinkleBookNote = false;
 
-    private void switchPdf(NoteDetail noteDetail) {
+    private void switchPdf(final NoteDetail noteDetail) {
         int attachmentid = noteDetail.getDocumentItemID();
         int pagenumber = noteDetail.getPageNumber();
+//        if((attachmentid+"").equals(currentAttachmentId)&&(pagenumber+"").equals(currentAttachmentPage)){
+//            if (!TextUtils.isEmpty(selectCusterId)) {
+//                ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
+//                    @Override
+//                    public void getServiceReturnData(Object object) {
+//                        List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+//                        if (noteDetails != null && noteDetails.size() > 0) {
+//                            notifyDrawNotes(noteDetails, 1);
+//                        }
+//                        twinkleBookNote(noteDetail.getLinkID());
+//                    }
+//                });
+//            }
+//            return;
+//        }
         linkID = noteDetail.getLinkID();
         if (documentList.size() > 0) {
             for (LineItem lineItem : documentList) {
