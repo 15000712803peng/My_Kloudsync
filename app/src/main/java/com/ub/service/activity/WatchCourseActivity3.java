@@ -4739,6 +4739,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private SyncRoomOtherNoteListPopup syncRoomOtherNoteListPopup;
 
     private void gotoOtherNoteList(String userid) {
+
         syncRoomOtherNoteListPopup = new SyncRoomOtherNoteListPopup();
         syncRoomOtherNoteListPopup.getPopwindow(WatchCourseActivity3.this);
         syncRoomOtherNoteListPopup.setWebCamPopupListener(new SyncRoomOtherNoteListPopup.WebCamPopupListener() {

@@ -259,14 +259,15 @@ public class MeetingFragment extends MyFragment{
                     x2 = "0";
                 }
                 if (Long.parseLong(x1) > Long.parseLong(x2)) {
-                    return 1;
-                }
+                    return -1;
+                }else
                 if (Long.parseLong(x1) == Long.parseLong(x2)) {
                     return 0;
                 }
-                return -1;
+                return 1;
             }
         });
+
         for (ServiceBean bean : serviceBeanList) {
             String planedsatrtdate = bean.getPlanedStartDate();
             if (TextUtils.isEmpty(planedsatrtdate)) {
