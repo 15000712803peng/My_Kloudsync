@@ -154,6 +154,7 @@ import com.ub.techexcel.tools.SpliteSocket;
 import com.ub.techexcel.tools.SyncRoomDocumentPopup;
 import com.ub.techexcel.tools.SyncRoomMeetingPopup;
 import com.ub.techexcel.tools.SyncRoomMemberPopup;
+import com.ub.techexcel.tools.SyncRoomOtherNoteListPopup;
 import com.ub.techexcel.tools.SyncRoomOutlinePopup;
 import com.ub.techexcel.tools.SyncRoomPopup;
 import com.ub.techexcel.tools.SyncRoomPropertyPopup;
@@ -328,7 +329,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private ImageView command_active;
     private LinearLayout activte_linearlayout;
     private LinearLayout syncroomll;
-    private RelativeLayout prepareStart, syncdisplayoutline, syncdisplaymembers, syncdisplaymeeting, syncdisplaychat, syncdisplayproperty, syncdisplayshare, syncyinxiang, syncdisplayquit, prepareScanTV;
+    private RelativeLayout prepareStart, syncdisplayoutline,syncdisplaynote, syncdisplaymembers, syncdisplaymeeting, syncdisplaychat, syncdisplayproperty, syncdisplayshare, syncyinxiang, syncdisplayquit, prepareScanTV;
     public static boolean watch3instance = false;
     private TextView endtextview;
     private TextView prompt;
@@ -1167,6 +1168,18 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
                     } else if (jsonObject.getInt("actionType") == 15) { //收到关闭自己的Video
 
+                    }else if (jsonObject.getInt("actionType") == 1820) {
+                        String userid=jsonObject.getString("useId");
+                        if (jsonObject.getInt("stat") == 0) {
+                            if(syncRoomOtherNoteListPopup != null){
+                                syncRoomOtherNoteListPopup.dismiss();
+                            }
+                        } else if (jsonObject.getInt("stat") == 1) {
+                            if(syncRoomOtherNoteListPopup == null && !syncRoomOtherNoteListPopup.isShowing()){
+                                selectCusterId=userid;
+                                openNotePopup();
+                            }
+                        }
                     } else if (jsonObject.getInt("actionType") == 21) {
                     } else if (jsonObject.getInt("actionType") == 24) {
                         String newMeetingid = jsonObject.getString("meetingID");
@@ -1553,6 +1566,8 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         syncroomll = (LinearLayout) findViewById(R.id.syncroomll);
         syncdisplayoutline = (RelativeLayout) findViewById(R.id.syncdisplayoutline);
         syncdisplayoutline.setOnClickListener(this);
+        syncdisplaynote = (RelativeLayout) findViewById(R.id.syncdisplaynote);
+        syncdisplaynote.setOnClickListener(this);
         syncdisplayshare = (RelativeLayout) findViewById(R.id.syncdisplayshare);
         syncdisplayshare.setOnClickListener(this);
         syncyinxiang = (RelativeLayout) findViewById(R.id.syncyinxiang);
@@ -2612,12 +2627,30 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             }
         });
 
-        ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELIST, new ServiceInterfaceListener() {
+        ServiceInterfaceTools.getinstance().getNoteListV2(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + AppConfig.UserID, ServiceInterfaceTools.GETNOTELISTV2, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
                 List<NoteDetail> noteDetails = (List<NoteDetail>) object;
                 if (noteDetails != null && noteDetails.size() > 0) {
                     notifyDrawNotes(noteDetails, 0);
+                }
+                if (isTwinkleBookNote) {
+                    twinkleBookNote(linkID);
+                }
+                if (!TextUtils.isEmpty(selectCusterId)) {
+                    ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
+                        @Override
+                        public void getServiceReturnData(Object object) {
+                            List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+                            if (noteDetails != null && noteDetails.size() > 0) {
+                                notifyDrawNotes(noteDetails, 1);
+                            }
+                            if (isTwinkleBookNote) {
+                                twinkleBookNote(linkID);
+                            }
+                            isTwinkleBookNote = false;
+                        }
+                    });
                 }
             }
         });
@@ -3243,6 +3276,12 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 menu.setImageResource(R.drawable.icon_menu);
                 wv_show.load("javascript:CheckZoom()", null);
                 break;
+            case R.id.syncdisplaynote:
+                openNotePopup();
+                notifyTvNoteOpenOrClose(1,selectCusterId);
+                syncroomll.setVisibility(View.GONE);
+                menu.setImageResource(R.drawable.icon_menu);
+                break;
             case R.id.syncdisplaymembers:
                 openMemberPopup();
                 syncroomll.setVisibility(View.GONE);
@@ -3377,6 +3416,92 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 break;
             default:
                 break;
+        }
+    }
+
+    private String selectCusterId;
+
+    private void openNotePopup() {
+        if (TextUtils.isEmpty(selectCusterId)) {
+            selectCusterId = AppConfig.UserID;
+        }
+        gotoOtherNoteList(selectCusterId);
+    }
+
+
+    /**
+     * 进入笔记列表
+     */
+    private SyncRoomOtherNoteListPopup syncRoomOtherNoteListPopup;
+
+    private void gotoOtherNoteList(String userid) {
+        syncRoomOtherNoteListPopup = new SyncRoomOtherNoteListPopup();
+        syncRoomOtherNoteListPopup.getPopwindow(SyncBookActivity.this);
+        syncRoomOtherNoteListPopup.setWebCamPopupListener(new SyncRoomOtherNoteListPopup.WebCamPopupListener() {
+            @Override
+            public void select(NoteDetail noteDetail) {
+                switchPdf(noteDetail);
+            }
+
+            @Override
+            public void notifychangeUserid(String userId) {
+                selectCusterId = userId;
+            }
+
+            @Override
+            public void close() {
+                notifyTvNoteOpenOrClose(0,selectCusterId);
+            }
+
+        });
+        syncRoomOtherNoteListPopup.StartPop(userid, meetingId);
+
+    }
+
+    private void notifyTvNoteOpenOrClose(int type,String useid) {
+        JSONObject actionJson = new JSONObject();
+        try {
+            actionJson.put("actionType", 1820);
+            // 1表示打开 0表示关闭
+            actionJson.put("stat", type);
+            actionJson.put("useId", useid);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        send_message("SEND_MESSAGE", AppConfig.UserToken, 0, null, Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
+
+    }
+
+    /**
+     * 切换带笔记对应的文档
+     */
+
+    private int linkID;
+    private boolean isTwinkleBookNote = false;
+
+    private void switchPdf(NoteDetail noteDetail) {
+        int attachmentid = noteDetail.getDocumentItemID();
+        int pagenumber = noteDetail.getPageNumber();
+        linkID = noteDetail.getLinkID();
+        if (documentList.size() > 0) {
+            for (LineItem lineItem : documentList) {
+                Log.e("switchPdf", attachmentid + "   " + lineItem.getAttachmentID());
+                if (lineItem.getAttachmentID().equals(attachmentid + "")) {
+                    Log.e("switchPdf22", attachmentid + "   " + lineItem.getAttachmentID());
+                    currentAttachmentPage = pagenumber + "";
+                    AppConfig.currentPageNumber = pagenumber + "";
+                    currentShowPdf = lineItem;
+                    currentShowPdf.setSelect(true);
+                    currentAttachmentId = currentShowPdf.getAttachmentID();
+                    currentItemId = currentShowPdf.getItemId();
+                    targetUrl = currentShowPdf.getUrl();
+                    newPath = currentShowPdf.getNewPath();
+                    isTwinkleBookNote = true;
+                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage);
+                    loadWebIndex();
+                    break;
+                }
+            }
         }
     }
 

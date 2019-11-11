@@ -1619,7 +1619,19 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                             initMute(false);
                             openVideoByViewType();
                         }
-                    } else if (jsonObject.getInt("actionType") == 21) {
+                    }else if (jsonObject.getInt("actionType") == 1820) {
+                        String userid=jsonObject.getString("useId");
+                        if (jsonObject.getInt("stat") == 0) {
+                            if(syncRoomOtherNoteListPopup != null){
+                                syncRoomOtherNoteListPopup.dismiss();
+                            }
+                        } else if (jsonObject.getInt("stat") == 1) {
+                            if(syncRoomOtherNoteListPopup == null && !syncRoomOtherNoteListPopup.isShowing()){
+                                selectCusterId=userid;
+                                openNotePopup();
+                            }
+                        }
+                    }  else if (jsonObject.getInt("actionType") == 21) {
                         if (jsonObject.getInt("isHide") == 0) {
 //                            initMute(true);  // SHOW
                             if (isShowDefaultVideo == false) {
@@ -4522,6 +4534,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 break;
             case R.id.syncdisplaynote:
                 openNotePopup();
+                notifyTvNoteOpenOrClose(1,selectCusterId);
                 menu_linearlayout.setVisibility(View.GONE);
                 menu.setImageResource(R.drawable.icon_menu);
                 break;
@@ -4801,8 +4814,27 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 selectCusterId = userId;
             }
 
+            @Override
+            public void close() {
+                notifyTvNoteOpenOrClose(0,selectCusterId);
+            }
+
         });
         syncRoomOtherNoteListPopup.StartPop(userid, lessonId);
+
+    }
+
+    private void notifyTvNoteOpenOrClose(int type,String useid) {
+        JSONObject actionJson = new JSONObject();
+        try {
+            actionJson.put("actionType", 1820);
+            // 1表示打开 0表示关闭
+            actionJson.put("stat", type);
+            actionJson.put("useId", useid);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        send_message("SEND_MESSAGE", AppConfig.UserToken, 0, null, Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
 
     }
 
