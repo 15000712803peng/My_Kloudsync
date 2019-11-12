@@ -3825,11 +3825,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     private String selectCusterId;
 
     private void openNotePopup() {
-//        if (TextUtils.isEmpty(selectCusterId)) {
-//            gotosyncRoomNote(selectCusterId);
-//        } else {
-//            gotoOtherNoteList(selectCusterId);
-//        }
         if (TextUtils.isEmpty(selectCusterId)) {
             selectCusterId = AppConfig.UserID;
         }
@@ -3853,6 +3848,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void notifychangeUserid(String userId) {
                 selectCusterId = userId;
+                loadNoteWhenChangeUser(userId);
             }
 
             @Override
@@ -3891,22 +3887,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         int pagenumber = noteDetail.getPageNumber();
 
         if ((attachmentid + "").equals(currentAttachmentId) && (pagenumber + "").equals(currentAttachmentPage)) {
-            if (!TextUtils.isEmpty(selectCusterId)) {
-                if (selectCusterId.equals(AppConfig.UserID)) {
-                    //清除别人的日记
-                    clearBookNote(false, true);
-                }
-                ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
-                    @Override
-                    public void getServiceReturnData(Object object) {
-                        List<NoteDetail> noteDetails = (List<NoteDetail>) object;
-                        if (noteDetails != null && noteDetails.size() > 0) {
-                            notifyDrawNotes(noteDetails, 1);
-                        }
-                        twinkleBookNote(noteDetail.getLinkID());
-                    }
-                });
-            }
+            twinkleBookNote(noteDetail.getLinkID());
             return;
         }
 
@@ -3929,6 +3910,26 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                     loadWebIndex();
                     break;
                 }
+            }
+        }
+    }
+
+
+    private void loadNoteWhenChangeUser(String userId) {
+        if (!TextUtils.isEmpty(userId)) {
+            if (userId.equals(AppConfig.UserID)) {
+                //清除别人的日记
+                clearBookNote(false, true);
+            } else {//加载别人的日记
+                ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + userId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+                        if (noteDetails != null && noteDetails.size() > 0) {
+                            notifyDrawNotes(noteDetails, 1);
+                        }
+                    }
+                });
             }
         }
     }
