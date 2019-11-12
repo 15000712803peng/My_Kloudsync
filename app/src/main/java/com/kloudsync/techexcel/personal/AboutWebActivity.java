@@ -1,30 +1,16 @@
 package com.kloudsync.techexcel.personal;
 
-import android.annotation.TargetApi;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.transition.Slide;
-import android.transition.Transition;
-import android.transition.Visibility;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
-import com.kloudsync.techexcel.pc.ui.ChangePasswordActivity;
 
 public class AboutWebActivity extends AppCompatActivity {
 

@@ -3890,26 +3890,25 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         int attachmentid = noteDetail.getDocumentItemID();
         int pagenumber = noteDetail.getPageNumber();
 
-//        if ((attachmentid + "").equals(currentAttachmentId) && (pagenumber + "").equals(currentAttachmentPage)) {
-//            if (selectCusterId.equals(AppConfig.UserID)) {
-//                //清除别人的日记
-//                clearBookNote(false,true);
-//            }
-//
-//            if (!TextUtils.isEmpty(selectCusterId)) {
-//                ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
-//                    @Override
-//                    public void getServiceReturnData(Object object) {
-//                        List<NoteDetail> noteDetails = (List<NoteDetail>) object;
-//                        if (noteDetails != null && noteDetails.size() > 0) {
-//                            notifyDrawNotes(noteDetails, 1);
-//                        }
-//                        twinkleBookNote(noteDetail.getLinkID());
-//                    }
-//                });
-//            }
-//            return;
-//        }
+        if ((attachmentid + "").equals(currentAttachmentId) && (pagenumber + "").equals(currentAttachmentPage)) {
+            if (!TextUtils.isEmpty(selectCusterId)) {
+                if (selectCusterId.equals(AppConfig.UserID)) {
+                    //清除别人的日记
+                    clearBookNote(false, true);
+                }
+                ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+                        if (noteDetails != null && noteDetails.size() > 0) {
+                            notifyDrawNotes(noteDetails, 1);
+                        }
+                        twinkleBookNote(noteDetail.getLinkID());
+                    }
+                });
+            }
+            return;
+        }
 
         linkID = noteDetail.getLinkID();
         if (documentList.size() > 0) {
@@ -6401,10 +6400,9 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             JSONObject clearnote = new JSONObject();
             clearnote.put("ClearMe", clearme);
             clearnote.put("ClearOther", clearother);
-            Log.e("clearBookNote",clearnote.toString());
-            if (wv_show != null) {
-                wv_show.load("javascript:ClearBookNote(" + clearnote + ")", null);
-            }
+            String key = "ClearBookNote";
+            Log.e("ClearBookNote", clearnote.toString() + "");
+            wv_show.load("javascript:FromApp('" + key + "'," + clearnote + ")", null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
