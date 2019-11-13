@@ -95,6 +95,7 @@ public class SyncRoomOtherNoteListPopup {
             @Override
             public void onCancel(DialogInterface dialog) {
                 dismiss();
+                webCamPopupListener.close();
             }
         });
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -192,6 +193,8 @@ public class SyncRoomOtherNoteListPopup {
         void select(NoteDetail noteDetail);
 
         void notifychangeUserid(String userId);
+
+        void close();
     }
 
     public void setWebCamPopupListener(WebCamPopupListener webCamPopupListener) {

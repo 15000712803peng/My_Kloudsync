@@ -1,5 +1,4 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -9,13 +8,13 @@
 
 
     <RelativeLayout
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="16dp"
-        android:background="#e6ffffff"
-        android:paddingRight="18dp"
         android:id="@+id/rl_contacts_portrait"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="20dp"
+        android:background="#e6ffffff"
+        android:paddingRight="18dp">
 
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/contacts_portrait"
@@ -46,32 +45,32 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:textSize="16sp"
                     android:id="@+id/tv_pc_account_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:textColor="#333333" />
+                    android:textColor="#333333"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
             <TextView
-                android:textSize="14dp"
                 android:id="@+id/tv_pc_account_level"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:textColor="#999999" />
+                android:textColor="#999999"
+                android:textSize="14dp" />
         </LinearLayout>
 
 
         <ImageView
-            android:padding="2dp"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
+            android:padding="2dp"
             android:src="@drawable/arrow2" />
     </RelativeLayout>
 
@@ -86,12 +85,14 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:background="#e6ffffff"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="#e6ffffff"
+                android:orientation="vertical">
 
                 <com.kloudsync.techexcel.ui.MaskViewGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="18dp"
                     app:containerCornerRadius="16dp"
@@ -100,22 +101,21 @@
                     app:containerShadowRadius="6dp"
                     app:deltaX="0dp"
                     app:deltaY="3dp"
-                    app:enable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    app:enable="true">
+
                     <RelativeLayout
                         android:id="@+id/lin_switch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:paddingBottom="12dp"
-                        android:paddingTop="12dp"
                         android:background="@drawable/team_bg"
                         android:gravity="center_vertical"
 
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingBottom="12dp"
+                        android:paddingTop="12dp">
 
                         <ImageView
                             android:id="@+id/switchteam"
@@ -127,31 +127,28 @@
                             android:src="@drawable/icon_company" />
 
 
-
                         <TextView
-                            android:layout_centerVertical="true"
-                            android:layout_toRightOf="@id/switchteam"
-                            android:singleLine="false"
-                            android:layout_marginLeft="10dp"
-                            android:maxLines="2"
                             android:id="@+id/tv_sname"
-                            android:gravity="left"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="10dp"
+                            android:layout_toRightOf="@id/switchteam"
+                            android:gravity="left"
+                            android:maxLines="2"
+                            android:singleLine="false"
                             android:text="Medical team of Beijing long long"
                             android:textColor="@color/white"
                             android:textSize="15sp" />
 
                         <ImageView
-                            android:layout_marginRight="20dp"
-                            android:layout_alignParentRight="true"
-                            android:src="@drawable/switch_white"
-                            android:layout_marginLeft="6dp"
-                            android:layout_centerVertical="true"
                             android:layout_width="22dp"
-                            android:layout_height="22dp" />
-
-
+                            android:layout_height="22dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="6dp"
+                            android:layout_marginRight="20dp"
+                            android:src="@drawable/switch_white" />
 
 
                     </RelativeLayout>
@@ -159,13 +156,12 @@
                 </com.kloudsync.techexcel.ui.MaskViewGroup>
 
 
-
                 <RelativeLayout
-                    android:padding="12dp"
                     android:id="@+id/rl_pc_klassroomID"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/pc_white">
+                    android:background="@color/pc_white"
+                    android:padding="12dp">
 
                     <ImageView
                         android:id="@+id/img_pc_meeting_id"
@@ -185,39 +181,37 @@
                         android:textColor="@color/pc_black_text" />
 
                     <TextView
-                        android:padding="2dp"
-                        android:background="@drawable/corners_white"
                         android:id="@+id/tv_roomid"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:text="H4226"
                         android:layout_toLeftOf="@+id/arrow_id_right"
-                        android:textSize="14sp"
+                        android:background="@drawable/corners_white"
+                        android:ellipsize="end"
                         android:gravity="center_vertical"
+                        android:padding="2dp"
                         android:singleLine="true"
-                        android:textColor="#999999" />
+                        android:text="H4226"
+                        android:textColor="#999999"
+                        android:textSize="14sp" />
 
                     <ImageView
-                        android:padding="2dp"
                         android:id="@+id/arrow_id_right"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="16dp"
+                        android:padding="2dp"
                         android:src="@drawable/arrow2" />
                 </RelativeLayout>
 
 
-
-
                 <RelativeLayout
-                    android:padding="12dp"
                     android:id="@+id/rl_cn_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/pc_white">
+                    android:background="@color/pc_white"
+                    android:padding="12dp">
 
                     <ImageView
                         android:id="@+id/img_pc_account"
@@ -238,23 +232,22 @@
 
 
                     <ImageView
-                        android:padding="2dp"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="16dp"
+                        android:padding="2dp"
                         android:src="@drawable/arrow2" />
                 </RelativeLayout>
 
 
-
                 <RelativeLayout
-                    android:padding="12dp"
                     android:id="@+id/rl_cn_account_setting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/pc_white">
+                    android:background="@color/pc_white"
+                    android:padding="12dp">
 
                     <ImageView
                         android:id="@+id/img_pc_account_setting"
@@ -275,12 +268,12 @@
 
 
                     <ImageView
-                        android:padding="2dp"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="16dp"
+                        android:padding="2dp"
                         android:src="@drawable/arrow2" />
                 </RelativeLayout>
 
@@ -288,21 +281,19 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="16dp"/>
-
-
-
-            <View
-                android:background="#fff7f7f7"
-                android:layout_width="match_parent"
-                android:layout_height="10dp"/>
-
-
+                android:layout_height="16dp" />
 
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="16dp"/>
+                android:layout_height="10dp"
+                android:background="#fff7f7f7" />
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
             <RelativeLayout
                 android:id="@+id/rl_school_name"
                 android:layout_width="match_parent"
@@ -338,16 +329,14 @@
             </RelativeLayout>
 
 
-
-
             <!-- 专业领域 -->
 
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/rl_pc_professionalField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/pc_white"
+                android:padding="12dp"
                 android:visibility="gone">
 
                 <ImageView
@@ -392,11 +381,11 @@
             <!-- 专业领域 -->
 
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/rl_teacher_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/pc_white"
+                android:padding="12dp"
                 android:visibility="gone">
 
                 <ImageView
@@ -427,12 +416,12 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/ll_pc_publish_article"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="@color/pc_white"
+                android:padding="12dp"
                 android:visibility="gone">
 
                 <ImageView
@@ -476,11 +465,11 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/ll_pc_integral"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/pc_white"
+                android:padding="12dp"
                 android:visibility="gone">
 
                 <ImageView
@@ -524,11 +513,11 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/rl_pc_synctv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/pc_white">
+                android:background="@color/pc_white"
+                android:padding="12dp">
 
                 <ImageView
                     android:id="@+id/img_pc_synctv"
@@ -549,25 +538,22 @@
                     android:textColor="@color/pc_black_text" />
 
                 <ImageView
-                    android:padding="2dp"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
+                    android:padding="2dp"
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
 
-
-
-
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/ll_pc_collection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/pc_white">
+                android:background="@color/pc_white"
+                android:padding="12dp">
 
                 <ImageView
                     android:id="@+id/img_pc_collection"
@@ -585,7 +571,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_collection"
                     android:text="@string/saved"
-                    android:textColor="@color/pc_black_text"/>
+                    android:textColor="@color/pc_black_text" />
 
                 <TextView
                     android:id="@+id/pc_collection"
@@ -600,13 +586,63 @@
                     android:textColor="@color/black" />
 
                 <ImageView
-                    android:padding="2dp"
                     android:id="@+id/arrow15"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
+                    android:padding="2dp"
+                    android:src="@drawable/arrow2" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/ll_pc_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/pc_white"
+                android:padding="12dp">
+
+                <ImageView
+                    android:id="@+id/img_pc_note"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/icon_mynote" />
+
+                <TextView
+                    android:id="@+id/tv_pc_note"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@+id/img_pc_note"
+                    android:text="@string/mynote"
+                    android:textColor="@color/pc_black_text" />
+
+                <TextView
+                    android:id="@+id/pc_note"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@+id/arrownote"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical|right"
+                    android:singleLine="true"
+                    android:text="(BOOX)"
+                    android:textColor="#999999" />
+
+                <ImageView
+                    android:id="@+id/arrownote"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="16dp"
+                    android:padding="2dp"
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
@@ -614,11 +650,11 @@
             <!-- 我的资格认证 -->
 
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/rl_pc_portrait"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/pc_white"
+                android:padding="12dp"
                 android:visibility="gone">
 
                 <ImageView
@@ -665,12 +701,12 @@
 
 
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/rl_pc_effective"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="@color/pc_white"
+                android:padding="12dp"
                 android:visibility="gone">
 
                 <ImageView
@@ -714,13 +750,12 @@
             </RelativeLayout>
 
 
-
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/rl_pc_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/pc_white">
+                android:background="@color/pc_white"
+                android:padding="12dp">
 
                 <ImageView
                     android:id="@+id/img_pc_password"
@@ -738,26 +773,26 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_password"
                     android:text="@string/change_password"
-                    android:textColor="@color/pc_black_text"/>
+                    android:textColor="@color/pc_black_text" />
 
                 <ImageView
-                    android:padding="2dp"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
+                    android:padding="2dp"
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
 
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/rl_pc_hc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/pc_white"
 
-                android:background="@color/pc_white">
+                android:padding="12dp">
 
                 <ImageView
                     android:id="@+id/img_pc_hc"
@@ -778,22 +813,22 @@
                     android:textColor="@color/pc_black_text" />
 
                 <ImageView
-                    android:padding="2dp"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
+                    android:padding="2dp"
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
 
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/rl_pc_sk"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/pc_white"
+                android:padding="12dp"
                 android:visibility="visible">
 
                 <ImageView
@@ -815,22 +850,22 @@
                     android:textColor="@color/pc_black_text" />
 
                 <ImageView
-                    android:padding="2dp"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
+                    android:padding="2dp"
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
 
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/rl_pc_language"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/pc_white">
+                android:background="@color/pc_white"
+                android:padding="12dp">
 
                 <ImageView
                     android:id="@+id/img_pc_language"
@@ -848,8 +883,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_language"
                     android:text="@string/language2"
-                    android:textColor="@color/pc_black_text"
-                    />
+                    android:textColor="@color/pc_black_text" />
 
                 <TextView
                     android:id="@+id/pc_tv_language"
@@ -861,28 +895,27 @@
                     android:gravity="center_vertical"
                     android:singleLine="true"
                     android:text="xxx"
-                    android:textSize="12sp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
 
                 <ImageView
-                    android:padding="2dp"
                     android:id="@+id/arrow123"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
+                    android:padding="2dp"
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
 
-
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/rl_pc_about"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/pc_white">
+                android:background="@color/pc_white"
+                android:padding="12dp">
 
                 <ImageView
                     android:id="@+id/img_pc_about"
@@ -900,27 +933,26 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_about"
                     android:text="@string/About"
-                    android:textColor="@color/pc_black_text"
-                    />
+                    android:textColor="@color/pc_black_text" />
 
                 <ImageView
-                    android:padding="2dp"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
+                    android:padding="2dp"
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
 
             <RelativeLayout
-                android:visibility="gone"
-                android:padding="12dp"
                 android:id="@+id/rl_guide"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/pc_white">
+                android:background="@color/pc_white"
+                android:padding="12dp"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/img_guide"
@@ -951,11 +983,11 @@
 
 
             <RelativeLayout
-                android:padding="12dp"
                 android:id="@+id/rl_pc_loginout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/pc_white">
+                android:background="@color/pc_white"
+                android:padding="12dp">
 
                 <ImageView
                     android:id="@+id/img_logout"
@@ -966,17 +998,15 @@
                     android:src="@drawable/icon_logout" />
 
                 <TextView
-                    android:text="@string/login_out"
-                    android:layout_toRightOf="@id/img_logout"
                     android:id="@+id/tv_pc_loginout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="16dp"
-                    android:textColor="@color/red2"
-                    />
+                    android:layout_toRightOf="@id/img_logout"
+                    android:text="@string/login_out"
+                    android:textColor="@color/red2" />
             </RelativeLayout>
-
 
 
         </LinearLayout>

@@ -235,7 +235,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private ProgressBar mProgressBar;
     private String studentid;
     private String teacherid;
-    public static String meetingId;
+    private String meetingId;
     private String lessonId;
     private int isInstantMeeting; // 1 新的课程   旧的课程
     private int identity = 0;
@@ -1174,6 +1174,18 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
                     } else if (jsonObject.getInt("actionType") == 15) { //收到关闭自己的Video
 
+                    }else if (jsonObject.getInt("actionType") == 1820) {
+                        String userid=jsonObject.getString("useId");
+                        if (jsonObject.getInt("stat") == 0) {
+                            if(syncRoomOtherNoteListPopup != null){
+                                syncRoomOtherNoteListPopup.dismiss();
+                            }
+                        } else if (jsonObject.getInt("stat") == 1) {
+                            if(syncRoomOtherNoteListPopup == null && !syncRoomOtherNoteListPopup.isShowing()){
+                                selectCusterId=userid;
+                                openNotePopup();
+                            }
+                        }
                     } else if (jsonObject.getInt("actionType") == 21) {
                     } else if (jsonObject.getInt("actionType") == 24) {
                         String newMeetingid = jsonObject.getString("meetingID");

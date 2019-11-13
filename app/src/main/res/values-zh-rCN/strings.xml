@@ -183,6 +183,8 @@
     <string name="course2">系统课程模板</string>
     <string name="credit">我的课程</string>
     <string name="saved">我的收藏</string>
+    <string name="mynote">我的笔记</string>
+
     <string name="areas">专业领域</string>
     <string name="about_me">个人简介</string>
     <string name="valid_membership">会员有效期</string>

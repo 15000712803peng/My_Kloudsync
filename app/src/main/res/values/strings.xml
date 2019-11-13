@@ -183,8 +183,9 @@
     <string name="course">My course Template</string>
     <string name="course2">System course Template</string>
     <string name="credit">Activity</string>
-    <string name="saved">My Saved File</string>
     <string name="areas">Areas</string>
+    <string name="saved">My Saved File</string>
+    <string name="mynote">My Note</string>
     <string name="about_me">About me</string>
     <string name="valid_membership">Valid membership</string>
     <string name="change_password">Change password</string>

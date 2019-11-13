@@ -1670,17 +1670,15 @@ public class ServiceInterfaceTools {
                         JSONObject lineitem = returnjson.getJSONObject("RetData");
                         Note note = new Note();
                         note.setLocalFileID(lineitem.getString("LocalFileID"));
-                        note.setPageNumber(lineitem.getInt("PageNumber"));
-                        note.setDocumentItemID(lineitem.getInt("DocumentItemID"));
                         note.setFileName(lineitem.getString("Title"));
                         note.setAttachmentUrl(lineitem.getString("AttachmentUrl"));
                         note.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
                         note.setAttachmentID(lineitem.getInt("AttachmentID"));
+                        note.setNoteID(lineitem.getInt("NoteID"));
                         Message msg = Message.obtain();
                         msg.obj = note;
                         msg.what = code;
                         handler.sendMessage(msg);
-
                     } else {
                         Message msg3 = Message.obtain();
                         msg3.what = ERRORMESSAGE;
@@ -1762,7 +1760,7 @@ public class ServiceInterfaceTools {
                             Note item = new Note();
                             item.setNoteID(lineitem.getInt("NoteID"));
                             item.setLocalFileID(lineitem.getString("LocalFileID"));
-                            item.setFileName(lineitem.getString("Title"));
+                            item.setTitle(lineitem.getString("Title"));
                             item.setFileID(lineitem.getInt("FileID"));
                             item.setFileName(lineitem.getString("FileName"));
                             item.setAttachmentUrl(lineitem.getString("AttachmentUrl"));

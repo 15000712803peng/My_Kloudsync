@@ -810,6 +810,49 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     }
 
+    private void followChangeFile(LineItem lineItem) {
+        Log.e("dddddd", documentList.size() + "");
+        if (documentList.size() > 0) {
+            if (lineItem == null || TextUtils.isEmpty(lineItem.getItemId()) || lineItem.getItemId().equals("0")) {
+                lineItem = documentList.get(0);
+                lineItem.setSelect(true);
+            } else {
+                for (int i = 0; i < documentList.size(); i++) {
+                    LineItem lineItem1 = documentList.get(i);
+                    if (lineItem.getItemId().equals(lineItem1.getItemId())) {
+                        lineItem1.setSelect(true);
+                        lineItem = lineItem1;
+                    } else {
+                        lineItem1.setSelect(false);
+                    }
+                }
+            }
+
+            if(!lineItem.isSelect()){  //lineitem 不在pdf列表中
+
+                String noteid=lineItem.getItemId();
+                String url=AppConfig.URL_PUBLIC+"DocumentNote/Item?noteID="+noteid;
+                ServiceInterfaceTools.getinstance().getNoteByNoteId(url, ServiceInterfaceTools.GETNOTEBYNOTEID, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        Note note= (Note) object;
+                        displayNoteTv(note);
+                    }
+                });
+            }else{
+                currentAttachmentId = lineItem.getAttachmentID();
+                currentItemId = lineItem.getItemId();
+                targetUrl = lineItem.getUrl();
+                newPath = lineItem.getNewPath();
+                Log.e("dddddd", currentAttachmentId + "  " + currentItemId + "  " + targetUrl + "  " + newPath);
+                loadWebIndex();
+
+            }
+
+        }
+
+    }
+
     /**
      * invate meeting  设置收到旁听者的信息
      *
@@ -1491,10 +1534,11 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                         lineitem.setItemId(jsonObject.getString("itemId"));
                         currentAttachmentPage = jsonObject.getString("pageNumber");
                         AppConfig.currentPageNumber = jsonObject.getString("pageNumber");
-                        Message documentMsg = Message.obtain();
-                        documentMsg.obj = lineitem;
-                        documentMsg.what = 0x1205;
-                        handler.sendMessage(documentMsg);
+//                        Message documentMsg = Message.obtain();
+//                        documentMsg.obj = lineitem;
+//                        documentMsg.what = 0x1205;
+//                        handler.sendMessage(documentMsg);
+                        followChangeFile(lineitem);
 
                     } else if (jsonObject.getInt("actionType") == 9) { // 直播视频大小切换
                         Log.e("dddddddddddd", currentMode);
@@ -1589,7 +1633,19 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                             initMute(false);
                             openVideoByViewType();
                         }
-                    } else if (jsonObject.getInt("actionType") == 21) {
+                    }else if (jsonObject.getInt("actionType") == 1820) {
+                        String userid=jsonObject.getString("useId");
+                        if (jsonObject.getInt("stat") == 0) {
+                            if(syncRoomOtherNoteListPopup != null){
+                                syncRoomOtherNoteListPopup.dismiss();
+                            }
+                        } else if (jsonObject.getInt("stat") == 1) {
+                            if(syncRoomOtherNoteListPopup == null && !syncRoomOtherNoteListPopup.isShowing()){
+                                selectCusterId=userid;
+                                openNotePopup();
+                            }
+                        }
+                    }  else if (jsonObject.getInt("actionType") == 21) {
                         if (jsonObject.getInt("isHide") == 0) {
 //                            initMute(true);  // SHOW
                             if (isShowDefaultVideo == false) {
@@ -3361,7 +3417,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 if (isTwinkleBookNote) {
                     twinkleBookNote(linkID);
                 }
-                if (!TextUtils.isEmpty(selectCusterId)) {
+                if (!TextUtils.isEmpty(selectCusterId)&&!selectCusterId.equals(AppConfig.UserID)) {
                     ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
                         @Override
                         public void getServiceReturnData(Object object) {
@@ -4496,6 +4552,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 break;
             case R.id.syncdisplaynote:
                 openNotePopup();
+                notifyTvNoteOpenOrClose(1,selectCusterId);
                 menu_linearlayout.setVisibility(View.GONE);
                 menu.setImageResource(R.drawable.icon_menu);
                 break;
@@ -4743,11 +4800,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private String selectCusterId;
 
     private void openNotePopup() {
-//        if (TextUtils.isEmpty(selectCusterId)) {
-//            gotosyncRoomNote(selectCusterId);
-//        } else {
-//            gotoOtherNoteList(selectCusterId);
-//        }
         if (TextUtils.isEmpty(selectCusterId)) {
             selectCusterId = AppConfig.UserID;
         }
@@ -4773,10 +4825,50 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             @Override
             public void notifychangeUserid(String userId) {
                 selectCusterId = userId;
+                loadNoteWhenChangeUser(userId);
+            }
+
+            @Override
+            public void close() {
+                notifyTvNoteOpenOrClose(0,selectCusterId);
             }
 
         });
         syncRoomOtherNoteListPopup.StartPop(userid, lessonId);
+
+    }
+
+    private void loadNoteWhenChangeUser(String userId) {
+        if (!TextUtils.isEmpty(userId)) {
+            if (userId.equals(AppConfig.UserID)) {
+                //清除别人的日记
+                clearBookNote(false, true);
+            } else {//加载别人的日记
+                ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + userId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        List<NoteDetail> noteDetails = (List<NoteDetail>) object;
+                        if (noteDetails != null && noteDetails.size() > 0) {
+                            notifyDrawNotes(noteDetails, 1);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+
+    private void notifyTvNoteOpenOrClose(int type,String useid) {
+        JSONObject actionJson = new JSONObject();
+        try {
+            actionJson.put("actionType", 1820);
+            // 1表示打开 0表示关闭
+            actionJson.put("stat", type);
+            actionJson.put("useId", useid);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        send_message("SEND_MESSAGE", AppConfig.UserToken, 0, null, Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
 
     }
 
@@ -4787,9 +4879,14 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private int linkID;
     private boolean isTwinkleBookNote = false;
 
-    private void switchPdf(NoteDetail noteDetail) {
+    private void switchPdf(final NoteDetail noteDetail) {
         int attachmentid = noteDetail.getDocumentItemID();
         int pagenumber = noteDetail.getPageNumber();
+        if ((attachmentid + "").equals(currentAttachmentId) && (pagenumber + "").equals(currentAttachmentPage)) {
+            twinkleBookNote(noteDetail.getLinkID());
+            return;
+        }
+
         linkID = noteDetail.getLinkID();
         if (documentList.size() > 0) {
             for (LineItem lineItem : documentList) {
@@ -8956,19 +9053,11 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private void displayNote(Note note) {
         closenote = findViewById(R.id.closenote);
         closenote.setVisibility(View.VISIBLE);
-        //两个按钮
-        menu.setVisibility(View.GONE);
-        command_active.setVisibility(View.GONE);
         closenote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closenote.setVisibility(View.GONE);
-                menu.setVisibility(View.VISIBLE);
-                if (isPrepare) {
-                    command_active.setVisibility(View.GONE);
-                } else {
-                    command_active.setVisibility(View.VISIBLE);
-                }
+
                 for (int i = 0; i < documentList.size(); i++) {
                     documentList.get(i).setSelect(false);
                 }
@@ -9016,6 +9105,25 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         newPath = currentShowPdf.getNewPath();
 
         notifySwitchDocumentSocket(currentShowPdf, "1");
+        loadWebIndex();
+    }
+
+    private void displayNoteTv(Note note) {
+        closenote = findViewById(R.id.closenote);
+        closenote.setVisibility(View.GONE);
+
+        //重新赋值
+        currentAttachmentPage = "0";
+        AppConfig.currentPageNumber = "0";
+        currentShowPdf = new LineItem();
+        currentShowPdf.setUrl(note.getAttachmentUrl());
+        currentShowPdf.setItemId(note.getNoteID()+""); //同步笔记noteid
+        currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
+
+        currentAttachmentId = currentShowPdf.getAttachmentID();
+        currentItemId ="0";
+        targetUrl = currentShowPdf.getUrl();
+        newPath = currentShowPdf.getNewPath();
         loadWebIndex();
     }
 
@@ -9241,6 +9349,19 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             if (wv_show != null) {
                 wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void clearBookNote(boolean clearme, boolean clearother) {
+        try {
+            JSONObject clearnote = new JSONObject();
+            clearnote.put("ClearMe", clearme);
+            clearnote.put("ClearOther", clearother);
+            String key = "ClearBookNote";
+            Log.e("ClearBookNote", clearnote.toString() + "");
+            wv_show.load("javascript:FromApp('" + key + "'," + clearnote + ")", null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
