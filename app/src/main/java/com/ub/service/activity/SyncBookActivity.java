@@ -235,7 +235,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private ProgressBar mProgressBar;
     private String studentid;
     private String teacherid;
-    private String meetingId;
+    public static String meetingId;
     private String lessonId;
     private int isInstantMeeting; // 1 新的课程   旧的课程
     private int identity = 0;
@@ -329,7 +329,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private LinearLayout activte_linearlayout;
     private LinearLayout syncroomll;
     private RelativeLayout prepareStart, syncdisplayoutline, syncdisplaymembers, syncdisplaymeeting, syncdisplaychat, syncdisplayproperty, syncdisplayshare, syncyinxiang, syncdisplayquit, prepareScanTV;
-    public static boolean watch3instance = false;
+    public static boolean syncbookInstance = false;
     private TextView endtextview;
     private TextView prompt;
     private String changeNumber = "0";
@@ -661,7 +661,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         EventBus.getDefault().register(this);
         screenWidth = wm.getDefaultDisplay().getWidth();
         handler = new MyHandler(this);
-        watch3instance = true;
+        syncbookInstance = true;
         XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
 
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -680,7 +680,6 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         ishavedefaultpage = getIntent().getBooleanExtra("ishavedefaultpage", false);
         isTeamspace = getIntent().getBooleanExtra("isTeamspace", false);
         spaceId = getIntent().getIntExtra("spaceId", 0);
-
         Log.e("-------", targetUrl + "  " + "  meetingId: " + meetingId + "  identity : " + identity + "    isInstantMeeting :" + isInstantMeeting + "   lession: " + lessonId);
         if (meetingId.contains(",")) {
             isTeamspace = true;
@@ -1006,6 +1005,9 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         public void onReceive(Context context, Intent intent) {
 
             String message = intent.getStringExtra("message");
+            if(TextUtils.isEmpty(message)){
+                return;
+            }
             if (message.equals("disconnect")) {
                 poornetworkll.setVisibility(View.VISIBLE);
                 if (isHavePresenter()) {
@@ -1020,6 +1022,11 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 return;
             } else if (message.equals("connect")) {
                 poornetworkll.setVisibility(View.GONE);
+                return;
+            }
+
+            if(message.equals("LEAVE_MEETING")){
+                followLeaveMeeting();
                 return;
             }
             String msg = Tools.getFromBase64(message);
@@ -1268,11 +1275,13 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             //离开课程  返回的socket
             if (msg_action.equals("LEAVE_MEETING")) {  // 别人收到xx离开
                 doLEAVE_MEETING(msg);
+                closeCourse(0);
             }
             //老师 结束课程  所有人离开
             if (msg_action.equals("END_MEETING")) { //所有人都收到
                 finish();
             }
+
             if (msg_action.equals("HELLO")) {
                 AppConfig.isPresenter = isHavePresenter();
                 AppConfig.status = 1 + "";
@@ -5219,18 +5228,21 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             try {
                 JSONObject loginjson = new JSONObject();
                 if (id == 1) {
-                    loginjson.put("action", "END_MEETING");
+                    loginjson.put("action", "LEAVE_MEETING");
                 } else if (id == 0) {
                     loginjson.put("action", "LEAVE_MEETING");
                 }
                 loginjson.put("sessionId", AppConfig.UserToken);
+                loginjson.put("meetingId", meetingId);
                 String ss = loginjson.toString();
                 SpliteSocket.sendMesageBySocket(ss);
             } catch (JSONException e) {
-                finish();
+
                 e.printStackTrace();
             }
         }
+
+        finish();
     }
 
 
@@ -5870,7 +5882,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         AppConfig.status = "0";
         AppConfig.currentLine = 0;
         AppConfig.currentMode = "0";
-        watch3instance = false;
+        syncbookInstance = false;
         wl.release();
 
         if (broadcastReceiver != null) {
@@ -6436,6 +6448,23 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 displayNote(note);
             }
         });
+    }
+
+    private void followLeaveMeeting(){
+        if (mWebSocketClient != null) {
+            try {
+                JSONObject loginjson = new JSONObject();
+                loginjson.put("action", "LEAVE_MEETING");
+                loginjson.put("sessionId", AppConfig.UserToken);
+                loginjson.put("meetingId", meetingId);
+                loginjson.put("followToLeave", 1);
+                String ss = loginjson.toString();
+                SpliteSocket.sendMesageBySocket(ss);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        finish();
     }
 
 

@@ -203,6 +203,9 @@ public interface TempleteCourse_interface {
     @GET
     Call<ResponseBody> getUserPreference(@Header("UserToken") String userToken);
 
+    @GET()
+    Call<ResponseBody> getLessionIdByItemId(@Url String url, @Header("UserToken") String userToken);
+
 
 
 

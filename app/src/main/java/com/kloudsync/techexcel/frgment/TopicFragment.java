@@ -213,7 +213,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
             //syncbook
             Intent intent = new Intent(getActivity(), SyncBookActivity.class);
             intent.putExtra("userid", AppConfig.UserID);
-            intent.putExtra("meetingId", "SR-" + AppConfig.UserID);
+            intent.putExtra("meetingId", syncRoomBean.getItemID() + "," + AppConfig.UserID);
             intent.putExtra("isTeamspace", true);
             intent.putExtra("yinxiangmode", 0);
             intent.putExtra("identity", 2);
@@ -227,7 +227,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
         }else {
             Intent intent = new Intent(getActivity(), SyncRoomActivity.class);
             intent.putExtra("userid", AppConfig.UserID);
-            intent.putExtra("meetingId", "SR-" + AppConfig.UserID);
+            intent.putExtra("meetingId", syncRoomBean.getItemID() + "," + AppConfig.UserID);
             intent.putExtra("isTeamspace", true);
             intent.putExtra("yinxiangmode", 0);
             intent.putExtra("identity", 2);

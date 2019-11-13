@@ -116,6 +116,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                     heartBeatMessage.put("currentPageNumber", AppConfig.currentPageNumber);
                     heartBeatMessage.put("currentItemId", AppConfig.currentDocId);
                 }
+
                 if (kloudWebClient != null) {
                     kloudWebClient.send(heartBeatMessage.toString());
                     Log.e("KloundWebClientManager","send heart beat message:" + heartBeatMessage.toString());
@@ -149,6 +150,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
             heartBeatTimer.cancel();
             heartBeatTimer = null;
             heartBeatTask = null;
+            heartBeatStarted = false;
             instance = null;
         }
     }

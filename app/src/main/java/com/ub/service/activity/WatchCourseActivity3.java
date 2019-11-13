@@ -263,7 +263,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private ProgressBar mProgressBar;
     private String studentid;
     private String teacherid;
-    private String meetingId;
+    public static  String meetingId;
     private String lessonId;
     private int isInstantMeeting; // 1 新的课程   旧的课程
     private boolean isHtml = false;
@@ -393,6 +393,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private boolean isPrepare = false;  //是否备课
 
     public static boolean watch3instance = false;
+    public static boolean isInMeeting = false;
     private TextView endtextview;
     //    private boolean isrefresh = false;
     private TextView prompt;
@@ -934,6 +935,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         if (meetingId.contains(",")) {
             lessonId = meetingId.substring(0, meetingId.lastIndexOf(","));
         }
+
         imageLoader = new ImageLoader(this);
         cache = new File(Environment.getExternalStorageDirectory(), "Image");
         if (!cache.exists()) {
@@ -1244,7 +1246,10 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             JSONObject jsonObject = new JSONObject(msg);
             changeNumber = jsonObject.getString("changeNumber");
             JSONObject retdata = jsonObject.getJSONObject("retData");
-
+            if(retdata.has("type")){
+                isInMeeting = (retdata.getInt("type") == 0);
+                roomType = retdata.getInt("type");
+            }
             JSONArray jsonArray = retdata.getJSONArray("usersList");
             List<Customer> joinlist = Tools.getUserListByJoinMeeting(jsonArray);
 
@@ -1357,6 +1362,9 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         public void onReceive(Context context, Intent intent) {
 
             String message = intent.getStringExtra("message");
+            if(TextUtils.isEmpty(message)){
+                return;
+            }
             if (message.equals("disconnect")) {
                 poornetworkll.setVisibility(View.VISIBLE);
                 if (isHavePresenter()) {
@@ -1371,6 +1379,11 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 return;
             } else if (message.equals("connect")) {
                 poornetworkll.setVisibility(View.GONE);
+                return;
+            }
+
+            if(message.equals("LEAVE_MEETING")){
+                followLeaveMeeting();
                 return;
             }
 
@@ -1412,6 +1425,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     e.printStackTrace();
                 }
             }
+
             /**
              * 邀请学生加入声网 成功回调
              */
@@ -1630,7 +1644,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 try {
                     JSONObject jsonObject = new JSONObject(Tools.getFromBase64(d));
                     if (jsonObject.getInt("actionType") == 11) {
-                        lessonId = jsonObject.getString("incidentID");
+//                        lessonId = jsonObject.getString("incidentID");
                         getServiceDetail();
                     }
                 } catch (Exception e) {
@@ -1701,6 +1715,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             //离开课程  返回的socket
             if (msg_action.equals("LEAVE_MEETING")) {  // 别人收到xx离开
                 doLEAVE_MEETING(msg);
+                closeCourse(0);
             }
             //老师 结束课程  所有人离开
             if (msg_action.equals("END_MEETING")) { //所有人都收到
@@ -3104,6 +3119,9 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    if(wv_show == null){
+                        return;
+                    }
                     wv_show.load("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ")", null);
                     wv_show.load("javascript:Record()", null);
                     userSetting();
@@ -4889,6 +4907,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                                                 break;
                                             }
                                         }
+
                                         Log.e("devices", device.getDeviceName() + "  " + device.getDeviceSessionId() + "  " + device.getLoginTime() + " " + device.getUserID());
                                     }
                                     if (tvDevicesListPopup != null) {
@@ -6759,18 +6778,42 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             try {
                 JSONObject loginjson = new JSONObject();
                 if (id == 1) {
-                    loginjson.put("action", "END_MEETING");
+                    if(isInMeeting){
+                        loginjson.put("action", "END_MEETING");
+                    }else {
+                        loginjson.put("action", "LEAVE_MEETING");
+
+                    }
                 } else if (id == 0) {
                     loginjson.put("action", "LEAVE_MEETING");
                 }
                 loginjson.put("sessionId", AppConfig.UserToken);
+                loginjson.put("meetingId", meetingId);
                 String ss = loginjson.toString();
                 SpliteSocket.sendMesageBySocket(ss);
             } catch (JSONException e) {
-                finish();
                 e.printStackTrace();
             }
         }
+
+        finish();
+    }
+
+    private void followLeaveMeeting(){
+        if (mWebSocketClient != null) {
+            try {
+                JSONObject loginjson = new JSONObject();
+                loginjson.put("action", "LEAVE_MEETING");
+                loginjson.put("sessionId", AppConfig.UserToken);
+                loginjson.put("meetingId", meetingId);
+                loginjson.put("followToLeave", 1);
+                String ss = loginjson.toString();
+                SpliteSocket.sendMesageBySocket(ss);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        finish();
     }
 
 

@@ -111,7 +111,7 @@ public class SpaceSyncRoomActivity extends Activity implements View.OnClickListe
                                     //syncbook
                                     Intent intent = new Intent(SpaceSyncRoomActivity.this, SyncBookActivity.class);
                                     intent.putExtra("userid", AppConfig.UserID);
-                                    intent.putExtra("meetingId", "SR-" + AppConfig.UserID);
+                                    intent.putExtra("meetingId", syncRoomBean.getItemID() + "," + AppConfig.UserID);
                                     intent.putExtra("isTeamspace", true);
                                     intent.putExtra("yinxiangmode", 0);
                                     intent.putExtra("identity", 2);
@@ -126,7 +126,7 @@ public class SpaceSyncRoomActivity extends Activity implements View.OnClickListe
                                 }else {
                                     Intent intent = new Intent(SpaceSyncRoomActivity.this, SyncRoomActivity.class);
                                     intent.putExtra("userid", AppConfig.UserID);
-                                    intent.putExtra("meetingId", "SR-" + AppConfig.UserID);
+                                    intent.putExtra("meetingId", syncRoomBean.getItemID() + "," + AppConfig.UserID);
                                     intent.putExtra("isTeamspace", true);
                                     intent.putExtra("yinxiangmode", 0);
                                     intent.putExtra("identity", 2);

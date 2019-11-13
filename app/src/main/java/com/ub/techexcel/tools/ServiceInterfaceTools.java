@@ -132,6 +132,7 @@ public class ServiceInterfaceTools {
     public static final int GETNOTELISTV3 = 0x1145;
     public static final int REMOVENOTE = 0x1146;
     public static final int GETNOTEBYLINKID = 0x1147;
+    public static final int GETLESSIONID = 0x1148;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -738,7 +739,7 @@ public class ServiceInterfaceTools {
                         int itemId = 0;
                         JSONObject jsonObject1 = returnjson.getJSONObject("RetData");
                         String lessonid = jsonObject1.getString("LessonID");
-                        if(jsonObject1.has("ItemID")){
+                        if (jsonObject1.has("ItemID")) {
                             itemId = jsonObject1.getInt("ItemID");
                         }
                         msg3.what = code;
@@ -2157,6 +2158,10 @@ public class ServiceInterfaceTools {
         return request.getBindTvs2(AppConfig.wssServer + "/tv/current_user_bind_tv_info", AppConfig.UserToken);
     }
 
+    public Call<ResponseBody> getLessionIdByItemId(int itemId){
+        return request.getLessionIdByItemId(AppConfig.URL_PUBLIC + "Lesson/GetLessonIDByItemID?itemID=" + itemId,AppConfig.UserToken);
+    }
+
 
     public void uploadLocalNoteFile(final String url, final int code, final String fileName,
                                     final String Description,
@@ -2224,6 +2229,28 @@ public class ServiceInterfaceTools {
 
     public interface OnJsonResponseReceiver {
         void jsonResponse(JSONObject jsonResponse);
+    }
+
+    public void getLessionId(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("getLessionId", url + "  " + returnjson.toString());
+        try {
+            if (returnjson.getInt("RetCode") == 0) {
+
+                Message msg = Message.obtain();
+                msg.obj = returnjson;
+                msg.what = code;
+                handler.sendMessage(msg);
+            } else {
+                Message msg3 = Message.obtain();
+                msg3.what = ERRORMESSAGE;
+                msg3.obj = returnjson.getString("ErrorMessage");
+                handler.sendMessage(msg3);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 

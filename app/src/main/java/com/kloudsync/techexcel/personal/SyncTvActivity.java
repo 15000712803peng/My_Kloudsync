@@ -136,10 +136,10 @@ public class SyncTvActivity extends Activity implements View.OnClickListener, Co
                 if (response != null && response.isSuccessful() && response.body() != null) {
                     if (response.body().getData() != null) {
                         List<TvDevice> devices = response.body().getData().getDeviceList();
+                        enableStatusSwitch.setOnCheckedChangeListener(null);
+                        enableStatusSwitch.setChecked(response.body().getData().isEnableBind());
+                        enableStatusSwitch.setOnCheckedChangeListener(SyncTvActivity.this);
                         if (devices != null && devices.size() > 0) {
-                            enableStatusSwitch.setOnCheckedChangeListener(null);
-                            enableStatusSwitch.setChecked(response.body().getData().isEnableBind());
-                            enableStatusSwitch.setOnCheckedChangeListener(SyncTvActivity.this);
                             devicesLayout.setVisibility(View.VISIBLE);
                             noDeviceText.setVisibility(View.GONE);
                             adapter.setDevices(devices);
@@ -160,7 +160,7 @@ public class SyncTvActivity extends Activity implements View.OnClickListener, Co
             }
         });
 
-        LoginGet.GetCurrentUserBindTvInfo(this);
+//        LoginGet.GetCurrentUserBindTvInfo(this);
     }
 
     private void requestChangeBindTvStatus(final int status) {

@@ -27,12 +27,15 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.bean.EventSpaceData;
 import com.kloudsync.techexcel.bean.EventSpaceFragment;
 import com.kloudsync.techexcel.bean.EventWxFilePath;
+import com.kloudsync.techexcel.bean.FollowInfo;
+import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.UserPath;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -78,27 +81,43 @@ import com.pgyersdk.update.javabean.AppBean;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.ub.kloudsync.activity.TeamSpaceBean;
+import com.ub.service.activity.NotifyActivity;
 import com.ub.service.activity.SocketService;
+import com.ub.service.activity.SyncBookActivity;
+import com.ub.service.activity.SyncRoomActivity;
+import com.ub.service.activity.WatchCourseActivity2;
+import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
+import com.ub.techexcel.tools.Tools;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.RongIMClient.ConnectCallback;
 import io.rong.imlib.RongIMClient.ErrorCode;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.ub.techexcel.tools.ServiceInterfaceTools.GETLESSIONID;
 
 public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener, OnClickListener {
 
@@ -516,20 +535,20 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Override
     public void onClick(View v) {
         if (v instanceof TextView) {
-            if(inSpace && spaceFragmentData != null){
-                if(v.getId() == R.id.txt_tab_document || v.getId() == R.id.txt_tab_syncroom){
-                    if(v.getId() == R.id.txt_tab_document){
+            if (inSpace && spaceFragmentData != null) {
+                if (v.getId() == R.id.txt_tab_document || v.getId() == R.id.txt_tab_syncroom) {
+                    if (v.getId() == R.id.txt_tab_document) {
                         spaceFragmentData.setType(1);
-                    }else {
+                    } else {
                         spaceFragmentData.setType(2);
                     }
-                    spaceFragmentData.setTeamId(sharedPreferences.getInt("teamid",0));
-                    spaceFragmentData.setTeamName(sharedPreferences.getString("teamname",""));
+                    spaceFragmentData.setTeamId(sharedPreferences.getInt("teamid", 0));
+                    spaceFragmentData.setTeamName(sharedPreferences.getString("teamname", ""));
                     handleChangeSpaceFragment(spaceFragmentData);
-                }else {
+                } else {
                     changeTeamFragment((TextView) v);
                 }
-            }else {
+            } else {
                 changeTeamFragment((TextView) v);
             }
 
@@ -644,6 +663,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
     private boolean inSpace = false;
+
     private void UpdateOutData() {
         RequestParams params = new RequestParams();
         params.setHeader("UserToken", AppConfig.UserToken);
@@ -1112,7 +1132,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             }
 
             fragment = getTeamFragment(v.getId());
-            if(!fragment.isAdded()){
+            if (!fragment.isAdded()) {
                 fragmentTransaction.add(R.id.frame_tab_team, fragment, String.valueOf(v.getId()));
             }
 
@@ -1120,9 +1140,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
         } else {
             fragmentTransaction.hide(currentTeamFragment);
-            Log.e("fragment_operation","hide fragment:" + currentTeamFragment);
+            Log.e("fragment_operation", "hide fragment:" + currentTeamFragment);
             fragmentTransaction.show(fragment);
-            Log.e("fragment_operation","show fragment:" + fragment);
+            Log.e("fragment_operation", "show fragment:" + fragment);
 
         }
 
@@ -1138,6 +1158,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         inSpace = true;
         handleChangeSpaceFragment(spaceFragmentData);
     }
+
     EventSpaceFragment spaceFragmentData;
 
     @Subscribe
@@ -1146,9 +1167,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         spaceFragmentData = null;
         currentSpaceFragment = null;
         inSpace = false;
-        if(teamFragment.getType() == 1){
+        if (teamFragment.getType() == 1) {
             changeTeamFragment(documentTab);
-        }else if(teamFragment.getType() == 2){
+        } else if (teamFragment.getType() == 2) {
             changeTeamFragment(syncroomTab);
         }
 
@@ -1157,34 +1178,34 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     public void handleChangeSpaceFragment(EventSpaceFragment spaceFragment) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment fragment = null;
-        Log.e("currentSpaceFragment","space:" + spaceFragment);
-        if(spaceFragment.getType() == 1){
+        Log.e("currentSpaceFragment", "space:" + spaceFragment);
+        if (spaceFragment.getType() == 1) {
 
             //go to space documents
             teamFrame.setVisibility(View.GONE);
             spaceFrame.setVisibility(View.VISIBLE);
             fragment = new SpaceDocumentsFragment();
             Bundle bundle = new Bundle();
-            bundle.putInt("ItemID",spaceFragment.getItemID());
-            bundle.putString("space_name",spaceFragment.getSpaceName());
-            bundle.putInt("team_id",spaceFragment.getTeamId());
-            bundle.putString("project_name",spaceFragment.getTeamName());
+            bundle.putInt("ItemID", spaceFragment.getItemID());
+            bundle.putString("space_name", spaceFragment.getSpaceName());
+            bundle.putInt("team_id", spaceFragment.getTeamId());
+            bundle.putString("project_name", spaceFragment.getTeamName());
             fragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.frame_tab_space, fragment);
             fragmentTransaction.commitAllowingStateLoss();
             changeSelectedTab(R.id.txt_tab_document);
-        }else if(spaceFragment.getType() == 2){
+        } else if (spaceFragment.getType() == 2) {
 
             // go to space syncrooms
             teamFrame.setVisibility(View.GONE);
             spaceFrame.setVisibility(View.VISIBLE);
             fragment = new SpaceSyncRoomFragment();
             Bundle bundle = new Bundle();
-            bundle.putInt("ItemID",spaceFragment.getItemID());
-            bundle.putInt("spaceid",spaceFragment.getItemID());
-            bundle.putString("space_name",spaceFragment.getSpaceName());
-            bundle.putInt("team_id",spaceFragment.getTeamId());
-            bundle.putString("project_name",spaceFragment.getTeamName());
+            bundle.putInt("ItemID", spaceFragment.getItemID());
+            bundle.putInt("spaceid", spaceFragment.getItemID());
+            bundle.putString("space_name", spaceFragment.getSpaceName());
+            bundle.putInt("team_id", spaceFragment.getTeamId());
+            bundle.putString("project_name", spaceFragment.getTeamName());
             fragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.frame_tab_space, fragment);
             fragmentTransaction.commitAllowingStateLoss();
@@ -1194,14 +1215,259 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
     @Subscribe
-    public void eventSpaceChanged(EventSpaceData spaceData){
-        if(spaceFragmentData != null){
+    public void eventSpaceChanged(EventSpaceData spaceData) {
+        if (spaceFragmentData != null) {
             spaceFragmentData.setSpaceId(spaceData.getSpaceId());
             spaceFragmentData.setItemID(spaceData.getSpaceId());
             spaceFragmentData.setSpaceName(spaceData.getSpaceName());
         }
     }
 
+    @Subscribe
+    public void followOhterDevice(FollowInfo info) {
+        Log.e("followOhterDevice", "info:" + info);
+        if (info.getData() == null) {
+            return;
+        }
+        switch (info.getActionType()) {
+            case "HELLO":
+                handleHeartMessage(info);
+                break;
+            case "ENABLE_TV_FOLLOW":
+                break;
+            case "DISABLE_TV_FOLLOW":
+                sendLeaveMeetingMessage();
+                break;
+            case "BIND_TV_JOIN_MEETING":
+                handleBindJoinMeeting(info);
+                break;
+            case "BIND_TV_LEAVE_MEETING":
+                sendLeaveMeetingMessage();
+                break;
+        }
+    }
 
+
+    private void handleBindJoinMeeting(FollowInfo followInfo) {
+        JSONObject messageJson = followInfo.getData();
+        try {
+            if (messageJson.has("meetingId")) {
+                followInfo.setMeetingId(messageJson.getString("meetingId"));
+            }
+            if (messageJson.has("type")) {
+                followInfo.setType(messageJson.getInt("type"));
+            }
+            if (messageJson.has("itemId")) {
+                followInfo.setItemId(messageJson.getInt("itemId"));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("handleBindJoinMeeting", "info:" + followInfo);
+
+        // -- 1:如果在会议里面
+        if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
+            return;
+        }
+
+        // -- 2:如果在document,syncroom ,或者 syncbook里面
+//        if((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
+//                SyncBookActivity.syncbookInstance){
+//            String _meetingId = "";
+//            if(WatchCourseActivity3.watch3instance){
+//                _meetingId = WatchCourseActivity3.meetingId;
+//            }
+//            if(SyncBookActivity.syncbookInstance){
+//                _meetingId = SyncBookActivity.meetingId;
+//            }
+//            if(SyncRoomActivity.syncroomInstance){
+//                _meetingId = SyncRoomActivity.meetingId;
+//            }
+//
+//        }
+
+        sendLeaveMeetingMessage();
+        doFollowUser(followInfo);
+
+
+    }
+
+    private void handleHeartMessage(FollowInfo followInfo) {
+        try {
+            String meetingId = null;
+            int meetingType = 0;
+            JSONObject messageJson = followInfo.getData();
+            if (messageJson.has("hasOwner")) {
+                boolean hasOwner = messageJson.getBoolean("hasOwner");
+                if (hasOwner) {
+                    // 开启了同步
+                    // 1: 如果正在会议里面，不用做额外处理
+                    if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
+                        return;
+                    }
+
+                    if (messageJson.has("tvOwnerMeetingId")) {
+                        followInfo.setMeetingId(messageJson.getString("tvOwnerMeetingId"));
+                    } else {
+                        followInfo.setMeetingId("");
+                    }
+
+                    if (messageJson.has("tvOwnerMeetingLessonId")) {
+                        followInfo.setLessionId(messageJson.getString("tvOwnerMeetingLessonId"));
+                    }
+
+                    if (messageJson.has("tvOwnerMeetingType")) {
+                        followInfo.setType(messageJson.getInt("tvOwnerMeetingType"));
+                    }
+
+                    // -- 2:如果在document,syncroom ,或者 syncbook里面
+                    if ((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
+                            SyncBookActivity.syncbookInstance) {
+                        String _meetingId = "";
+                        if (WatchCourseActivity3.watch3instance) {
+                            _meetingId = WatchCourseActivity3.meetingId;
+//                            Log.e("----", "one,meeting_id:" + _meetingId);
+                        }
+                        if (SyncBookActivity.syncbookInstance) {
+                            _meetingId = SyncBookActivity.meetingId;
+//                            Log.e("----", "two,meeting_id:" + _meetingId);
+                        }
+                        if (SyncRoomActivity.syncroomInstance) {
+                            _meetingId = SyncRoomActivity.meetingId;
+//                            Log.e("----", "three,meeting_id:" + _meetingId);
+                        }
+
+                        if (messageJson.has("tvBindUserId")) {
+                            String bindUserId = messageJson.getString("tvBindUserId");
+                            if (!TextUtils.isEmpty(bindUserId)) {
+                                if (TextUtils.isEmpty(followInfo.getMeetingId())) {
+                                    // 心跳中没有会议了
+//                                    sendLeaveMeetingMessage();
+                                    return;
+                                }
+                            }
+                        }
+
+                        if (!_meetingId.equals(messageJson.getString("tvOwnerMeetingId"))) {
+//                            Log.e("----", "four,tvOwnerMeetingId:" + messageJson.getString("tvOwnerMeetingId"));
+                            sendLeaveMeetingMessage();
+                            followUser(followInfo.getMeetingId(), followInfo.getLessionId(), followInfo.getType());
+                        }
+                        return;
+                    }
+
+                    // -- 没有在任何..
+                    if (!WatchCourseActivity3.watch3instance && !SyncRoomActivity.syncroomInstance ||
+                            !SyncBookActivity.syncbookInstance)
+
+                        if (messageJson.has("tvOwnerMeetingId")) {
+                            followUser(followInfo.getMeetingId(), followInfo.getLessionId(), followInfo.getType());
+
+                        }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void doFollowUser(final FollowInfo info) {
+        if (info.getType() == 2) {
+            // Doc
+            Observable.just(info).observeOn(Schedulers.io()).map(new Function<FollowInfo, FollowInfo>() {
+                @Override
+                public FollowInfo apply(FollowInfo followInfo) throws Exception {
+                    Response<ResponseBody> response = ServiceInterfaceTools.getinstance().
+                            getLessionIdByItemId(info.getItemId()).execute();
+                    if (response.isSuccessful() && response.body() != null) {
+                        JSONObject data = new JSONObject(new String(response.body().bytes()));
+                        if (data.has("RetData")) {
+                            followInfo.setLessionId(data.getInt("RetData") + "");
+                        }
+                    }
+                    Log.e("getLessionId", "info:" + followInfo);
+                    return followInfo;
+                }
+            }).doOnNext(new Consumer<FollowInfo>() {
+                @Override
+                public void accept(FollowInfo followInfo) throws Exception {
+                    followUser(followInfo.getMeetingId(), followInfo.getLessionId(), followInfo.getType());
+                }
+            }).subscribe();
+        } else {
+            if (info.getMeetingId().contains(",")) {
+                String[] datas = info.getMeetingId().split(",");
+                followUser(info.getMeetingId(), datas[0], info.getType());
+            }
+        }
+
+    }
+
+    private void followUser(String meetingId, String lessionId, int type) {
+        Log.e("MainActivity", "follow user,meeting type:" + type + ",meeting id" + meetingId + ",lession id:" + lessionId);
+        if (TextUtils.isEmpty(lessionId) || lessionId.equals("0")) {
+//            Toast.makeText(this, "数据获取失败", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (type == 1 || type == 2) {
+            Intent intent = (type == 2) ? new Intent(this, WatchCourseActivity3.class) :
+                    new Intent(this, SyncRoomActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("userid", AppConfig.UserID);
+            intent.putExtra("meetingId", meetingId);
+            intent.putExtra("isTeamspace", true);
+            intent.putExtra("identity", 1);
+            intent.putExtra("is_meeting", false);
+            intent.putExtra("lessionId", lessionId);
+            intent.putExtra("isInstantMeeting", 1);
+            intent.putExtra("meeting_type", type);
+            intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
+            intent.putExtra("isStartCourse", false);
+            intent.putExtra("type", type);
+            startActivity(intent);
+        } else if (type == 0) {
+            Intent intent = new Intent(this, WatchCourseActivity3.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("userid", AppConfig.UserID);
+            intent.putExtra("meetingId", meetingId);
+            intent.putExtra("isTeamspace", false);
+            intent.putExtra("identity", 1);
+            intent.putExtra("lessionId", lessionId);
+            intent.putExtra("isInstantMeeting", 1);
+            intent.putExtra("meeting_type", type);
+            intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
+            intent.putExtra("isStartCourse", false);
+            intent.putExtra("is_meeting", true);
+            intent.putExtra("type", type);
+            startActivity(intent);
+        } else if (type == 3) {
+            Intent intent = new Intent(this, SyncBookActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("userid", AppConfig.UserID);
+            intent.putExtra("meetingId", meetingId);
+            intent.putExtra("isTeamspace", true);
+            intent.putExtra("identity", 1);
+            intent.putExtra("is_meeting", false);
+            intent.putExtra("lessionId", lessionId);
+            intent.putExtra("isInstantMeeting", 1);
+            intent.putExtra("meeting_type", type);
+            intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
+            intent.putExtra("isStartCourse", false);
+            intent.putExtra("type", type);
+            startActivity(intent);
+        }
+
+    }
+
+    private void sendLeaveMeetingMessage() {
+        Log.e("MainActivity", "sendLeaveMeetingMessage");
+        Intent intent = new Intent();
+        intent.setAction("com.cn.socket");
+        intent.putExtra("message", "LEAVE_MEETING");
+        sendBroadcast(intent);
+    }
 
 }
