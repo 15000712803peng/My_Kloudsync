@@ -17,21 +17,19 @@
         android:orientation="vertical" >
 
         <TextView
+            android:background="@color/bg_gray"
         	android:id="@+id/tv_sort"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="15dp"
             android:text="F"
-            android:textColor="@color/skyblue"
+            android:textColor="@color/brunette"
             android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp" 
-            android:background="@color/skyblue"/>
     </LinearLayout>
     
     <LinearLayout
+        android:background="@color/white"
         android:id="@+id/lin_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,8 +39,8 @@
 
         <ImageView
             android:id="@+id/img_country"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
             android:layout_gravity="center_vertical"
             android:scaleType="fitXY"
             android:src="@drawable/country86"

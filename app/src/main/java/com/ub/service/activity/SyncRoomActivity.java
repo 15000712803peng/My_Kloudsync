@@ -82,6 +82,9 @@ import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.BookNote;
+import com.kloudsync.techexcel.bean.EventDoc;
+import com.kloudsync.techexcel.bean.EventSyncBook;
+import com.kloudsync.techexcel.bean.EventSyncRoom;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.NoteId;
@@ -113,6 +116,7 @@ import com.kloudsync.techexcel.tool.DocumentUploadUtil;
 import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.Md5Tool;
+import com.kloudsync.techexcel.ui.MainActivity;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.util.PreferencesCookieStore;
 import com.mining.app.zxing.MipcaActivityCapture;
@@ -689,6 +693,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CheckLanguage();
+        MainActivity.IsInSyncRoom  = true;
         setContentView(R.layout.syncroomactivity2);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -698,9 +703,11 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         WindowManager wm = (WindowManager)
                 getSystemService(WINDOW_SERVICE);
         EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new EventSyncRoom());
         screenWidth = wm.getDefaultDisplay().getWidth();
         handler = new MyHandler(this);
         syncroomInstance = true;
+        AppConfig.IsInMeeting = false;
         XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
 
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -810,6 +817,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
      */
     @Override
     protected void onResume() {
+        syncroomInstance = true;
         ConnectionClassManager.getInstance().register(connectionChangedListener);
 
         if (AppConfig.isUpdateAuditor) {
@@ -2380,6 +2388,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         } else {
             isDisplayInCenter = false;
         }
+
         String sourceName = pdfurl.substring(pdfurl.lastIndexOf("/") + 1); // 得到test_<10>.pdf
         String houzui = sourceName.substring(sourceName.lastIndexOf("."));
         // 得到 https://peertime.cn/CWDocs/P49/Attachment/D3191/test_
@@ -2392,6 +2401,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 //        } else {
 //            downloadurl = prefixPdf + page + houzui;
 //        }
+
         downloadurl = prefixPdf + page + houzui;
         String xxx = meetingId + "_" + EncoderByMd5(targetUrl).replaceAll("/", "_") + "_";
         //保存在本地的地址
@@ -3749,22 +3759,24 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         syncRoomDocumentPopup.setWebCamPopupListener(new SyncRoomDocumentPopup.WebCamPopupListener() {
             @Override
             public void changeOptions(LineItem syncRoomBean, int position) { //切换文档
-                if (isHavePresenter()) {
-                    notifySelectedFileIndex(position);
-                    currentAttachmentPage = "0";
-                    AppConfig.currentPageNumber = "0";
-                    for (int i = 0; i < documentList.size(); i++) {
-                        documentList.get(i).setSelect(false);
-                    }
-                    currentShowPdf = syncRoomBean;
-                    currentShowPdf.setSelect(true);
-                    currentAttachmentId = currentShowPdf.getAttachmentID();  // itemId
-                    currentItemId = currentShowPdf.getItemId();
-                    targetUrl = currentShowPdf.getUrl();
-                    newPath = currentShowPdf.getNewPath();
-                    notifySwitchDocumentSocket(currentShowPdf, "1");
-                    loadWebIndex();
+//                if (isHavePresenter()) {
+//
+//                }
+
+                notifySelectedFileIndex(position);
+                currentAttachmentPage = "0";
+                AppConfig.currentPageNumber = "0";
+                for (int i = 0; i < documentList.size(); i++) {
+                    documentList.get(i).setSelect(false);
                 }
+                currentShowPdf = syncRoomBean;
+                currentShowPdf.setSelect(true);
+                currentAttachmentId = currentShowPdf.getAttachmentID();  // itemId
+                currentItemId = currentShowPdf.getItemId();
+                targetUrl = currentShowPdf.getUrl();
+                newPath = currentShowPdf.getNewPath();
+                notifySwitchDocumentSocket(currentShowPdf, "1");
+                loadWebIndex();
             }
 
             @Override
@@ -5291,14 +5303,15 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         MeetingServiceTools.getInstance().getSyncroomDetail(url, MeetingServiceTools.GETTOPICATTACHMENT, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
+                Log.e("getSyncroomDetail","object:" + object);
                 List<LineItem> list = (List<LineItem>) object;
+                Log.e("getSyncroomDetail","list:" + list);
                 documentList.clear();
                 documentList.addAll(list);
                 initpdfdata(documentList);
             }
         });
     }
-
 
     private void initpdfdata(final List<LineItem> documentList) {
         for (int i = 0; i < documentList.size(); i++) {
@@ -5317,7 +5330,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             }
         }
         documentList.addAll(uploadList);
-
 
         if (documentList.size() > 0) {
             findViewById(R.id.defaultpagehaha).setVisibility(View.GONE);
@@ -5349,10 +5361,12 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 }
             }
         }
-        if (isLoadPdfAgain && documentList.size() > 0) {
-            isLoadPdfAgain = false;
-            changedocumentlabel(currentShowPdf);
-        }
+//        if (isLoadPdfAgain && documentList.size() > 0) {
+//            isLoadPdfAgain = false;
+//
+//        }
+
+        changedocumentlabel(currentShowPdf);
 
     }
 
@@ -6019,6 +6033,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         AppConfig.currentLine = 0;
         AppConfig.currentMode = "0";
         syncroomInstance = false;
+        MainActivity.IsInSyncRoom  = false;
         wl.release();
 
         if (broadcastReceiver != null) {
@@ -6451,6 +6466,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void followLeaveMeeting(){
+
         if (mWebSocketClient != null) {
             try {
                 JSONObject loginjson = new JSONObject();
@@ -6466,6 +6482,8 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         }
         finish();
     }
+
+
 
 
 }

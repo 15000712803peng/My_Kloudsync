@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightgrey"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <include layout="@layout/common_title" />
@@ -11,19 +11,22 @@
     <RelativeLayout
         android:id="@+id/layout_enable_sync"
         android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:layout_marginTop="36dp"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
         android:background="@color/white">
 
         <TextView
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
-            android:text="Sync TV APP"
-            android:textColor="@color/darkgrey"
-            android:textSize="12sp" />
+            android:lineSpacingExtra="2dp"
+            android:text="Enable Auto Sync of Display \nfor All My Devices"
+            android:textColor="@color/brunette"
+            android:textSize="15sp" />
 
 
         <Switch
@@ -39,16 +42,18 @@
     </RelativeLayout>
 
     <TextView
+        android:background="@color/bg_gray"
+        android:paddingLeft="32dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="18dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="18dp"
-        android:text="AutoSync enables content be displayed on your TV devices"
-        android:textColor="@color/red"
-        android:textSize="11sp" />
+        android:text="List of Devices"
+        android:textColor="@color/brunette"
+        android:textSize="15sp" />
 
     <RelativeLayout
-        android:layout_marginTop="30dp"
+        android:background="@color/white"
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp">
@@ -58,29 +63,6 @@
             android:layout_width="match_parent"
             android:orientation="vertical"
             android:layout_height="wrap_content">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginRight="18dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="设备名称"
-                    android:textColor="@color/black"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:text="登录时间"
-                    android:textColor="@color/black"
-                    android:textSize="13sp" />
-            </RelativeLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:layout_marginTop="6dp"
@@ -92,7 +74,7 @@
 
         <TextView
             android:visibility="gone"
-            android:textSize="14sp"
+            android:textSize="18sp"
             android:textColor="@color/txt_color1"
             android:layout_marginTop="16dp"
             android:gravity="center"

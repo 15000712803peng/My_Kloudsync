@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
@@ -30,10 +31,11 @@ import java.util.List;
 
 public class ChangeCountryCode extends Activity {
 
-	private TextView tv_back;
+	private RelativeLayout backLayout;
 	private EditText et_search;
 	private ListView lv_group;
 	private SideBar sidebar;
+	private TextView titleText;
 	
 	private List<CountryCodeInfo> mlist = new ArrayList<CountryCodeInfo>();
 	private List<CountryCodeInfo> eList = new ArrayList<CountryCodeInfo>();
@@ -48,27 +50,26 @@ public class ChangeCountryCode extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_change_countrycode);
 		normal = getIntent().getBooleanExtra("normal", false);
-		
 		initView();		
 	}
 
 	private void initView() {
-		tv_back = (TextView) findViewById(R.id.tv_back);
+		backLayout = (RelativeLayout) findViewById(R.id.layout_back);
 		et_search = (EditText) findViewById(R.id.et_search);
 		lv_group = (ListView) findViewById(R.id.lv_group);
 		sidebar = (SideBar) findViewById(R.id.sidebar);
-
+		titleText = findViewById(R.id.tv_title);
+		titleText.setText("选择国家／区域");
 		getData();
 		getSide();
 		editGroup();
-		
-		tv_back.setOnClickListener(new myOnClick());
+
+		backLayout.setOnClickListener(new myOnClick());
 	}
 	
 	private void getData() {
 		mlist = new CountryCodeShow().ccl;
-		Collections.sort(mlist, new PinyinComparatorCC());		
-
+//		Collections.sort(mlist, new PinyinComparatorCC());
 		cadapter = new ChangeCountryCodeAdapter(ChangeCountryCode.this, mlist);
 		lv_group.setAdapter(cadapter);
 		lv_group.setOnItemClickListener(new myOnItem());
@@ -169,7 +170,7 @@ public class ChangeCountryCode extends Activity {
 		@Override
 		public void onClick(View v) {
 			switch (v.getId()) {
-			case R.id.tv_back:
+			case R.id.layout_back:
 				CancelActivity();
 				break;
 

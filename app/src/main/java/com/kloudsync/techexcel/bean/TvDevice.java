@@ -5,9 +5,18 @@ public class TvDevice {
     private String deviceSessionId;
     private String loginTime;
     private boolean enableBind;
+    private boolean enableSync;
     private boolean isSelect;
     private String UserID;
     private boolean isOpenVoice;
+
+    public boolean isEnableSync() {
+        return enableSync;
+    }
+
+    public void setEnableSync(boolean enableSync) {
+        this.enableSync = enableSync;
+    }
 
     public boolean isOpenVoice() {
         return isOpenVoice;

@@ -94,6 +94,8 @@ import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.BookNote;
+import com.kloudsync.techexcel.bean.EventDoc;
+import com.kloudsync.techexcel.bean.EventSyncBook;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.NoteId;
@@ -126,6 +128,7 @@ import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.Md5Tool;
 import com.kloudsync.techexcel.tool.QueryLocalNoteTool;
+import com.kloudsync.techexcel.ui.MainActivity;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.util.PreferencesCookieStore;
 import com.mining.app.zxing.MipcaActivityCapture;
@@ -282,7 +285,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private int roomType;
 
     private int spaceId;
-
     private int documentId;
 
     @Override
@@ -948,13 +950,16 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         WindowManager wm = (WindowManager)
                 getSystemService(WINDOW_SERVICE);
         EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new EventDoc());
         screenWidth = wm.getDefaultDisplay().getWidth();
         handler = new MyHandler(this);
+        MainActivity.IsInDoc = true;
         watch3instance = true;
         XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK, "TEST");
         wl.acquire();
+        AppConfig.IsInMeeting = false;
         teacherid = getIntent().getStringExtra("teacherid");
         studentid = getIntent().getStringExtra("userid");
         identity = getIntent().getIntExtra("identity", 0);
@@ -1080,6 +1085,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
      */
     @Override
     protected void onResume() {
+        watch3instance = true;
         ConnectionClassManager.getInstance().register(connectionChangedListener);
         if (isJoinChannel) {
 
@@ -1292,6 +1298,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             if(retdata.has("type")){
                 isInMeeting = (retdata.getInt("type") == 0);
                 roomType = retdata.getInt("type");
+                AppConfig.IsInMeeting = isInMeeting;
             }
             JSONArray jsonArray = retdata.getJSONArray("usersList");
             List<Customer> joinlist = Tools.getUserListByJoinMeeting(jsonArray);
@@ -6807,7 +6814,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         myRecyclerAdapter2.setMyItemClickListener(new MyRecyclerAdapter2.MyItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                if (isHavePresenter()) {
+
+                if (isHavePresenter() || !isInMeeting) {
                     currentAttachmentPage = "0";
                     AppConfig.currentPageNumber = "0";
                     for (int i = 0; i < documentList.size(); i++) {
@@ -6897,6 +6905,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     }
 
     private void followLeaveMeeting(){
+
         if (mWebSocketClient != null) {
             try {
                 JSONObject loginjson = new JSONObject();
@@ -7998,6 +8007,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
+        MainActivity.IsInDoc = false;
         Tools.removeGroupMeaage(mGroupId);
         sendAudioSocket(0, soundtrackID);
 

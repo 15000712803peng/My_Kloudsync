@@ -50,6 +50,10 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
         return instance;
     }
 
+    public static KloudWebClientManager getInstance(){
+        return instance;
+    }
+
 
     private KloudWebClientManager(Context context, URI uri) {
         this.context = context;
@@ -109,7 +113,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                 heartBeatMessage.put("action", "HELLO");
                 heartBeatMessage.put("sessionId", AppConfig.UserToken);
                 heartBeatMessage.put("changeNumber", 0);
-                if (AppConfig.isPresenter) {
+                if (AppConfig.IsInMeeting) {
                     heartBeatMessage.put("status", AppConfig.status);
                     heartBeatMessage.put("currentLine", AppConfig.currentLine);
                     heartBeatMessage.put("currentMode", AppConfig.currentMode);
@@ -140,6 +144,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
         heartBeatTask = new HeartBeatTask();
         if (!heartBeatStarted && heartBeatTimer != null && heartBeatTask != null) {
             heartBeatTimer.schedule(heartBeatTask, 3000, 5000);
+            heartBeatStarted = true;
         }
     }
 

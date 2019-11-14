@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.TvDeviceAdapter;
+import com.kloudsync.techexcel.adapter.TvDeviceAdapterV2;
 import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.CenterToast;
@@ -42,7 +43,7 @@ public class SyncTvActivity extends Activity implements View.OnClickListener, Co
     private RelativeLayout backLayout;
     private TextView tv_title;
     private RecyclerView deviceList;
-    private TvDeviceAdapter adapter;
+    private TvDeviceAdapterV2 adapter;
     ArrayList<TvDevice> mlist = new ArrayList();
     private TextView scanText;
     private LinearLayout devicesLayout;
@@ -121,16 +122,16 @@ public class SyncTvActivity extends Activity implements View.OnClickListener, Co
         deviceList = (RecyclerView) findViewById(R.id.list_device);
         final LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         deviceList.setLayoutManager(manager);
-        adapter = new TvDeviceAdapter(this,mlist,true);
+        adapter = new TvDeviceAdapterV2(this,mlist,true);
         deviceList.setAdapter(adapter);
         devicesLayout = (LinearLayout) findViewById(R.id.layout_devices);
         noDeviceText = (TextView) findViewById(R.id.txt_no_devices);
-
 
     }
 
     private void getBindTvs() {
         ServiceInterfaceTools.getinstance().getBindTvs().enqueue(new Callback<DevicesResponse>() {
+
             @Override
             public void onResponse(Call<DevicesResponse> call, Response<DevicesResponse> response) {
                 if (response != null && response.isSuccessful() && response.body() != null) {

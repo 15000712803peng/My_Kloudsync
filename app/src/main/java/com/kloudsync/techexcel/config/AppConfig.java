@@ -308,5 +308,7 @@ public class AppConfig {
     public static final int PASSWORDERROR = 0X1131;
     public static final int PASSWORDERROR2 = 0X112;
 
+    public static boolean IsInMeeting = false;
+
 
 }

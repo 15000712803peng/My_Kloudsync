@@ -57,6 +57,7 @@ import com.ub.kloudsync.activity.TeamPropertyActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
+import com.ub.service.activity.SocketService;
 import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
@@ -169,6 +170,8 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         getUserDetail();
         getSpaceList();
         getAllDocumentList();
+        Intent intent = new Intent(getActivity(), SocketService.class);
+        getActivity().startService(intent);
     }
 
 

@@ -47,6 +47,8 @@ public class CountryCodeList {
 		hashMap.put(966, R.drawable.country966);
 		hashMap.put(971, R.drawable.country971);
 
+
+
 		// 第二 批
 
 		hashMap.put(20, R.drawable.country20);
@@ -88,7 +90,7 @@ public class CountryCodeList {
 		// 第三批
 		hashMap.put(95, R.drawable.country95);
 		hashMap.put(216, R.drawable.country216);
-		hashMap.put(243, R.drawable.country243);
+		hashMap.put(1809, R.drawable.country243);
 		hashMap.put(249, R.drawable.country249);
 		hashMap.put(251, R.drawable.country251);
 		hashMap.put(359, R.drawable.country359);
@@ -165,7 +167,7 @@ public class CountryCodeList {
 		hashMap.put(992, R.drawable.country992);
 		hashMap.put(996, R.drawable.country996);
 		hashMap.put(1242, R.drawable.country1242);
-		
+
 		
 
 		

@@ -37,6 +37,7 @@ public class SideBar extends View {
 
 	public SideBar(Context context, AttributeSet attrs) {
 		super(context, attrs);
+
 	}
 
 	public SideBar(Context context) {

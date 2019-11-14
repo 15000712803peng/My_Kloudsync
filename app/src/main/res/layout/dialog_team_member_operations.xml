@@ -91,7 +91,7 @@
             android:layout_height="16dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"
-            android:src="@drawable/tab_d_05" />
+            android:src="@drawable/tab5_unselected" />
 
         <TextView
             android:id="@+id/txt_admin"

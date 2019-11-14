@@ -21,7 +21,6 @@ public class KloudCache implements SharedPreferences.OnSharedPreferenceChangeLis
     private final SharedPreferences userInfoPrefreence;
     private static KloudCache instance;
     Gson gson;
-
     public interface OnUserInfoChangedListener {
         void onUserInfoChanged(UserInCompany user);
     }

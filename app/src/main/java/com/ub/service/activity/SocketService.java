@@ -158,6 +158,14 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if(KloudWebClientManager.getInstance() != null){
+            KloudWebClientManager.getInstance().startHeartBeat();
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
     public void onMessage(String message) {
         String msg = Tools.getFromBase64(message);
         Log.e("socket服务器返回结果--------2", msg);
