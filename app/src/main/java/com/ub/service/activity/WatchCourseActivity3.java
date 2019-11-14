@@ -1659,7 +1659,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                                 syncRoomOtherNoteListPopup.dismiss();
                             }
                         } else if (jsonObject.getInt("stat") == 1) {
-                            if(syncRoomOtherNoteListPopup == null && !syncRoomOtherNoteListPopup.isShowing()){
+                            if(syncRoomOtherNoteListPopup == null || !syncRoomOtherNoteListPopup.isShowing()){
                                 selectCusterId=userid;
                                 openNotePopup();
                             }
@@ -4879,7 +4879,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             e.printStackTrace();
         }
         send_message("SEND_MESSAGE", AppConfig.UserToken, 0, null, Tools.getBase64(actionJson.toString()).replaceAll("[\\s*\t\n\r]", ""));
-
     }
 
     /**
@@ -8170,7 +8169,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         });
     }
 
-    private String mAudioWavPath;
     private long startTime;
 
     /**
@@ -8180,8 +8178,10 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private CustomVideoView recordscreenvideoview;
     private RecyclerView recordlistvideorecyclerview;
 
-
-    private void startAgoraRecording() {
+    /**
+     * 播放录课信息
+     */
+    private void playAgoraRecording() {
         recordscreenvideoview = findViewById(R.id.recordscreenvideo);
         recordlistvideorecyclerview = findViewById(R.id.recordinglistvideo);
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
@@ -8203,6 +8203,51 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         });
 
     }
+
+
+    /**
+     * 开始录制meeting
+     */
+    private void  startRecording(){
+
+
+
+
+
+    }
+
+
+    /**
+     * 结束录制meeting
+     */
+    private void  endRecording(){
+
+
+    }
+
+    /**
+     * 开始录制音视频
+     */
+    private void  startAgoraRecording(){
+
+
+    }
+
+    /**
+     * 结束录制音视频
+     */
+    private void  endAgoraRecording(){
+
+
+    }
+
+
+
+
+
+
+
+
 
 
     private SectionVO voiceSectionVO = new SectionVO();

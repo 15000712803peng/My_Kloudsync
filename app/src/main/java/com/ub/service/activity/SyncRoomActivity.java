@@ -1251,7 +1251,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                                 syncRoomOtherNoteListPopup.dismiss();
                             }
                         } else if (jsonObject.getInt("stat") == 1) {
-                            if (syncRoomOtherNoteListPopup == null && !syncRoomOtherNoteListPopup.isShowing()) {
+                            if (syncRoomOtherNoteListPopup == null || !syncRoomOtherNoteListPopup.isShowing()) {
                                 selectCusterId = userid;
                                 openNotePopup();
                             }
@@ -1756,8 +1756,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         if (mediaPlayer != null) {
             mediaPlayer.start();
         }
-
-
     }
 
 
