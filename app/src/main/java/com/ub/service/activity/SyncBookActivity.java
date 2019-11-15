@@ -653,6 +653,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         CheckLanguage();
         setContentView(R.layout.syncbookactivity);
+        initWeb();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
         } else {
@@ -1502,6 +1503,17 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
     private LinearLayout createblabkpage, inviteattendee, sharedocument;
 
+    private void initWeb(){
+        wv_show = (XWalkView) findViewById(R.id.wv_show);
+        wv_show.setZOrderOnTop(false);
+        wv_show.getSettings().setDomStorageEnabled(true);
+        wv_show.addJavascriptInterface(SyncBookActivity.this, "AnalyticsWebInterface");
+        XWalkPreferences.setValue("enable-javascript", true);
+        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
+        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
+    }
+
     private void initView() {
         puo2 = new Popupdate2();
         puo2.getPopwindow(SyncBookActivity.this);
@@ -1514,14 +1526,6 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         poornetworkll = (LinearLayout) findViewById(R.id.poornetworkll);
         poornetworktv = (TextView) findViewById(R.id.poornetworktv);
 
-        wv_show = (XWalkView) findViewById(R.id.wv_show);
-        wv_show.setZOrderOnTop(false);
-        wv_show.getSettings().setDomStorageEnabled(true);
-        wv_show.addJavascriptInterface(SyncBookActivity.this, "AnalyticsWebInterface");
-        XWalkPreferences.setValue("enable-javascript", true);
-        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
-        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
-        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
 
         createblabkpage = (LinearLayout) findViewById(R.id.createblabkpage);
         inviteattendee = (LinearLayout) findViewById(R.id.inviteattendee);

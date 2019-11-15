@@ -153,7 +153,7 @@ public class App extends Application {
             Fresco.initialize(App.this);
             mCrashHandler = CrashHandler.getInstance();
             PgyerActivityManager.set(App.this);
-            Pgyer.setAppId("93a473d475142e533738543361df6de4");
+            Pgyer.setAppId("c3ae43cb28a2922fd1145252c3138ad4");
             mCrashHandler.init(App.this);
             PgyCrashManager.register(App.this);
             mainHandler.post(new Runnable() {

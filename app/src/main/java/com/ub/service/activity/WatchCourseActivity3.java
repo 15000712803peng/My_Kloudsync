@@ -287,6 +287,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private int spaceId;
     private int documentId;
 
+
     @Override
     public void shareDocumentToFriend(SoundtrackBean soundtrackBean) {
         shareSyncDialog = new ShareSyncDialog(this);
@@ -936,12 +937,24 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         }
     }
 
+    private void initWeb(){
+        wv_show = (XWalkView) findViewById(R.id.wv_show);
+        wv_show.setZOrderOnTop(false);
+        wv_show.getSettings().setDomStorageEnabled(true);
+        wv_show.addJavascriptInterface(WatchCourseActivity3.this, "AnalyticsWebInterface");
+        XWalkPreferences.setValue("enable-javascript", true);
+        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
+        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CheckLanguage();
         Log.e("WatchCourseActivity3", "on create");
         setContentView(R.layout.watchcourse3);
+        initWeb();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
         } else {
@@ -997,7 +1010,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 //        isPrepare = true;
 //        isTeamspace = true;
         //测试录课   -----------------------
-
 
         SpliteSocket.init(getApplicationContext());
         initView();
@@ -2010,15 +2022,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         llpre.setOnClickListener(this);
         poornetworkll = (LinearLayout) findViewById(R.id.poornetworkll);
         poornetworktv = (TextView) findViewById(R.id.poornetworktv);
-
-        wv_show = (XWalkView) findViewById(R.id.wv_show);
-        wv_show.setZOrderOnTop(false);
-        wv_show.getSettings().setDomStorageEnabled(true);
-        wv_show.addJavascriptInterface(WatchCourseActivity3.this, "AnalyticsWebInterface");
-        XWalkPreferences.setValue("enable-javascript", true);
-        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
-        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
-        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
 
         createblabkpage = (LinearLayout) findViewById(R.id.createblabkpage);
         inviteattendee = (LinearLayout) findViewById(R.id.inviteattendee);
@@ -3687,7 +3690,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     @org.xwalk.core.JavascriptInterface
     public void autoChangeFileFunction(int diff) {
         Log.e("webview-autoChangeFile", diff + "");
-        if (documentList.size() == 0) {
+        if (documentList.size() <= 1) {
             return;
         }
         if (isHavePresenter()) {
@@ -7882,6 +7885,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
 
     private boolean isHavePresenter() {
+
         if (identity == 1) { // 学生
             if (TextUtils.isEmpty(studentCustomer.getUserID())) {
                 return false;

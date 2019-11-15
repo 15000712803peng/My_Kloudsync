@@ -86,6 +86,7 @@ import com.kloudsync.techexcel.bean.EventDoc;
 import com.kloudsync.techexcel.bean.EventSyncBook;
 import com.kloudsync.techexcel.bean.EventSyncRoom;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.NoteId;
 import com.kloudsync.techexcel.bean.SupportDevice;
@@ -246,6 +247,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     private PowerManager pm;
     private PowerManager.WakeLock wl;
     private ShareSyncDialog shareSyncDialog;
+    int meetingType = MeetingType.SYNCROOM;
 
     @Override
     public void shareDocumentToFriend(SoundtrackBean soundtrackBean) {
@@ -689,12 +691,24 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
 
+    private void initWeb(){
+        wv_show = (XWalkView) findViewById(R.id.wv_show);
+        wv_show.setZOrderOnTop(false);
+        wv_show.getSettings().setDomStorageEnabled(true);
+        wv_show.addJavascriptInterface(SyncRoomActivity.this, "AnalyticsWebInterface");
+        XWalkPreferences.setValue("enable-javascript", true);
+        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
+        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CheckLanguage();
         MainActivity.IsInSyncRoom  = true;
         setContentView(R.layout.syncroomactivity2);
+        initWeb();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
         } else {
@@ -708,7 +722,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         handler = new MyHandler(this);
         syncroomInstance = true;
         AppConfig.IsInMeeting = false;
-        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+
 
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK, "TEST");
@@ -959,6 +973,10 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
             JSONArray jsonArray = retdata.getJSONArray("usersList");
             List<Customer> joinlist = Tools.getUserListByJoinMeeting(jsonArray);
+
+            if(retdata.has("type")){
+                meetingType = retdata.getInt("type");
+            }
 
             msg = retdata.toString();
             String currentLine2 = getRetCodeByReturnData2("currentLine", msg);
@@ -1463,7 +1481,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             loginjson.put("meetingId", meetingId2);
             loginjson.put("meetingPassword", "");
             loginjson.put("role", role);
-            loginjson.put("type", 1);
+            loginjson.put("type", meetingType);
             loginjson.put("mode", 1);
             loginjson.put("isInstantMeeting", 0);
             if (isTeamspace) {
@@ -1537,16 +1555,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         llpre.setOnClickListener(this);
         poornetworkll = (LinearLayout) findViewById(R.id.poornetworkll);
         poornetworktv = (TextView) findViewById(R.id.poornetworktv);
-
-        wv_show = (XWalkView) findViewById(R.id.wv_show);
-        wv_show.setZOrderOnTop(false);
-        wv_show.getSettings().setDomStorageEnabled(true);
-        wv_show.addJavascriptInterface(SyncRoomActivity.this, "AnalyticsWebInterface");
-        XWalkPreferences.setValue("enable-javascript", true);
-        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
-        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
-        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
-
         createblabkpage = (LinearLayout) findViewById(R.id.createblabkpage);
         inviteattendee = (LinearLayout) findViewById(R.id.inviteattendee);
         sharedocument = (LinearLayout) findViewById(R.id.sharedocument);
@@ -2921,10 +2929,11 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     @org.xwalk.core.JavascriptInterface
     public void autoChangeFileFunction(int diff) {
         Log.e("webview-autoChangeFile", diff + "");
-        if (documentList.size() == 0) {
+        if (documentList.size() == 0 || documentList.size() == 1) {
             return;
         }
         if (isHavePresenter()) {
+
             for (int i = 0; i < documentList.size(); i++) {
                 LineItem line = documentList.get(i);
                 if (line.getAttachmentID().equals(currentShowPdf.getAttachmentID())) { //当前文档
@@ -2954,6 +2963,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             currentItemId = currentShowPdf.getItemId();
             targetUrl = currentShowPdf.getUrl();
             newPath = currentShowPdf.getNewPath();
+
             if (diff == 1) {
                 currentAttachmentPage = "1";
                 notifySwitchDocumentSocket(currentShowPdf, "1");
@@ -5988,6 +5998,11 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
 
     private boolean isHavePresenter() {
+
+        if(meetingType != 0){
+            return true;
+        }
+
         if (identity == 1) { // 学生
             if (TextUtils.isEmpty(studentCustomer.getUserID())) {
                 return false;
@@ -6466,7 +6481,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void followLeaveMeeting(){
-
         if (mWebSocketClient != null) {
             try {
                 JSONObject loginjson = new JSONObject();

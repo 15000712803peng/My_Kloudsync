@@ -609,7 +609,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         twoToOneFragment = new TwoToOneFragment();
         serviceFragment = new ServiceFragment();
         topicFragment = new TopicFragment();
-
         personalCenterFragment = new PersonalCenterFragment();
         if (sharedPreferences.getBoolean("enable_sync", false)) {
             syncroomTab.setVisibility(View.VISIBLE);
@@ -833,9 +832,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         boolean enableSync = sharedPreferences.getBoolean("enable_sync", false);
         Log.e("MainActivity", "enableSync:" + enableSync);
         if (enableSync) {
-            tv_community.setVisibility(View.VISIBLE);
+            syncroomTab.setVisibility(View.VISIBLE);
         } else {
-            tv_community.setVisibility(View.GONE);
+            syncroomTab.setVisibility(View.GONE);
         }
     }
 

@@ -122,7 +122,7 @@ public class SyncTvActivity extends Activity implements View.OnClickListener, Co
         deviceList = (RecyclerView) findViewById(R.id.list_device);
         final LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         deviceList.setLayoutManager(manager);
-        adapter = new TvDeviceAdapterV2(this,mlist,true);
+        adapter = new TvDeviceAdapterV2(this,mlist);
         deviceList.setAdapter(adapter);
         devicesLayout = (LinearLayout) findViewById(R.id.layout_devices);
         noDeviceText = (TextView) findViewById(R.id.txt_no_devices);

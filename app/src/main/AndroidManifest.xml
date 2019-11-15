@@ -641,7 +641,7 @@
             android:authorities="${applicationId}.com.pgyer.provider" />
         <meta-data
             android:name="PGYER_APPID"
-            android:value="93a473d475142e533738543361df6de4" />
+            android:value="c3ae43cb28a2922fd1145252c3138ad4" />
         <!-- 测试 -->
         <!--
             <meta-data
@@ -726,6 +726,7 @@
             android:name="com.ub.service.activity.WatchCourseActivity3"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:hardwareAccelerated="true"
+            android:launchMode="singleTop"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
@@ -733,8 +734,8 @@
             android:name="com.ub.service.activity.SyncRoomActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:hardwareAccelerated="true"
-            android:screenOrientation="landscape"
             android:launchMode="singleTop"
+            android:screenOrientation="landscape"
             android:windowSoftInputMode="stateHidden|adjustPan" />
 
         <activity

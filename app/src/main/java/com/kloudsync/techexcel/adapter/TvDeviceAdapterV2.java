@@ -22,7 +22,6 @@ public class TvDeviceAdapterV2 extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private List<TvDevice> mlist = new ArrayList<>();
     private Context context;
-    private boolean isbeike;
     private OnRecyclerViewItemClickListener mOnItemClickListener = null;
 
     public interface OnRecyclerViewItemClickListener {
@@ -38,8 +37,7 @@ public class TvDeviceAdapterV2 extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
 
-    public TvDeviceAdapterV2(Context context, List<TvDevice> devices, boolean isbeike) {
-        this.isbeike = isbeike;
+    public TvDeviceAdapterV2(Context context, List<TvDevice> devices) {
         this.mlist = devices;
         this.context = context;
     }
@@ -63,20 +61,25 @@ public class TvDeviceAdapterV2 extends RecyclerView.Adapter<RecyclerView.ViewHol
         final TvDevice device = mlist.get(position);
         holder.nameText.setText(device.getDeviceName());
         holder.timeText.setText(device.getLoginTime());
-
-        if (isbeike) {
-            holder.img_device.setImageResource(R.drawable.tv2);
-        } else {
-            if (TextUtils.isEmpty(device.getUserID())) {
-                holder.img_device.setImageResource(R.drawable.tv2);
-            } else {
-                if (device.isOpenVoice()) {
-                    holder.img_device.setImageResource(R.drawable.icon_sound_in);
-                } else {
-                    holder.img_device.setImageResource(R.drawable.icon_sound_disable);
-                }
-            }
+        holder.syncImage.setImageResource(device.isEnableSync() ? R.mipmap.on : R.mipmap.off);
+        switch (device.getDeviceType()) {
+            case 0:
+                holder.img_device.setImageResource(R.drawable.icon_web);
+                holder.type.setText("Web");
+                break;
+            case 1:
+            case 2:
+                holder.img_device.setImageResource(R.drawable.icon_phone);
+                holder.type.setText("Phone");
+                break;
+            case 3:
+                holder.img_device.setImageResource(R.drawable.icon_tv);
+                holder.type.setText("TV");
+                break;
+            default:
+                break;
         }
+
 
         holder.ll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,12 +93,14 @@ public class TvDeviceAdapterV2 extends RecyclerView.Adapter<RecyclerView.ViewHol
                         holder.img_device.setImageResource(R.drawable.icon_sound_in);
                         mOnItemClickListener.openTransfer(device);
                     }
+
                     @Override
                     public void closeTransfer() {
                         device.setOpenVoice(false);
                         holder.img_device.setImageResource(R.drawable.icon_sound_disable);
                         mOnItemClickListener.closeTransfer(device);
                     }
+
                     @Override
                     public void logout() {
                         mOnItemClickListener.logout(device);
@@ -119,6 +124,8 @@ public class TvDeviceAdapterV2 extends RecyclerView.Adapter<RecyclerView.ViewHol
         TextView timeText;
         ImageView img_device;
         LinearLayout ll;
+        TextView type;
+        ImageView syncImage;
 
         ViewHolder(View view) {
             super(view);
@@ -126,6 +133,8 @@ public class TvDeviceAdapterV2 extends RecyclerView.Adapter<RecyclerView.ViewHol
             timeText = (TextView) view.findViewById(R.id.txt_time);
             img_device = (ImageView) view.findViewById(R.id.img_device);
             ll = (LinearLayout) view.findViewById(R.id.ll);
+            type = (TextView) view.findViewById(R.id.txt_type);
+            syncImage = (ImageView) view.findViewById(R.id.image_sync);
         }
     }
 }

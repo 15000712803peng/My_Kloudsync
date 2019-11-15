@@ -8,6 +8,7 @@ public class TvDevice {
     private boolean enableSync;
     private boolean isSelect;
     private String UserID;
+    private int deviceType;
     private boolean isOpenVoice;
 
     public boolean isEnableSync() {
@@ -73,5 +74,13 @@ public class TvDevice {
 
     public void setUserID(String userID) {
         UserID = userID;
+    }
+
+    public int getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(int deviceType) {
+        this.deviceType = deviceType;
     }
 }
