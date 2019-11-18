@@ -41,6 +41,23 @@ public class LineItem implements Serializable {
     private String localFileID;
     private int pageNumber;
     private int documentItemID;
+    private int docType;
+
+    public int getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(int noteId) {
+        this.noteId = noteId;
+    }
+
+    public int getDocType() {
+        return docType;
+    }
+
+    public void setDocType(int docType) {
+        this.docType = docType;
+    }
 
     public int getPageNumber() {
         return pageNumber;

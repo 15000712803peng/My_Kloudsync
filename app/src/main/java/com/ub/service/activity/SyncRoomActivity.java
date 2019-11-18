@@ -82,8 +82,6 @@ import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.BookNote;
-import com.kloudsync.techexcel.bean.EventDoc;
-import com.kloudsync.techexcel.bean.EventSyncBook;
 import com.kloudsync.techexcel.bean.EventSyncRoom;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
 import com.kloudsync.techexcel.bean.MeetingType;
@@ -95,7 +93,6 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
-import com.kloudsync.techexcel.dialog.SelectMyNoteDialog;
 import com.kloudsync.techexcel.dialog.SelectNoteDialog;
 import com.kloudsync.techexcel.dialog.ShareSyncDialog;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -117,7 +114,6 @@ import com.kloudsync.techexcel.tool.DocumentUploadUtil;
 import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.Md5Tool;
-import com.kloudsync.techexcel.ui.MainActivity;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.util.PreferencesCookieStore;
 import com.mining.app.zxing.MipcaActivityCapture;
@@ -131,7 +127,6 @@ import com.ub.teacher.gesture.BrightnessHelper;
 import com.ub.teacher.gesture.ShowChangeLayout;
 import com.ub.teacher.gesture.VideoGestureRelativeLayout;
 import com.ub.techexcel.adapter.ChatAdapter;
-import com.ub.techexcel.adapter.MyRecyclerAdapter2;
 import com.ub.techexcel.bean.AudioActionBean;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.Note;
@@ -156,7 +151,6 @@ import com.ub.techexcel.tools.SpliteSocket;
 import com.ub.techexcel.tools.SyncRoomDocumentPopup;
 import com.ub.techexcel.tools.SyncRoomMeetingPopup;
 import com.ub.techexcel.tools.SyncRoomMemberPopup;
-import com.ub.techexcel.tools.SyncRoomNotePopup;
 import com.ub.techexcel.tools.SyncRoomOtherNoteListPopup;
 import com.ub.techexcel.tools.SyncRoomPopup;
 import com.ub.techexcel.tools.SyncRoomPropertyPopup;
@@ -494,11 +488,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                         List<String> ll = (List<String>) msg.obj;
                         activity3.getDetailInfo(ll, 1);
                         break;
-                    case 0x1205: //切换
-                        activity3.findViewById(R.id.defaultpagehaha).setVisibility(View.GONE);
-                        activity3.currentShowPdf = (LineItem) msg.obj;
-                        activity3.changedocumentlabel(activity3.currentShowPdf);
-                        break;
                     case 0x4010:
                         final String ddd = (String) msg.obj;
                         activity3.runOnUiThread(new Runnable() {
@@ -544,7 +533,12 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    private void notifySwitchDocumentSocket(LineItem lineItem, String pagenumber) {
+    /**
+     * @param lineItem
+     * @param pagenumber
+     * @param docType    切换文档 增加 docType//0:doc 1: note
+     */
+    private void notifySwitchDocumentSocket(LineItem lineItem, String pagenumber, int docType) {
         JSONObject json = new JSONObject();
         try {
             json.put("actionType", 8);
@@ -555,6 +549,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             json.put("itemId", lineItem.getItemId());
             json.put("incidentID", meetingId);
             json.put("pageNumber", pagenumber);
+            json.put("docType", docType);
             json.put("isH5", lineItem.isHtml5());
         } catch (Exception e) {
             e.printStackTrace();
@@ -594,7 +589,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void changedocumentlabel(LineItem lineItem) {
-        Log.e("dddddd", documentList.size() + "");
         if (documentList.size() > 0) {
             if (lineItem == null || TextUtils.isEmpty(lineItem.getItemId()) || lineItem.getItemId().equals("0")) {
                 lineItem = documentList.get(0);
@@ -610,63 +604,53 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                     }
                 }
             }
+            currentShowPdf = lineItem;
             currentAttachmentId = lineItem.getAttachmentID();
             currentItemId = lineItem.getItemId();
             targetUrl = lineItem.getUrl();
             newPath = lineItem.getNewPath();
             Log.e("dddddd", currentAttachmentId + "  " + currentItemId + "  " + targetUrl + "  " + newPath);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (wv_show == null) {
-                        return;
-                    }
-                    loadWebIndex();
-                }
-            });
+            loadWebIndex();
             if (isHavePresenter()) {
-                notifySwitchDocumentSocket(lineItem, "1");
+                notifySwitchDocumentSocket(lineItem, currentAttachmentPage, lineItem.getDocType());
             }
         }
-
     }
 
     private void followChangeFile(LineItem lineItem) {
-        Log.e("dddddd", documentList.size() + "");
-        if (documentList.size() > 0) {
-            if (lineItem == null || TextUtils.isEmpty(lineItem.getItemId()) || lineItem.getItemId().equals("0")) {
-                lineItem = documentList.get(0);
-                lineItem.setSelect(true);
-            } else {
-                for (int i = 0; i < documentList.size(); i++) {
-                    LineItem lineItem1 = documentList.get(i);
-                    if (lineItem.getItemId().equals(lineItem1.getItemId())) {
-                        lineItem1.setSelect(true);
-                        lineItem = lineItem1;
-                    } else {
-                        lineItem1.setSelect(false);
+        if (lineItem.getDocType() == 1) {
+            String noteid = lineItem.getItemId();
+            String url = AppConfig.URL_PUBLIC + "DocumentNote/Item?noteID=" + noteid;
+            ServiceInterfaceTools.getinstance().getNoteByNoteId(url, ServiceInterfaceTools.GETNOTEBYNOTEID, new ServiceInterfaceListener() {
+                @Override
+                public void getServiceReturnData(Object object) {
+                    Note note = (Note) object;
+                    displayNoteTv(note);
+                }
+            });
+        } else {
+            if (documentList.size() > 0) {
+                if (lineItem == null || TextUtils.isEmpty(lineItem.getItemId()) || lineItem.getItemId().equals("0")) {
+                    lineItem = documentList.get(0);
+                    lineItem.setSelect(true);
+                } else {
+                    for (int i = 0; i < documentList.size(); i++) {
+                        LineItem lineItem1 = documentList.get(i);
+                        if (lineItem.getItemId().equals(lineItem1.getItemId())) {
+                            lineItem1.setSelect(true);
+                            lineItem = lineItem1;
+                        } else {
+                            lineItem1.setSelect(false);
+                        }
                     }
                 }
-            }
-
-            if (!lineItem.isSelect()) {  //lineitem 不在pdf列表中
-                String noteid = lineItem.getItemId();
-                String url = AppConfig.URL_PUBLIC + "DocumentNote/Item?noteID=" + noteid;
-                ServiceInterfaceTools.getinstance().getNoteByNoteId(url, ServiceInterfaceTools.GETNOTEBYNOTEID, new ServiceInterfaceListener() {
-                    @Override
-                    public void getServiceReturnData(Object object) {
-                        Note note = (Note) object;
-                        displayNoteTv(note);
-                    }
-                });
-            } else {
+                currentShowPdf = lineItem;
                 currentAttachmentId = lineItem.getAttachmentID();
                 currentItemId = lineItem.getItemId();
                 targetUrl = lineItem.getUrl();
                 newPath = lineItem.getNewPath();
                 Log.e("dddddd", currentAttachmentId + "  " + currentItemId + "  " + targetUrl + "  " + newPath);
                 loadWebIndex();
-
             }
 
         }
@@ -690,16 +674,19 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     }
 
 
-    private void initWeb(){
+    @SuppressLint("ClickableViewAccessibility")
+    private void initWeb() {
         wv_show = (XWalkView) findViewById(R.id.wv_show);
         wv_show.setZOrderOnTop(false);
         wv_show.getSettings().setDomStorageEnabled(true);
         wv_show.addJavascriptInterface(SyncRoomActivity.this, "AnalyticsWebInterface");
+//        wv_show.setOnTouchListener(new XWalkViewTouchListener());
         XWalkPreferences.setValue("enable-javascript", true);
         XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
         XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
         XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -963,6 +950,9 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
 
     private int startYinxiangTime = 0;
+    private String prevItemId;
+    private String prevAttachmentPage;
+    private boolean isJoinNote = false;
 
     private void doJOIN_MEETING(String msg) {
         try {
@@ -973,7 +963,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             JSONArray jsonArray = retdata.getJSONArray("usersList");
             List<Customer> joinlist = Tools.getUserListByJoinMeeting(jsonArray);
 
-            if(retdata.has("type")){
+            if (retdata.has("type")) {
                 meetingType = retdata.getInt("type");
             }
 
@@ -1008,6 +998,20 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             String[] page = currentpage.split("-");
             currentItemId = page[0];
             currentAttachmentPage = page[1];
+
+            String prevpage = getRetCodeByReturnData2("prevDocInfo", msg);
+            if (TextUtils.isEmpty(prevpage)) {
+                isJoinNote = false;
+            } else {
+                String[] prevpages = prevpage.split("-");
+                prevItemId = prevpages[0];
+                prevAttachmentPage = prevpages[1];
+                if (currentItemId.equals(prevItemId)) {
+                    isJoinNote = false;
+                } else {
+                    isJoinNote = true;
+                }
+            }
 
             Message message1 = Message.obtain();
             message1.obj = joinlist;
@@ -1071,7 +1075,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
             String message = intent.getStringExtra("message");
 
-            if(TextUtils.isEmpty(message)){
+            if (TextUtils.isEmpty(message)) {
                 return;
             }
 
@@ -1092,7 +1096,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 return;
             }
 
-            if(message.equals("LEAVE_MEETING")){
+            if (message.equals("LEAVE_MEETING")) {
                 followLeaveMeeting();
                 return;
             }
@@ -1184,12 +1188,9 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                         lineitem.setUrl(jsonObject.getString("attachmentUrl"));
                         lineitem.setHtml5(jsonObject.getBoolean("isH5"));
                         lineitem.setItemId(jsonObject.getString("itemId"));
+                        lineitem.setDocType(jsonObject.getInt("docType"));
                         currentAttachmentPage = jsonObject.getString("pageNumber");
                         AppConfig.currentPageNumber = jsonObject.getString("pageNumber");
-//                        Message documentMsg = Message.obtain();
-//                        documentMsg.obj = lineitem;
-//                        documentMsg.what = 0x1205;
-//                        handler.sendMessage(documentMsg);
                         followChangeFile(lineitem);
 
                     } else if (jsonObject.getInt("actionType") == 19) {
@@ -1376,10 +1377,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                                 currentItemId = currentItemId2;
                                 for (int i = 0; i < documentList.size(); i++) {
                                     if (documentList.get(i).getItemId().equals(currentItemId)) {
-                                        Message documentMsg = Message.obtain();
-                                        documentMsg.obj = documentList.get(i);
-                                        documentMsg.what = 0x1205;
-                                        handler.sendMessage(documentMsg);
+                                        followChangeFile(documentList.get(i));
                                     }
                                 }
                             }
@@ -2425,7 +2423,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(wv_show == null){
+                    if (wv_show == null) {
                         return;
                     }
                     wv_show.load("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ")", null);
@@ -2965,11 +2963,11 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
             if (diff == 1) {
                 currentAttachmentPage = "1";
-                notifySwitchDocumentSocket(currentShowPdf, "1");
+                notifySwitchDocumentSocket(currentShowPdf, "1", 0);
             } else if (diff == -1) {
                 if (!TextUtils.isEmpty(currentShowPdf.getUrl())) {
                     currentAttachmentPage = getPdfCount(currentShowPdf.getUrl()) + "";
-                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage);
+                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
                 }
             }
             AppConfig.currentPageNumber = currentAttachmentPage;
@@ -3486,6 +3484,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 if (wv_show == null) {
                     return;
                 }
+                findViewById(R.id.defaultpagehaha).setVisibility(View.GONE);
                 wv_show.load(url, null);
             }
         });
@@ -3783,7 +3782,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 currentItemId = currentShowPdf.getItemId();
                 targetUrl = currentShowPdf.getUrl();
                 newPath = currentShowPdf.getNewPath();
-                notifySwitchDocumentSocket(currentShowPdf, "1");
+                notifySwitchDocumentSocket(currentShowPdf, "1", 0);
                 loadWebIndex();
             }
 
@@ -3941,7 +3940,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                     targetUrl = currentShowPdf.getUrl();
                     newPath = currentShowPdf.getNewPath();
                     isTwinkleBookNote = true;
-                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage);
+                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
                     loadWebIndex();
                     break;
                 }
@@ -5312,9 +5311,9 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         MeetingServiceTools.getInstance().getSyncroomDetail(url, MeetingServiceTools.GETTOPICATTACHMENT, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
-                Log.e("getSyncroomDetail","object:" + object);
+                Log.e("getSyncroomDetail", "object:" + object);
                 List<LineItem> list = (List<LineItem>) object;
-                Log.e("getSyncroomDetail","list:" + list);
+                Log.e("getSyncroomDetail", "list:" + list);
                 documentList.clear();
                 documentList.addAll(list);
                 initpdfdata(documentList);
@@ -5370,12 +5369,17 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 }
             }
         }
-//        if (isLoadPdfAgain && documentList.size() > 0) {
-//            isLoadPdfAgain = false;
-//
-//        }
+//        changedocumentlabel(currentShowPdf);
 
-        changedocumentlabel(currentShowPdf);
+        LineItem lineitem = new LineItem();
+        lineitem.setItemId(currentItemId);
+        if (isJoinNote) {
+            lineitem.setDocType(1);
+        } else {
+            lineitem.setDocType(0);
+        }
+        AppConfig.currentPageNumber = currentAttachmentPage;
+        followChangeFile(lineitem);
 
     }
 
@@ -5998,7 +6002,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
     private boolean isHavePresenter() {
 
-        if(meetingType != 0){
+        if (meetingType != 0) {
             return true;
         }
 
@@ -6221,7 +6225,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 currentItemId = currentShowPdf.getItemId();
                 targetUrl = currentShowPdf.getUrl();
                 newPath = currentShowPdf.getNewPath();
-                notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage);
+                notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
                 loadWebIndex();
             }
         });
@@ -6249,14 +6253,13 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
 
-        notifySwitchDocumentSocket(currentShowPdf, "1");
+        notifySwitchDocumentSocket(currentShowPdf, "1", 1);
         loadWebIndex();
     }
 
     private void displayNoteTv(Note note) {
         closenote = findViewById(R.id.closenote);
         closenote.setVisibility(View.GONE);
-
         //重新赋值
         currentAttachmentPage = "0";
         AppConfig.currentPageNumber = "0";
@@ -6479,7 +6482,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         });
     }
 
-    private void followLeaveMeeting(){
+    private void followLeaveMeeting() {
         if (mWebSocketClient != null) {
             try {
                 JSONObject loginjson = new JSONObject();
@@ -6495,8 +6498,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         }
         finish();
     }
-
-
 
 
 }

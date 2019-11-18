@@ -173,6 +173,7 @@ import com.ub.techexcel.tools.InviteUserPopup;
 import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.MoreactionPopup;
 import com.ub.techexcel.tools.NotificationPopup;
+import com.ub.techexcel.tools.RecordingPopup;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.SpliteSocket;
@@ -603,14 +604,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     case 0x1204: //join  meeting  返回的未进入meeting的人
                         activity3.setDefaultAuditor2((List<Customer>) msg.obj);
                         break;
-                    case 0x1301: // 提升旁听者为学生
-
-                        break;
-                    case 0x1205: //切换
-                        activity3.findViewById(R.id.defaultpagehaha).setVisibility(View.GONE);
-                        activity3.currentShowPdf = (LineItem) msg.obj;
-                        activity3.changedocumentlabel(activity3.currentShowPdf, false);
-                        break;
                     case 0x4010:
                         final String ddd = (String) msg.obj;
                         activity3.runOnUiThread(new Runnable() {
@@ -729,7 +722,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         icon_command_mic_enabel.setEnabled(false);
     }
 
-    private void notifySwitchDocumentSocket(LineItem lineItem, String pagenumber) {
+    private void notifySwitchDocumentSocket(LineItem lineItem, String pagenumber, int docType) {
         JSONObject json = new JSONObject();
         try {
             json.put("actionType", 8);
@@ -739,6 +732,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             json.put("meetingID", meetingId);
             json.put("itemId", lineItem.getItemId());
             json.put("incidentID", meetingId);
+            json.put("docType", docType);
             json.put("pageNumber", pagenumber);
             json.put("isH5", lineItem.isHtml5());
         } catch (Exception e) {
@@ -807,7 +801,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             loadWebIndex();
             if (isHavePresenter()) {
                 if (needSendMessage) {
-                    notifySwitchDocumentSocket(lineItem, "1");
+                    notifySwitchDocumentSocket(lineItem, "1", lineItem.getDocType());
                 }
             }
         }
@@ -815,42 +809,39 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     }
 
     private void followChangeFile(LineItem lineItem) {
-        Log.e("dddddd", documentList.size() + "");
-        if (documentList.size() > 0) {
-            if (lineItem == null || TextUtils.isEmpty(lineItem.getItemId()) || lineItem.getItemId().equals("0")) {
-                lineItem = documentList.get(0);
-                lineItem.setSelect(true);
-            } else {
-                for (int i = 0; i < documentList.size(); i++) {
-                    LineItem lineItem1 = documentList.get(i);
-                    if (lineItem.getItemId().equals(lineItem1.getItemId())) {
-                        lineItem1.setSelect(true);
-                        lineItem = lineItem1;
-                    } else {
-                        lineItem1.setSelect(false);
+        if (lineItem.getDocType() == 1) {
+            String noteid = lineItem.getItemId();
+            String url = AppConfig.URL_PUBLIC + "DocumentNote/Item?noteID=" + noteid;
+            ServiceInterfaceTools.getinstance().getNoteByNoteId(url, ServiceInterfaceTools.GETNOTEBYNOTEID, new ServiceInterfaceListener() {
+                @Override
+                public void getServiceReturnData(Object object) {
+                    Note note = (Note) object;
+                    displayNoteTv(note);
+                }
+            });
+        } else {
+            if (documentList.size() > 0) {
+                if (lineItem == null || TextUtils.isEmpty(lineItem.getItemId()) || lineItem.getItemId().equals("0")) {
+                    lineItem = documentList.get(0);
+                    lineItem.setSelect(true);
+                } else {
+                    for (int i = 0; i < documentList.size(); i++) {
+                        LineItem lineItem1 = documentList.get(i);
+                        if (lineItem.getItemId().equals(lineItem1.getItemId())) {
+                            lineItem1.setSelect(true);
+                            lineItem = lineItem1;
+                        } else {
+                            lineItem1.setSelect(false);
+                        }
                     }
                 }
-            }
-
-            if (!lineItem.isSelect()) {  //lineitem 不在pdf列表中
-
-                String noteid = lineItem.getItemId();
-                String url = AppConfig.URL_PUBLIC + "DocumentNote/Item?noteID=" + noteid;
-                ServiceInterfaceTools.getinstance().getNoteByNoteId(url, ServiceInterfaceTools.GETNOTEBYNOTEID, new ServiceInterfaceListener() {
-                    @Override
-                    public void getServiceReturnData(Object object) {
-                        Note note = (Note) object;
-                        displayNoteTv(note);
-                    }
-                });
-            } else {
+                currentShowPdf = lineItem;
                 currentAttachmentId = lineItem.getAttachmentID();
                 currentItemId = lineItem.getItemId();
                 targetUrl = lineItem.getUrl();
                 newPath = lineItem.getNewPath();
                 Log.e("dddddd", currentAttachmentId + "  " + currentItemId + "  " + targetUrl + "  " + newPath);
                 loadWebIndex();
-
             }
 
         }
@@ -938,7 +929,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         }
     }
 
-    private void initWeb(){
+    private void initWeb() {
         wv_show = (XWalkView) findViewById(R.id.wv_show);
         wv_show.setZOrderOnTop(false);
         wv_show.getSettings().setDomStorageEnabled(true);
@@ -1293,6 +1284,10 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private int audienceCount;
     private int startYinxiangTime = 0;
 
+    private String prevItemId;
+    private String prevAttachmentPage;
+    private boolean isJoinNote=false;
+
     private void doJOIN_MEETING(String msg) {
         try {
             JSONObject jsonObject = new JSONObject(msg);
@@ -1345,6 +1340,20 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             String[] page = currentpage.split("-");
             currentItemId = page[0];
             currentAttachmentPage = page[1];
+
+            String prevpage = getRetCodeByReturnData2("prevDocInfo", msg);
+            if(TextUtils.isEmpty(prevpage)){
+                isJoinNote=false;
+            }else{
+                String[] prevpages = prevpage.split("-");
+                prevItemId = prevpages[0];
+                prevAttachmentPage = prevpages[1];
+                if(currentItemId.equals(prevItemId)){
+                    isJoinNote=false;
+                }else{
+                    isJoinNote=true;
+                }
+            }
 
             Message message1 = Message.obtain();
             message1.obj = joinlist;
@@ -1542,12 +1551,9 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                         lineitem.setUrl(jsonObject.getString("attachmentUrl"));
                         lineitem.setHtml5(jsonObject.getBoolean("isH5"));
                         lineitem.setItemId(jsonObject.getString("itemId"));
+                        lineitem.setDocType(jsonObject.getInt("docType"));
                         currentAttachmentPage = jsonObject.getString("pageNumber");
                         AppConfig.currentPageNumber = jsonObject.getString("pageNumber");
-//                        Message documentMsg = Message.obtain();
-//                        documentMsg.obj = lineitem;
-//                        documentMsg.what = 0x1205;
-//                        handler.sendMessage(documentMsg);
                         followChangeFile(lineitem);
 
                     } else if (jsonObject.getInt("actionType") == 9) { // 直播视频大小切换
@@ -1831,10 +1837,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                                 currentItemId = currentItemId2;
                                 for (int i = 0; i < documentList.size(); i++) {
                                     if (documentList.get(i).getItemId().equals(currentItemId)) {
-                                        Message documentMsg = Message.obtain();
-                                        documentMsg.obj = documentList.get(i);
-                                        documentMsg.what = 0x1205;
-                                        handler.sendMessage(documentMsg);
+                                        followChangeFile(documentList.get(i));
                                     }
                                 }
                             }
@@ -1986,17 +1989,17 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 if (jsonObject.has(str)) {
                     return jsonObject.getString(str) + "";
                 } else {
-                    return "000000000";
+                    return "";
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                return "000000000";
+                return "";
             } catch (Exception e) {
                 e.printStackTrace();
-                return "000000000";
+                return "";
             }
         } else {
-            return "000000000";
+            return "";
         }
     }
 
@@ -3719,11 +3722,11 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             isHtml = currentShowPdf.isHtml5();
             if (diff == 1) {
                 currentAttachmentPage = "1";
-                notifySwitchDocumentSocket(currentShowPdf, "1");
+                notifySwitchDocumentSocket(currentShowPdf, "1", 0);
             } else if (diff == -1) {
                 if (!TextUtils.isEmpty(currentShowPdf.getUrl())) {
                     currentAttachmentPage = getPdfCount(currentShowPdf.getUrl()) + "";
-                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage);
+                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
                 }
             }
             AppConfig.currentPageNumber = currentAttachmentPage;
@@ -4096,11 +4099,36 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
             @Override
             public void docrecord() {
-                openYinxiangList(4);
+                displayRecordListPopup();
             }
 
         });
         moreactionPopup.StartPop(testdebug, isHavePresenter(), isAgoraRecord);
+    }
+
+
+    private RecordingPopup recordingPopup;
+
+    private void displayRecordListPopup() {
+        recordingPopup = new RecordingPopup();
+        recordingPopup.getPopwindow(WatchCourseActivity3.this);
+        recordingPopup.setFavoritePoPListener(new RecordingPopup.FavoritePoPListener() {
+            @Override
+            public void dismiss() {
+            }
+
+            @Override
+            public void open() {
+            }
+
+            @Override
+            public void playYinxiang(RecordingBean recordingBean) {
+                playAgoraRecording(recordingBean);
+                activte_linearlayout.setVisibility(View.GONE);
+                command_active.setImageResource(R.drawable.icon_command);
+            }
+        });
+        recordingPopup.StartPop(wv_show, lessonId);
     }
 
 
@@ -4222,7 +4250,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             public void onError(RongIMClient.ErrorCode errorCode) {
 
             }
-
         });
     }
 
@@ -4478,16 +4505,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     }).start(((App) getApplication()).getThreadMgr());
                     yinxiangmode = 2;
                 }
-
-                //测试录课   -----------------------
-//                startAgoraRecording();
-                //测试录课   -----------------------
-
-                // pdf 上弹出pdf
-
-//                displayNote();
-
-
                 break;
             case R.id.prepareScanTV:
                 openTvDevicesList();
@@ -4910,7 +4927,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     targetUrl = currentShowPdf.getUrl();
                     newPath = currentShowPdf.getNewPath();
                     isTwinkleBookNote = true;
-                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage);
+                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
                     loadWebIndex();
                     break;
                 }
@@ -5873,7 +5890,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     private WebCamPopup webCamPopuP;
     private boolean isOpenShengwang = false;
-    private boolean isJoinChannel=false;
+    private boolean isJoinChannel = false;
 
     private void openshengwang(int i) {
         if (webCamPopuP != null && webCamPopuP.isShowing()) {
@@ -5891,8 +5908,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 //                initMute(isMute2);
                 isOpenShengwang = true;
 //                switchMode();
-                videoStreamStatus=isMute2;
-                audioStreamStatus=isListen;
+                videoStreamStatus = isMute2;
+                audioStreamStatus = isListen;
 
                 toggle.setVisibility(View.VISIBLE);
                 joinvideo.setVisibility(View.GONE);
@@ -6844,7 +6861,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     targetUrl = currentShowPdf.getUrl();
                     newPath = currentShowPdf.getNewPath();
                     isHtml = currentShowPdf.isHtml5();
-                    notifySwitchDocumentSocket(currentShowPdf, "1");
+                    notifySwitchDocumentSocket(currentShowPdf, "1", 0);
                     loadWebIndex();
                 }
             }
@@ -6884,7 +6901,15 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
         if (isLoadPdfAgain && documentList.size() > 0) {
             isLoadPdfAgain = false;
-            changedocumentlabel(currentShowPdf, true);
+            LineItem lineitem = new LineItem();
+            lineitem.setItemId(currentItemId);
+            if (isJoinNote) {
+                lineitem.setDocType(1);
+            } else {
+                lineitem.setDocType(0);
+            }
+            AppConfig.currentPageNumber = currentAttachmentPage;
+            followChangeFile(lineitem);
         }
 
     }
@@ -7927,7 +7952,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             icon_command_mic_enabel.setImageResource(R.drawable.icon_command_mic_enabel);
         }
 
-        if(isMeetingRecording){
+        if (isMeetingRecording) {
             notifyAgoraStatus(1, audioStreamStatus, videoStreamStatus);
         }
     }
@@ -7954,7 +7979,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             icon_command_webcam_enable.setImageResource(R.drawable.icon_command_webcam_disable);
         }
 
-        if(isMeetingRecording){
+        if (isMeetingRecording) {
             notifyAgoraStatus(1, audioStreamStatus, videoStreamStatus);
         }
     }
@@ -8178,7 +8203,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                         @Override
                         public void run() {
                             notifyAgoraStatus(1, audioStreamStatus, videoStreamStatus);
-                            playAgoraRecording();
                         }
                     }, 3000);
                 }
@@ -8230,42 +8254,21 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
 
     private long startTime;
-    /**
-     * 是否录课
-     */
+
     private boolean isAgoraRecord = false;
     private CustomVideoView recordscreenvideoview;
     private RecyclerView recordlistvideorecyclerview;
 
-    /**
-     * 播放录课信息
-     */
-    private void playAgoraRecording() {
+    private SectionVO voiceSectionVO = new SectionVO();
+    private boolean isPlayRecordInfo = false;
+
+    private void playAgoraRecording(final RecordingBean recordingBean) {
         recordscreenvideoview = findViewById(R.id.recordscreenvideo);
         recordlistvideorecyclerview = findViewById(R.id.recordinglistvideo);
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         linearLayoutManager3.setOrientation(LinearLayoutManager.VERTICAL);
         recordlistvideorecyclerview.setLayoutManager(linearLayoutManager3);
-        String recordListurl = AppConfig.URL_PUBLIC_AUDIENCE + "MeetingServer/recording/recording_list?lessonId=" + lessonId;
-        ServiceInterfaceTools.getinstance().getRecordingList(recordListurl, ServiceInterfaceTools.GETRECORDINGLIST, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-//                List<RecordingBean> recordingBeanList = new ArrayList<>();
-//                recordingBeanList.addAll((List<RecordingBean>) object);
-//                if (recordingBeanList.size() > 0) {
-//                    RecordingBean recordingBean = recordingBeanList.get(0);
-//                    getRecordingItem(recordingBean);
-//                }
-            }
-        });
 
-    }
-
-
-    private SectionVO voiceSectionVO = new SectionVO();
-    private boolean isPlayRecordInfo = false;
-
-    private void getRecordingItem(final RecordingBean recordingBean) {
         String url = AppConfig.URL_PUBLIC_AUDIENCE + "MeetingServer/recording/recording_item?recordingId=" + recordingBean.getRecordingId();
         ServiceInterfaceTools.getinstance().getRecordingItem(url, ServiceInterfaceTools.GETRECORDINGITEM, new ServiceInterfaceListener() {
             @Override
@@ -9050,6 +9053,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 if (wv_show == null) {
                     return;
                 }
+                findViewById(R.id.defaultpagehaha).setVisibility(View.GONE);
                 wv_show.load(url, null);
             }
         });
@@ -9091,12 +9095,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private LineItem currentShowPdf2 = new LineItem();
     private TextView closenote;
 
-
-
-
-    /**
-     * @param note
-     */
     private void displayNote(Note note) {
         closenote = findViewById(R.id.closenote);
         closenote.setVisibility(View.VISIBLE);
@@ -9104,11 +9102,9 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             @Override
             public void onClick(View v) {
                 closenote.setVisibility(View.GONE);
-
                 for (int i = 0; i < documentList.size(); i++) {
                     documentList.get(i).setSelect(false);
                 }
-
                 currentAttachmentPage = currentAttachmentPage2;
                 AppConfig.currentPageNumber = currentAttachmentPage2;
                 currentShowPdf.setSelect(true);
@@ -9116,14 +9112,12 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 currentShowPdf.setUrl(currentShowPdf2.getUrl());
                 currentShowPdf.setItemId(currentShowPdf2.getItemId());
                 currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
-
-
                 myRecyclerAdapter2.notifyDataSetChanged();
                 currentAttachmentId = currentShowPdf.getAttachmentID();
                 currentItemId = currentShowPdf.getItemId();
                 targetUrl = currentShowPdf.getUrl();
                 newPath = currentShowPdf.getNewPath();
-                notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage);
+                notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
                 loadWebIndex();
             }
         });
@@ -9151,7 +9145,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
 
-        notifySwitchDocumentSocket(currentShowPdf, "1");
+        notifySwitchDocumentSocket(currentShowPdf, "1", 1);
         loadWebIndex();
     }
 
