@@ -5271,8 +5271,9 @@ public class KeyActivity extends BaseActivity implements View.OnClickListener, A
         webCamPopuP.getPopwindow(KeyActivity.this, identity, firstStatus);
         webCamPopuP.setDefault(i);
         webCamPopuP.setWebCamPopupListener(new WebCamPopup.WebCamPopupListener() {
+
             @Override
-            public void start(boolean isListen, boolean isMute2) {
+            public void start(boolean isListen, boolean isMute2, boolean isRecord) {
                 initListen(isListen);
                 initMute(isMute2);
                 isOpenShengwang = true;

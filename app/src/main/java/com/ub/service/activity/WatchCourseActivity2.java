@@ -3071,6 +3071,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 }
                 if (isTwinkleBookNote) {
                     twinkleBookNote(linkID);
+                    isTwinkleBookNote = false;
                 }
                 if (!TextUtils.isEmpty(selectCusterId)&&!selectCusterId.equals(AppConfig.UserID)) {
                     ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
@@ -4521,6 +4522,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                     AppConfig.currentPageNumber = pagenumber + "";
                     currentShowPdf = lineItem;
                     currentShowPdf.setSelect(true);
+                    currentShowPdf.setPageNumber(pagenumber);
                     currentAttachmentId = currentShowPdf.getAttachmentID();
                     currentItemId = currentShowPdf.getItemId();
                     targetUrl = currentShowPdf.getUrl();
@@ -4605,7 +4607,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 currentItemId = currentShowPdf.getItemId();
                 targetUrl = currentShowPdf.getUrl();
                 newPath = currentShowPdf.getNewPath();
-                notifySwitchDocumentSocket(currentShowPdf, "1");
+                notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage);
                 loadWebIndex();
             }
         });
@@ -5551,8 +5553,9 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         webCamPopuP.getPopwindow(WatchCourseActivity2.this, identity, firstStatus);
         webCamPopuP.setDefault(i);
         webCamPopuP.setWebCamPopupListener(new WebCamPopup.WebCamPopupListener() {
+
             @Override
-            public void start(boolean isListen, boolean isMute2) {
+            public void start(boolean isListen, boolean isMute2, boolean isRecord) {
                 initListen(isListen);
                 initMute(isMute2);
                 isOpenShengwang = true;

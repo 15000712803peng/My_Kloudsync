@@ -650,7 +650,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             }
 
             if (!lineItem.isSelect()) {  //lineitem 不在pdf列表中
-
                 String noteid = lineItem.getItemId();
                 String url = AppConfig.URL_PUBLIC + "DocumentNote/Item?noteID=" + noteid;
                 ServiceInterfaceTools.getinstance().getNoteByNoteId(url, ServiceInterfaceTools.GETNOTEBYNOTEID, new ServiceInterfaceListener() {
@@ -706,7 +705,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CheckLanguage();
-        MainActivity.IsInSyncRoom  = true;
+//        MainActivity.IsInSyncRoom  = true;
         setContentView(R.layout.syncroomactivity2);
         initWeb();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -2685,6 +2684,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 }
                 if (isTwinkleBookNote) {
                     twinkleBookNote(linkID);
+                    isTwinkleBookNote = false;
                 }
                 if (!TextUtils.isEmpty(selectCusterId) && !selectCusterId.equals(AppConfig.UserID)) {
                     ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
@@ -2696,8 +2696,9 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                             }
                             if (isTwinkleBookNote) {
                                 twinkleBookNote(linkID);
+                                isTwinkleBookNote = false;
                             }
-                            isTwinkleBookNote = false;
+
                         }
                     });
                 }
@@ -3542,7 +3543,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                                             }
                                         });
                             }
-
                         }
                     });
                     selectNoteDialog.show(url);
@@ -3935,6 +3935,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                     AppConfig.currentPageNumber = pagenumber + "";
                     currentShowPdf = lineItem;
                     currentShowPdf.setSelect(true);
+                    currentShowPdf.setPageNumber(pagenumber);
                     currentAttachmentId = currentShowPdf.getAttachmentID();
                     currentItemId = currentShowPdf.getItemId();
                     targetUrl = currentShowPdf.getUrl();
@@ -6046,7 +6047,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         AppConfig.currentLine = 0;
         AppConfig.currentMode = "0";
         syncroomInstance = false;
-        MainActivity.IsInSyncRoom  = false;
+//        MainActivity.IsInSyncRoom  = false;
         wl.release();
 
         if (broadcastReceiver != null) {
@@ -6220,7 +6221,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 currentItemId = currentShowPdf.getItemId();
                 targetUrl = currentShowPdf.getUrl();
                 newPath = currentShowPdf.getNewPath();
-                notifySwitchDocumentSocket(currentShowPdf, "1");
+                notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage);
                 loadWebIndex();
             }
         });

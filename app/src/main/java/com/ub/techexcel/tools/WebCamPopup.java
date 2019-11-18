@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ public class WebCamPopup implements View.OnClickListener {
     private LinearLayout ll;
     private int identity;
     private String firstStatus;
+    private CheckBox isOpenRecord;
 
     public void getPopwindow(Context context, int identity, String firstStatus) {
         this.mContext = context;
@@ -87,6 +89,7 @@ public class WebCamPopup implements View.OnClickListener {
         tv11 = (TextView) view.findViewById(R.id.tv11);
         tv21 = (TextView) view.findViewById(R.id.tv21);
         ll = (LinearLayout) view.findViewById(R.id.ll);
+        isOpenRecord = (CheckBox) view.findViewById(R.id.isOpenRecord);
 
         systembtn = (TextView) view.findViewById(R.id.systembtn);
         kloudcallbtn = (TextView) view.findViewById(R.id.kloudcallbtn);
@@ -142,7 +145,7 @@ public class WebCamPopup implements View.OnClickListener {
 
 
     public interface WebCamPopupListener {
-        void start(boolean isListen, boolean isMute);
+        void start(boolean isListen, boolean isMute, boolean isRecord);
 
         void changeOptions(int position);
 
@@ -186,7 +189,7 @@ public class WebCamPopup implements View.OnClickListener {
                 break;
             case R.id.bnt:
                 mPopupWindow.dismiss();
-                webCamPopupListener.start(isListen, isMute);
+                webCamPopupListener.start(isListen, isMute, isOpenRecord.isChecked());
                 break;
             case R.id.closebnt:
                 mPopupWindow.dismiss();

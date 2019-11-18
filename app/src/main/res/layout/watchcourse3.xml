@@ -864,7 +864,39 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/recordmeeting"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:orientation="horizontal"
+            android:visibility="visible">
 
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/start2" />
+
+            <TextView
+                android:id="@+id/recordtv"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="30dp"
+                android:gravity="center"
+                android:text="录制中"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/white" />
+        </RelativeLayout>
+
+
+
+        <RelativeLayout
             android:id="@+id/callmelater"
             android:layout_width="match_parent"
             android:layout_height="35dp"

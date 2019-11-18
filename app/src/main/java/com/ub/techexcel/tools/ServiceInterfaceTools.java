@@ -1461,7 +1461,7 @@ public class ServiceInterfaceTools {
             public void run() {
                 try {
                     JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
-                    Log.e("Recording list", url + "  " + returnjson.toString());
+                    Log.e("Recording_list", url + "  " + returnjson.toString());
                     if (returnjson.getInt("code") == 0) {
                         JSONArray data = returnjson.getJSONArray("data");
                         List<RecordingBean> list = new ArrayList<>();

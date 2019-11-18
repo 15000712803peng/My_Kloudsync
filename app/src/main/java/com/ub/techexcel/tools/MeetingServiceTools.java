@@ -14,6 +14,7 @@ import com.kloudsync.techexcel.help.ThreadManager;
 import com.ub.techexcel.bean.AudioActionBean;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.ServiceBean;
+import com.ub.techexcel.service.ConnectService;
 
 import org.feezu.liuli.timeselector.Utils.TextUtil;
 import org.json.JSONArray;
@@ -31,6 +32,10 @@ public class MeetingServiceTools {
     public static final int ENTERTEACHERONGOINGMEETING = 0x1103;
     public static final int UPLOADFILEWITHHASH = 0x1104;
     public static final int GETTOPICATTACHMENT = 0x1106;
+
+    public static final int STARTRECORDING = 0x2101;
+    public static final int ENDRECORDING = 0x2102;
+
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
 
@@ -74,8 +79,6 @@ public class MeetingServiceTools {
 
 
     /**
-     *
-     *
      * @param url
      * @param code
      * @param serviceInterfaceListener
@@ -338,6 +341,63 @@ public class MeetingServiceTools {
         }).start();
     }
 
+
+    public void startRecording(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject returnJson = com.ub.techexcel.service.ConnectService.submitDataByJson(url, null);
+                Log.e("Recording_start", url + "   " + returnJson.toString());
+                try {
+                    int retCode = returnJson.getInt("code");
+                    if (retCode == 0 && returnJson.getString("msg").equals("success")) {
+                        Message msg = Message.obtain();
+                        msg.obj = returnJson.getInt("data");
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnJson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+
+    public void endRecording(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject returnJson = ConnectService.submitDataByJson(url, null);
+                Log.e("recording_end", url + "   " + returnJson.toString());
+                try {
+                    int retCode = returnJson.getInt("code");
+                    if (retCode == 0 && returnJson.getString("msg").equals("success")) {
+                        Message msg = Message.obtain();
+                        msg.obj = retCode;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnJson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start(ThreadManager.getManager());
+    }
 
 
 }
