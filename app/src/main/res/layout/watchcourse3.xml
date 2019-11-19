@@ -1544,6 +1544,8 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
         android:background="@color/black"
         android:alpha="0.8"
         android:text="@string/back"

@@ -330,7 +330,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private ImageView command_active;
     private LinearLayout activte_linearlayout;
     private LinearLayout syncroomll;
-    private RelativeLayout prepareStart, syncdisplayoutline, syncdisplaymembers, syncdisplaynote,syncdisplaymeeting, syncdisplaychat, syncdisplayproperty, syncdisplayshare, syncyinxiang, syncdisplayquit, prepareScanTV;
+    private RelativeLayout prepareStart, syncdisplayoutline, syncdisplaymembers, syncdisplaynote, syncdisplaymeeting, syncdisplaychat, syncdisplayproperty, syncdisplayshare, syncyinxiang, syncdisplayquit, prepareScanTV;
     public static boolean syncbookInstance = false;
     private TextView endtextview;
     private TextView prompt;
@@ -614,15 +614,16 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             currentItemId = lineItem.getItemId();
             targetUrl = lineItem.getUrl();
             newPath = lineItem.getNewPath();
+            closenote.setVisibility(View.GONE);
             loadWebIndex();
             if (isHavePresenter()) {
-                notifySwitchDocumentSocket(lineItem, "1",lineItem.getDocType());
+                notifySwitchDocumentSocket(lineItem, "1", lineItem.getDocType());
             }
         }
     }
 
 
-    private void followChangeFile(LineItem lineItem) {
+    private void followChangeFile(LineItem lineItem, String pagenumber) {
         if (lineItem.getDocType() == 1) {
             String noteid = lineItem.getItemId();
             String url = AppConfig.URL_PUBLIC + "DocumentNote/Item?noteID=" + noteid;
@@ -649,12 +650,15 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                         }
                     }
                 }
+                prevItemId = null;
                 currentShowPdf = lineItem;
+                currentShowPdf.setPageNumber(pagenumber);
                 currentAttachmentId = lineItem.getAttachmentID();
                 currentItemId = lineItem.getItemId();
                 targetUrl = lineItem.getUrl();
                 newPath = lineItem.getNewPath();
                 Log.e("dddddd", currentAttachmentId + "  " + currentItemId + "  " + targetUrl + "  " + newPath);
+                closenote.setVisibility(View.GONE);
                 loadWebIndex();
             }
 
@@ -943,7 +947,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
     private String prevItemId;
     private String prevAttachmentPage;
-    private boolean isJoinNote=false;
+    private boolean isJoinNote = false;
 
     private void doJOIN_MEETING(String msg) {
         try {
@@ -987,16 +991,17 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             currentAttachmentPage = page[1];
 
             String prevpage = getRetCodeByReturnData2("prevDocInfo", msg);
-            if(TextUtils.isEmpty(prevpage)){
-                isJoinNote=false;
-            }else{
+            if (TextUtils.isEmpty(prevpage)) {
+                isJoinNote = false;
+            } else {
                 String[] prevpages = prevpage.split("-");
                 prevItemId = prevpages[0];
                 prevAttachmentPage = prevpages[1];
-                if(currentItemId.equals(prevItemId)){
-                    isJoinNote=false;
-                }else{
-                    isJoinNote=true;
+                prevAttachmentPage = (int) Float.parseFloat(prevAttachmentPage) + "";
+                if (currentItemId.equals(prevItemId)) {
+                    isJoinNote = false;
+                } else {
+                    isJoinNote = true;
                 }
             }
 
@@ -1061,7 +1066,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         public void onReceive(Context context, Intent intent) {
 
             String message = intent.getStringExtra("message");
-            if(TextUtils.isEmpty(message)){
+            if (TextUtils.isEmpty(message)) {
                 return;
             }
             if (message.equals("disconnect")) {
@@ -1081,7 +1086,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 return;
             }
 
-            if(message.equals("LEAVE_MEETING")){
+            if (message.equals("LEAVE_MEETING")) {
                 followLeaveMeeting();
                 return;
             }
@@ -1175,7 +1180,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                         lineitem.setDocType(jsonObject.getInt("docType"));
                         currentAttachmentPage = jsonObject.getString("pageNumber");
                         AppConfig.currentPageNumber = jsonObject.getString("pageNumber");
-                        followChangeFile(lineitem);
+                        followChangeFile(lineitem, currentAttachmentPage);
                     } else if (jsonObject.getInt("actionType") == 19) {
                         final int stat = jsonObject.getInt("stat");
                         final float time = jsonObject.getInt("time");
@@ -1227,7 +1232,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
                     } else if (jsonObject.getInt("actionType") == 15) { //收到关闭自己的Video
 
-                    }else if (jsonObject.getInt("actionType") == 1820) {
+                    } else if (jsonObject.getInt("actionType") == 1820) {
 //                        String userid=jsonObject.getString("useId");
 //                        if (jsonObject.getInt("stat") == 0) {
 //                            if(syncRoomOtherNoteListPopup != null){
@@ -1381,7 +1386,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                                 currentItemId = currentItemId2;
                                 for (int i = 0; i < documentList.size(); i++) {
                                     if (documentList.get(i).getItemId().equals(currentItemId)) {
-                                        followChangeFile(documentList.get(i));
+                                        followChangeFile(documentList.get(i), "1");
                                     }
                                 }
                             }
@@ -1546,7 +1551,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
     private LinearLayout createblabkpage, inviteattendee, sharedocument;
 
-    private void initWeb(){
+    private void initWeb() {
         wv_show = (XWalkView) findViewById(R.id.wv_show);
         wv_show.setZOrderOnTop(false);
         wv_show.getSettings().setDomStorageEnabled(true);
@@ -1560,6 +1565,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private void initView() {
         puo2 = new Popupdate2();
         puo2.getPopwindow(SyncBookActivity.this);
+        closenote = findViewById(R.id.closenote);
         prompt = (TextView) findViewById(R.id.prompt);
         endtextview = (TextView) findViewById(R.id.endtextview);
         llpre = (LinearLayout) findViewById(R.id.llpre);
@@ -2699,7 +2705,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                     twinkleBookNote(linkID);
                     isTwinkleBookNote = false;
                 }
-                if (!TextUtils.isEmpty(selectCusterId)&&!selectCusterId.equals(AppConfig.UserID)) {
+                if (!TextUtils.isEmpty(selectCusterId) && !selectCusterId.equals(AppConfig.UserID)) {
                     ServiceInterfaceTools.getinstance().getNoteListV3(AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + currentAttachmentId + "&pageNumber=" + currentAttachmentPage + "&userID=" + selectCusterId, ServiceInterfaceTools.GETNOTELISTV3, new ServiceInterfaceListener() {
                         @Override
                         public void getServiceReturnData(Object object) {
@@ -2972,11 +2978,11 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             newPath = currentShowPdf.getNewPath();
             if (diff == 1) {
                 currentAttachmentPage = "1";
-                notifySwitchDocumentSocket(currentShowPdf, "1",0);
+                notifySwitchDocumentSocket(currentShowPdf, "1", 0);
             } else if (diff == -1) {
                 if (!TextUtils.isEmpty(currentShowPdf.getUrl())) {
                     currentAttachmentPage = getPdfCount(currentShowPdf.getUrl()) + "";
-                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage,0);
+                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
                 }
             }
             AppConfig.currentPageNumber = currentAttachmentPage;
@@ -3340,7 +3346,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.syncdisplaynote:
                 openNotePopup();
-                notifyTvNoteOpenOrClose(1,selectCusterId);
+                notifyTvNoteOpenOrClose(1, selectCusterId);
                 syncroomll.setVisibility(View.GONE);
                 menu.setImageResource(R.drawable.icon_menu);
                 break;
@@ -3513,7 +3519,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
             @Override
             public void close() {
-                notifyTvNoteOpenOrClose(0,selectCusterId);
+                notifyTvNoteOpenOrClose(0, selectCusterId);
             }
 
         });
@@ -3539,7 +3545,8 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             }
         }
     }
-    private void notifyTvNoteOpenOrClose(int type,String useid) {
+
+    private void notifyTvNoteOpenOrClose(int type, String useid) {
         JSONObject actionJson = new JSONObject();
         try {
             actionJson.put("actionType", 1820);
@@ -3561,9 +3568,10 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private boolean isTwinkleBookNote = false;
 
     private void switchPdf(final NoteDetail noteDetail) {
+        closenote.setVisibility(View.GONE);
         int attachmentid = noteDetail.getDocumentItemID();
         int pagenumber = noteDetail.getPageNumber();
-        if((attachmentid+"").equals(currentAttachmentId)&&(pagenumber+"").equals(currentAttachmentPage)){
+        if ((attachmentid + "").equals(currentAttachmentId) && (pagenumber + "").equals(currentAttachmentPage)) {
             twinkleBookNote(noteDetail.getLinkID());
             return;
         }
@@ -3577,12 +3585,13 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                     AppConfig.currentPageNumber = pagenumber + "";
                     currentShowPdf = lineItem;
                     currentShowPdf.setSelect(true);
+                    currentShowPdf.setPageNumber(pagenumber + "");
                     currentAttachmentId = currentShowPdf.getAttachmentID();
                     currentItemId = currentShowPdf.getItemId();
                     targetUrl = currentShowPdf.getUrl();
                     newPath = currentShowPdf.getNewPath();
                     isTwinkleBookNote = true;
-                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage,0);
+                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
                     loadWebIndex();
                     break;
                 }
@@ -3600,32 +3609,6 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private String currentAttachmentPage2;
     private LineItem currentShowPdf2 = new LineItem();
     private TextView closenote;
-
-    /**
-     * 展示笔记列表  (切换文档)
-     */
-    private void displayNoteBook(String json) {
-        String id = "";
-        if (json != null) {
-            try {
-                JSONObject jsonObject = new JSONObject(json);
-                id = jsonObject.getString("id");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-//        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=ab3a05cb-f813-4cb7-b029-e6faffcb5586";
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/ItemByLocalFileID?localFileID=" + id;
-        ServiceInterfaceTools.getinstance().getNoteByLocalFileId(url, ServiceInterfaceTools.GETNOTEBYLOCALFILEID, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                Note note = (Note) object;
-                displayNote(note);
-            }
-        });
-
-    }
-
 
     private SelectNoteDialog selectNoteDialog;
 
@@ -3672,7 +3655,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                                             @Override
                                             public void getServiceReturnData(Object object) {
                                                 int linkid = (int) object;
-                                                Log.e("noterru", "删除了 "+linkID + "  添加了 " + linkid);
+                                                Log.e("noterru", "删除了 " + linkID + "  添加了 " + linkid);
                                                 deleteNote(linkID);
                                                 drawNote(linkid, linkProperty, 0);
                                             }
@@ -3927,7 +3910,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                     currentItemId = currentShowPdf.getItemId();
                     targetUrl = currentShowPdf.getUrl();
                     newPath = currentShowPdf.getNewPath();
-                    notifySwitchDocumentSocket(currentShowPdf, "1",0);
+                    notifySwitchDocumentSocket(currentShowPdf, "1", 0);
                     loadWebIndex();
                 }
             }
@@ -5421,7 +5404,10 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 lineitem.setDocType(0);
             }
             AppConfig.currentPageNumber = currentAttachmentPage;
-            followChangeFile(lineitem);
+            followChangeFile(lineitem, currentAttachmentPage);
+            if (!TextUtils.isEmpty(currentItemId) && currentItemId.equals("0")) {
+                notifySwitchDocumentSocket(lineitem, currentAttachmentPage, lineitem.getDocType());
+            }
         }
 
     }
@@ -6388,41 +6374,37 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
 
     private void displayNote(Note note) {
-        closenote = findViewById(R.id.closenote);
         closenote.setVisibility(View.VISIBLE);
-        //两个按钮
-        menu.setVisibility(View.GONE);
-        command_active.setVisibility(View.GONE);
         closenote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                closenote.setVisibility(View.GONE);
-                menu.setVisibility(View.VISIBLE);
-                if (isTeamspace) {
-                    command_active.setVisibility(View.GONE);
-                } else {
-                    command_active.setVisibility(View.VISIBLE);
+                if (isHavePresenter()) {
+                    if (!TextUtils.isEmpty(currentShowPdf2.getItemId())) {
+                        closenote.setVisibility(View.GONE);
+                        for (int i = 0; i < documentList.size(); i++) {
+                            LineItem lineItem = documentList.get(i);
+                            if (currentShowPdf2.getItemId().equals(lineItem.getItemId())) {
+                                lineItem.setSelect(true);
+                            } else {
+                                lineItem.setSelect(false);
+                            }
+                        }
+                        currentAttachmentPage = currentAttachmentPage2;
+                        AppConfig.currentPageNumber = currentAttachmentPage2;
+                        currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
+                        currentShowPdf.setUrl(currentShowPdf2.getUrl());
+                        currentShowPdf.setItemId(currentShowPdf2.getItemId());
+                        currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
+                        currentAttachmentId = currentShowPdf.getAttachmentID();
+                        currentItemId = currentShowPdf.getItemId();
+                        targetUrl = currentShowPdf.getUrl();
+                        newPath = currentShowPdf.getNewPath();
+                        notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
+                        loadWebIndex();
+                    }
                 }
-                for (int i = 0; i < documentList.size(); i++) {
-                    documentList.get(i).setSelect(false);
-                }
-                currentAttachmentPage = currentAttachmentPage2;
-                AppConfig.currentPageNumber = currentAttachmentPage2;
-                currentShowPdf.setSelect(true);
-                currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
-                currentShowPdf.setUrl(currentShowPdf2.getUrl());
-                currentShowPdf.setItemId(currentShowPdf2.getItemId());
-                currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
-
-                currentAttachmentId = currentShowPdf.getAttachmentID();
-                currentItemId = currentShowPdf.getItemId();
-                targetUrl = currentShowPdf.getUrl();
-                newPath = currentShowPdf.getNewPath();
-                notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage,0);
-                loadWebIndex();
             }
         });
-
         //保存
         currentAttachmentPage2 = currentAttachmentPage;
         currentShowPdf2.setNewPath(newPath);
@@ -6432,28 +6414,6 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         for (int i = 0; i < documentList.size(); i++) {
             documentList.get(i).setSelect(false);
         }
-
-        //重新赋值
-        currentAttachmentPage = "0";
-        AppConfig.currentPageNumber = "0";
-        currentShowPdf = new LineItem();
-        currentShowPdf.setUrl(note.getAttachmentUrl());
-        currentShowPdf.setItemId(note.getNoteID()+""); //同步笔记noteid
-        currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
-
-        currentAttachmentId = currentShowPdf.getAttachmentID();
-        currentItemId = "0";
-        targetUrl = currentShowPdf.getUrl();
-        newPath = currentShowPdf.getNewPath();
-
-        notifySwitchDocumentSocket(currentShowPdf, "1",1);
-        loadWebIndex();
-    }
-
-    private void displayNoteTv(Note note) {
-        closenote = findViewById(R.id.closenote);
-        closenote.setVisibility(View.GONE);
-
         //重新赋值
         currentAttachmentPage = "0";
         AppConfig.currentPageNumber = "0";
@@ -6466,6 +6426,95 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         currentItemId = "0";
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
+
+        notifySwitchDocumentSocket(currentShowPdf, "1", 1);
+        loadWebIndex();
+    }
+
+    private void displayNoteTv(Note note) {
+        closenote.setVisibility(View.VISIBLE);
+        closenote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("displayNotelog", isHavePresenter() + "");
+                if (isHavePresenter()) {
+                    Log.e("displayNotelog", "1");
+                    if (!TextUtils.isEmpty(prevItemId)) {
+                        Log.e("displayNotelog", "2");
+                        closenote.setVisibility(View.GONE);
+                        for (int i = 0; i < documentList.size(); i++) {
+                            LineItem lineItem = documentList.get(i);
+                            if (prevItemId.equals(lineItem.getItemId())) {
+                                currentShowPdf2 = lineItem;
+                                lineItem.setSelect(true);
+                            } else {
+                                lineItem.setSelect(false);
+                            }
+                        }
+                        currentAttachmentPage = prevAttachmentPage;
+                        AppConfig.currentPageNumber = prevAttachmentPage;
+                        currentShowPdf.setPageNumber(currentAttachmentPage);
+                        currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
+                        currentShowPdf.setUrl(currentShowPdf2.getUrl());
+                        currentShowPdf.setItemId(currentShowPdf2.getItemId());
+                        currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
+                        currentAttachmentId = currentShowPdf.getAttachmentID();
+                        currentItemId = currentShowPdf.getItemId();
+                        targetUrl = currentShowPdf.getUrl();
+                        newPath = currentShowPdf.getNewPath();
+                        notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
+                        loadWebIndex();
+                        prevItemId = null;
+                    } else if (!TextUtils.isEmpty(currentShowPdf2.getItemId())) {
+                        Log.e("displayNotelog", "3");
+                        closenote.setVisibility(View.GONE);
+                        for (int i = 0; i < documentList.size(); i++) {
+                            LineItem lineItem = documentList.get(i);
+                            if (currentShowPdf2.getItemId().equals(lineItem.getItemId())) {
+                                lineItem.setSelect(true);
+                            } else {
+                                lineItem.setSelect(false);
+                            }
+                        }
+                        currentAttachmentPage = currentAttachmentPage2;
+                        AppConfig.currentPageNumber = currentAttachmentPage2;
+                        currentShowPdf.setPageNumber(currentAttachmentPage);
+                        currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
+                        currentShowPdf.setUrl(currentShowPdf2.getUrl());
+                        currentShowPdf.setItemId(currentShowPdf2.getItemId());
+                        currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
+                        currentAttachmentId = currentShowPdf.getAttachmentID();
+                        currentItemId = currentShowPdf.getItemId();
+                        targetUrl = currentShowPdf.getUrl();
+                        newPath = currentShowPdf.getNewPath();
+                        notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
+                        loadWebIndex();
+                    }
+                }
+            }
+        });
+        //保存
+        currentAttachmentPage2 = currentShowPdf.getPageNumber();
+        currentShowPdf2.setNewPath(newPath);
+        currentShowPdf2.setUrl(targetUrl);
+        currentShowPdf2.setItemId(currentItemId);
+        currentShowPdf2.setAttachmentID(currentAttachmentId);
+        for (int i = 0; i < documentList.size(); i++) {
+            documentList.get(i).setSelect(false);
+        }
+        //重新赋值
+        currentAttachmentPage = "0";
+        AppConfig.currentPageNumber = "0";
+        currentShowPdf = new LineItem();
+        currentShowPdf.setUrl(note.getAttachmentUrl());
+        currentShowPdf.setItemId(note.getNoteID() + ""); //同步笔记noteid
+        currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
+
+        currentAttachmentId = currentShowPdf.getAttachmentID();
+        currentItemId = "0";
+        targetUrl = currentShowPdf.getUrl();
+        newPath = currentShowPdf.getNewPath();
+
         loadWebIndex();
     }
 
@@ -6531,23 +6580,23 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             case "BookNoteMove":
                 break;
             case "BookNoteDelete":
-                String ss="";
+                String ss = "";
                 try {
                     final JSONArray linkIds = datas.getJSONArray("LinkIDs");
-                    for(int i=0;i<linkIds.length();i++){
-                        int link=linkIds.getInt(i);
-                        if(i==linkIds.length()-1){
-                            ss=ss+link;
-                        }else{
-                            ss=ss+link+",";
+                    for (int i = 0; i < linkIds.length(); i++) {
+                        int link = linkIds.getInt(i);
+                        if (i == linkIds.length() - 1) {
+                            ss = ss + link;
+                        } else {
+                            ss = ss + link + ",";
                         }
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Log.e("BookNoteDelete",ss);
-                String url=AppConfig.URL_PUBLIC+"DocumentNote/RemoveNote?linkIDs="+ss;
+                Log.e("BookNoteDelete", ss);
+                String url = AppConfig.URL_PUBLIC + "DocumentNote/RemoveNote?linkIDs=" + ss;
                 ServiceInterfaceTools.getinstance().removeNote(url, ServiceInterfaceTools.REMOVENOTE, new ServiceInterfaceListener() {
                     @Override
                     public void getServiceReturnData(Object object) {
@@ -6691,7 +6740,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         });
     }
 
-    private void followLeaveMeeting(){
+    private void followLeaveMeeting() {
         if (mWebSocketClient != null) {
             try {
                 JSONObject loginjson = new JSONObject();

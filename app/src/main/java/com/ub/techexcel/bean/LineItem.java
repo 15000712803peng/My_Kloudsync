@@ -39,7 +39,7 @@ public class LineItem implements Serializable {
     private boolean me;
 
     private String localFileID;
-    private int pageNumber;
+    private String pageNumber;
     private int documentItemID;
     private int docType;
 
@@ -59,11 +59,11 @@ public class LineItem implements Serializable {
         this.docType = docType;
     }
 
-    public int getPageNumber() {
+    public String getPageNumber() {
         return pageNumber;
     }
 
-    public void setPageNumber(int pageNumber) {
+    public void setPageNumber(String pageNumber) {
         this.pageNumber = pageNumber;
     }
 
