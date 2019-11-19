@@ -115,6 +115,7 @@ import com.kloudsync.techexcel.help.PopAlbums;
 import com.kloudsync.techexcel.help.Popupdate;
 import com.kloudsync.techexcel.help.Popupdate2;
 import com.kloudsync.techexcel.help.ThreadManager;
+import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.info.ConvertingResult;
 import com.kloudsync.techexcel.info.Customer;
@@ -1819,6 +1820,12 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     String data = getRetCodeByReturnData2("data", msg);
                     if (!TextUtils.isEmpty(data)) {
                         JSONObject jsonObject = new JSONObject(Tools.getFromBase64(data));
+                        if(jsonObject.has("lastMsgSessionId") && !isInMeeting){
+                            if(jsonObject.getString("lastMsgSessionId").equals(UserData.getUserToken(WatchCourseActivity3.this))){
+                                //不处理心跳
+                                return;
+                            }
+                        }
                         String currentItemId2 = jsonObject.getString("currentItemId");
                         currentPresenterId = jsonObject.getString("currentPresenter");
                         String currentMode2 = jsonObject.getString("currentMode");
@@ -2789,6 +2796,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             audioplaytimer.cancel();
             audioplaytimer = null;
         }
+
         audioplaytimer = new Timer();
         audioplaytimer.schedule(new TimerTask() {
             @Override
@@ -3010,8 +3018,15 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             public void getServiceReturnData(Object object) {
                 if (object != null) {
                     Log.e("userSettingChan", object.toString() + "   ");
-                    JSONArray jsonArray = (JSONArray) object;
-                    wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                    final JSONArray jsonArray = (JSONArray) object;
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                        }
+                    },200);
+
                 }
             }
         });
@@ -3666,6 +3681,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     msg3.what = 0x1109;
                     handler.sendMessage(msg3);
                 }
+
                 if (currentPresenterId.equals(AppConfig.UserID)) {
                     Log.e("---------", currentPresenterId.equals(AppConfig.UserID) + "  dd  " + (wv_show == null));
                     wv_show.load("javascript:ShowToolbar(" + true + ")", null);
@@ -3675,8 +3691,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     wv_show.load("javascript:ShowToolbar(" + false + ")", null);
                     wv_show.load("javascript:StopRecord()", null);
                 }
-
-
                 isWebViewLoadFinish = true;
             }
         });
@@ -7883,8 +7897,11 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         }
     }
 
-
     private boolean isHavePresenter() {
+
+        if(roomType != 0){
+            return true;
+        }
 
         if (identity == 1) { // 学生
             if (TextUtils.isEmpty(studentCustomer.getUserID())) {
@@ -9090,7 +9107,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 currentItemId = currentShowPdf.getItemId();
                 targetUrl = currentShowPdf.getUrl();
                 newPath = currentShowPdf.getNewPath();
-                notifySwitchDocumentSocket(currentShowPdf, "1");
+                notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage);
                 loadWebIndex();
             }
         });
@@ -9392,6 +9409,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         Log.e("TwinkleBookNote", linkId + "");
         wv_show.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
     }
+
     private void displayNoteByLinkId(int linkId) {
 
         String url = AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID?linkID=" + linkId;

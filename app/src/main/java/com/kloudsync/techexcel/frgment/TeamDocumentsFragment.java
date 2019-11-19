@@ -47,6 +47,7 @@ import com.kloudsync.techexcel.search.ui.TeamAndDocSearchActivity;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.kloudsync.activity.CreateNewSpaceActivityV2;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.SpaceDeletePopup;
@@ -770,9 +771,9 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         }
     };
 
-
     private void GoToVIew(Document lesson) {
         Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", "Doc-" + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);

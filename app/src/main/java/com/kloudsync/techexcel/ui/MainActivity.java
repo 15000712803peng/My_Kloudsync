@@ -2,7 +2,9 @@ package com.kloudsync.techexcel.ui;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -84,6 +86,7 @@ import com.pgyersdk.update.javabean.AppBean;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.ub.kloudsync.activity.TeamSpaceBean;
+import com.ub.service.KloudWebClientManager;
 import com.ub.service.activity.NotifyActivity;
 import com.ub.service.activity.SocketService;
 import com.ub.service.activity.SyncBookActivity;
@@ -213,6 +216,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e("MainActivity","on create");
         systemTime = System.currentTimeMillis();
         instance = this;
         app = (App) getApplication();
@@ -230,7 +234,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         requestRongCloudOnlineStatus();
         GetSchoolInfo();
         initUpdate();
-        StartWBServiceHAHA();
+        StartWBService();
         GetMaZhang();
         GetMyPermission();
         String wechatFilePath = getIntent().getStringExtra("wechat_data_path");
@@ -348,9 +352,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
     }
 
-    private void StartWBServiceHAHA() {
+    private void StartWBService() {
         service = new Intent(getApplicationContext(), SocketService.class);
-//        startService(service);
+        startService(service);
     }
 
     ProgressDialog progressDialog;
@@ -778,6 +782,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     public void onResume() {
         super.onResume();
+        WatchCourseActivity3.watch3instance = false;
+        SyncRoomActivity.syncroomInstance = false;
+        SyncBookActivity.syncbookInstance = false;
         if (RESUME) {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
@@ -813,6 +820,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
     public void onPause() {
+        Log.e("MainActivity","on pause");
         super.onPause();
         MobclickAgent.onPageEnd("MainActivity");
         MobclickAgent.onPause(this);
@@ -1539,4 +1547,36 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.e("MainActivity","on stop");
+        keepWebSocketLive();
+    }
+
+    private void keepWebSocketLive(){
+        if(isServiceRunning(this,"com.ub.service.activity.SocketService")){
+            Log.e("MainActivity","SocketService is running");
+            KloudWebClientManager.getInstance().startHeartBeat();
+        }else {
+            Log.e("MainActivity","SocketService is not running");
+            StartWBService();
+        }
+    }
+
+    public static boolean isServiceRunning(Context mContext, String className){
+        boolean isRunning = false ;
+        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> seviceList = activityManager.getRunningServices(300);
+        if (seviceList.size() <= 0){
+            return false;
+        }
+        for (int i=0 ;i < seviceList.size();i++){
+            if (seviceList.get(i).service.getClassName().toString().equals(className)){
+                isRunning = true;
+                break;
+            }
+        }
+        return isRunning;
+    }
 }

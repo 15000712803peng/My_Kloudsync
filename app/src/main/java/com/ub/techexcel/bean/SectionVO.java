@@ -13,7 +13,6 @@ public class SectionVO {
     private long createDate;
     private String fileUrl;
     private String sid;
-
     private boolean isClose;
 
 

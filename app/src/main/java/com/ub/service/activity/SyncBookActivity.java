@@ -85,6 +85,7 @@ import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.BookNote;
 import com.kloudsync.techexcel.bean.EventSyncBook;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.NoteId;
 import com.kloudsync.techexcel.bean.OutlineChapterItem;
@@ -106,6 +107,7 @@ import com.kloudsync.techexcel.help.Popupdate;
 import com.kloudsync.techexcel.help.Popupdate2;
 import com.kloudsync.techexcel.help.ShareKloudSyncDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
+import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.info.ConvertingResult;
 import com.kloudsync.techexcel.info.Customer;
@@ -247,6 +249,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private PowerManager pm;
     private PowerManager.WakeLock wl;
     private ShareSyncDialog shareSyncDialog;
+    int meetingType = MeetingType.SYNCBOOK;
 
     @Override
     public void shareDocumentToFriend(SoundtrackBean soundtrackBean) {
@@ -763,7 +766,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
         if (mWebSocketClient.getReadyState() == WebSocket.READYSTATE.OPEN) {
             if (identity == 2) {
-                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting, 3);
+                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting, meetingType);
             } else {
                 getOnstageMemberCount(meetingId);
             }
@@ -918,6 +921,10 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
             JSONArray jsonArray = retdata.getJSONArray("usersList");
             List<Customer> joinlist = Tools.getUserListByJoinMeeting(jsonArray);
+
+            if(retdata.has("type")){
+                meetingType = retdata.getInt("type");
+            }
 
             msg = retdata.toString();
             String currentLine2 = getRetCodeByReturnData2("currentLine", msg);
@@ -1311,6 +1318,12 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                     String data = getRetCodeByReturnData2("data", msg);
                     if (!TextUtils.isEmpty(data)) {
                         JSONObject jsonObject = new JSONObject(Tools.getFromBase64(data));
+                        if(jsonObject.has("lastMsgSessionId") && meetingType != 0){
+                            if(jsonObject.getString("lastMsgSessionId").equals(UserData.getUserToken(SyncBookActivity.this))){
+                                //不处理心跳
+                                return;
+                            }
+                        }
                         String currentItemId2 = jsonObject.getString("currentItemId");
                         currentPresenterId = jsonObject.getString("currentPresenter");
                         String currentMode2 = jsonObject.getString("currentMode");
@@ -2222,8 +2235,13 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             public void getServiceReturnData(Object object) {
                 if (object != null) {
                     Log.e("userSettingChan", object.toString() + "   ");
-                    JSONArray jsonArray = (JSONArray) object;
-                    wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                    final JSONArray jsonArray = (JSONArray) object;
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                        }
+                    },200);
                 }
             }
         });
@@ -3671,6 +3689,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
     private void gotoMeeting(String lessonId) {
         final Intent intent = new Intent(SyncBookActivity.this, WatchCourseActivity3.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", lessonId);
         intent.putExtra("isTeamspace", false);
@@ -5995,6 +6014,9 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
 
     private boolean isHavePresenter() {
+        if(meetingType != MeetingType.MEETING){
+            return true;
+        }
         if (identity == 1) { // 学生
             if (TextUtils.isEmpty(studentCustomer.getUserID())) {
                 return false;

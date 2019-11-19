@@ -148,6 +148,7 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
                                 if(syncRoomBean.getTopicType() == 7){
                                     //syncbook
                                     Intent intent = new Intent(getActivity(), SyncBookActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     intent.putExtra("userid", AppConfig.UserID);
                                     intent.putExtra("meetingId", syncRoomBean.getItemID() + "," + AppConfig.UserID);
                                     intent.putExtra("isTeamspace", true);
@@ -163,6 +164,7 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
                                     startActivity(intent);
                                 }else {
                                     Intent intent = new Intent(getActivity(), SyncRoomActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     intent.putExtra("userid", AppConfig.UserID);
                                     intent.putExtra("meetingId", syncRoomBean.getItemID() + "," + AppConfig.UserID);
                                     intent.putExtra("isTeamspace", true);

@@ -109,7 +109,6 @@ public class MipcaActivityCapture extends Activity implements Callback, TextureV
         //ViewUtil.addTopView(getApplicationContext(), this, R.string.scan_card);
         CameraManager.init(getApplication());
         viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
-
         RelativeLayout backLayout = (RelativeLayout) findViewById(R.id.layout_back);
         backLayout.setOnClickListener(new OnClickListener() {
 

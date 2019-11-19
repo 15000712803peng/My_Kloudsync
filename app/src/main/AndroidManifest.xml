@@ -71,6 +71,7 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
+
         android:name=".app.App"
         android:allowBackup="true"
         android:icon="@drawable/ubaoapph"
@@ -374,7 +375,7 @@
         <activity
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:launchMode="singleTop"
-            android:screenOrientation="behind"
+            android:screenOrientation="landscape"
             android:name="com.mining.app.zxing.MipcaActivityCapture"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="stateAlwaysHidden" />
@@ -467,6 +468,7 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:launchMode="singleTop"
             android:name=".linshi.LinshiActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -720,6 +722,7 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:hardwareAccelerated="true"
             android:screenOrientation="landscape"
+            android:launchMode="singleInstance"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
@@ -734,7 +737,7 @@
             android:name="com.ub.service.activity.SyncRoomActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:hardwareAccelerated="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="stateHidden|adjustPan" />
 
@@ -746,6 +749,16 @@
             android:screenOrientation="landscape"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden|adjustPan" />
+
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.kloudsync.techexcel.ui.DocAndMeetingActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+
+
 
 
         <service android:name="com.ub.service.activity.SocketService" />
