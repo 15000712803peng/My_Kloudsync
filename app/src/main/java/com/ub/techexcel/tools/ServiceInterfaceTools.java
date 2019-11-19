@@ -1461,7 +1461,7 @@ public class ServiceInterfaceTools {
             public void run() {
                 try {
                     JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
-                    Log.e("Recording list", url + "  " + returnjson.toString());
+                    Log.e("Recording_list", url + "  " + returnjson.toString());
                     if (returnjson.getInt("code") == 0) {
                         JSONArray data = returnjson.getJSONArray("data");
                         List<RecordingBean> list = new ArrayList<>();
@@ -1921,27 +1921,21 @@ public class ServiceInterfaceTools {
                     JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
                     Log.e("Recording item", url + "  " + returnjson.toString());
                     if (returnjson.getInt("code") == 0) {
-
-
                         JSONObject data = returnjson.getJSONObject("data");
-
                         RecordingBean recordingBean = new RecordingBean();
                         recordingBean.setRecordingId(data.getInt("recordingId"));
                         recordingBean.setTitle(data.getString("title"));
                         recordingBean.setCreateDate(data.getLong("createDate"));
                         recordingBean.setDuration(data.getLong("duration"));
                         JSONArray channelVOListjs = data.getJSONArray("channelVOList");
-
                         List<ChannelVO> channelVOList = new ArrayList<>();
                         for (int i = 0; i < channelVOListjs.length(); i++) {
                             ChannelVO channelVO = new ChannelVO();
-
                             JSONObject channelVOJS = channelVOListjs.getJSONObject(i);
                             channelVO.setChannelId(channelVOJS.getInt("channelId"));
                             channelVO.setType(channelVOJS.getInt("type"));
                             channelVO.setUserId(channelVOJS.getInt("userId"));
                             JSONArray sectionVOListjs = channelVOJS.getJSONArray("sectionVOList");
-
                             List<SectionVO> sectionVOList = new ArrayList<>();
                             for (int j = 0; j < sectionVOListjs.length(); j++) {
                                 SectionVO sectionVO = new SectionVO();
@@ -1963,8 +1957,6 @@ public class ServiceInterfaceTools {
                             channelVOList.add(channelVO);
                         }
                         recordingBean.setChannelVOList(channelVOList);
-
-
                         Message msg3 = Message.obtain();
                         msg3.what = code;
                         msg3.obj = recordingBean;

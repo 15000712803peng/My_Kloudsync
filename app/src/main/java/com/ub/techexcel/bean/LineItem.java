@@ -39,14 +39,31 @@ public class LineItem implements Serializable {
     private boolean me;
 
     private String localFileID;
-    private int pageNumber;
+    private String pageNumber;
     private int documentItemID;
+    private int docType;
 
-    public int getPageNumber() {
+    public int getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(int noteId) {
+        this.noteId = noteId;
+    }
+
+    public int getDocType() {
+        return docType;
+    }
+
+    public void setDocType(int docType) {
+        this.docType = docType;
+    }
+
+    public String getPageNumber() {
         return pageNumber;
     }
 
-    public void setPageNumber(int pageNumber) {
+    public void setPageNumber(String pageNumber) {
         this.pageNumber = pageNumber;
     }
 

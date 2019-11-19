@@ -1,159 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-    android:background="@drawable/rc_white_bg_shape"
-android:gravity="center_horizontal"
-android:orientation="vertical"
-android:paddingBottom="10dp"
-
-android:paddingTop="10dp">
-
-<RelativeLayout
-    android:paddingRight="16dp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:background="@drawable/rc_white_bg_shape"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp">
 
-    <TextView
-        android:layout_centerVertical="true"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="10dp"
-        android:text="@string/satOptions" />
-
-    <ImageView
-        android:padding="3dp"
-        android:id="@+id/closebnt"
-        android:layout_width="19dp"
-        android:layout_height="19dp"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/close" />
-</RelativeLayout>
-
-<LinearLayout
-    android:id="@+id/ll"
-    android:layout_width="wrap_content"
-    android:layout_height="45dp"
-    android:layout_marginTop="5dp"
-    android:orientation="horizontal">
-
-    <TextView
-        android:id="@+id/systembtn"
-        android:layout_width="100dp"
-        android:layout_height="30dp"
-        android:gravity="center"
-        android:text="@string/satSystem"
-        android:textColor="@color/blue" />
-
-    <TextView
-        android:id="@+id/kloudcallbtn"
-        android:layout_width="100dp"
-        android:layout_height="30dp"
-        android:gravity="center"
-        android:text="@string/kCall"
-        android:textColor="@color/black" />
-
-    <LinearLayout
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:paddingRight="16dp">
 
         <TextView
-            android:id="@+id/externalbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="10dp"
+            android:text="@string/satOptions" />
+
+        <ImageView
+            android:id="@+id/closebnt"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="3dp"
+            android:src="@drawable/close" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/systembtn"
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:gravity="center"
-            android:text="@string/satExternal"
-            android:textColor="@color/black" />
+            android:text="@string/satSystem"
+            android:textColor="@color/blue" />
 
         <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
+            android:id="@+id/kloudcallbtn"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:text="@string/kCall"
+            android:textColor="@color/black" />
+
+        <LinearLayout
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="(skype,wechat...)"
-            android:textSize="10sp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/externalbtn"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:text="@string/satExternal"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="(skype,wechat...)"
+                android:textSize="10sp" />
+        </LinearLayout>
+
     </LinearLayout>
 
-</LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
 
-<TextView
-    android:layout_width="match_parent"
-    android:layout_height="1dp"
-    android:background="@color/divider_line" />
+    <RelativeLayout
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp">
 
-<RelativeLayout
-    android:layout_width="200dp"
-    android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/haha"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="26dp"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-    <LinearLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/tv1"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/sound_on1" />
+
+                <TextView
+                    android:id="@+id/tv11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/satOn" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="60dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/tv2"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/cam_off2" />
+
+                <TextView
+                    android:id="@+id/tv21"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/satOff" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/isOpenRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/haha"
+            android:checked="true"
+            android:text="开启录制"
+            android:textColor="@color/black" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/bnt"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:layout_marginTop="26dp"
+        android:background="@drawable/peertimeselect_bg2"
         android:gravity="center"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/tv1"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:src="@drawable/sound_on1" />
-
-            <TextView
-                android:id="@+id/tv11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/satOn" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="60dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/tv2"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:src="@drawable/cam_off2" />
-
-            <TextView
-                android:id="@+id/tv21"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/satOff" />
-        </LinearLayout>
-    </LinearLayout>
-
-
-</RelativeLayout>
-
-<TextView
-    android:id="@+id/bnt"
-    android:layout_width="200dp"
-    android:layout_height="wrap_content"
-    android:background="@drawable/peertimeselect_bg2"
-    android:gravity="center"
-    android:layout_marginBottom="12dp"
-    android:paddingBottom="8dp"
-    android:paddingTop="8dp"
-    android:text="@string/satOk"
-    android:textColor="@color/white"
-    android:textSize="16sp" />
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="@string/satOk"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
 </LinearLayout>
