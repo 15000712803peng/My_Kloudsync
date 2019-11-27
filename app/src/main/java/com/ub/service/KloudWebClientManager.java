@@ -130,20 +130,19 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                 e.printStackTrace();
             } catch (Exception e) {
 
-
             }
 
         }
     }
 
+
     private Timer heartBeatTimer;
     private HeartBeatTask heartBeatTask;
 
-    public synchronized void startHeartBeat() {
-        Log.e("KloudWebClientManager","heartBeatStarted:" + heartBeatStarted);
-        if (!heartBeatStarted) {
-            heartBeatTimer = new Timer();
-            heartBeatTask = new HeartBeatTask();
+    public void startHeartBeat() {
+        heartBeatTimer = new Timer();
+        heartBeatTask = new HeartBeatTask();
+        if (!heartBeatStarted && heartBeatTimer != null && heartBeatTask != null) {
             heartBeatTimer.schedule(heartBeatTask, 3000, 5000);
             heartBeatStarted = true;
         }
@@ -160,6 +159,4 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
             instance = null;
         }
     }
-
-
 }

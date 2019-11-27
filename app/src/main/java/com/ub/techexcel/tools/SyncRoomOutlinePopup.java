@@ -192,8 +192,6 @@ public class SyncRoomOutlinePopup implements View.OnClickListener {
                                                 (new OutlineChildChildSectionItemHolder(mContext));
                                         childChildSectionNode.setValueId(childChildSectionItem.getIdeaID() + "-" + childChildSectionItem.getOutLineID());
                                         childChildSectionItem.setTreeNodeId(childChildSectionItem.getIdeaID() + "-" + childChildSectionItem.getOutLineID());
-
-
                                         childChildSectionNode.setClickListener(new TreeNode.TreeNodeClickListener() {
                                             @Override
                                             public void onClick(TreeNode node, Object value) {
@@ -206,7 +204,6 @@ public class SyncRoomOutlinePopup implements View.OnClickListener {
                                             }
                                         });
                                         // -----
-
                                         List<OutlineChildSectionItem> childChildChildSectionItems = childChildSectionItem.getChildSectionItems();
                                         if (childChildChildSectionItems != null && childChildChildSectionItems.size() > 0) {
                                             for (OutlineChildSectionItem childChildChildSectionItem : childChildChildSectionItems) {
@@ -324,7 +321,6 @@ public class SyncRoomOutlinePopup implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.closebnt:
-
                 break;
             case R.id.adddocument:
 
@@ -415,7 +411,6 @@ public class SyncRoomOutlinePopup implements View.OnClickListener {
             if(rootNode != null){
                 allTreeNode = outlineView.getAll(rootNode);
             }
-
         }
 
         if(outlineView != null){

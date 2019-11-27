@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -121,16 +120,8 @@ public class LoginActivity extends Activity implements OnClickListener {
         loadingDialog.cancel();
         if (result != null) {
             if (result.isSuccessful()) {
-                Log.e("LoginActivity","show login succ toast");
-//                new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage("登录成功").create().show();
                 goToMainActivity();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                },1000);
-
+                new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage("登录成功").create().show();
             } else {
                 String message = result.getErrorMessage();
                 if (TextUtils.isEmpty(message)) {
@@ -301,7 +292,6 @@ public class LoginActivity extends Activity implements OnClickListener {
     private List<Company> companies = new ArrayList<>();
 
     private void processLogin(final String name, final String password, final String phoneNumber) {
-
         loadingDialog.show();
         loginDisposable = Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, String>() {
             @Override
@@ -317,12 +307,14 @@ public class LoginActivity extends Activity implements OnClickListener {
                         } else {
                             sendEventLoginFail(response.body().getErrorMessage());
                         }
+
                     }
                 } catch (UnknownHostException e) {
                     sendEventLoginFail("network error");
                 } catch (SocketTimeoutException exception) {
                     sendEventLoginFail("network error");
                 }
+
                 return rongCloudUrl;
             }
         }).map(new Function<String, String>() {

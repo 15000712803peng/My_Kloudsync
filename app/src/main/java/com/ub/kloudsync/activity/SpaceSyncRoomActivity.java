@@ -110,7 +110,6 @@ public class SpaceSyncRoomActivity extends Activity implements View.OnClickListe
                                 if(syncRoomBean.getTopicType() == 7){
                                     //syncbook
                                     Intent intent = new Intent(SpaceSyncRoomActivity.this, SyncBookActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     intent.putExtra("userid", AppConfig.UserID);
                                     intent.putExtra("meetingId", syncRoomBean.getItemID() + "," + AppConfig.UserID);
                                     intent.putExtra("isTeamspace", true);
@@ -126,7 +125,6 @@ public class SpaceSyncRoomActivity extends Activity implements View.OnClickListe
                                     startActivity(intent);
                                 }else {
                                     Intent intent = new Intent(SpaceSyncRoomActivity.this, SyncRoomActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     intent.putExtra("userid", AppConfig.UserID);
                                     intent.putExtra("meetingId", syncRoomBean.getItemID() + "," + AppConfig.UserID);
                                     intent.putExtra("isTeamspace", true);
@@ -159,7 +157,6 @@ public class SpaceSyncRoomActivity extends Activity implements View.OnClickListe
     private void enterSyncroom(SyncRoomBean syncRoomBean) {
 
         Intent intent = new Intent(this, SyncRoomActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", syncRoomBean.getItemID() + "");
         intent.putExtra("isTeamspace", true);
@@ -179,14 +176,12 @@ public class SpaceSyncRoomActivity extends Activity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.image_add:
                 Intent intent = new Intent(this, CreateNewSyncRoomActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("spaceid", spaceId);
                 intent.putExtra("teamid", teamId);
                 startActivity(intent);
                 break;
             case R.id.teamrl:
                 Intent intent2 = new Intent(this, SwitchSpaceActivity.class);
-                intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent2.putExtra("ItemID", spaceId);
                 intent2.putExtra("isSyncRoom",true);
                 startActivityForResult(intent2, REQUEST_CODE_CHANGESPACE);
@@ -218,8 +213,10 @@ public class SpaceSyncRoomActivity extends Activity implements View.OnClickListe
                     getSyncRoomList();
                 }
             }
+
         }
     }
+
 
     private void ShowMorePop() {
 
