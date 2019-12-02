@@ -106,7 +106,7 @@
     <!-- 浅灰色文字 -->
     <color name="pc_gray_text">#a2a8b6</color>
     <!-- 个人设置黑色字体 -->
-    <color name="pc_black_text">#3E3F42</color>
+    <color name="pc_black_text">#333333</color>
     <!-- 个人设置灰色字体 -->
     <color name="pi_gray_text">#4A4A4A</color>
     <!-- 个人设置附属号码灰色字体 -->

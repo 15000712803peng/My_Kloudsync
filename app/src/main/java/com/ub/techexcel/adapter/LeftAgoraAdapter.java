@@ -158,11 +158,6 @@ public class LeftAgoraAdapter extends RecyclerView.Adapter<LeftAgoraAdapter.View
         }
     }
 
-
-
-
-
-
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ViewHolder(View a) {
             super(a);

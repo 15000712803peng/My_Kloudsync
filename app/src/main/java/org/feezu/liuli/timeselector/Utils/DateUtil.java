@@ -2,6 +2,8 @@ package org.feezu.liuli.timeselector.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by liuli on 2015/11/27.
@@ -47,6 +49,16 @@ public class DateUtil {
         }
         return (returnValue);
     }
+
+    public static String getMeetingTime(long timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("mm:ss",
+                Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+        Date date = new Date(timestamp+8*60*60*1000);
+        sdf.format(date);
+        return sdf.format(date);
+    }
+
 
 
 

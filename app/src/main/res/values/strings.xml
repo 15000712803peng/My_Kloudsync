@@ -405,6 +405,7 @@
     <string name="mtInvite">Invite</string>
     <string name="mtLeave">Leave</string>
     <string name="mtEnd">End</string>
+    <string name="save_and_leave">Save and Leave</string>
     <!--右下侧按钮-->
     <string name="mtFile">File</string>
     <string name="mtNote">User Note</string>
@@ -763,6 +764,9 @@ Please input the cell phone number to add the contact
     <string name="show_only_my_spaces">Show my spaces only</string>
 
     <string name="select_a_dir">select a dir</string>
+
+    <string name="attendees">Attendees</string>
+    <string name="title_to_leave">are you sure to leave?</string>
 
 
 

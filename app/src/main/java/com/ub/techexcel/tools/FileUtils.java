@@ -233,5 +233,37 @@ public class FileUtils {
         return null;
     }
 
+    private final static String FOLDER_KLOUD = "/kloud";
+    private final static String FOLDER_KLOUD_RECORDING = "/kloud/recording";
+    private static String baseDir;
+
+    public static boolean createFileSaveDir(Context context){
+        mDataRootPath = context.getCacheDir().getPath();
+        baseDir = Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED) ?  mSdRootPath :  mDataRootPath;
+        File file = new File(baseDir + FOLDER_KLOUD);
+        if(file.exists()){
+            return true;
+        }else {
+            return file.mkdirs();
+        }
+    }
+
+    public static boolean createRecordingFilesDir(Context context){
+        mDataRootPath = context.getCacheDir().getPath();
+        baseDir = Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED) ?  mSdRootPath :  mDataRootPath;
+        File file = new File(baseDir + FOLDER_KLOUD_RECORDING);
+        if(file.exists()){
+            return true;
+        }else {
+            return file.mkdirs();
+        }
+    }
+
+    public static String getBaseDir(){
+        return  baseDir + FOLDER_KLOUD +"/";
+    }
+
 
 }

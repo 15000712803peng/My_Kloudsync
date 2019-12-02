@@ -172,6 +172,7 @@
                         android:src="@drawable/meeting_id" />
 
                     <TextView
+                        android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
@@ -222,6 +223,7 @@
                         android:src="@drawable/icon_personal_create_company" />
 
                     <TextView
+                        android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
@@ -258,6 +260,7 @@
                         android:src="@drawable/icon_personal_account_setting" />
 
                     <TextView
+                        android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
@@ -528,6 +531,7 @@
                     android:src="@drawable/tv" />
 
                 <TextView
+                    android:textSize="16sp"
                     android:id="@+id/tv_pc_synctv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -564,6 +568,7 @@
                     android:src="@drawable/icon_myfiles" />
 
                 <TextView
+                    android:textSize="16sp"
                     android:id="@+id/tv_pc_collection"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -613,6 +618,7 @@
                     android:src="@drawable/icon_mynote" />
 
                 <TextView
+                    android:textSize="16sp"
                     android:id="@+id/tv_pc_note"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -766,6 +772,7 @@
                     android:src="@drawable/icon_reset_psw" />
 
                 <TextView
+                    android:textSize="16sp"
                     android:id="@+id/tv_pc_password"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -803,6 +810,7 @@
                     android:src="@drawable/icon_help" />
 
                 <TextView
+                    android:textSize="16sp"
                     android:id="@+id/tv_pc_hc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -840,6 +848,7 @@
                     android:src="@drawable/icon_zan" />
 
                 <TextView
+                    android:textSize="16sp"
                     android:id="@+id/tv_pc_sk"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -876,6 +885,7 @@
                     android:src="@drawable/icon_lang" />
 
                 <TextView
+                    android:textSize="16sp"
                     android:id="@+id/tv_pc_language"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -926,6 +936,7 @@
                     android:src="@drawable/icon_about" />
 
                 <TextView
+                    android:textSize="16sp"
                     android:id="@+id/tv_pc_about"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -981,8 +992,14 @@
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="#fff7f7f7" />
+
 
             <RelativeLayout
+
                 android:id="@+id/rl_pc_loginout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -990,6 +1007,7 @@
                 android:padding="12dp">
 
                 <ImageView
+                    android:visibility="invisible"
                     android:id="@+id/img_logout"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
@@ -998,15 +1016,21 @@
                     android:src="@drawable/icon_logout" />
 
                 <TextView
+                    android:textSize="16sp"
+                    android:layout_centerInParent="true"
                     android:id="@+id/tv_pc_loginout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="16dp"
-                    android:layout_toRightOf="@id/img_logout"
                     android:text="@string/login_out"
                     android:textColor="@color/red2" />
             </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="#fff7f7f7" />
 
 
         </LinearLayout>

@@ -433,16 +433,17 @@
     <string name="shYcan">作为主持人，你可以</string>
     <string name="shAcan">作为参会者，你可以</string>
     <string name="miProgress">正在进行中的会议</string>
+    <string name="attendees">参会者</string>
 
     <!--右上侧按钮-->
     <string name="mtMore">更多</string>
-    <string name="saTv">扫描电视</string>
+    <string name="saTv">同步TV</string>
     <string name="mtInvite">邀请</string>
     <string name="mtLeave">离开</string>
     <string name="mtEnd">结束</string>
     <!--右下侧按钮-->
     <string name="mtFile">文件</string>
-    <string name="mtNote">用户笔记</string>
+    <string name="mtNote">我的笔记</string>
     <string name="mtAttendee">成员</string>
     <string name="mtInvite2">邀请</string>
     <string name="mtChat">聊天</string>
@@ -755,6 +756,8 @@
     <string name="_File">文件</string>
     <string name="_Favorite">收藏</string>
     <string name="_Camera">相机</string>
+    <string name="save_and_leave">保存并离开</string>
+    <string name="title_to_leave">你确定要离开吗?</string>
 
 
 </resources>

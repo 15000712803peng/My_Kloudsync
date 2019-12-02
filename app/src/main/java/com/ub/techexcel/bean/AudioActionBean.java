@@ -8,7 +8,6 @@ public class AudioActionBean {
     // ,"id":"758a0d82-f78d-167b-44f5-c4c26c897376","w":"0.5","color":"#ff0000","CW":699,"CH":989,"tar":"","time":4956}
     private String data;
 
-
     public int getTime() {
         return time;
     }

@@ -63,7 +63,7 @@
                     var tch2 = evt['touches'][1];
                     that._startzoominfo[evt.currentTarget.id] = [tch.clientX, tch.clientY, tch2.clientX, tch2.clientY];
                     that._midPoint = that.getMidPoint(tch.clientX, tch.clientY, tch2.clientX, tch2.clientY);
-                    if (that.options.beforeZoom) that.options.beforeZoom(that._midPoint);
+                    if (that.options.beforeZoom) that.options.beforeZoom(that._midPoint,evt['touches'].length);
                     
                 }
                 //evt.preventDefault();
@@ -79,6 +79,10 @@
                 if (typeof (evt.changedTouches) == 'undefined' || evt.changedTouches.length < 1) {
                     if (that.options.onEnd) that.options.onEnd(evt);
                     return;
+                }
+                else
+                {
+                    if (that.options.onEndEx) that.options.onEndEx(evt);
                 }
                 return;
                 var id = evt.changedTouches[0].target.id;

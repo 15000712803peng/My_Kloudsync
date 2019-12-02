@@ -71,7 +71,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ServiceFragment extends MyFragment implements View.OnClickListener {
+public class
+ServiceFragment extends MyFragment implements View.OnClickListener {
     private boolean isPrepared = false;
 
     private ServiceAdapter2 serviceAdapter1;
@@ -430,7 +431,6 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
 
     private void initView(View view) {
-
         Fresco.initialize(getActivity());
         lin_myroom = (RelativeLayout) view.findViewById(R.id.lin_myroom);
         lin_join = (RelativeLayout) view.findViewById(R.id.lin_join);
@@ -474,9 +474,9 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         View allView2 = layoutInflater.inflate(R.layout.tabtwo, null);
         View allView3 = layoutInflater.inflate(R.layout.tabthree, null);
 
-        serviceListView1 = (ListView) allView1.findViewById(R.id.serviceList);
-        serviceListView2 = (ListView) allView2.findViewById(R.id.serviceList);
-        serviceListView3 = (ListView) allView3.findViewById(R.id.serviceList);
+//        serviceListView1 = (ListView) allView1.findViewById(R.id.serviceList);
+//        serviceListView2 = (ListView) allView2.findViewById(R.id.serviceList);
+//        serviceListView3 = (ListView) allView3.findViewById(R.id.serviceList);
 //        viewList.add(allView1);
 //        viewList.add(allView2);
 //        viewList.add(allView3);

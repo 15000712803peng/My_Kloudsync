@@ -311,7 +311,7 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
                     e.printStackTrace();
                 }
             }
-            EventBus.getDefault().post(info);
+//            EventBus.getDefault().post(info);
 
 
         } else if(actionString.equals("ENABLE_TV_FOLLOW") ||
@@ -328,7 +328,7 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
                     e.printStackTrace();
                 }
             }
-            EventBus.getDefault().post(info);
+//            EventBus.getDefault().post(info);
         }
 
 

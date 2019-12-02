@@ -103,11 +103,12 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
-import com.kloudsync.techexcel.dialog.SelectMyNoteDialog;
+import com.kloudsync.techexcel.dialog.RecordPlayDialog;
 import com.kloudsync.techexcel.dialog.SelectNoteDialog;
 import com.kloudsync.techexcel.dialog.ShareSyncDialog;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DeviceManager;
+import com.kloudsync.techexcel.help.PlayRecordKit;
 import com.kloudsync.techexcel.help.PopAlbums;
 import com.kloudsync.techexcel.help.Popupdate;
 import com.kloudsync.techexcel.help.Popupdate2;
@@ -147,6 +148,8 @@ import com.ub.techexcel.bean.AudioActionBean;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.PageActionBean;
+import com.ub.techexcel.bean.Record;
+import com.ub.techexcel.bean.RecordDetail;
 import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.bean.SyncRoomBean;
 import com.ub.techexcel.bean.TelePhoneCall;
@@ -159,13 +162,13 @@ import com.ub.techexcel.tools.FavoritePopup;
 import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.InviteUserPopup;
+import com.ub.techexcel.tools.MeetingRecordsDialog;
 import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.MoreactionPopup;
 import com.ub.techexcel.tools.NotificationPopup;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.SpliteSocket;
-import com.ub.techexcel.tools.SyncRoomNotePopup;
 import com.ub.techexcel.tools.SyncRoomOtherNoteListPopup;
 import com.ub.techexcel.tools.SyncRoomPopup;
 import com.ub.techexcel.tools.Tools;
@@ -230,7 +233,7 @@ import retrofit2.Response;
  * Created by wang on 2017/6/16.
  */
 public class WatchCourseActivity2 extends BaseActivity implements View.OnClickListener, AGEventHandler, VideoGestureRelativeLayout.VideoGestureListener,
-        YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener {
+        YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,MeetingRecordsDialog.OnPlayRecordListener{
 
     private String targetUrl;
     private String newPath;
@@ -395,7 +398,6 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     private RelativeLayout filedownprogress;
     private ProgressBar fileprogress;
     private TextView progressbartv;
-
 
     private static class MyHandler extends Handler {
 
@@ -905,7 +907,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CheckLanguage();
-        setContentView(R.layout.watchcourse3);
+        setContentView(R.layout.watchcourse2);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
         } else {
@@ -1820,6 +1822,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             loginjson.put("role", role);
             loginjson.put("type", 0);
             loginjson.put("isInstantMeeting", isInstantMeeting);
+            loginjson.put("lessonId", meetingId2);
             String ss = loginjson.toString();
             SpliteSocket.sendMesageBySocket(ss);
         } catch (JSONException e) {
@@ -2057,12 +2060,12 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                     firstPlayAgora();
                 }
             });
-            displayplay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    firstPlayAgora();
-                }
-            });
+//            displayplay.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    firstPlayAgora();
+//                }
+//            });
             playagorarl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -4475,10 +4478,23 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 });
                 loginGet.MyFavoriteRequest(WatchCourseActivity2.this, 1);
                 break;
+            case R.id.displayplay:
+                if(recordsDialog != null){
+                    recordsDialog.dismiss();
+                    recordsDialog = null;
+                }
+                recordsDialog = new MeetingRecordsDialog(WatchCourseActivity2.this);
+                recordsDialog.setOnPlayRecordListener(WatchCourseActivity2.this);
+                recordsDialog.StartPop(meetingId);
+                menu_linearlayout.setVisibility(View.GONE);
+
+                break;
             default:
                 break;
         }
     }
+
+    MeetingRecordsDialog recordsDialog;
 
     private String selectCusterId;
 
@@ -8851,6 +8867,29 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             }
         });
     }
+
+    //---- play meeting record
+    RecordPlayDialog recordPlayDialog;
+    @Override
+    public void play(Record record) {
+        FileUtils.createRecordingFilesDir(this);
+        Log.e("WatchCourseActivity2","play_record:" + record);
+        boolean play = true;
+        if(play){
+            play = false;
+            if(recordPlayDialog != null){
+                recordPlayDialog.dismiss();
+            }
+            recordPlayDialog = new RecordPlayDialog(this,record);
+            recordPlayDialog.show();
+        }
+
+    }
+
+    private void getRecordingItem(final Record record) {
+
+    }
+
 
 
 }

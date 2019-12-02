@@ -13,9 +13,34 @@ public class SectionVO {
     private long createDate;
     private String fileUrl;
     private String sid;
-
     private boolean isClose;
+    private boolean isPrepared;
+    private boolean isPlaying;
+    private boolean isPreparing;
 
+    public boolean isPreparing() {
+        return isPreparing;
+    }
+
+    public void setPreparing(boolean preparing) {
+        isPreparing = preparing;
+    }
+
+    public boolean isPrepared() {
+        return isPrepared;
+    }
+
+    public void setPrepared(boolean prepared) {
+        isPrepared = prepared;
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+    }
 
     public boolean isClose() {
         return isClose;
@@ -111,5 +136,38 @@ public class SectionVO {
 
     public void setSid(String sid) {
         this.sid = sid;
+    }
+
+    @Override
+    public String toString() {
+        return "SectionVO{" +
+                "id=" + id +
+                ", type=" + type +
+                ", sectionId=" + sectionId +
+                ", userId=" + userId +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", fileName='" + fileName + '\'' +
+                ", status=" + status +
+                ", createDate=" + createDate +
+                ", fileUrl='" + fileUrl + '\'' +
+                ", sid='" + sid + '\'' +
+                ", isClose=" + isClose +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SectionVO sectionVO = (SectionVO) o;
+
+        return id == sectionVO.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

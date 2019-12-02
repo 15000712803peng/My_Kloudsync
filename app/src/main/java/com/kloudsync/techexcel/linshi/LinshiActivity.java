@@ -100,6 +100,7 @@ public class LinshiActivity extends AppCompatActivity {
 
 
                 Intent intent = new Intent(LinshiActivity.this, SyncRoomActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("userid", AppConfig.UserID);
                 intent.putExtra("meetingId", syncRoomBean.getItemID() + "," + AppConfig.UserID);
                 intent.putExtra("isTeamspace", true);

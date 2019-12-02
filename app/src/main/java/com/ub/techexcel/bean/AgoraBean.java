@@ -63,5 +63,4 @@ public class AgoraBean {
         this.muteVideo = muteVideo;
     }
 
-
 }

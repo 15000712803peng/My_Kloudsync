@@ -52,7 +52,7 @@ public class FavoriteDocumentShareDialog {
 
     boolean record;
 
-    private String linshiUrl = "https://www.baidu.com/";
+    private String linshiUrl = "https://www.pgyer.com/Dck1";
 
     private static PopShareKloudSyncDismissListener popShareKloudSyncDismissListener;
 

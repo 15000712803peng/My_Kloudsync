@@ -17,9 +17,6 @@ import com.ub.techexcel.bean.LineItem;
 
 import java.util.List;
 
-/**
- * Created by wang on 2017/8/18.
- */
 
 public class MyRecyclerAdapter2 extends RecyclerView.Adapter<MyRecyclerAdapter2.ViewHolder> {
 

@@ -100,6 +100,13 @@
             //setTimeout(function () {
             //    whiteboard.TwinkleBookNote(123);
             //}, 6000);
+            // setTimeout(function () {
+            //     ShowToolbar(false);
+            // },3000);
+            // setTimeout(function () {
+            //     ShowToolbar(true);
+            // },5000);
+            
         }
         function InitPage()
         {
@@ -111,7 +118,7 @@
             //whiteboard.SetRecord(true);
             whiteboard.SetCanEdit(true);
             whiteboard.OnToolReset(function(res) {
-              //console.log("OnToolReset:"+res);
+              console.log("OnToolReset:"+res);
               //_activeButton("#liveActionCursor");
                 if (res == "") {
                     if (!IsInlineWihteBoardShow) {
@@ -119,6 +126,7 @@
                     }
                     ResetTools($("#div_btn_pointer"));
                 }
+                CallApp("OnToolChange",{"ToolName":res});
             });
             whiteboard.OnReceviceData(function(res) {        
               RecordHandle(res);
@@ -192,6 +200,9 @@
             });
             whiteboard.SetCallBack("BookNoteEdit",function(data){
                 CallApp("BookNoteEdit",data);
+            });
+            whiteboard.SetCallBack("BookNoteDelete",function(data){
+                CallApp("BookNoteDelete",data);
             });
 
         }
@@ -444,6 +455,8 @@
             var oldH = 0;
             var zoomTimer = null;
             var oldInfo = null;
+            var isMove=false;
+            var touchLength=0;
             //var lastZoomTime = new Date();
             MAINTOUCH = $("#main").touch({
                onEnd: function ()
@@ -454,10 +467,22 @@
                     //Record_zoom();
                     //Record_scroll();
                 },
-                beforeZoom: function (midpoint)
+                onEndEx:function(evt){
+                    if(touchLength==2 && isMove==false)
+                    {
+                        ResetTools($("#div_btn_pointer"));
+                        whiteboard.SetDrawTool("");
+                        CanScroll = true;
+                        iconChange("#div_btn_pointer")
+                    }
+                    isMove=false;
+                    touchLength=0;
+                },
+                beforeZoom: function (midpoint,touchlength)
                 {
                     //alert("beforeZoom");
                     //ShowMsg("beforeZoom:" +midpoint);
+                    touchLength=touchlength;
                     var container = GetPageContainer(PageNumber);
                     oldw = container.width();
                     oldh = container.height();
@@ -471,6 +496,7 @@
                 },
                 onZoom: function (zoom, midpoint)
                 {
+                    isMove=true;
                     if (IsToolBarShow==false)
                     {
                         return;
@@ -703,10 +729,19 @@
             console.log("FromApp:Key:" + key);
             console.log(data);
             if (key == "ClearBookNote") {
-                whiteboard.ClearBookNote();
+                whiteboard.ClearBookNote(data.ClearMe,data.ClearOther);
             }
             else if (key == "TwinkleBookNote") {
                 whiteboard.TwinkleBookNote(data.LinkID);
+            }
+            else if (key == "OnToolStart") {
+                whiteboard.OnToolStart(data.x,data.y);
+            }
+            else if (key == "OnToolMove") {
+                whiteboard.OnToolMove(data.x,data.y);
+            }
+            else if (key == "OnToolEnd") {
+                whiteboard.OnToolEnd(data.x,data.y);
             }
 
         }
@@ -1387,13 +1422,13 @@
             IsToolBarShow = isshow;
             if (isshow)
             {
-                // $("#div_btn_toobar").show();
+                 $("#div_btn_toobar").show();
                 
             }
             else
             {                
                 ToPointer();
-                // $("#div_btn_toobar").hide();
+                $("#div_btn_toobar").hide();
             }
             $("#liveMouse").hide();            
             whiteboard.SetCanEdit(isshow);
@@ -1403,14 +1438,14 @@
             IsToolBarShowOnly = isshow;
             if (isshow)
             {
-                // $("#div_btn_toobar").show();
+                 $("#div_btn_toobar").show();
                 
             }
             else
             {
-                // $("#div_btn_toobar").hide();
+                 $("#div_btn_toobar").hide();
                 //ToPointer();
-                // setTimeout(function () {$("#div_btn_toobar").hide(); },500);
+                 setTimeout(function () {$("#div_btn_toobar").hide(); },500);
             }
         }
         function GetCurrentPageNumber() {
@@ -1441,7 +1476,7 @@
             }
             ShowLog("ShowPDF:" + Url + "," + pageNum + "," + AttachmentID);
             PDFURL = Url;
-            PageNumber = pageNum;
+            PageNumber = pageNum
             ToPageNumber = pageNum;
             ResetTools($("#div_btn_pointer"));
             whiteboard.ShowDocument($("#main"), Url, pageNum, function(issuccess, pdfcount)  {
@@ -1544,7 +1579,7 @@
             //return
         if(FLAG){
             $("#div_btn_toobar").animate({right:"46px"},100)
-            _cancelBubble(evt);
+            if(evt) _cancelBubble(evt);
             $("#maintools").stop().show().animate({ right: '0px' }, 100,function(){
                 FLAG=false;
             });
@@ -1552,6 +1587,20 @@
             CloseToolsEx()
         }
 
+        }
+        function ShowRightToolBar(isshow)
+        {
+            if(isshow)
+            {
+                $("#div_btn_toobar").animate({right:"46px"},100);
+                $("#maintools").stop().show().animate({ right: '0px' }, 100,function(){
+                    FLAG=false;
+                });
+            }
+            else
+            {
+                CloseToolsEx();
+            }
         }
         function FullScreen()
         {

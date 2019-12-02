@@ -45,4 +45,14 @@ public class ChannelVO {
     public void setSectionVOList(List<SectionVO> sectionVOList) {
         this.sectionVOList = sectionVOList;
     }
+
+    @Override
+    public String toString() {
+        return "ChannelVO{" +
+                "channelId=" + channelId +
+                ", type=" + type +
+                ", userId=" + userId +
+                ", sectionVOList=" + sectionVOList +
+                '}';
+    }
 }

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/inviteuserleft"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:textColor="@color/brunette"
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="你确定要离开吗？"
+        android:paddingTop="24dp"
+        android:textSize="16sp" />
+    <View
+        android:layout_marginTop="20dp"
+
+        android:background="@color/divider_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        >
+
+        <TextView
+            android:id="@+id/save_and_leave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/save_and_leave"
+            android:textColor="@color/blue1" />
+
+        <View
+            android:id="@+id/first_divider"
+            android:background="@color/divider_line"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+
+            android:id="@+id/leave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/mtLeave"
+            android:textColor="@color/blue1" />
+
+        <View
+            android:background="@color/divider_line"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/Cancel"
+            android:textColor="@color/blue1" />
+    </LinearLayout>
+
+</LinearLayout>

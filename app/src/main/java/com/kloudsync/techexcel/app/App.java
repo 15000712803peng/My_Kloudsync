@@ -148,7 +148,7 @@ public class App extends Application {
         }
 
         private void init() {
-            MultiDex.install(App.this);
+
             x.Ext.init(App.this);
             Fresco.initialize(App.this);
             mCrashHandler = CrashHandler.getInstance();
@@ -193,5 +193,11 @@ public class App extends Application {
                 //initWorkerThread();
             }
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(App.this);
     }
 }

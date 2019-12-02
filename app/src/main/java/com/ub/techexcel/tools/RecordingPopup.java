@@ -3,47 +3,20 @@ package com.ub.techexcel.tools;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.support.v4.util.LruCache;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.Volley;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
-import com.kloudsync.techexcel.docment.WeiXinApi;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.SendMessageToWX;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.tencent.mm.sdk.openapi.WXWebpageObject;
 import com.ub.techexcel.adapter.RecordingAdapter;
-import com.ub.techexcel.adapter.YinXiangAdapter;
-import com.ub.techexcel.adapter.YinXiangAdapter2;
-import com.ub.techexcel.bean.LineItem;
-import com.ub.techexcel.bean.RecordingBean;
-import com.ub.techexcel.bean.SoundtrackBean;
+import com.ub.techexcel.bean.Record;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +40,7 @@ public class RecordingPopup implements View.OnClickListener {
 
         void open();
 
-        void playYinxiang(RecordingBean soundtrackBean);
+        void playYinxiang(Record soundtrackBean);
     }
 
     private FavoritePoPListener favoritePoPListener;
@@ -124,15 +97,15 @@ public class RecordingPopup implements View.OnClickListener {
             ServiceInterfaceTools.getinstance().getRecordingList(recordListurl, ServiceInterfaceTools.GETRECORDINGLIST, new ServiceInterfaceListener() {
                 @Override
                 public void getServiceReturnData(Object object) {
-                    List<RecordingBean> recordingBeanList = new ArrayList<>();
-                    recordingBeanList.addAll((List<RecordingBean>) object);
-                    RecordingAdapter recordingAdapter = new RecordingAdapter(mContext, recordingBeanList);
+                    List<Record> recordList = new ArrayList<>();
+                    recordList.addAll((List<Record>) object);
+                    RecordingAdapter recordingAdapter = new RecordingAdapter(mContext, recordList);
                     recycleview.setAdapter(recordingAdapter);
                     recordingAdapter.setFavoritePoPListener(new RecordingAdapter.FavoritePoPListener2() {
                         @Override
-                        public void playYinxiang(RecordingBean recordingBean) {
+                        public void playYinxiang(Record record) {
                             dismiss();
-                            favoritePoPListener.playYinxiang(recordingBean);
+                            favoritePoPListener.playYinxiang(record);
                         }
                     });
                 }

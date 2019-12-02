@@ -3,6 +3,8 @@ package com.ub.techexcel.tools;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.kloudsync.techexcel.bean.DocumentPage;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -72,6 +74,7 @@ public class DownloadUtil {
                     Log.e("dddddddd", response.code() + "    " + saveDir);
                     listener.onDownloadSuccess(response.code());
                 } catch (Exception e) {
+                    Log.e("downLoadPage", "onDownloadFailed:"  + e);
                     listener.onDownloadFailed();
                 } finally {
                     try {
@@ -160,4 +163,50 @@ public class DownloadUtil {
          */
         void onDownloadFailed();
     }
+
+    public void syncDownload(DocumentPage page, final OnDownloadListener listener) {
+        Request request = new Request.Builder().get().url(page.getPageUrl()).build();
+        InputStream is = null;
+        FileOutputStream fos = null;
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            if(response.isSuccessful() && response.body() != null){
+
+                byte[] buf = new byte[2048];
+                int len = 0;
+                is = response.body().byteStream();
+                long total = response.body().contentLength();
+                File file = new File(page.getSavedLocalPath());
+                fos = new FileOutputStream(file);
+                long sum = 0;
+                while ((len = is.read(buf)) != -1) {
+                    fos.write(buf, 0, len);
+                    sum += len;
+                    int progress = (int) (sum * 1.0f / total * 100);
+                    // 下载中
+                    listener.onDownloading(progress);
+                }
+                fos.flush();
+                // 下载完成
+                listener.onDownloadSuccess(response.code());
+            }else {
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                if (is != null)
+                    is.close();
+            } catch (IOException e) {
+            }
+            try {
+                if (fos != null)
+                    fos.close();
+            } catch (IOException e) {
+            }
+        }
+
+    }
+
 }

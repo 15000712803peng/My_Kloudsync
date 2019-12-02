@@ -627,13 +627,20 @@ public class DialogueFragment extends Fragment {
 
     private void VisibleGoneDialogue() {
         list = RongIMClient.getInstance().getConversationList();
-        if (list != null && list.size() > 0) {
-            lin_none.setVisibility(View.GONE);
-            lin_dialogue.setVisibility(View.VISIBLE);
-        } else {
-            lin_none.setVisibility(View.VISIBLE);
-            lin_dialogue.setVisibility(View.GONE);
-        }
+        Log.e("Check_Thread","Thread:" + Thread.currentThread());
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (list != null && list.size() > 0) {
+                    lin_none.setVisibility(View.GONE);
+                    lin_dialogue.setVisibility(View.VISIBLE);
+                } else {
+                    lin_none.setVisibility(View.VISIBLE);
+                    lin_dialogue.setVisibility(View.GONE);
+                }
+            }
+        });
+
 
     }
 

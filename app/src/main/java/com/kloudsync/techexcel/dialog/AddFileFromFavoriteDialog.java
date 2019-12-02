@@ -78,7 +78,10 @@ public class AddFileFromFavoriteDialog implements View.OnClickListener {
 
 
     public boolean isShowing() {
-        return dialog.isShowing();
+        if(dialog != null){
+            return dialog.isShowing();
+        }
+        return false;
     }
 
     public void dismiss() {

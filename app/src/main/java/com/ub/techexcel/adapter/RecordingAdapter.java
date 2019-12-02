@@ -1,33 +1,25 @@
 package com.ub.techexcel.adapter;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
-import com.ub.techexcel.bean.RecordingBean;
-import com.ub.techexcel.bean.SoundtrackBean;
-import com.ub.techexcel.tools.RecordingPopup;
-import com.ub.techexcel.tools.Tools;
+import com.ub.techexcel.bean.Record;
 
 import java.util.List;
 
 public class RecordingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<RecordingBean> mlist;
+    private List<Record> mlist;
 
     private Context mContext;
 
 
-    public RecordingAdapter(Context context, List<RecordingBean> mlist) {
+    public RecordingAdapter(Context context, List<Record> mlist) {
         this.mContext = context;
         this.mlist = mlist;
 
@@ -35,7 +27,7 @@ public class RecordingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public interface FavoritePoPListener2 {
 
-        void playYinxiang(RecordingBean soundtrackBean);
+        void playYinxiang(Record soundtrackBean);
     }
 
     private FavoritePoPListener2 favoritePoPListener;
@@ -52,12 +44,12 @@ public class RecordingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         final ViewHolder holder = (ViewHolder) viewHolder;
-        final RecordingBean recordingBean = mlist.get(position);
-        holder.title.setText(recordingBean.getTitle());
+        final Record record = mlist.get(position);
+        holder.title.setText(record.getTitle());
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                favoritePoPListener.playYinxiang(recordingBean);
+                favoritePoPListener.playYinxiang(record);
             }
         });
     }

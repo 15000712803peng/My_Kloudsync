@@ -24,6 +24,7 @@ public class NoteDetail {
     String CreatedDate;
     String Status;
 
+
     public int getLinkID() {
         return LinkID;
     }

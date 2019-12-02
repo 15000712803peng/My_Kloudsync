@@ -47,6 +47,7 @@ import com.kloudsync.techexcel.search.ui.TeamAndDocSearchActivity;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.kloudsync.activity.CreateNewSpaceActivityV2;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.SpaceDeletePopup;
@@ -770,11 +771,12 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         }
     };
 
-
     private void GoToVIew(Document lesson) {
         Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", "Doc-" + AppConfig.UserID);
+
         intent.putExtra("isTeamspace", true);
         intent.putExtra("yinxiangmode", 0);
         intent.putExtra("identity", 2);
@@ -783,8 +785,15 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         intent.putExtra("type", 2);
         intent.putExtra("isInstantMeeting", 0);
         intent.putExtra("documentId", lesson.getTempItemId());
+
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
+        //-----
+        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
+        intent.putExtra("document_id", lesson.getTempItemId());
+        intent.putExtra("meeting_type", 2);
+        intent.putExtra("space_id", itemID);
+        intent.putExtra("lession_id", Integer.parseInt(lesson.getLessonId()));
         startActivity(intent);
     }
 

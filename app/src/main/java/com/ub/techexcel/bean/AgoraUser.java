@@ -1,11 +1,12 @@
 package com.ub.techexcel.bean;
 
+import android.support.annotation.NonNull;
 import android.view.SurfaceView;
 
 import java.util.Objects;
 
 
-public class AgoraUser {
+public class AgoraUser implements Comparable<AgoraUser>{
 
     private String id;
     private SurfaceView surfaceView;
@@ -13,6 +14,15 @@ public class AgoraUser {
     private boolean muteVideo;  // true   禁止视频流
     private boolean isSelect;
     private String userName;
+    private boolean isSelf;
+
+    public boolean isSelf() {
+        return isSelf;
+    }
+
+    public void setSelf(boolean self) {
+        isSelf = self;
+    }
 
     public String getUserName() {
         return userName;
@@ -73,5 +83,13 @@ public class AgoraUser {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public int compareTo(@NonNull AgoraUser o) {
+        if(isSelf){
+
+        }
+        return 0;
     }
 }

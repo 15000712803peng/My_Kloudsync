@@ -2,21 +2,13 @@ package com.ub.techexcel.bean;
 
 import java.util.List;
 
-public class RecordingBean {
+public class Record {
 
-    int recordingId;
-    String title;
-    long createDate ;
-    long duration;
-    private List<ChannelVO> channelVOList;
-
-    public List<ChannelVO> getChannelVOList() {
-        return channelVOList;
-    }
-
-    public void setChannelVOList(List<ChannelVO> channelVOList) {
-        this.channelVOList = channelVOList;
-    }
+    private int recordingId;
+    private String title;
+    private long createDate ;
+    private long duration;
+    private int status;
 
     public int getRecordingId() {
         return recordingId;
@@ -48,5 +40,13 @@ public class RecordingBean {
 
     public void setDuration(long duration) {
         this.duration = duration;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

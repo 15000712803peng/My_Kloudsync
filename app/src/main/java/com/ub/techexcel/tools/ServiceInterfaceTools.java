@@ -48,7 +48,6 @@ import com.kloudsync.techexcel.response.TeamSearchResponse;
 import com.kloudsync.techexcel.response.TeamsResponse;
 import com.kloudsync.techexcel.response.UserInCompanyResponse;
 import com.kloudsync.techexcel.service.ConnectService;
-import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.techexcel.bean.AudioActionBean;
@@ -56,7 +55,9 @@ import com.ub.techexcel.bean.ChannelVO;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.PageActionBean;
-import com.ub.techexcel.bean.RecordingBean;
+import com.ub.techexcel.bean.Record;
+import com.ub.techexcel.bean.RecordAction;
+import com.ub.techexcel.bean.RecordDetail;
 import com.ub.techexcel.bean.SectionVO;
 import com.ub.techexcel.bean.SoundtrackBean;
 
@@ -66,7 +67,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,7 +74,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.rong.imkit.manager.InternalModuleManager;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -177,7 +176,6 @@ public class ServiceInterfaceTools {
         return serviceInterfaceTools;
     }
 
-
     public void getSoundtrackActions(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         new Thread(new Runnable() {
@@ -215,6 +213,48 @@ public class ServiceInterfaceTools {
             }
         }).start();
     }
+
+    public void getRecordActions(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                Log.e("getRecordActions", url + "    " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        JSONObject retdata = jsonObject1.getJSONObject("RetData");
+                        JSONArray jsonArray = retdata.getJSONArray("SoundtackActions");
+                        List<RecordAction> recordActions = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject audiojson = jsonArray.getJSONObject(i);
+                            RecordAction  recordAction = new RecordAction();
+                            recordAction.setTime(audiojson.getInt("Time"));
+                            String data = audiojson.getString("Data").replaceAll("\"", "");
+                            recordAction.setData(Tools.getFromBase64(data));
+                            Log.e("data__",recordAction.getData());
+                            recordAction.setSoundtrackID(audiojson.getInt("SoundtrackID"));
+                            recordAction.setPageNumber(audiojson.getString("PageNumber"));
+                            recordAction.setAttachmentID(audiojson.getInt("AttachmentID"));
+                            recordActions.add(recordAction);
+                        }
+                        Message msg3 = Message.obtain();
+                        msg3.obj = recordActions;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
 
 
     public void createOrUpdateUserSetting(final String url, final int code, final String jsonarray, ServiceInterfaceListener serviceInterfaceListener) {
@@ -1464,15 +1504,15 @@ public class ServiceInterfaceTools {
                     Log.e("Recording_list", url + "  " + returnjson.toString());
                     if (returnjson.getInt("code") == 0) {
                         JSONArray data = returnjson.getJSONArray("data");
-                        List<RecordingBean> list = new ArrayList<>();
+                        List<Record> list = new ArrayList<>();
                         for (int i = 0; i < data.length(); i++) {
                             JSONObject jsonObject = data.getJSONObject(i);
-                            RecordingBean recordingBean = new RecordingBean();
-                            recordingBean.setRecordingId(jsonObject.getInt("recordingId"));
-                            recordingBean.setTitle(jsonObject.getString("title"));
-                            recordingBean.setCreateDate(jsonObject.getLong("createDate"));
-                            recordingBean.setDuration(jsonObject.getLong("duration"));
-                            list.add(recordingBean);
+                            Record record = new Record();
+                            record.setRecordingId(jsonObject.getInt("recordingId"));
+                            record.setTitle(jsonObject.getString("title"));
+                            record.setCreateDate(jsonObject.getLong("createDate"));
+                            record.setDuration(jsonObject.getLong("duration"));
+                            list.add(record);
                         }
                         Message msg3 = Message.obtain();
                         msg3.what = code;
@@ -1922,11 +1962,11 @@ public class ServiceInterfaceTools {
                     Log.e("Recording item", url + "  " + returnjson.toString());
                     if (returnjson.getInt("code") == 0) {
                         JSONObject data = returnjson.getJSONObject("data");
-                        RecordingBean recordingBean = new RecordingBean();
-                        recordingBean.setRecordingId(data.getInt("recordingId"));
-                        recordingBean.setTitle(data.getString("title"));
-                        recordingBean.setCreateDate(data.getLong("createDate"));
-                        recordingBean.setDuration(data.getLong("duration"));
+                        RecordDetail record = new RecordDetail();
+                        record.setRecordingId(data.getInt("recordingId"));
+                        record.setTitle(data.getString("title"));
+                        record.setCreateDate(data.getLong("createDate"));
+                        record.setDuration(data.getLong("duration"));
                         JSONArray channelVOListjs = data.getJSONArray("channelVOList");
                         List<ChannelVO> channelVOList = new ArrayList<>();
                         for (int i = 0; i < channelVOListjs.length(); i++) {
@@ -1956,10 +1996,10 @@ public class ServiceInterfaceTools {
                             channelVO.setSectionVOList(sectionVOList);
                             channelVOList.add(channelVO);
                         }
-                        recordingBean.setChannelVOList(channelVOList);
+                        record.setChannelVOList(channelVOList);
                         Message msg3 = Message.obtain();
                         msg3.what = code;
-                        msg3.obj = recordingBean;
+                        msg3.obj = record;
                         handler.sendMessage(msg3);
                     } else {
                         Message msg3 = Message.obtain();
