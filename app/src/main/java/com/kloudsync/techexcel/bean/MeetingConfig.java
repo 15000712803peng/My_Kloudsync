@@ -26,6 +26,15 @@ public class MeetingConfig {
     private List<AgoraUser> agoraUsers;
     private String presenterSessionId;
     private boolean docModifide;
+    private String notifyUrl;
+
+    public String getNotifyUrl() {
+        return notifyUrl;
+    }
+
+    public void setNotifyUrl(String notifyUrl) {
+        this.notifyUrl = notifyUrl;
+    }
 
     public boolean isDocModifide() {
         return docModifide;
@@ -195,6 +204,15 @@ public class MeetingConfig {
                 ", lessionId=" + lessionId +
                 ", role=" + role +
                 ", documentId='" + documentId + '\'' +
+                ", document=" + document +
+                ", isMicroOn=" + isMicroOn +
+                ", isRecordOn=" + isRecordOn +
+                ", isCameraOn=" + isCameraOn +
+                ", isInRealMeeting=" + isInRealMeeting +
+                ", isMembersCameraToggle=" + isMembersCameraToggle +
+                ", agoraUsers=" + agoraUsers +
+                ", presenterSessionId='" + presenterSessionId + '\'' +
+                ", docModifide=" + docModifide +
                 '}';
     }
 }

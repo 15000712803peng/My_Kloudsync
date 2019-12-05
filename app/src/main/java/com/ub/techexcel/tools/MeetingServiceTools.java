@@ -7,20 +7,26 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
+import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingType;
+import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.ub.techexcel.bean.AudioActionBean;
 import com.ub.techexcel.bean.LineItem;
+import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.service.ConnectService;
 
 import org.feezu.liuli.timeselector.Utils.TextUtil;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -278,6 +284,64 @@ public class MeetingServiceTools {
         }
         return pageActions;
 
+    }
+
+
+    public EventPageNotes syncGetPageNotes(MeetingConfig meetingConfig) {
+        String url  = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + meetingConfig.getDocument().getAttachmentID() +
+                "&pageNumber=" + meetingConfig.getPageNumber() + "&userID=" + AppConfig.UserID;
+        JSONObject returnJson = com.kloudsync.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetPageNotes", url + "   " + returnJson.toString());
+        EventPageNotes pageNotes = new EventPageNotes();
+        pageNotes.setPageNumber(meetingConfig.getPageNumber());
+        try {
+            if (returnJson.getInt("RetCode") == 0) {
+                JSONArray _notes = returnJson.getJSONArray("RetData");
+                List<NoteDetail> notes = new ArrayList<NoteDetail>();
+                for (int j = 0; j < _notes.length(); j++) {
+                    JSONObject note = _notes.getJSONObject(j);
+                    notes.add(new Gson().fromJson(note.toString(), NoteDetail.class));
+                }
+                pageNotes.setNotes(notes);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return pageNotes;
+    }
+
+    public EventNote syncGetNoteByLinkId(int linkId) {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID?linkID=" + linkId;
+        JSONObject returnjson = com.kloudsync.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+        Log.e("getNoteByLinkID", url + "  " + returnjson.toString());
+        EventNote eventNote = new EventNote();
+        eventNote.setLinkId(linkId);
+        try {
+            if (returnjson.getInt("RetCode") == 0) {
+                JSONObject lineitem = returnjson.getJSONObject("RetData");
+                Note note = new Note();
+                String attachmentUrl = lineitem.getString("AttachmentUrl");
+                note.setLocalFileID(lineitem.getString("LocalFileID"));
+                note.setNoteID(lineitem.getInt("NoteID"));
+                note.setLinkID(lineitem.getInt("LinkID"));
+                note.setPageNumber(lineitem.getInt("PageNumber"));
+                note.setDocumentItemID(lineitem.getInt("DocumentItemID"));
+                note.setFileName(lineitem.getString("Title"));
+                note.setAttachmentUrl(attachmentUrl);
+                note.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                note.setAttachmentID(lineitem.getInt("AttachmentID"));
+                String noteUrl = attachmentUrl.substring(0,attachmentUrl.lastIndexOf("<")) + 1 + attachmentUrl.substring(attachmentUrl.lastIndexOf("."));
+                note.setUrl(noteUrl);
+                eventNote.setNote(note);
+
+            } else {
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return eventNote;
     }
 
 

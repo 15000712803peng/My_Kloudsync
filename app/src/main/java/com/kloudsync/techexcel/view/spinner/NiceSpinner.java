@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -136,9 +137,10 @@ public class NiceSpinner extends AppCompatTextView {
         setClickable(true);
         backgroundSelector = typedArray.getResourceId(R.styleable.NiceSpinner_backgroundSelector, R.drawable.spinner_selector);
         setBackgroundResource(backgroundSelector);
-        textColor = typedArray.getColor(R.styleable.NiceSpinner_textTint, getDefaultTextColor(context));
+        textColor = typedArray.getColor(R.styleable.NiceSpinner_textTint, getResources().getColor(R.color.brunette));
         setTextColor(textColor);
         popupWindow = new ListPopupWindow(context);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
         popupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -291,7 +293,7 @@ public class NiceSpinner extends AppCompatTextView {
         setArrowDrawableOrHide(arrowDrawable);
     }
 
-    private void setTextInternal(Object item) {
+    public void setTextInternal(Object item) {
         if (selectedTextFormatter != null) {
             setText(selectedTextFormatter.format(item));
         } else {

@@ -259,7 +259,6 @@ public class AddFileFromDocumentDialog implements View.OnClickListener, HeaderRe
                     @Override
                     public void getServiceReturnData(Object object) {
                         List<Document> list = (List<Document>) object;
-
                         documentAdapter = new DocumentAdapter(mContext, list);
                         documentList.setAdapter(documentAdapter);
                     }

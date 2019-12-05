@@ -192,7 +192,6 @@ public class MoveSyncDialog implements OnClickListener {
 
     }
 
-
     private void getSpaceList(String teamId) {
         String url = AppConfig.URL_PUBLIC + "TeamSpace/List?companyID=" + AppConfig.SchoolID + "&type=2&parentID=" + teamId;
         TeamSpaceInterfaceTools.getinstance().getTeamSpaceList(url,

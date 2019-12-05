@@ -11,9 +11,8 @@ import com.kloudsync.techexcel.bean.EventSocketMessage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingType;
+import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
-import com.ub.techexcel.bean.LineItem;
-import com.ub.techexcel.tools.SpliteSocket;
 import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -51,6 +50,7 @@ public class SocketMessageManager {
             socketMessage.setAction(MESSAGE_LEAVE_MEETING);
             return socketMessage;
         }
+
         String _message = Tools.getFromBase64(message);
         try {
             JSONObject jsonMessage = new JSONObject(_message);
@@ -200,6 +200,8 @@ public class SocketMessageManager {
             e.printStackTrace();
         }
     }
+
+
 
     private WebSocketClient getClient() {
         if (socketClient == null) {

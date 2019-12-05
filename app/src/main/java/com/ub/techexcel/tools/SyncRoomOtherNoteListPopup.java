@@ -33,6 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+
 
 public class SyncRoomOtherNoteListPopup {
 
@@ -261,6 +263,7 @@ public class SyncRoomOtherNoteListPopup {
                             getNoteData(selectId, syncroomid);
                         }
                     });
+
                     noteOperatorPopup.StartPop(holder.operationmore, noteDetail);
                 }
             });

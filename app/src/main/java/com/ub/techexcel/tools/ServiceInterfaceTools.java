@@ -228,11 +228,11 @@ public class ServiceInterfaceTools {
                         List<RecordAction> recordActions = new ArrayList<>();
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject audiojson = jsonArray.getJSONObject(i);
-                            RecordAction  recordAction = new RecordAction();
+                            RecordAction recordAction = new RecordAction();
                             recordAction.setTime(audiojson.getInt("Time"));
                             String data = audiojson.getString("Data").replaceAll("\"", "");
                             recordAction.setData(Tools.getFromBase64(data));
-                            Log.e("data__",recordAction.getData());
+                            Log.e("data__", recordAction.getData());
                             recordAction.setSoundtrackID(audiojson.getInt("SoundtrackID"));
                             recordAction.setPageNumber(audiojson.getString("PageNumber"));
                             recordAction.setAttachmentID(audiojson.getInt("AttachmentID"));
@@ -254,7 +254,6 @@ public class ServiceInterfaceTools {
             }
         }).start(ThreadManager.getManager());
     }
-
 
 
     public void createOrUpdateUserSetting(final String url, final int code, final String jsonarray, ServiceInterfaceListener serviceInterfaceListener) {
@@ -1583,6 +1582,31 @@ public class ServiceInterfaceTools {
         }).start(ThreadManager.getManager());
     }
 
+    public List<NoteDetail> syncGetUserNotes(final String url) {
+        List<NoteDetail> notes = new ArrayList<NoteDetail>();
+            try {
+                JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("syncGetUserNotes", url + "  " + returnjson.toString());
+                if (returnjson.getInt("RetCode") == 0) {
+                    JSONArray _notes = returnjson.getJSONArray("RetData");
+
+                    for (int j = 0; j < _notes.length(); j++) {
+                        JSONObject note = _notes.getJSONObject(j);
+                        NoteDetail _note = new Gson().fromJson(note.toString(), NoteDetail.class);
+                        String noteUrl = _note.getAttachmentUrl().substring(0,_note.getAttachmentUrl().lastIndexOf("<")) + 1 + _note.getAttachmentUrl().substring(_note.getAttachmentUrl().lastIndexOf("."));
+                        _note.setUrl(noteUrl);
+                        notes.add(_note);
+
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("getNoteListV2", "Exception:" + e);
+                e.printStackTrace();
+            }
+            return notes;
+    }
+
+
 
     public void getNoteListV2(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
@@ -1599,6 +1623,7 @@ public class ServiceInterfaceTools {
                             JSONObject lineitem = lineitems.getJSONObject(j);
                             items.add(new Gson().fromJson(lineitem.toString(), NoteDetail.class));
                         }
+                        Log.e("getNoteListV2", "items:" + items.size());
                         Message msg = Message.obtain();
                         msg.obj = items;
                         msg.what = code;
@@ -1610,6 +1635,7 @@ public class ServiceInterfaceTools {
                         handler.sendMessage(msg3);
                     }
                 } catch (Exception e) {
+                    Log.e("getNoteListV2", "Exception:" + e);
                     e.printStackTrace();
                 }
             }
@@ -1777,6 +1803,33 @@ public class ServiceInterfaceTools {
     }
 
 
+    public List<Customer> syncGetDocUsers(final String url) {
+
+        List<Customer> list = new ArrayList<>();
+        try {
+            JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+            Log.e("syncGetDocUsers ", url + "  " + returnjson.toString());
+            if (returnjson.getInt("RetCode") == 0) {
+                JSONArray userArray = returnjson.getJSONArray("RetData");
+                for (int i = 0; i < userArray.length(); i++) {
+                    JSONObject userJson = userArray.getJSONObject(i);
+                    Customer customer = new Customer();
+                    customer.setUserID(userJson.getInt("UserID") + "");
+                    customer.setName(userJson.getString("UserName"));
+                    customer.setNoteCount(userJson.getInt("NoteCount"));
+                    list.add(customer);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+
+    }
+
+
     /**
      * 获取用户的Note列表
      *
@@ -1910,6 +1963,7 @@ public class ServiceInterfaceTools {
             }
         }).start(ThreadManager.getManager());
     }
+
 
     /**
      * 根据LinkID删除Note信息
@@ -2188,8 +2242,8 @@ public class ServiceInterfaceTools {
         return request.getBindTvs2(AppConfig.wssServer + "/tv/current_user_bind_tv_info", AppConfig.UserToken);
     }
 
-    public Call<ResponseBody> getLessionIdByItemId(int itemId){
-        return request.getLessionIdByItemId(AppConfig.URL_PUBLIC + "Lesson/GetLessonIDByItemID?itemID=" + itemId,AppConfig.UserToken);
+    public Call<ResponseBody> getLessionIdByItemId(int itemId) {
+        return request.getLessionIdByItemId(AppConfig.URL_PUBLIC + "Lesson/GetLessonIDByItemID?itemID=" + itemId, AppConfig.UserToken);
     }
 
 

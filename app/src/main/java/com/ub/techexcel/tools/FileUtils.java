@@ -262,7 +262,7 @@ public class FileUtils {
     }
 
     public static String getBaseDir(){
-        return  baseDir + FOLDER_KLOUD +"/";
+        return  baseDir + FOLDER_KLOUD;
     }
 
 

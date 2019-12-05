@@ -67,6 +67,12 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                     bottomMenuOperationsListener.menuShareDocClicked();
                 }
                 break;
+            case R.id.bottom_menu_notes:
+                hide();
+                if(bottomMenuOperationsListener != null){
+                    bottomMenuOperationsListener.menuNoteClicked();
+                }
+                break;
         }
     }
 
@@ -75,6 +81,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
         void menuFileClicked();
         void menuStartMeetingClicked();
         void menuShareDocClicked();
+        void menuNoteClicked();
 
     }
 

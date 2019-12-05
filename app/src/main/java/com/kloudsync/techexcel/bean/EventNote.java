@@ -1,0 +1,38 @@
+package com.kloudsync.techexcel.bean;
+
+import com.ub.techexcel.bean.Note;
+
+import java.util.List;
+
+/**
+ * Created by tonyan on 2019/11/28.
+ */
+
+public class EventNote {
+    private int linkId;
+    private Note note;
+
+    public int getLinkId() {
+        return linkId;
+    }
+
+    public void setLinkId(int linkId) {
+        this.linkId = linkId;
+    }
+
+    public Note getNote() {
+        return note;
+    }
+
+    public void setNote(Note note) {
+        this.note = note;
+    }
+
+    @Override
+    public String toString() {
+        return "EventNote{" +
+                "linkId=" + linkId +
+                ", note=" + note +
+                '}';
+    }
+}

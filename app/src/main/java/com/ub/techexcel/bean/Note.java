@@ -22,6 +22,24 @@ public class Note implements Serializable {
     private String createdDate;
     private int status;
     private int linkID;
+    private String localFilePath;
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getLocalFilePath() {
+        return localFilePath;
+    }
+
+    public void setLocalFilePath(String localFilePath) {
+        this.localFilePath = localFilePath;
+    }
 
     public int getLinkID() {
         return linkID;
@@ -137,5 +155,15 @@ public class Note implements Serializable {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "Note{" +
+                "noteID=" + noteID +
+                ", attachmentUrl='" + attachmentUrl + '\'' +
+                ", localFilePath='" + localFilePath + '\'' +
+                ", url='" + url + '\'' +
+                '}';
     }
 }

@@ -3,6 +3,7 @@ package com.kloudsync.techexcel.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -16,26 +17,30 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.DocumentPage;
+import com.kloudsync.techexcel.bean.EventHighlightNote;
+import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
+import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.EventRefreshDocs;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingType;
+import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
+import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DeviceManager;
-import com.kloudsync.techexcel.help.DocumentShareDialog;
 import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.help.BottomMenuManager;
+import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
 import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
-import com.kloudsync.techexcel.help.PopMeetingMenu;
 import com.kloudsync.techexcel.help.ShareDocumentDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
@@ -44,12 +49,12 @@ import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
-import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.bean.AgoraMember;
+import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
 import com.ub.techexcel.tools.FileUtils;
@@ -67,10 +72,13 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import Decoder.BASE64Encoder;
 import butterknife.Bind;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -86,7 +94,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private BottomMenuManager menuManager;
     private PopBottomFile bottomFilePop;
     private MeetingKit meetingKit;
-
     //---
     @Bind(R.id.layout_real_meeting)
     RelativeLayout meetingLayout;
@@ -98,6 +105,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     RecyclerView cameraList;
     @Bind(R.id.meeting_menu)
     ImageView meetingMenu;
+    @Bind(R.id.layout_note)
+    RelativeLayout noteLayout;
 
     //----
     AgoraCameraAdapter cameraAdapter;
@@ -232,13 +241,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     if (documents == null || documents.size() <= 0) {
                         requestDocumentsAndShowPage();
                     }
+
                     if (meetingConfig.getType() == MeetingType.DOC) {
                         meetingLayout.setVisibility(View.GONE);
                     } else if (meetingConfig.getType() == MeetingType.MEETING) {
                         if (dataJson.has("presenterSessionId")) {
                             meetingConfig.setPresenterSessionId(dataJson.getString("presenterSessionId"));
                         }
-
                         if (meetingConfig.isInRealMeeting()) {
                             return;
                         }
@@ -306,6 +315,18 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             menuIcon.setVisibility(View.VISIBLE);
         }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public synchronized void showNote(EventNote note) {
+        Note _note = note.getNote();
+        Log.e("show_note", "note:" + _note);
+        if (_note == null || TextUtils.isEmpty(_note.getLocalFilePath())) {
+            return;
+        }
+
+        NoteViewManager.getInstance().setContent(this, noteLayout, _note, meetingConfig);
+    }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveSocketMessage(EventSocketMessage socketMessage) {
@@ -378,6 +399,33 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receivePageNotes(EventPageNotes pageNotes) {
+        Log.e("receivePageNotes", "page_notes:" + pageNotes);
+        List<NoteDetail> notes = pageNotes.getNotes();
+        if (notes != null && notes.size() > 0) {
+            if (pageNotes.getPageNumber() == meetingConfig.getPageNumber()) {
+                if (messageManager != null) {
+                    for (NoteDetail note : notes) {
+                        try {
+                            JSONObject message = new JSONObject();
+                            message.put("type", 38);
+                            message.put("LinkID", note.getLinkID());
+                            message.put("IsOther", false);
+                            if (!TextUtils.isEmpty(note.getLinkProperty())) {
+                                message.put("LinkProperty", new JSONObject(note.getLinkProperty()));
+                            }
+                            web.load("javascript:PlayActionByTxt('" + message + "')", null);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void showMemeberCamera(AgoraMember member) {
         Log.e("showSelfCamera", "member:" + member);
         if (cameraAdapter == null) {
@@ -389,6 +437,122 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
 
         meetingKit.setCameraAdapter(cameraAdapter);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public synchronized void highLightNote(final EventHighlightNote note) {
+
+        if (note.getPageNumber() == meetingConfig.getPageNumber()) {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("LinkID", note.getNote().getLinkID());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String key = "TwinkleBookNote";
+            web.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
+
+        } else {
+
+//            if (note.getNote().getAttachmentID() != meetingConfig.getDocument().getAttachmentID()) {
+//                Log.e("highLightNote", "in_different_document");
+//                final int index = documents.indexOf(new MeetingDocument(note.getNote().getDocumentItemID()));
+//                changeDocument(note.getNote().getDocumentItemID(), note.getPageNumber());
+//
+//            } else
+
+            {
+                Log.e("highLightNote", "in_same_document");
+                final String notifyUrl = meetingConfig.getNotifyUrl();
+                if (TextUtils.isEmpty(notifyUrl)) {
+                    return;
+                }
+                if (note.getPageNumber() - 1 < 0 || note.getPageNumber() > meetingConfig.getDocument().getPageCount()) {
+                    return;
+                }
+                final DocumentPage page = meetingConfig.getDocument().getDocumentPages().get(note.getPageNumber() - 1);
+                if (page == null) {
+                    return;
+                }
+                final String pathLocalPath = notifyUrl.substring(0, notifyUrl.lastIndexOf("<")) +
+                        note.getPageNumber() + notifyUrl.substring(notifyUrl.lastIndexOf("."));
+                if (!TextUtils.isEmpty(page.getPageUrl())) {
+                    DocumentPage _page = pageCache.getPageCache(page.getPageUrl());
+                    Log.e("check_cache_page", "_page:" + _page + "，page:" + page);
+
+                    if (_page != null && page.getPageUrl().equals(_page.getPageUrl())) {
+                        if (!TextUtils.isEmpty(_page.getSavedLocalPath())) {
+                            File localFile = new File(_page.getSavedLocalPath());
+                            if (localFile.exists()) {
+                                if (!pathLocalPath.equals(localFile.getAbsolutePath())) {
+                                    if (localFile.renameTo(new File(pathLocalPath))) {
+                                        Log.e("highLightNote", "uncorrect_file_name,rename");
+                                        notifyWebFilePrepared(notifyUrl, note.getPageNumber());
+                                        page.setSavedLocalPath(pathLocalPath);
+                                        page.setShowingPath(notifyUrl);
+                                        pageCache.cacheFile(page);
+                                        highLightNoteInDifferentPage(page, note);
+                                        return;
+                                    } else {
+                                        Log.e("highLightNote", "uncorrect_file_name,delete");
+                                        localFile.delete();
+                                    }
+                                } else {
+                                    Log.e("highLightNote", "correct_file_name,notify");
+                                    page.setSavedLocalPath(pathLocalPath);
+                                    page.setShowingPath(notifyUrl);
+                                    pageCache.cacheFile(page);
+                                    notifyWebFilePrepared(notifyUrl, note.getPageNumber());
+                                    highLightNoteInDifferentPage(page, note);
+                                    return;
+                                }
+
+                            } else {
+                                //清楚缓存
+                                pageCache.removeFile(_page.getPageUrl());
+                            }
+
+                        }
+                    }
+                }
+
+                Observable.just(meetingConfig.getDocument()).observeOn(Schedulers.io()).map(new Function<MeetingDocument, Object>() {
+                    @Override
+                    public Object apply(MeetingDocument document) throws Exception {
+                        safeDownloadFile(page, pathLocalPath, note.getPageNumber(), true);
+                        return document;
+                    }
+                }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        highLightNoteInDifferentPage(page, note);
+
+                    }
+                }).subscribe();
+            }
+
+
+        }
+    }
+
+    private void highLightNoteInDifferentPage(DocumentPage page, EventHighlightNote note) {
+        showDocumentPage(page);
+        final JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("LinkID", note.getNote().getLinkID());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Observable.just(page).delay(500, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
+            @Override
+            public void accept(DocumentPage page) throws Exception {
+                String key = "TwinkleBookNote";
+                Log.e("TwinkleBookNote", "delay");
+                web.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
+            }
+        }).subscribe();
+
     }
 
     private MeetingDocument getDocument(DocumentPage page) {
@@ -631,6 +795,41 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         changeDocument(_document, pageNumber);
     }
 
+
+    private synchronized void safeDownloadFile(final DocumentPage page, final String localPath, final int pageNumber, final boolean needRedownload) {
+
+        Log.e("safeDownloadFile", "start down load:" + page);
+        final String url = meetingConfig.getNotifyUrl();
+
+        page.setSavedLocalPath(localPath);
+        final ThreadLocal<DocumentPage> localPage = new ThreadLocal<>();
+        localPage.set(page);
+//      DownloadUtil.get().cancelAll();
+        DownloadUtil.get().syncDownload(localPage.get(), new DownloadUtil.OnDownloadListener() {
+            @Override
+            public void onDownloadSuccess(int code) {
+                localPage.get().setShowingPath(url);
+                Log.e("safeDownloadFile", "onDownloadSuccess:" + localPage.get());
+                pageCache.cacheFile(localPage.get());
+                notifyWebFilePrepared(url, pageNumber);
+            }
+
+            @Override
+            public void onDownloading(int progress) {
+
+            }
+
+            @Override
+            public void onDownloadFailed() {
+                Log.e("safeDownloadFile", "onDownloadFailed:" + localPage.get());
+                if (needRedownload) {
+                    safeDownloadFile(page, localPath, pageNumber, false);
+                }
+            }
+        });
+    }
+
+
     private synchronized void safeDownloadFile(final String pathLocalPath, final DocumentPage page, final String notifyUrl, final int index, final boolean needRedownload) {
 
         Log.e("safeDownloadFile", "start down load:" + page);
@@ -707,6 +906,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @org.xwalk.core.JavascriptInterface
     public synchronized void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
         Log.e("JavascriptInterface", "preLoadFileFunction,url:  " + url + ", currentpageNum:" + currentpageNum + ",showLoading:" + showLoading);
+        meetingConfig.setNotifyUrl(url);
         if (currentpageNum - 1 < 0) {
             return;
         }
@@ -786,7 +986,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private boolean checkIfModifyDoc(String result) {
-        if(meetingConfig.isDocModifide()){
+        if (meetingConfig.isDocModifide()) {
             return true;
         }
         if (!TextUtils.isEmpty(result)) {
@@ -896,8 +1096,18 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @org.xwalk.core.JavascriptInterface
-    public void callAppFunction(String action, final String data) {
+    public synchronized void callAppFunction(String action, final String data) {
         Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
+        if (TextUtils.isEmpty(action) || TextUtils.isEmpty(data)) {
+            return;
+        }
+
+        try {
+
+            PageActionsAndNotesMgr.handleNoteActions(this, action, new JSONObject(data));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -906,10 +1116,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Override
     public void menuClosedClicked() {
-       handleExit();
+        handleExit();
     }
 
-    private void handleExit(){
+    private void handleExit() {
         if (exitDialog != null) {
             if (exitDialog.isShowing()) {
                 exitDialog.dismiss();
@@ -921,7 +1131,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         exitDialog.setDialogClickListener(new ExitDialog.ExitDialogClickListener() {
             @Override
             public void onSaveAndLeaveClick() {
-                if(messageManager != null){
+                if (messageManager != null) {
                     messageManager.sendMessage_UpdateAttchment(meetingConfig);
                 }
                 PageActionsAndNotesMgr.requestActionsSaved(meetingConfig);
@@ -959,6 +1169,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         shareDocument();
     }
 
+    @Override
+    public void menuNoteClicked() {
+        showNotesDialog();
+    }
+
     //-----
     @Override
     public void addFromTeam() {
@@ -988,7 +1203,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         addFileFromFavoriteDialog = new AddFileFromFavoriteDialog(this);
         addFileFromFavoriteDialog.setOnFavoriteDocSelectedListener(this);
         addFileFromFavoriteDialog.show();
-
     }
 
     @Override
@@ -1031,7 +1245,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             meetingKit.startMeeting();
         }
         meetingLayout.setVisibility(View.VISIBLE);
-
     }
 
     private void initViews() {
@@ -1061,14 +1274,29 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     ShareDocumentDialog shareDocumentDialog;
+
     private void shareDocument() {
-        if(shareDocumentDialog != null){
+        if (shareDocumentDialog != null) {
             shareDocumentDialog.dismiss();
             shareDocumentDialog = null;
         }
         shareDocumentDialog = new ShareDocumentDialog();
         shareDocumentDialog.getPopwindow(this, meetingConfig.getDocument());
         shareDocumentDialog.show();
+    }
+
+    UserNotesDialog notesDialog;
+
+    private void showNotesDialog() {
+        Log.e("showNotesDialog", "meeting_config:" + meetingConfig);
+        if (notesDialog != null) {
+            if (notesDialog.isShowing()) {
+                notesDialog.dismiss();
+                notesDialog = null;
+            }
+        }
+        notesDialog = new UserNotesDialog(this);
+        notesDialog.show(AppConfig.UserID, meetingConfig);
     }
 
 }
