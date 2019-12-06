@@ -999,7 +999,7 @@ public class MainActivityV3 extends FragmentActivity implements AddWxDocDialog.O
             }
 
             @Override
-            public void uploadFinished() {
+            public void uploadFinished(Object result) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -1085,7 +1085,7 @@ public class MainActivityV3 extends FragmentActivity implements AddWxDocDialog.O
             }
 
             @Override
-            public void uploadFinished() {
+            public void uploadFinished(Object result) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

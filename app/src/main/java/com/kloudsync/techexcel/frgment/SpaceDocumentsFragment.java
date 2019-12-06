@@ -607,7 +607,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
                     }
 
                     @Override
-                    public void uploadFinished() {
+                    public void uploadFinished(Object result) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1279,7 +1279,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
 
 
     @Override
-    public void uploadFinished() {
+    public void uploadFinished(Object result) {
         addDocSucc();
     }
 

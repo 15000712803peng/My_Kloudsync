@@ -35,6 +35,33 @@ public class MeetingDocument {
     private String QueryToken;
     private List<DocumentPage> documentPages;
     private boolean isSelect;
+    private boolean isTemp;
+    private int progress;
+    private String tempDocPrompt;
+
+    public String getTempDocPrompt() {
+        return tempDocPrompt;
+    }
+
+    public void setTempDocPrompt(String tempDocPrompt) {
+        this.tempDocPrompt = tempDocPrompt;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
+    public boolean isTemp() {
+        return isTemp;
+    }
+
+    public void setTemp(boolean temp) {
+        isTemp = temp;
+    }
 
     public boolean isSelect() {
         return isSelect;

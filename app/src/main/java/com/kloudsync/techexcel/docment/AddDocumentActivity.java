@@ -186,7 +186,7 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
                             }
 
                             @Override
-                            public void uploadFinished() {
+                            public void uploadFinished(Object result) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {

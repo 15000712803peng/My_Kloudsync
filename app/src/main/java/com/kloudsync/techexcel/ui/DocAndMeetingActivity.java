@@ -2,11 +2,20 @@ package com.kloudsync.techexcel.ui;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.PersistableBundle;
+import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -16,12 +25,14 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
 import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.EventRefreshDocs;
+import com.kloudsync.techexcel.bean.EventShowMenuIcon;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
@@ -30,9 +41,11 @@ import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
+import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
+import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.MeetingKit;
@@ -45,15 +58,19 @@ import com.kloudsync.techexcel.help.ShareDocumentDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
+import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
+import com.kloudsync.techexcel.tool.DocumentUploadTool;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
+import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.bean.AgoraMember;
+import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
@@ -71,7 +88,9 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import Decoder.BASE64Encoder;
@@ -86,7 +105,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by tonyan on 2019/11/19.
  */
 
-public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener, BottomFileAdapter.OnDocumentClickListener, View.OnClickListener {
+public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener, BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener {
 
     private MeetingConfig meetingConfig;
     private SocketMessageManager messageManager;
@@ -107,7 +126,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     ImageView meetingMenu;
     @Bind(R.id.layout_note)
     RelativeLayout noteLayout;
-
     //----
     AgoraCameraAdapter cameraAdapter;
 
@@ -147,18 +165,34 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Override
     protected void onStop() {
         super.onStop();
-        if (bottomFilePop != null && bottomFilePop.isShowing()) {
-            bottomFilePop.hide();
-        }
+//        if (bottomFilePop != null && bottomFilePop.isShowing()) {
+//            bottomFilePop.hide();
+//        }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+
+    @Override
     protected void onResume() {
+        if (menuManager != null) {
+            menuManager.setMenuIcon(menuIcon);
+        }
         if (bottomFilePop != null && !bottomFilePop.isShowing()) {
-            menuIcon.setVisibility(View.VISIBLE);
+            menuIcon.setImageResource(R.drawable.icon_menu);
         }
         super.onResume();
     }
+
 
     private void initWeb() {
         web.setZOrderOnTop(false);
@@ -308,9 +342,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         web.load("javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
         web.load("javascript:Record()", null);
-
         if (bottomFilePop != null && bottomFilePop.isShowing()) {
             bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
+            bottomFilePop.removeTempDoc();
         } else {
             menuIcon.setVisibility(View.VISIBLE);
         }
@@ -325,6 +359,15 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
 
         NoteViewManager.getInstance().setContent(this, noteLayout, _note, meetingConfig);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showMenuIcon(EventShowMenuIcon showMenuIcon) {
+        if (menuIcon != null) {
+            Log.e("showMenuIcon", "show");
+            menuIcon.setImageResource(R.drawable.icon_menu);
+            Log.e("showMenuIcon", "menu visible:  " + (menuIcon.getVisibility() == View.VISIBLE));
+        }
     }
 
 
@@ -1153,9 +1196,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
 
         bottomFilePop.setDocuments(documents, meetingConfig.getDocument().getItemID(), this);
-        // hide menu
-        menuManager.totalHideMenu();
-        bottomFilePop.show(web, menuIcon, this);
+        if (menuManager != null) {
+            menuManager.setMenuIcon(menuIcon);
+            menuManager.totalHideMenu();
+        }
+        menuIcon.setImageResource(R.drawable.shape_transparent);
+        bottomFilePop.show(web, this);
     }
 
     @Override
@@ -1177,18 +1223,64 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     //-----
     @Override
     public void addFromTeam() {
+        openTeamDocument();
 
     }
 
     @Override
     public void addFromCamera() {
-
+        openCameraForAddDoc();
     }
 
     @Override
     public void addFromPictures() {
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, REQUEST_PICTURE_ADD_DOC);
+    }
+
+    @Override
+    public void addBlankFile() {
+        reqeustNewBlankPage();
+    }
+
+    AddFileFromDocumentDialog addFileFromDocumentDialog;
+
+    private void openTeamDocument() {
+
+        if (addFileFromDocumentDialog != null) {
+            addFileFromDocumentDialog.dismiss();
+        }
+        addFileFromDocumentDialog = new AddFileFromDocumentDialog(this);
+        addFileFromDocumentDialog.setOnSpaceSelectedListener(this);
+        addFileFromDocumentDialog.show();
 
     }
+
+    @Override
+    public void onDocSelected(String docId) {
+        TeamSpaceInterfaceTools.getinstance().uploadFromSpace(AppConfig.URL_PUBLIC + "EventAttachment/UploadFromSpace?lessonID=" + meetingConfig.getLessionId() + "&itemIDs=" + docId, TeamSpaceInterfaceTools.UPLOADFROMSPACE, new TeamSpaceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                Log.e("add_success", "response:" + object);
+                try {
+                    JSONObject data = new JSONObject(object.toString());
+                    if (data.getInt("RetCode") == 0) {
+                        JSONObject document = data.getJSONArray("RetData").getJSONObject(0);
+                        if (document != null && document.has("ItemID")) {
+                            addDocSucc(document.getInt("ItemID"));
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+    }
+
+    //------
 
     private AddFileFromFavoriteDialog addFileFromFavoriteDialog;
 
@@ -1205,6 +1297,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         addFileFromFavoriteDialog.show();
     }
 
+
     @Override
     public void onFavoriteDocSelected(String docId) {
         TeamSpaceInterfaceTools.getinstance().uploadFromSpace(AppConfig.URL_PUBLIC + "EventAttachment/UploadFromFavorite?lessonID=" +
@@ -1217,8 +1310,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             JSONObject data = new JSONObject(object.toString());
                             if (data.getInt("RetCode") == 0) {
                                 JSONObject document = data.getJSONArray("RetData").getJSONObject(0);
-                                DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, document.getInt("ItemID"));
-                                new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(true).setMessage("operate success").create().show();
+                                if (document != null && document.has("ItemID")) {
+                                    addDocSucc(document.getInt("ItemID"));
+                                }
                             }
 
                         } catch (JSONException e) {
@@ -1299,4 +1393,189 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         notesDialog.show(AppConfig.UserID, meetingConfig);
     }
 
+    //--------
+
+    private boolean isCameraCanUse() {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)
+                && !getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private File cameraFile;
+
+    private void openCameraForAddDoc() {
+        if (!isCameraCanUse()) {
+            Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String mFilePath = FileUtils.getBaseDir();
+        // 文件名
+        String fileName = "Kloud_" + DateFormat.format("yyyyMMdd_hhmmss",
+                Calendar.getInstance(Locale.CHINA))
+                + ".jpg";
+        cameraFile = new File(mFilePath, fileName);
+        //Android7.0文件保存方式改变了
+        if (Build.VERSION.SDK_INT < 24) {
+            Uri uri = Uri.fromFile(cameraFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        } else {
+            ContentValues contentValues = new ContentValues(1);
+            contentValues.put(MediaStore.Images.Media.DATA, cameraFile.getAbsolutePath());
+            Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        }
+        startActivityForResult(intent, REQUEST_CAMEIA_ADD_DOC);
+    }
+
+    private static final int REQUEST_CAMEIA_ADD_DOC = 1;
+    private static final int REQUEST_PICTURE_ADD_DOC = 2;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_CAMEIA_ADD_DOC:
+                    if (cameraFile != null && cameraFile.exists()) {
+                        Log.e("onActivityResult", "camera_file:" + cameraFile);
+                        uploadFileWhenAddDoc(cameraFile);
+
+                    }
+                    break;
+                case REQUEST_PICTURE_ADD_DOC:
+                    if (data.getData() != null) {
+                        File picture = new File(FileUtils.getPath(this, data.getData()));
+                        if (picture != null && picture.exists()) {
+                            uploadFileWhenAddDoc(picture);
+                        }
+                    }
+
+                    break;
+            }
+        }
+    }
+
+    private void uploadFileWhenAddDoc(File file) {
+
+        AddDocumentTool.addDocumentInDoc(this, file, meetingConfig.getLessionId() + "", new DocumentUploadTool.DocUploadDetailLinstener() {
+            @Override
+            public void uploadStart() {
+//                                Log.e("addDocumentInDoc","uploadStart");
+                if (bottomFilePop != null && bottomFilePop.isShowing()) {
+                    final MeetingDocument tempDoc = new MeetingDocument();
+                    tempDoc.setProgress(0);
+                    tempDoc.setTemp(true);
+                    tempDoc.setTempDocPrompt("loading");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            bottomFilePop.addTempDoc(tempDoc);
+                        }
+                    });
+
+
+                }
+            }
+
+            @Override
+            public void uploadFile(final int progress) {
+                Log.e("addDocumentInDoc", "uploadFile:" + progress);
+                if (bottomFilePop != null && bottomFilePop.isShowing()) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            bottomFilePop.refreshTempDoc("uploading", progress);
+
+                        }
+                    });
+                }
+
+            }
+
+            @Override
+            public void convertFile(final int progress) {
+                Log.e("addDocumentInDoc", "convertFile:" + progress);
+                if (bottomFilePop != null && bottomFilePop.isShowing()) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            bottomFilePop.refreshTempDoc("converting", progress);
+                        }
+                    });
+                }
+
+            }
+
+            @Override
+            public void uploadFinished(Object result) {
+                Log.e("addDocumentInDoc", "uploadFinished:" + result);
+                try {
+                    JSONObject data = new JSONObject(result.toString());
+                    if (data.getInt("RetCode") == 0) {
+                        JSONObject document = data.getJSONObject("RetData");
+                        if (document != null && document.has("ItemID")) {
+                            addDocSucc(document.getInt("ItemID"));
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void uploadError(String message) {
+                Log.e("addDocumentInDoc", "uploadError");
+                if (bottomFilePop != null && bottomFilePop.isShowing()) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            new CenterToast.Builder(DocAndMeetingActivity.this).
+                                    setSuccess(false).setMessage("operate failed").create().show();
+                            bottomFilePop.removeTempDoc();
+                        }
+                    });
+
+                }
+
+            }
+        });
+    }
+
+    private void reqeustNewBlankPage() {
+        Observable.just(meetingConfig).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingConfig>() {
+            @Override
+            public void accept(MeetingConfig meetingConfig) throws Exception {
+                final JSONObject data = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "EventAttachment/AddBlankPage?lessonID=" +
+                        meetingConfig.getLessionId(), null);
+//                Log.e("blank_page","result:" + jsonObject);
+                if (data.getInt("RetCode") == 0) {
+                    JSONObject document = data.getJSONObject("RetData");
+                    if (document != null && document.has("ItemID")) {
+                        addDocSucc(document.getInt("ItemID"));
+                    }
+
+                }
+            }
+        }).subscribe();
+    }
+
+    private void addDocSucc(int newItemid) {
+        DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, newItemid);
+        if (bottomFilePop != null && bottomFilePop.isShowing()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    new CenterToast.Builder(DocAndMeetingActivity.this).
+                            setSuccess(true).setMessage("operate success").create().show();
+                }
+            });
+
+        }
+    }
 }

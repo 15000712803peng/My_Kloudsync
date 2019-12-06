@@ -49,7 +49,7 @@ public class AddDocumentTool {
                         final String errorMessage = responsedata
                                 .getString("ErrorMessage");
                         if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
-                            uploadDetailLinstener.uploadFinished();
+                            uploadDetailLinstener.uploadFinished("");
                         } else if (retcode.equals(AppConfig.Upload_NoExist + "")) { // 添加
                             JSONObject jsonObject = responsedata.getJSONObject("RetData");
                             String targetFolderKey = jsonObject.getString("Path");
@@ -83,6 +83,68 @@ public class AddDocumentTool {
     }
 
 
+
+    public static void addDocumentInDoc(final Activity activity,final File file,final String lessonId ,final DocumentUploadTool.DocUploadDetailLinstener uploadDetailLinstener) {
+        final JSONObject jsonobject = null;
+        String url = null;
+
+            try {
+                url = AppConfig.URL_PUBLIC + "EventAttachment/UploadFileWithHash?LessonID=" + lessonId + "&Title="
+                        + URLEncoder.encode(LoginGet.getBase64Password(file.getName()), "UTF-8") + "&Hash=" +
+                        Md5Tool.getMd5ByFile(file) + "&IsAddToFavorite= 1";
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            final String finalUrl = url;
+
+            new ApiTask(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        uploadDetailLinstener.uploadStart();
+                        JSONObject responsedata = com.kloudsync.techexcel.service.ConnectService
+                                .submitDataByJson(finalUrl, jsonobject);
+                        Log.e("UploadFileWithHash", responsedata.toString() + "   " + finalUrl);
+                        String retcode = responsedata.getString("RetCode");
+                        Message msg = new Message();
+                        final String errorMessage = responsedata
+                                .getString("ErrorMessage");
+                        if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
+                            uploadDetailLinstener.uploadFinished("");
+                        } else if (retcode.equals(AppConfig.Upload_NoExist + "")) { // 添加
+                            JSONObject jsonObject = responsedata.getJSONObject("RetData");
+                            String targetFolderKey = jsonObject.getString("Path");
+                            int field = jsonObject.getInt("FileID");
+                            DocumentUploadTool uploadTool = new DocumentUploadTool(activity);
+                            uploadTool.setUploadDetailLinstener(uploadDetailLinstener);
+                            uploadTool.uploadFile(activity, targetFolderKey, field, file, lessonId,3);
+                        } else if (retcode.equals(AppConfig.Upload_Exist + "")) { //不要重复上传
+                            msg.what = AppConfig.FAILED;
+                            msg.obj = errorMessage;
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(activity, errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            uploadDetailLinstener.uploadError(errorMessage);
+                        }
+
+                    } catch (JSONException e) {
+                        uploadDetailLinstener.uploadError("data exception,add failed");
+                        e.printStackTrace();
+                    }
+                }
+
+            }).start(ThreadManager.getManager());
+
+    }
+
+
     public static void addDocumentToFavorite(final Activity activity, String filePath, final DocumentUploadTool.DocUploadDetailLinstener uploadDetailLinstener) {
         final JSONObject jsonobject = null;
         String url = null;
@@ -111,7 +173,7 @@ public class AddDocumentTool {
                         final String ErrorMessage = responsedata
                                 .getString("ErrorMessage");
                         if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
-                            uploadDetailLinstener.uploadFinished();
+                            uploadDetailLinstener.uploadFinished("");
                         } else if (retcode.equals(AppConfig.Upload_NoExist + "")) { // 添加
                             JSONObject jsonObject = responsedata.getJSONObject("RetData");
                             String targetFolderKey = jsonObject.getString("Path");

@@ -3,6 +3,7 @@ package com.kloudsync.techexcel.ui;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,10 +35,10 @@ public abstract class BaseDocAndMeetingActivity extends Activity{
     @Bind(R.id.menu)
     protected ImageView menuIcon;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e("BaseDocAndMeetingActivity","on_create");
         setContentView(R.layout.activity_doc_and_meeting);
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);

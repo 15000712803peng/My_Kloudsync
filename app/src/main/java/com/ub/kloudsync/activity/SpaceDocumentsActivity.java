@@ -567,7 +567,7 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
                     }
 
                     @Override
-                    public void uploadFinished() {
+                    public void uploadFinished(Object result) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1220,7 +1220,7 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
 
 
     @Override
-    public void uploadFinished() {
+    public void uploadFinished(Object result) {
         addDocSucc();
     }
 

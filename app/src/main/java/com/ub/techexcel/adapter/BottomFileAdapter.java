@@ -2,6 +2,7 @@ package com.ub.techexcel.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,15 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
     private OnDocumentClickListener onDocumentClickListener;
     public Context context;
     private int documentId;
+    private MeetingDocument tempDocument;
+
+    public void addTempDocument(MeetingDocument tempDocument){
+        this.tempDocument = tempDocument;
+        mDatas.add(tempDocument);
+        notifyDataSetChanged();
+    }
+
+
 
     public void setDocumentId(List<MeetingDocument> documents,int documentId) {
         this.documentId = documentId;
@@ -107,35 +117,60 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final MeetingDocument document = mDatas.get(position);
-            holder.bgisshow2.setVisibility(View.GONE);
-            holder.rpb_update.setVisibility(View.GONE);
-            holder.bgisshow.setVisibility(View.VISIBLE);
-            holder.icon.setVisibility(View.VISIBLE);
-            holder.name.setText((position + 1) + "");
-            holder.icon.setImageResource(R.drawable.documento);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(onDocumentClickListener != null){
-                        clearSelected();
-                        document.setSelect(true);
-                        onDocumentClickListener.onDocumentClick(document);
-                        notifyDataSetChanged();
-                    }
+            if(document.isTemp()){
+                holder.itemView.setOnClickListener(null);
+                holder.bgisshow2.setVisibility(View.VISIBLE);
+                holder.rpb_update.setVisibility(View.VISIBLE);
+                holder.bgisshow.setVisibility(View.GONE);
+                holder.icon.setVisibility(View.GONE);
+                if(TextUtils.isEmpty(document.getTempDocPrompt())){
+                    holder.name.setText("");
+                }else {
+                    holder.name.setText(document.getTempDocPrompt());
                 }
-            });
-
-            if (document.isSelect()) {
-                holder.bgisshow.setBackgroundResource(R.drawable.course_bg1);
-            } else {
-                holder.bgisshow.setBackgroundResource(R.drawable.course_bg2);
+                holder.rpb_update.setProgress(document.getProgress());
+            }else {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(onDocumentClickListener != null){
+                            clearSelected();
+                            document.setSelect(true);
+                            onDocumentClickListener.onDocumentClick(document);
+                            notifyDataSetChanged();
+                        }
+                    }
+                });
+                holder.bgisshow2.setVisibility(View.GONE);
+                holder.rpb_update.setVisibility(View.GONE);
+                holder.bgisshow.setVisibility(View.VISIBLE);
+                holder.icon.setVisibility(View.VISIBLE);
+                holder.name.setText((position + 1) + "");
+                holder.icon.setImageResource(R.drawable.documento);
+                if (document.isSelect()) {
+                    holder.bgisshow.setBackgroundResource(R.drawable.course_bg1);
+                } else {
+                    holder.bgisshow.setBackgroundResource(R.drawable.course_bg2);
+                }
             }
+
+
 
     }
 
-    public void setProgress(long total, long current, LineItem att) {
-        int pb = (int) (current * 100 / total);
-        att.setProgress(pb);
+    public void refreshTempDoc(int progress,String prompt) {
+        if(tempDocument != null){
+            tempDocument.setProgress(progress);
+            tempDocument.setTempDocPrompt(prompt);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void removeTempDoc(){
+        if(tempDocument != null){
+            mDatas.remove(tempDocument);
+            tempDocument = null;
+        }
         notifyDataSetChanged();
     }
 

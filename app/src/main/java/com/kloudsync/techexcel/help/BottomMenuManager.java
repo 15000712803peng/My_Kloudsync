@@ -80,12 +80,8 @@ public class BottomMenuManager implements View.OnClickListener {
     public void totalHideMenu(){
         if (bottomMenuPop != null && bottomMenuPop.isShowing()) {
             bottomMenuPop.hide();
-            menuIcon.setImageResource(R.drawable.icon_menu);
         }
 
-        if(menuIcon != null){
-            menuIcon.setVisibility(View.INVISIBLE);
-        }
     }
 
 

@@ -36,6 +36,7 @@ import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceBean;
+import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -83,7 +84,7 @@ public class DocumentUploadTool {
 
         void convertFile(int progress);
 
-        void uploadFinished();
+        void uploadFinished(Object result);
 
         void uploadError(String message);
     }
@@ -156,6 +157,32 @@ public class DocumentUploadTool {
         this.spaceID = spaceID;
         this.mfile = file;
         this.type = 0;
+        this.fileName = file.getName();
+        this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName());
+        LoginGet lg = new LoginGet();
+        lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
+            @Override
+            public void getUD(Uploadao ud) {
+                if (1 == ud.getServiceProviderId()) {
+                    uploadWithTransferUtility(ud);
+                } else if (2 == ud.getServiceProviderId()) {
+                    initOSS(ud);
+                }
+            }
+        });
+        lg.GetprepareUploading(mContext);
+    }
+
+    private String lessionId;
+
+    public void uploadFile(final Context context, String targetFolderKey1, int field1,
+                           File file, String lessionId, int type) {
+        this.mContext = context;
+        this.targetFolderKey = targetFolderKey1;
+        this.field = field1;
+        this.lessionId = lessionId;
+        this.mfile = file;
+        this.type = type;
         this.fileName = file.getName();
         this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName());
         LoginGet lg = new LoginGet();
@@ -675,19 +702,19 @@ public class DocumentUploadTool {
                 timerTask1 = null;
             }
             if (type != 1) {
-                if(type == 10){
+                if (type == 10) {
                     Log.e("addLocalNote", "step six type:" + type);
                     ServiceInterfaceTools.getinstance().uploadLocalNoteFile(AppConfig.URL_PUBLIC + "DocumentNote/UploadNewFile", ServiceInterfaceTools.UPLOADFAVORITENEWFILE, fileName, "",
-                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId,this.noteLinkProperty,new ServiceInterfaceListener() {
+                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId, this.noteLinkProperty, new ServiceInterfaceListener() {
                                 @Override
                                 public void getServiceReturnData(Object object) {
-                                    if(object != null){
+                                    if (object != null) {
                                         JSONObject response = (JSONObject) object;
                                         try {
-                                            if(response.getInt("RetCode") == 0){
+                                            if (response.getInt("RetCode") == 0) {
                                                 NoteId noteId = new NoteId();
                                                 noteId.setLinkID(response.getInt("RetData"));
-                                                Log.e("EventBus","post noteId:" + noteId.getLinkID());
+                                                Log.e("EventBus", "post noteId:" + noteId.getLinkID());
                                                 EventBus.getDefault().post(noteId);
                                             }
                                         } catch (JSONException e) {
@@ -696,7 +723,20 @@ public class DocumentUploadTool {
                                     }
                                 }
                             });
-                }else {
+                } else if (type == 3) {
+                    ServiceInterfaceTools.getinstance().uploadNewFile(AppConfig.URL_PUBLIC + "EventAttachment/UploadNewFile", ServiceInterfaceTools.UPLOADNEWFILE,
+                            fileName, uploadao, lessionId, MD5Hash, convertingResult, true, field, new ServiceInterfaceListener() {
+                                @Override
+                                public void getServiceReturnData(Object object) {
+                                    Log.e("UploadNewFile", "object:" + object);
+                                    if (uploadDetailLinstener != null) {
+                                        uploadDetailLinstener.uploadFinished(object);
+                                    }
+
+                                }
+                            }
+                    );
+                } else {
                     ServiceInterfaceTools.getinstance().uploadSpaceNewFile(AppConfig.URL_PUBLIC + "SpaceAttachment/UploadNewFile",
                             ServiceInterfaceTools.UPLOADSPACENEWFILE,
                             fileName, spaceID, "", MD5Hash,
@@ -723,7 +763,7 @@ public class DocumentUploadTool {
 //                                Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
 //                                updateGetListener.Update();
                                 if (uploadDetailLinstener != null) {
-                                    uploadDetailLinstener.uploadFinished();
+                                    uploadDetailLinstener.uploadFinished(object);
                                 }
                             }
                         }
@@ -772,19 +812,19 @@ public class DocumentUploadTool {
             }
             if (type != 1) {
 
-                if(type == 10){
+                if (type == 10) {
                     Log.e("addLocalNote", "step six type:" + type);
                     ServiceInterfaceTools.getinstance().uploadLocalNoteFile(AppConfig.URL_PUBLIC + "DocumentNote/UploadNewFile", ServiceInterfaceTools.UPLOADFAVORITENEWFILE, fileName, "",
-                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId,this.noteLinkProperty,new ServiceInterfaceListener() {
+                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId, this.noteLinkProperty, new ServiceInterfaceListener() {
                                 @Override
                                 public void getServiceReturnData(Object object) {
-                                    if(object != null){
+                                    if (object != null) {
                                         JSONObject response = (JSONObject) object;
                                         try {
-                                            if(response.getInt("RetCode") == 0){
+                                            if (response.getInt("RetCode") == 0) {
                                                 NoteId noteId = new NoteId();
                                                 noteId.setLinkID(response.getInt("RetData"));
-                                                Log.e("addLocalNote","post noteId:" + noteId.getLinkID());
+                                                Log.e("addLocalNote", "post noteId:" + noteId.getLinkID());
                                                 EventBus.getDefault().post(noteId);
                                             }
                                         } catch (JSONException e) {
@@ -793,7 +833,21 @@ public class DocumentUploadTool {
                                     }
                                 }
                             });
-                }else {
+                } else if (type == 3) {
+
+                    ServiceInterfaceTools.getinstance().uploadNewFile(AppConfig.URL_PUBLIC + "EventAttachment/UploadNewFile", ServiceInterfaceTools.UPLOADNEWFILE,
+                            fileName, uploadao, lessionId, MD5Hash, convertingResult, true, field, new ServiceInterfaceListener() {
+                                @Override
+                                public void getServiceReturnData(Object object) {
+                                    Log.e("UploadNewFile", "object:" + object);
+                                    if (uploadDetailLinstener != null) {
+                                        uploadDetailLinstener.uploadFinished(object);
+                                    }
+
+                                }
+                            }
+                    );
+                } else {
                     ServiceInterfaceTools.getinstance().uploadSpaceNewFile(AppConfig.URL_PUBLIC + "SpaceAttachment/UploadNewFile",
                             ServiceInterfaceTools.UPLOADSPACENEWFILE,
                             fileName, spaceID, "", MD5Hash,
@@ -802,7 +856,7 @@ public class DocumentUploadTool {
                                 public void getServiceReturnData(Object object) {
                                     Log.e("hhh", "SpaceAttachment/UploadNewFile");
                                     if (uploadDetailLinstener != null) {
-                                        uploadDetailLinstener.uploadFinished();
+                                        uploadDetailLinstener.uploadFinished(object);
                                     }
                                     Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
                                     EventBus.getDefault().post(new TeamSpaceBean());
@@ -824,7 +878,7 @@ public class DocumentUploadTool {
 //                                Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
 //                                updateGetListener.Update();
                                 if (uploadDetailLinstener != null) {
-                                    uploadDetailLinstener.uploadFinished();
+                                    uploadDetailLinstener.uploadFinished(object);
                                 }
                             }
                         }
@@ -832,7 +886,7 @@ public class DocumentUploadTool {
 
             }
             if (uploadDetailLinstener != null) {
-                uploadDetailLinstener.uploadFinished();
+                uploadDetailLinstener.uploadFinished("");
             }
         } else if (convertingResult.getCurrentStatus() == 3) { // Failed
             if (timer1 != null) {
@@ -859,7 +913,7 @@ public class DocumentUploadTool {
 
 
     public void uploadNote(final Context context, String targetFolderKey1, int field1,
-                           File file,String noteId,String documentId,String pageIndex,int spaceID,String syncroomId,String noteLinkProperty) {
+                           File file, String noteId, String documentId, String pageIndex, int spaceID, String syncroomId, String noteLinkProperty) {
         this.mContext = context;
         this.noteId = noteId;
         this.documentId = documentId;
@@ -889,7 +943,7 @@ public class DocumentUploadTool {
 
 
     public void uploadNote(final Context context, String targetFolderKey1, int field1,
-                           File file,String noteId,String documentId,String pageIndex,int spaceID,String syncroomId) {
+                           File file, String noteId, String documentId, String pageIndex, int spaceID, String syncroomId) {
         this.mContext = context;
         this.noteId = noteId;
         this.documentId = documentId;

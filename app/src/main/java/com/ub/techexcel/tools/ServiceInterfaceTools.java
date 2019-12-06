@@ -1120,7 +1120,7 @@ public class ServiceInterfaceTools {
                     if (returnjson.getInt("RetCode") == 0) {
                         Message msg3 = Message.obtain();
                         msg3.what = code;
-                        msg3.obj = "";
+                        msg3.obj = returnjson.toString();
                         handler.sendMessage(msg3);
                     }
 

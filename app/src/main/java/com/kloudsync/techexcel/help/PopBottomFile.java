@@ -24,10 +24,13 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventShowMenuIcon;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.BottomFileAdapter;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.Calendar;
@@ -41,9 +44,7 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
     private Context mContext;
     //--
     private RecyclerView fileList;
-    private RelativeLayout menuFile;
     private BottomFileAdapter adapter;
-    private ImageView menuIcon;
     private LinearLayout uploadLayout;
 
 
@@ -99,6 +100,15 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
                     bottomFileOperationsListener.addFromTeam();
                 }
                 break;
+
+            case R.id.blank_file:
+                if(uploadLayout != null){
+                    uploadLayout.setVisibility(View.GONE);
+                }
+                if(bottomFileOperationsListener != null){
+                    bottomFileOperationsListener.addBlankFile();
+                }
+                break;
         }
     }
 
@@ -107,6 +117,7 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
         void addFromCamera();
         void addFromPictures();
         void addFromFavorite();
+        void addBlankFile();
     }
 
     private BottomFileOperationsListener bottomFileOperationsListener;
@@ -141,10 +152,12 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
         linearLayoutManager3.setOrientation(LinearLayoutManager.HORIZONTAL);
         fileList.setLayoutManager(linearLayoutManager3);
 
-        final RelativeLayout take_photo = (RelativeLayout) view.findViewById(R.id.take_photo);
-        final RelativeLayout file_library = (RelativeLayout) view.findViewById(R.id.file_library);
+        RelativeLayout take_photo = (RelativeLayout) view.findViewById(R.id.take_photo);
+        RelativeLayout file_library = (RelativeLayout) view.findViewById(R.id.file_library);
         RelativeLayout favorite_file = (RelativeLayout) view.findViewById(R.id.save_file);
         RelativeLayout team_file = (RelativeLayout) view.findViewById(R.id.team_document);
+        RelativeLayout blank_file = (RelativeLayout) view.findViewById(R.id.blank_file);
+
 
         ImageView selectfile = (ImageView) view.findViewById(R.id.img_add);
 
@@ -158,6 +171,8 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
 
         team_file.setOnClickListener(this);
 
+        blank_file.setOnClickListener(this);
+
         bottomFileWindow = new PopupWindow(view, LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT, false);
         bottomFileWindow.setOnDismissListener(this);
@@ -168,12 +183,12 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
     }
 
 
-    public void show(View view, ImageView menuIcon, PopBottomFile.BottomFileOperationsListener bottomMenuOperationsListener) {
-        this.menuIcon = menuIcon;
+    public void show(View view,PopBottomFile.BottomFileOperationsListener bottomMenuOperationsListener) {
         this.bottomFileOperationsListener = bottomMenuOperationsListener;
         if (bottomFileWindow == null) {
             init();
         }
+
         bottomFileWindow.setOnDismissListener(this);
         if (!bottomFileWindow.isShowing()) {
             bottomFileWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
@@ -197,11 +212,7 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
 
     @Override
     public void onDismiss() {
-        if (menuIcon != null) {
-            Log.e("PopBottomFile","on_dismiss,set_visible");
-            menuIcon.clearAnimation();
-            menuIcon.setVisibility(View.VISIBLE);
-        }
+        EventBus.getDefault().post(new EventShowMenuIcon());
     }
 
     public void setDocuments(List<MeetingDocument> documents, int documentId, BottomFileAdapter.OnDocumentClickListener clickListener) {
@@ -215,7 +226,24 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
             adapter.setDocumentId(documents,documentId);
             adapter.notifyDataSetChanged();
         }
+    }
 
+    public void addTempDoc(MeetingDocument tempDoc){
+        if(adapter != null){
+            adapter.addTempDocument(tempDoc);
+        }
+    }
+
+    public void refreshTempDoc(String prompt,int progress){
+        if(adapter != null){
+            adapter.refreshTempDoc(progress,prompt);
+        }
+    }
+
+    public void removeTempDoc(){
+        if(adapter != null){
+            adapter.removeTempDoc();
+        }
     }
 
 }

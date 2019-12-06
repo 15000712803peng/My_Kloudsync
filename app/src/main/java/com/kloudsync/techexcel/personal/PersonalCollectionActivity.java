@@ -660,7 +660,7 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
                     }
 
                     @Override
-                    public void uploadFinished() {
+                    public void uploadFinished(Object result) {
                         getData();
                         handler.postDelayed(new Runnable() {
                             @Override

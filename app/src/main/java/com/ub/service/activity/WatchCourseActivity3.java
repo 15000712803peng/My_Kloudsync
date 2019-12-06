@@ -4008,40 +4008,12 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
     private void openTeamDocument() {
 
-
         if (AddFileFromDocumentDialog != null) {
             AddFileFromDocumentDialog.dismiss();
         }
         AddFileFromDocumentDialog = new AddFileFromDocumentDialog(this);
         AddFileFromDocumentDialog.setOnSpaceSelectedListener(this);
         AddFileFromDocumentDialog.show();
-//        final TeamDocumentPopup teamDocumentPopup = new TeamDocumentPopup();
-//        teamDocumentPopup.getPopwindow(WatchCourseActivity3.this);
-//        teamDocumentPopup.setFavoritePoPListener(new TeamDocumentPopup.FavoritePoPListener() {
-//
-//            @Override
-//            public void dismiss() {
-//            }
-//
-//            @Override
-//            public void open() {
-//            }
-//
-//            @Override
-//            public void select(final Document teamSpaceBeanFile, TeamSpaceBean teamName, TeamSpaceBean spaceName, List<Document> teamSpaceBeanFileList) {
-//                teamName1 = teamName;
-//                spaceName1 = spaceName;
-//                teamSpaceBeanFileList1.clear();
-//                teamSpaceBeanFileList1.addAll(teamSpaceBeanFileList);
-//                TeamSpaceInterfaceTools.getinstance().uploadFromSpace(AppConfig.URL_PUBLIC + "EventAttachment/UploadFromSpace?lessonID=" + lessonId + "&itemIDs=" + teamSpaceBeanFile.getItemID(), TeamSpaceInterfaceTools.UPLOADFROMSPACE, new TeamSpaceInterfaceListener() {
-//                    @Override
-//                    public void getServiceReturnData(Object object) {
-//
-//                    }
-//                });
-//            }
-//        });
-//        teamDocumentPopup.StartPop(wv_show, teamName1, spaceName1, teamSpaceBeanFileList1);
 
     }
 
@@ -7017,6 +6989,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             uploadFile(attachmentBean);
             openAlbum();
         }
+
         if (requestCode == REQUEST_CODE_CAPTURE_MEDIA && resultCode == Activity.RESULT_OK) { // // 选择视频
             Uri uri = data.getData();
             Cursor cursor = getContentResolver().query(uri, null, null, null, null);
