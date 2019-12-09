@@ -32,6 +32,7 @@ public class SocketMessageManager {
     public static final String MESSAGE_JOIN_MEETING = "JOIN_MEETING";
     public static final String MESSAGE_BROADCAST_FRAME = "BROADCAST_FRAME";
     public static final String MESSAGE_SEND_MESSAGE = "SEND_MESSAGE";
+    public static final String MESSAGE_END_MEETING = "END_MEETING";
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -96,8 +97,9 @@ public class SocketMessageManager {
             message.put("mode", 0);
             message.put("type", config.getType());
             message.put("lessonId", config.getLessionId());
-            if (!TextUtils.isEmpty(config.getDocumentId())) {
-                message.put("itemId", config.getDocumentId());
+            message.put("isInstantMeeting", 1);
+            if(config.getDocument() != null){
+                message.put("itemId", config.getDocument().getItemID());
             }
             doSendMessage(message.toString());
         } catch (JSONException e) {
@@ -118,8 +120,9 @@ public class SocketMessageManager {
             message.put("mode", 0);
             message.put("type", 0);
             message.put("lessonId", config.getLessionId());
-            if (!TextUtils.isEmpty(config.getDocumentId())) {
-                message.put("itemId", config.getDocumentId());
+            message.put("isInstantMeeting", 1);
+            if(config.getDocument() != null){
+                message.put("itemId", config.getDocument().getItemID());
             }
             doSendMessage(message.toString());
         } catch (JSONException e) {

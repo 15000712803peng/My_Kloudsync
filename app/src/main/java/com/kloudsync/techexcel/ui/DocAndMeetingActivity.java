@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,21 +25,27 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.DocumentPage;
+import com.kloudsync.techexcel.bean.EventHideMembers;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
 import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.EventRefreshDocs;
+import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
+import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.SupportDevice;
+import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
@@ -57,13 +64,16 @@ import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.ShareDocumentDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
+import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.info.Uploadao;
+import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
+import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.WatchCourseActivity3;
@@ -75,11 +85,15 @@ import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
+import com.ub.techexcel.tools.TvDevicesListPopup;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xwalk.core.XWalkPreferences;
@@ -88,6 +102,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -95,11 +110,15 @@ import java.util.concurrent.TimeUnit;
 
 import Decoder.BASE64Encoder;
 import butterknife.Bind;
+import io.agora.rtc.internal.RtcEngineImpl;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by tonyan on 2019/11/19.
@@ -113,6 +132,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private BottomMenuManager menuManager;
     private PopBottomFile bottomFilePop;
     private MeetingKit meetingKit;
+
     //---
     @Bind(R.id.layout_real_meeting)
     RelativeLayout meetingLayout;
@@ -127,6 +147,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Bind(R.id.layout_note)
     RelativeLayout noteLayout;
     //----
+    @Bind(R.id.layout_meeting_members)
+    LinearLayout meetingMembersLayout;
+
     AgoraCameraAdapter cameraAdapter;
 
     @Override
@@ -189,6 +212,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         if (bottomFilePop != null && !bottomFilePop.isShowing()) {
             menuIcon.setImageResource(R.drawable.icon_menu);
+            menuIcon.setEnabled(true);
         }
         super.onResume();
     }
@@ -282,6 +306,35 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         if (dataJson.has("presenterSessionId")) {
                             meetingConfig.setPresenterSessionId(dataJson.getString("presenterSessionId"));
                         }
+
+                        if (dataJson.has("usersList")) {
+                            JSONArray users = dataJson.getJSONArray("usersList");
+                            if (users.length() > 0) {
+                                List<MeetingMember> allMembers = (List<MeetingMember>) new Gson().fromJson(users.toString(), new TypeToken<List<MeetingMember>>() {
+                                }.getType());
+                                List<MeetingMember> auditors = new ArrayList<>();
+                                List<MeetingMember> members = new ArrayList<>();
+                                for(MeetingMember member : allMembers){
+                                    if(member.getRole() == 3){
+                                        //旁听生
+                                        auditors.add(member);
+                                    }else {
+                                        members.add(member);
+                                    }
+                                    if(member.getRole() == 2){
+                                        meetingConfig.setMeetingHostId(member.getUserId());
+                                    }
+                                }
+
+                                meetingConfig.setMeetingAuditor(auditors);
+                                meetingConfig.setMeetingMembers(members);
+
+                                EventBus.getDefault().post(new EventRefreshMembers());
+                            }
+                        }
+
+                        Log.e("check_meeting_member", "member:" + meetingConfig.getMeetingMembers() + ",");
+
                         if (meetingConfig.isInRealMeeting()) {
                             return;
                         }
@@ -366,6 +419,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (menuIcon != null) {
             Log.e("showMenuIcon", "show");
             menuIcon.setImageResource(R.drawable.icon_menu);
+            menuIcon.setEnabled(true);
             Log.e("showMenuIcon", "menu visible:  " + (menuIcon.getVisibility() == View.VISIBLE));
         }
     }
@@ -380,6 +434,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         switch (action) {
             case SocketMessageManager.MESSAGE_LEAVE_MEETING:
+
                 break;
 
             case SocketMessageManager.MESSAGE_JOIN_MEETING:
@@ -419,17 +474,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    private void handleMessageSendMessage(JSONObject data) throws JSONException {
-        if (!data.has("actionType")) {
-            return;
-        }
-
-        switch (data.getInt("actionType")) {
-            case 8:
-                changeDocument(data.getInt("itemId"), Integer.parseInt(data.getString("pageNumber")));
-                break;
-        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void hideMeetingMembers(EventHideMembers hideMembers){
+        meetingMembersLayout.setVisibility(View.GONE);
+        menuIcon.setEnabled(true);
+        menuIcon.setImageResource(R.drawable.icon_menu);
     }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receivePageActions(EventPageActions pageActions) {
@@ -470,7 +521,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showMemeberCamera(AgoraMember member) {
-        Log.e("showSelfCamera", "member:" + member);
+        if(member.getId() == meetingConfig.getAgoraChannelId()){
+            //自己开启会议成功
+            notifyDocumentChanged();
+        }
+
         if (cameraAdapter == null) {
             cameraAdapter = new AgoraCameraAdapter(this);
             cameraAdapter.addUser(member);
@@ -575,6 +630,27 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
 
 
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void refreshMeetingMembers(EventRefreshMembers refreshMembers){
+        if(meetingConfig.getMeetingMembers() == null || meetingConfig.getType() != MeetingType.MEETING){
+            return;
+        }
+        MeetingKit.getInstance().refreshMeetingMembers(meetingConfig,meetingMembersLayout);
+
+    }
+
+    private void handleMessageSendMessage(JSONObject data) throws JSONException {
+        if (!data.has("actionType")) {
+            return;
+        }
+
+        switch (data.getInt("actionType")) {
+            case 8:
+                changeDocument(data.getInt("itemId"), Integer.parseInt(data.getString("pageNumber")));
+                break;
         }
     }
 
@@ -1201,6 +1277,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             menuManager.totalHideMenu();
         }
         menuIcon.setImageResource(R.drawable.shape_transparent);
+        menuIcon.setEnabled(false);
         bottomFilePop.show(web, this);
     }
 
@@ -1218,6 +1295,23 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Override
     public void menuNoteClicked() {
         showNotesDialog();
+    }
+
+    @Override
+    public void menuScanTvClicked() {
+        handleScanTv();
+    }
+
+    @Override
+    public void menuMeetingMembersClicked() {
+        if(meetingConfig.getMeetingMembers() == null || meetingConfig.getMeetingMembers().size() <= 0){
+            return;
+        }
+
+        meetingMembersLayout.setVisibility(View.VISIBLE);
+        menuIcon.setImageResource(R.drawable.shape_transparent);
+        menuIcon.setEnabled(false);
+        MeetingKit.getInstance().showMeetingMembers(this,meetingConfig,meetingMembersLayout);
     }
 
     //-----
@@ -1339,6 +1433,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             meetingKit.startMeeting();
         }
         meetingLayout.setVisibility(View.VISIBLE);
+
     }
 
     private void initViews() {
@@ -1578,4 +1673,68 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         }
     }
+
+    private void handleScanTv() {
+        Observable.just(meetingConfig).observeOn(Schedulers.io()).map(new Function<MeetingConfig, List<TvDevice>>() {
+            @Override
+            public List<TvDevice> apply(MeetingConfig meetingConfig) throws Exception {
+                Response<DevicesResponse> response = ServiceInterfaceTools.getinstance().getBindTvs().execute();
+                List<TvDevice> _devices = new ArrayList<>();
+                if (response.isSuccessful() && response.body().getData() != null) {
+                    List<TvDevice> devices = response.body().getData().getDeviceList();
+                    for (TvDevice device : devices) {
+                        if (device.getDeviceType() == 3) {
+                            _devices.add(device);
+                        }
+                    }
+                }
+                return _devices;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<List<TvDevice>>() {
+            @Override
+            public void accept(List<TvDevice> tvDevices) throws Exception {
+                if (tvDevices.size() > 0) {
+                } else {
+                    if (meetingConfig.getType() != MeetingType.MEETING) {
+                        gotoScanTv();
+                    } else {
+                        MeetingKit.getInstance().checkCameraForScan();
+                        gotoScanTv();
+                    }
+                }
+            }
+        }).subscribe();
+
+    }
+
+
+    private void gotoScanTv() {
+
+        if (!isCameraCanUse()) {
+            Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent1 = new Intent(DocAndMeetingActivity.this, MipcaActivityCapture.class);
+                intent1.putExtra("isHorization", true);
+                intent1.putExtra("type", 0);
+                startActivity(intent1);
+            }
+        }, 10);
+        String url = AppConfig.wssServer + "/tv/change_bind_tv_status?status=1";
+        ServiceInterfaceTools.getinstance().changeBindTvStatus(url, ServiceInterfaceTools.CHANGEBINDTVSTATUS,
+                true, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+
+                    }
+                });
+
+
+    }
+
+
 }

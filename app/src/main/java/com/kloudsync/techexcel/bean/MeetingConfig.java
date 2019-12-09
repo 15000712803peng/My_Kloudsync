@@ -27,6 +27,42 @@ public class MeetingConfig {
     private String presenterSessionId;
     private boolean docModifide;
     private String notifyUrl;
+    private List<MeetingMember> meetingMembers;
+    private List<MeetingMember> meetingAuditor;
+    private String meetingHostId;
+    private int agoraChannelId;
+
+    public int getAgoraChannelId() {
+        return agoraChannelId;
+    }
+
+    public void setAgoraChannelId(int agoraChannelId) {
+        this.agoraChannelId = agoraChannelId;
+    }
+
+    public String getMeetingHostId() {
+        return meetingHostId;
+    }
+
+    public void setMeetingHostId(String meetingHostId) {
+        this.meetingHostId = meetingHostId;
+    }
+
+    public List<MeetingMember> getMeetingAuditor() {
+        return meetingAuditor;
+    }
+
+    public void setMeetingAuditor(List<MeetingMember> meetingAuditor) {
+        this.meetingAuditor = meetingAuditor;
+    }
+
+    public List<MeetingMember> getMeetingMembers() {
+        return meetingMembers;
+    }
+
+    public void setMeetingMembers(List<MeetingMember> meetingMembers) {
+        this.meetingMembers = meetingMembers;
+    }
 
     public String getNotifyUrl() {
         return notifyUrl;

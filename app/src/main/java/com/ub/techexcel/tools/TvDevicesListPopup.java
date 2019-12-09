@@ -144,7 +144,6 @@ public class TvDevicesListPopup implements View.OnClickListener {
 
         void logout(TvDevice tvDevice);
 
-
     }
 
     public void setWebCamPopupListener(WebCamPopupListener webCamPopupListener) {
@@ -167,7 +166,6 @@ public class TvDevicesListPopup implements View.OnClickListener {
                 break;
         }
     }
-
 
     private void getBindTvs(List<TvDevice> devices, boolean enable, boolean isbeike) {
         isChangeStatus.setChecked(enable);

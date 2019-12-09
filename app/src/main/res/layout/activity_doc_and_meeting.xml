@@ -170,6 +170,91 @@
 
     </RelativeLayout>
 
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/layout_meeting_members"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_marginLeft="12dp"
+            android:id="@+id/list_meeting_member"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_weight="1" />
+
+
+        <RelativeLayout
+
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_marginRight="12dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/layout_auditor"
+                android:id="@+id/image_add_meeting_member"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/icon_add_audience" />
+
+            <RelativeLayout
+                android:id="@+id/layout_auditor"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="50dp">
+
+                <ImageView
+                    android:id="@+id/icon_audience"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/icon_audience_audio" />
+
+                <TextView
+                    android:id="@+id/audience_number"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/icon_audience_bg"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textSize="10sp" />
+            </RelativeLayout>
+
+
+            <ImageView
+                android:id="@+id/image_members_close"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/icon_close" />
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
     <ImageView
         android:id="@+id/menu"
         android:layout_width="36dp"

@@ -193,9 +193,9 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
             public void accept(UserNotes userNotes) throws Exception {
                 String url = "";
                 String paramsId ="";
-                if(meetingConfig.getType() == MeetingType.DOC){
+                if(meetingConfig.getType() == MeetingType.DOC || meetingConfig.getType() == MeetingType.MEETING){
                      url = AppConfig.URL_PUBLIC + "DocumentNote/DocViewUserList?attachmentID=" + meetingConfig.getDocument().getAttachmentID();
-                    paramsId = meetingConfig.getDocument().getAttachmentID() +"";
+                     paramsId = meetingConfig.getDocument().getAttachmentID() +"";
                 }
                 userNotes.setParamsId(paramsId);
                 List<Customer> members =  ServiceInterfaceTools.getinstance().syncGetDocUsers(url);

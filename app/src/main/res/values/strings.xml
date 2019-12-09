@@ -767,6 +767,7 @@ Please input the cell phone number to add the contact
 
     <string name="attendees">Attendees</string>
     <string name="title_to_leave">are you sure to leave?</string>
+    <string name="presenter">presenter</string>
 
 
 

@@ -3,19 +3,27 @@ package com.kloudsync.techexcel.help;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.EventHideMembers;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingMember;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
+import com.ub.techexcel.adapter.MeetingMembersAdapter;
 import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.AgoraUser;
@@ -24,9 +32,13 @@ import com.ub.techexcel.tools.MeetingSettingDialog;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
+import java.util.Collections;
+import java.util.List;
+
 import io.agora.openlive.model.AGEventHandler;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
+import io.agora.rtc.internal.RtcEngineImpl;
 import io.agora.rtc.video.VideoCanvas;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
@@ -35,7 +47,7 @@ import io.reactivex.schedulers.Schedulers;
 import static io.agora.rtc.Constants.CLIENT_ROLE_BROADCASTER;
 
 
-public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, AGEventHandler ,View.OnClickListener,PopMeetingMenu.MeetingMenuOperationsListener{
+public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, AGEventHandler, View.OnClickListener, PopMeetingMenu.MeetingMenuOperationsListener {
 
     private static MeetingKit kit;
 
@@ -112,6 +124,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         meetingConfig.setMeetingId(newMeetingId);
         rtcManager = RtcManager.getDefault(host);
         rtcManager.doConfigEngine(CLIENT_ROLE_BROADCASTER);
+        Log.e("MeetingKit","joinChannel:"+meetingConfig.getMeetingId());
         rtcManager.joinRtcChannle(meetingConfig.getMeetingId());
 
     }
@@ -137,13 +150,15 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     @Override
     public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
         isStarted = true;
+
         if (meetingConfig != null) {
             meetingConfig.setInRealMeeting(true);
+            meetingConfig.setAgoraChannelId(uid);
         }
         try {
             getRtcManager().worker().getEngineConfig().mUid = uid;
         } catch (Exception e) {
-            Log.e("MeetingKit","mUid = uid:" + e);
+            Log.e("MeetingKit", "mUid = uid:" + e);
         }
         EventBus.getDefault().post(createSelfCamera(uid));
 //        Log.e("MeetingKit", "onJoinChannelSuccess,uid:" + uid + ",elapsed:" + elapsed);
@@ -156,7 +171,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onAudioRouteChanged(int routing) {
-        if(popMeetingMenu != null && popMeetingMenu.isShowing()){
+        if (popMeetingMenu != null && popMeetingMenu.isShowing()) {
             popMeetingMenu.onAudioRouteChanged(routing);
         }
     }
@@ -178,9 +193,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onUserJoined(int uid, int elapsed) {
-        Log.e("MeetingKit","onUserJoined,uid:" + uid);
+        Log.e("MeetingKit", "onUserJoined,uid:" + uid);
         if (meetingConfig != null) {
-            if(!meetingConfig.isInRealMeeting()){
+            if (!meetingConfig.isInRealMeeting()) {
                 return;
             }
             EventBus.getDefault().post(createMemberCamera(uid));
@@ -220,9 +235,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         return member;
     }
 
-    public void release(){
-        if(settingDialog != null){
-            if(settingDialog.isShowing()){
+    public void release() {
+        if (settingDialog != null) {
+            if (settingDialog.isShowing()) {
                 settingDialog.dismiss();
                 settingDialog = null;
             }
@@ -230,8 +245,8 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         try {
             getRtcManager().rtcEngine().leaveChannel();
             getRtcManager().event().removeEventHandler(this);
-        }catch (Exception e){
-            Log.e("MeetingKit","release exception:" + e);
+        } catch (Exception e) {
+            Log.e("MeetingKit", "release exception:" + e);
         }
         isStarted = false;
         kit = null;
@@ -239,14 +254,16 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-
+        switch (v.getId()) {
+            case R.id.image_members_close:
+                EventBus.getDefault().post(new EventHideMembers());
+                break;
         }
     }
 
-    public void showMeetingMenu(ImageView menu,Activity host,MeetingConfig meetingConfig) {
-        Log.e("PopMeetingMenu","showMeetingMenu");
-        this.meetingConfig =  meetingConfig;
+    public void showMeetingMenu(ImageView menu, Activity host, MeetingConfig meetingConfig) {
+        Log.e("PopMeetingMenu", "showMeetingMenu");
+        this.meetingConfig = meetingConfig;
         this.host = host;
         if (popMeetingMenu != null) {
             if (popMeetingMenu.isShowing()) {
@@ -254,23 +271,29 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 popMeetingMenu = null;
             }
         }
+
         popMeetingMenu = new PopMeetingMenu(host);
-        popMeetingMenu.show(host,menu,this);
+        popMeetingMenu.show(host, menu, meetingConfig,this);
     }
 
     // --- meeting menu
 
     @Override
-    public void menuClosedClicked() {
+    public void menuEndClicked() {
+
+    }
+
+    @Override
+    public void menuLeaveClicked() {
 
     }
 
     @Override
     public void menuCameraClicked(boolean isCameraOn) {
-        Log.e("menuCameraClicked","mute_locacl_video:" + !isCameraOn);
+        Log.e("menuCameraClicked", "mute_locacl_video:" + !isCameraOn);
         getRtcManager().worker().getRtcEngine().muteLocalVideoStream(!isCameraOn);
-        if(cameraAdapter != null){
-            cameraAdapter.muteOrOpenCamera(getRtcManager().worker().getEngineConfig().mUid,!isCameraOn);
+        if (cameraAdapter != null) {
+            cameraAdapter.muteOrOpenCamera(getRtcManager().worker().getEngineConfig().mUid, !isCameraOn);
         }
     }
 
@@ -279,5 +302,59 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         getRtcManager().worker().getRtcEngine().switchCamera();
     }
 
+    public void checkCameraForScan() {
 
+        try {
+            RtcEngineImpl engine = (RtcEngineImpl) getRtcManager().worker().getRtcEngine();
+            engine.setVideoCamera(0);
+        }catch (Exception e){
+
+        }
+    }
+
+
+    private List<MeetingMember> meetingMembers;
+    private List<MeetingMember> meetingAuditors;
+    private LinearLayout meetingMembersLayout;
+    private RecyclerView membersList;
+    private MeetingMembersAdapter membersAdapter;
+    private TextView audienceNumbersText;
+    private ImageView closeMembersImage;
+
+
+    public void showMeetingMembers(Activity host,MeetingConfig meetingConfig, LinearLayout meetingMembersLayout){
+        if(meetingConfig.getType() != MeetingType.MEETING ){
+            return;
+        }
+        this.host = host;
+        this.meetingConfig = meetingConfig;
+        meetingMembers = meetingConfig.getMeetingMembers();
+        meetingAuditors = meetingConfig.getMeetingAuditor();
+        this.meetingMembersLayout = meetingMembersLayout;
+        membersList = meetingMembersLayout.findViewById(R.id.list_meeting_member);
+        audienceNumbersText = meetingMembersLayout.findViewById(R.id.audience_number);
+        if(meetingAuditors != null && meetingAuditors.size() > 0){
+            audienceNumbersText.setText(meetingAuditors.size() +"");
+        }else {
+            audienceNumbersText.setText("0");
+        }
+        closeMembersImage = meetingMembersLayout.findViewById(R.id.image_members_close);
+        closeMembersImage.setOnClickListener(this);
+        membersList.setLayoutManager(new LinearLayoutManager(host,RecyclerView.HORIZONTAL,false));
+        Collections.sort(meetingMembers);
+        membersAdapter = new MeetingMembersAdapter(host,meetingMembers);
+        membersList.setAdapter(membersAdapter);
+    }
+
+    public void refreshMeetingMembers(MeetingConfig meetingConfig,LinearLayout meetingMembersLayout){
+        this.meetingConfig = meetingConfig;
+        if(meetingMembersLayout.getVisibility() != View.VISIBLE){
+            return;
+        }
+        if(membersAdapter != null){
+            Collections.sort(meetingConfig.getMeetingMembers());
+            membersAdapter.updateMembers(meetingConfig.getMeetingMembers());
+        }
+
+    }
 }

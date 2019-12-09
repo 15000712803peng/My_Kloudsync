@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/headll"
+    android:layout_width="wrap_content"
+    android:layout_marginLeft="6dp"
+    android:layout_marginRight="6dp"
+    android:layout_height="80dp"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/identlyTv"
+        android:singleLine="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="10dp"
+        android:textColor="@color/black"
+        android:visibility="visible" />
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:paddingTop="2dp"
+            android:id="@+id/bgisshow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/course_bg2"
+            android:orientation="horizontal"
+            android:padding="2dp">
+
+            <com.kloudsync.techexcel.view.CircleImageView
+                android:id="@+id/studenticon"
+                android:padding="2dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/bgisshow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal"
+            android:padding="1.4dp"
+            android:visibility="gone">
+
+            <com.kloudsync.techexcel.view.RoundProgressBar
+                android:padding="2dp"
+                android:id="@+id/rpb_update"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                app:roundColor="@color/qiangrey"
+                app:roundProgressColor="@color/skyblue"
+                app:roundWidth="3dp"
+                app:textColor="@color/white"
+                app:textSize="12sp" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/studentname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="12sp" />
+</LinearLayout>

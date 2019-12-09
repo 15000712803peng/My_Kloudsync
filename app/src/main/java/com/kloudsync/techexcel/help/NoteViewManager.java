@@ -187,7 +187,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
             public void accept(UserNotes userNotes) throws Exception {
                 String url = "";
                 String paramsId = "";
-                if (meetingConfig.getType() == MeetingType.DOC) {
+                if (meetingConfig.getType() == MeetingType.DOC || meetingConfig.getType() == MeetingType.MEETING) {
                     url = AppConfig.URL_PUBLIC + "DocumentNote/DocViewUserList?attachmentID=" + meetingConfig.getDocument().getAttachmentID();
                     paramsId = meetingConfig.getDocument().getAttachmentID() + "";
                 }

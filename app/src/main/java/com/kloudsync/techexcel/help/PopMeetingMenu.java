@@ -14,6 +14,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 
 import io.reactivex.Observable;
@@ -24,11 +25,12 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
 
     int width;
     private Activity host;
+    private MeetingConfig meetingConfig;
     private PopupWindow bottomMenuWindow;
     //--
     private ImageView menuIcon;
 
-    private RelativeLayout menuClose;
+    private RelativeLayout menuEnd;
     private RelativeLayout menuInvite;
     private RelativeLayout menuMore;
     private RelativeLayout menuLeave;
@@ -62,11 +64,16 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                     operationsListener.menuSwitchCamera();
                 }
                 break;
+            case R.id.meeting_menu_end:
+                break;
+            case R.id.meeting_menu_leave:
+                break;
         }
     }
 
     public interface MeetingMenuOperationsListener {
-        void menuClosedClicked();
+        void menuEndClicked();
+        void menuLeaveClicked();
         void menuCameraClicked(boolean isCameraOn);
         void menuSwitchCamera();
 
@@ -101,6 +108,10 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         cameraImage = view.findViewById(R.id.meeting_camera);
         switchCameraImage = view.findViewById(R.id.meeting_camera_switch);
         switchCameraImage.setOnClickListener(this);
+        menuEnd = view.findViewById(R.id.meeting_menu_end);
+        menuEnd.setOnClickListener(this);
+        menuLeave = view.findViewById(R.id.meeting_menu_leave);
+        menuLeave.setOnClickListener(this);
         cameraImage.setOnClickListener(this);
         bottomMenuWindow.getWidth();
         bottomMenuWindow.getHeight();
@@ -112,9 +123,10 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         bottomMenuWindow.setBackgroundDrawable(new BitmapDrawable());
     }
 
-    public void show(Activity host,ImageView menu,PopMeetingMenu.MeetingMenuOperationsListener operationsListener) {
+    public void show(Activity host,ImageView menu,MeetingConfig meetingConfig,PopMeetingMenu.MeetingMenuOperationsListener operationsListener) {
         this.host = host;
         this.menuIcon = menu;
+        this.meetingConfig = meetingConfig;
         this.operationsListener = operationsListener;
         initBySetting();
         Log.e("PopMeetingMenu","show_menu");
@@ -181,6 +193,13 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
 
         cameraImage.setImageResource(getSettingCache(host).getMeetingSetting().isCameraOn() ? R.drawable.icon_command_webcam_enable :
                 R.drawable.icon_command_webcam_disable);
+        if(meetingConfig != null){
+            if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){
+                menuEnd.setVisibility(View.VISIBLE);
+            }else {
+                menuEnd.setVisibility(View.GONE);
+            }
+        }
     }
 
     private MeetingSettingCache getSettingCache(Activity host){

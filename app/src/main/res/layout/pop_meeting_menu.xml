@@ -194,7 +194,7 @@
 
 
             <RelativeLayout
-                android:id="@+id/meeting_menu_close"
+                android:id="@+id/meeting_menu_end"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:orientation="horizontal">

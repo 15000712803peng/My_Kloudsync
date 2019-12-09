@@ -5874,57 +5874,58 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         webCamPopuP = new WebCamPopup();
         webCamPopuP.getPopwindow(WatchCourseActivity3.this, identity, firstStatus);
         webCamPopuP.setDefault(i);
-//        webCamPopuP.setWebCamPopupListener(new WebCamPopup.WebCamPopupListener() {
-//            @Override
-//            public void start(boolean isListen, boolean isMute2) {
-//                initListen(isListen);
-//                initMute(isMute2);
-//                isOpenShengwang = true;
-//                switchMode();
-//                toggle.setVisibility(View.VISIBLE);
-//                joinvideo.setVisibility(View.GONE);
-//                startll.setVisibility(View.GONE);
-//                leavell.setVisibility(View.VISIBLE);
+        webCamPopuP.setWebCamPopupListener(new WebCamPopup.WebCamPopupListener() {
+
+            @Override
+            public void start(boolean isListen, boolean isMute, boolean isRecord) {
+                initListen(isListen);
+                initMute(isMute);
+                isOpenShengwang = true;
+                switchMode();
+                toggle.setVisibility(View.VISIBLE);
+                joinvideo.setVisibility(View.GONE);
+                startll.setVisibility(View.GONE);
+                leavell.setVisibility(View.VISIBLE);
+                endtextview.setText(getString(R.string.mtEnd));
+                if (currentLine == LINE_PEERTIME) {  //  声网  模式
+                } else if (currentLine == LINE_KLOUDPHONE) {   // kloudcall  模式
+                    createConference(AppConfig.Mobile);
+                } else if (currentLine == LINE_EXTERNOAUDIO) {  //  no audio  模式
+                    switcKcOrPeerTime(4);
+                }
+            }
+
+            @Override
+            public void changeOptions(int position) {
+                switch (position) {
+                    case 0:
+                        currentLine = LINE_PEERTIME;
+                        webCamPopuP.setDefault(0);
+                        break;
+                    case 1:
+                        currentLine = LINE_KLOUDPHONE;
+                        webCamPopuP.setDefault(1);
+                        break;
+                    case 2:
+                        currentLine = LINE_EXTERNOAUDIO;
+                        webCamPopuP.setDefault(1);
+                        break;
+                }
+            }
+
+            @Override
+            public void dismiss() {
+//                menu.setEnabled(true);
+//                command_active.setEnabled(true);
 //                endtextview.setText(getString(R.string.mtEnd));
-//                if (currentLine == LINE_PEERTIME) {  //  声网  模式
-//                } else if (currentLine == LINE_KLOUDPHONE) {   // kloudcall  模式
-//                    createConference(AppConfig.Mobile);
-//                } else if (currentLine == LINE_EXTERNOAUDIO) {  //  no audio  模式
-//                    switcKcOrPeerTime(4);
-//                }
-//            }
-//
-//            @Override
-//            public void changeOptions(int position) {
-//                switch (position) {
-//                    case 0:
-//                        currentLine = LINE_PEERTIME;
-//                        webCamPopuP.setDefault(0);
-//                        break;
-//                    case 1:
-//                        currentLine = LINE_KLOUDPHONE;
-//                        webCamPopuP.setDefault(1);
-//                        break;
-//                    case 2:
-//                        currentLine = LINE_EXTERNOAUDIO;
-//                        webCamPopuP.setDefault(1);
-//                        break;
-//                }
-//            }
-//
-//            @Override
-//            public void dismiss() {
-////                menu.setEnabled(true);
-////                command_active.setEnabled(true);
-////                endtextview.setText(getString(R.string.mtEnd));
-//            }
-//
-//            @Override
-//            public void open() {
-////                menu.setEnabled(false);
-////                command_active.setEnabled(false);
-//            }
-//        });
+            }
+
+            @Override
+            public void open() {
+//                menu.setEnabled(false);
+//                command_active.setEnabled(false);
+            }
+        });
         webCamPopuP.StartPop(wv_show);
         activte_linearlayout.setVisibility(View.GONE);
         command_active.setImageResource(R.drawable.icon_command);

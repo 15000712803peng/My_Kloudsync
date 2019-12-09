@@ -134,7 +134,7 @@ public class DocumentUploadTool {
         this.targetFolderKey = targetFolderKey1;
         this.field = field1;
         this.spaceID = spaceID;
-        this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName());
+        this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName())+ System.currentTimeMillis();
         LoginGet lg = new LoginGet();
         lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
             @Override
@@ -158,7 +158,7 @@ public class DocumentUploadTool {
         this.mfile = file;
         this.type = 0;
         this.fileName = file.getName();
-        this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName());
+        this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName())+ System.currentTimeMillis();
         LoginGet lg = new LoginGet();
         lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
             @Override
@@ -184,7 +184,7 @@ public class DocumentUploadTool {
         this.mfile = file;
         this.type = type;
         this.fileName = file.getName();
-        this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName());
+        this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName())+ System.currentTimeMillis();
         LoginGet lg = new LoginGet();
         lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
             @Override
@@ -242,7 +242,7 @@ public class DocumentUploadTool {
         this.field = field1;
         this.mfile = file;
         type = 1;
-        this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName());
+        this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName())+ System.currentTimeMillis();
         this.fileName = file.getName();
         LoginGet lg = new LoginGet();
         lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
@@ -792,12 +792,12 @@ public class DocumentUploadTool {
     }
 
     private void uploadNewFile(final ConvertingResult convertingResult) {
-        Log.e("addLocalNote", "step five type:" + type + ",convertingResult:" + convertingResult.getCurrentStatus());
+        Log.e("addLocalNote", "step five type:" + type + ",convertingResult,status:" + convertingResult.getCurrentStatus() + ",finish_percent:" + convertingResult.getFinishPercent());
         if (convertingResult.getCurrentStatus() == 0) {  // prepare
             if (uploadDetailLinstener != null) {
                 uploadDetailLinstener.convertFile(0);
             }
-        } else if (convertingResult.getCurrentStatus() == 1) { //Converting
+        } else if (convertingResult.getCurrentStatus() == 1 || convertingResult.getCurrentStatus() == 4) { //Converting
             if (uploadDetailLinstener != null) {
                 uploadDetailLinstener.convertFile(convertingResult.getFinishPercent());
             }
