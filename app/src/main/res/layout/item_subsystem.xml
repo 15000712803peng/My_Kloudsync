@@ -4,9 +4,12 @@
     android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants"
     android:id="@+id/layout_item"
+
     android:orientation="vertical">
 
     <RelativeLayout
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:id="@+id/layout_group_item_item"
         android:background="#f1f5ff"
         android:layout_width="match_parent"

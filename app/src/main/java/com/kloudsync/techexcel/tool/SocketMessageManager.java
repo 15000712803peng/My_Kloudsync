@@ -10,6 +10,7 @@ import android.util.Log;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
+import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -33,6 +34,8 @@ public class SocketMessageManager {
     public static final String MESSAGE_BROADCAST_FRAME = "BROADCAST_FRAME";
     public static final String MESSAGE_SEND_MESSAGE = "SEND_MESSAGE";
     public static final String MESSAGE_END_MEETING = "END_MEETING";
+    public static final String MESSAGE_MAKE_PRESENTER = "MAKE_PRESENTER";
+    public static final String MESSAGE_ATTACHMENT_UPLOADED = "ATTACHMENT_UPLOADED";
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -187,6 +190,19 @@ public class SocketMessageManager {
         }
     }
 
+    public void sendMessage_EndMeeting(MeetingConfig config) {
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "END_MEETING");
+            message.put("sessionId", config.getUserToken());
+            message.put("meetingId", config.getMeetingId());
+//                    message.put("followToLeave", 1);
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendMessage_MyActionFrame(String actions, MeetingConfig meetingConfig) {
         String _actions = Tools.getBase64(actions).replaceAll("[\\s*\t\n\r]", "");
         try {
@@ -202,6 +218,37 @@ public class SocketMessageManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendMessage_MeetingStatus(MeetingConfig config) {
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "MEETING_STATUS");
+            message.put("sessionId", config.getUserToken());
+            message.put("meetingId", config.getMeetingId());
+            message.put("lessonId", config.getLessionId());
+            message.put("status", 1);
+//                    message.put("followToLeave", 1);
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessage_MakePresenter(MeetingConfig config, MeetingMember member){
+
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "MAKE_PRESENTER");
+            message.put("sessionId", AppConfig.UserToken);
+            message.put("meetingId", config.getMeetingId());
+            message.put("lessonId", config.getLessionId());
+            message.put("newPresenterSessionId", member.getSessionId());
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

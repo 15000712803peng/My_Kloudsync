@@ -43,6 +43,7 @@ import com.kloudsync.techexcel.help.UserInfoHelper;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.info.Space;
 import com.kloudsync.techexcel.response.NetworkResponse;
+import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.search.ui.TeamAndDocSearchActivity;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.KloudCache;
@@ -104,6 +105,8 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     private static final int REQUEST_UPDATE_TEAM = 1;
     private ImageView filterSpaceImage;
     private View view;
+    private ImageView switchCompanyImage;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -451,7 +454,8 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         searchLayout = view.findViewById(R.id.search_layout);
         mCurrentTeamRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         spaceRecycleView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-
+        switchCompanyImage = view.findViewById(R.id.image_switch_company);
+        switchCompanyImage.setOnClickListener(this);
         spaceAdapter = new SpaceAdapter(getActivity(), spacesList, false, false);
         spaceRecycleView.setAdapter(spaceAdapter);
         spaceAdapter.setOnItemLectureListener(this);
@@ -539,6 +543,10 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                 dialog.setOptionsLinstener(this);
                 dialog.setSelectedOption(sharedPreferences.getInt("show_all_spaces", 0));
                 dialog.show();
+                break;
+
+            case R.id.image_switch_company:
+                goToSwitchCompany();
                 break;
         }
     }
@@ -889,5 +897,11 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         sharedPreferences.edit().putInt("show_all_spaces", 0).commit();
         getSpaceList();
 
+    }
+
+    private void goToSwitchCompany() {
+        Intent intent = new Intent(getActivity(), SwitchOrganizationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 }

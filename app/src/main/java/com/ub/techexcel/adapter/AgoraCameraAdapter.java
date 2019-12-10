@@ -113,6 +113,15 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         notifyItemRangeChanged(getItemCount() - 2,2);
     }
 
+    public void removeUser(AgoraMember user){
+
+        if(users.contains(user)){
+            this.users.remove(user);
+        }
+        Collections.sort(users);
+        notifyDataSetChanged();
+    }
+
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {

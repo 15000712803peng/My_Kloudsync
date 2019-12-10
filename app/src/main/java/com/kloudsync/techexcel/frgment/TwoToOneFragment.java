@@ -24,6 +24,7 @@ import com.kloudsync.techexcel.bean.EventSearchContact;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.InviteNewDialog;
 import com.kloudsync.techexcel.help.PopContactHAHA;
+import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.ui.InviteFromPhoneActivity;
 import com.kloudsync.techexcel.view.CustomViewPager;
 import com.ub.service.activity.NotifyActivity;
@@ -53,6 +54,7 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
     private List<Fragment> mTabs = new ArrayList<Fragment>();
     private FragmentPagerAdapter mAdapter;
     private RelativeLayout searchLayout;
+    private ImageView switchCompanyImage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,6 +70,7 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
     }
 
     private void initView() {
+        switchCompanyImage = (ImageView) view.findViewById(R.id.image_switch_company);
         addLayout = (RelativeLayout) view.findViewById(R.id.layout_add);
         img_notice = (ImageView) view.findViewById(R.id.img_notice);
         tv_ns = (TextView) view.findViewById(R.id.tv_ns);
@@ -80,6 +83,7 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
         vp_contact.setPagingEnabled(true);
         searchLayout = (RelativeLayout) view.findViewById(R.id.search_layout);
         searchLayout.setOnClickListener(this);
+        switchCompanyImage.setOnClickListener(this);
     }
 
     @Override
@@ -161,6 +165,8 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
             } else {
                 EventBus.getDefault().post(new EventSearchContact());
             }
+        }else if(v.getId() == R.id.image_switch_company){
+            goToSwitchCompany();
         }
     }
 
@@ -285,5 +291,11 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
             broadcastReceiver = null;
         }
+    }
+
+    private void goToSwitchCompany() {
+        Intent intent = new Intent(getActivity(), SwitchOrganizationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 }

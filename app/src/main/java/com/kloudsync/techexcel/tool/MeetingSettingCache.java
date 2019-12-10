@@ -46,6 +46,13 @@ public class MeetingSettingCache {
 
     }
 
+    public void setVoiceStatus(int status){
+        RealMeetingSetting setting = getMeetingSetting();
+        setting.setVoiceStatus(status);
+        cachePreference.edit().putString("meeting_setting",gson.toJson(setting)).commit();
+    }
+
+
     public void setRecordOn(boolean isOn){
         RealMeetingSetting setting = getMeetingSetting();
         setting.setRecordOn(isOn);

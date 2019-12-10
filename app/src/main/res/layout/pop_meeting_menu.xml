@@ -41,8 +41,6 @@
                     android:src="@drawable/icon_command_mic_enabel" />
 
 
-
-
                 <ImageView
                     android:id="@+id/meeting_voice"
                     android:layout_width="28dp"

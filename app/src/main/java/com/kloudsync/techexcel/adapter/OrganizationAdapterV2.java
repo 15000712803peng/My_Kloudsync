@@ -134,7 +134,7 @@ public class OrganizationAdapterV2 extends BaseExpandableListAdapter implements 
             companyHolder = (CompanyHolder) convertView.getTag();
         }
         if (groupPosition == 0) {
-            companyHolder.divider.setVisibility(View.GONE);
+            companyHolder.divider.setVisibility(View.VISIBLE);
         } else {
             companyHolder.divider.setVisibility(View.VISIBLE);
         }

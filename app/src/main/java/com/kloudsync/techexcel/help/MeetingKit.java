@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventHideMembers;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
@@ -22,6 +23,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.MeetingMembersAdapter;
 import com.ub.techexcel.bean.AgoraBean;
@@ -97,7 +99,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         return rtcManager;
     }
 
-    public void prepareStart(Activity host, MeetingConfig meetingConfig, String newMeetingId) {
+    public void prepareStart(Activity host, MeetingConfig meetingConfig, String newMeetingId){
         this.host = host;
         this.newMeetingId = newMeetingId;
         this.meetingConfig = meetingConfig;
@@ -115,7 +117,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         if (settingDialog.isShowing()) {
             return;
         }
-        settingDialog.show();
+        settingDialog.show(host);
     }
 
     public void startMeeting() {
@@ -136,10 +138,12 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             public void accept(String s) throws Exception {
                 JSONObject response = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/UpgradeToNormalLesson?lessonID=" + newMeetingId, null);
                 if (response != null && response.getInt("RetCode") == 0) {
+                    SocketMessageManager.getManager(host).sendMessage_LeaveMeeting(meetingConfig);
                     SocketMessageManager.getManager(host).sendMessage_startMeeting(meetingConfig, newMeetingId);
                 }
             }
         }).subscribe();
+
     }
 
     @Override
@@ -149,8 +153,8 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
+        initAgora(host);
         isStarted = true;
-
         if (meetingConfig != null) {
             meetingConfig.setInRealMeeting(true);
             meetingConfig.setAgoraChannelId(uid);
@@ -166,7 +170,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onUserOffline(int uid, int reason) {
-
+        Log.e("MeetingKit", "onUserOffline:" + uid);
+        AgoraMember member = new AgoraMember();
+        member.setId(uid);
+        member.setAdd(false);
+        EventBus.getDefault().post(member);
     }
 
     @Override
@@ -211,6 +219,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         AgoraMember member = new AgoraMember();
         member.setId(uid);
         member.setMuteVideo(false);
+        member.setAdd(true);
         SurfaceView surfaceV = RtcEngine.CreateRendererView(host.getApplicationContext());
         surfaceV.setZOrderOnTop(true);
         surfaceV.setZOrderMediaOverlay(true);
@@ -225,6 +234,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         member.setId(uid);
         boolean isMute = !MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn();
         member.setMuteVideo(isMute);
+        member.setAdd(true);
         SurfaceView surfaceV = RtcEngine.CreateRendererView(host.getApplicationContext());
         surfaceV.setZOrderOnTop(true);
         surfaceV.setZOrderMediaOverlay(true);
@@ -280,11 +290,16 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void menuEndClicked() {
-
+        EventExit exit = new EventExit();
+        exit.setEnd(true);
+        EventBus.getDefault().post(exit);
     }
 
     @Override
     public void menuLeaveClicked() {
+        EventExit exit = new EventExit();
+        exit.setEnd(false);
+        EventBus.getDefault().post(exit);
 
     }
 
@@ -292,14 +307,84 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     public void menuCameraClicked(boolean isCameraOn) {
         Log.e("menuCameraClicked", "mute_locacl_video:" + !isCameraOn);
         getRtcManager().worker().getRtcEngine().muteLocalVideoStream(!isCameraOn);
+        MeetingSettingCache.getInstance(host).setCameraOn(isCameraOn);
         if (cameraAdapter != null) {
             cameraAdapter.muteOrOpenCamera(getRtcManager().worker().getEngineConfig().mUid, !isCameraOn);
+
         }
     }
 
     @Override
     public void menuSwitchCamera() {
         getRtcManager().worker().getRtcEngine().switchCamera();
+    }
+
+    @Override
+    public void menuMicroClicked(boolean isMicroOn) {
+        Log.e("menuMicroClicked", "mute_locacl_voice:" + !isMicroOn);
+        getRtcManager().worker().getRtcEngine().muteLocalAudioStream(!isMicroOn);
+        MeetingSettingCache.getInstance(host).setMicroOn(isMicroOn);
+
+    }
+
+    @Override
+    public void menuChangeVoiceStatus(int status) {
+
+        if(status == 0){
+            getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(false);
+            getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(false);
+            MeetingSettingCache.getInstance(host).setVoiceStatus(1);
+        }else if(status == 1){
+            getRtcManager().worker().getRtcEngine().muteAllRemoteAudioStreams(true);
+            MeetingSettingCache.getInstance(host).setVoiceStatus(2);
+
+        }else if(status == 2){
+            getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(true);
+            getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(true);
+            MeetingSettingCache.getInstance(host).setVoiceStatus(0);
+        }
+    }
+
+    public void initVoice(int status){
+        try {
+            if(status == 0){
+                getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(true);
+                getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(true);
+
+            }else if(status == 1){
+                getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(false);
+                getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(false);
+            }else if(status == 2){
+                getRtcManager().worker().getRtcEngine().muteAllRemoteAudioStreams(true);
+            }
+        }catch (Exception e){
+
+        }
+
+    }
+
+    private void initAgora(Activity host){
+        int status = getSettingCache(host).getMeetingSetting().getVoiceStatus();
+        boolean isMicroOn = getSettingCache(host).getMeetingSetting().isMicroOn();
+        boolean isCameraOn = getSettingCache(host).getMeetingSetting().isCameraOn();
+        try {
+            if(status == 0){
+                getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(true);
+                getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(true);
+
+            }else if(status == 1){
+                getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(false);
+                getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(false);
+            }else if(status == 2){
+                getRtcManager().worker().getRtcEngine().muteAllRemoteAudioStreams(true);
+            }
+            getRtcManager().worker().getRtcEngine().muteLocalAudioStream(!isMicroOn);
+            getRtcManager().worker().getRtcEngine().muteLocalVideoStream(!isCameraOn);
+        }catch (Exception e){
+
+        }
+
+
     }
 
     public void checkCameraForScan() {
@@ -312,7 +397,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
     }
 
-
     private List<MeetingMember> meetingMembers;
     private List<MeetingMember> meetingAuditors;
     private LinearLayout meetingMembersLayout;
@@ -323,7 +407,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
 
     public void showMeetingMembers(Activity host,MeetingConfig meetingConfig, LinearLayout meetingMembersLayout){
-        if(meetingConfig.getType() != MeetingType.MEETING ){
+        if(meetingConfig.getType() != MeetingType.MEETING){
             return;
         }
         this.host = host;
@@ -342,8 +426,15 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         closeMembersImage.setOnClickListener(this);
         membersList.setLayoutManager(new LinearLayoutManager(host,RecyclerView.HORIZONTAL,false));
         Collections.sort(meetingMembers);
-        membersAdapter = new MeetingMembersAdapter(host,meetingMembers);
-        membersList.setAdapter(membersAdapter);
+        if(membersAdapter == null){
+            membersAdapter = new MeetingMembersAdapter(host,meetingMembers);
+            membersList.setAdapter(membersAdapter);
+        }else {
+            membersAdapter.updateMembers(meetingMembers);
+        }
+
+        membersAdapter.setOnMemberClickedListener((DocAndMeetingActivity)host);
+
     }
 
     public void refreshMeetingMembers(MeetingConfig meetingConfig,LinearLayout meetingMembersLayout){
@@ -355,6 +446,14 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             Collections.sort(meetingConfig.getMeetingMembers());
             membersAdapter.updateMembers(meetingConfig.getMeetingMembers());
         }
+    }
 
+    private MeetingSettingCache settingCache;
+
+    private MeetingSettingCache getSettingCache(Activity host) {
+        if (settingCache == null) {
+            settingCache = MeetingSettingCache.getInstance(host);
+        }
+        return settingCache;
     }
 }

@@ -243,7 +243,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 addWxDocDialog.dismiss();
                 addWxDocDialog = null;
             }
-
             addWxDocDialog = new AddWxDocDialog(this, wechatFilePath);
             addWxDocDialog.setSavedListener(this);
             addWxDocDialog.show();

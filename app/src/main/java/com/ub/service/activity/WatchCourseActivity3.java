@@ -4263,14 +4263,14 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         mPopupWindow2.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
-                getWindow().getDecorView().setAlpha(1f);
+
             }
         });
         mPopupWindow2.setBackgroundDrawable(new BitmapDrawable());
         mPopupWindow2.setAnimationStyle(R.style.anination2);
         mPopupWindow2.setFocusable(true);
         mPopupWindow2.showAtLocation(wv_show, Gravity.BOTTOM, 0, 20);
-        getWindow().getDecorView().setAlpha(0.5f);
+//        getWindow().getDecorView().setAlpha(0.5f);
 
     }
 

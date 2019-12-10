@@ -9,6 +9,15 @@ public class RealMeetingSetting {
     private boolean isMicroOn;
     private boolean isRecordOn;
     private boolean isCameraOn;
+    private int voiceStatus;
+
+    public int getVoiceStatus() {
+        return voiceStatus;
+    }
+
+    public void setVoiceStatus(int voiceStatus) {
+        this.voiceStatus = voiceStatus;
+    }
 
     public boolean isMicroOn() {
         return isMicroOn;

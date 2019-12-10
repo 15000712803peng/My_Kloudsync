@@ -14,8 +14,7 @@
 
         <ExpandableListView
             android:groupIndicator="@null"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
+
             android:id="@+id/list_organization"
             android:divider="@color/lightgrey"
             android:dividerHeight="0px"

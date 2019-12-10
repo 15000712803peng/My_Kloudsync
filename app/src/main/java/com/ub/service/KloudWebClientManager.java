@@ -3,8 +3,11 @@ package com.ub.service;
 import android.content.Context;
 import android.util.Log;
 
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
+
 import com.kloudsync.techexcel.tool.Md5Tool;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -113,12 +116,24 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                 heartBeatMessage.put("action", "HELLO");
                 heartBeatMessage.put("sessionId", AppConfig.UserToken);
                 heartBeatMessage.put("changeNumber", 0);
-                if (AppConfig.IsInMeeting) {
-                    heartBeatMessage.put("status", AppConfig.status);
-                    heartBeatMessage.put("currentLine", AppConfig.currentLine);
-                    heartBeatMessage.put("currentMode", AppConfig.currentMode);
-                    heartBeatMessage.put("currentPageNumber", AppConfig.currentPageNumber);
-                    heartBeatMessage.put("currentItemId", AppConfig.currentDocId);
+
+//                if (AppConfig.IsInMeeting) {
+//                    heartBeatMessage.put("status", AppConfig.status);
+//                    heartBeatMessage.put("currentLine", AppConfig.currentLine);
+//                    heartBeatMessage.put("currentMode", AppConfig.currentMode);
+//                    heartBeatMessage.put("currentPageNumber", AppConfig.currentPageNumber);
+//                    heartBeatMessage.put("currentItemId", AppConfig.currentDocId);
+//                }
+                MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
+                if(meetingConfig != null && meetingConfig.isInRealMeeting()){
+                    heartBeatMessage.put("status", "0");
+                    heartBeatMessage.put("currentLine", 0);
+                    heartBeatMessage.put("currentMode", "0");
+                    heartBeatMessage.put("currentPageNumber", meetingConfig.getPageNumber());
+                    if(meetingConfig.getDocument() != null){
+                        heartBeatMessage.put("currentItemId", meetingConfig.getDocument().getItemID());
+                    }
+
                 }
 
                 if (kloudWebClient != null) {

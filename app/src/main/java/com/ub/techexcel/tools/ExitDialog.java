@@ -24,6 +24,15 @@ public class ExitDialog extends Dialog implements DialogInterface.OnDismissListe
     private TextView cancelText;
     private View firstDivider;
     private MeetingConfig meetingConfig;
+    private boolean isEndMeeting;
+
+    public boolean isEndMeeting() {
+        return isEndMeeting;
+    }
+
+    public void setEndMeeting(boolean endMeeting) {
+        isEndMeeting = endMeeting;
+    }
 
     @Override
     public void onDismiss(DialogInterface dialog) {
@@ -97,6 +106,8 @@ public class ExitDialog extends Dialog implements DialogInterface.OnDismissListe
         dialogWindow.setAttributes(lp);
     }
 
+
+
     private void initByConfig(){
         if(meetingConfig.getType() != MeetingType.MEETING){
             titleText.setText(context.getString(R.string.title_to_leave));
@@ -107,6 +118,19 @@ public class ExitDialog extends Dialog implements DialogInterface.OnDismissListe
                 saveAndLeaveText.setVisibility(View.VISIBLE);
                 firstDivider.setVisibility(View.VISIBLE);
             }
+        }else {
+            if(isEndMeeting){
+                titleText.setText(context.getString(R.string.title_to_end_meeting));
+                saveAndLeaveText.setText(R.string.save_and_End);
+                leaveText.setText(R.string.End);
+            }else {
+                titleText.setText(context.getString(R.string.title_to_leave_meeting));
+                saveAndLeaveText.setText(R.string.save_and_leave);
+                leaveText.setText(R.string.mtLeave);
+            }
+            saveAndLeaveText.setVisibility(View.VISIBLE);
+            firstDivider.setVisibility(View.VISIBLE);
+
         }
     }
 }

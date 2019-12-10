@@ -27,6 +27,18 @@ public class MeetingMembersAdapter extends RecyclerView.Adapter<MeetingMembersAd
     private List<MeetingMember> meetingMembers = new ArrayList<>();
     public ImageLoader imageLoader;
 
+    public interface OnMemberClickedListener{
+        void onMemberClicked(MeetingMember meetingMember);
+    }
+
+
+    private OnMemberClickedListener onMemberClickedListener;
+
+
+    public void setOnMemberClickedListener(OnMemberClickedListener onMemberClickedListener) {
+        this.onMemberClickedListener = onMemberClickedListener;
+    }
+
     public MeetingMembersAdapter(Context context, List<MeetingMember> members) {
         inflater = LayoutInflater.from(context);
         meetingMembers.clear();
@@ -51,6 +63,7 @@ public class MeetingMembersAdapter extends RecyclerView.Adapter<MeetingMembersAd
     }
 
     public void updateMembers(List<MeetingMember> members){
+        Log.e("MeetingMembersAdapter","updateMembers:" + members);
         meetingMembers.clear();
         meetingMembers.addAll(members);
         notifyDataSetChanged();
@@ -84,13 +97,13 @@ public class MeetingMembersAdapter extends RecyclerView.Adapter<MeetingMembersAd
             imageLoader.DisplayImage(url, holder.icon);
         }
 
-
         if (member.getPresenter() == 1) {
             holder.idently.setVisibility(View.VISIBLE);
             holder.idently.setText(R.string.presenter);
             holder.bgisshow.setBackgroundResource(R.drawable.course_bg1);
         } else {
             holder.bgisshow.setBackgroundResource(R.drawable.course_bg2);
+            holder.idently.setText("");
         }
 
         if (member.getIsOnline() == 1) {
@@ -101,9 +114,12 @@ public class MeetingMembersAdapter extends RecyclerView.Adapter<MeetingMembersAd
             holder.headll.setClickable(false);
         }
 
-        holder.icon.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(member.getPresenter() != 1){
+                    onMemberClickedListener.onMemberClicked(member);
+                }
             }
         });
 

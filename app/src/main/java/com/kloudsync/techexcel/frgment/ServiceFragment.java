@@ -39,6 +39,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.school.SelectSchoolActivity;
+import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.service.activity.MeetingPropertyActivity;
@@ -71,8 +72,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class
-ServiceFragment extends MyFragment implements View.OnClickListener {
+public class ServiceFragment extends MyFragment implements View.OnClickListener {
     private boolean isPrepared = false;
 
     private ServiceAdapter2 serviceAdapter1;
@@ -109,6 +109,7 @@ ServiceFragment extends MyFragment implements View.OnClickListener {
     private int lessionid;
     private TextView upcoming, pastdue, finished;
     private RelativeLayout search_layout;
+    private ImageView switchCompanyImage;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -440,7 +441,8 @@ ServiceFragment extends MyFragment implements View.OnClickListener {
         lin_schedule.setOnClickListener(this);
         search_layout = (RelativeLayout)view.findViewById(R.id.search_layout);
         search_layout.setOnClickListener(this);
-
+        switchCompanyImage = (ImageView) view.findViewById(R.id.image_switch_company);
+        switchCompanyImage.setOnClickListener(this);
         inprogressunderline = (TextView) view.findViewById(R.id.inprogressunderline);
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -685,8 +687,17 @@ ServiceFragment extends MyFragment implements View.OnClickListener {
                 break;
             default:
                 break;
+            case R.id.image_switch_company:
+                goToSwitchCompany();
+                break;
         }
 
+    }
+
+    private void goToSwitchCompany() {
+        Intent intent = new Intent(getActivity(), SwitchOrganizationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
 

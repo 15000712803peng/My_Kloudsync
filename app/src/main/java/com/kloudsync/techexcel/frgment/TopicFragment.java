@@ -26,6 +26,7 @@ import com.kloudsync.techexcel.docment.AddSyncRoomActivity;
 import com.kloudsync.techexcel.docment.RenameActivity;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
+import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
@@ -66,7 +67,8 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
     private SyncRoomAdapter syncRoomAdapter;
     private ImageView moreOpation;
     RelativeLayout addSyncRoomLayout;
-    View view ;
+    View view;
+    private ImageView switchCompanyImage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -266,6 +268,8 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
         addSyncRoomLayout.setOnClickListener(this);
         switchTeam.setOnClickListener(this);
         createNewSpace.setOnClickListener(this);
+        switchCompanyImage = view.findViewById(R.id.image_switch_company);
+        switchCompanyImage.setOnClickListener(this);
         getTeamhaha();
     }
 
@@ -343,7 +347,16 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
                 }
                 startActivity(addDocIntent);
                 break;
+            case R.id.image_switch_company:
+                goToSwitchCompany();
+                break;
         }
+    }
+
+    private void goToSwitchCompany() {
+        Intent intent = new Intent(getActivity(), SwitchOrganizationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     private void MoreForTeam() {

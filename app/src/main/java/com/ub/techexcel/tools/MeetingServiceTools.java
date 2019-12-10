@@ -136,6 +136,40 @@ public class MeetingServiceTools {
         }).start();
     }
 
+    public void syncGetDocuments(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+
+
+                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                Log.e("meetingservicrtools", url + returnJson.toString());
+                try {
+                    if (returnJson.getInt("RetCode") == 0) {
+                        JSONObject service = returnJson.getJSONObject("RetData");
+                        JSONArray lineitems = service.getJSONArray("AttachmentList");
+                        List<LineItem> items = new ArrayList<LineItem>();
+                        for (int j = 0; j < lineitems.length(); j++) {
+                            JSONObject lineitem = lineitems.getJSONObject(j);
+                            LineItem item = new LineItem();
+                            item.setFileName(lineitem.getString("Title"));
+                            item.setUrl(lineitem.getString("AttachmentUrl"));
+                            item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                            item.setHtml5(false);
+                            item.setItemId(lineitem.getString("ItemID"));
+                            item.setAttachmentID(lineitem.getString("AttachmentID"));
+                            item.setNewPath(lineitem.getString("NewPath"));
+                            item.setFlag(0);
+                            if (lineitem.getInt("Status") == 0) {
+                                items.add(item);
+                            }
+                        }
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+    }
+
+
     public void getTopicAttachment(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         new Thread(new Runnable() {

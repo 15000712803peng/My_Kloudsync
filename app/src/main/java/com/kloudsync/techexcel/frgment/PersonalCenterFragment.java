@@ -342,9 +342,10 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         }
     }
 
-    private void GoToSelectSchool() {
+    private void getToSwitchCompany() {
 //        Intent intent = new Intent(getActivity(), SelectSchoolActivity.class);
         Intent intent = new Intent(getActivity(), SwitchOrganizationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
@@ -919,7 +920,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                 break;
                 //跟换组织
             case R.id.lin_switch:
-                GoToSelectSchool();
+                getToSwitchCompany();
                 break;
                 //修改密码
             case R.id.rl_pc_password:

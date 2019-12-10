@@ -15,6 +15,15 @@ public class AgoraMember implements Comparable<AgoraMember>{
     private boolean isSelect;
     private String userName;
     private boolean isSelf;
+    private boolean isAdd;
+
+    public boolean isAdd() {
+        return isAdd;
+    }
+
+    public void setAdd(boolean add) {
+        isAdd = add;
+    }
 
     public AgoraMember(){
 

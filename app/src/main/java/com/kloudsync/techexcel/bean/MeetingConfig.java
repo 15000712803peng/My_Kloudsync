@@ -31,6 +31,15 @@ public class MeetingConfig {
     private List<MeetingMember> meetingAuditor;
     private String meetingHostId;
     private int agoraChannelId;
+    private String presenterId;
+
+    public String getPresenterId() {
+        return presenterId;
+    }
+
+    public void setPresenterId(String presenterId) {
+        this.presenterId = presenterId;
+    }
 
     public int getAgoraChannelId() {
         return agoraChannelId;
