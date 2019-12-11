@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.bean;
 
 import com.ub.techexcel.bean.AgoraUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,8 +28,8 @@ public class MeetingConfig {
     private String presenterSessionId;
     private boolean docModifide;
     private String notifyUrl;
-    private List<MeetingMember> meetingMembers;
-    private List<MeetingMember> meetingAuditor;
+    private List<MeetingMember> meetingMembers = new ArrayList<>();
+    private List<MeetingMember> meetingAuditor = new ArrayList<>();
     private String meetingHostId;
     private int agoraChannelId;
     private String presenterId;
@@ -62,7 +63,8 @@ public class MeetingConfig {
     }
 
     public void setMeetingAuditor(List<MeetingMember> meetingAuditor) {
-        this.meetingAuditor = meetingAuditor;
+        this.meetingAuditor.clear();
+        this.meetingAuditor.addAll(meetingAuditor);
     }
 
     public List<MeetingMember> getMeetingMembers() {
@@ -70,7 +72,8 @@ public class MeetingConfig {
     }
 
     public void setMeetingMembers(List<MeetingMember> meetingMembers) {
-        this.meetingMembers = meetingMembers;
+        this.meetingMembers.clear();
+        this.meetingMembers.addAll(meetingMembers);
     }
 
     public String getNotifyUrl() {
@@ -236,6 +239,11 @@ public class MeetingConfig {
         public int getRole() {
             return role;
         }
+    }
+
+    public void reset(){
+        this.meetingMembers.clear();
+        this.meetingAuditor.clear();
     }
 
     @Override

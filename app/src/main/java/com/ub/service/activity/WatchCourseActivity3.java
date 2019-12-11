@@ -1395,7 +1395,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         }
     }
 
-
     private void doLEAVE_MEETING(String msg) {
         String retdate = getRetCodeByReturnData2("retData", msg);
         try {
@@ -1791,7 +1790,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             //离开课程  返回的socket
             if (msg_action.equals("LEAVE_MEETING")) {  // 别人收到xx离开
                 doLEAVE_MEETING(msg);
-                closeCourse(0);
+//                closeCourse(0);
             }
             //老师 结束课程  所有人离开
             if (msg_action.equals("END_MEETING")) { //所有人都收到
@@ -6954,6 +6953,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     private static final int REQUEST_CODE_CAPTURE_MEDIA = 2;
     private static final int REQUEST_CODE_TAKE_PHOTO = 3;
     private static final int REQUEST_CODE_CAPTURE_SAVE_MEDIA = 4;
+    private static final int REQUEST_CODE_ADD_NOTE = 100;
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -7031,7 +7031,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             UpdateVideo(path, title);
         }
 
-        if (requestCode == 100 && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
 //            Log.e("NoteBook","NoteBook return,data:" + data);
             if (wv_show != null) {
                 String json = data.getStringExtra("OPEN_NOTE_BEAN_JSON");
@@ -9017,7 +9017,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         intent.putExtra("OPEN_NOTE_BEAN", new Gson().toJson(bookNote));
         ComponentName comp = new ComponentName("com.onyx.android.note", "com.onyx.android.note.note.ui.ScribbleActivity");
         intent.setComponent(comp);
-        startActivityForResult(intent, 100);
+        startActivityForResult(intent, REQUEST_CODE_ADD_NOTE);
     }
 
 

@@ -153,14 +153,16 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
-        initAgora(host);
+
         isStarted = true;
+        Log.e("MeetingKit", "onJoinChannelSuccess:" + channel);
         if (meetingConfig != null) {
             meetingConfig.setInRealMeeting(true);
             meetingConfig.setAgoraChannelId(uid);
         }
         try {
             getRtcManager().worker().getEngineConfig().mUid = uid;
+            initAgora(host);
         } catch (Exception e) {
             Log.e("MeetingKit", "mUid = uid:" + e);
         }
@@ -383,7 +385,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }catch (Exception e){
 
         }
-
 
     }
 

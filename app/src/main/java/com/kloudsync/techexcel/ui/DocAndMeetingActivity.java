@@ -270,6 +270,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             web.onDestroy();
             web = null;
         }
+
+        if(meetingConfig != null){
+            meetingConfig.reset();
+        }
         meetingConfig = null;
     }
 
@@ -277,6 +281,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (data == null) {
             return;
         }
+
         if (data.has("retCode")) {
             try {
                 if (data.getInt("retCode") == 0) {
@@ -328,8 +333,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private synchronized void getMeetingMembers(JSONArray users) {
-        List<MeetingMember> allMembers = (List<MeetingMember>) new Gson().fromJson(users.toString(), new TypeToken<List<MeetingMember>>() {
-        }.getType());
+        List<MeetingMember> allMembers = (List<MeetingMember>) new Gson().fromJson(users.toString(), new TypeToken<List<MeetingMember>>() {}.getType());
         List<MeetingMember> auditors = new ArrayList<>();
         List<MeetingMember> members = new ArrayList<>();
         for (MeetingMember member : allMembers) {
@@ -339,6 +343,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             } else {
                 members.add(member);
             }
+
             if (member.getRole() == 2) {
                 meetingConfig.setMeetingHostId(member.getUserId());
             }
@@ -434,12 +439,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receiveSocketMessage(EventSocketMessage socketMessage) {
+    public synchronized void receiveSocketMessage(EventSocketMessage socketMessage) {
         Log.e("DocAndMeetingActivity", "socket_message:" + socketMessage);
         String action = socketMessage.getAction();
         if (TextUtils.isEmpty(action)) {
             return;
         }
+
         switch (action) {
             case SocketMessageManager.MESSAGE_LEAVE_MEETING:
                 handleMessageLeaveMeeting(socketMessage.getData());
@@ -602,10 +608,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showMemeberCamera(AgoraMember member) {
+
         if (member.getId() == meetingConfig.getAgoraChannelId() && member.isAdd()) {
             //自己开启会议成功
             notifyDocumentChanged();
         }
+
         if (member.isAdd()) {
             if (cameraAdapter == null) {
                 cameraAdapter = new AgoraCameraAdapter(this);
@@ -1364,6 +1372,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
             @Override
             public void onLeaveClick() {
+                if(exitDialog.isEndMeeting() && meetingConfig.isInRealMeeting()){
+                    messageManager.sendMessage_EndMeeting(meetingConfig);
+                }
                 finish();
             }
         });
