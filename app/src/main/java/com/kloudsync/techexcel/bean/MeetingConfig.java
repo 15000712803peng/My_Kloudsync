@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.bean;
 
+import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.AgoraUser;
 
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ public class MeetingConfig {
     private boolean isCameraOn;
     private boolean isInRealMeeting;
     private boolean isMembersCameraToggle;
-    private List<AgoraUser> agoraUsers;
     private String presenterSessionId;
     private boolean docModifide;
     private String notifyUrl;
@@ -33,6 +33,25 @@ public class MeetingConfig {
     private String meetingHostId;
     private int agoraChannelId;
     private String presenterId;
+    private List<AgoraMember> agoraMembers = new ArrayList<>();
+
+    public List<AgoraMember> getAgoraMembers() {
+        return agoraMembers;
+    }
+
+    public void setAgoraMembers(List<AgoraMember> agoraMembers) {
+        this.agoraMembers = agoraMembers;
+    }
+
+    public void addAgoraMember(AgoraMember member){
+        if(!agoraMembers.contains(member)){
+            agoraMembers.add(member);
+        }
+    }
+
+    public void deleteAgoraMember(AgoraMember member){
+        agoraMembers.remove(member);
+    }
 
     public String getPresenterId() {
         return presenterId;
@@ -98,14 +117,6 @@ public class MeetingConfig {
 
     public void setPresenterSessionId(String presenterSessionId) {
         this.presenterSessionId = presenterSessionId;
-    }
-
-    public List<AgoraUser> getAgoraUsers() {
-        return agoraUsers;
-    }
-
-    public void setAgoraUsers(List<AgoraUser> agoraUsers) {
-        this.agoraUsers = agoraUsers;
     }
 
     public boolean isMembersCameraToggle() {
@@ -263,7 +274,7 @@ public class MeetingConfig {
                 ", isCameraOn=" + isCameraOn +
                 ", isInRealMeeting=" + isInRealMeeting +
                 ", isMembersCameraToggle=" + isMembersCameraToggle +
-                ", agoraUsers=" + agoraUsers +
+                ", agoraMembers=" + agoraMembers +
                 ", presenterSessionId='" + presenterSessionId + '\'' +
                 ", docModifide=" + docModifide +
                 '}';

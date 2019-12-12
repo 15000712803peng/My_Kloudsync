@@ -7961,7 +7961,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         worker().getRtcEngine().enableVideo();
     }
 
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void eventTelephone(TelePhoneCall telePhoneCall) {
         boolean isTelephoneComing = telePhoneCall.isCall();
@@ -7980,7 +7979,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             pauseOrStartAudioRecord();
         }
     }
-
 
     /**
      * onDestory

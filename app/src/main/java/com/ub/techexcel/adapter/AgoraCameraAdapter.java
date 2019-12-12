@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.AgoraUser;
 
@@ -33,11 +34,24 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     private List<AgoraMember> users;
     private Context mContext;
 
+    public List<AgoraMember> getUsers() {
+        return users;
+    }
 
     public AgoraCameraAdapter(Context context) {
         this.mContext = context;
         inflater = LayoutInflater.from(mContext);
         users = new ArrayList<>();
+    }
+
+    private OnCameraOptionsListener onCameraOptionsListener;
+
+    public void setOnCameraOptionsListener(OnCameraOptionsListener onCameraOptionsListener) {
+        this.onCameraOptionsListener = onCameraOptionsListener;
+    }
+
+    public interface OnCameraOptionsListener {
+        void onCameraFrameClick(AgoraMember member);
     }
 
     @Override
@@ -65,9 +79,18 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                 target.setVisibility(View.VISIBLE);
                 stripSurfaceView(target);
                 holderView.addView(target, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }else {
+            } else {
+                Log.e("onBindViewHolder","target_gone");
                 target.setVisibility(View.GONE);
             }
+            myHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onCameraOptionsListener != null) {
+                        onCameraOptionsListener.onCameraFrameClick(user);
+                    }
+                }
+            });
         }
     }
 
@@ -87,42 +110,42 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         }
     }
 
-    public void muteOrOpenCamera(int myId,boolean isMute){
-        int index  =users.indexOf(new AgoraMember(myId));
-        if(index >= 0 && index < users.size()){
+    public void muteOrOpenCamera(int myId, boolean isMute) {
+        int index = users.indexOf(new AgoraMember(myId));
+        if (index >= 0 && index < users.size()) {
             users.get(index).setMuteVideo(isMute);
+            Log.e("muteOrOpenCamera","isMute:" + isMute);
             notifyDataSetChanged();
         }
-
     }
 
-    public void setUsers(List<AgoraUser> users){
-        this.users.clear();
-        users.addAll(users);
-        Collections.sort(users);
+    public void setMembers(List<AgoraMember> users) {
+        if (users != null) {
+            this.users.clear();
+            this.users.addAll(users);
+            Collections.sort(users);
+        }
         notifyDataSetChanged();
     }
 
-    public void addUser(AgoraMember user){
+    public void addUser(AgoraMember user) {
 
-        if(users.contains(user)){
+        if (users.contains(user)) {
             return;
         }
         this.users.add(user);
         Collections.sort(users);
-        notifyItemRangeChanged(getItemCount() - 2,2);
+        notifyItemRangeChanged(getItemCount() - 2, 2);
     }
 
-    public void removeUser(AgoraMember user){
+    public void removeUser(AgoraMember user) {
 
-        if(users.contains(user)){
+        if (users.contains(user)) {
             this.users.remove(user);
         }
         Collections.sort(users);
         notifyDataSetChanged();
     }
-
-
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ViewHolder(View a) {
@@ -130,5 +153,13 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         }
     }
 
+   public void reset(){
+       for (AgoraMember member : this.users) {
+           SurfaceView surfaceView = member.getSurfaceView();
+           stripSurfaceView(surfaceView);
+       }
+       this.users.clear();
+       notifyDataSetChanged();
+   }
 
 }

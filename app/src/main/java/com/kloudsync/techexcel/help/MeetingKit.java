@@ -25,6 +25,7 @@ import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
+import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
 import com.ub.techexcel.adapter.MeetingMembersAdapter;
 import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
@@ -67,10 +68,15 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     private PopMeetingMenu popMeetingMenu;
     private boolean isStarted;
     private AgoraCameraAdapter cameraAdapter;
+    private FullAgoraCameraAdapter fullCameraAdapter;
 
 
     public void setCameraAdapter(AgoraCameraAdapter cameraAdapter) {
         this.cameraAdapter = cameraAdapter;
+    }
+
+    public void setFullCameraAdaptero(FullAgoraCameraAdapter fullCameraAdapter){
+        this.fullCameraAdapter = fullCameraAdapter;
     }
 
     public void setMenu(ImageView menu) {
@@ -242,7 +248,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         surfaceV.setZOrderMediaOverlay(true);
         getRtcManager().rtcEngine().setupLocalVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, uid));
         getRtcManager().worker().getRtcEngine().muteLocalVideoStream(isMute);
-
         member.setSurfaceView(surfaceV);
         return member;
     }
@@ -312,7 +317,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         MeetingSettingCache.getInstance(host).setCameraOn(isCameraOn);
         if (cameraAdapter != null) {
             cameraAdapter.muteOrOpenCamera(getRtcManager().worker().getEngineConfig().mUid, !isCameraOn);
-
+        }
+        if(fullCameraAdapter != null){
+            fullCameraAdapter.muteOrOpenCamera(getRtcManager().worker().getEngineConfig().mUid, !isCameraOn);
         }
     }
 
@@ -331,7 +338,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void menuChangeVoiceStatus(int status) {
-
         if(status == 0){
             getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(false);
             getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(false);

@@ -16,6 +16,15 @@ public class AgoraMember implements Comparable<AgoraMember>{
     private String userName;
     private boolean isSelf;
     private boolean isAdd;
+    private boolean isUserHide;
+
+    public boolean isUserHide() {
+        return isUserHide;
+    }
+
+    public void setUserHide(boolean userHide) {
+        isUserHide = userHide;
+    }
 
     public boolean isAdd() {
         return isAdd;
@@ -107,8 +116,21 @@ public class AgoraMember implements Comparable<AgoraMember>{
     @Override
     public int compareTo(@NonNull AgoraMember o) {
         if(isSelf){
-
         }
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "AgoraMember{" +
+                "id=" + id +
+                ", surfaceView=" + surfaceView +
+                ", muteAudio=" + muteAudio +
+                ", muteVideo=" + muteVideo +
+                ", isSelect=" + isSelect +
+                ", userName='" + userName + '\'' +
+                ", isSelf=" + isSelf +
+                ", isAdd=" + isAdd +
+                '}';
     }
 }

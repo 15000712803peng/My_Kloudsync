@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.config.AppConfig;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -64,7 +65,7 @@ public class RtcManager{
     }
 
     public void joinRtcChannle(String meetingId){
-        worker().joinChannel(meetingId.toUpperCase(),config().mUid);
+        worker().joinChannel(meetingId.toUpperCase(), Integer.parseInt(AppConfig.UserID));
     }
 
     public void addEventHandler(AGEventHandler handler){
