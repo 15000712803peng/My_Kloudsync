@@ -8,7 +8,6 @@ import java.util.Objects;
 
 public class AgoraMember implements Comparable<AgoraMember>{
 
-    private int id;
     private SurfaceView surfaceView;
     private boolean muteAudio;  // true   禁止音频流
     private boolean muteVideo;  // true   禁止视频流
@@ -17,6 +16,16 @@ public class AgoraMember implements Comparable<AgoraMember>{
     private boolean isSelf;
     private boolean isAdd;
     private boolean isUserHide;
+    private int userId;
+
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
     public boolean isUserHide() {
         return isUserHide;
@@ -38,8 +47,8 @@ public class AgoraMember implements Comparable<AgoraMember>{
 
     }
 
-    public AgoraMember(int id){
-        this.id = id;
+    public AgoraMember(int userId){
+        this.userId = userId;
     }
 
     public boolean isSelf() {
@@ -90,28 +99,7 @@ public class AgoraMember implements Comparable<AgoraMember>{
         this.muteVideo = muteVideo;
     }
 
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AgoraMember that = (AgoraMember) o;
-
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
 
     @Override
     public int compareTo(@NonNull AgoraMember o) {
@@ -121,16 +109,32 @@ public class AgoraMember implements Comparable<AgoraMember>{
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AgoraMember member = (AgoraMember) o;
+
+        return userId == member.userId;
+    }
+
+    @Override
+    public int hashCode() {
+        return userId;
+    }
+
+    @Override
     public String toString() {
         return "AgoraMember{" +
-                "id=" + id +
-                ", surfaceView=" + surfaceView +
+                "surfaceView=" + surfaceView +
                 ", muteAudio=" + muteAudio +
                 ", muteVideo=" + muteVideo +
                 ", isSelect=" + isSelect +
                 ", userName='" + userName + '\'' +
                 ", isSelf=" + isSelf +
                 ", isAdd=" + isAdd +
+                ", isUserHide=" + isUserHide +
+                ", userId=" + userId +
                 '}';
     }
 }

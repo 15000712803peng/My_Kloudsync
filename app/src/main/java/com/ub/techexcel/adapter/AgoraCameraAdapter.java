@@ -81,6 +81,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                 holderView.addView(target, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             } else {
                 Log.e("onBindViewHolder","target_gone");
+                stripSurfaceView(target);
                 target.setVisibility(View.GONE);
             }
             myHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -160,6 +161,15 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
        }
        this.users.clear();
        notifyDataSetChanged();
+   }
+
+   public void muteVideo(AgoraMember member,boolean isMute){
+       int index = this.users.indexOf(member);
+       if(index >= 0){
+           this.users.get(index).setMuteVideo(isMute);
+           notifyItemChanged(index);
+       }
+
    }
 
 }

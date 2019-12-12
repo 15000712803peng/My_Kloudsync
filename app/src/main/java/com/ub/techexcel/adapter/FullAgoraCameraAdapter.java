@@ -52,15 +52,16 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.video_view_container2, parent, false);
+        View view = inflater.inflate(R.layout.full_camera_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ViewHolder myHolder = holder;
+        Log.e("FullAgoraCameraAdapter", "members_size:" + members.size());
         final AgoraMember member = members.get(position);
-        final FrameLayout holderView = (FrameLayout) myHolder.itemView;
+        final FrameLayout holderView = (FrameLayout) myHolder.vedioLayout;
         holderView.removeAllViews();
         int height = mContext.getResources().getDisplayMetrics().heightPixels;
         Rect frame = new Rect();
@@ -76,20 +77,28 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
             int line = ((members.size() % 5) == 0 ? 0 : 1);
             framelayoutHeight = height / (members.size() / 5 + line);
         }
-        if (holderView.getChildCount() == 0) {
-            SurfaceView target = member.getSurfaceView();
-            stripSurfaceView(target);
-            if (!member.isMuteVideo()) {
-                target.setVisibility(View.VISIBLE);
-                stripSurfaceView(target);
-                holderView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
-                Log.e("FullAgoraCameraAdapter", "add_surface_view");
-                holderView.addView(target, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
-            } else {
-                target.setVisibility(View.GONE);
-            }
 
+        SurfaceView target = member.getSurfaceView();
+        if (!member.isMuteVideo()) {
+            target.setVisibility(View.VISIBLE);
+            stripSurfaceView(target);
+            holderView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
+            Log.e("FullAgoraCameraAdapter", "add_surface_view:" + framelayoutHeight);
+            holderView.addView(target, 0, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
+        } else {
+            Log.e("FullAgoraCameraAdapter", "surface_view_gone");
+            stripSurfaceView(target);
+            target.setVisibility(View.GONE);
         }
+
+        if (TextUtils.isEmpty(member.getUserName())) {
+            myHolder.nameText.setVisibility(View.GONE);
+            myHolder.nameText.setText("");
+        } else {
+            myHolder.nameText.setVisibility(View.VISIBLE);
+            myHolder.nameText.setText(member.getUserName());
+        }
+
 
     }
 
@@ -119,7 +128,7 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
         int index = members.indexOf(new AgoraMember(myId));
         if (index >= 0 && index < members.size()) {
             members.get(index).setMuteVideo(isMute);
-            Log.e("muteOrOpenCamera","isMute:" + isMute);
+            Log.e("muteOrOpenCamera", "isMute:" + isMute);
             notifyDataSetChanged();
         }
     }
@@ -132,9 +141,14 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public ViewHolder(View a) {
-            super(a);
+        public ViewHolder(View view) {
+            super(view);
+            vedioLayout = view.findViewById(R.id.layout_vedio);
+            nameText = view.findViewById(R.id.txt_name);
         }
+
+        public FrameLayout vedioLayout;
+        public TextView nameText;
     }
 
     public void reset() {
@@ -146,5 +160,12 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
         notifyDataSetChanged();
     }
 
+    public void muteVideo(AgoraMember member,boolean isMute){
+        int index = this.members.indexOf(member);
+        if(index >= 0){
+            this.members.get(index).setMuteVideo(isMute);
+            notifyItemChanged(index);
+        }
+    }
 
 }

@@ -16,6 +16,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventHideMembers;
+import com.kloudsync.techexcel.bean.EventMute;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
@@ -164,15 +165,16 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         Log.e("MeetingKit", "onJoinChannelSuccess:" + channel);
         if (meetingConfig != null) {
             meetingConfig.setInRealMeeting(true);
-            meetingConfig.setAgoraChannelId(uid);
+            meetingConfig.setAgoraChannelId(channel);
         }
+
         try {
             getRtcManager().worker().getEngineConfig().mUid = uid;
             initAgora(host);
         } catch (Exception e) {
             Log.e("MeetingKit", "mUid = uid:" + e);
         }
-        EventBus.getDefault().post(createSelfCamera(uid));
+        EventBus.getDefault().post(createSelfCamera(meetingConfig.getAgoraChannelId(),uid));
 //        Log.e("MeetingKit", "onJoinChannelSuccess,uid:" + uid + ",elapsed:" + elapsed);
     }
 
@@ -180,8 +182,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     public void onUserOffline(int uid, int reason) {
         Log.e("MeetingKit", "onUserOffline:" + uid);
         AgoraMember member = new AgoraMember();
-        member.setId(uid);
-        member.setAdd(false);
+        member.setUserId(uid);
         EventBus.getDefault().post(member);
     }
 
@@ -194,11 +195,20 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onUserMuteVideo(int uid, boolean muted) {
+        Log.e("MeetingKit", "onUserMuteVideo:" + uid);
+        AgoraMember member = new AgoraMember();
+        member.setUserId(uid);
+        EventMute eventMute = new EventMute();
+        eventMute.setMute(muted);
+        eventMute.setAgoraMember(member);
+        EventBus.getDefault().post(eventMute);
+
 
     }
 
     @Override
     public void onUserMuteAudio(int uid, boolean muted) {
+        Log.e("MeetingKit", "onUserMuteAudio:" + uid);
 
     }
 
@@ -214,7 +224,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             if (!meetingConfig.isInRealMeeting()) {
                 return;
             }
-            EventBus.getDefault().post(createMemberCamera(uid));
+            EventBus.getDefault().post(createMemberCamera(meetingConfig.getAgoraChannelId(),uid));
         }
     }
 
@@ -223,30 +233,30 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     }
 
-    private AgoraMember createMemberCamera(int uid) {
+    private AgoraMember createMemberCamera(String channelId,int userId) {
         AgoraMember member = new AgoraMember();
-        member.setId(uid);
+        member.setUserId(userId);
         member.setMuteVideo(false);
         member.setAdd(true);
         SurfaceView surfaceV = RtcEngine.CreateRendererView(host.getApplicationContext());
         surfaceV.setZOrderOnTop(true);
         surfaceV.setZOrderMediaOverlay(true);
-        getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, uid));
+        getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, userId));
         member.setSurfaceView(surfaceV);
         return member;
     }
 
 
-    private AgoraMember createSelfCamera(int uid) {
+    private AgoraMember createSelfCamera(String channelId,int userId) {
         AgoraMember member = new AgoraMember();
-        member.setId(uid);
+        member.setUserId(userId);
         boolean isMute = !MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn();
         member.setMuteVideo(isMute);
         member.setAdd(true);
         SurfaceView surfaceV = RtcEngine.CreateRendererView(host.getApplicationContext());
         surfaceV.setZOrderOnTop(true);
         surfaceV.setZOrderMediaOverlay(true);
-        getRtcManager().rtcEngine().setupLocalVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, uid));
+        getRtcManager().rtcEngine().setupLocalVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, userId));
         getRtcManager().worker().getRtcEngine().muteLocalVideoStream(isMute);
         member.setSurfaceView(surfaceV);
         return member;

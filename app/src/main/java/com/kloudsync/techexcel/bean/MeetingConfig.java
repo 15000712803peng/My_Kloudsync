@@ -31,7 +31,7 @@ public class MeetingConfig {
     private List<MeetingMember> meetingMembers = new ArrayList<>();
     private List<MeetingMember> meetingAuditor = new ArrayList<>();
     private String meetingHostId;
-    private int agoraChannelId;
+    private String agoraChannelId;
     private String presenterId;
     private List<AgoraMember> agoraMembers = new ArrayList<>();
 
@@ -61,11 +61,11 @@ public class MeetingConfig {
         this.presenterId = presenterId;
     }
 
-    public int getAgoraChannelId() {
+    public String getAgoraChannelId() {
         return agoraChannelId;
     }
 
-    public void setAgoraChannelId(int agoraChannelId) {
+    public void setAgoraChannelId(String agoraChannelId) {
         this.agoraChannelId = agoraChannelId;
     }
 

@@ -32,6 +32,7 @@ import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventHideMembers;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
+import com.kloudsync.techexcel.bean.EventMute;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
 import com.kloudsync.techexcel.bean.EventPageNotes;
@@ -133,7 +134,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private BottomMenuManager menuManager;
     private PopBottomFile bottomFilePop;
     private MeetingKit meetingKit;
-
     //---
     @Bind(R.id.layout_real_meeting)
     RelativeLayout meetingLayout;
@@ -200,7 +200,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 //            bottomFilePop.hide();
 //        }
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
@@ -602,6 +601,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             if (pageNotes.getPageNumber() == meetingConfig.getPageNumber()) {
                 if (messageManager != null) {
                     for (NoteDetail note : notes) {
+
                         try {
                             JSONObject message = new JSONObject();
                             message.put("type", 38);
@@ -624,7 +624,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showMemeberCamera(AgoraMember member) {
 
-        if (member.getId() == meetingConfig.getAgoraChannelId() && member.isAdd()) {
+        if ((member.getUserId() + "").equals(AppConfig.UserID) && member.isAdd()) {
             //自己开启会议成功
             notifyDocumentChanged();
         }
@@ -635,20 +635,23 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             //delete user
             meetingConfig.deleteAgoraMember(member);
         }
+        checkAgoraMemberName();
+
         refreshAgoraMember();
+
         if (cameraAdapter != null) {
             cameraAdapter.setOnCameraOptionsListener(this);
         }
 
     }
 
-    private void refreshAgoraMember(){
+    private void refreshAgoraMember() {
         List<AgoraMember> copyMembers = new ArrayList<>();
-        for(AgoraMember member : meetingConfig.getAgoraMembers()){
+        for (AgoraMember member : meetingConfig.getAgoraMembers()) {
             copyMembers.add(member);
         }
-        if(cameraList.getVisibility() == View.VISIBLE){
-            if(cameraAdapter != null){
+        if (cameraList.getVisibility() == View.VISIBLE) {
+            if (cameraAdapter != null) {
                 cameraAdapter.reset();
                 cameraAdapter = null;
             }
@@ -660,8 +663,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             MeetingKit.getInstance().setCameraAdapter(cameraAdapter);
         }
 
-        if(fullCameraList.getVisibility() == View.VISIBLE){
-            if(fullCameraAdapter != null){
+        if (fullCameraList.getVisibility() == View.VISIBLE) {
+            if (fullCameraAdapter != null) {
                 fullCameraAdapter.reset();
                 fullCameraAdapter = null;
             }
@@ -771,12 +774,50 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshMeetingMembers(EventRefreshMembers refreshMembers) {
+
         if (meetingConfig.getMeetingMembers() == null || meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
 
         MeetingKit.getInstance().refreshMeetingMembers(meetingConfig, meetingMembersLayout);
 
+        checkAgoraMemberName();
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void muteAgoraMember(EventMute eventMute){
+        if(cameraList.getVisibility() == View.VISIBLE){
+            if(cameraAdapter != null){
+                cameraAdapter.muteVideo(eventMute.getAgoraMember(),eventMute.isMute());
+            }
+        }
+
+        if(fullCameraList.getVisibility() == View.VISIBLE){
+            if(fullCameraAdapter != null){
+                fullCameraAdapter.muteVideo(eventMute.getAgoraMember(),eventMute.isMute());
+            }
+        }
+    }
+
+    private void checkAgoraMemberName() {
+        for (MeetingMember member : meetingConfig.getMeetingMembers()) {
+            for (AgoraMember agoraMember : meetingConfig.getAgoraMembers()) {
+                if (member.getUserId().equals(agoraMember.getUserId() + "")) {
+                    agoraMember.setUserName(member.getUserName());
+                    break;
+                }
+            }
+        }
+
+        for (MeetingMember member : meetingConfig.getMeetingAuditor()) {
+            for (AgoraMember agoraMember : meetingConfig.getAgoraMembers()) {
+                if (member.getUserId().equals(agoraMember.getUserId() + "")) {
+                    agoraMember.setUserName(member.getUserName());
+                    break;
+                }
+            }
+        }
     }
 
     private void handleMessageSendMessage(JSONObject data) throws JSONException {
@@ -1629,15 +1670,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
 
-
     private void toggleMembersCamera(boolean isToggle) {
         fullCameraList.setVisibility(View.GONE);
-        if(cameraList.getVisibility() != View.VISIBLE){
+        if (cameraList.getVisibility() != View.VISIBLE) {
             cameraList.setVisibility(View.VISIBLE);
             refreshAgoraMember();
             toggleCameraImage.setImageResource(R.drawable.eyeclose);
-        }else {
-            if(cameraAdapter != null){
+        } else {
+            if (cameraAdapter != null) {
                 cameraAdapter.reset();
             }
             cameraList.setVisibility(View.GONE);
@@ -1974,30 +2014,34 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     }
 
-    private void fitFullCameraList(){
-        GridLayoutManager s = (GridLayoutManager) fullCameraList.getLayoutManager();
+    private void fitFullCameraList() {
+
         int size = meetingConfig.getAgoraMembers().size();
-        int currentSpanCount = s.getSpanCount();
+
         if (size == 1) {
-            if (currentSpanCount != 1) {
-                fullCameraList.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false));
-            }
+
+            fullCameraList.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false));
+
         } else if (size > 1 && size <= 4) {
-            if (currentSpanCount != 2) {
-                fullCameraList.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false));
-            }
+
+            fullCameraList.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false));
+
         } else if (size > 4 && size <= 6) {
-            if (currentSpanCount != 3) {
-                fullCameraList.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
-            }
+
+            fullCameraList.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
+
         } else if (size > 6 && size <= 8) {
-            if (currentSpanCount != 4) {
-                fullCameraList.setLayoutManager(new GridLayoutManager(this, 4, GridLayoutManager.VERTICAL, false));
-            }
+
+            fullCameraList.setLayoutManager(new GridLayoutManager(this, 4, GridLayoutManager.VERTICAL, false));
+
         } else {
-            if (currentSpanCount != 5) {
-                fullCameraList.setLayoutManager(new GridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false));
-            }
+            fullCameraList.setLayoutManager(new GridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false));
+
         }
+        GridLayoutManager s = (GridLayoutManager) fullCameraList.getLayoutManager();
+        int currentSpanCount = s.getSpanCount();
+
+        Log.e("fitFullCameraList","span:"+ currentSpanCount);
+
     }
 }
