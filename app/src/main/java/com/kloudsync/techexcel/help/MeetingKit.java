@@ -343,12 +343,12 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         Log.e("menuMicroClicked", "mute_locacl_voice:" + !isMicroOn);
         getRtcManager().worker().getRtcEngine().muteLocalAudioStream(!isMicroOn);
         MeetingSettingCache.getInstance(host).setMicroOn(isMicroOn);
-
     }
 
     @Override
     public void menuChangeVoiceStatus(int status) {
         if(status == 0){
+            getRtcManager().worker().getRtcEngine().muteAllRemoteAudioStreams(false);
             getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(false);
             getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(false);
             MeetingSettingCache.getInstance(host).setVoiceStatus(1);
@@ -357,6 +357,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             MeetingSettingCache.getInstance(host).setVoiceStatus(2);
 
         }else if(status == 2){
+            getRtcManager().worker().getRtcEngine().muteAllRemoteAudioStreams(false);
             getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(true);
             getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(true);
             MeetingSettingCache.getInstance(host).setVoiceStatus(0);
@@ -366,10 +367,12 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     public void initVoice(int status){
         try {
             if(status == 0){
+                getRtcManager().worker().getRtcEngine().muteAllRemoteAudioStreams(false);
                 getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(true);
                 getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(true);
 
             }else if(status == 1){
+                getRtcManager().worker().getRtcEngine().muteAllRemoteAudioStreams(false);
                 getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(false);
                 getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(false);
             }else if(status == 2){
@@ -387,10 +390,12 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         boolean isCameraOn = getSettingCache(host).getMeetingSetting().isCameraOn();
         try {
             if(status == 0){
+                getRtcManager().worker().getRtcEngine().muteAllRemoteAudioStreams(false);
                 getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(true);
                 getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(true);
 
             }else if(status == 1){
+                getRtcManager().worker().getRtcEngine().muteAllRemoteAudioStreams(false);
                 getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(false);
                 getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(false);
             }else if(status == 2){
