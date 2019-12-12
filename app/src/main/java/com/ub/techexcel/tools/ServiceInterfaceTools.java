@@ -25,6 +25,7 @@ import com.kloudsync.techexcel.bean.RoleInTeam;
 import com.kloudsync.techexcel.bean.RongCloudData;
 import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.bean.SyncBook;
+import com.kloudsync.techexcel.bean.UserInCompany;
 import com.kloudsync.techexcel.bean.params.AcceptFriendsRequestParams;
 import com.kloudsync.techexcel.bean.params.AcceptInvitationsParams;
 import com.kloudsync.techexcel.bean.params.InviteMultipleParams;
@@ -136,6 +137,9 @@ public class ServiceInterfaceTools {
     public static final int REMOVENOTE = 0x1146;
     public static final int GETNOTEBYLINKID = 0x1147;
     public static final int GETLESSIONID = 0x1148;
+    public static final int GETSCHOOLCONTACT = 0x1149;
+    public static final int SETSCHOOLSETTINGS = 0x1150;
+    public static final int GETSCHOOLSETTINGITEM = 0x1151;
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
 
@@ -311,6 +315,120 @@ public class ServiceInterfaceTools {
                 }
             }
         }).start();
+    }
+
+    public void getSchoolContact(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("getSchoolContact", url + "   " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        JSONObject retdata = jsonObject1.getJSONObject("RetData");
+
+                        UserInCompany userInCompany = new UserInCompany();
+
+                        userInCompany.setUserID(retdata.getString("UserID"));
+                        userInCompany.setLoginName(retdata.getString("LoginName"));
+                        userInCompany.setNickname(retdata.getString("Nickname"));
+                        userInCompany.setUserName(retdata.getString("UserName"));
+                        userInCompany.setFirstName(retdata.getString("FirstName"));
+                        userInCompany.setMiddleName(retdata.getString("MiddleName"));
+                        userInCompany.setLastName(retdata.getString("LastName"));
+                        userInCompany.setAvatarUrl(retdata.getString("AvatarUrl"));
+                        userInCompany.setGender(retdata.getInt("Gender"));
+                        userInCompany.setPhone(retdata.getString("Phone"));
+                        userInCompany.setEmail(retdata.getString("Email"));
+                        userInCompany.setBirthDate(retdata.getString("BirthDate"));
+                        userInCompany.setGrade(retdata.getString("Grade"));
+                        userInCompany.setSchoolName(retdata.getString("SchoolName"));
+                        userInCompany.setRole(retdata.getInt("Role"));
+
+                        Message msg3 = Message.obtain();
+                        msg3.obj = userInCompany;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public void getSchoolSettingItem(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("getSchoolSettingItem", url + "   " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        JSONObject jsonObject = jsonObject1.getJSONObject("RetData");
+                        int settingValue = jsonObject.getInt("SettingValue");
+                        Message msg3 = Message.obtain();
+                        msg3.obj = settingValue;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void setSchoolSettings(final String url, final int code, final int schoolId, final int settingvalue, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject subJson = new JSONObject();
+                    subJson.put("SchoolID", schoolId);
+
+                    JSONArray jsonArray = new JSONArray();
+                    JSONObject settings = new JSONObject();
+                    settings.put("SettingID", "10001");
+                    settings.put("SettingValue", settingvalue + "");
+                    settings.put("SettingText", "");
+                    settings.put("SettingNotes", "");
+                    jsonArray.put(settings);
+
+                    subJson.put("Settings", jsonArray);
+
+                    JSONObject returnjson = ConnectService.submitDataByJson(url, subJson);
+                    Log.e("setSchoolSettings", url + "   " + subJson + "   " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.what = code;
+                        msg3.obj = "";
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
     }
 
 
@@ -1587,28 +1705,27 @@ public class ServiceInterfaceTools {
 
     public List<NoteDetail> syncGetUserNotes(final String url) {
         List<NoteDetail> notes = new ArrayList<NoteDetail>();
-            try {
-                JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
-                Log.e("syncGetUserNotes", url + "  " + returnjson.toString());
-                if (returnjson.getInt("RetCode") == 0) {
-                    JSONArray _notes = returnjson.getJSONArray("RetData");
+        try {
+            JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+            Log.e("syncGetUserNotes", url + "  " + returnjson.toString());
+            if (returnjson.getInt("RetCode") == 0) {
+                JSONArray _notes = returnjson.getJSONArray("RetData");
 
-                    for (int j = 0; j < _notes.length(); j++) {
-                        JSONObject note = _notes.getJSONObject(j);
-                        NoteDetail _note = new Gson().fromJson(note.toString(), NoteDetail.class);
-                        String noteUrl = _note.getAttachmentUrl().substring(0,_note.getAttachmentUrl().lastIndexOf("<")) + 1 + _note.getAttachmentUrl().substring(_note.getAttachmentUrl().lastIndexOf("."));
-                        _note.setUrl(noteUrl);
-                        notes.add(_note);
+                for (int j = 0; j < _notes.length(); j++) {
+                    JSONObject note = _notes.getJSONObject(j);
+                    NoteDetail _note = new Gson().fromJson(note.toString(), NoteDetail.class);
+                    String noteUrl = _note.getAttachmentUrl().substring(0, _note.getAttachmentUrl().lastIndexOf("<")) + 1 + _note.getAttachmentUrl().substring(_note.getAttachmentUrl().lastIndexOf("."));
+                    _note.setUrl(noteUrl);
+                    notes.add(_note);
 
-                    }
                 }
-            } catch (Exception e) {
-                Log.e("getNoteListV2", "Exception:" + e);
-                e.printStackTrace();
             }
-            return notes;
+        } catch (Exception e) {
+            Log.e("getNoteListV2", "Exception:" + e);
+            e.printStackTrace();
+        }
+        return notes;
     }
-
 
 
     public void getNoteListV2(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
@@ -1827,7 +1944,6 @@ public class ServiceInterfaceTools {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
 
     }
@@ -1961,6 +2077,11 @@ public class ServiceInterfaceTools {
                         handler.sendMessage(msg3);
                     }
                 } catch (Exception e) {
+                    Message msg3 = Message.obtain();
+                    msg3.what = code;
+                    Note note = new Note();
+                    msg3.obj = note;
+                    handler.sendMessage(msg3);
                     e.printStackTrace();
                 }
             }

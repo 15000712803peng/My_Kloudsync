@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -25,9 +24,6 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Customer;
-import com.ub.techexcel.bean.LineItem;
-import com.ub.techexcel.bean.Note;
-import com.ub.techexcel.bean.SoundtrackBean;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -119,14 +115,18 @@ public class SyncRoomOtherNoteListPopup {
             @Override
             public void selectCustomer(Customer customer) {
                 String userid = customer.getUserID();
-                selectId = userid;
                 webCamPopupListener.notifychangeUserid(userid);
-                setName(userid, syncroomid);
-                getNoteData(userid, syncroomid);
-
+//                reLoadUser(userid);
             }
         });
         syncRoomNotePopup.StartPop(syncroomid, userid);
+    }
+
+
+    public void reLoadUser(String userid) {
+        selectId = userid;
+        setName(userid, syncroomid);
+        getNoteData(userid, syncroomid);
     }
 
 
@@ -164,6 +164,9 @@ public class SyncRoomOtherNoteListPopup {
         });
     }
 
+
+    private List<NoteDetail> useNoteList = new ArrayList<>();
+
     private void getNoteData(String id, String syncroomid) {
         String url = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + syncroomid + "&documentItemID=0&pageNumber=0&userID=" + id;
         ServiceInterfaceTools.getinstance().getNoteListV2(url, ServiceInterfaceTools.GETNOTELISTV2, new ServiceInterfaceListener() {
@@ -172,10 +175,16 @@ public class SyncRoomOtherNoteListPopup {
                 List<NoteDetail> items = new ArrayList<NoteDetail>();
                 items.clear();
                 items.addAll((List<NoteDetail>) object);
+                useNoteList.clear();
+                useNoteList.addAll((List<NoteDetail>) object);
                 syncRoomNoteListAdapter = new SyncRoomNoteListAdapter(mContext, items);
                 recycleview.setAdapter(syncRoomNoteListAdapter);
             }
         });
+    }
+
+    public List<NoteDetail> getUseNoteList() {
+        return useNoteList;
     }
 
 
@@ -193,6 +202,8 @@ public class SyncRoomOtherNoteListPopup {
     public interface WebCamPopupListener {
 
         void select(NoteDetail noteDetail);
+
+        void viewNote(NoteDetail noteDetail);
 
         void notifychangeUserid(String userId);
 
@@ -225,7 +236,7 @@ public class SyncRoomOtherNoteListPopup {
 
 
         @Override
-        public void onBindViewHolder(final SyncRoomNoteListAdapter.RecycleHolder2 holder, final int position) {
+        public void onBindViewHolder(final RecycleHolder2 holder, final int position) {
             final NoteDetail noteDetail = list.get(position);
             holder.title.setText(noteDetail.getTitle());
             String date = noteDetail.getCreatedDate();
@@ -267,6 +278,13 @@ public class SyncRoomOtherNoteListPopup {
                     noteOperatorPopup.StartPop(holder.operationmore, noteDetail);
                 }
             });
+            holder.viewnote.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                    webCamPopupListener.viewNote(noteDetail);
+                }
+            });
         }
 
         @Override
@@ -281,6 +299,7 @@ public class SyncRoomOtherNoteListPopup {
             TextView date;
             TextView pagenumber;
             ImageView operationmore;
+            ImageView viewnote;
 
             public RecycleHolder2(View itemView) {
                 super(itemView);
@@ -290,6 +309,7 @@ public class SyncRoomOtherNoteListPopup {
                 img_url = itemView.findViewById(R.id.img_url);
                 pagenumber = itemView.findViewById(R.id.pagenumber);
                 operationmore = itemView.findViewById(R.id.operationmore);
+                viewnote = itemView.findViewById(R.id.viewnote);
             }
         }
     }

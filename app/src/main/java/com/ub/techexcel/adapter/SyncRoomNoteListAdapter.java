@@ -46,15 +46,15 @@ public class SyncRoomNoteListAdapter extends RecyclerView.Adapter<SyncRoomNoteLi
 
 
     @Override
-    public SyncRoomNoteListAdapter.RecycleHolder2 onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecycleHolder2 onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.syncroom_othernotelist_popup_item, parent, false);
-        SyncRoomNoteListAdapter.RecycleHolder2 holder = new SyncRoomNoteListAdapter.RecycleHolder2(view);
+        RecycleHolder2 holder = new RecycleHolder2(view);
         return holder;
     }
 
 
     @Override
-    public void onBindViewHolder(final SyncRoomNoteListAdapter.RecycleHolder2 holder, final int position) {
+    public void onBindViewHolder(final RecycleHolder2 holder, final int position) {
         final Note noteDetail = list.get(position);
         holder.title.setText(noteDetail.getTitle());
         String date = noteDetail.getCreatedDate();

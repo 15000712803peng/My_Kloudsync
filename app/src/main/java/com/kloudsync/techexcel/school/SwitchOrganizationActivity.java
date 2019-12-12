@@ -23,6 +23,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.OrganizationAdapterV2;
 import com.kloudsync.techexcel.bean.Company;
 import com.kloudsync.techexcel.bean.CompanySubsystem;
+import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DialogSelectSchool;
@@ -123,6 +124,7 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                     editor.commit();
                 }
                 EventBus.getDefault().post(new TeamSpaceBean());
+                EventBus.getDefault().post(new EventRefreshTab());
                 finish();
 //                initDatas();
             }

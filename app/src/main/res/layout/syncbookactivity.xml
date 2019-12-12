@@ -216,6 +216,25 @@
             android:src="@drawable/btn_close" />
     </com.ub.teacher.gesture.VideoGestureRelativeLayout>
 
+    <LinearLayout
+        android:id="@+id/h5close"
+        android:layout_width="45dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="45dp"
+        android:layout_marginTop="23dp"
+        android:alpha="0"
+        android:orientation="horizontal"
+        ></LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/h5open"
+        android:layout_width="45dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:alpha="0"
+        android:orientation="horizontal"
+        ></LinearLayout>
 
     <ImageView
         android:id="@+id/command_active"

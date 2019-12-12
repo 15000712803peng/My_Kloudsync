@@ -395,9 +395,9 @@ public class SyncRoomOutlinePopup implements View.OnClickListener {
     public interface OnChapterClickedListener {
         void onChapterClicked(OutlineChapterItem chapterItem, int chapterIndex);
 
-        void onSectionItemClicked(OutlineSectionItem sectionItem,int chapterIndex);
+        void onSectionItemClicked(OutlineSectionItem sectionItem, int chapterIndex);
 
-        void onChildSectionItemClicked(OutlineChildSectionItem childSectionItem,int chapterIndex);
+        void onChildSectionItemClicked(OutlineChildSectionItem childSectionItem, int chapterIndex);
     }
 
     private OnChapterClickedListener onChapterClickedListener;

@@ -72,14 +72,28 @@
                     android:src="@drawable/more_favor" />
             </RelativeLayout>
 
-            <TextView
-                android:id="@+id/date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="2019-10-12 21:09"
-                android:textSize="12sp" />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp">
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="2019-10-12 21:09"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:id="@+id/viewnote"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/eyeblack" />
+            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 

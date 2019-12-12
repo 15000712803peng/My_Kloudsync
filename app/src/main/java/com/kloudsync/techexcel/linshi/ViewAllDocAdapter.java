@@ -39,7 +39,7 @@ public class ViewAllDocAdapter extends RecyclerView.Adapter<ViewAllDocAdapter.Ho
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.viewalldocumentitem, parent, false);
-        ViewAllDocAdapter.Holder holder = new ViewAllDocAdapter.Holder(view);
+        Holder holder = new Holder(view);
         return holder;
     }
 

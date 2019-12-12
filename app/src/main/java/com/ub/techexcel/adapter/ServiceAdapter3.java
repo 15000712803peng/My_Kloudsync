@@ -174,10 +174,10 @@ public class ServiceAdapter3 extends BaseAdapter {
     }
 
 
-    private ServiceAdapter3.OnModifyServiceListener onModifyServiceListener;
+    private OnModifyServiceListener onModifyServiceListener;
 
     public void setOnModifyServiceListener(
-            ServiceAdapter3.OnModifyServiceListener onModifyServiceListener) {
+            OnModifyServiceListener onModifyServiceListener) {
         this.onModifyServiceListener = onModifyServiceListener;
     }
 

@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.personal;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -34,6 +35,7 @@ import com.kloudsync.techexcel.bean.AccountSettingBean;
 import com.kloudsync.techexcel.bean.AccountSettingContactBean;
 import com.kloudsync.techexcel.bean.AccountSettingImageBean;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
+import com.kloudsync.techexcel.bean.UserInCompany;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
@@ -48,6 +50,8 @@ import com.lidroid.xutils.http.client.HttpRequest;
 import com.ub.techexcel.service.ConnectService;
 import com.ub.techexcel.tools.AccountSettingTakePhotoPopup;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -68,7 +72,7 @@ import java.util.Locale;
 public class AccountSettingActivity extends Activity {
 
 
-    private RelativeLayout as_rl_logo, as_rl_admin, as_rl_contact;
+    private RelativeLayout as_rl_logo, as_rl_admin, as_rl_contact, layout_enable_sync;
     private ContainsEmojiEditText as_et_name, as__et_webaddress, as_et_email;
     private ImageView img_notice;
     private TextView as_tv_save;
@@ -80,7 +84,7 @@ public class AccountSettingActivity extends Activity {
     private List<AccountSettingContactBean> ascontactlist = new ArrayList<AccountSettingContactBean>();
 
 
-    private SimpleDraweeView as_img_logo,as_img_admin_one,as_img_admin_two,as_img_admin_three,as_img_contact_one,as_img_contact_two,as_img_contact_three;
+    private SimpleDraweeView as_img_logo, as_img_admin_one, as_img_admin_two, as_img_admin_three, as_img_contact_one, as_img_contact_two, as_img_contact_three;
 
     public static String path = "";
     public static String pathname = "";
@@ -94,6 +98,7 @@ public class AccountSettingActivity extends Activity {
     // public PopupWindow mPopupWindow;
     private Intent intent;
 
+    @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -108,38 +113,38 @@ public class AccountSettingActivity extends Activity {
                     }
                     break;
                 case 0x01:
-                    if(ascontactlist.size() >= 3) {
+                    if (ascontactlist.size() >= 3) {
                         as_img_contact_one.setImageURI(Uri.parse(ascontactlist.get(0).getAvatarUrl()));
                         as_img_contact_two.setImageURI(Uri.parse(ascontactlist.get(1).getAvatarUrl()));
                         as_img_contact_three.setImageURI(Uri.parse(ascontactlist.get(2).getAvatarUrl()));
-                    }else if (ascontactlist.size() >= 2){
+                    } else if (ascontactlist.size() >= 2) {
                         as_img_contact_one.setImageURI(Uri.parse(ascontactlist.get(0).getAvatarUrl()));
                         as_img_contact_two.setImageURI(Uri.parse(ascontactlist.get(1).getAvatarUrl()));
                         as_img_contact_three.setVisibility(View.GONE);
-                    }else if (ascontactlist.size() >= 1){
+                    } else if (ascontactlist.size() >= 1) {
                         as_img_contact_one.setImageURI(Uri.parse(ascontactlist.get(0).getAvatarUrl()));
                         as_img_contact_two.setVisibility(View.GONE);
                         as_img_contact_three.setVisibility(View.GONE);
-                    }else {
+                    } else {
                         as_img_contact_one.setVisibility(View.GONE);
                         as_img_contact_two.setVisibility(View.GONE);
                         as_img_contact_three.setVisibility(View.GONE);
                     }
                     break;
                 case 0x02:
-                    if(aslist.size() >= 3) {
+                    if (aslist.size() >= 3) {
                         as_img_admin_one.setImageURI(Uri.parse(aslist.get(0).getAvatarUrl()));
                         as_img_admin_two.setImageURI(Uri.parse(aslist.get(1).getAvatarUrl()));
                         as_img_admin_three.setImageURI(Uri.parse(aslist.get(2).getAvatarUrl()));
-                    }else if (aslist.size() >= 2){
+                    } else if (aslist.size() >= 2) {
                         as_img_admin_one.setImageURI(Uri.parse(aslist.get(0).getAvatarUrl()));
                         as_img_admin_two.setImageURI(Uri.parse(aslist.get(1).getAvatarUrl()));
                         as_img_admin_three.setVisibility(View.GONE);
-                    }else if (aslist.size() >= 1){
+                    } else if (aslist.size() >= 1) {
                         as_img_admin_one.setImageURI(Uri.parse(aslist.get(0).getAvatarUrl()));
                         as_img_admin_two.setVisibility(View.GONE);
                         as_img_admin_three.setVisibility(View.GONE);
-                    }else {
+                    } else {
                         as_img_admin_one.setVisibility(View.GONE);
                         as_img_admin_two.setVisibility(View.GONE);
                         as_img_admin_three.setVisibility(View.GONE);
@@ -162,7 +167,26 @@ public class AccountSettingActivity extends Activity {
         confirmSex();
         GetAdminInfo();
         GetContactInfo();
+        getSchoolContact();
     }
+
+
+    private void getSchoolContact() {
+
+        String url = AppConfig.URL_PUBLIC + "SchoolContact/Item?schoolID=" + AppConfig.SchoolID + "&userID=" + AppConfig.UserID;
+        ServiceInterfaceTools.getinstance().getSchoolContact(url, ServiceInterfaceTools.GETSCHOOLCONTACT, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                UserInCompany userInCompany = (UserInCompany) object;
+                if (userInCompany.getRole() == 7 || userInCompany.getRole() == 8) {
+                    layout_enable_sync.setVisibility(View.VISIBLE);
+                } else {
+                    layout_enable_sync.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
 
     public void initView() {
         img_notice = findViewById(R.id.img_notice);
@@ -174,7 +198,7 @@ public class AccountSettingActivity extends Activity {
         as_img_contact_one = findViewById(R.id.as_img_contact_one);
         as_img_contact_two = findViewById(R.id.as_img_contact_two);
         as_img_contact_three = findViewById(R.id.as_img_contact_three);
-
+        layout_enable_sync = findViewById(R.id.layout_enable_sync);
 
         as_rl_logo = findViewById(R.id.as_rl_logo);
         as_et_name = findViewById(R.id.as_et_name);
@@ -203,9 +227,36 @@ public class AccountSettingActivity extends Activity {
                 userPreferences.edit().putBoolean("enable_sync", isChecked).commit();
                 EventBus.getDefault().post(new EventRefreshTab());
                 Log.e("AccountSettingActivity", "post event");
+                String url = AppConfig.URL_PUBLIC + "School/SetSettings";
+                ServiceInterfaceTools.getinstance().setSchoolSettings(url, ServiceInterfaceTools.SETSCHOOLSETTINGS, AppConfig.SchoolID, isChecked ? 1 : 0, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+
+                    }
+                });
+            }
+        });
+
+        isOpen();
+
+    }
+
+
+    private void isOpen() {
+        String url = AppConfig.URL_PUBLIC + "School/GetSettingItem?schoolID=" + AppConfig.SchoolID + "&settingID=10001";
+        ServiceInterfaceTools.getinstance().getSchoolSettingItem(url, ServiceInterfaceTools.GETSCHOOLSETTINGITEM, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                int settingValue = (int) object;
+                if (settingValue == 1) {
+                    syncSwitch.setChecked(true);
+                } else if (settingValue == 0) {
+                    syncSwitch.setChecked(false);
+                }
             }
         });
     }
+
 
     /**
      * 获得AdminUser前三个头像
@@ -221,7 +272,7 @@ public class AccountSettingActivity extends Activity {
                     JSONObject jsonObject = ConnectService
                             .getIncidentData(
                                     AppConfig.URL_PUBLIC
-                                            + "SchoolContact/List?schoolID=" + AppConfig.SchoolID+"&roleType=7,8&searchText=&pageIndex=0");
+                                            + "SchoolContact/List?schoolID=" + AppConfig.SchoolID + "&roleType=7,8&searchText=&pageIndex=0");
                     //Log.e("老余AdminUser", jsonObject + "");
                     aslist = formatAdminjson(jsonObject);
                     //Log.e("老余AdminUserSize", aslist.size() + "");
@@ -230,7 +281,7 @@ public class AccountSettingActivity extends Activity {
                         msg.what = 0x02;
                         msg.obj = aslist;
                         handler.sendMessage(msg);
-                    }else {
+                    } else {
                         as_img_admin_one.setVisibility(View.GONE);
                         as_img_admin_two.setVisibility(View.GONE);
                         as_img_admin_three.setVisibility(View.GONE);
@@ -243,6 +294,7 @@ public class AccountSettingActivity extends Activity {
             }
         }).start(ThreadManager.getManager());
     }
+
     private List<AccountSettingAdminUserBean> formatAdminjson(JSONObject jsonObject) {
         List<AccountSettingAdminUserBean> list = new ArrayList<AccountSettingAdminUserBean>();
         JSONArray jsonarray;
@@ -273,20 +325,18 @@ public class AccountSettingActivity extends Activity {
             @Override
             public void run() {
                 try {
-
                     JSONObject jsonObject = ConnectService
-                            .getIncidentData(
-                                    AppConfig.URL_PUBLIC
-                                            + "SchoolContact/List?schoolID=" + AppConfig.SchoolID + "&roleType=0,1,2,3,4,5,6,7,8,9&searchText=&pageIndex=0");
-                  //  Log.e("老余Contact", jsonObject + "");
+                            .getIncidentData(AppConfig.URL_PUBLIC
+                                    + "SchoolContact/List?schoolID=" + AppConfig.SchoolID + "&roleType=0,1,2,3,4,5,6,7,8,9&searchText=&pageIndex=0");
+                    //  Log.e("老余Contact", jsonObject + "");
                     ascontactlist = formatCantactjson(jsonObject);
-                  //  Log.e("老余ContactSize", ascontactlist.size() + "");
+                    //  Log.e("老余ContactSize", ascontactlist.size() + "");
                     if (ascontactlist.size() > 0 && ascontactlist != null) {
                         Message msg = new Message();
                         msg.what = 0x01;
                         msg.obj = ascontactlist;
                         handler.sendMessage(msg);
-                    }else {
+                    } else {
                         as_img_contact_one.setVisibility(View.GONE);
                         as_img_contact_two.setVisibility(View.GONE);
                         as_img_contact_three.setVisibility(View.GONE);
@@ -417,7 +467,7 @@ public class AccountSettingActivity extends Activity {
         params.setHeader("UserToken", AppConfig.UserToken);
         params.addBodyParameter("Content-Type", "multipart/form-data");// 设定传送的内容类型
         // params.setContentType("application/octet-stream");
-        if (localFile.exists()){
+        if (localFile.exists()) {
             try {
                 String baseurl = LoginGet.getBase64Password(pathname);
                 String fileNamebase = URLEncoder.encode(baseurl, "UTF-8");
@@ -428,7 +478,7 @@ public class AccountSettingActivity extends Activity {
                 e.printStackTrace();
             }
         }
-        String url = AppConfig.URL_PUBLIC + "School/UploadCompanyAvatar?companyID="+AppConfig.SchoolID;
+        String url = AppConfig.URL_PUBLIC + "School/UploadCompanyAvatar?companyID=" + AppConfig.SchoolID;
 
         HttpUtils http = new HttpUtils();
         http.configResponseTextCharset("UTF-8");
@@ -505,6 +555,7 @@ public class AccountSettingActivity extends Activity {
 
     /**
      * 当从照片界面或者相册界面返回时
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -654,7 +705,7 @@ public class AccountSettingActivity extends Activity {
                     startActivity(intent);
                     break;
                 case R.id.as_tv_save:
-                    if(path != null && path.length() > 0){
+                    if (path != null && path.length() > 0) {
                         uploadhead();
                     } else {
                         //save();

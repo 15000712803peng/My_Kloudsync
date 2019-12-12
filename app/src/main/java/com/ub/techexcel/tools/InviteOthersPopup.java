@@ -107,7 +107,7 @@ public class InviteOthersPopup implements View.OnClickListener {
                 mlist.addAll(list);
                 gadapter = new GroupAdapter(mContext, mlist);
                 listView.setAdapter(gadapter);
-                listView.setOnItemClickListener(new InviteOthersPopup.myOnItem());
+                listView.setOnItemClickListener(new myOnItem());
 
             }
         });

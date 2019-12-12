@@ -100,7 +100,7 @@ public class FavoriteVideoPopup {
 
         void cancel();
 
-        void save(int type,boolean isYinxiang);
+        void save(int type, boolean isYinxiang);
 
         void uploadFile();
 

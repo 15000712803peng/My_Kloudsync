@@ -48,6 +48,6 @@ public class CameraProvider {
     }
 
     public static int getSdkVersion() {
-        return android.os.Build.VERSION.SDK_INT;
+        return Build.VERSION.SDK_INT;
     }
 }

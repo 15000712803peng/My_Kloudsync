@@ -94,7 +94,7 @@ public class AccountSettingAdminUserAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        AccountSettingAdminUserAdapter.ViewHolder holder = null;
+        ViewHolder holder = null;
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = LayoutInflater.from(context).inflate(
@@ -105,7 +105,7 @@ public class AccountSettingAdminUserAdapter extends BaseAdapter {
 
             convertView.setTag(holder);
         } else {
-            holder = (AccountSettingAdminUserAdapter.ViewHolder) convertView.getTag();
+            holder = (ViewHolder) convertView.getTag();
         }
 
 
@@ -113,7 +113,7 @@ public class AccountSettingAdminUserAdapter extends BaseAdapter {
 
 
         final AccountSettingAdminUserBean bean = serviceList.get(position);
-        final AccountSettingAdminUserAdapter.ViewHolder finalHolder = holder;
+        final ViewHolder finalHolder = holder;
 
 
 

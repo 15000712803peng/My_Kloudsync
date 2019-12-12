@@ -208,7 +208,7 @@ public class SyncRoomDocumentPopup implements View.OnClickListener {
 
     public interface WebCamPopupListener {
 
-        void changeOptions(LineItem syncRoomBean,int position);
+        void changeOptions(LineItem syncRoomBean, int position);
 
         void teamDocument();
 

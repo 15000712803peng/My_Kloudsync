@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -53,13 +54,14 @@ import io.reactivex.schedulers.Schedulers;
  * Created by tonyan on 2019/11/9.
  */
 
-public class MeetingFragment extends MyFragment{
+public class MeetingFragment extends MyFragment {
 
     private ListView meetingList;
     int type;
     String keyWord;
     private List<ServiceBean> mList = new ArrayList<>();
     LinearLayout noMeetingLayout;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +75,13 @@ public class MeetingFragment extends MyFragment{
 
     @Override
     protected void lazyLoad() {
-        Log.e("MeetingFragment","lazyLoad");
+        Log.e("MeetingFragment", "lazyLoad");
+//        new ApiTask(new Runnable() {
+//            @Override
+//            public void run() {
+//                requestMeeting();
+//            }
+//        }).start(ThreadManager.getManager());
     }
 
     private View view;
@@ -81,8 +89,8 @@ public class MeetingFragment extends MyFragment{
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if(view == null){
-            view = inflater.inflate(R.layout.fragment_meeting,container,false);
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_meeting, container, false);
             noMeetingLayout = view.findViewById(R.id.layout_no_meeting);
             meetingList = view.findViewById(R.id.list_meeting);
         }
@@ -92,7 +100,7 @@ public class MeetingFragment extends MyFragment{
         return view;
     }
 
-    private void loadMeetings(){
+    private void loadMeetings() {
         Observable.just(type).observeOn(Schedulers.io()).map(new Function<Integer, List<ServiceBean>>() {
             @Override
             public List<ServiceBean> apply(Integer integer) throws Exception {
@@ -107,15 +115,15 @@ public class MeetingFragment extends MyFragment{
 
     }
 
-    private List<ServiceBean> requestMeetings(){
-        String url="";
+    private List<ServiceBean> requestMeetings() {
+        String url = "";
         if (keyWord == null || keyWord.equals("")) {
             url = AppConfig.URL_PUBLIC
                     + "Lesson/List?roleID=3&isPublish=1&pageIndex=0&pageSize=20&type=" + type;
         } else {
             try {
                 url = AppConfig.URL_PUBLIC
-                        + "Lesson/List?roleID=3&isPublish=1&pageIndex=0&pageSize=20&type=" + type + "&keyword=" + URLEncoder.encode(LoginGet.getBase64Password(keyWord), "UTF-8") ;
+                        + "Lesson/List?roleID=3&isPublish=1&pageIndex=0&pageSize=20&type=" + type + "&keyword=" + URLEncoder.encode(LoginGet.getBase64Password(keyWord), "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -161,12 +169,12 @@ public class MeetingFragment extends MyFragment{
 
     }
 
-    public void loadMeeting(List<ServiceBean> meetings){
-        if(meetings == null || meetings.size() == 0){
+    public void loadMeeting(List<ServiceBean> meetings) {
+        if (meetings == null || meetings.size() == 0) {
             noMeetingLayout.setVisibility(View.VISIBLE);
             meetingList.setVisibility(View.GONE);
 
-        }else {
+        } else {
             noMeetingLayout.setVisibility(View.GONE);
             meetingList.setVisibility(View.VISIBLE);
             meetings = sortBydata(meetings);
@@ -185,16 +193,33 @@ public class MeetingFragment extends MyFragment{
 
                         @Override
                         public void view() {
-                            Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
-                            intent.putExtra("userid", bean.getUserId());
-                            intent.putExtra("meetingId", bean.getId() + "");
-                            intent.putExtra("teacherid", bean.getTeacherId());
-                            intent.putExtra("identity", bean.getRoleinlesson());
-                            intent.putExtra("isInstantMeeting", 0);
-                            intent.putExtra("isStartCourse", true);
-                            intent.putExtra("isPrepare", true);
-                            intent.putExtra("yinxiangmode", 1);
-                            startActivity(intent);
+//                            Toast.makeText(getActivity(),type+"",Toast.LENGTH_LONG).show();
+                            if (type == 3||type==2) {
+                                Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+                                intent.putExtra("userid", bean.getUserId());
+                                intent.putExtra("meetingId", bean.getId() + "");
+                                intent.putExtra("teacherid", bean.getTeacherId());
+                                intent.putExtra("identity", bean.getRoleinlesson());
+                                intent.putExtra("isInstantMeeting", 0);
+                                intent.putExtra("isStartCourse", true);
+                                intent.putExtra("isPrepare", true);
+                                intent.putExtra("filemeetingId", bean.getId() + "");
+                                intent.putExtra("isFinished", true);
+                                intent.putExtra("yinxiangmode", 1);
+                                startActivity(intent);
+                            } else {
+                                Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+                                intent.putExtra("userid", bean.getUserId());
+                                intent.putExtra("meetingId", bean.getId() + "");
+                                intent.putExtra("teacherid", bean.getTeacherId());
+                                intent.putExtra("identity", bean.getRoleinlesson());
+                                intent.putExtra("isInstantMeeting", 0);
+                                intent.putExtra("isStartCourse", true);
+                                intent.putExtra("isPrepare", true);
+                                intent.putExtra("yinxiangmode", 1);
+                                startActivity(intent);
+                            }
+
                         }
 
                         @Override
@@ -227,7 +252,9 @@ public class MeetingFragment extends MyFragment{
 
                         @Override
                         public void property() {
-
+                            Intent intent = new Intent(getActivity(), MeetingPropertyActivity.class);
+                            intent.putExtra("servicebean", bean);
+                            getActivity().startActivity(intent);
                         }
 
                     });
@@ -254,8 +281,7 @@ public class MeetingFragment extends MyFragment{
                 }
                 if (Long.parseLong(x1) > Long.parseLong(x2)) {
                     return -1;
-                }else
-                if (Long.parseLong(x1) == Long.parseLong(x2)) {
+                } else if (Long.parseLong(x1) == Long.parseLong(x2)) {
                     return 0;
                 }
                 return 1;

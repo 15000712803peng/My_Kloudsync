@@ -176,7 +176,7 @@ public class LoginActivity extends Activity implements OnClickListener {
                 MODE_PRIVATE);
         editor = sharedPreferences.edit();
         telephone = sharedPreferences.getString("telephone", null);
-        password = com.kloudsync.techexcel.start.LoginGet.DecodeBase64Password(sharedPreferences.getString("password", ""));
+        password = LoginGet.DecodeBase64Password(sharedPreferences.getString("password", ""));
         AppConfig.COUNTRY_CODE = sharedPreferences.getInt("countrycode", 86);
         et_telephone.setText(telephone);
         et_password.setText(password);
@@ -385,7 +385,7 @@ public class LoginActivity extends Activity implements OnClickListener {
                     return;
                 }
                 editor.putString("telephone", phoneNumber);
-                editor.putString("password", com.kloudsync.techexcel.start.LoginGet.getBase64Password(password));
+                editor.putString("password", LoginGet.getBase64Password(password));
                 editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
                 editor.commit();
                 if (companies != null && companies.size() > 0) {

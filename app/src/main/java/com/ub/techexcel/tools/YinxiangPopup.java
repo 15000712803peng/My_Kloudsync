@@ -446,7 +446,7 @@ public class YinxiangPopup implements View.OnClickListener {
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         final LruCache<String, Bitmap> lruCache = new LruCache<String, Bitmap>(
                 20);
-        com.android.volley.toolbox.ImageLoader.ImageCache imageCache = new com.android.volley.toolbox.ImageLoader.ImageCache() {
+        ImageLoader.ImageCache imageCache = new ImageLoader.ImageCache() {
             @Override
             public void putBitmap(String key, Bitmap value) {
                 lruCache.put(key, value);
@@ -457,7 +457,7 @@ public class YinxiangPopup implements View.OnClickListener {
                 return lruCache.get(key);
             }
         };
-        com.android.volley.toolbox.ImageLoader imageLoader = new com.android.volley.toolbox.ImageLoader(requestQueue, imageCache);
+        ImageLoader imageLoader = new ImageLoader(requestQueue, imageCache);
 //            String url = document.getSourceFileUrl();
         String url = document.getUrl();
         Log.e("url", url + "      " + document.getUrl());
@@ -467,7 +467,7 @@ public class YinxiangPopup implements View.OnClickListener {
         }
         Log.e("url", url + "      ");
 //        final long s1 = System.currentTimeMillis();
-        imageLoader.get(url, new com.android.volley.toolbox.ImageLoader.ImageListener() {
+        imageLoader.get(url, new ImageLoader.ImageListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
