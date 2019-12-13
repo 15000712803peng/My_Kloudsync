@@ -72,16 +72,12 @@ public class DocVedioManager  implements MediaPlayer.OnPreparedListener,MediaPla
         this.vedioLayout = vedioLayout;
         this.context = context;
         this.meetingConfig = meetingConfig;
-
-        if(meetingConfig.getType() != MeetingType.MEETING){
-            if(vedioData == null || vedioData.getId() != id){
-                VedioData _vedioData =  new VedioData();
-                _vedioData.setId(id);
-                requestAndPlay(_vedioData);
-            }else if(vedioData.getId() == id && !TextUtils.isEmpty(vedioData.getUrl())){
-                doPlay(vedioData);
-            }
-
+        if(vedioData == null || vedioData.getId() != id){
+            VedioData _vedioData =  new VedioData();
+            _vedioData.setId(id);
+            requestAndPlay(_vedioData);
+        }else if(vedioData.getId() == id && !TextUtils.isEmpty(vedioData.getUrl())){
+            doPlay(vedioData);
         }
     }
 
