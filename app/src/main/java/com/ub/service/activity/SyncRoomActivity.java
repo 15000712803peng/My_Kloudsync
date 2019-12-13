@@ -769,7 +769,15 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             }
         }
     }
-
+    private void  closeTouchHelper(){
+        if (DeviceManager.getDeviceType(this) == SupportDevice.BOOK) {
+            if (touchHelper.isRawDrawingRenderEnabled()) {
+                touchHelper.closeRawDrawing();
+                touchHelper.setRawDrawingEnabled(false);
+                Log.e("refreshTouchHelper", "refreshTouchHelper");
+            }
+        }
+    }
 
     public Rect getRelativeRect(final View parentView, final View childView) {
         int[] parent = new int[2];
@@ -2412,8 +2420,16 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             public void getServiceReturnData(Object object) {
                 if (object != null) {
                     Log.e("userSettingChan", object.toString() + "   ");
-                    JSONArray jsonArray = (JSONArray) object;
-                    wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                    final JSONArray jsonArray = (JSONArray) object;
+                    if (wv_show != null) {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                            }
+                        }, 200);
+                    }
+
                 }
             }
         });
@@ -5619,6 +5635,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             isLoadPdfAgain = false;
             LineItem lineitem = new LineItem();
             lineitem.setItemId(currentItemId);
+            lineitem.setAttachmentID(currentShowPdf.getAttachmentID());
             if (isJoinNote) {
                 lineitem.setDocType(1);
             } else {
@@ -6338,6 +6355,9 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             wv_show.removeAllViews();
             wv_show.onDestroy();
             wv_show = null;
+        }
+        if(DeviceManager.getDeviceType(this)==SupportDevice.BOOK){
+            closeTouchHelper();
         }
         if (isRegistered) {
             unregisterReceiver(netWorkChangReceiver);

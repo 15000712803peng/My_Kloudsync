@@ -1010,6 +1010,16 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         }
     }
 
+    private void closeTouchHelper() {
+        if (DeviceManager.getDeviceType(this) == SupportDevice.BOOK) {
+            if (touchHelper.isRawDrawingRenderEnabled()) {
+                touchHelper.closeRawDrawing();
+                touchHelper.setRawDrawingEnabled(false);
+                Log.e("refreshTouchHelper", "refreshTouchHelper");
+            }
+        }
+    }
+
 
     public Rect getRelativeRect(final View parentView, final View childView) {
         int[] parent = new int[2];
@@ -1210,6 +1220,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting);
             } else {
                 getOnstageMemberCount(meetingId);
+//                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting);
             }
         }
     }
@@ -3159,8 +3170,15 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             public void getServiceReturnData(Object object) {
                 if (object != null) {
                     Log.e("userSettingChan", object.toString() + "   ");
-                    JSONArray jsonArray = (JSONArray) object;
-                    wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                    final JSONArray jsonArray = (JSONArray) object;
+                    if (wv_show != null) {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                            }
+                        }, 200);
+                    }
                 }
             }
         });
@@ -5341,7 +5359,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             @Override
             public void getServiceReturnData(Object object) {
                 int role = (int) object;
-                switchRole(MenberRole.match(role));
+//                switchRole(MenberRole.match(role));
                 sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, role, isInstantMeeting);
             }
         });
@@ -7127,6 +7145,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             isLoadPdfAgain = false;
             LineItem lineitem = new LineItem();
             lineitem.setItemId(currentItemId);
+            lineitem.setAttachmentID(currentShowPdf.getAttachmentID());
             if (isJoinNote) {
                 lineitem.setDocType(1);
             } else {
@@ -8182,9 +8201,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             icon_command_mic_enabel.setImageResource(R.drawable.icon_command_mic_enabel);
         }
 
-        if (isMeetingRecording) {
-            notifyAgoraStatus(1, audioStreamStatus, videoStreamStatus);
-        }
+        notifyAgoraStatus(1, audioStreamStatus, videoStreamStatus);
     }
 
     /**
@@ -8209,9 +8226,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             icon_command_webcam_enable.setImageResource(R.drawable.icon_command_webcam_disable);
         }
 
-        if (isMeetingRecording) {
-            notifyAgoraStatus(1, audioStreamStatus, videoStreamStatus);
-        }
+        notifyAgoraStatus(1, audioStreamStatus, videoStreamStatus);
     }
 
     private void closeAlbum() {
@@ -8315,7 +8330,9 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             wv_show.onDestroy();
             wv_show = null;
         }
-
+        if (DeviceManager.getDeviceType(this) == SupportDevice.BOOK) {
+            closeTouchHelper();
+        }
         if (isRegistered) {
             unregisterReceiver(netWorkChangReceiver);
         }
@@ -8428,14 +8445,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     openVideoByViewType();
                 }
                 Log.e("RRRRRRRRRRRRRRRRRR", isPrepare + "");
-                if (isMeetingRecording) {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            notifyAgoraStatus(1, audioStreamStatus, videoStreamStatus);
-                        }
-                    }, 3000);
-                }
             }
         });
     }
@@ -9238,8 +9247,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     DialogRoleAudience roleAudienceDialog;
 
     private void showAudienceContent() {
-        command_active.setVisibility(View.GONE);
-        menu.setVisibility(View.GONE);
+        command_active.setVisibility(View.VISIBLE);
+        menu.setVisibility(View.VISIBLE);
         icon_back.setVisibility(View.VISIBLE);
         if (roleAudienceDialog == null) {
             roleAudienceDialog = new DialogRoleAudience();

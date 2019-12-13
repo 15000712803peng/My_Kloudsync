@@ -23,6 +23,7 @@ import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.service.activity.MeetingPropertyActivity;
+import com.ub.service.activity.MeetingShareActivity;
 import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.techexcel.adapter.ServiceAdapter2;
 import com.ub.techexcel.bean.ServiceBean;
@@ -194,7 +195,7 @@ public class MeetingFragment extends MyFragment {
                         @Override
                         public void view() {
 //                            Toast.makeText(getActivity(),type+"",Toast.LENGTH_LONG).show();
-                            if (type == 3||type==2) {
+                            if (type == 3 || type == 2) {
                                 Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
                                 intent.putExtra("userid", bean.getUserId());
                                 intent.putExtra("meetingId", bean.getId() + "");
@@ -224,9 +225,15 @@ public class MeetingFragment extends MyFragment {
 
                         @Override
                         public void edit() {
-                            Intent intent = new Intent(getActivity(), MeetingPropertyActivity.class);
-                            intent.putExtra("servicebean", bean);
-                            getActivity().startActivity(intent);
+                            if (type == 3) {
+                                Intent shareintent = new Intent(getActivity(), MeetingShareActivity.class);
+                                shareintent.putExtra("lesson", bean);
+                                startActivity(shareintent);
+                            } else {
+                                Intent intent = new Intent(getActivity(), MeetingPropertyActivity.class);
+                                intent.putExtra("servicebean", bean);
+                                getActivity().startActivity(intent);
+                            }
                         }
 
                         @Override

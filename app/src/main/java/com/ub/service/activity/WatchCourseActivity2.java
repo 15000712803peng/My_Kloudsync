@@ -1155,8 +1155,8 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             if (identity == 2) {
                 sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting);
             } else {
-//                getOnstageMemberCount(meetingId);
-                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting);
+                getOnstageMemberCount(meetingId);
+//                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting);
             }
             if (identity == 2) { // 学生收到消息后进入老师的标准课程
                 JSONObject json = new JSONObject();
@@ -2810,8 +2810,16 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             public void getServiceReturnData(Object object) {
                 if (object != null) {
                     Log.e("userSettingChan", object.toString() + "   ");
-                    JSONArray jsonArray = (JSONArray) object;
-                    wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                    final JSONArray jsonArray = (JSONArray) object;
+                    if (wv_show != null) {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                            }
+                        }, 200);
+                    }
+
                 }
             }
         });
@@ -3448,8 +3456,10 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                     wv_show.load("javascript:ShowToolbar(" + true + ")", null);
                     wv_show.load("javascript:Record()", null);
                 } else {
-                    wv_show.load("javascript:ShowToolbar(" + false + ")", null);
-                    wv_show.load("javascript:StopRecord()", null);
+//                    wv_show.load("javascript:ShowToolbar(" + false + ")", null);
+//                    wv_show.load("javascript:StopRecord()", null);
+                    wv_show.load("javascript:ShowToolbar(" + true + ")", null);
+                    wv_show.load("javascript:Record()", null);
                 }
 
                 isWebViewLoadFinish = true;
@@ -6813,6 +6823,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             isLoadPdfAgain = false;
             LineItem lineitem = new LineItem();
             lineitem.setItemId(currentItemId);
+            lineitem.setAttachmentID(currentShowPdf.getAttachmentID());
             if (isJoinNote) {
                 lineitem.setDocType(1);
             } else {

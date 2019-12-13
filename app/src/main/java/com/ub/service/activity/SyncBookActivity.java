@@ -2429,12 +2429,17 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 if (object != null) {
                     Log.e("userSettingChan", object.toString() + "   ");
                     final JSONArray jsonArray = (JSONArray) object;
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
-                        }
-                    }, 200);
+
+                    if (wv_show != null) {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                            }
+                        }, 200);
+                    }
+
+
                 }
             }
         });
@@ -3848,9 +3853,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     private String currentAttachmentPage2;
     private LineItem currentShowPdf2 = new LineItem();
     private TextView closenote;
-
     private SelectNoteDialog selectNoteDialog;
-
     /**
      * 笔记列表弹窗
      */
@@ -5640,6 +5643,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             isLoadPdfAgain = false;
             LineItem lineitem = new LineItem();
             lineitem.setItemId(currentItemId);
+            lineitem.setAttachmentID(currentShowPdf.getAttachmentID());
             if (isJoinNote) {
                 lineitem.setDocType(1);
             } else {
