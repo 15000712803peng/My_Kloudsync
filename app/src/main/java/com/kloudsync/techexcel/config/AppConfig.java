@@ -32,7 +32,7 @@ public class AppConfig {
 
     //上传专用
     public static String URL_LIVEDOC = "https://livedoc.peertime.cn/TxLiveDocumentApi/api/";
-    public static String URL_PUBLIC_AUDIENCE = "https://api.peertime.cn/";
+    public static String URL_PUBLIC_AUDIENCE = "https://wss.peertime.cn/";
 
 //    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
 

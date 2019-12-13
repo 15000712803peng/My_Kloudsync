@@ -33,7 +33,6 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     private LayoutInflater inflater;
     private List<AgoraMember> users;
     private Context mContext;
-
     public List<AgoraMember> getUsers() {
         return users;
     }
@@ -82,7 +81,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             } else {
                 Log.e("onBindViewHolder","target_gone");
                 stripSurfaceView(target);
-                target.setVisibility(View.GONE);
+                target.setVisibility(View.INVISIBLE);
             }
             myHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

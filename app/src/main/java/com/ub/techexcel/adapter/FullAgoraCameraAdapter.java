@@ -88,7 +88,7 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
         } else {
             Log.e("FullAgoraCameraAdapter", "surface_view_gone");
             stripSurfaceView(target);
-            target.setVisibility(View.GONE);
+            target.setVisibility(View.INVISIBLE);
         }
 
         if (TextUtils.isEmpty(member.getUserName())) {

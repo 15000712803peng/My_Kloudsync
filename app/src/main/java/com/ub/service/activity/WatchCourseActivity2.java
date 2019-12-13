@@ -1010,13 +1010,14 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         if (mWebSocketClient == null) {
             return;
         }
+
         if (mWebSocketClient.getReadyState() == WebSocket.READYSTATE.OPEN) {
-//            if (identity == 2) {
-//                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting);
-//            } else {
-//                getOnstageMemberCount(meetingId);
-//            }
-            sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting);
+            if (identity == 2) {
+                sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting);
+            } else {
+                getOnstageMemberCount(meetingId);
+            }
+//            sendStringBySocket2("JOIN_MEETING", AppConfig.UserToken, "", meetingId, "", true, "v20140605.0", false, identity, isInstantMeeting);
             if (identity == 2) { // 学生收到消息后进入老师的标准课程
                 JSONObject json = new JSONObject();
                 try {

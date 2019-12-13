@@ -19,13 +19,13 @@ import java.lang.annotation.RetentionPolicy;
 public class VideoGestureRelativeLayout extends RelativeLayout {
     private static final String TAG = "gesturetest";
     private static final int NONE = 0, VOLUME = 1, BRIGHTNESS = 2, FF_REW = 3;
-    private
     @ScrollMode
-    int mScrollMode = NONE;
+    private int mScrollMode = NONE;
 
     @IntDef({NONE, VOLUME, BRIGHTNESS, FF_REW})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ScrollMode {
+
     }
 
     private VideoPlayerOnGestureListener mOnGestureListener;
@@ -68,14 +68,6 @@ public class VideoGestureRelativeLayout extends RelativeLayout {
             }
         });
 
-//        setOnGenericMotionListener(new OnGenericMotionListener() {
-//            @Override
-//            public boolean onGenericMotion(View v, MotionEvent event) {
-//                Log.d(TAG, "onGenericMotion: " + event.toString());
-//                //监听鼠标点击事件
-//                return mGestureDetector.onGenericMotionEvent(event);
-//            }
-//        });
     }
 
     public class VideoPlayerOnGestureListener extends GestureDetector.SimpleOnGestureListener {

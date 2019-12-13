@@ -106,6 +106,10 @@
             // setTimeout(function () {
             //     ShowToolbar(true);
             // },5000);
+            setTimeout(function(){
+                FromApp("ShowDotPanData",{"PageToken":"xxx-xx-xx-xxxxx","PaintData":[{"address":"1536.671.59.6","userID":225016572,"event_type":2,"force":0,"point_x":0,"point_y":0,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":212,"point_x":499,"point_y":518,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":244,"point_x":499,"point_y":511,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":386,"point_x":499,"point_y":509,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":422,"point_x":501,"point_y":511,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":434,"point_x":499,"point_y":522,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":446,"point_x":479,"point_y":572,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":462,"point_x":461,"point_y":634,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":474,"point_x":456,"point_y":672,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":477,"point_x":454,"point_y":698,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":489,"point_x":456,"point_y":707,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":440,"point_x":855,"point_y":1207,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"},{"address":"1536.671.59.6","userID":225016572,"event_type":1,"force":345,"point_x":1855,"point_y":1902,"timestamp":1.57483738E+09,"penID":"TD-602-08GUR"}]});
+
+            },2000);
             
         }
         function InitPage()
@@ -215,6 +219,7 @@
                 return false;
             });
             $("#div_btn_drawline").click(function (e) {
+
                 if ($("#div_btn_drawline").hasClass("selected")) {
                     whiteboard.ShowSetting(true);
                     return;
@@ -743,7 +748,91 @@
             else if (key == "OnToolEnd") {
                 whiteboard.OnToolEnd(data.x,data.y);
             }
+            else if (key == "ShowDotPanData")
+            {
+                var info= ConvertPoints2Line(data);
+                whiteboard.ShowDotpenLine(info.lines,info.width,info.height);
+            }
+        }
+        function ConvertPoints2Line(d)
+        { 
+            if (typeof (d) == "string")
+            {
+                d = JSON.parse(d);
+            }
+            if (d.PaintData)
+            {
+                d = d.PaintData;
+            }
+            if (d.lines)
+            {
+              if (!d.width ||! d.height)
+              {
+                var width = 5600;
+                var height = 7920;
+                var paper = "A4";
+                if (d.address.indexOf("1713.")==0)
+                {
+                  width = 7920;
+                  height = 11200;
+                  paper = "A3";
+                }
+                else if (address.indexOf("1536.")==0)
+                {
+                  width = 5600;
+                  height = 7920;
+                  paper = "A4";
+                }
+                d.width = width;
+                d.height = height;
+                d.paper = paper;
+              }
+              return d;
+            }
+            var lines = new Array();
+            var points = new Array();
+            var address = "";
+            for (var p of d)
+            {
+            if (address=="" && p.address)
+            {
+                address = p.address;
+            }
+            if (p.event_type == 2)
+            {
+                if (points.length > 0)
+                {
+                lines.push({id:GUID(),points:points});
+                points = [];
+                }
+            }
+            else
+            {
+                points.push([p.point_x,p.point_y,p.force,0]);
+            }
+            }
+            if (points.length > 0)
+            {
+            lines.push({id:GUID(),points:points});
+            points = [];
+            }
+            var width = 5600;
+            var height = 7920;
+            var paper = "";
+            if (address.indexOf("1713"))
+            {
+            width = 7920;
+            height = 11200;
+            paper = "A3";
+            }
+            else if (address.indexOf("1536"))
+            {
+            width = 7920;
+            height = 11200;
+            paper = "A4";
+            }
 
+            return {"address":address,"lines":lines,"width":width,"height":height,"paper":paper};
         }
         function UserSettingChange(opt)
         {
@@ -1236,6 +1325,7 @@
                 $("#maintools").hide();
                 $(".video-choose").hide();
                 $(".addText").hide();
+                CallApp("OnToolBarVisibleChange",{IsShow:0});
                 //$("#div_btn_toobar").css("opacity", '0').show().animate({ opacity: 1 }, 500);
             });
 
@@ -1476,7 +1566,7 @@
             }
             ShowLog("ShowPDF:" + Url + "," + pageNum + "," + AttachmentID);
             PDFURL = Url;
-            PageNumber = pageNum
+            PageNumber = pageNum;
             ToPageNumber = pageNum;
             ResetTools($("#div_btn_pointer"));
             whiteboard.ShowDocument($("#main"), Url, pageNum, function(issuccess, pdfcount)  {
@@ -1577,16 +1667,16 @@
             //    PlayActionByTxt('{"type":32,"page":1,"CW":308,"CH":398,"VW":1393,"VH":503,"ST":0,"SL":0}');
             //}, 5000);
             //return
-        if(FLAG){
-            $("#div_btn_toobar").animate({right:"46px"},100)
-            if(evt) _cancelBubble(evt);
-            $("#maintools").stop().show().animate({ right: '0px' }, 100,function(){
-                FLAG=false;
-            });
-        } else{
-            CloseToolsEx()
-        }
-
+            if(FLAG){
+                $("#div_btn_toobar").animate({right:"46px"},100)
+                if(evt) _cancelBubble(evt);
+                $("#maintools").stop().show().animate({ right: '0px' }, 100,function(){
+                    FLAG=false;
+                });
+            } else{
+                CloseToolsEx()
+            }
+            CallApp("OnToolBarVisibleChange",{IsShow:1});
         }
         function ShowRightToolBar(isshow)
         {

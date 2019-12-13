@@ -56,6 +56,7 @@ import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DeviceManager;
+import com.kloudsync.techexcel.help.DocVedioManager;
 import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.help.BottomMenuManager;
 import com.kloudsync.techexcel.help.NoteViewManager;
@@ -77,6 +78,7 @@ import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
+import com.ub.teacher.gesture.VideoGestureRelativeLayout;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
@@ -156,6 +158,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     RelativeLayout fullCamereLayout;
     @Bind(R.id.icon_back_full_screen)
     ImageView backFullCameraImage;
+    @Bind(R.id.layout_vedio)
+    RelativeLayout vedioLayout;
+
+    @Bind(R.id.image_vedio_close)
+    ImageView closeVedioImage;
 
     AgoraCameraAdapter cameraAdapter;
     FullAgoraCameraAdapter fullCameraAdapter;
@@ -1280,6 +1287,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         Log.e("JavascriptInterface", "reflect,result:  " + result);
         meetingConfig.setDocModifide(checkIfModifyDoc(result));
         notifyMyWebActions(result);
+        DocVedioManager.getInstance(this).prepareVedio(result);
     }
 
     private boolean checkIfModifyDoc(String result) {
@@ -1313,14 +1321,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         } else {
             Log.e("notifyMyWebActions", "role:" + meetingConfig.getRole());
-//            if (!TextUtils.isEmpty(meetingConfig.getPresenterSessionId())) {
-//                if (AppConfig.UserToken.equals(meetingConfig.getPresenterSessionId())) {
-//                    if (meetingConfig.isInRealMeeting()) {
-//
-//
-//                    }
-//                }
-//            }
             if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())) {
                 return;
             }
@@ -1388,6 +1388,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @org.xwalk.core.JavascriptInterface
     public void videoPlayFunction(final int vid) {
         Log.e("JavascriptInterface", "videoPlayFunction,vid:  " + vid);
+        DocVedioManager.getInstance(this).play(this,vedioLayout,meetingConfig,vid);
+
     }
 
     //打开
@@ -1645,6 +1647,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         fullCameraList.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
         meetingMenu.setOnClickListener(this);
         backFullCameraImage.setOnClickListener(this);
+        closeVedioImage.setOnClickListener(this);
     }
 
     @Override
@@ -1665,6 +1668,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 fullCameraList.setVisibility(View.GONE);
                 cameraList.setVisibility(View.VISIBLE);
                 refreshAgoraMember();
+                break;
+            case R.id.image_vedio_close:
+                DocVedioManager.getInstance(this).close();
                 break;
         }
     }
@@ -2042,6 +2048,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         int currentSpanCount = s.getSpanCount();
 
         Log.e("fitFullCameraList","span:"+ currentSpanCount);
-
     }
+
+
 }

@@ -36,6 +36,9 @@ public class SocketMessageManager {
     public static final String MESSAGE_END_MEETING = "END_MEETING";
     public static final String MESSAGE_MAKE_PRESENTER = "MAKE_PRESENTER";
     public static final String MESSAGE_ATTACHMENT_UPLOADED = "ATTACHMENT_UPLOADED";
+    public static final int MESSAGE_VIDEO_PAUSE = 0;
+    public static final int MESSAGE_VIDEO_PLAY = 1;
+    public static final int MESSAGE_VIDEO_CLOSE = 2;
 
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -251,6 +254,20 @@ public class SocketMessageManager {
 
     }
 
+    public void sendMessage_VedioPlayedStatus(int state, float time, String vid, String url){
+        JSONObject message = new JSONObject();
+        try {
+            message.put("stat", state);
+            message.put("actionType", 19);
+            message.put("time", time);
+            message.put("vid", vid);
+            message.put("url", url);
+            message.put("type", 1 );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        doSendMessage(wrapperSendMessage(AppConfig.UserToken,0,Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+    }
 
 
     private WebSocketClient getClient() {
