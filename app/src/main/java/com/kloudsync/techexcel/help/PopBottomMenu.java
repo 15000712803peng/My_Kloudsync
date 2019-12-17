@@ -38,7 +38,6 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     //----
     private MeetingConfig meetingConfig;
 
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -118,7 +117,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
             init();
         }
     }
-    
+
     public void init() {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         View popupWindow = layoutInflater.inflate(R.layout.pop_bottom_menu, null);

@@ -47,7 +47,6 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
     private BottomFileAdapter adapter;
     private LinearLayout uploadLayout;
 
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

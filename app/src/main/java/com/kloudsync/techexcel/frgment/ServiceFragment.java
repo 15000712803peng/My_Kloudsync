@@ -79,6 +79,10 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 public class ServiceFragment extends MyFragment implements View.OnClickListener {
     private boolean isPrepared = false;
 
@@ -644,7 +648,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                     if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
                         Toast.makeText(getActivity(), "你加入的课堂不存在!", Toast.LENGTH_LONG).show();
                     } else {
-                        getClassRoomLessonID(AppConfig.ClassRoomID);
+//                        getClassRoomLessonID(AppConfig.ClassRoomID);
+                        doStartMeeting(AppConfig.ClassRoomID);
                     }
                 }
 
@@ -722,6 +727,30 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         finished.setTextColor(getResources().getColor(R.color.c5));
     }
 
+    private void doStartMeeting(final String meetingRoom){
+            final EventJoinMeeting joinMeeting = new EventJoinMeeting();
+            Observable.just(joinMeeting).observeOn(Schedulers.io()).doOnNext(new Consumer<EventJoinMeeting>() {
+                @Override
+                public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+                    JSONObject params = new JSONObject();
+                    params.put("classroomID", meetingRoom);
+                    params.put("addBlankPage", 0);
+                    JSONObject result = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/AddInstantLesson?classRoomID=" + meetingRoom + "&addBlankPage=0",params);
+                    Log.e("GetClassRoomLessonID","meetingRoom:" + meetingRoom + ",result:" + result);
+                    if(result.has("RetCode")){
+                        int retCode = result.getInt("RetCode");
+                        if(retCode == 0){
+                            joinMeeting.setLessionId(result.getInt("RetData"));
+                            joinMeeting.setMeetingId(meetingRoom);
+                            joinMeeting.setRole(MeetingConfig.MeetingRole.HOST);
+                        }
+                    }
+
+                    EventBus.getDefault().post(joinMeeting);
+                }
+            }).subscribe();
+    }
+
 
     private void getClassRoomLessonID(final String classRoomId) {
         new ApiTask(new Runnable() {
@@ -787,7 +816,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         intent.putExtra("meeting_id", eventJoinMeeting.getMeetingId());
         intent.putExtra("meeting_type", 0);
         intent.putExtra("lession_id", eventJoinMeeting.getLessionId());
-        intent.putExtra("meeting_role", MeetingConfig.MeetingRole.MEMBER);
+        intent.putExtra("meeting_role", eventJoinMeeting.getRole());
         startActivity(intent);
     }
 }

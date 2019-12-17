@@ -5083,7 +5083,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         if (worker().getRtcEngine() != null) {
             RtcEngineImpl engine = (RtcEngineImpl) worker().getRtcEngine();
             engine.setVideoCamera(0);
-
         }
 
 

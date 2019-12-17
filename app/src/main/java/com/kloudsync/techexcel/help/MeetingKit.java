@@ -105,6 +105,8 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         return kit;
     }
 
+
+
     private RtcManager getRtcManager() {
         if (rtcManager == null) {
             return RtcManager.getDefault(host);
@@ -113,6 +115,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
     public void prepareStart(Activity host, MeetingConfig meetingConfig, String newMeetingId) {
+        Log.e("prepareStart","role:" + meetingConfig.getRole());
         this.host = host;
         this.newMeetingId = newMeetingId;
         this.meetingConfig = meetingConfig;
@@ -195,7 +198,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
-
         isStarted = true;
         Log.e("MeetingKit", "onJoinChannelSuccess:" + channel);
         if (meetingConfig != null) {
@@ -573,5 +575,26 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
             }
         }).subscribe();
+    }
+
+    public void templeDisableLocalVideo(){
+        try {
+            getRtcManager().worker().getRtcEngine().disableVideo();
+            Log.e("templeDisableLocalVideo","disableVideo");
+        }catch (Exception e){
+            Log.e("templeDisableLocalVideo","exception:" + e);
+
+        }
+    }
+
+    public void restoreLocalVedeo(){
+        boolean isCameraOn = MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn();
+        try {
+            getRtcManager().worker().getRtcEngine().enableVideo();
+            Log.e("restoreLocalVedeo","enableVideo:" + isCameraOn);
+        }catch (Exception e){
+            Log.e("restoreLocalVedeo","exception:" + e);
+
+        }
     }
 }

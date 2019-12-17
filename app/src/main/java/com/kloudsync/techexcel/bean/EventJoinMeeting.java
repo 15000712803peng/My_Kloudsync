@@ -7,6 +7,15 @@ package com.kloudsync.techexcel.bean;
 public class EventJoinMeeting {
     private String meetingId;
     private int lessionId;
+    private int role;
+
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
+    }
 
     public String getMeetingId() {
         return meetingId;

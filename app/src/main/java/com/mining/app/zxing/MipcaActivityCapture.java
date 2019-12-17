@@ -114,6 +114,7 @@ public class MipcaActivityCapture extends Activity implements Callback, TextureV
 
             @Override
             public void onClick(View v) {
+                setResult(RESULT_OK);
                 MipcaActivityCapture.this.finish();
             }
         });

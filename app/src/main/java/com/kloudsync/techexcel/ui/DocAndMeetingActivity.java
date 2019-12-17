@@ -115,6 +115,7 @@ import java.util.concurrent.TimeUnit;
 
 import Decoder.BASE64Encoder;
 import butterknife.Bind;
+import io.agora.rtc.internal.RtcEngineImpl;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -193,6 +194,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         messageManager = SocketMessageManager.getManager(this);
         messageManager.registerMessageReceiver();
         if (meetingConfig.getType() != MeetingType.MEETING) {
+
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
             MeetingKit.getInstance().prepareJoin(this, meetingConfig);
@@ -650,20 +652,22 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showMemeberCamera(AgoraMember member) {
-
+        Log.e("showMemeberCamera","member:" + member);
         if ((member.getUserId() + "").equals(AppConfig.UserID) && member.isAdd()) {
             //自己开启会议成功
-            notifyDocumentChanged();
+            if(documents != null && documents.size() > 0){
+                notifyDocumentChanged();
+            }
         }
+
         if (member.isAdd()) {
             meetingConfig.addAgoraMember(member);
-
         } else {
             //delete user
             meetingConfig.deleteAgoraMember(member);
         }
-        checkAgoraMemberName();
 
+        checkAgoraMemberName();
         refreshAgoraMember();
 
         if (cameraAdapter != null) {
@@ -677,6 +681,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         for (AgoraMember member : meetingConfig.getAgoraMembers()) {
             copyMembers.add(member);
         }
+
         if (cameraList.getVisibility() == View.VISIBLE) {
             if (cameraAdapter != null) {
                 cameraAdapter.reset();
@@ -1489,8 +1494,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (bottomFilePop == null) {
             bottomFilePop = new PopBottomFile(this);
         }
-
-        bottomFilePop.setDocuments(documents, meetingConfig.getDocument().getItemID(), this);
+        if(documents != null && documents.size() > 0){
+            bottomFilePop.setDocuments(documents, meetingConfig.getDocument().getItemID(), this);
+        }
         if (menuManager != null) {
             menuManager.setMenuIcon(menuIcon);
             menuManager.totalHideMenu();
@@ -1776,6 +1782,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     private static final int REQUEST_CAMEIA_ADD_DOC = 1;
     private static final int REQUEST_PICTURE_ADD_DOC = 2;
+    private static final int REQUEST_SCAN = 3;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1797,6 +1804,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         }
                     }
 
+                    break;
+                case REQUEST_SCAN:
+                    if(meetingConfig.getType() == MeetingType.MEETING){
+                        MeetingKit.getInstance().restoreLocalVedeo();
+                    }
                     break;
             }
         }
@@ -1961,24 +1973,27 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        Log.e("gotoScanTv","meeting_type:" + meetingConfig.getType());
+        if(meetingConfig.getType() == MeetingType.MEETING){
+            MeetingKit.getInstance().templeDisableLocalVideo();
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent1 = new Intent(DocAndMeetingActivity.this, MipcaActivityCapture.class);
-                intent1.putExtra("isHorization", true);
-                intent1.putExtra("type", 0);
-                startActivity(intent1);
+                Intent intent = new Intent(DocAndMeetingActivity.this, MipcaActivityCapture.class);
+                intent.putExtra("isHorization", true);
+                intent.putExtra("type", 0);
+                startActivityForResult(intent,REQUEST_SCAN);
             }
-        }, 10);
-        String url = AppConfig.wssServer + "/tv/change_bind_tv_status?status=1";
-        ServiceInterfaceTools.getinstance().changeBindTvStatus(url, ServiceInterfaceTools.CHANGEBINDTVSTATUS,
-                true, new ServiceInterfaceListener() {
-                    @Override
-                    public void getServiceReturnData(Object object) {
-
-                    }
-                });
+        }, 1000);
+//        String url = AppConfig.wssServer + "/tv/change_bind_tv_status?status=1";
+//        ServiceInterfaceTools.getinstance().changeBindTvStatus(url, ServiceInterfaceTools.CHANGEBINDTVSTATUS,
+//                true, new ServiceInterfaceListener() {
+//                    @Override
+//                    public void getServiceReturnData(Object object) {
+//
+//                    }
+//                });
 
     }
 

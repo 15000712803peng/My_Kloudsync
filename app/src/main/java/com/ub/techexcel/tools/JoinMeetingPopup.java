@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventJoinMeeting;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
@@ -154,9 +155,9 @@ public class JoinMeetingPopup implements View.OnClickListener {
                     if(retCode == 0){
                         joinMeeting.setLessionId(result.getInt("RetData"));
                         joinMeeting.setMeetingId(meetingRoom);
+                        joinMeeting.setRole(MeetingConfig.MeetingRole.MEMBER);
                     }
                 }
-
                 EventBus.getDefault().post(joinMeeting);
             }
         }).subscribe();
