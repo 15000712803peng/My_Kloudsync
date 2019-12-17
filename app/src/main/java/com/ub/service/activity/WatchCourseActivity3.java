@@ -5856,6 +5856,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             send_message("SEND_MESSAGE", AppConfig.UserToken, 0, "", Tools.getBase64(json.toString()).replaceAll("[\\s*\t\n\r]", ""));
             sendvoicenet("MEETING_STATUS", AppConfig.UserToken, meetingId, 1, lessonId);
         }

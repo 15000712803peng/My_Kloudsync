@@ -36,6 +36,7 @@ public class SocketMessageManager {
     public static final String MESSAGE_END_MEETING = "END_MEETING";
     public static final String MESSAGE_MAKE_PRESENTER = "MAKE_PRESENTER";
     public static final String MESSAGE_ATTACHMENT_UPLOADED = "ATTACHMENT_UPLOADED";
+    public static final String MESSAGE_AGORA_STATUS_CHANGE = "AGORA_STATUS_CHANGE";
     public static final int MESSAGE_VIDEO_PAUSE = 0;
     public static final int MESSAGE_VIDEO_PLAY = 1;
     public static final int MESSAGE_VIDEO_CLOSE = 2;
@@ -99,7 +100,7 @@ public class SocketMessageManager {
             message.put("meetingId", config.getMeetingId());
             message.put("meetingPassword", "");
             message.put("clientVersion", "v20140605.0");
-            message.put("role", config.getRole().getRole());
+            message.put("role", config.getRole());
             message.put("mode", 0);
             message.put("type", config.getType());
             message.put("lessonId", config.getLessionId());
@@ -122,7 +123,8 @@ public class SocketMessageManager {
             message.put("meetingId", newMeetingId);
             message.put("meetingPassword", "");
             message.put("clientVersion", "v20140605.0");
-            message.put("role", MeetingConfig.MeetingRole.HOST.getRole());
+            config.setRole(MeetingConfig.MeetingRole.HOST);
+            message.put("role", config.getRole());
             message.put("mode", 0);
             message.put("type", 0);
             message.put("lessonId", config.getLessionId());
@@ -135,7 +137,6 @@ public class SocketMessageManager {
             e.printStackTrace();
         }
     }
-
 
     /**
      * 老师第一次join时，调一下这个方法，将当前文档ID发给鹏飞
@@ -266,9 +267,9 @@ public class SocketMessageManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         doSendMessage(wrapperSendMessage(AppConfig.UserToken,0,Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
     }
-
 
     private WebSocketClient getClient() {
         if (socketClient == null) {
@@ -291,7 +292,6 @@ public class SocketMessageManager {
     private String wrapperSendMessage(String sessionId, int type, String data) {
         JSONObject message = new JSONObject();
         try {
-
             message.put("action", "SEND_MESSAGE");
             message.put("sessionId", sessionId);
             message.put("type", type);
@@ -300,6 +300,7 @@ public class SocketMessageManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         return message.toString();
 
     }
@@ -314,6 +315,5 @@ public class SocketMessageManager {
         context.unregisterReceiver(messageReceiver);
         instance = null;
     }
-
 
 }

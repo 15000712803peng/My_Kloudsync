@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -35,12 +36,15 @@ import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventJoinMeeting;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.school.SelectSchoolActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.service.activity.MeetingPropertyActivity;
 import com.ub.service.activity.MeetingSearchResultsActivity;
@@ -60,6 +64,9 @@ import com.ub.techexcel.tools.MenuEventPopup;
 import com.ub.techexcel.tools.ServiceTool;
 import com.ub.techexcel.tools.Tools;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -364,6 +371,11 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         dialog.show();
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
 
 
 
@@ -402,6 +414,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
             getActivity().unregisterReceiver(broadcastReceiver);
             broadcastReceiver = null;
         }
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 
@@ -642,10 +655,12 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 joinMeetingPopup.setFavoritePoPListener(new JoinMeetingPopup.FavoritePoPListener() {
                     @Override
                     public void dismiss() {
+
                     }
 
                     @Override
                     public void open() {
+
                     }
                 });
                 joinMeetingPopup.StartPop(lin_schedule);
@@ -758,5 +773,21 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 }
             }
         }).start(ThreadManager.getManager());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void joinMeeting(EventJoinMeeting eventJoinMeeting){
+        if(eventJoinMeeting.getLessionId() <= 0){
+            Toast.makeText(getActivity(),"加入的meeting不存在或没有开始" ,Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //-----
+        intent.putExtra("meeting_id", eventJoinMeeting.getMeetingId());
+        intent.putExtra("meeting_type", 0);
+        intent.putExtra("lession_id", eventJoinMeeting.getLessionId());
+        intent.putExtra("meeting_role", MeetingConfig.MeetingRole.MEMBER);
+        startActivity(intent);
     }
 }

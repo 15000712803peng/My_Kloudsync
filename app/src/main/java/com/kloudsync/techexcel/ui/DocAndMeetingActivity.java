@@ -76,6 +76,7 @@ import com.kloudsync.techexcel.tool.DocumentUploadTool;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.mining.app.zxing.MipcaActivityCapture;
+import com.mining.app.zxing.view.ViewfinderView;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.teacher.gesture.VideoGestureRelativeLayout;
@@ -164,6 +165,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Bind(R.id.image_vedio_close)
     ImageView closeVedioImage;
 
+    @Bind(R.id.layout_meeting_default_document)
+    RelativeLayout meetingDefaultDocument;
+
     AgoraCameraAdapter cameraAdapter;
     FullAgoraCameraAdapter fullCameraAdapter;
 
@@ -188,9 +192,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingConfig = getConfig();
         messageManager = SocketMessageManager.getManager(this);
         messageManager.registerMessageReceiver();
-        messageManager.sendMessage_JoinMeeting(meetingConfig);
-        pageCache = DocumentPageCache.getInstance(this);
+        if (meetingConfig.getType() != MeetingType.MEETING) {
+            messageManager.sendMessage_JoinMeeting(meetingConfig);
+        } else {
+            MeetingKit.getInstance().prepareJoin(this, meetingConfig);
+        }
 
+        pageCache = DocumentPageCache.getInstance(this);
         //--
         menuManager = BottomMenuManager.getInstance(this, meetingConfig);
         menuManager.setBottomMenuOperationsListener(this);
@@ -267,6 +275,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingConfig.setMeetingId(data.getStringExtra("meeting_id"));
         meetingConfig.setLessionId(data.getIntExtra("lession_id", 0));
         meetingConfig.setDocumentId(data.getStringExtra("document_id"));
+        meetingConfig.setRole(data.getIntExtra("meeting_role", MeetingConfig.MeetingRole.HOST));
         meetingConfig.setUserToken(UserData.getUserToken(this));
         return meetingConfig;
     }
@@ -334,6 +343,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             }
                         }
 
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+
                         Log.e("check_meeting_member", "member:" + meetingConfig.getMeetingMembers() + ",");
 
                         if (meetingConfig.isInRealMeeting()) {
@@ -395,6 +406,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
             meetingConfig.setDocument(this.documents.get(index));
             downLoadDocumentPageAndShow();
+        }else {
+            hideEnterLoading();
+            menuIcon.setVisibility(View.VISIBLE);
+
+            if(meetingConfig.getType() == MeetingType.MEETING){
+                meetingDefaultDocument.setVisibility(View.VISIBLE);
+                MeetingKit.getInstance().handleMeetingDefaultDocument(meetingDefaultDocument);
+            }
         }
     }
 
@@ -420,6 +439,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         //notify change file
         notifyDocumentChanged();
         Log.e("Show_PDF", "javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")");
+        meetingDefaultDocument.setVisibility(View.GONE);
         web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         web.load("javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
         web.load("javascript:Record()", null);
@@ -793,16 +813,16 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void muteAgoraMember(EventMute eventMute){
-        if(cameraList.getVisibility() == View.VISIBLE){
-            if(cameraAdapter != null){
-                cameraAdapter.muteVideo(eventMute.getAgoraMember(),eventMute.isMute());
+    public void muteAgoraMember(EventMute eventMute) {
+        if (cameraList.getVisibility() == View.VISIBLE) {
+            if (cameraAdapter != null) {
+                cameraAdapter.muteVideo(eventMute.getAgoraMember(), eventMute.isMute());
             }
         }
 
-        if(fullCameraList.getVisibility() == View.VISIBLE){
-            if(fullCameraAdapter != null){
-                fullCameraAdapter.muteVideo(eventMute.getAgoraMember(),eventMute.isMute());
+        if (fullCameraList.getVisibility() == View.VISIBLE) {
+            if (fullCameraAdapter != null) {
+                fullCameraAdapter.muteVideo(eventMute.getAgoraMember(), eventMute.isMute());
             }
         }
     }
@@ -1388,7 +1408,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @org.xwalk.core.JavascriptInterface
     public void videoPlayFunction(final int vid) {
         Log.e("JavascriptInterface", "videoPlayFunction,vid:  " + vid);
-        DocVedioManager.getInstance(this).play(this,vedioLayout,meetingConfig,vid);
+        DocVedioManager.getInstance(this).play(this, vedioLayout, meetingConfig, vid);
 
     }
 
@@ -1628,9 +1648,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
 
-        if (meetingKit != null) {
-            meetingKit.startMeeting();
-        }
+        MeetingKit.getInstance().startMeeting();
         meetingLayout.setVisibility(View.VISIBLE);
         if (messageManager != null) {
             messageManager.sendMessage_MeetingStatus(meetingConfig);
@@ -2047,7 +2065,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         GridLayoutManager s = (GridLayoutManager) fullCameraList.getLayoutManager();
         int currentSpanCount = s.getSpanCount();
 
-        Log.e("fitFullCameraList","span:"+ currentSpanCount);
+        Log.e("fitFullCameraList", "span:" + currentSpanCount);
     }
 
 

@@ -26,9 +26,19 @@ public class MeetingSettingDialog implements View.OnClickListener{
     private TextView startText;
     private ImageView microImage,cameraImage;
     private TextView microText,cameraText;
+    private boolean isStartMeeting;
+
+    public boolean isStartMeeting() {
+        return isStartMeeting;
+    }
+
+    public void setStartMeeting(boolean startMeeting) {
+        isStartMeeting = startMeeting;
+    }
 
     public interface OnUserOptionsListener{
         void onUserStart();
+        void onUserJoin();
     }
 
     private OnUserOptionsListener onUserOptionsListener;
@@ -115,9 +125,16 @@ public class MeetingSettingDialog implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.txt_start:
-                if(onUserOptionsListener != null){
-                    onUserOptionsListener.onUserStart();
+                if(isStartMeeting){
+                    if(onUserOptionsListener != null){
+                        onUserOptionsListener.onUserStart();
+                    }
+                }else {
+                    if(onUserOptionsListener != null){
+                        onUserOptionsListener.onUserJoin();
+                    }
                 }
+
                 dismiss();
                 break;
             case R.id.image_micro:

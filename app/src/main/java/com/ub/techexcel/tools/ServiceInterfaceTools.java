@@ -16,6 +16,7 @@ import com.kloudsync.techexcel.bean.DocumentDetail;
 import com.kloudsync.techexcel.bean.FavoriteData;
 import com.kloudsync.techexcel.bean.InviteInfo;
 import com.kloudsync.techexcel.bean.LoginData;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.PhoneItem;
 import com.kloudsync.techexcel.bean.RoleInTeam;
@@ -2335,6 +2336,23 @@ public class ServiceInterfaceTools {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public JSONObject syncGetMeetingMembers(String meetingId,int role) {
+
+        String url = "";
+        if(role == MeetingConfig.MeetingRole.MEMBER){
+            url += AppConfig.URL_MEETING_BASE + "member/member_in_meeting_list?meetingId=" + meetingId;
+        }else if(role == MeetingConfig.MeetingRole.AUDIENCE){
+            url += AppConfig.URL_MEETING_BASE + "member/audience_list?meetingId=" + meetingId;
+        }else if(role == MeetingConfig.MeetingRole.BE_INVITED){
+            url += AppConfig.URL_MEETING_BASE + "member/invited_not_join_list?meetingId=" + meetingId;
+        }
+
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetMeetingMembers","url:" + url + ",result:" + response);
+        return response;
+
     }
 
 

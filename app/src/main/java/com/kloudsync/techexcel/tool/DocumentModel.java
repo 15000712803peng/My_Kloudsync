@@ -33,6 +33,7 @@ public class DocumentModel {
             @Override
             public void run() {
                 JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/Item?lessonID=" + meetingConfig.getLessionId());
+                Log.e("getDocuments","Lesson/Item?lessonID=" + meetingConfig.getLessionId() + ",result:" + response);
                 if (response == null) {
 
                 } else {

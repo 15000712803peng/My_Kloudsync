@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
@@ -29,12 +30,19 @@ import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.UpcomingLesson;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by wang on 2017/9/18.
@@ -54,6 +62,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
     private int teacherid;
     private TextView cancelText;
     private UpcomingLesson lesson = null;
+    String defaultMeetingRoom;
 
     private static FavoritePoPListener mFavoritePoPListener;
 
@@ -103,10 +112,18 @@ public class JoinMeetingPopup implements View.OnClickListener {
         mPopupWindow.getWindow().setAttributes(lp);
 
     }
-
-
+    
     @SuppressLint("NewApi")
     public void StartPop(View v) {
+        defaultMeetingRoom = mContext.getSharedPreferences(AppConfig.LOGININFO,
+                MODE_PRIVATE).getString("join_meeting_room","");
+        if(!TextUtils.isEmpty(defaultMeetingRoom)){
+            roomet.setText(defaultMeetingRoom);
+            joinroom2.setBackgroundResource(R.drawable.do_join_bg);
+        }else {
+            joinroom2.setBackgroundResource(R.drawable.join_bg);
+        }
+
         if (mPopupWindow != null) {
             mPopupWindow.show();
             mFavoritePoPListener.open();
@@ -125,6 +142,27 @@ public class JoinMeetingPopup implements View.OnClickListener {
     }
 
 
+    private void doJoin(final String meetingRoom){
+        final EventJoinMeeting joinMeeting = new EventJoinMeeting();
+        Observable.just(joinMeeting).observeOn(Schedulers.io()).doOnNext(new Consumer<EventJoinMeeting>() {
+            @Override
+            public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+                JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomLessonID?classRoomID=" + meetingRoom);
+                Log.e("GetClassRoomLessonID","meetingRoom:" + meetingRoom + ",result:" + result);
+                if(result.has("RetCode")){
+                    int retCode = result.getInt("RetCode");
+                    if(retCode == 0){
+                        joinMeeting.setLessionId(result.getInt("RetData"));
+                        joinMeeting.setMeetingId(meetingRoom);
+                    }
+                }
+
+                EventBus.getDefault().post(joinMeeting);
+            }
+        }).subscribe();
+    }
+
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -135,7 +173,11 @@ public class JoinMeetingPopup implements View.OnClickListener {
                     imm.hideSoftInputFromWindow(roomet.getWindowToken(), 0);
                     roomid = roomet.getText().toString();
                     if (!TextUtils.isEmpty(roomid)) {
-                        checkClassRoomExist(roomid);
+//                        checkClassRoomExist(roomid);
+                        roomid = roomid.toUpperCase();
+                        mContext.getSharedPreferences(AppConfig.LOGININFO,
+                                MODE_PRIVATE).edit().putString("join_meeting_room",roomid).commit();
+                        doJoin(roomid);
                     } else {
                         Toast.makeText(mContext, mContext.getString(R.string.joinroom), Toast.LENGTH_LONG).show();
                     }

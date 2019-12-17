@@ -3,6 +3,8 @@ package com.kloudsync.techexcel.help;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.opengl.ETC1Util;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -245,10 +247,12 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 R.drawable.icon_command_webcam_disable);
         microImage.setImageResource(getSettingCache(host).getMeetingSetting().isMicroOn() ? R.drawable.icon_command_mic_enabel : R.drawable.icon_command_mic_disable);
         if (meetingConfig != null) {
-            if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {
-                menuEnd.setVisibility(View.VISIBLE);
-            } else {
+
+            if (TextUtils.isEmpty(meetingConfig.getMeetingHostId()) || !meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {
                 menuEnd.setVisibility(View.GONE);
+            } else {
+                menuEnd.setVisibility(View.VISIBLE);
+
             }
         }
 

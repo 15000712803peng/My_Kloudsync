@@ -17,7 +17,7 @@ public class MeetingConfig {
     private int pageNumber;
     private String userToken;
     private int lessionId;
-    private MeetingRole role = MeetingRole.MEMBER;
+    private int role = MeetingRole.MEMBER;
     private String documentId;
     private MeetingDocument document;
     private boolean isMicroOn;
@@ -30,6 +30,7 @@ public class MeetingConfig {
     private String notifyUrl;
     private List<MeetingMember> meetingMembers = new ArrayList<>();
     private List<MeetingMember> meetingAuditor = new ArrayList<>();
+    private List<MeetingMember> meetingInvitors = new ArrayList<>();
     private String meetingHostId;
     private String agoraChannelId;
     private String presenterId;
@@ -84,6 +85,15 @@ public class MeetingConfig {
     public void setMeetingAuditor(List<MeetingMember> meetingAuditor) {
         this.meetingAuditor.clear();
         this.meetingAuditor.addAll(meetingAuditor);
+    }
+
+    public List<MeetingMember> getMeetingInvitors() {
+        return meetingInvitors;
+    }
+
+    public void setMeetingInvitors(List<MeetingMember> meetingInvitors) {
+        this.meetingInvitors.clear();
+        this.meetingInvitors.addAll(meetingInvitors);
     }
 
     public List<MeetingMember> getMeetingMembers() {
@@ -223,33 +233,20 @@ public class MeetingConfig {
         this.lessionId = lessionId;
     }
 
-    public MeetingRole getRole() {
+    public int getRole() {
         return role;
     }
 
-    public void setRole(MeetingRole role) {
+    public void setRole(int role) {
         this.role = role;
     }
 
-    public enum MeetingRole {
-        DEFULT(-1), MEMBER(0), HOST(2), AUDIENCE(3);
-        private int role;
-
-        private MeetingRole(int role) {
-            this.role = role;
-        }
-        public static MeetingRole match(int role) {
-            for (MeetingConfig.MeetingRole myRole : MeetingRole.values()) {
-                if (myRole.role == role) {
-                    return myRole;
-                }
-            }
-            return MeetingConfig.MeetingRole.DEFULT;
-        }
-
-        public int getRole() {
-            return role;
-        }
+    public static class MeetingRole {
+        public static final int DEFULT = -1;
+        public static final int MEMBER = 1;
+        public static final int HOST = 2;
+        public static final int AUDIENCE = 3;
+        public static final int BE_INVITED = 4;
     }
 
     public void reset(){
