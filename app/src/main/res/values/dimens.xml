@@ -9,7 +9,7 @@
 
     <dimen name="three_grid_unit">10dp</dimen>
     <dimen name="one_and_a_half_grid_unit">4dp</dimen>
-    <dimen name="menu_bottom_margin">16dp</dimen>
+    <dimen name="menu_bottom_margin">60dp</dimen>
     <dimen name="menu_top_margin">52dp</dimen>
 
 </resources>

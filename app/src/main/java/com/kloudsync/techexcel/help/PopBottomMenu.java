@@ -118,8 +118,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
             init();
         }
     }
-
-
+    
     public void init() {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         View popupWindow = layoutInflater.inflate(R.layout.pop_bottom_menu, null);
@@ -172,7 +171,6 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 menuChat.setVisibility(View.GONE);
                 menuSetting.setVisibility(View.GONE);
 
-
                 break;
             case MeetingType.MEETING:
                 menuFile.setVisibility(View.VISIBLE);
@@ -198,7 +196,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     public void show(ImageView menu,PopBottomMenu.BottomMenuOperationsListener bottomMenuOperationsListener) {
         this.menuIcon = menu;
         this.bottomMenuOperationsListener = bottomMenuOperationsListener;
-        bottomMenuWindow.showAtLocation(menu, Gravity.TOP | Gravity.LEFT,
+        bottomMenuWindow.showAtLocation(menu, Gravity.BOTTOM | Gravity.LEFT,
                 width - mContext.getResources().getDimensionPixelSize(R.dimen.fab_margin),
                 mContext.getResources().getDimensionPixelSize(R.dimen.menu_bottom_margin));
     }

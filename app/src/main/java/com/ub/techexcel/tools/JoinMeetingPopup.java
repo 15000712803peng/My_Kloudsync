@@ -112,7 +112,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
         mPopupWindow.getWindow().setAttributes(lp);
 
     }
-    
+
     @SuppressLint("NewApi")
     public void StartPop(View v) {
         defaultMeetingRoom = mContext.getSharedPreferences(AppConfig.LOGININFO,
