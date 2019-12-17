@@ -2338,6 +2338,12 @@ public class ServiceInterfaceTools {
         }
     }
 
+    public JSONObject syncGetFavoriteVedios(){
+        String url  = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + 2;
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        return response;
+    }
+
     public JSONObject syncGetMeetingMembers(String meetingId,int role) {
 
         String url = "";

@@ -32,6 +32,7 @@ import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventHideMembers;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
+import com.kloudsync.techexcel.bean.EventMeetingDocuments;
 import com.kloudsync.techexcel.bean.EventMute;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
@@ -90,6 +91,7 @@ import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.ConfirmDialog;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
+import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -162,7 +164,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     ImageView backFullCameraImage;
     @Bind(R.id.layout_vedio)
     RelativeLayout vedioLayout;
-
     @Bind(R.id.image_vedio_close)
     ImageView closeVedioImage;
 
@@ -194,7 +195,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         messageManager = SocketMessageManager.getManager(this);
         messageManager.registerMessageReceiver();
         if (meetingConfig.getType() != MeetingType.MEETING) {
-
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
             MeetingKit.getInstance().prepareJoin(this, meetingConfig);
@@ -396,11 +396,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     // ------- @Subscribe
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receiveDocuments(List<MeetingDocument> documents) {
+    public void receiveDocuments(EventMeetingDocuments documents) {
         // 所有文档的data
         Log.e("receiverDocuemnts", "documents:" + documents);
         this.documents.clear();
-        this.documents.addAll(documents);
+        this.documents.addAll(documents.getDocuments());
         if (this.documents != null && this.documents.size() > 0) {
             int index = this.documents.indexOf(new MeetingDocument(meetingConfig.getFileId()));
             if (index < 0) {
@@ -408,11 +408,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
             meetingConfig.setDocument(this.documents.get(index));
             downLoadDocumentPageAndShow();
-        }else {
+        } else {
             hideEnterLoading();
             menuIcon.setVisibility(View.VISIBLE);
 
-            if(meetingConfig.getType() == MeetingType.MEETING){
+            if (meetingConfig.getType() == MeetingType.MEETING) {
                 meetingDefaultDocument.setVisibility(View.VISIBLE);
                 MeetingKit.getInstance().handleMeetingDefaultDocument(meetingDefaultDocument);
             }
@@ -652,10 +652,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showMemeberCamera(AgoraMember member) {
-        Log.e("showMemeberCamera","member:" + member);
+        Log.e("showMemeberCamera", "member:" + member);
         if ((member.getUserId() + "").equals(AppConfig.UserID) && member.isAdd()) {
             //自己开启会议成功
-            if(documents != null && documents.size() > 0){
+            if (documents != null && documents.size() > 0) {
                 notifyDocumentChanged();
             }
         }
@@ -1417,11 +1417,16 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     }
 
+    private FavoriteVideoPopup selectVideoDialog;
     //打开
     @org.xwalk.core.JavascriptInterface
     public void videoSelectFunction(String video) {
         Log.e("JavascriptInterface", "videoSelectFunction,id:  " + video);
-
+        if(selectVideoDialog != null){
+            selectVideoDialog.dismiss();
+            selectVideoDialog = null;
+        }
+        selectVideoDialog = new FavoriteVideoPopup(this);
     }
 
     // 录制
@@ -1494,7 +1499,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (bottomFilePop == null) {
             bottomFilePop = new PopBottomFile(this);
         }
-        if(documents != null && documents.size() > 0){
+        if (documents != null && documents.size() > 0) {
             bottomFilePop.setDocuments(documents, meetingConfig.getDocument().getItemID(), this);
         }
         if (menuManager != null) {
@@ -1806,7 +1811,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
                     break;
                 case REQUEST_SCAN:
-                    if(meetingConfig.getType() == MeetingType.MEETING){
+                    if (meetingConfig.getType() == MeetingType.MEETING) {
                         MeetingKit.getInstance().restoreLocalVedeo();
                     }
                     break;
@@ -1968,24 +1973,30 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
 
     private void gotoScanTv() {
-
         if (!isCameraCanUse()) {
             Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
             return;
         }
-        Log.e("gotoScanTv","meeting_type:" + meetingConfig.getType());
-        if(meetingConfig.getType() == MeetingType.MEETING){
+
+        Log.e("gotoScanTv", "meeting_type:" + meetingConfig.getType());
+        if (meetingConfig.getType() == MeetingType.MEETING) {
             MeetingKit.getInstance().templeDisableLocalVideo();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(DocAndMeetingActivity.this, MipcaActivityCapture.class);
+                    intent.putExtra("isHorization", true);
+                    intent.putExtra("type", 0);
+                    startActivityForResult(intent, REQUEST_SCAN);
+                }
+            }, 500);
+
+        } else {
+            Intent intent = new Intent(DocAndMeetingActivity.this, MipcaActivityCapture.class);
+            intent.putExtra("isHorization", true);
+            intent.putExtra("type", 0);
+            startActivityForResult(intent, REQUEST_SCAN);
         }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(DocAndMeetingActivity.this, MipcaActivityCapture.class);
-                intent.putExtra("isHorization", true);
-                intent.putExtra("type", 0);
-                startActivityForResult(intent,REQUEST_SCAN);
-            }
-        }, 1000);
 //        String url = AppConfig.wssServer + "/tv/change_bind_tv_status?status=1";
 //        ServiceInterfaceTools.getinstance().changeBindTvStatus(url, ServiceInterfaceTools.CHANGEBINDTVSTATUS,
 //                true, new ServiceInterfaceListener() {

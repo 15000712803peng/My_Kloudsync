@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.bean.DocumentPage;
+import com.kloudsync.techexcel.bean.EventMeetingDocuments;
 import com.kloudsync.techexcel.bean.EventRefreshDocs;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
@@ -79,7 +80,9 @@ public class DocumentModel {
                                     document.setDocumentPages(pages);
                                     documents.add(document);
                                 }
-                                EventBus.getDefault().post(documents);
+                                EventMeetingDocuments meetingDocuments = new EventMeetingDocuments();
+                                meetingDocuments.setDocuments(documents);
+                                EventBus.getDefault().post(meetingDocuments);
                             }
                         }
                     } catch (JSONException e) {

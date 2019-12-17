@@ -6295,7 +6295,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         startActivityForResult(intent, REQUEST_CODE_CAPTURE_SAVE_MEDIA);
     }
 
-
     /**
      * @param state        当前播放状态 status == 0,暂停，== 1 播放，== 2:Close
      * @param time

@@ -26,8 +26,6 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
     private boolean isSwitch;
     boolean fromSearch;
     String keyword;
-
-
     public void clearSelect() {
         if (list != null) {
             for (TeamSpaceBean space : list) {
@@ -62,6 +60,7 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
     }
 
     public interface OnItemLectureListener {
+
         void onItem(TeamSpaceBean teamSpaceBean);
 
         void select(TeamSpaceBean teamSpaceBean);
