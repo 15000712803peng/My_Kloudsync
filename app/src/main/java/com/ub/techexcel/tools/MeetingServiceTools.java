@@ -15,6 +15,7 @@ import com.kloudsync.techexcel.bean.EventNotePageActions;
 import com.kloudsync.techexcel.bean.EventPageActions;
 import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -46,6 +47,7 @@ public class MeetingServiceTools {
 
     public static final int STARTRECORDING = 0x2101;
     public static final int ENDRECORDING = 0x2102;
+    public static final int GETMEETINGMEMBERS = 0x2103;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -648,6 +650,88 @@ public class MeetingServiceTools {
             }
         }).start();
     }
+
+    public void getMeetingMembers(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("getMeetingMembers", url + returnJson.toString());
+                try {
+                    if (returnJson.getInt("RetCode") == 0 && returnJson.getString("msg").equals("success")) {
+                        JSONArray meetingMemberJson = returnJson.getJSONArray("data");
+                        List<MeetingMember> meetingMembers = new ArrayList<>();
+                        for (int j = 0; j < meetingMemberJson.length(); j++) {
+                            JSONObject memberjson = meetingMemberJson.getJSONObject(j);
+                            MeetingMember meetingMember = new MeetingMember();
+                            meetingMember.setUserId(memberjson.getString("userId"));
+                            meetingMember.setUserName(memberjson.getString("userName"));
+                            meetingMember.setAvatarUrl(memberjson.getString("avatarUrl"));
+                            meetingMember.setIsOnline(memberjson.getInt("isOnline"));
+                            meetingMember.setHandStatus(memberjson.getInt("handStatus"));
+                            meetingMember.setSessionId(memberjson.getString("sessionId"));
+                            meetingMember.setRole(memberjson.getInt("role"));
+                            meetingMember.setPresenter(memberjson.getInt("presenter"));
+                            meetingMember.setRongCloudId(memberjson.getInt("rongCloudId"));
+                            meetingMember.setAgoraStatus(memberjson.getInt("agoraStatus"));
+                            meetingMember.setMicrophoneStatus(memberjson.getInt("microphoneStatus"));
+                            meetingMember.setCameraStatus(memberjson.getInt("cameraStatus"));
+                            meetingMembers.add(meetingMember);
+                        }
+                        Message msg = Message.obtain();
+                        msg.obj = meetingMembers;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnJson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    /**
+     * 是否举手
+     */
+    public void  raiseHandOnStage(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener){
+            putInterface(code, serviceInterfaceListener);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
+                    Log.e("getMeetingMembers", url + returnJson.toString());
+                    try {
+                        if (returnJson.getInt("RetCode") == 0 && returnJson.getString("msg").equals("success")) {
+
+
+
+
+
+                            Message msg = Message.obtain();
+//                            msg.obj = meetingMembers;
+                            msg.what = code;
+                            handler.sendMessage(msg);
+                        } else {
+                            Message msg3 = Message.obtain();
+                            msg3.what = ERRORMESSAGE;
+                            msg3.obj = returnJson.getString("ErrorMessage");
+                            handler.sendMessage(msg3);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+    }
+
+
 
 
     public void startRecording(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {

@@ -274,7 +274,6 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                                 if (!Tools.isFastClick()) {
                                     requestDocumentDetail(document);
                                 }
-
                             }
 
                             @Override

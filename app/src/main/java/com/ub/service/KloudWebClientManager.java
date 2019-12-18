@@ -117,24 +117,24 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                 heartBeatMessage.put("sessionId", AppConfig.UserToken);
                 heartBeatMessage.put("changeNumber", 0);
 
-//                if (AppConfig.IsInMeeting) {
-//                    heartBeatMessage.put("status", AppConfig.status);
-//                    heartBeatMessage.put("currentLine", AppConfig.currentLine);
-//                    heartBeatMessage.put("currentMode", AppConfig.currentMode);
-//                    heartBeatMessage.put("currentPageNumber", AppConfig.currentPageNumber);
-//                    heartBeatMessage.put("currentItemId", AppConfig.currentDocId);
-//                }
-                MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
-                if(meetingConfig != null && meetingConfig.isInRealMeeting()){
-                    heartBeatMessage.put("status", "0");
-                    heartBeatMessage.put("currentLine", 0);
-                    heartBeatMessage.put("currentMode", "0");
-                    heartBeatMessage.put("currentPageNumber", meetingConfig.getPageNumber());
-                    if(meetingConfig.getDocument() != null){
-                        heartBeatMessage.put("currentItemId", meetingConfig.getDocument().getItemID());
-                    }
-
+                if (AppConfig.IsInMeeting) {
+                    heartBeatMessage.put("status", AppConfig.status);
+                    heartBeatMessage.put("currentLine", AppConfig.currentLine);
+                    heartBeatMessage.put("currentMode", AppConfig.currentMode);
+                    heartBeatMessage.put("currentPageNumber", AppConfig.currentPageNumber);
+                    heartBeatMessage.put("currentItemId", AppConfig.currentDocId);
                 }
+//                MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
+//                if(meetingConfig != null && meetingConfig.isInRealMeeting()){
+//                    heartBeatMessage.put("status", "0");
+//                    heartBeatMessage.put("currentLine", 0);
+//                    heartBeatMessage.put("currentMode", "0");
+//                    heartBeatMessage.put("currentPageNumber", meetingConfig.getPageNumber());
+//                    if(meetingConfig.getDocument() != null){
+//                        heartBeatMessage.put("currentItemId", meetingConfig.getDocument().getItemID());
+//                    }
+//
+//                }
 
                 if (kloudWebClient != null) {
                     kloudWebClient.send(heartBeatMessage.toString());

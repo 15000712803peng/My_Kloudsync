@@ -20,8 +20,11 @@ import android.widget.Toast;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
+import com.kloudsync.techexcel.help.PopShareKloudSync;
+import com.kloudsync.techexcel.help.PopShareMeeting;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.ub.kloudsync.activity.Document;
 import com.ub.service.activity.MeetingPropertyActivity;
 import com.ub.service.activity.MeetingShareActivity;
 import com.ub.service.activity.WatchCourseActivity2;
@@ -174,7 +177,6 @@ public class MeetingFragment extends MyFragment {
         if (meetings == null || meetings.size() == 0) {
             noMeetingLayout.setVisibility(View.VISIBLE);
             meetingList.setVisibility(View.GONE);
-
         } else {
             noMeetingLayout.setVisibility(View.GONE);
             meetingList.setVisibility(View.VISIBLE);
@@ -195,7 +197,7 @@ public class MeetingFragment extends MyFragment {
                         @Override
                         public void view() {
 //                            Toast.makeText(getActivity(),type+"",Toast.LENGTH_LONG).show();
-                            if (type == 3 || type == 2) {
+                            if (type == 3||type==2) {
                                 Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
                                 intent.putExtra("userid", bean.getUserId());
                                 intent.putExtra("meetingId", bean.getId() + "");
@@ -225,11 +227,12 @@ public class MeetingFragment extends MyFragment {
 
                         @Override
                         public void edit() {
-                            if (type == 3) {
-                                Intent shareintent = new Intent(getActivity(), MeetingShareActivity.class);
-                                shareintent.putExtra("lesson", bean);
-                                startActivity(shareintent);
-                            } else {
+                            if(type==3){
+//                                Intent shareintent = new Intent(getActivity(), MeetingShareActivity.class);
+//                                shareintent.putExtra("lesson", bean);
+//                                startActivity(shareintent);
+                                shareDocumentDialog(bean);
+                            }else{
                                 Intent intent = new Intent(getActivity(), MeetingPropertyActivity.class);
                                 intent.putExtra("servicebean", bean);
                                 getActivity().startActivity(intent);
@@ -270,6 +273,13 @@ public class MeetingFragment extends MyFragment {
             });
 
         }
+    }
+
+
+    private void shareDocumentDialog(final ServiceBean document) {
+        final PopShareMeeting psk = new PopShareMeeting();
+        psk.getPopwindow(getActivity(), document);
+        psk.startPop();
     }
 
     ServiceAdapter2 meetingAdapter;
