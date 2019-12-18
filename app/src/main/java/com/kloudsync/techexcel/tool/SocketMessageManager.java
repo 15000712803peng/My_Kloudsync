@@ -14,6 +14,7 @@ import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -269,6 +270,26 @@ public class SocketMessageManager {
         }
 
         doSendMessage(wrapperSendMessage(AppConfig.UserToken,0,Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+    }
+
+
+
+    public void sendMessage_AgoraStatusChange(MeetingConfig config, AgoraMember member){
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "AGORA_STATUS_CHANGE");
+            message.put("sessionId", config.getUserToken());
+            message.put("agoraStatus", 1);
+            message.put("microphoneStatus", member.isMuteAudio()?3:2);
+            message.put("cameraStatus", member.isMuteVideo() ? 3: 2);
+            message.put("screenStatus", 0);
+
+//                    message.put("followToLeave", 1);
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private WebSocketClient getClient() {

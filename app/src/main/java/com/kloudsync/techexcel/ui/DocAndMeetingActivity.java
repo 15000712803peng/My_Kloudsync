@@ -280,7 +280,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingConfig.setDocumentId(data.getStringExtra("document_id"));
         meetingConfig.setRole(data.getIntExtra("meeting_role", MeetingConfig.MeetingRole.HOST));
         meetingConfig.setUserToken(UserData.getUserToken(this));
-        meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting",false));
+        meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting", false));
         return meetingConfig;
     }
 
@@ -566,8 +566,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe
-    public void receiveEventClose(EventClose close){
-        Log.e("receiveEventClose","close");
+    public void receiveEventClose(EventClose close) {
+        Log.e("receiveEventClose", "close");
         finish();
     }
 
@@ -680,6 +680,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         if (cameraAdapter != null) {
             cameraAdapter.setOnCameraOptionsListener(this);
+        }
+
+        Log.e("check_send_agora_status","user_id:" + AppConfig.UserID + ",agora_id:" + member.getUserId());
+        if ((member.getUserId() + "").equals(AppConfig.UserID)) {
+            messageManager.sendMessage_AgoraStatusChange(meetingConfig, member);
         }
 
     }
@@ -827,14 +832,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void muteAgoraMember(EventMute eventMute) {
-        Log.e("muteAgoraMember","eventMute:" + eventMute.getType());
+        Log.e("muteAgoraMember", "eventMute:" + eventMute.getType());
         if (cameraList.getVisibility() == View.VISIBLE) {
             if (cameraAdapter != null) {
-                if(eventMute.getType() == EventMute.TYPE_MUTE_VEDIO){
-                    Log.e("muteAgoraMember","muteVideo");
+                if (eventMute.getType() == EventMute.TYPE_MUTE_VEDIO) {
+                    Log.e("muteAgoraMember", "muteVideo");
                     cameraAdapter.muteVideo(eventMute.getAgoraMember(), eventMute.isMuteVedio());
-                }else if(eventMute.getType() == EventMute.TYPE_MUTE_AUDIO){
-                    Log.e("muteAgoraMember","muteAudio");
+                } else if (eventMute.getType() == EventMute.TYPE_MUTE_AUDIO) {
+                    Log.e("muteAgoraMember", "muteAudio");
                     cameraAdapter.muteAudio(eventMute.getAgoraMember(), eventMute.isMuteAudio());
                 }
 
@@ -843,15 +848,25 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         if (fullCameraList.getVisibility() == View.VISIBLE) {
             if (fullCameraAdapter != null) {
-                if(eventMute.getType() == EventMute.TYPE_MUTE_VEDIO){
+                if (eventMute.getType() == EventMute.TYPE_MUTE_VEDIO) {
                     fullCameraAdapter.muteVideo(eventMute.getAgoraMember(), eventMute.isMuteVedio());
-                }else if(eventMute.getType() == EventMute.TYPE_MUTE_AUDIO){
+                } else if (eventMute.getType() == EventMute.TYPE_MUTE_AUDIO) {
                     fullCameraAdapter.muteAudio(eventMute.getAgoraMember(), eventMute.isMuteAudio());
 
                 }
 
             }
         }
+
+        if(eventMute.getAgoraMember() != null){
+            if((eventMute.getAgoraMember().getUserId() + "").equals(AppConfig.UserID)){
+                messageManager.sendMessage_AgoraStatusChange(meetingConfig, eventMute.getAgoraMember());
+            }
+        }
+        
+        Log.e("check_send_agora_status","user_id:" + AppConfig.UserID + ",agora_id:" + eventMute.getAgoraMember().getUserId());
+
+
     }
 
     private void checkAgoraMemberName() {
@@ -1440,11 +1455,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private FavoriteVideoPopup selectVideoDialog;
+
     //打开
     @org.xwalk.core.JavascriptInterface
     public void videoSelectFunction(String video) {
         Log.e("JavascriptInterface", "videoSelectFunction,id:  " + video);
-        if(selectVideoDialog != null){
+        if (selectVideoDialog != null) {
             selectVideoDialog.dismiss();
             selectVideoDialog = null;
         }
