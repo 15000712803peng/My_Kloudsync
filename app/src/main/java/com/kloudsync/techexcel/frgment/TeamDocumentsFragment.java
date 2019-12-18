@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -106,6 +107,14 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     private ImageView filterSpaceImage;
     private View view;
     private ImageView switchCompanyImage;
+    private TextView searchPromptText;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        sharedPreferences = getActivity().getSharedPreferences(AppConfig.LOGININFO,
+                Context.MODE_PRIVATE);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -135,7 +144,6 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     }
 
     private void getUserDetail() {
-
         UserInfoHelper.getUserInfoInCompany(getActivity(), AppConfig.SchoolID + "", AppConfig.UserID,
                 sharedPreferences.getInt("teamid", 0) + "");
     }
@@ -459,7 +467,8 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         spaceAdapter = new SpaceAdapter(getActivity(), spacesList, false, false);
         spaceRecycleView.setAdapter(spaceAdapter);
         spaceAdapter.setOnItemLectureListener(this);
-
+        searchPromptText = view.findViewById(R.id.txt_promp_search);
+        searchPromptText.setText(getString(R.string.Search_Contact) + "  "+sharedPreferences.getString("SchoolName", ""));
         mCurrentTeamRecyclerView.setNestedScrollingEnabled(false);
         spaceRecycleView.setNestedScrollingEnabled(false);
 
@@ -482,8 +491,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     }
 
     private void getTeam() {
-        sharedPreferences = getActivity().getSharedPreferences(AppConfig.LOGININFO,
-                Context.MODE_PRIVATE);
+
         teamSpaceBean.setName(sharedPreferences.getString("teamname", ""));
         teamSpacename.setText(teamSpaceBean.getName());
         int teamId = sharedPreferences.getInt("teamid", 0);

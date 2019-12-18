@@ -62,6 +62,9 @@
                     android:background="@drawable/searchicon" />
 
                 <TextView
+                    android:singleLine="true"
+                    android:layout_marginRight="10dp"
+                    android:id="@+id/txt_promp_search"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@id/icon_search"
                     android:layout_width="wrap_content"

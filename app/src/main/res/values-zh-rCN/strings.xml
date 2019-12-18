@@ -424,7 +424,7 @@
     <string name="satExternal">外部工具</string>
     <string name="satOn">启用</string>
     <string name="satOff">关闭</string>
-    <string name="satOk">确认</string>
+    <string name="satOk">确定</string>
 
     <!--进入页面显示-->
     <string name="inAttendee">邀请参会者</string>

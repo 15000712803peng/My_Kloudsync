@@ -813,10 +813,12 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //-----
+
         intent.putExtra("meeting_id", eventJoinMeeting.getMeetingId());
         intent.putExtra("meeting_type", 0);
         intent.putExtra("lession_id", eventJoinMeeting.getLessionId());
         intent.putExtra("meeting_role", eventJoinMeeting.getRole());
+        intent.putExtra("from_meeting",true);
         startActivity(intent);
     }
 }

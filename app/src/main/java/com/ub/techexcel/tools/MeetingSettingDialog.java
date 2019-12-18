@@ -27,6 +27,8 @@ public class MeetingSettingDialog implements View.OnClickListener{
     private ImageView microImage,cameraImage;
     private TextView microText,cameraText;
     private boolean isStartMeeting;
+    private TextView closeText;
+
 
     public boolean isStartMeeting() {
         return isStartMeeting;
@@ -67,6 +69,8 @@ public class MeetingSettingDialog implements View.OnClickListener{
         view = layoutInflater.inflate(R.layout.dialog_meeting_setting, null);
         microImage = view.findViewById(R.id.image_micro);
         microImage.setOnClickListener(this);
+        closeText = view.findViewById(R.id.txt_cancel);
+        closeText.setOnClickListener(this);
         microText = view.findViewById(R.id.txt_micro);
         cameraImage = view.findViewById(R.id.image_camera);
         cameraImage.setOnClickListener(this);
@@ -75,6 +79,7 @@ public class MeetingSettingDialog implements View.OnClickListener{
         startText.setOnClickListener(this);
         settingDialog = new Dialog(host, R.style.my_dialog);
         settingDialog.setContentView(view);
+        settingDialog.setCancelable(false);
 
     }
 
@@ -159,6 +164,9 @@ public class MeetingSettingDialog implements View.OnClickListener{
                     cameraText.setText(R.string.satOff);
                 }
                 getSettingCache(host).setCameraOn(!isCameraOn);
+                break;
+            case R.id.txt_cancel:
+                dismiss();
                 break;
         }
     }

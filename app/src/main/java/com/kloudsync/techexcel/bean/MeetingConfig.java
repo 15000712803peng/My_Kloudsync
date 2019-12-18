@@ -35,6 +35,15 @@ public class MeetingConfig {
     private String agoraChannelId;
     private String presenterId;
     private List<AgoraMember> agoraMembers = new ArrayList<>();
+    private boolean fromMeeting;
+
+    public boolean isFromMeeting() {
+        return fromMeeting;
+    }
+
+    public void setFromMeeting(boolean fromMeeting) {
+        this.fromMeeting = fromMeeting;
+    }
 
     public List<AgoraMember> getAgoraMembers() {
         return agoraMembers;

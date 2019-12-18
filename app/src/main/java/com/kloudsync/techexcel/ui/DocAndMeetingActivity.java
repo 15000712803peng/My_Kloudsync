@@ -279,6 +279,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingConfig.setDocumentId(data.getStringExtra("document_id"));
         meetingConfig.setRole(data.getIntExtra("meeting_role", MeetingConfig.MeetingRole.HOST));
         meetingConfig.setUserToken(UserData.getUserToken(this));
+        meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting",false));
         return meetingConfig;
     }
 
@@ -1661,7 +1662,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         MeetingKit.getInstance().startMeeting();
         meetingLayout.setVisibility(View.VISIBLE);
-        if (messageManager != null) {
+        if (messageManager != null && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
             messageManager.sendMessage_MeetingStatus(meetingConfig);
         }
     }
