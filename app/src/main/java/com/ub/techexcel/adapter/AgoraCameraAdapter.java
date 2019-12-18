@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -55,7 +56,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.video_view_container, parent, false);
+        View view = inflater.inflate(R.layout.small_camera_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -63,21 +64,21 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     public void onBindViewHolder(ViewHolder holder, int position) {
         ViewHolder myHolder = holder;
         final AgoraMember user = users.get(position);
-        FrameLayout holderView = (FrameLayout) myHolder.itemView;
-        holderView.removeAllViews();
-        if (holderView.getChildCount() == 0) {
+
+        holder.vedioFrame.removeAllViews();
+        if (holder.vedioFrame.getChildCount() == 0) {
             View d = inflater.inflate(R.layout.framelayout_head, null);
             TextView videoname = (TextView) d.findViewById(R.id.videoname);
             ViewParent parent = videoname.getParent();
             if (parent != null) {
                 ((RelativeLayout) parent).removeView(videoname);
             }
-            holderView.addView(videoname);
+            holder.vedioFrame.addView(videoname);
             SurfaceView target = user.getSurfaceView();
             if (!user.isMuteVideo()) {
                 target.setVisibility(View.VISIBLE);
                 stripSurfaceView(target);
-                holderView.addView(target, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                holder.vedioFrame.addView(target, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             } else {
                 Log.e("onBindViewHolder","target_gone");
                 stripSurfaceView(target);
@@ -91,6 +92,25 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                     }
                 }
             });
+
+            //---
+            if(!TextUtils.isEmpty(user.getUserName())){
+                holder.nameText.setText(user.getUserName());
+            }else {
+                holder.nameText.setText("");
+            }
+
+            if(user.isMuteAudio()){
+                holder.audioStatusImage.setImageResource(R.drawable.icon_command_mic_disable);
+            }else {
+                holder.audioStatusImage.setImageResource(R.drawable.icon_command_mic_enabel);
+            }
+
+            if(user.isMuteVideo()){
+                holder.vedioStatusImage.setImageResource(R.drawable.icon_command_webcam_disable);
+            }else {
+                holder.vedioStatusImage.setImageResource(R.drawable.icon_command_webcam_enable);
+            }
         }
     }
 
@@ -148,9 +168,18 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public ViewHolder(View a) {
-            super(a);
+        public ViewHolder(View view) {
+            super(view);
+            vedioFrame = view.findViewById(R.id.video_view_container);
+            nameText = view.findViewById(R.id.txt_name);
+            audioStatusImage = view.findViewById(R.id.image_audio_status);
+            vedioStatusImage = view.findViewById(R.id.image_vedio_status);
         }
+
+        public FrameLayout vedioFrame;
+        public TextView nameText;
+        public ImageView audioStatusImage;
+        public ImageView vedioStatusImage;
     }
 
    public void reset(){
@@ -168,7 +197,15 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
            this.users.get(index).setMuteVideo(isMute);
            notifyItemChanged(index);
        }
-
    }
+
+    public void muteAudio(AgoraMember member,boolean isMute){
+        int index = this.users.indexOf(member);
+        Log.e("AgoraCameraAdapter","muteAudio:" + isMute + ",index:" + index);
+        if(index >= 0){
+            this.users.get(index).setMuteAudio(isMute);
+            notifyItemChanged(index);
+        }
+    }
 
 }

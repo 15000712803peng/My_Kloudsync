@@ -79,10 +79,10 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
         }
 
         SurfaceView target = member.getSurfaceView();
+        holderView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
         if (!member.isMuteVideo()) {
             target.setVisibility(View.VISIBLE);
             stripSurfaceView(target);
-            holderView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
             Log.e("FullAgoraCameraAdapter", "add_surface_view:" + framelayoutHeight);
             holderView.addView(target, 0, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
         } else {
@@ -164,6 +164,14 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
         int index = this.members.indexOf(member);
         if(index >= 0){
             this.members.get(index).setMuteVideo(isMute);
+            notifyItemChanged(index);
+        }
+    }
+
+    public void muteAudio(AgoraMember member,boolean isMute){
+        int index = this.members.indexOf(member);
+        if(index >= 0){
+            this.members.get(index).setMuteAudio(isMute);
             notifyItemChanged(index);
         }
     }

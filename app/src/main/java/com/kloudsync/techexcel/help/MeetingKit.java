@@ -134,7 +134,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         if (settingDialog.isShowing()) {
             return;
         }
-        settingDialog.show(host);
+        settingDialog.show(host,meetingConfig);
     }
 
     public void prepareJoin(Activity host, MeetingConfig meetingConfig) {
@@ -155,7 +155,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         if (settingDialog.isShowing()) {
             return;
         }
-        settingDialog.show(host);
+        settingDialog.show(host,meetingConfig);
     }
 
     public void startMeeting() {
@@ -220,6 +220,8 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         Log.e("MeetingKit", "onUserOffline:" + uid);
         AgoraMember member = new AgoraMember();
         member.setUserId(uid);
+        member.setMuteAudio(true);
+        member.setMuteVideo(true);
         EventBus.getDefault().post(member);
     }
 
@@ -234,9 +236,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     public void onUserMuteVideo(int uid, boolean muted) {
         Log.e("MeetingKit", "onUserMuteVideo:" + uid);
         AgoraMember member = new AgoraMember();
+
         member.setUserId(uid);
         EventMute eventMute = new EventMute();
-        eventMute.setMute(muted);
+        eventMute.setType(EventMute.TYPE_MUTE_VEDIO);
+        eventMute.setMuteVedio(muted);
         eventMute.setAgoraMember(member);
         EventBus.getDefault().post(eventMute);
 
@@ -246,6 +250,13 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     @Override
     public void onUserMuteAudio(int uid, boolean muted) {
         Log.e("MeetingKit", "onUserMuteAudio:" + uid);
+        AgoraMember member = new AgoraMember();
+        member.setUserId(uid);
+        EventMute eventMute = new EventMute();
+        eventMute.setType(EventMute.TYPE_MUTE_AUDIO);
+        eventMute.setMuteAudio(muted);
+        eventMute.setAgoraMember(member);
+        EventBus.getDefault().post(eventMute);
 
     }
 
@@ -283,18 +294,19 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         return member;
     }
 
-
     private AgoraMember createSelfCamera(String channelId, int userId) {
         AgoraMember member = new AgoraMember();
         member.setUserId(userId);
-        boolean isMute = !MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn();
-        member.setMuteVideo(isMute);
+        boolean isMuteVedio = !MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn();
+        boolean isMuteAudio = !MeetingSettingCache.getInstance(host).getMeetingSetting().isMicroOn();
+        member.setMuteVideo(isMuteVedio);
+        member.setMuteAudio(isMuteAudio);
         member.setAdd(true);
         SurfaceView surfaceV = RtcEngine.CreateRendererView(host.getApplicationContext());
         surfaceV.setZOrderOnTop(true);
         surfaceV.setZOrderMediaOverlay(true);
         getRtcManager().rtcEngine().setupLocalVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, userId));
-        getRtcManager().worker().getRtcEngine().muteLocalVideoStream(isMute);
+        getRtcManager().worker().getRtcEngine().muteLocalVideoStream(isMuteVedio);
         member.setSurfaceView(surfaceV);
         return member;
     }
@@ -380,6 +392,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         Log.e("menuMicroClicked", "mute_locacl_voice:" + !isMicroOn);
         getRtcManager().worker().getRtcEngine().muteLocalAudioStream(!isMicroOn);
         MeetingSettingCache.getInstance(host).setMicroOn(isMicroOn);
+        onUserMuteAudio(Integer.parseInt(AppConfig.UserID),!MeetingSettingCache.getInstance(host).getMeetingSetting().isMicroOn());
     }
 
     @Override
@@ -523,7 +536,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.MEMBER);
                 if (result.has("RetCode")) {
                     if (result.getInt("RetCode") == 0) {
-                        List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("userList").toString(), new TypeToken<List<MeetingMember>>() {
+                        List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
                         if(members != null){
                             meetingConfig.setMeetingMembers(members);
@@ -537,7 +550,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.AUDIENCE);
                 if (result.has("RetCode")) {
                     if (result.getInt("RetCode") == 0) {
-                        List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("userList").toString(), new TypeToken<List<MeetingMember>>() {
+                        List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
                         if(members != null){
                             meetingConfig.setMeetingAuditor(members);
@@ -551,7 +564,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.MEMBER);
                 if (result.has("RetCode")) {
                     if (result.getInt("RetCode") == 0) {
-                        List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("userList").toString(), new TypeToken<List<MeetingMember>>() {
+                        List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
                         if(members != null){
                             meetingConfig.setMeetingInvitors(members);
@@ -565,7 +578,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     private RelativeLayout defaultDocumentView;
     private LinearLayout createBlankPage, inviteAttendee, shareDocument;
-
 
     public void handleMeetingDefaultDocument(final RelativeLayout defaultDocumentView){
         this.defaultDocumentView = defaultDocumentView;

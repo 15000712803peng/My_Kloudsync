@@ -3,16 +3,24 @@ package com.ub.techexcel.tools;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.usage.UsageEvents;
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventClose;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by wang on 2017/9/18.
@@ -28,7 +36,10 @@ public class MeetingSettingDialog implements View.OnClickListener{
     private TextView microText,cameraText;
     private boolean isStartMeeting;
     private TextView closeText;
+    private MeetingConfig meetingConfig;
 
+    private LinearLayout tabTitlesLayout;
+    private LinearLayout recordingLayout;
 
     public boolean isStartMeeting() {
         return isStartMeeting;
@@ -71,6 +82,8 @@ public class MeetingSettingDialog implements View.OnClickListener{
         microImage.setOnClickListener(this);
         closeText = view.findViewById(R.id.txt_cancel);
         closeText.setOnClickListener(this);
+        tabTitlesLayout = view.findViewById(R.id.layout_tab_titles);
+        recordingLayout = view.findViewById(R.id.layout_recording);
         microText = view.findViewById(R.id.txt_micro);
         cameraImage = view.findViewById(R.id.image_camera);
         cameraImage.setOnClickListener(this);
@@ -80,6 +93,13 @@ public class MeetingSettingDialog implements View.OnClickListener{
         settingDialog = new Dialog(host, R.style.my_dialog);
         settingDialog.setContentView(view);
         settingDialog.setCancelable(false);
+
+        Window window = settingDialog.getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.gravity = Gravity.CENTER;
+        lp.width = host.getResources().getDimensionPixelSize(R.dimen.meeting_setting_dialog_width);
+        settingDialog.getWindow().setAttributes(lp);
+
 
     }
 
@@ -100,11 +120,23 @@ public class MeetingSettingDialog implements View.OnClickListener{
             cameraImage.setImageResource(R.drawable.cam_off2);
             cameraText.setText(R.string.satOff);
         }
+
+        if(meetingConfig.isFromMeeting() && meetingConfig.getRole() != MeetingConfig.MeetingRole.HOST){
+            recordingLayout.setVisibility(View.GONE);
+            tabTitlesLayout.setVisibility(View.GONE);
+            closeText.setVisibility(View.GONE);
+        }else {
+            recordingLayout.setVisibility(View.VISIBLE);
+            tabTitlesLayout.setVisibility(View.VISIBLE);
+            closeText.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @SuppressLint("NewApi")
-    public void show(Activity host) {
+    public void show(Activity host,MeetingConfig meetingConfig) {
         this.host = host;
+        this.meetingConfig = meetingConfig;
         if (settingDialog != null && !settingDialog.isShowing()) {
             settingDialog.show();
         }
@@ -166,6 +198,9 @@ public class MeetingSettingDialog implements View.OnClickListener{
                 getSettingCache(host).setCameraOn(!isCameraOn);
                 break;
             case R.id.txt_cancel:
+                if(meetingConfig.isFromMeeting() && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST){
+                    EventBus.getDefault().post(new EventClose());
+                }
                 dismiss();
                 break;
         }

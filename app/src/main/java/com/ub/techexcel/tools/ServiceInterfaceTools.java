@@ -134,7 +134,6 @@ public class ServiceInterfaceTools {
     public static final int GETNOTEBYLINKID = 0x1147;
     public static final int GETLESSIONID = 0x1148;
 
-
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
 
     private static ServiceInterfaceTools serviceInterfaceTools;

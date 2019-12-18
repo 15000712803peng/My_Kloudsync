@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="320dp"
+    android:layout_width="@dimen/meeting_setting_dialog_width"
     android:layout_height="wrap_content"
     android:background="@drawable/rc_white_bg_shape"
     android:gravity="center_horizontal"
@@ -25,7 +25,7 @@
 
     <LinearLayout
         android:gravity="center"
-        android:id="@+id/ll"
+        android:id="@+id/layout_tab_titles"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="5dp"
@@ -135,6 +135,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layout_recording"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:layout_marginLeft="30dp"
@@ -173,7 +174,7 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="42dp">
 
         <TextView
             android:layout_weight="1"
@@ -199,7 +200,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="12dp"
-            android:text="@string/cancel"
+            android:text="@string/Cancel"
             android:textSize="16sp" />
     </LinearLayout>
 

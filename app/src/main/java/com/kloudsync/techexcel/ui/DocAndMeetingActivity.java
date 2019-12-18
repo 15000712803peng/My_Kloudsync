@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.DocumentPage;
+import com.kloudsync.techexcel.bean.EventClose;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventHideMembers;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
@@ -318,10 +319,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (data.getInt("retCode") == 0) {
                     // 成功收到JOIN_MEETING的返回
                     JSONObject dataJson = data.getJSONObject("retData");
-                    if (!dataJson.has("CurrentDocumentPage")) {
-                        Toast.makeText(this, "join meeting failed", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+//                    if (!dataJson.has("CurrentDocumentPage")) {
+//                        Toast.makeText(this, "join meeting failed", Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
                     String pageData = dataJson.getString("CurrentDocumentPage");
                     String[] datas = pageData.split("-");
                     meetingConfig.setFileId(Integer.parseInt(datas[0]));
@@ -562,6 +563,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 finish();
                 break;
         }
+    }
+
+    @Subscribe
+    public void receiveEventClose(EventClose close){
+        Log.e("receiveEventClose","close");
+        finish();
     }
 
     private void handleMessageAttchmentUploadedAndShow(JSONObject data) {
@@ -820,15 +827,29 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void muteAgoraMember(EventMute eventMute) {
+        Log.e("muteAgoraMember","eventMute:" + eventMute.getType());
         if (cameraList.getVisibility() == View.VISIBLE) {
             if (cameraAdapter != null) {
-                cameraAdapter.muteVideo(eventMute.getAgoraMember(), eventMute.isMute());
+                if(eventMute.getType() == EventMute.TYPE_MUTE_VEDIO){
+                    Log.e("muteAgoraMember","muteVideo");
+                    cameraAdapter.muteVideo(eventMute.getAgoraMember(), eventMute.isMuteVedio());
+                }else if(eventMute.getType() == EventMute.TYPE_MUTE_AUDIO){
+                    Log.e("muteAgoraMember","muteAudio");
+                    cameraAdapter.muteAudio(eventMute.getAgoraMember(), eventMute.isMuteAudio());
+                }
+
             }
         }
 
         if (fullCameraList.getVisibility() == View.VISIBLE) {
             if (fullCameraAdapter != null) {
-                fullCameraAdapter.muteVideo(eventMute.getAgoraMember(), eventMute.isMute());
+                if(eventMute.getType() == EventMute.TYPE_MUTE_VEDIO){
+                    fullCameraAdapter.muteVideo(eventMute.getAgoraMember(), eventMute.isMuteVedio());
+                }else if(eventMute.getType() == EventMute.TYPE_MUTE_AUDIO){
+                    fullCameraAdapter.muteAudio(eventMute.getAgoraMember(), eventMute.isMuteAudio());
+
+                }
+
             }
         }
     }
