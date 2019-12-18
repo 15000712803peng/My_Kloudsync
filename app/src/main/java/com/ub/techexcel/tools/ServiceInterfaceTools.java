@@ -18,6 +18,7 @@ import com.kloudsync.techexcel.bean.FavoriteData;
 import com.kloudsync.techexcel.bean.InviteInfo;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.PhoneItem;
@@ -2109,6 +2110,73 @@ public class ServiceInterfaceTools {
                         msg.obj = 0;
                         msg.what = code;
                         handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+    public void getSchoolSettingItem(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("getSchoolSettingItem", url + "   " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        JSONObject jsonObject = jsonObject1.getJSONObject("RetData");
+                        int settingValue = jsonObject.getInt("SettingValue");
+                        Message msg3 = Message.obtain();
+                        msg3.obj = settingValue;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void setSchoolSettings(final String url, final int code, final int schoolId, final int settingvalue, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject subJson = new JSONObject();
+                    subJson.put("SchoolID", schoolId);
+
+                    JSONArray jsonArray = new JSONArray();
+                    JSONObject settings = new JSONObject();
+                    settings.put("SettingID", "10001");
+                    settings.put("SettingValue", settingvalue + "");
+                    settings.put("SettingText", "");
+                    settings.put("SettingNotes", "");
+                    jsonArray.put(settings);
+
+                    subJson.put("Settings", jsonArray);
+
+                    JSONObject returnjson = ConnectService.submitDataByJson(url, subJson);
+                    Log.e("setSchoolSettings", url + "   " + subJson + "   " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.what = code;
+                        msg3.obj = "";
+                        handler.sendMessage(msg3);
                     } else {
                         Message msg3 = Message.obtain();
                         msg3.what = ERRORMESSAGE;

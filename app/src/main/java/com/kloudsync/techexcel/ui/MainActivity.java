@@ -625,9 +625,22 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         mTabs.add(personalCenterFragment);
         changeTeamFragment(documentTab);
         Log.e("user_info", "user_token:" + AppConfig.UserToken + ",company_id:" + AppConfig.SchoolID);
-
+        isOpenYinxiang();
     }
-
+    private void isOpenYinxiang() {
+        String url = AppConfig.URL_PUBLIC + "School/GetSettingItem?schoolID=" + AppConfig.SchoolID + "&settingID=10001";
+        ServiceInterfaceTools.getinstance().getSchoolSettingItem(url, ServiceInterfaceTools.GETSCHOOLSETTINGITEM, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                int settingValue = (int) object;
+                if (settingValue == 1) {
+                    syncroomTab.setVisibility(View.VISIBLE);
+                } else if (settingValue == 0) {
+                    syncroomTab.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
 
     public void GoTOTab(int s) {
         for (int i = 0; i < tvs.size(); i++) {
@@ -843,6 +856,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         } else {
             syncroomTab.setVisibility(View.GONE);
         }
+        isOpenYinxiang();
     }
 
     @Override
