@@ -8438,7 +8438,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 }
                 worker().getEngineConfig().mUid = uid;
                 videoByUser();
-                if (issetting) {  //播放视频结束回来后重新加入声网音视频的设置
+                if (issetting) {  // 播放视频结束回来后重新加入声网音视频的设置
                     issetting = false;
                     initMute(videoStreamStatus);
                     initListen(audioStreamStatus);

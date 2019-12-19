@@ -144,6 +144,7 @@ public class MeetingFragment extends MyFragment {
             switch (retCode) {
                 case AppConfig.RETCODE_SUCCESS:
                     JSONArray retdata = returnJson.getJSONArray("RetData");
+                    mList.clear();
                     for (int i = 0; i < retdata.length(); i++) {
                         JSONObject service = retdata.getJSONObject(i);
                         ServiceBean bean = new ServiceBean();
