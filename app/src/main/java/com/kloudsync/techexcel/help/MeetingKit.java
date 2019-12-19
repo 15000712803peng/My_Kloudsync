@@ -32,7 +32,6 @@ import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
-import com.ub.techexcel.adapter.MeetingMembersAdapter;
 import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.AgoraUser;
@@ -53,6 +52,7 @@ import io.agora.rtc.video.VideoCanvas;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 import static io.agora.rtc.Constants.CLIENT_ROLE_BROADCASTER;
@@ -331,9 +331,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.image_members_close:
-                EventBus.getDefault().post(new EventHideMembers());
-                break;
+
         }
     }
 
@@ -472,56 +470,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
     }
 
-    private List<MeetingMember> meetingMembers;
-    private List<MeetingMember> meetingAuditors;
-    private LinearLayout meetingMembersLayout;
-    private RecyclerView membersList;
-    private MeetingMembersAdapter membersAdapter;
-    private TextView audienceNumbersText;
-    private ImageView closeMembersImage;
-
-    public void showMeetingMembers(Activity host, MeetingConfig meetingConfig, LinearLayout meetingMembersLayout) {
-        if (meetingConfig.getType() != MeetingType.MEETING) {
-            return;
-        }
-        this.host = host;
-        this.meetingConfig = meetingConfig;
-        meetingMembers = meetingConfig.getMeetingMembers();
-        meetingAuditors = meetingConfig.getMeetingAuditor();
-        this.meetingMembersLayout = meetingMembersLayout;
-        membersList = meetingMembersLayout.findViewById(R.id.list_meeting_member);
-        audienceNumbersText = meetingMembersLayout.findViewById(R.id.audience_number);
-        if (meetingAuditors != null && meetingAuditors.size() > 0) {
-            audienceNumbersText.setText(meetingAuditors.size() + "");
-        } else {
-            audienceNumbersText.setText("0");
-        }
-        closeMembersImage = meetingMembersLayout.findViewById(R.id.image_members_close);
-        closeMembersImage.setOnClickListener(this);
-        membersList.setLayoutManager(new LinearLayoutManager(host, RecyclerView.HORIZONTAL, false));
-        Collections.sort(meetingMembers);
-        if (membersAdapter == null) {
-            membersAdapter = new MeetingMembersAdapter(host, meetingMembers);
-            membersList.setAdapter(membersAdapter);
-        } else {
-            membersAdapter.updateMembers(meetingMembers);
-        }
-
-        membersAdapter.setOnMemberClickedListener((DocAndMeetingActivity) host);
-
-    }
-
-    public void refreshMeetingMembers(MeetingConfig meetingConfig, LinearLayout meetingMembersLayout) {
-        this.meetingConfig = meetingConfig;
-        if (meetingMembersLayout.getVisibility() != View.VISIBLE) {
-            return;
-        }
-        if (membersAdapter != null) {
-            Collections.sort(meetingConfig.getMeetingMembers());
-            membersAdapter.updateMembers(meetingConfig.getMeetingMembers());
-        }
-    }
-
     private MeetingSettingCache settingCache;
 
     private MeetingSettingCache getSettingCache(Activity host) {
@@ -533,12 +481,12 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     public void requestMeetingMembers(MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
-        Observable.just(meetingConfig).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingConfig>() {
+        Observable.just(meetingConfig).observeOn(Schedulers.io()).map(new Function<MeetingConfig, MeetingConfig>() {
             @Override
-            public void accept(MeetingConfig meetingConfig) throws Exception {
+            public MeetingConfig apply(MeetingConfig meetingConfig) throws Exception {
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.MEMBER);
-                if (result.has("RetCode")) {
-                    if (result.getInt("RetCode") == 0) {
+                if (result.has("code")) {
+                    if (result.getInt("code") == 0) {
                         List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
                         if(members != null){
@@ -546,27 +494,35 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                         }
                     }
                 }
+                return meetingConfig;
             }
-        }).doOnNext(new Consumer<MeetingConfig>() {
+
+        }).map(new Function<MeetingConfig, MeetingConfig>() {
             @Override
-            public void accept(MeetingConfig meetingConfig) throws Exception {
+            public MeetingConfig apply(MeetingConfig meetingConfig) throws Exception {
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.AUDIENCE);
-                if (result.has("RetCode")) {
-                    if (result.getInt("RetCode") == 0) {
+                Log.e("check_auditor","result:" + result);
+
+                if (result.has("code")) {
+                    if (result.getInt("code") == 0) {
+                        Log.e("check_auditor","json_array" + result.getJSONArray("data").toString());
                         List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
+                        Log.e("check_auditor","auditor" + members);
                         if(members != null){
                             meetingConfig.setMeetingAuditor(members);
                         }
                     }
                 }
+                return meetingConfig;
             }
-        }).doOnNext(new Consumer<MeetingConfig>() {
+
+        }).map(new Function<MeetingConfig, MeetingConfig>() {
             @Override
-            public void accept(MeetingConfig meetingConfig) throws Exception {
-                JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.MEMBER);
-                if (result.has("RetCode")) {
-                    if (result.getInt("RetCode") == 0) {
+            public MeetingConfig apply(MeetingConfig meetingConfig) throws Exception {
+                JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.BE_INVITED);
+                if (result.has("code")) {
+                    if (result.getInt("code") == 0) {
                         List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
                         if(members != null){
@@ -574,8 +530,13 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                         }
                     }
                 }
-                EventBus.getDefault().post(new EventRefreshMembers());
+                EventRefreshMembers refreshMembers = new EventRefreshMembers();
+                refreshMembers.setMeetingConfig(meetingConfig);
+                Log.e("check_member","member:" + meetingConfig.getMeetingMembers().size() + "," + "auditor:" + meetingConfig.getMeetingAuditor().size());
+                EventBus.getDefault().post(refreshMembers);
+                return meetingConfig;
             }
+
         }).subscribe();
     }
 

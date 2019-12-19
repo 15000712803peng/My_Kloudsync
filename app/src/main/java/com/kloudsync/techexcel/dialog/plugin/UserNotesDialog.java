@@ -188,6 +188,9 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
 
         user = new UserNotes();
         user.setUserId(userId);
+        if(meetingConfig.getDocument() == null){
+            return;
+        }
         Observable.just(user).observeOn(Schedulers.io()).doOnNext(new Consumer<UserNotes>() {
             @Override
             public void accept(UserNotes userNotes) throws Exception {

@@ -1,12 +1,13 @@
 package com.kloudsync.techexcel.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by tonyan on 2019/10/10.
  */
 
-public class MeetingDocument {
+public class MeetingDocument implements Serializable {
     private String LessonID;
     private int IsAttendeeUpload;
     private int CourseID;

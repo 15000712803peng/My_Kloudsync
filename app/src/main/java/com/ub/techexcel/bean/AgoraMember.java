@@ -3,10 +3,11 @@ package com.ub.techexcel.bean;
 import android.support.annotation.NonNull;
 import android.view.SurfaceView;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 
-public class AgoraMember implements Comparable<AgoraMember>{
+public class AgoraMember implements Comparable<AgoraMember>,Serializable {
 
     private SurfaceView surfaceView;
     private boolean muteAudio = true;  // true   禁止音频流

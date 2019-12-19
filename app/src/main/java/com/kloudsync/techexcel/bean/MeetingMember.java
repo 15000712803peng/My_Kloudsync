@@ -2,13 +2,15 @@ package com.kloudsync.techexcel.bean;
 
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
+
 /**
  * Created by tonyan on 2019/12/8.
  */
 
-public class MeetingMember implements Comparable<MeetingMember>{
+public class MeetingMember implements Comparable<MeetingMember>,Serializable {
 
-    private String userId;
+    private int userId;
     private String userName;
     private int rongCloudId;
     private String avatarUrl;
@@ -19,14 +21,33 @@ public class MeetingMember implements Comparable<MeetingMember>{
     private int agoraStatus;
     private int microphoneStatus;
     private int cameraStatus;
+    private int deviceType;
+    private int handStatus;
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
+
+    public int getHandStatus() {
+        return handStatus;
+    }
+
+    public void setHandStatus(int handStatus) {
+        this.handStatus = handStatus;
+    }
+
+    public int getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(int deviceType) {
+        this.deviceType = deviceType;
+    }
+
 
     public String getUserName() {
         return userName;

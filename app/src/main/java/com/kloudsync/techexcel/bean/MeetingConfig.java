@@ -3,6 +3,7 @@ package com.kloudsync.techexcel.bean;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.AgoraUser;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by tonyan on 2019/11/19.
  */
 
-public class MeetingConfig {
+public class MeetingConfig implements Serializable{
     private int type;
     private String meetingId;
     private int fileId;

@@ -1,8 +1,10 @@
 package com.kloudsync.techexcel.ui;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,7 +23,7 @@ import butterknife.ButterKnife;
  * Created by tonyan on 2019/11/19.
  */
 
-public abstract class BaseDocAndMeetingActivity extends Activity{
+public abstract class BaseDocAndMeetingActivity extends FragmentActivity{
 
     @Bind(R.id.layout_enter_loading)
     protected LinearLayout enterLoading;

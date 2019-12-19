@@ -5,4 +5,13 @@ package com.kloudsync.techexcel.bean;
  */
 
 public class EventRefreshMembers {
+    private MeetingConfig meetingConfig;
+
+    public MeetingConfig getMeetingConfig() {
+        return meetingConfig;
+    }
+
+    public void setMeetingConfig(MeetingConfig meetingConfig) {
+        this.meetingConfig = meetingConfig;
+    }
 }

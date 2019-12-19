@@ -31,7 +31,6 @@ public class MeetingMembersAdapter extends RecyclerView.Adapter<MeetingMembersAd
         void onMemberClicked(MeetingMember meetingMember);
     }
 
-
     private OnMemberClickedListener onMemberClickedListener;
 
 

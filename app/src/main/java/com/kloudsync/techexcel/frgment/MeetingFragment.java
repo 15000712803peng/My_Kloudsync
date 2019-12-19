@@ -74,12 +74,6 @@ public class MeetingFragment extends MyFragment{
     @Override
     protected void lazyLoad() {
         Log.e("MeetingFragment","lazyLoad");
-//        new ApiTask(new Runnable() {
-//            @Override
-//            public void run() {
-//                requestMeeting();
-//            }
-//        }).start(ThreadManager.getManager());
     }
 
     private View view;

@@ -772,6 +772,7 @@ Please input the cell phone number to add the contact
     <string name="title_to_end_meeting">are you sure to end meeting?</string>
     <string name="presenter">presenter</string>
     <string name="End">End</string>
+    <string name="Me">Me</string>
 
 
 

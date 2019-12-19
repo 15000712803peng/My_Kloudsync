@@ -232,6 +232,9 @@
         <item name="android:windowNoTitle">true</item><!--无标题-->
         <item name="android:windowBackground">@color/nocolor</item><!--背景透明-->
         <item name="android:background">#00000000</item>
+        <item name="android:padding">0dp</item>
+
+
     </style>
 
     <style name="loading_dialog_style">

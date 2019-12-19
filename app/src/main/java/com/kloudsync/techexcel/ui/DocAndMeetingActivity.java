@@ -54,6 +54,7 @@ import com.kloudsync.techexcel.config.RealMeetingSetting;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
+import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -78,23 +79,18 @@ import com.kloudsync.techexcel.tool.DocumentUploadTool;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.mining.app.zxing.MipcaActivityCapture;
-import com.mining.app.zxing.view.ViewfinderView;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
-import com.ub.teacher.gesture.VideoGestureRelativeLayout;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
 import com.ub.techexcel.adapter.MeetingMembersAdapter;
-import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.Note;
-import com.ub.techexcel.tools.ConfirmDialog;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
 import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
-import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
 
@@ -118,15 +114,12 @@ import java.util.concurrent.TimeUnit;
 
 import Decoder.BASE64Encoder;
 import butterknife.Bind;
-import io.agora.rtc.internal.RtcEngineImpl;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
-
-import static com.kloudsync.techexcel.tool.SocketMessageManager.MESSAGE_END_MEETING;
 
 /**
  * Created by tonyan on 2019/11/19.
@@ -156,9 +149,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     ImageView meetingMenu;
     @Bind(R.id.layout_note)
     RelativeLayout noteLayout;
-    //----
-    @Bind(R.id.layout_meeting_members)
-    LinearLayout meetingMembersLayout;
     @Bind(R.id.layout_full_camera)
     RelativeLayout fullCamereLayout;
     @Bind(R.id.icon_back_full_screen)
@@ -349,8 +339,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
                         MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
 
-                        Log.e("check_meeting_member", "member:" + meetingConfig.getMeetingMembers() + ",");
-
                         if (meetingConfig.isInRealMeeting()) {
                             return;
                         }
@@ -379,17 +367,19 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
 
             if (member.getRole() == 2) {
-                meetingConfig.setMeetingHostId(member.getUserId());
+                meetingConfig.setMeetingHostId(member.getUserId()+"");
             }
             if (member.getPresenter() == 1) {
-                meetingConfig.setPresenterId(member.getUserId());
+                meetingConfig.setPresenterId(member.getUserId()+"");
             }
         }
 
         Log.e("getMeetingMembers", "members_size:" + members.size());
         meetingConfig.setMeetingAuditor(auditors);
         meetingConfig.setMeetingMembers(members);
-        EventBus.getDefault().post(new EventRefreshMembers());
+//        EventRefreshMembers refreshMembers = new EventRefreshMembers();
+//        refreshMembers.setMeetingConfig(meetingConfig);
+//        EventBus.getDefault().post(refreshMembers);
     }
 
     private void requestDocumentsAndShowPage() {
@@ -545,13 +535,15 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 }
 
                 for (MeetingMember member : meetingConfig.getMeetingMembers()) {
-                    if (member.getUserId().equals(meetingConfig.getPresenterId())) {
+                    if ((member.getUserId()+"").equals(meetingConfig.getPresenterId())) {
                         member.setPresenter(1);
                     } else {
                         member.setPresenter(0);
                     }
                 }
-                EventBus.getDefault().post(new EventRefreshMembers());
+                EventRefreshMembers refreshMembers = new EventRefreshMembers();
+                refreshMembers.setMeetingConfig(meetingConfig);
+                EventBus.getDefault().post(refreshMembers);
                 break;
             case SocketMessageManager.MESSAGE_ATTACHMENT_UPLOADED:
                 if (socketMessage.getData() == null) {
@@ -561,6 +553,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 break;
             case SocketMessageManager.MESSAGE_END_MEETING:
                 finish();
+                break;
+            case SocketMessageManager.MESSAGE_MEMBER_LIST_CHANGE:
+                MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
                 break;
         }
     }
@@ -610,13 +605,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
         }
 
-    }
+        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void hideMeetingMembers(EventHideMembers hideMembers) {
-        meetingMembersLayout.setVisibility(View.GONE);
-        menuIcon.setEnabled(true);
-        menuIcon.setImageResource(R.drawable.icon_menu);
     }
 
 
@@ -823,9 +813,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getMeetingMembers() == null || meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
-
-        MeetingKit.getInstance().refreshMeetingMembers(meetingConfig, meetingMembersLayout);
-
+        if(meetingMembersDialog != null && meetingMembersDialog.isShowing()){
+            Log.e("refreshMeetingMembers","dialog_is_show");
+            meetingMembersDialog.refresh(refreshMembers);
+        }
         checkAgoraMemberName();
 
     }
@@ -873,7 +864,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private void checkAgoraMemberName() {
         for (MeetingMember member : meetingConfig.getMeetingMembers()) {
             for (AgoraMember agoraMember : meetingConfig.getAgoraMembers()) {
-                if (member.getUserId().equals(agoraMember.getUserId() + "")) {
+                if ((member.getUserId()+"").equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
                     break;
@@ -883,7 +874,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         for (MeetingMember member : meetingConfig.getMeetingAuditor()) {
             for (AgoraMember agoraMember : meetingConfig.getAgoraMembers()) {
-                if (member.getUserId().equals(agoraMember.getUserId() + "")) {
+                if ((member.getUserId()+"").equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
                     break;
@@ -1578,11 +1569,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getMeetingMembers() == null || meetingConfig.getMeetingMembers().size() < 0) {
             return;
         }
-
-        meetingMembersLayout.setVisibility(View.VISIBLE);
-        menuIcon.setImageResource(R.drawable.shape_transparent);
-        menuIcon.setEnabled(false);
-        MeetingKit.getInstance().showMeetingMembers(this, meetingConfig, meetingMembersLayout);
+        showMembersDialog();
     }
 
     //-----
@@ -1786,6 +1773,22 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         notesDialog = new UserNotesDialog(this);
         notesDialog.show(AppConfig.UserID, meetingConfig);
+    }
+
+
+    MeetingMembersDialog meetingMembersDialog;
+
+    private void showMembersDialog() {
+
+        if (meetingMembersDialog != null) {
+            if (meetingMembersDialog.isShowing()) {
+                meetingMembersDialog.dismiss();
+                meetingMembersDialog = null;
+            }
+        }
+        meetingMembersDialog = new MeetingMembersDialog();
+        meetingMembersDialog.init(this,meetingConfig);
+        meetingMembersDialog.show(getSupportFragmentManager());
     }
 
     //--------
