@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +25,14 @@ public class SpaceMembersAdapter extends HeaderRecyclerAdapter<TeamMember> {
     private static final int TYPE_MEMBER = 0;
     private static final int TYPE_ADMIN = 1;
     private static final int TYPE_OWNER = 2;
+
+    private int loginRole;
     //--------------
 
-    public SpaceMembersAdapter(Context context) {
+    public SpaceMembersAdapter(Context context,int loginRole) {
+        this.loginRole=loginRole;
         this.context = context;
+        Log.e("SpaceMembersAdapter",loginRole+"");
     }
 
     public interface MoreOptionsClickListener {
@@ -59,6 +64,22 @@ public class SpaceMembersAdapter extends HeaderRecyclerAdapter<TeamMember> {
         }
         holder.memberImage.setImageURI(imageUri2);
         showMemberType(member.getMemberType(), holder.typeText);
+
+
+
+
+        if(member.getMemberType()==2){
+            holder.moreOpation.setVisibility(View.GONE);
+        }else{
+            if(loginRole==0){
+                holder.moreOpation.setVisibility(View.GONE);
+            }else{
+                holder.moreOpation.setVisibility(View.VISIBLE);
+            }
+        }
+
+
+
         holder.moreOpation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

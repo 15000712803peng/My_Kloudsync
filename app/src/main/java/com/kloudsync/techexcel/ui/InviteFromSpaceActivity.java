@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -22,6 +21,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.response.CompanyContactsResponse;
 import com.kloudsync.techexcel.response.NResponse;
 import com.kloudsync.techexcel.response.NetworkResponse;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import java.net.SocketTimeoutException;
@@ -38,7 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class InviteFromCompanyActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
+public class InviteFromSpaceActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
 
     private TextView titleText;
     private RelativeLayout backLayout;
@@ -49,6 +49,7 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
     private EditText searchEdit;
     Handler handler = new Handler();
     RelativeLayout titleRightLayout;
+    private boolean isAddAdmin = true;
 
     @Override
     protected int setLayout() {
@@ -59,6 +60,7 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
     protected void initView() {
         teamId = getIntent().getIntExtra("team_id", 0);
         spaceId = getIntent().getIntExtra("space_id", 0);
+        isAddAdmin = getIntent().getBooleanExtra("isAddAdmin", true);
         titleText = findViewById(R.id.tv_title);
         titleText.setText("Add from company contact");
         contactList = findViewById(R.id.list_contact);
@@ -94,7 +96,11 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
                         Toast.makeText(getApplicationContext(), "please select contact first", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    requestAddAdmin(contacts);
+                    if (isAddAdmin) {
+                        requestAddAdmin(contacts);
+                    } else {
+                        inviteCompanyMemberToSpace(contacts);
+                    }
                 }
 
                 break;
@@ -102,50 +108,49 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
     }
 
     private void requestAddAdmin(List<CompanyContact> contacts) {
-        ServiceInterfaceTools.getinstance().inviteCompanyMemberAsTeamAdmin(teamId + "", contacts).enqueue(new Callback<NetworkResponse>() {
-            @Override
-            public void onResponse(Call<NetworkResponse> call, Response<NetworkResponse> response) {
-                if (response != null && response.isSuccessful()) {
-                    if (response.body().getRetCode() == 0) {
-                        Toast.makeText(getApplicationContext(), "add team admin success", Toast.LENGTH_SHORT).show();
-                        setResult(RESULT_OK);
-                        finish();
-                    } else {
-                        Toast.makeText(getApplicationContext(), "add failed", Toast.LENGTH_SHORT).show();
-                    }
-                }
+        String hh = "";
+        for (int i = 0; i < contacts.size(); i++) {
+            if (i == 0) {
+                hh = contacts.get(i).getUserID();
+            } else {
+                hh = hh + "," + contacts.get(i).getUserID();
             }
-
+        }
+        String url = AppConfig.URL_PUBLIC + "TeamSpace/AddAdminMember?CompanyID=" + AppConfig.SchoolID + "&TeamSpaceID=" + teamId + "&MemberList="+hh;
+        ServiceInterfaceTools.getinstance().addAdminMember(url, ServiceInterfaceTools.ADDADMINMEMBER, new ServiceInterfaceListener() {
             @Override
-            public void onFailure(Call<NetworkResponse> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "add failed", Toast.LENGTH_SHORT).show();
+            public void getServiceReturnData(Object object) {
+                setResult(RESULT_OK);
+                finish();
+            }
+        });
+    }
+
+    private void inviteCompanyMemberToSpace(List<CompanyContact> contacts) {
+        String url = AppConfig.URL_PUBLIC + "Invite/InviteCompanyMemberToSpace";
+        ServiceInterfaceTools.getinstance().inviteCompanyMemberToSpace(url, ServiceInterfaceTools.INVITECOMPANYMEMBERTOSPACE, teamId, contacts, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                setResult(RESULT_OK);
+                finish();
             }
         });
     }
 
     private void getCompanyContacts(String keyword) {
 
-        ServiceInterfaceTools.getinstance().searchCompanyContactInTeam(teamId + "", keyword).enqueue(new Callback<CompanyContactsResponse>() {
+        String url = AppConfig.URL_PUBLIC + "TeamSpace/SearchContact?companyID=" + AppConfig.SchoolID + "&spaceID=" + teamId + "&keyword=&pageIndex=0&pageSize=10";
+        ServiceInterfaceTools.getinstance().getSearchContact(url, ServiceInterfaceTools.GETSEARCHCONTACT, new ServiceInterfaceListener() {
             @Override
-            public void onResponse(Call<CompanyContactsResponse> call, Response<CompanyContactsResponse> response) {
-                if (response != null && response.isSuccessful()) {
-                    Log.e("success", "response:" + response.body());
-                    List<CompanyContact> contacts = response.body().getRetData();
-                    if (contacts == null) {
-                        contacts = new ArrayList<>();
-                    }
-                    adapter.setDatas(contacts);
+            public void getServiceReturnData(Object object) {
+                List<CompanyContact> contacts = new ArrayList<>();
+                contacts.addAll((List<CompanyContact>) object);
+                if (contacts.size() == 0) {
+                    contacts = new ArrayList<>();
                 }
-            }
-
-            @Override
-            public void onFailure(Call<CompanyContactsResponse> call, Throwable t) {
-                Log.e("fail", "response:" + call);
+                adapter.setDatas(contacts);
             }
         });
-
-
-
     }
 
     @Override
@@ -160,8 +165,7 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
 
     @Override
     public void afterTextChanged(Editable s) {
-        handler.removeCallbacks(editRunnable);
-        handler.postDelayed(editRunnable, 600);
+
     }
 
     private Runnable editRunnable = new Runnable() {
@@ -172,30 +176,9 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
     };
 
     private void showLoading() {
-        loadingBar.setVisibility(View.VISIBLE);
     }
 
     private void search(final String searchStr) {
-        showLoading();
-        Observable.just(searchStr).observeOn(Schedulers.io()).map(new Function<String, NResponse<CompanyContactsResponse>>() {
-            @Override
-            public NResponse<CompanyContactsResponse> apply(String searchStr) throws Exception {
-                NResponse<CompanyContactsResponse> response = new NResponse<>();
-                try {
-                    response.setResponse(ServiceInterfaceTools.getinstance().searchCompanyContactInTeam(teamId + "", searchStr).execute());
-                } catch (UnknownHostException e) {
-                    return response.setNull(true);
-                } catch (SocketTimeoutException exception) {
-                    return response.setNull(true);
-                }
-                return response;
-            }
-        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<NResponse<CompanyContactsResponse>>() {
-            @Override
-            public void accept(NResponse<CompanyContactsResponse> teamSearchResponseResponse) throws Exception {
-                handleResponse(teamSearchResponseResponse, searchStr);
-            }
-        }).subscribe();
 
     }
 

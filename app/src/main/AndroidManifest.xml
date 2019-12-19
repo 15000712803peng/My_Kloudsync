@@ -468,6 +468,9 @@
             android:name=".ui.InviteFromPhoneActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.InviteFromSpaceActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".dialog.plugin.SingleCallActivity2"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"

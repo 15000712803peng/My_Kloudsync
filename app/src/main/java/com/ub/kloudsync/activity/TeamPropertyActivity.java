@@ -28,6 +28,7 @@ import com.kloudsync.techexcel.docment.InviteNewActivity;
 import com.kloudsync.techexcel.docment.RenameActivity;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.InviteNewDialog;
+import com.kloudsync.techexcel.help.SpaceMemberOperationDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.response.TeamMembersResponse;
 import com.kloudsync.techexcel.service.ConnectService;
@@ -36,6 +37,7 @@ import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
 import com.kloudsync.techexcel.ui.InviteFromCompanyActivity;
 import com.kloudsync.techexcel.ui.InviteFromPhoneActivity;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -121,7 +123,7 @@ public class TeamPropertyActivity extends Activity implements View.OnClickListen
         int teamRole = KloudCache.getInstance(this).getTeamRole().getTeamRole();
 
         memberList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        madapter = new TeamMembersAdapterV2(this);
+        madapter = new TeamMembersAdapterV2(this, teamRole);
         madapter.setMoreOptionsClickListener(this);
         if (role == 7 || role == 8 || teamRole == RoleInTeam.ROLE_OWENER || teamRole == RoleInTeam.ROLE_ADMIN) {
             View view = getLayoutInflater().inflate(R.layout.add_header, memberList, false);
@@ -188,12 +190,12 @@ public class TeamPropertyActivity extends Activity implements View.OnClickListen
 
     private void GoTOET() {
         Intent intent = new Intent(TeamPropertyActivity.this, EditTeamActivity.class);
-        intent.putExtra("itemID",itemID);
+        intent.putExtra("itemID", itemID);
         startActivity(intent);
     }
 
     private void MoreForTeam() {
-        TeamMorePopup teamMorePopup=new TeamMorePopup();
+        TeamMorePopup teamMorePopup = new TeamMorePopup();
         teamMorePopup.setIsTeam(true);
         teamMorePopup.setTSid(itemID);
         teamMorePopup.getPopwindow(this);
@@ -215,7 +217,7 @@ public class TeamPropertyActivity extends Activity implements View.OnClickListen
                 lg.setBeforeDeleteTeamListener(new LoginGet.BeforeDeleteTeamListener() {
                     @Override
                     public void getBDT(int retdata) {
-                        if(retdata > 0){
+                        if (retdata > 0) {
                             Toast.makeText(getApplicationContext(), "Please delete space first", Toast.LENGTH_LONG).show();
                         } else {
                             DeleteTeam();
@@ -246,7 +248,7 @@ public class TeamPropertyActivity extends Activity implements View.OnClickListen
 
     private void GoToRename() {
         Intent intent = new Intent(TeamPropertyActivity.this, RenameActivity.class);
-        intent.putExtra("itemID",itemID);
+        intent.putExtra("itemID", itemID);
         intent.putExtra("isteam", true);
         startActivity(intent);
     }
@@ -300,12 +302,23 @@ public class TeamPropertyActivity extends Activity implements View.OnClickListen
     }
 
     private static final int REQUEST_ADD_ADMIN = 1;
+
     @Override
     public void inviteFromContactOption() {
         Intent intent = new Intent(this, InviteFromCompanyActivity.class);
         intent.putExtra("team_id", itemID);
         startActivityForResult(intent, REQUEST_ADD_ADMIN);
     }
+
+
+    @Override
+    public void inviteNewOption() {
+        Intent intent = new Intent(this, InviteFromPhoneActivity.class);
+        intent.putExtra("invite_type", 3);
+        intent.putExtra("team_id", itemID);
+        startActivity(intent);
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -317,19 +330,38 @@ public class TeamPropertyActivity extends Activity implements View.OnClickListen
         }
     }
 
-    @Override
-    public void inviteNewOption() {
-        Intent intent = new Intent(this, InviteFromPhoneActivity.class);
-        intent.putExtra("invite_type", 3);
-        intent.putExtra("team_id", itemID);
-        startActivity(intent);
-    }
-
     private TeamMemberOperationsDialog operationsDialog;
 
+//    @Override
+//    public void moreOptionsClick(TeamMember member) {
+//        operationsDialog = new TeamMemberOperationsDialog(this, member, myTeamRole);
+//        operationsDialog.show();
+//    }
+
+    private SpaceMemberOperationDialog spaceMemberOperationDialog;
+
     @Override
-    public void moreOptionsClick(TeamMember member) {
-        operationsDialog = new TeamMemberOperationsDialog(this, member, myTeamRole);
-        operationsDialog.show();
+    public void moreOptionsClick(final TeamMember member) {
+        spaceMemberOperationDialog = new SpaceMemberOperationDialog(this, member);
+        spaceMemberOperationDialog.setOptionsLinstener(new SpaceMemberOperationDialog.InviteOptionsLinstener() {
+            @Override
+            public void setAdmin() {
+                String url = AppConfig.URL_PUBLIC + "TeamSpace/ChangeMemberType?ItemID=" + itemID + "&MemberID=" + member.getMemberID() + "&memberType=" + 1; //设置Admin = 1
+                ServiceInterfaceTools.getinstance().changeMemberType(url, ServiceInterfaceTools.CHANGEMEMBERTYPE, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        getTeamMembers();
+                    }
+                });
+            }
+
+            @Override
+            public void clean() {
+                
+            }
+        });
+        spaceMemberOperationDialog.show();
+        spaceMemberOperationDialog.setDeleteHidden();
+
     }
 }

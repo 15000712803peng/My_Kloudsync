@@ -144,7 +144,7 @@ public interface TempleteCourse_interface {
 
     @GET("TeamSpace/SearchContact")
     Call<CompanyContactsResponse> searchCompanyContactInTeam(@Header("UserToken") String userToken, @Query("companyID") String companyID,
-                                                             @Query("spaceID") String teamID, @Query("keyword") String keyword);
+                                                             @Query("spaceID") String teamID, @Query("keyword") String keyword, @Query("pageIndex") int pageIndex, @Query("pageSize") int pageSize);
 
     @POST("Invite/InviteCompanyMemberAsTeamAdmin")
     Call<NetworkResponse> inviteCompanyMemberAsTeamAdmin(@Header("UserToken") String userToken, @Body InviteTeamAdminParams params);

@@ -24,10 +24,12 @@ public class TeamMembersAdapterV2 extends HeaderRecyclerAdapter<TeamMember> {
     private static final int TYPE_MEMBER = 0;
     private static final int TYPE_ADMIN = 1;
     private static final int TYPE_OWNER = 2;
+    private int  loginRole;
     //--------------
 
-    public TeamMembersAdapterV2(Context context) {
+    public TeamMembersAdapterV2(Context context,int loginRole) {
         this.context = context;
+        this.loginRole=loginRole;
     }
 
     public interface MoreOptionsClickListener {
@@ -59,6 +61,20 @@ public class TeamMembersAdapterV2 extends HeaderRecyclerAdapter<TeamMember> {
         }
         holder.memberImage.setImageURI(imageUri2);
         showMemberType(member.getMemberType(), holder.typeText);
+
+
+        if(member.getMemberType()==2){
+            holder.moreOpation.setVisibility(View.GONE);
+        }else{
+            if(loginRole==0){
+                holder.moreOpation.setVisibility(View.GONE);
+            }else{
+                holder.moreOpation.setVisibility(View.VISIBLE);
+            }
+        }
+
+
+
         holder.moreOpation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

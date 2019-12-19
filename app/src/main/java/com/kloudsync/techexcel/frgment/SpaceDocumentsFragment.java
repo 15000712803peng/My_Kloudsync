@@ -993,6 +993,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         });
 
         teamMorePopup.StartPop(moreOptionsImage);
+
     }
 
     private void GotoRename() {
