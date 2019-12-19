@@ -18,6 +18,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.httpgetimage.ImageLoader;
+import com.kloudsync.techexcel.view.CircleImageView;
 import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.AgoraBean;
@@ -37,7 +39,7 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
     private LayoutInflater inflater;
     private List<AgoraMember> members;
     private Context mContext;
-    public VideoViewEventListener mListener;
+    private ImageLoader imageLoader;
 
     public List<AgoraMember> getUsers() {
         return members;
@@ -48,6 +50,7 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
         this.mContext = context;
         inflater = LayoutInflater.from(context);
         members = new ArrayList<>();
+        imageLoader = new ImageLoader(context);
     }
 
     @Override
@@ -99,6 +102,27 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
             myHolder.nameText.setText(member.getUserName());
         }
 
+        if(member.isMuteAudio()){
+            holder.audioStatusImage.setImageResource(R.drawable.icon_command_mic_disable);
+        }else {
+            holder.audioStatusImage.setImageResource(R.drawable.icon_command_mic_enabel);
+        }
+
+        if(TextUtils.isEmpty(member.getIconUrl())){
+            holder.iconImage.setImageResource(R.drawable.hello);
+        }else {
+            imageLoader.DisplayImage(member.getIconUrl(), holder.iconImage);
+        }
+
+        if(member.isMuteVideo()){
+            holder.vedioStatusImage.setImageResource(R.drawable.icon_command_webcam_disable);
+            holder.iconImage.setVisibility(View.VISIBLE);
+
+        }else {
+            holder.vedioStatusImage.setImageResource(R.drawable.icon_command_webcam_enable);
+            holder.iconImage.setVisibility(View.GONE);
+        }
+
 
     }
 
@@ -145,10 +169,16 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
             super(view);
             vedioLayout = view.findViewById(R.id.layout_vedio);
             nameText = view.findViewById(R.id.txt_name);
+            audioStatusImage = view.findViewById(R.id.image_audio_status);
+            vedioStatusImage = view.findViewById(R.id.image_vedio_status);
+            iconImage = view.findViewById(R.id.member_icon);
         }
 
         public FrameLayout vedioLayout;
         public TextView nameText;
+        public ImageView audioStatusImage;
+        public ImageView vedioStatusImage;
+        public CircleImageView iconImage;
     }
 
     public void reset() {

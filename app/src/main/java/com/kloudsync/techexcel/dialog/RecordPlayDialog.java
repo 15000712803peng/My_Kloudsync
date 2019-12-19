@@ -243,7 +243,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
     private void requestMeetingRecord(){
         if(record != null){
-            String url = "https://api.peertime.cn/MeetingServer/recording/recording_item?recordingId=" + record.getRecordingId();
+            String url = "https://wss.peertime.cn/MeetingServer/recording/recording_item?recordingId=" + record.getRecordingId();
             ServiceInterfaceTools.getinstance().getRecordingItem(url, ServiceInterfaceTools.GETRECORDINGITEM, new ServiceInterfaceListener() {
                 @Override
                 public void getServiceReturnData(Object object) {

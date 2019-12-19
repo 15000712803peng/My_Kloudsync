@@ -45,4 +45,14 @@ public class EventMute {
     public void setAgoraMember(AgoraMember agoraMember) {
         this.agoraMember = agoraMember;
     }
+
+    @Override
+    public String toString() {
+        return "EventMute{" +
+                "type=" + type +
+                ", isMuteVedio=" + isMuteVedio +
+                ", isMuteAudio=" + isMuteAudio +
+                ", agoraMember=" + agoraMember +
+                '}';
+    }
 }

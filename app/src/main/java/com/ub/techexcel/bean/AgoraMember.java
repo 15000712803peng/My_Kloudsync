@@ -9,15 +9,23 @@ import java.util.Objects;
 public class AgoraMember implements Comparable<AgoraMember>{
 
     private SurfaceView surfaceView;
-    private boolean muteAudio;  // true   禁止音频流
-    private boolean muteVideo;  // true   禁止视频流
+    private boolean muteAudio = true;  // true   禁止音频流
+    private boolean muteVideo = true;  // true   禁止视频流
     private boolean isSelect;
     private String userName;
     private boolean isSelf;
     private boolean isAdd;
     private boolean isUserHide;
     private int userId;
+    private String iconUrl;
 
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
 
     public int getUserId() {
         return userId;

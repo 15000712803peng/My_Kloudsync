@@ -832,7 +832,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void muteAgoraMember(EventMute eventMute) {
-        Log.e("muteAgoraMember", "eventMute:" + eventMute.getType());
+        Log.e("muteAgoraMember", "eventMute:" + eventMute);
         if (cameraList.getVisibility() == View.VISIBLE) {
             if (cameraAdapter != null) {
                 if (eventMute.getType() == EventMute.TYPE_MUTE_VEDIO) {
@@ -860,12 +860,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         if(eventMute.getAgoraMember() != null){
             if((eventMute.getAgoraMember().getUserId() + "").equals(AppConfig.UserID)){
-                messageManager.sendMessage_AgoraStatusChange(meetingConfig, eventMute.getAgoraMember());
+                int index = meetingConfig.getAgoraMembers().indexOf(eventMute.getAgoraMember());
+                if(index >= 0){
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig, meetingConfig.getAgoraMembers().get(index));
+                }
+
             }
         }
-        
-        Log.e("check_send_agora_status","user_id:" + AppConfig.UserID + ",agora_id:" + eventMute.getAgoraMember().getUserId());
-
 
     }
 
@@ -874,6 +875,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             for (AgoraMember agoraMember : meetingConfig.getAgoraMembers()) {
                 if (member.getUserId().equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
+                    agoraMember.setIconUrl(member.getAvatarUrl());
                     break;
                 }
             }
@@ -883,6 +885,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             for (AgoraMember agoraMember : meetingConfig.getAgoraMembers()) {
                 if (member.getUserId().equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
+                    agoraMember.setIconUrl(member.getAvatarUrl());
                     break;
                 }
             }

@@ -25,6 +25,40 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <LinearLayout
+        android:layout_marginRight="16dp"
+        android:orientation="horizontal"
+        android:gravity="right|center_vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="33dp">
+
+
+        <ImageView
+            android:id="@+id/image_audio_status"
+            android:src="@drawable/icon_command_mic_disable"
+            android:layout_width="32dp"
+            android:layout_height="36dp" />
+
+        <ImageView
+            android:id="@+id/image_vedio_status"
+            android:src="@drawable/icon_command_webcam_disable"
+            android:layout_width="32dp"
+            android:layout_height="36dp" />
+
+    </LinearLayout>
+
+    <com.kloudsync.techexcel.view.CircleImageView
+        android:id="@+id/member_icon"
+        android:layout_marginBottom="6dp"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        android:padding="2dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        />
+
+
 </RelativeLayout>
 
 

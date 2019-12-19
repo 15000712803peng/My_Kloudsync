@@ -377,9 +377,12 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         if (cameraAdapter != null) {
             cameraAdapter.muteOrOpenCamera(getRtcManager().worker().getEngineConfig().mUid, !isCameraOn);
         }
+
         if (fullCameraAdapter != null) {
             fullCameraAdapter.muteOrOpenCamera(getRtcManager().worker().getEngineConfig().mUid, !isCameraOn);
         }
+        onUserMuteVideo(Integer.parseInt(AppConfig.UserID),!MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn());
+
     }
 
     @Override

@@ -15,6 +15,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.httpgetimage.ImageLoader;
+import com.kloudsync.techexcel.view.CircleImageView;
 import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.AgoraUser;
@@ -34,14 +36,18 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     private LayoutInflater inflater;
     private List<AgoraMember> users;
     private Context mContext;
+    private ImageLoader imageLoader;
     public List<AgoraMember> getUsers() {
         return users;
     }
+
+
 
     public AgoraCameraAdapter(Context context) {
         this.mContext = context;
         inflater = LayoutInflater.from(mContext);
         users = new ArrayList<>();
+        imageLoader = new ImageLoader(context);
     }
 
     private OnCameraOptionsListener onCameraOptionsListener;
@@ -106,10 +112,19 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                 holder.audioStatusImage.setImageResource(R.drawable.icon_command_mic_enabel);
             }
 
+            if(TextUtils.isEmpty(user.getIconUrl())){
+                holder.iconImage.setImageResource(R.drawable.hello);
+            }else {
+                imageLoader.DisplayImage(user.getIconUrl(), holder.iconImage);
+            }
+
             if(user.isMuteVideo()){
                 holder.vedioStatusImage.setImageResource(R.drawable.icon_command_webcam_disable);
+                holder.iconImage.setVisibility(View.VISIBLE);
+
             }else {
                 holder.vedioStatusImage.setImageResource(R.drawable.icon_command_webcam_enable);
+                holder.iconImage.setVisibility(View.GONE);
             }
         }
     }
@@ -174,12 +189,14 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             nameText = view.findViewById(R.id.txt_name);
             audioStatusImage = view.findViewById(R.id.image_audio_status);
             vedioStatusImage = view.findViewById(R.id.image_vedio_status);
+            iconImage = view.findViewById(R.id.member_icon);
         }
 
         public FrameLayout vedioFrame;
         public TextView nameText;
         public ImageView audioStatusImage;
         public ImageView vedioStatusImage;
+        public CircleImageView iconImage;
     }
 
    public void reset(){

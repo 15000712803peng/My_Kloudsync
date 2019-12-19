@@ -45,4 +45,14 @@
 
     </LinearLayout>
 
+    <com.kloudsync.techexcel.view.CircleImageView
+        android:id="@+id/member_icon"
+        android:layout_marginBottom="6dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:padding="2dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        />
+
 </RelativeLayout>

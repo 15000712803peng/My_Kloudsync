@@ -273,7 +273,6 @@ public class SocketMessageManager {
     }
 
 
-
     public void sendMessage_AgoraStatusChange(MeetingConfig config, AgoraMember member){
         try {
             JSONObject message = new JSONObject();
@@ -283,8 +282,6 @@ public class SocketMessageManager {
             message.put("microphoneStatus", member.isMuteAudio()?3:2);
             message.put("cameraStatus", member.isMuteVideo() ? 3: 2);
             message.put("screenStatus", 0);
-
-//                    message.put("followToLeave", 1);
             doSendMessage(message.toString());
         } catch (JSONException e) {
             e.printStackTrace();
