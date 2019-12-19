@@ -728,7 +728,11 @@ Please input the cell phone number to add the contact
     <string name="syncrooms_in_spaces">syncrooms in current space</string>
     <string name="invite_form_company">Add from contact</string>
     <string name="invite_form_admin">Invite new admin</string>
-    <string name="invite_form_new">Invite new admin</string>
+    <string name="invite_form_new">Invite new</string>
+    <string name="addteamadmin">Add team admin</string>
+    <string name="addspaceadmin">Add space admin</string>
+    <string name="addnewmember">Add new member</string>
+
 
 
 

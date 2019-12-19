@@ -43,7 +43,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="5dp"
                 android:layout_toRightOf="@+id/image_add_new"
-                android:text="Add space admin" />
+                android:text="@string/addspaceadmin" />
         </RelativeLayout>
 
         <View
@@ -86,7 +86,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="5dp"
                 android:layout_toRightOf="@+id/image_add_new_2"
-                android:text="Add space member" />
+                android:text="@string/addnewmember" />
         </RelativeLayout>
 
         <View

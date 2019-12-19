@@ -721,6 +721,10 @@
     <string name="invite_form_admin">邀请新管理员</string>
     <string name="invite_form_new">邀请新联系人</string>
 
+    <string name="addteamadmin">增加团队管理员</string>
+    <string name="addspaceadmin">增加空间管理员</string>
+    <string name="addnewmember">邀请新成员</string>
+
     <string name="Mobile_phone">手机号</string>
     <string name="Password_hint">密码(6-20)</string>
     <string name="Sign_up">注册</string>

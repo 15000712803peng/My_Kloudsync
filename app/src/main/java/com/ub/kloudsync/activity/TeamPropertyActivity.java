@@ -26,6 +26,7 @@ import com.kloudsync.techexcel.dialog.TeamMemberOperationsDialog;
 import com.kloudsync.techexcel.docment.EditTeamActivity;
 import com.kloudsync.techexcel.docment.InviteNewActivity;
 import com.kloudsync.techexcel.docment.RenameActivity;
+import com.kloudsync.techexcel.help.AddSpaceMemberDialog;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.InviteNewDialog;
 import com.kloudsync.techexcel.help.SpaceMemberOperationDialog;
@@ -37,6 +38,7 @@ import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
 import com.kloudsync.techexcel.ui.InviteFromCompanyActivity;
 import com.kloudsync.techexcel.ui.InviteFromPhoneActivity;
+import com.kloudsync.techexcel.ui.InviteFromSpaceActivity;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -178,15 +180,40 @@ public class TeamPropertyActivity extends Activity implements View.OnClickListen
 //                MoreForTeam();
                 break;
             case R.id.layout_header:
-                if (inviteNewDialog == null) {
-                    inviteNewDialog = new InviteNewDialog(this);
-                    inviteNewDialog.setTitle("Add team admin");
-                }
-                inviteNewDialog.setOptionsLinstener(this);
-                inviteNewDialog.show();
+//                if (inviteNewDialog == null) {
+//                    inviteNewDialog = new InviteNewDialog(this);
+//                    inviteNewDialog.setTitle("Add team admin");
+//                }
+//                inviteNewDialog.setOptionsLinstener(this);
+//                inviteNewDialog.show();
+
+
+                addSpaceMemberDialog = new AddSpaceMemberDialog(this);
+                addSpaceMemberDialog.setOptionsLinstener(new AddSpaceMemberDialog.InviteOptionsLinstener() {
+                    @Override
+                    public void fromCompany() {
+
+                        Intent intent = new Intent(TeamPropertyActivity.this, InviteFromCompanyActivity.class);
+                        intent.putExtra("team_id", itemID);
+                        startActivityForResult(intent, REQUEST_ADD_ADMIN);
+                    }
+
+                    @Override
+                    public void formInvite() {
+                        Intent intent = new Intent(TeamPropertyActivity.this, InviteFromPhoneActivity.class);
+                        intent.putExtra("invite_type", 3);
+                        intent.putExtra("team_id", itemID);
+                        startActivity(intent);
+                    }
+                });
+                addSpaceMemberDialog.show(0);
+
+
                 break;
         }
     }
+
+    private AddSpaceMemberDialog addSpaceMemberDialog;
 
     private void GoTOET() {
         Intent intent = new Intent(TeamPropertyActivity.this, EditTeamActivity.class);
@@ -308,6 +335,7 @@ public class TeamPropertyActivity extends Activity implements View.OnClickListen
         Intent intent = new Intent(this, InviteFromCompanyActivity.class);
         intent.putExtra("team_id", itemID);
         startActivityForResult(intent, REQUEST_ADD_ADMIN);
+
     }
 
 
@@ -357,7 +385,7 @@ public class TeamPropertyActivity extends Activity implements View.OnClickListen
 
             @Override
             public void clean() {
-                
+
             }
         });
         spaceMemberOperationDialog.show();

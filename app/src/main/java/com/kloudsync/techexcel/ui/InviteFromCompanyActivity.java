@@ -22,6 +22,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.response.CompanyContactsResponse;
 import com.kloudsync.techexcel.response.NResponse;
 import com.kloudsync.techexcel.response.NetworkResponse;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import java.net.SocketTimeoutException;
@@ -143,6 +144,20 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
                 Log.e("fail", "response:" + call);
             }
         });
+
+        String url = AppConfig.URL_PUBLIC + "TeamSpace/SearchContact?companyID=" + AppConfig.SchoolID + "&spaceID=" + teamId + "&keyword=&pageIndex=0&pageSize=10";
+        ServiceInterfaceTools.getinstance().getSearchContact(url, ServiceInterfaceTools.GETSEARCHCONTACT, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                List<CompanyContact> contacts = new ArrayList<>();
+                contacts.addAll((List<CompanyContact>) object);
+                if (contacts.size() == 0) {
+                    contacts = new ArrayList<>();
+                }
+                adapter.setDatas(contacts);
+            }
+        });
+
 
 
 
