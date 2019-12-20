@@ -732,6 +732,7 @@ Please input the cell phone number to add the contact
     <string name="addteamadmin">Add team admin</string>
     <string name="addspaceadmin">Add space admin</string>
     <string name="addnewmember">Add new member</string>
+    <string name="addmemberfromcomcomtact">add member from company contact</string>
 
 
 

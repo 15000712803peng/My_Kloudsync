@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,10 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.TeamMember;
+import com.kloudsync.techexcel.config.AppConfig;
 import com.ub.techexcel.tools.Tools;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,15 +66,22 @@ public class TeamMembersAdapterV2 extends HeaderRecyclerAdapter<TeamMember> {
         showMemberType(member.getMemberType(), holder.typeText);
 
 
-        if(member.getMemberType()==2){
-            holder.moreOpation.setVisibility(View.GONE);
+//        if(member.getMemberType()==2){
+//            holder.moreOpation.setVisibility(View.GONE);
+//        }else{
+//            if(loginRole==0){
+//                holder.moreOpation.setVisibility(View.GONE);
+//            }else{
+//                holder.moreOpation.setVisibility(View.VISIBLE);
+//            }
+//        }
+
+        if(member.isShowMore()){
+            holder.moreOpation.setVisibility(View.VISIBLE);
         }else{
-            if(loginRole==0){
-                holder.moreOpation.setVisibility(View.GONE);
-            }else{
-                holder.moreOpation.setVisibility(View.VISIBLE);
-            }
+            holder.moreOpation.setVisibility(View.GONE);
         }
+
 
 
 
@@ -85,10 +95,43 @@ public class TeamMembersAdapterV2 extends HeaderRecyclerAdapter<TeamMember> {
         });
     }
 
+
+    private List<TeamMember> teamMembers = new ArrayList<>();
     @Override
     public void setDatas(List<TeamMember> datas) {
         Collections.sort(datas);
+        teamMembers.clear();
+        teamMembers.addAll(datas);
+        if(datas.size()>0){
+            for (TeamMember member : datas) {
+                if (member.getMemberType() == 2) {  // 2 owner  1 admin  0 member
+                    member.setShowMore(false);
+                } else {
+                    if (loginRole == 0) {  // 登录用户在机构中是成员
+                        Log.e("role in team",getLoginSpaceRole()+"");
+                        if (getLoginSpaceRole() == 2 || getLoginSpaceRole() == 1) { //登录用户在team中是owner 或 admin
+                            member.setShowMore(true);
+                        } else {
+                            member.setShowMore(false);
+                        }
+                    } else {  // 登录用户是 owner 或  admin
+                        member.setShowMore(true);
+                    }
+                }
+            }
+        }
         super.setDatas(datas);
+    }
+
+    private int getLoginSpaceRole() {
+        if (teamMembers.size() > 0) {
+            for (TeamMember spacesMember : teamMembers) {
+                if (spacesMember.getMemberID().equals(AppConfig.UserID)) {
+                    return spacesMember.getMemberType();
+                }
+            }
+        }
+        return 0;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

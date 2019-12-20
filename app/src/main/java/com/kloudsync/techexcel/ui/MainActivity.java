@@ -1221,7 +1221,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             fragmentTransaction.commitAllowingStateLoss();
             changeSelectedTab(R.id.txt_tab_document);
         } else if (spaceFragment.getType() == 2) {
-
             // go to space syncrooms
             teamFrame.setVisibility(View.GONE);
             spaceFrame.setVisibility(View.VISIBLE);

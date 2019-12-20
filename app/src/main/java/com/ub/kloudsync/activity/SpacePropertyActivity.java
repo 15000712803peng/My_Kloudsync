@@ -148,8 +148,6 @@ public class SpacePropertyActivity extends Activity implements SpaceMembersAdapt
             addMemberLayout.setOnClickListener(this);
             madapter.setHeaderView(view);
         }
-
-
     }
 
 
@@ -173,9 +171,7 @@ public class SpacePropertyActivity extends Activity implements SpaceMembersAdapt
         Drawable d = getResources().getDrawable(R.drawable.documentadd2);
         d.setBounds(0, 0, DensityUtil.dp2px(getApplicationContext(), 41),
                 DensityUtil.dp2px(getApplicationContext(), 41));
-
     }
-
 
 
     @Override
@@ -275,7 +271,6 @@ public class SpacePropertyActivity extends Activity implements SpaceMembersAdapt
                     @Override
                     public void getServiceReturnData(Object object) {
                         getSpaceMemebers(spaceId);
-
                     }
                 });
             }

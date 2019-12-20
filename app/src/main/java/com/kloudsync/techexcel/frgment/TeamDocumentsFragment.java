@@ -172,7 +172,6 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         if (isPrepared && isVisible) {  //isPrepared 可见在onCreate之前执行
             if (!isLoadDataFinish) {
                 isLoadDataFinish = true;
-
             }
         }
     }
@@ -551,7 +550,6 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                 dialog.setSelectedOption(sharedPreferences.getInt("show_all_spaces", 0));
                 dialog.show();
                 break;
-
             case R.id.image_switch_company:
                 goToSwitchCompany();
                 break;
@@ -625,6 +623,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
 
                     @Override
                     public void Close() {
+
                     }
                 });
                 pdd.StartPop(moreOpation);
@@ -710,7 +709,6 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
             @Override
             public void run() {
                 try {
-
                     JSONObject responsedata = ConnectService.submitDataByJson(
                             AppConfig.URL_PUBLIC
                                     + "SpaceAttachment/UploadFromFavorite?spaceID=" + itemID

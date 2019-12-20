@@ -1141,8 +1141,6 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
                         String ErrorMessage = responsedata.getString("ErrorMessage");
                         msg.obj = ErrorMessage;
                     }
-
-
                     handler.sendMessage(msg);
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block

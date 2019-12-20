@@ -15,7 +15,7 @@
             android:textSize="14sp"
             android:padding="12dp"
             android:textColor="#4a4a4a"
-            android:text="add member from company contact"
+            android:text="@string/addmemberfromcomcomtact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

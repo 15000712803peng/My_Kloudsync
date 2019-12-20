@@ -720,6 +720,7 @@
     <string name="invite_form_company">从公司中添加</string>
     <string name="invite_form_admin">邀请新管理员</string>
     <string name="invite_form_new">邀请新联系人</string>
+    <string name="addmemberfromcomcomtact">从公司联系人和个人联系人中添加成员</string>
 
     <string name="addteamadmin">增加团队管理员</string>
     <string name="addspaceadmin">增加空间管理员</string>

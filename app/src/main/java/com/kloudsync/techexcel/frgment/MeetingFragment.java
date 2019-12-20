@@ -223,7 +223,6 @@ public class MeetingFragment extends MyFragment {
                                 intent.putExtra("yinxiangmode", 1);
                                 startActivity(intent);
                             }
-
                         }
 
                         @Override

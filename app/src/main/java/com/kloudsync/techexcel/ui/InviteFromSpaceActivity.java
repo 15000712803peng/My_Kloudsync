@@ -62,7 +62,7 @@ public class InviteFromSpaceActivity extends BaseActivity implements View.OnClic
         spaceId = getIntent().getIntExtra("space_id", 0);
         isAddAdmin = getIntent().getBooleanExtra("isAddAdmin", true);
         titleText = findViewById(R.id.tv_title);
-        titleText.setText("Add from company contact");
+        titleText.setText(getString(R.string.invite_form_company));
         contactList = findViewById(R.id.list_contact);
         noDataLayout = findViewById(R.id.no_data_lay);
         messageText = findViewById(R.id.txt_msg);

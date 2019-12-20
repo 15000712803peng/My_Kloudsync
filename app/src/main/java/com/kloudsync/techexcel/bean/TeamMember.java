@@ -15,6 +15,15 @@ public class TeamMember implements Comparable<TeamMember> {
     private String MemberAvatar;
     private String JoinDate;
     private int MemberType;
+    private boolean isShowMore;
+
+    public boolean isShowMore() {
+        return isShowMore;
+    }
+
+    public void setShowMore(boolean showMore) {
+        isShowMore = showMore;
+    }
 
     public String getMemberID() {
         return MemberID;

@@ -1173,7 +1173,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             JSONObject returnjson = new JSONObject(jsonstring);
             if (returnjson.getBoolean("Success")) {
                 JSONObject data = returnjson.getJSONObject("Data");
-
                 JSONObject bucket = data.getJSONObject("Bucket");
                 Uploadao uploadao = new Uploadao();
                 uploadao.setServiceProviderId(bucket.getInt("ServiceProviderId"));
