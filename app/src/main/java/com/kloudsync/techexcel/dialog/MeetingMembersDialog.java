@@ -81,10 +81,7 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         membersPager.setAdapter(membersAdapter);
         getDialog().getWindow().setGravity(Gravity.RIGHT);
         getDialog().getWindow().setWindowAnimations(R.style.anination3);
-        WindowManager.LayoutParams lp = getDialog().getWindow().getAttributes();
-        lp.height = heigth;
-        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
-        getDialog().getWindow().setAttributes(lp);
+
         init();
 
     }
@@ -95,6 +92,10 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
     public void onStart() {
         super.onStart();
         getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        WindowManager.LayoutParams lp = getDialog().getWindow().getAttributes();
+        lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        getDialog().getWindow().setAttributes(lp);
 
     }
 
@@ -194,9 +195,9 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         auditorsTab.setOnClickListener(this);
         invitorsTab.setOnClickListener(this);
         membersPager.addOnPageChangeListener(this);
-        tab1.setText("参会者" +"（" + meetingConfig.getMeetingMembers().size() + ")");
-        tab2.setText("旁听者" +"（" + meetingConfig.getMeetingAuditor().size() + ")");
-        tab3.setText("被邀请人" +"（" + meetingConfig.getMeetingInvitors().size() + ")");
+        tab1.setText("参会者" +"(" + meetingConfig.getMeetingMembers().size() + ")");
+        tab2.setText("旁听者" +"(" + meetingConfig.getMeetingAuditor().size() + ")");
+        tab3.setText("被邀请人" +"(" + meetingConfig.getMeetingInvitors().size() + ")");
         if(meetingConfig.getMeetingInvitors().size() > 0){
             invitorsTab.setVisibility(View.VISIBLE);
 

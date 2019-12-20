@@ -733,7 +733,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 @Override
                 public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
                     JSONObject params = new JSONObject();
-                    params.put("classroomID", meetingRoom);
+                    params.put("classroomID", meetingRoom.toUpperCase());
                     params.put("addBlankPage", 0);
                     JSONObject result = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/AddInstantLesson?classRoomID=" + meetingRoom + "&addBlankPage=0",params);
                     Log.e("GetClassRoomLessonID","meetingRoom:" + meetingRoom + ",result:" + result);
@@ -741,7 +741,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                         int retCode = result.getInt("RetCode");
                         if(retCode == 0){
                             joinMeeting.setLessionId(result.getInt("RetData"));
-                            joinMeeting.setMeetingId(meetingRoom);
+                            joinMeeting.setMeetingId(meetingRoom.toUpperCase());
                             joinMeeting.setRole(MeetingConfig.MeetingRole.HOST);
                         }
                     }

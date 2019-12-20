@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.frgment;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,14 +11,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.DeviceType;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.PopMeetingMemberSetting;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.view.CircleImageView;
 
@@ -112,12 +116,14 @@ public class MeetingMembersFragment extends MyFragment{
             presenter = view.findViewById(R.id.txt_presenter);
             me = view.findViewById(R.id.txt_is_me);
             type = view.findViewById(R.id.txt_type);
+            settingImage = view.findViewById(R.id.image_setting);
         }
         public CircleImageView icon;
         public TextView name;
         public TextView presenter;
         public TextView me;
         public TextView type;
+        public ImageView settingImage;
 
     }
 
@@ -169,17 +175,14 @@ public class MeetingMembersFragment extends MyFragment{
                 imageLoader.DisplayImage(url, holder.icon);
             }
 
-            if(member.getPresenter() == 1){
-                holder.presenter.setVisibility(View.VISIBLE);
-            }else {
-                holder.presenter.setVisibility(View.GONE);
-            }
-
             if((member.getUserId()+"").equals(AppConfig.UserID)){
                 holder.me.setVisibility(View.VISIBLE);
             }else{
                 holder.me.setVisibility(View.GONE);
             }
+
+            fillDevictType(member.getDeviceType(),holder.type);
+            fillViewByRole(member,holder);
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -187,6 +190,78 @@ public class MeetingMembersFragment extends MyFragment{
 
                 }
             });
+
+        }
+    }
+
+    private void fillDevictType(int deviceType,TextView typeText){
+        switch (deviceType){
+            case DeviceType.WEB:
+                typeText.setVisibility(View.VISIBLE);
+                typeText.setBackgroundResource(R.drawable.bg_web);
+                typeText.setTextColor(Color.parseColor("#6A6DEB"));
+                typeText.setText("Web");
+                break;
+            case DeviceType.ANDROID:
+                typeText.setVisibility(View.VISIBLE);
+                typeText.setBackgroundResource(R.drawable.bg_android);
+                typeText.setTextColor(Color.parseColor("#26C184"));
+                typeText.setText("Android");
+
+                break;
+            case DeviceType.IPHONE:
+                typeText.setVisibility(View.VISIBLE);
+                typeText.setBackgroundResource(R.drawable.bg_iphone);
+                typeText.setTextColor(Color.parseColor("#999999"));
+                typeText.setText("IOS");
+                break;
+            case DeviceType.TV:
+                typeText.setVisibility(View.VISIBLE);
+                typeText.setBackgroundResource(R.drawable.bg_tv);
+                typeText.setTextColor(getActivity().getResources().getColor(R.color.darkblack2));
+                typeText.setText("TV");
+                break;
+                default:
+                    typeText.setText("");
+                    typeText.setVisibility(View.GONE);
+                    break;
+        }
+    }
+
+    PopMeetingMemberSetting popMeetingMemberSetting;
+
+    private void showMemberSetting(View view){
+        if(popMeetingMemberSetting != null){
+            if(popMeetingMemberSetting.isShowing()){
+                popMeetingMemberSetting.dismiss();
+            }
+            popMeetingMemberSetting = null;
+        }
+
+        popMeetingMemberSetting = new PopMeetingMemberSetting(getActivity());
+        popMeetingMemberSetting.showAtBottom(view);
+    }
+
+    private void fillViewByRole(MeetingMember meetingMember, final ViewHolder holder){
+        int role = meetingMember.getRole();
+
+        if(role == MeetingConfig.MeetingRole.MEMBER){
+            if(meetingMember.getPresenter() == 1){
+                holder.presenter.setVisibility(View.VISIBLE);
+            }else {
+                holder.presenter.setVisibility(View.GONE);
+            }
+            holder.settingImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showMemberSetting(holder.settingImage);
+                }
+            });
+
+
+        }else if(role == MeetingConfig.MeetingRole.AUDIENCE){
+
+        }else if(role == MeetingConfig.MeetingRole.BE_INVITED){
 
         }
     }

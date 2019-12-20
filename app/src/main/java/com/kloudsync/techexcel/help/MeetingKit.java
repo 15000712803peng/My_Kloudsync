@@ -490,6 +490,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                         List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
                         if(members != null){
+                            for(MeetingMember member : members){
+                                member.setRole(MeetingConfig.MeetingRole.MEMBER);
+                            }
                             meetingConfig.setMeetingMembers(members);
                         }
                     }
@@ -510,6 +513,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                         }.getType());
                         Log.e("check_auditor","auditor" + members);
                         if(members != null){
+                            for(MeetingMember member : members){
+                                member.setRole(MeetingConfig.MeetingRole.AUDIENCE);
+                            }
                             meetingConfig.setMeetingAuditor(members);
                         }
                     }
@@ -526,6 +532,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                         List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
                         if(members != null){
+                            for(MeetingMember member : members){
+                                member.setRole(MeetingConfig.MeetingRole.BE_INVITED);
+                            }
                             meetingConfig.setMeetingInvitors(members);
                         }
                     }

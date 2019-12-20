@@ -21,7 +21,7 @@ public class MeetingMember implements Comparable<MeetingMember>,Serializable {
     private int agoraStatus;
     private int microphoneStatus;
     private int cameraStatus;
-    private int deviceType;
+    private int deviceType = -1;
     private int handStatus;
 
     public int getUserId() {
