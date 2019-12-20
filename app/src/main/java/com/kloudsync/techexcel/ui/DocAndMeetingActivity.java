@@ -40,6 +40,7 @@ import com.kloudsync.techexcel.bean.EventPageActions;
 import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.EventRefreshDocs;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
+import com.kloudsync.techexcel.bean.EventSetPresenter;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
@@ -126,7 +127,7 @@ import retrofit2.Response;
  */
 
 public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
-        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, SetPresenterDialog.OnSetPresenterClickedListener, AgoraCameraAdapter.OnCameraOptionsListener {
+        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener {
 
     public static MeetingConfig meetingConfig;
     private SocketMessageManager messageManager;
@@ -694,6 +695,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             cameraAdapter = new AgoraCameraAdapter(this);
             cameraAdapter.setMembers(copyMembers);
             cameraAdapter.setOnCameraOptionsListener(this);
+            fitCameraList();
             cameraList.setAdapter(cameraAdapter);
             MeetingKit.getInstance().setCameraAdapter(cameraAdapter);
         }
@@ -1696,7 +1698,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     private void initViews() {
         toggleCameraLayout.setOnClickListener(this);
-        cameraList.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        cameraList.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false));
         cameraList.setDrawingCacheEnabled(true);
         cameraList.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
         fullCameraList.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false));
@@ -2066,10 +2068,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     }
 
-    @Override
-    public void onSetPresenterClicked(MeetingMember meetingMember) {
-        messageManager.sendMessage_MakePresenter(meetingConfig, meetingMember);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void setPresenter(EventSetPresenter setPresenter){
+        messageManager.sendMessage_MakePresenter(meetingConfig, setPresenter.getMeetingMember());
+
     }
+
 
     @Override
     public void onBackPressed() {
@@ -2113,7 +2117,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         int size = meetingConfig.getAgoraMembers().size();
 
         if (size == 1) {
-
             fullCameraList.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false));
 
         } else if (size > 1 && size <= 4) {
@@ -2136,6 +2139,26 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         int currentSpanCount = s.getSpanCount();
 
         Log.e("fitFullCameraList", "span:" + currentSpanCount);
+    }
+
+    private void fitCameraList() {
+
+        int size = meetingConfig.getAgoraMembers().size();
+
+        if (size > 0 && size <= 8) {
+            cameraList.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false));
+
+        } else if (size > 8 && size <= 16) {
+
+            cameraList.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.HORIZONTAL, false));
+
+        } else if (size > 16 ) {
+
+            cameraList.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.HORIZONTAL, false));
+
+        }
+        GridLayoutManager s = (GridLayoutManager) fullCameraList.getLayoutManager();
+        int currentSpanCount = s.getSpanCount();
     }
 
 

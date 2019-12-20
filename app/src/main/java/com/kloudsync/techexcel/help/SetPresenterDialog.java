@@ -108,7 +108,6 @@ public class SetPresenterDialog implements DialogInterface.OnDismissListener, On
     public void show(MeetingMember meetingMember,Activity host) {
         this.meetingMember = meetingMember;
         this.host = host;
-        setOnSetPresenterClickedListener((DocAndMeetingActivity)host);
         dialog.show();
 
     }

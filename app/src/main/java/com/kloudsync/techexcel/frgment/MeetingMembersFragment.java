@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.DeviceType;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
+import com.kloudsync.techexcel.bean.EventSetPresenter;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
@@ -37,7 +38,7 @@ import java.util.List;
  * Created by tonyan on 2019/11/9.
  */
 
-public class MeetingMembersFragment extends MyFragment{
+public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged{
 
     private RecyclerView membersList;
     int type;
@@ -230,7 +231,7 @@ public class MeetingMembersFragment extends MyFragment{
 
     PopMeetingMemberSetting popMeetingMemberSetting;
 
-    private void showMemberSetting(View view){
+    private void showMemberSetting(MeetingMember member,View view){
         if(popMeetingMemberSetting != null){
             if(popMeetingMemberSetting.isShowing()){
                 popMeetingMemberSetting.dismiss();
@@ -239,10 +240,11 @@ public class MeetingMembersFragment extends MyFragment{
         }
 
         popMeetingMemberSetting = new PopMeetingMemberSetting(getActivity());
-        popMeetingMemberSetting.showAtBottom(view);
+        popMeetingMemberSetting.setOnMemberSettingChanged(this);
+        popMeetingMemberSetting.showAtBottom(member,view);
     }
 
-    private void fillViewByRole(MeetingMember meetingMember, final ViewHolder holder){
+    private void fillViewByRole(final MeetingMember meetingMember, final ViewHolder holder){
         int role = meetingMember.getRole();
 
         if(role == MeetingConfig.MeetingRole.MEMBER){
@@ -254,7 +256,7 @@ public class MeetingMembersFragment extends MyFragment{
             holder.settingImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showMemberSetting(holder.settingImage);
+                    showMemberSetting(meetingMember,holder.settingImage);
                 }
             });
 
@@ -264,6 +266,18 @@ public class MeetingMembersFragment extends MyFragment{
         }else if(role == MeetingConfig.MeetingRole.BE_INVITED){
 
         }
+    }
+
+    @Override
+    public void setPresenter(MeetingMember meetingMember) {
+        EventSetPresenter setPresenter = new EventSetPresenter();
+        setPresenter.setMeetingMember(meetingMember);
+        EventBus.getDefault().post(setPresenter);
+    }
+
+    @Override
+    public void setAuditor(MeetingMember meetingMember) {
+
     }
 
 

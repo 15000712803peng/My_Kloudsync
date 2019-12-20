@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingMember;
@@ -22,6 +23,18 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
     private Context context;
 
     private MeetingMember meetingMember;
+    private TextView setPresenter,setAuditor;
+
+    public interface OnMemberSettingChanged{
+        void setPresenter(MeetingMember meetingMember);
+        void setAuditor(MeetingMember meetingMember);
+    }
+
+    private OnMemberSettingChanged onMemberSettingChanged;
+
+    public void setOnMemberSettingChanged(OnMemberSettingChanged onMemberSettingChanged) {
+        this.onMemberSettingChanged = onMemberSettingChanged;
+    }
 
     public PopMeetingMemberSetting(Context context) {
         super(context);
@@ -32,6 +45,10 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
     private void initalize() {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.pop_meeting_member_options, null);
+        setPresenter = view.findViewById(R.id.txt_setting_presenter);
+        setAuditor = view.findViewById(R.id.txt_setting_auditor);
+        setPresenter.setOnClickListener(this);
+        setAuditor.setOnClickListener(this);
         setContentView(view);
         initWindow();
     }
@@ -48,13 +65,24 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
 
     public void showAtBottom(MeetingMember meetingMember,View view) {
         this.meetingMember = meetingMember;
+        if(meetingMember.getPresenter() == 1){
+            setPresenter.setVisibility(View.GONE);
+        }
         showAsDropDown(view, -context.getResources().getDimensionPixelOffset(R.dimen.meeting_members_setting_width) + context.getResources().getDimensionPixelOffset(R.dimen.pop_setting_left_margin), 10);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-
+            case R.id.txt_setting_presenter:
+                dismiss();
+                if(meetingMember != null && onMemberSettingChanged != null){
+                    onMemberSettingChanged.setPresenter(meetingMember);
+                }
+                break;
+            case R.id.txt_setting_auditor:
+                dismiss();
+                break;
             default:
                 break;
         }
