@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -34,6 +35,7 @@ import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventClose;
+import com.kloudsync.techexcel.bean.EventCloseShare;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventHideMembers;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
@@ -610,6 +612,16 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         remoteShareFrame.addView(shareScreen.getShareView(), new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         shareScreen.getShareView().setZOrderMediaOverlay(true);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void closeShareScreen(EventCloseShare closeShare) {
+        SurfaceView surfaceView = (SurfaceView) remoteShareFrame.getChildAt(0);
+        if (surfaceView != null) {
+            surfaceView.setVisibility(View.GONE);
+        }
+        remoteShareFrame.removeAllViews();
+        remoteShareLayout.setVisibility(View.GONE);
     }
 
     public void refreshAgoraMember(AgoraMember member) {

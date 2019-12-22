@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.EventCloseShare;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventHideMembers;
 import com.kloudsync.techexcel.bean.EventMute;
@@ -219,11 +220,16 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     @Override
     public void onUserOffline(int uid, int reason) {
         Log.e("MeetingKit", "onUserOffline:" + uid);
-        AgoraMember member = new AgoraMember();
-        member.setUserId(uid);
-        member.setMuteAudio(true);
-        member.setMuteVideo(true);
-        EventBus.getDefault().post(member);
+        if (uid > 1000000000 && uid < 1500000000) {
+            EventBus.getDefault().post(new EventCloseShare());
+        }else {
+            AgoraMember member = new AgoraMember();
+            member.setUserId(uid);
+            member.setMuteAudio(true);
+            member.setMuteVideo(true);
+            EventBus.getDefault().post(member);
+        }
+
     }
 
     @Override
