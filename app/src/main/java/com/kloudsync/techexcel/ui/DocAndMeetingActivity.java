@@ -598,11 +598,18 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void showShareScreen(EventShareScreen shareScreen){
         Log.e("showShareScreen","show_screen");
         remoteShareLayout.setVisibility(View.VISIBLE);
-        remoteShareFrame.addView(shareScreen.getShareView(),0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        if (remoteShareFrame.getChildCount() == 0) {
+            ViewParent parent = shareScreen.getShareView().getParent();
+            if (parent != null) {
+                ((FrameLayout) parent).removeView(shareScreen.getShareView());
+            }
+        }
+        remoteShareFrame.addView(shareScreen.getShareView(), new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        shareScreen.getShareView().setZOrderMediaOverlay(true);
     }
 
     public void refreshAgoraMember(AgoraMember member) {
