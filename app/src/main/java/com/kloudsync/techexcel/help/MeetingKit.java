@@ -22,6 +22,7 @@ import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventHideMembers;
 import com.kloudsync.techexcel.bean.EventMute;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
+import com.kloudsync.techexcel.bean.EventShareScreen;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
@@ -272,7 +273,19 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             if (!meetingConfig.isInRealMeeting()) {
                 return;
             }
-            EventBus.getDefault().post(createMemberCamera(meetingConfig.getAgoraChannelId(), uid));
+            if (uid > 1000000000 && uid < 1500000000) {
+                SurfaceView surfaceView = RtcEngine.CreateRendererView(host);
+                surfaceView.setZOrderOnTop(true);
+                surfaceView.setZOrderMediaOverlay(true);
+                surfaceView.setTag(uid);
+                getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, uid));
+                EventShareScreen shareScreen = new EventShareScreen();
+                shareScreen.setShareView(surfaceView);
+                EventBus.getDefault().post(shareScreen);
+            }else {
+                EventBus.getDefault().post(createMemberCamera(meetingConfig.getAgoraChannelId(), uid));
+            }
+
         }
     }
 
@@ -284,7 +297,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     private AgoraMember createMemberCamera(String channelId, int userId) {
         AgoraMember member = new AgoraMember();
         member.setUserId(userId);
-        member.setMuteVideo(false);
         member.setAdd(true);
         SurfaceView surfaceV = RtcEngine.CreateRendererView(host.getApplicationContext());
         surfaceV.setZOrderOnTop(true);

@@ -26,6 +26,7 @@ import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.agora.openlive.ui.VideoViewEventListener;
@@ -204,6 +205,27 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
             this.members.get(index).setMuteAudio(isMute);
             notifyItemChanged(index);
         }
+    }
+
+
+    public void addUser(AgoraMember user) {
+
+        if (members.contains(user)) {
+            return;
+        }
+        this.members.add(user);
+        Collections.sort(members);
+        notifyItemInserted(this.members.indexOf(user));
+    }
+
+    public void removeUser(AgoraMember user) {
+        int index = members.indexOf(user);
+        if(index >= 0){
+            this.members.remove(user);
+            Collections.sort(members);
+            notifyItemRemoved(this.members.indexOf(user));
+        }
+
     }
 
 }

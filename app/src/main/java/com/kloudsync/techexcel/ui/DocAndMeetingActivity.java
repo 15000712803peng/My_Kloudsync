@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.ui;
 
 
 import android.annotation.SuppressLint;
+import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,7 +20,10 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.webkit.WebSettings;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -41,6 +45,7 @@ import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.EventRefreshDocs;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.EventSetPresenter;
+import com.kloudsync.techexcel.bean.EventShareScreen;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
@@ -120,6 +125,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
 import retrofit2.Response;
 
 /**
@@ -161,6 +167,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Bind(R.id.layout_meeting_default_document)
     RelativeLayout meetingDefaultDocument;
+
+    @Bind(R.id.layout_remote_share)
+    RelativeLayout remoteShareLayout;
+    @Bind(R.id.frame_remote_share)
+    FrameLayout remoteShareFrame;
 
     AgoraCameraAdapter cameraAdapter;
     FullAgoraCameraAdapter fullCameraAdapter;
@@ -300,59 +311,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingConfig = null;
     }
 
-    public void handleMessageJoinMeeting(JSONObject data) {
-        if (data == null) {
-            return;
-        }
-
-        if (data.has("retCode")) {
-            try {
-                if (data.getInt("retCode") == 0) {
-                    // 成功收到JOIN_MEETING的返回
-                    JSONObject dataJson = data.getJSONObject("retData");
-//                    if (!dataJson.has("CurrentDocumentPage")) {
-//                        Toast.makeText(this, "join meeting failed", Toast.LENGTH_SHORT).show();
-//                        return;
-//                    }
-                    String pageData = dataJson.getString("CurrentDocumentPage");
-                    String[] datas = pageData.split("-");
-                    meetingConfig.setFileId(Integer.parseInt(datas[0]));
-                    float page = Float.parseFloat(datas[1]);
-                    meetingConfig.setPageNumber((int) page);
-                    meetingConfig.setType(dataJson.getInt("type"));
-                    if (documents == null || documents.size() <= 0) {
-                        requestDocumentsAndShowPage();
-                    }
-
-                    if (meetingConfig.getType() == MeetingType.DOC) {
-                        meetingLayout.setVisibility(View.GONE);
-                    } else if (meetingConfig.getType() == MeetingType.MEETING) {
-                        if (dataJson.has("presenterSessionId")) {
-                            meetingConfig.setPresenterSessionId(dataJson.getString("presenterSessionId"));
-                        }
-
-                        if (dataJson.has("usersList")) {
-                            JSONArray users = dataJson.getJSONArray("usersList");
-                            if (users.length() >= 0) {
-                                getMeetingMembers(users);
-                            }
-                        }
-
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
-
-                        if (meetingConfig.isInRealMeeting()) {
-                            return;
-                        }
-                        //
-                        initRealMeeting();
-                    }
-//                    Log.e("MeetingConfig","MeetingConfig:" + meetingConfig);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     private synchronized void getMeetingMembers(JSONArray users) {
         List<MeetingMember> allMembers = (List<MeetingMember>) new Gson().fromJson(users.toString(), new TypeToken<List<MeetingMember>>() {
@@ -368,10 +326,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
 
             if (member.getRole() == 2) {
-                meetingConfig.setMeetingHostId(member.getUserId()+"");
+                meetingConfig.setMeetingHostId(member.getUserId() + "");
             }
             if (member.getPresenter() == 1) {
-                meetingConfig.setPresenterId(member.getUserId()+"");
+                meetingConfig.setPresenterId(member.getUserId() + "");
             }
         }
 
@@ -536,7 +494,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 }
 
                 for (MeetingMember member : meetingConfig.getMeetingMembers()) {
-                    if ((member.getUserId()+"").equals(meetingConfig.getPresenterId())) {
+                    if ((member.getUserId() + "").equals(meetingConfig.getPresenterId())) {
                         member.setPresenter(1);
                     } else {
                         member.setPresenter(0);
@@ -558,6 +516,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             case SocketMessageManager.MESSAGE_MEMBER_LIST_CHANGE:
                 MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
                 break;
+            case SocketMessageManager.MESSAGE_AGORA_STATUS_CHANGE:
+//                handleMessageAgoraStatusChange(socketMessage.getData());
+                break;
         }
     }
 
@@ -565,49 +526,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public void receiveEventClose(EventClose close) {
         Log.e("receiveEventClose", "close");
         finish();
-    }
-
-    private void handleMessageAttchmentUploadedAndShow(JSONObject data) {
-        Log.e("handle_attchment_upload", "data;" + data);
-        String newDocumentId = "";
-        try {
-            newDocumentId = data.getString("itemId");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        if (TextUtils.isEmpty(newDocumentId)) {
-            return;
-        }
-        final String _id = newDocumentId;
-        Observable.just(meetingConfig).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingConfig>() {
-            @Override
-            public void accept(MeetingConfig meetingConfig) throws Exception {
-                DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, Integer.parseInt(_id));
-            }
-        }).subscribe();
-    }
-
-    private void handleMessageLeaveMeeting(JSONObject data) {
-        Log.e("handle_leave_meeting", "data:" + data);
-        if (data == null) {
-            return;
-        }
-
-        if (data.has("retCode")) {
-            try {
-                if (data.getInt("retCode") == 0) {
-                    JSONArray usersList = data.getJSONObject("retData").getJSONArray("usersList");
-                    if (usersList != null) {
-                        getMeetingMembers(usersList);
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
-
     }
 
 
@@ -667,20 +585,71 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
 
         checkAgoraMemberName();
-        refreshAgoraMember();
+        refreshAgoraMember(member);
 
         if (cameraAdapter != null) {
             cameraAdapter.setOnCameraOptionsListener(this);
         }
 
-        Log.e("check_send_agora_status","user_id:" + AppConfig.UserID + ",agora_id:" + member.getUserId());
+        Log.e("check_send_agora_status", "user_id:" + AppConfig.UserID + ",agora_id:" + member.getUserId());
         if ((member.getUserId() + "").equals(AppConfig.UserID)) {
             messageManager.sendMessage_AgoraStatusChange(meetingConfig, member);
         }
 
     }
 
-    private void refreshAgoraMember() {
+    @Subscribe
+    public void showShareScreen(EventShareScreen shareScreen){
+        Log.e("showShareScreen","show_screen");
+        remoteShareLayout.setVisibility(View.VISIBLE);
+        remoteShareFrame.addView(shareScreen.getShareView(),0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
+
+    public void refreshAgoraMember(AgoraMember member) {
+        if (cameraList.getVisibility() == View.VISIBLE) {
+            if (cameraAdapter != null) {
+                if (member.isAdd()) {
+                    cameraAdapter.addUser(member);
+                } else {
+                    cameraAdapter.removeUser(member);
+                }
+            } else {
+                List<AgoraMember> copyMembers = new ArrayList<>();
+                for (AgoraMember _member : meetingConfig.getAgoraMembers()) {
+                    copyMembers.add(_member);
+                }
+                cameraAdapter = new AgoraCameraAdapter(this);
+                cameraAdapter.setMembers(copyMembers);
+                cameraAdapter.setOnCameraOptionsListener(this);
+//            fitCameraList();
+                cameraList.setAdapter(cameraAdapter);
+                MeetingKit.getInstance().setCameraAdapter(cameraAdapter);
+            }
+        }
+
+        if (fullCameraList.getVisibility() == View.VISIBLE) {
+            if (fullCameraAdapter != null) {
+                if (member.isAdd()) {
+                    fullCameraAdapter.addUser(member);
+                } else {
+                    fullCameraAdapter.removeUser(member);
+                }
+            } else {
+                List<AgoraMember> copyMembers = new ArrayList<>();
+                for (AgoraMember _member : meetingConfig.getAgoraMembers()) {
+                    copyMembers.add(_member);
+                }
+                fullCameraAdapter = new FullAgoraCameraAdapter(this);
+                fullCameraAdapter.setMembers(copyMembers);
+                fitFullCameraList();
+                fullCameraList.setAdapter(fullCameraAdapter);
+                MeetingKit.getInstance().setFullCameraAdaptero(fullCameraAdapter);
+            }
+        }
+    }
+
+
+    private void reloadAgoraMember() {
         List<AgoraMember> copyMembers = new ArrayList<>();
         for (AgoraMember member : meetingConfig.getAgoraMembers()) {
             copyMembers.add(member);
@@ -695,7 +664,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             cameraAdapter = new AgoraCameraAdapter(this);
             cameraAdapter.setMembers(copyMembers);
             cameraAdapter.setOnCameraOptionsListener(this);
-            fitCameraList();
+//            fitCameraList();
             cameraList.setAdapter(cameraAdapter);
             MeetingKit.getInstance().setCameraAdapter(cameraAdapter);
         }
@@ -815,8 +784,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getMeetingMembers() == null || meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
-        if(meetingMembersDialog != null && meetingMembersDialog.isShowing()){
-            Log.e("refreshMeetingMembers","dialog_is_show");
+        if (meetingMembersDialog != null && meetingMembersDialog.isShowing()) {
+            Log.e("refreshMeetingMembers", "dialog_is_show");
             meetingMembersDialog.refresh(refreshMembers);
         }
         checkAgoraMemberName();
@@ -851,10 +820,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
         }
 
-        if(eventMute.getAgoraMember() != null){
-            if((eventMute.getAgoraMember().getUserId() + "").equals(AppConfig.UserID)){
+        if (eventMute.getAgoraMember() != null) {
+            if ((eventMute.getAgoraMember().getUserId() + "").equals(AppConfig.UserID)) {
                 int index = meetingConfig.getAgoraMembers().indexOf(eventMute.getAgoraMember());
-                if(index >= 0){
+                if (index >= 0) {
                     messageManager.sendMessage_AgoraStatusChange(meetingConfig, meetingConfig.getAgoraMembers().get(index));
                 }
 
@@ -866,7 +835,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private void checkAgoraMemberName() {
         for (MeetingMember member : meetingConfig.getMeetingMembers()) {
             for (AgoraMember agoraMember : meetingConfig.getAgoraMembers()) {
-                if ((member.getUserId()+"").equals(agoraMember.getUserId() + "")) {
+                if ((member.getUserId() + "").equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
                     break;
@@ -876,7 +845,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         for (MeetingMember member : meetingConfig.getMeetingAuditor()) {
             for (AgoraMember agoraMember : meetingConfig.getAgoraMembers()) {
-                if ((member.getUserId()+"").equals(agoraMember.getUserId() + "")) {
+                if ((member.getUserId() + "").equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
                     break;
@@ -885,17 +854,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    private void handleMessageSendMessage(JSONObject data) throws JSONException {
-        if (!data.has("actionType")) {
-            return;
-        }
-
-        switch (data.getInt("actionType")) {
-            case 8:
-                changeDocument(data.getInt("itemId"), Integer.parseInt(data.getString("pageNumber")));
-                break;
-        }
-    }
 
     private void highLightNoteInDifferentPage(DocumentPage page, EventHighlightNote note) {
         showDocumentPage(page);
@@ -1698,7 +1656,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     private void initViews() {
         toggleCameraLayout.setOnClickListener(this);
-        cameraList.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false));
+        cameraList.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         cameraList.setDrawingCacheEnabled(true);
         cameraList.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
         fullCameraList.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false));
@@ -1726,7 +1684,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 fullCamereLayout.setVisibility(View.GONE);
                 fullCameraList.setVisibility(View.GONE);
                 cameraList.setVisibility(View.VISIBLE);
-                refreshAgoraMember();
+                reloadAgoraMember();
                 break;
             case R.id.image_vedio_close:
                 DocVedioManager.getInstance(this).close();
@@ -1739,7 +1697,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         fullCameraList.setVisibility(View.GONE);
         if (cameraList.getVisibility() != View.VISIBLE) {
             cameraList.setVisibility(View.VISIBLE);
-            refreshAgoraMember();
+            reloadAgoraMember();
             toggleCameraImage.setImageResource(R.drawable.eyeclose);
         } else {
             if (cameraAdapter != null) {
@@ -1789,7 +1747,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
         }
         meetingMembersDialog = new MeetingMembersDialog();
-        meetingMembersDialog.init(this,meetingConfig);
+        meetingMembersDialog.init(this, meetingConfig);
         meetingMembersDialog.show(getSupportFragmentManager());
     }
 
@@ -2069,11 +2027,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void setPresenter(EventSetPresenter setPresenter){
+    public void setPresenter(EventSetPresenter setPresenter) {
         messageManager.sendMessage_MakePresenter(meetingConfig, setPresenter.getMeetingMember());
 
     }
-
 
     @Override
     public void onBackPressed() {
@@ -2108,7 +2065,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         fullCamereLayout.setVisibility(View.VISIBLE);
         fullCameraList.setVisibility(View.VISIBLE);
         cameraList.setVisibility(View.GONE);
-        refreshAgoraMember();
+        reloadAgoraMember();
 
     }
 
@@ -2141,24 +2098,172 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         Log.e("fitFullCameraList", "span:" + currentSpanCount);
     }
 
-    private void fitCameraList() {
+//    private void fitCameraList() {
+//
+//        int size = meetingConfig.getAgoraMembers().size();
+//
+//        if (size > 0 && size <= 8) {
+//            cameraList.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false));
+//
+//        } else if (size > 8 && size <= 16) {
+//
+//            cameraList.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.HORIZONTAL, false));
+//
+//        } else if (size > 16 ) {
+//
+//            cameraList.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.HORIZONTAL, false));
+//
+//        }
+//        GridLayoutManager s = (GridLayoutManager) fullCameraList.getLayoutManager();
+//        int currentSpanCount = s.getSpanCount();
+//    }
 
-        int size = meetingConfig.getAgoraMembers().size();
 
-        if (size > 0 && size <= 8) {
-            cameraList.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false));
+    // ----handle_message
 
-        } else if (size > 8 && size <= 16) {
-
-            cameraList.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.HORIZONTAL, false));
-
-        } else if (size > 16 ) {
-
-            cameraList.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.HORIZONTAL, false));
-
+    private void handleMessageSendMessage(JSONObject data) throws JSONException {
+        if (!data.has("actionType")) {
+            return;
         }
-        GridLayoutManager s = (GridLayoutManager) fullCameraList.getLayoutManager();
-        int currentSpanCount = s.getSpanCount();
+
+        switch (data.getInt("actionType")) {
+            case 8:
+                changeDocument(data.getInt("itemId"), Integer.parseInt(data.getString("pageNumber")));
+                break;
+        }
+    }
+
+    private void handleMessageLeaveMeeting(JSONObject data) {
+        Log.e("handle_leave_meeting", "data:" + data);
+        if (data == null) {
+            return;
+        }
+
+        if (data.has("retCode")) {
+            try {
+                if (data.getInt("retCode") == 0) {
+                    JSONArray usersList = data.getJSONObject("retData").getJSONArray("usersList");
+                    if (usersList != null) {
+                        getMeetingMembers(usersList);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+
+    }
+
+    private void handleMessageAttchmentUploadedAndShow(JSONObject data) {
+        Log.e("handle_attchment_upload", "data;" + data);
+        String newDocumentId = "";
+        try {
+            newDocumentId = data.getString("itemId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (TextUtils.isEmpty(newDocumentId)) {
+            return;
+        }
+        final String _id = newDocumentId;
+        Observable.just(meetingConfig).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingConfig>() {
+            @Override
+            public void accept(MeetingConfig meetingConfig) throws Exception {
+                DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, Integer.parseInt(_id));
+            }
+        }).subscribe();
+    }
+
+    public void handleMessageJoinMeeting(JSONObject data) {
+        if (data == null) {
+            return;
+        }
+
+        if (data.has("retCode")) {
+            try {
+                if (data.getInt("retCode") == 0) {
+                    // 成功收到JOIN_MEETING的返回
+                    JSONObject dataJson = data.getJSONObject("retData");
+//                    if (!dataJson.has("CurrentDocumentPage")) {
+//                        Toast.makeText(this, "join meeting failed", Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+                    String pageData = dataJson.getString("CurrentDocumentPage");
+                    String[] datas = pageData.split("-");
+                    meetingConfig.setFileId(Integer.parseInt(datas[0]));
+                    float page = Float.parseFloat(datas[1]);
+                    meetingConfig.setPageNumber((int) page);
+                    meetingConfig.setType(dataJson.getInt("type"));
+                    if (documents == null || documents.size() <= 0) {
+                        requestDocumentsAndShowPage();
+                    }
+
+                    if (meetingConfig.getType() == MeetingType.DOC) {
+                        meetingLayout.setVisibility(View.GONE);
+                    } else if (meetingConfig.getType() == MeetingType.MEETING) {
+                        if (dataJson.has("presenterSessionId")) {
+                            meetingConfig.setPresenterSessionId(dataJson.getString("presenterSessionId"));
+                        }
+
+                        if (dataJson.has("usersList")) {
+                            JSONArray users = dataJson.getJSONArray("usersList");
+                            if (users.length() >= 0) {
+                                getMeetingMembers(users);
+                            }
+                        }
+
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+
+                        if (meetingConfig.isInRealMeeting()) {
+                            return;
+                        }
+                        //
+                        initRealMeeting();
+                    }
+//                    Log.e("MeetingConfig","MeetingConfig:" + meetingConfig);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void handleMessageAgoraStatusChange(JSONObject data) {
+        Log.e("agora_status_change", "data:" + data);
+        if (data.has("retData")) {
+            try {
+                JSONObject _data = data.getJSONObject("retData");
+                if (_data.has("usersList")) {
+                    JSONArray userList = _data.getJSONArray("usersList");
+
+                    for (int i = 0; i < userList.length(); ++i) {
+                        JSONObject user = userList.getJSONObject(i);
+                        Log.e("check_list", "user:" + user);
+                        int index = meetingConfig.getAgoraMembers().indexOf(new AgoraMember(Integer.parseInt(user.getString("userId"))));
+                        if (index >= 0) {
+                            AgoraMember member = meetingConfig.getAgoraMembers().get(index);
+                            member.setUserName(user.getString("userName"));
+                            member.setMuteAudio(!(user.getInt("microphoneStatus") == 2));
+                            member.setMuteVideo(!(user.getInt("cameraStatus") == 2));
+                        } else {
+                            AgoraMember agoraMember = new AgoraMember();
+                            agoraMember.setUserId(Integer.parseInt(user.getString("userId")));
+                            agoraMember.setUserName(user.getString("userName"));
+                            agoraMember.setIconUrl(user.getString("avatarUrl"));
+                            agoraMember.setMuteAudio(!(user.getInt("microphoneStatus") == 2));
+                            agoraMember.setMuteVideo(!(user.getInt("cameraStatus") == 2));
+                            meetingConfig.getAgoraMembers().add(agoraMember);
+                        }
+
+                    }
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 

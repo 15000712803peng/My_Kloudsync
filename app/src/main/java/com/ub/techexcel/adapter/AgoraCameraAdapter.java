@@ -170,16 +170,18 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         }
         this.users.add(user);
         Collections.sort(users);
-        notifyItemRangeChanged(getItemCount() - 2, 2);
+        notifyItemInserted(this.users.indexOf(user));
     }
 
     public void removeUser(AgoraMember user) {
-
-        if (users.contains(user)) {
+        int index = users.indexOf(user);
+        if(index >= 0){
             this.users.remove(user);
+//            Collections.sort(users);
+            notifyItemRemoved(index);
+
         }
-        Collections.sort(users);
-        notifyDataSetChanged();
+
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
