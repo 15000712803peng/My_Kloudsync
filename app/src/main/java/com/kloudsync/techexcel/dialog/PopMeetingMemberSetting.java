@@ -12,6 +12,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 
 /**
@@ -24,6 +25,7 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
 
     private MeetingMember meetingMember;
     private TextView setPresenter,setAuditor;
+    private MeetingConfig meetingConfig;
 
     public interface OnMemberSettingChanged{
         void setPresenter(MeetingMember meetingMember);
@@ -63,24 +65,33 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
 
     }
 
-    public void showAtBottom(MeetingMember meetingMember,View view) {
+    public void showAtBottom(MeetingMember meetingMember,View view,MeetingConfig meetingConfig) {
         this.meetingMember = meetingMember;
+        this.meetingConfig = meetingConfig;
         if(meetingMember.getPresenter() == 1){
             setPresenter.setVisibility(View.GONE);
         }
+        if(meetingMember.getPresenter() == 1 || meetingMember.getRole() == 2){
+            setAuditor.setVisibility(View.GONE);
+        }
         showAsDropDown(view, -context.getResources().getDimensionPixelOffset(R.dimen.meeting_members_setting_width) + context.getResources().getDimensionPixelOffset(R.dimen.pop_setting_left_margin), 10);
     }
+
+
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.txt_setting_presenter:
-                dismiss();
                 if(meetingMember != null && onMemberSettingChanged != null){
                     onMemberSettingChanged.setPresenter(meetingMember);
                 }
+                dismiss();
                 break;
             case R.id.txt_setting_auditor:
+                if(meetingMember != null && onMemberSettingChanged != null){
+                    onMemberSettingChanged.setAuditor(meetingMember);
+                }
                 dismiss();
                 break;
             default:

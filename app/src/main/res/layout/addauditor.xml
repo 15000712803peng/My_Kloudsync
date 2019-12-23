@@ -8,14 +8,15 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/green" >
+        android:background="@color/white" >
 
         <TextView
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="添加旁听者"
-            android:textColor="@color/white"
+            android:text="添加参与者"
+            android:textColor="@color/brunette"
             android:textSize="18sp" />
         <TextView
             android:id="@+id/done"
@@ -25,28 +26,26 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textColor="@color/black"
+            android:textSize="16sp" />
 
         <LinearLayout
+            android:paddingLeft="8dp"
             android:id="@+id/backll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:orientation="horizontal" >
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginLeft="10dp"
-                android:src="@drawable/return_arrow" />
+
 
             <TextView
+
                 android:id="@+id/laststep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="返回"
-                android:textColor="#fff"
+                android:textColor="@color/black"
                 android:textSize="16sp" />
         </LinearLayout>
 

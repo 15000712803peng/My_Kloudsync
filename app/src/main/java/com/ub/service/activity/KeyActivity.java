@@ -3758,7 +3758,7 @@ public class KeyActivity extends BaseActivity implements View.OnClickListener, A
                 getWindow().getDecorView().setAlpha(0.5f);
             }
         });
-        inviteUserPopup.StartPop(wv_show);
+        inviteUserPopup.StartPop();
 
     }
 

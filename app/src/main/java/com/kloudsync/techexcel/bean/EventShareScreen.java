@@ -7,7 +7,16 @@ import android.view.SurfaceView;
  */
 
 public class EventShareScreen {
+    private int uid;
     private SurfaceView shareView;
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
 
     public SurfaceView getShareView() {
         return shareView;

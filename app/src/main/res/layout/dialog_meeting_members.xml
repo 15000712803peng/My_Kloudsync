@@ -29,6 +29,15 @@
                 android:layout_marginLeft="10dp"
                 android:text="会议成员"
                 android:textColor="@color/black" />
+
+            <ImageView
+                android:layout_marginRight="6dp"
+                android:id="@+id/image_add"
+                android:padding="10dp"
+                android:src="@drawable/icon_chat_add"
+                android:layout_alignParentRight="true"
+                android:layout_width="40dp"
+                android:layout_height="40dp" />
         </RelativeLayout>
         <View
             android:background="@color/divider"
@@ -54,7 +63,6 @@
                 android:id="@+id/tab1"
                 android:layout_width="fill_parent"
                 android:layout_height="35dp"
-                android:clickable="true"
                 android:gravity="center"
 
                 android:textSize="16dp"
@@ -82,7 +90,6 @@
                 android:id="@+id/tab2"
                 android:layout_width="fill_parent"
                 android:layout_height="35dp"
-                android:clickable="true"
                 android:gravity="center"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
@@ -114,7 +121,6 @@
                 android:id="@+id/tab3"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
-                android:clickable="true"
                 android:gravity="center"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"

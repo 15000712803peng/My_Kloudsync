@@ -1,10 +1,12 @@
 package com.kloudsync.techexcel.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by tonyan on 2019/10/11.
  */
 
-public class DocumentPage {
+public class DocumentPage implements Serializable{
     private int documentId;
     private int fileId;
     private String pageUrl;

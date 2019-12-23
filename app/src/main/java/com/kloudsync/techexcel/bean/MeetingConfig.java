@@ -1,5 +1,8 @@
 package com.kloudsync.techexcel.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.AgoraUser;
 
@@ -11,7 +14,7 @@ import java.util.List;
  * Created by tonyan on 2019/11/19.
  */
 
-public class MeetingConfig implements Serializable{
+public class MeetingConfig{
     private int type;
     private String meetingId;
     private int fileId;
@@ -250,6 +253,7 @@ public class MeetingConfig implements Serializable{
     public void setRole(int role) {
         this.role = role;
     }
+
 
     public static class MeetingRole {
         public static final int DEFULT = -1;

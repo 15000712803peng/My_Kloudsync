@@ -43,6 +43,7 @@
         android:visibility="gone">
 
         <FrameLayout
+            android:background="@color/white"
             android:id="@+id/frame_remote_share"
             android:layout_width="match_parent"
             android:layout_height="match_parent"></FrameLayout>

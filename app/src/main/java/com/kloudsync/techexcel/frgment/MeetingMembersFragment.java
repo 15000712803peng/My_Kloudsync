@@ -23,32 +23,41 @@ import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.PopMeetingMemberSetting;
+import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.kloudsync.techexcel.view.CircleImageView;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 /**
  * Created by tonyan on 2019/11/9.
  */
 
-public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged{
+public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged {
 
     private RecyclerView membersList;
     int type;
     private MeetingConfig meetingConfig;
     private MeetingMembersAdapter membersAdapter;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         type = getArguments().getInt("type");
-        meetingConfig = (MeetingConfig) getArguments().getSerializable("meeting_config");
+        meetingConfig = DocAndMeetingActivity.meetingConfig;
         EventBus.getDefault().register(this);
 
     }
@@ -63,7 +72,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
     @Override
     protected void lazyLoad() {
-        Log.e("MeetingMembersFragment","lazyLoad");
+        Log.e("MeetingMembersFragment", "lazyLoad");
     }
 
     private View view;
@@ -77,8 +86,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if(view == null){
-            view = inflater.inflate(R.layout.fragment_meeting_members,container,false);
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_meeting_members, container, false);
             membersList = view.findViewById(R.id.list_members);
             loadMembers();
         }
@@ -87,14 +96,14 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
     List<MeetingMember> meetingMembers = new ArrayList<>();
 
-    private void loadMembers(){
+    private void loadMembers() {
         meetingMembers.clear();
-        if(type == 1){
+        if (type == 1) {
             meetingMembers.addAll(meetingConfig.getMeetingMembers());
             Collections.sort(meetingMembers);
-        }else if(type == 2){
+        } else if (type == 2) {
             meetingMembers.addAll(meetingConfig.getMeetingAuditor());
-        }else if(type == 3){
+        } else if (type == 3) {
             meetingMembers.addAll(meetingConfig.getMeetingInvitors());
         }
 
@@ -118,13 +127,18 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             me = view.findViewById(R.id.txt_is_me);
             type = view.findViewById(R.id.txt_type);
             settingImage = view.findViewById(R.id.image_setting);
+            host = view.findViewById(R.id.txt_host);
+            changeToMember = view.findViewById(R.id.txt_change_to_member);
         }
+
         public CircleImageView icon;
         public TextView name;
         public TextView presenter;
         public TextView me;
         public TextView type;
         public ImageView settingImage;
+        public TextView host;
+        public TextView changeToMember;
 
     }
 
@@ -145,19 +159,20 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             return meetingMembers;
         }
 
-        public void updateMembers(List<MeetingMember> members){
-            Log.e("MeetingMembersAdapter","updateMembers:" + members);
+        public void updateMembers(List<MeetingMember> members) {
+            Log.e("MeetingMembersAdapter", "updateMembers:" + members);
             meetingMembers.clear();
             meetingMembers.addAll(members);
             notifyDataSetChanged();
         }
+
         @Override
         public int getItemCount() {
             return meetingMembers.size();
         }
 
         @Override
-        public  ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = inflater.inflate(R.layout.meeting_member, parent, false);
             ViewHolder viewHolder = new ViewHolder(view);
             return viewHolder;
@@ -166,8 +181,20 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
-            final  MeetingMember member = meetingMembers.get(position);
+            final MeetingMember member = meetingMembers.get(position);
             holder.name.setText(member.getUserName());
+            if (member.getPresenter() == 1) {
+                holder.settingImage.setVisibility(View.GONE);
+            } else {
+                holder.settingImage.setVisibility(View.VISIBLE);
+
+            }
+
+            if (meetingConfig.getMeetingHostId().equals(member.getUserId() + "")) {
+                holder.host.setVisibility(View.VISIBLE);
+            } else {
+                holder.host.setVisibility(View.GONE);
+            }
 
             String url = member.getAvatarUrl();
             if (null == url || url.length() < 1) {
@@ -176,14 +203,14 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 imageLoader.DisplayImage(url, holder.icon);
             }
 
-            if((member.getUserId()+"").equals(AppConfig.UserID)){
+            if ((member.getUserId() + "").equals(AppConfig.UserID)) {
                 holder.me.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 holder.me.setVisibility(View.GONE);
             }
 
-            fillDevictType(member.getDeviceType(),holder.type);
-            fillViewByRole(member,holder);
+            fillDevictType(member.getDeviceType(), holder.type);
+            fillViewByRole(member, holder);
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -195,8 +222,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }
     }
 
-    private void fillDevictType(int deviceType,TextView typeText){
-        switch (deviceType){
+    private void fillDevictType(int deviceType, TextView typeText) {
+        switch (deviceType) {
             case DeviceType.WEB:
                 typeText.setVisibility(View.VISIBLE);
                 typeText.setBackgroundResource(R.drawable.bg_web);
@@ -222,18 +249,18 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 typeText.setTextColor(getActivity().getResources().getColor(R.color.darkblack2));
                 typeText.setText("TV");
                 break;
-                default:
-                    typeText.setText("");
-                    typeText.setVisibility(View.GONE);
-                    break;
+            default:
+                typeText.setText("");
+                typeText.setVisibility(View.GONE);
+                break;
         }
     }
 
     PopMeetingMemberSetting popMeetingMemberSetting;
 
-    private void showMemberSetting(MeetingMember member,View view){
-        if(popMeetingMemberSetting != null){
-            if(popMeetingMemberSetting.isShowing()){
+    private void showMemberSetting(MeetingMember member, View view) {
+        if (popMeetingMemberSetting != null) {
+            if (popMeetingMemberSetting.isShowing()) {
                 popMeetingMemberSetting.dismiss();
             }
             popMeetingMemberSetting = null;
@@ -241,30 +268,45 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
         popMeetingMemberSetting = new PopMeetingMemberSetting(getActivity());
         popMeetingMemberSetting.setOnMemberSettingChanged(this);
-        popMeetingMemberSetting.showAtBottom(member,view);
+        popMeetingMemberSetting.showAtBottom(member, view, meetingConfig);
     }
 
-    private void fillViewByRole(final MeetingMember meetingMember, final ViewHolder holder){
+    private void fillViewByRole(final MeetingMember meetingMember, final ViewHolder holder) {
+
         int role = meetingMember.getRole();
 
-        if(role == MeetingConfig.MeetingRole.MEMBER){
-            if(meetingMember.getPresenter() == 1){
-                holder.presenter.setVisibility(View.VISIBLE);
-            }else {
-                holder.presenter.setVisibility(View.GONE);
+        if (meetingMember.getPresenter() == 1) {
+            holder.presenter.setVisibility(View.VISIBLE);
+
+        } else {
+            holder.presenter.setVisibility(View.GONE);
+        }
+
+
+        holder.settingImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMemberSetting(meetingMember, holder.settingImage);
             }
-            holder.settingImage.setOnClickListener(new View.OnClickListener() {
+        });
+
+
+        if (role == MeetingConfig.MeetingRole.MEMBER || role == MeetingConfig.MeetingRole.HOST) {
+            holder.changeToMember.setVisibility(View.GONE);
+
+        } else if (role == MeetingConfig.MeetingRole.AUDIENCE) {
+            holder.settingImage.setVisibility(View.GONE);
+            holder.changeToMember.setVisibility(View.VISIBLE);
+            holder.changeToMember.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showMemberSetting(meetingMember,holder.settingImage);
+                    setMember(meetingMember);
                 }
             });
 
-
-        }else if(role == MeetingConfig.MeetingRole.AUDIENCE){
-
-        }else if(role == MeetingConfig.MeetingRole.BE_INVITED){
-
+        } else if (role == MeetingConfig.MeetingRole.BE_INVITED) {
+            holder.settingImage.setVisibility(View.GONE);
+            holder.changeToMember.setVisibility(View.GONE);
         }
     }
 
@@ -277,7 +319,33 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
     @Override
     public void setAuditor(MeetingMember meetingMember) {
+        Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
+            @Override
+            public void accept(MeetingMember meetingMember) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().
+                        syncMakeUserUpAndDown(meetingMember.getUserId() + "",0);
+                if (response.has("code")) {
+                    if (response.getInt("code") == 0) {
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                    }
+                }
+            }
+        }).subscribe();
+    }
 
+    public void setMember(MeetingMember meetingMember) {
+        Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
+            @Override
+            public void accept(MeetingMember meetingMember) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().
+                        syncMakeUserUpAndDown(meetingMember.getUserId() + "",1);
+                if (response.has("code")) {
+                    if (response.getInt("code") == 0) {
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                    }
+                }
+            }
+        }).subscribe();
     }
 
 

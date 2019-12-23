@@ -109,6 +109,12 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 }
             }
             break;
+            case R.id.meeting_menu_invite:
+                if (operationsListener != null) {
+                    operationsListener.menuInviteClicked();
+                }
+                hide();
+                break;
 
 
         }
@@ -126,6 +132,8 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         void menuMicroClicked(boolean isMicroOn);
 
         void menuChangeVoiceStatus(int status);
+
+        void menuInviteClicked();
 
     }
 
@@ -158,6 +166,8 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         microImage = view.findViewById(R.id.meeting_mic_enabel);
         microImage.setOnClickListener(this);
         voiceImage.setOnClickListener(this);
+        menuInvite = view.findViewById(R.id.meeting_menu_invite);
+        menuInvite.setOnClickListener(this);
         cameraImage = view.findViewById(R.id.meeting_camera);
         switchCameraImage = view.findViewById(R.id.meeting_camera_switch);
         switchCameraImage.setOnClickListener(this);

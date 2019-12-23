@@ -76,7 +76,7 @@ public class InviteUserPopup implements View.OnClickListener {
 
 
     @SuppressLint("NewApi")
-    public void StartPop(View v) {
+    public void StartPop() {
         if (mPopupWindow != null) {
             invitePopupListener.open();
             mPopupWindow.show();

@@ -4054,7 +4054,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 //                getWindow().getDecorView().setAlpha(0.5f);
             }
         });
-        inviteUserPopup.StartPop(wv_show);
+        inviteUserPopup.StartPop();
 
     }
 

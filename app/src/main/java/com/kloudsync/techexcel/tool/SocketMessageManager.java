@@ -290,6 +290,19 @@ public class SocketMessageManager {
 
     }
 
+    public void sendMessage_InviteToMeeting(MeetingConfig config,String users){
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "INVITE_TO_MEETING");
+            message.put("sessionId", config.getUserToken());
+            message.put("meetingId", config.getMeetingId());
+            message.put("userIds", users);
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private WebSocketClient getClient() {
         if (socketClient == null) {
             socketClient = AppConfig.webSocketClient;

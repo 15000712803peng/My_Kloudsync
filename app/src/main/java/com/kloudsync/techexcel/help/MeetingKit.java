@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.help;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,11 +33,13 @@ import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
+import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
 import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.AgoraUser;
+import com.ub.techexcel.tools.InviteUserPopup;
 import com.ub.techexcel.tools.MeetingSettingDialog;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -286,6 +289,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 surfaceView.setTag(uid);
                 getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, uid));
                 EventShareScreen shareScreen = new EventShareScreen();
+                shareScreen.setUid(uid);
                 shareScreen.setShareView(surfaceView);
                 EventBus.getDefault().post(shareScreen);
             }else {
@@ -293,6 +297,12 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             }
 
         }
+    }
+
+    public void setShareScreenStream(EventShareScreen eventShareScreen){
+
+        getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(eventShareScreen.getShareView(), VideoCanvas.RENDER_MODE_HIDDEN, eventShareScreen.getUid()));
+
     }
 
     @Override
@@ -433,6 +443,56 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
     }
 
+    @Override
+    public void menuInviteClicked() {
+        showInviteDialog();
+    }
+
+    private InviteUserPopup inviteUserPopup;
+
+    private void showInviteDialog() {
+        if(inviteUserPopup != null){
+            if(inviteUserPopup.isShowing()){
+                inviteUserPopup.dismiss();
+            }
+            inviteUserPopup = null;
+        }
+        inviteUserPopup = new InviteUserPopup();
+        inviteUserPopup.getPopwindow(host, meetingConfig.getMeetingId());
+        inviteUserPopup.setInvitePopupListener(new InviteUserPopup.InvitePopupListener() {
+            @Override
+            public void copyLink() {
+
+            }
+
+            @Override
+            public void email(String url) {
+
+                String[] targetemail = {"214176156@qq.com"};
+                String[] email = {"1599528112@qq.com"};
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("message/rfc822"); // 设置邮件格式
+                intent.putExtra(Intent.EXTRA_EMAIL, targetemail); // 接收人
+                intent.putExtra(Intent.EXTRA_CC, email); // 抄送人
+                intent.putExtra(Intent.EXTRA_SUBJECT, "这是邮件的主题部分"); // 主题
+                intent.putExtra(Intent.EXTRA_TEXT, url); // 正文
+                host.startActivity(Intent.createChooser(intent, "请选择邮件类应用"));
+            }
+
+            @Override
+            public void dismiss() {
+//                getWindow().getDecorView().setAlpha(1.0f);
+            }
+
+            @Override
+            public void open() {
+//                getWindow().getDecorView().setAlpha(0.5f);
+            }
+        });
+        inviteUserPopup.StartPop();
+
+    }
+
     public void initVoice(int status) {
         try {
             if (status == 0) {
@@ -509,7 +569,14 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                         }.getType());
                         if(members != null){
                             for(MeetingMember member : members){
-                                member.setRole(MeetingConfig.MeetingRole.MEMBER);
+
+                                if(member.getRole() == 2){
+                                    meetingConfig.setMeetingHostId(member.getUserId()+"");
+                                }
+
+                                if (member.getPresenter() == 1) {
+                                    meetingConfig.setPresenterId(member.getUserId() + "");
+                                }
                             }
                             meetingConfig.setMeetingMembers(members);
                         }

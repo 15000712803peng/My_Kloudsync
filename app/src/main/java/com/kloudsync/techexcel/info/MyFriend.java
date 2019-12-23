@@ -15,6 +15,16 @@ public class MyFriend implements Serializable {
     private String Comment;
     private String LoginAlias;
     private String Email;
+    private String sortLetters;
+    private boolean isSelected;
+
+    public String getSortLetters() {
+        return sortLetters;
+    }
+
+    public void setSortLetters(String sortLetters) {
+        this.sortLetters = sortLetters;
+    }
 
     public String getUserID() {
         return UserID;
@@ -94,5 +104,13 @@ public class MyFriend implements Serializable {
 
     public void setEmail(String email) {
         Email = email;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

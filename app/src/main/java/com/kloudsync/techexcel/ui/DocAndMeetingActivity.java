@@ -39,6 +39,7 @@ import com.kloudsync.techexcel.bean.EventCloseShare;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventHideMembers;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
+import com.kloudsync.techexcel.bean.EventInviteUsers;
 import com.kloudsync.techexcel.bean.EventMeetingDocuments;
 import com.kloudsync.techexcel.bean.EventMute;
 import com.kloudsync.techexcel.bean.EventNote;
@@ -330,6 +331,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             if (member.getRole() == 2) {
                 meetingConfig.setMeetingHostId(member.getUserId() + "");
             }
+
             if (member.getPresenter() == 1) {
                 meetingConfig.setPresenterId(member.getUserId() + "");
             }
@@ -600,9 +602,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     }
 
+    private EventShareScreen shareScreen;
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void showShareScreen(EventShareScreen shareScreen){
-        Log.e("showShareScreen","show_screen");
+    public void showShareScreen(EventShareScreen shareScreen) {
+        Log.e("showShareScreen", "show_screen");
+        this.shareScreen = shareScreen;
         remoteShareLayout.setVisibility(View.VISIBLE);
         if (remoteShareFrame.getChildCount() == 0) {
             ViewParent parent = shareScreen.getShareView().getParent();
@@ -610,8 +615,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 ((FrameLayout) parent).removeView(shareScreen.getShareView());
             }
         }
+        MeetingKit.getInstance().setShareScreenStream(shareScreen);
+        remoteShareFrame.removeAllViews();
         remoteShareFrame.addView(shareScreen.getShareView(), new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        shareScreen.getShareView().setZOrderMediaOverlay(true);
+        reloadAgoraMember();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -622,6 +629,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         remoteShareFrame.removeAllViews();
         remoteShareLayout.setVisibility(View.GONE);
+        shareScreen = null;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void inviteUsers(EventInviteUsers inviteUsers) {
+        messageManager.sendMessage_InviteToMeeting(meetingConfig, inviteUsers.getUsers());
+        MeetingKit.getInstance().requestMeetingMembers(meetingConfig );
     }
 
     public void refreshAgoraMember(AgoraMember member) {
@@ -1704,6 +1718,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 fullCameraList.setVisibility(View.GONE);
                 cameraList.setVisibility(View.VISIBLE);
                 reloadAgoraMember();
+                if (shareScreen != null) {
+                    showShareScreen(shareScreen);
+                }
                 break;
             case R.id.image_vedio_close:
                 DocVedioManager.getInstance(this).close();

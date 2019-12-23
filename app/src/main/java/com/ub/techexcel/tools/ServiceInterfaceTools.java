@@ -2360,5 +2360,29 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncMakeUserUpAndDown(String userId,int status){
+        String url = AppConfig.URL_MEETING_BASE + "member/make_user_up_or_down_stage?userId=" + userId + "&status=" + status;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userId",userId);
+            jsonObject.put("status",status);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, jsonObject);
+        Log.e("syncMakeUserUpAndDown","url:" + url + ",result:" + response);
+        return response;
+    }
+
+    public JSONObject syncGetFrindList(){
+        String url = AppConfig.URL_PUBLIC + "Friend/FriendList";
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetFrindList","url:" + url + ",result:" + response);
+        return response;
+
+    }
+
+
+
 
 }

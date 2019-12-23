@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.dialog;
 
 import android.app.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,6 +25,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.frgment.MeetingMembersFragment;
+import com.ub.service.activity.AddMeetingMemberActivity;
 
 public class MeetingMembersDialog extends DialogFragment implements View.OnClickListener,ViewPager.OnPageChangeListener {
     public Activity host;
@@ -34,6 +37,8 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
     private ViewPager membersPager;
     private TextView tab1,tab2,tab3;
     private TextView indicator1,indicator2,indicator3;
+    private ImageView backImage;
+    private ImageView addImage;
 
     public MeetingMembersDialog(){
 
@@ -69,12 +74,19 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         auditorsTab = view.findViewById(R.id.tab_auditor);
         invitorsTab = view.findViewById(R.id.tab_invitors);
         membersPager = view.findViewById(R.id.pager_members);
+        addImage = view.findViewById(R.id.image_add);
+        addImage.setOnClickListener(this);
+        backImage = view.findViewById(R.id.back);
+        backImage.setOnClickListener(this);
         tab1 = view.findViewById(R.id.tab1);
         tab2 = view.findViewById(R.id.tab2);
         tab3 = view.findViewById(R.id.tab3);
         indicator1 = view.findViewById(R.id.indicator1);
         indicator2 = view.findViewById(R.id.indicator2);
         indicator3 = view.findViewById(R.id.indicator3);
+        membersTab.setOnClickListener(this);
+        auditorsTab.setOnClickListener(this);
+        invitorsTab.setOnClickListener(this);
         Log.e("check_members","members:" + meetingConfig.getMeetingMembers().size() + ",auditors:" + meetingConfig.getMeetingAuditor() +
                 ",invitors:" + meetingConfig.getMeetingInvitors().size());
         membersAdapter = new MeetingMembersAdapter(getChildFragmentManager(),this.meetingConfig);
@@ -111,10 +123,12 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         if (getDialog() != null) {
             getDialog().cancel();
         }
+        super.dismiss();
     }
 
     @Override
     public void onClick(View view) {
+        Log.e("onClick","clicked");
         switch (view.getId()) {
             case R.id.tab_members:
                 if(membersPager != null){
@@ -131,15 +145,20 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
                     membersPager.setCurrentItem(2);
                 }
                 break;
+            case R.id.back:
+                dismiss();
+                break;
+            case R.id.image_add:
+                Intent intent = new Intent(host, AddMeetingMemberActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                break;
         }
     }
 
 
     public void show(FragmentManager fragmentManager) {
         show(fragmentManager,"dialog");
-
-
-
     }
 
 
@@ -169,7 +188,7 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
             bundle.putInt("type",position + 1);
-            bundle.putSerializable("meeting_config",meetingConfig);
+
             MeetingMembersFragment fragment = new MeetingMembersFragment();
             fragment.setArguments(bundle);
             return fragment;
@@ -191,9 +210,6 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
 
     private void init(){
         membersPager.setSaveEnabled(false);
-        membersTab.setOnClickListener(this);
-        auditorsTab.setOnClickListener(this);
-        invitorsTab.setOnClickListener(this);
         membersPager.addOnPageChangeListener(this);
         tab1.setText("参会者" +"(" + meetingConfig.getMeetingMembers().size() + ")");
         tab2.setText("旁听者" +"(" + meetingConfig.getMeetingAuditor().size() + ")");

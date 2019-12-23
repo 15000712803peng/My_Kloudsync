@@ -712,6 +712,13 @@
         <activity
             android:name="com.ub.service.activity.AddAuditorActivity"
             android:screenOrientation="landscape" />
+
+        <activity
+            android:name="com.ub.service.activity.AddMeetingMemberActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape" />
+
+
         <activity
             android:name="com.ub.service.activity.AlertDialogActivity"
             android:screenOrientation="portrait"

@@ -36,7 +36,6 @@ public class AddAuditorActivity extends Activity implements View.OnClickListener
     private SideBar sideBar;
     private TextView dialog;
     private PinyinAddserviceComparator pinyinComparator;
-
     private CharacterParser characterParser;
 
     private ListView listView;

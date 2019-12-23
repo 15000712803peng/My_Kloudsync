@@ -3090,7 +3090,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             public void open() {
             }
         });
-        inviteUserPopup.StartPop(wv_show);
+        inviteUserPopup.StartPop();
 
     }
 
