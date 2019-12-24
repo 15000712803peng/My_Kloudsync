@@ -64,14 +64,6 @@ public class InviteUserPopup implements View.OnClickListener {
         email.setOnClickListener(this);
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
         mPopupWindow.setContentView(view);
-//        mPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-//            @Override
-//            public void onDismiss() {
-//                invitePopupListener.dismiss();
-//            }
-//        });
-//        mPopupWindow.setFocusable(true);
-//        mPopupWindow.setOutsideTouchable(true);
     }
 
 

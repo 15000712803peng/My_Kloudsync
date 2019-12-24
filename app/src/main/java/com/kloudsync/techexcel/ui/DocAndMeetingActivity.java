@@ -2,7 +2,6 @@ package com.kloudsync.techexcel.ui;
 
 
 import android.annotation.SuppressLint;
-import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -28,6 +27,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -37,7 +37,6 @@ import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventClose;
 import com.kloudsync.techexcel.bean.EventCloseShare;
 import com.kloudsync.techexcel.bean.EventExit;
-import com.kloudsync.techexcel.bean.EventHideMembers;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.EventInviteUsers;
 import com.kloudsync.techexcel.bean.EventMeetingDocuments;
@@ -90,6 +89,7 @@ import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
+import com.ub.service.activity.AddMeetingMemberActivity;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
@@ -102,6 +102,7 @@ import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
+import com.ub.techexcel.tools.UserSoundtrackDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -128,7 +129,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
 import retrofit2.Response;
 
 /**
@@ -175,6 +175,30 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     RelativeLayout remoteShareLayout;
     @Bind(R.id.frame_remote_share)
     FrameLayout remoteShareFrame;
+
+    @Bind(R.id.layout_create_blank_page)
+    LinearLayout createBlankPageLayout;
+
+    @Bind(R.id.layout_role_host)
+    LinearLayout roleHostLayout;
+
+    @Bind(R.id.layout_role_member)
+    LinearLayout roleMemberLayout;
+
+    @Bind(R.id.layout_invite)
+    LinearLayout inviteLayout;
+
+    @Bind(R.id.layout_share)
+    LinearLayout shareLayout;
+
+    @Bind(R.id._layout_invite)
+    LinearLayout _inviteLayout;
+
+    @Bind(R.id._layout_share)
+    LinearLayout _shareLayout;
+
+    @Bind(R.id.txt_role)
+    TextView roleText;
 
     AgoraCameraAdapter cameraAdapter;
     FullAgoraCameraAdapter fullCameraAdapter;
@@ -366,10 +390,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         } else {
             hideEnterLoading();
             menuIcon.setVisibility(View.VISIBLE);
-
             if (meetingConfig.getType() == MeetingType.MEETING) {
                 meetingDefaultDocument.setVisibility(View.VISIBLE);
-                MeetingKit.getInstance().handleMeetingDefaultDocument(meetingDefaultDocument);
+                handleMeetingDefaultDocument();
             }
         }
     }
@@ -395,7 +418,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         //notify change file
         notifyDocumentChanged();
-        Log.e("Show_PDF", "javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")");
         meetingDefaultDocument.setVisibility(View.GONE);
         web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         web.load("javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
@@ -572,7 +594,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void showMemeberCamera(AgoraMember member) {
+    public void showMemberCamera(AgoraMember member) {
         Log.e("showMemeberCamera", "member:" + member);
         if ((member.getUserId() + "").equals(AppConfig.UserID) && member.isAdd()) {
             //自己开启会议成功
@@ -601,6 +623,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
 
     }
+
 
     private EventShareScreen shareScreen;
 
@@ -635,7 +658,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void inviteUsers(EventInviteUsers inviteUsers) {
         messageManager.sendMessage_InviteToMeeting(meetingConfig, inviteUsers.getUsers());
-        MeetingKit.getInstance().requestMeetingMembers(meetingConfig );
+        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
     }
 
     public void refreshAgoraMember(AgoraMember member) {
@@ -1565,6 +1588,24 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         showMembersDialog();
     }
 
+    @Override
+    public void menuSyncClicked() {
+        showSoundtrackDialog();
+    }
+
+    private UserSoundtrackDialog soundtrackDialog;
+
+    private void showSoundtrackDialog(){
+        if(soundtrackDialog != null){
+            if(soundtrackDialog.isShowing()){
+                soundtrackDialog.dismiss();
+                soundtrackDialog = null;
+            }
+        }
+        soundtrackDialog = new UserSoundtrackDialog(this);
+        soundtrackDialog.show(meetingConfig);
+    }
+
     //-----
     @Override
     public void addFromTeam() {
@@ -1698,6 +1739,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingMenu.setOnClickListener(this);
         backFullCameraImage.setOnClickListener(this);
         closeVedioImage.setOnClickListener(this);
+        createBlankPageLayout.setOnClickListener(this);
+        inviteLayout.setOnClickListener(this);
+        shareLayout.setOnClickListener(this);
+        _inviteLayout.setOnClickListener(this);
+        _shareLayout.setOnClickListener(this);
     }
 
     @Override
@@ -1724,6 +1770,18 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 break;
             case R.id.image_vedio_close:
                 DocVedioManager.getInstance(this).close();
+                break;
+            case R.id._layout_invite:
+            case R.id.layout_invite:
+                Intent intent = new Intent(this, AddMeetingMemberActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                break;
+            case R.id.layout_share:
+            case R.id._layout_share:
+                break;
+            case R.id.layout_create_blank_page:
+                reqeustNewBlankPage();
                 break;
         }
     }
@@ -1775,7 +1833,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     MeetingMembersDialog meetingMembersDialog;
 
     private void showMembersDialog() {
-
+        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
         if (meetingMembersDialog != null) {
             if (meetingMembersDialog.isShowing()) {
                 meetingMembersDialog.dismiss();
@@ -2299,6 +2357,18 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void handleMeetingDefaultDocument(){
+        if(meetingConfig.getRole() != MeetingConfig.MeetingRole.HOST){
+            roleMemberLayout.setVisibility(View.VISIBLE);
+            roleHostLayout.setVisibility(View.GONE);
+            roleText.setText(R.string.shAcan);
+        }else {
+            roleMemberLayout.setVisibility(View.GONE);
+            roleHostLayout.setVisibility(View.VISIBLE);
+            roleText.setText(R.string.shYcan);
         }
     }
 

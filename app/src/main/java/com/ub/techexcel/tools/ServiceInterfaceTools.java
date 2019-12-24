@@ -17,6 +17,7 @@ import com.kloudsync.techexcel.bean.FavoriteData;
 import com.kloudsync.techexcel.bean.InviteInfo;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.PhoneItem;
 import com.kloudsync.techexcel.bean.RoleInTeam;
@@ -2378,6 +2379,20 @@ public class ServiceInterfaceTools {
         String url = AppConfig.URL_PUBLIC + "Friend/FriendList";
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
         Log.e("syncGetFrindList","url:" + url + ",result:" + response);
+        return response;
+
+    }
+
+    public JSONObject syncGetSoundtrackList(MeetingConfig meetingConfig){
+        String url = AppConfig.URL_PUBLIC;
+        if (meetingConfig.getType() == MeetingType.MEETING) {
+            url += "LessonSoundtrack/List?lessonID=" + meetingConfig.getLessionId() +
+                    "&attachmentID=" + meetingConfig.getDocument().getAttachmentID();
+        } else {
+            url += "Soundtrack/List?attachmentID=" + meetingConfig.getDocument().getAttachmentID() + "&isPublic=0";
+        }
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetSoundtrackList","url:" + url + ",result:" + response);
         return response;
 
     }

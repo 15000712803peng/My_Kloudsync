@@ -5199,6 +5199,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
 
     private void openYinxiangList(int yinxiangmode) {
+
         yinxiangPopup = new YinxiangPopup();
         yinxiangPopup.getPopwindow(WatchCourseActivity3.this);
         yinxiangPopup.setShareDocumentToFriendListener(this);

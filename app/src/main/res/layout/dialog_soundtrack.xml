@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="200dp"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible">
+
+            <RelativeLayout
+                android:paddingRight="16dp"
+                android:paddingBottom="12dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="12dp"
+                android:id="@+id/re1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="音想"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:layout_centerVertical="true"
+                    android:id="@+id/close"
+                    android:padding="2dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/close" />
+            </RelativeLayout>
+
+            <View
+                android:layout_below="@id/re1"
+                android:id="@+id/top_divider"
+                android:background="@color/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1.5px" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/list_soundtrack"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/top_divider"></android.support.v7.widget.RecyclerView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/selectmore"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="+ Select Mode Sound"
+                    android:textColor="@color/skyblue"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider_line" />
+
+
+                <LinearLayout
+                    android:id="@+id/createyinxiang"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:background="@color/txt_blue"
+                    android:padding="5dp">
+
+
+
+                    <TextView
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="@string/create_new_sync"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/ll2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:id="@+id/layout_back"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_alignParentLeft="true">
+
+                <ImageView
+                    android:layout_centerInParent="true"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/arrow_back2" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/view_divider"
+                android:layout_below="@id/layout_back"
+                android:background="@color/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1.5px" />
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_below="@id/view_divider"
+                android:id="@+id/allrecycleview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="70dp"
+                android:layout_marginTop="5dp"
+                android:visibility="visible"></android.support.v7.widget.RecyclerView>
+
+            <TextView
+                android:id="@+id/ok"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/skyblue"
+                android:gravity="center"
+                android:text="@string/OK"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+</RelativeLayout>
