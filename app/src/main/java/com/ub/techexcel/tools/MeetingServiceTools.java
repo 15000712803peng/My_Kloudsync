@@ -665,7 +665,7 @@ public class MeetingServiceTools {
                         for (int j = 0; j < meetingMemberJson.length(); j++) {
                             JSONObject memberjson = meetingMemberJson.getJSONObject(j);
                             MeetingMember meetingMember = new MeetingMember();
-                            meetingMember.setUserId(memberjson.getString("userId"));
+                            meetingMember.setUserId(memberjson.getInt("userId"));
                             meetingMember.setUserName(memberjson.getString("userName"));
                             meetingMember.setAvatarUrl(memberjson.getString("avatarUrl"));
                             meetingMember.setIsOnline(memberjson.getInt("isOnline"));

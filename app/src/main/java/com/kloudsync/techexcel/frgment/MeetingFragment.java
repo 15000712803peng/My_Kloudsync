@@ -198,7 +198,7 @@ public class MeetingFragment extends MyFragment {
                         @Override
                         public void view() {
 //                            Toast.makeText(getActivity(),type+"",Toast.LENGTH_LONG).show();
-                            if (type == 3||type==2) {
+                            if (type == 3 || type == 2) {
                                 Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
                                 intent.putExtra("userid", bean.getUserId());
                                 intent.putExtra("meetingId", bean.getId() + "");
@@ -227,12 +227,12 @@ public class MeetingFragment extends MyFragment {
 
                         @Override
                         public void edit() {
-                            if(type==3){
+                            if (type == 3) {
 //                                Intent shareintent = new Intent(getActivity(), MeetingShareActivity.class);
 //                                shareintent.putExtra("lesson", bean);
 //                                startActivity(shareintent);
                                 shareDocumentDialog(bean);
-                            }else{
+                            } else {
                                 Intent intent = new Intent(getActivity(), MeetingPropertyActivity.class);
                                 intent.putExtra("servicebean", bean);
                                 getActivity().startActivity(intent);
@@ -271,7 +271,6 @@ public class MeetingFragment extends MyFragment {
                     meetingMoreOperationPopup.StartPop(meetingList, bean, type);
                 }
             });
-
         }
     }
 

@@ -88,7 +88,6 @@ public class SpaceMembersAdapter extends HeaderRecyclerAdapter<TeamMember> {
             holder.moreOpation.setVisibility(View.GONE);
         }
 
-
         holder.moreOpation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

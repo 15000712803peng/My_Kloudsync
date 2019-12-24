@@ -6942,7 +6942,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     msg3.obj = data;
                     msg3.what = 0x1109;
                     handler.sendMessage(msg3);
-
                     audioActionBeanList.remove(i1);
                     i1--;
                 }
@@ -8673,13 +8672,14 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         remotevideoframe = (FrameLayout) findViewById(R.id.remotevideoframe);
         remotevideoRelative = (RelativeLayout) findViewById(R.id.remotevideoRelative);
         remotevideoRelative.setVisibility(View.VISIBLE);
-        remotevideoframe.addView(surfaceV, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
         if (remotevideoframe.getChildCount() == 0) {
             ViewParent parent = surfaceV.getParent();
             if (parent != null) {
                 ((FrameLayout) parent).removeView(surfaceV);
             }
         }
+        remotevideoframe.addView(surfaceV, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
     //关闭屏幕共享
