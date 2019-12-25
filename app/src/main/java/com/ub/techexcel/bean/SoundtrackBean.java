@@ -80,7 +80,6 @@ public class SoundtrackBean implements Serializable {
         this.backgroudMusicTitle = backgroudMusicTitle;
     }
 
-
     public String getSelectedAudioTitle() {
         return selectedAudioTitle;
     }

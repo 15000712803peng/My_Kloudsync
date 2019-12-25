@@ -30,7 +30,6 @@ public class WebVedioManager implements MediaPlayer.OnPreparedListener, MediaPla
     private WebVedio currentWebVedio;
     private SurfaceView surfaceView;
     //
-
     private WebVedioManager(Context context) {
         this.context = context;
         vedioPlayer = new MediaPlayer();

@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.kloudsync.techexcel.bean.WebVedio;
 
-public class RecordAction implements Comparable<RecordAction>{
+public class WebAction implements Comparable<WebAction>{
 
     private int SoundtrackID;
     private long Time;
@@ -90,7 +90,7 @@ public class RecordAction implements Comparable<RecordAction>{
 
 
     @Override
-    public int compareTo(@NonNull RecordAction o) {
+    public int compareTo(@NonNull WebAction o) {
         return (int)(getTime() - o.getTime());
     }
 
@@ -99,7 +99,7 @@ public class RecordAction implements Comparable<RecordAction>{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RecordAction that = (RecordAction) o;
+        WebAction that = (WebAction) o;
 
         return Time == that.Time;
     }
@@ -111,7 +111,7 @@ public class RecordAction implements Comparable<RecordAction>{
 
     @Override
     public String toString() {
-        return "RecordAction{" +
+        return "WebAction{" +
                 "SoundtrackID=" + SoundtrackID +
                 ", Time=" + Time +
                 ", Data='" + Data + '\'' +

@@ -22,6 +22,7 @@ import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.PhoneItem;
 import com.kloudsync.techexcel.bean.RoleInTeam;
 import com.kloudsync.techexcel.bean.RongCloudData;
+import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.params.AcceptFriendsRequestParams;
 import com.kloudsync.techexcel.bean.params.AcceptInvitationsParams;
@@ -58,7 +59,7 @@ import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.PageActionBean;
 import com.ub.techexcel.bean.Record;
-import com.ub.techexcel.bean.RecordAction;
+import com.ub.techexcel.bean.WebAction;
 import com.ub.techexcel.bean.RecordDetail;
 import com.ub.techexcel.bean.SectionVO;
 import com.ub.techexcel.bean.SoundtrackBean;
@@ -226,21 +227,21 @@ public class ServiceInterfaceTools {
                     if (jsonObject1.getInt("RetCode") == 0) {
                         JSONObject retdata = jsonObject1.getJSONObject("RetData");
                         JSONArray jsonArray = retdata.getJSONArray("SoundtackActions");
-                        List<RecordAction> recordActions = new ArrayList<>();
+                        List<WebAction> webActions = new ArrayList<>();
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject audiojson = jsonArray.getJSONObject(i);
-                            RecordAction recordAction = new RecordAction();
-                            recordAction.setTime(audiojson.getInt("Time"));
+                            WebAction webAction = new WebAction();
+                            webAction.setTime(audiojson.getInt("Time"));
                             String data = audiojson.getString("Data").replaceAll("\"", "");
-                            recordAction.setData(Tools.getFromBase64(data));
-                            Log.e("data__", recordAction.getData());
-                            recordAction.setSoundtrackID(audiojson.getInt("SoundtrackID"));
-                            recordAction.setPageNumber(audiojson.getString("PageNumber"));
-                            recordAction.setAttachmentID(audiojson.getInt("AttachmentID"));
-                            recordActions.add(recordAction);
+                            webAction.setData(Tools.getFromBase64(data));
+                            Log.e("data__", webAction.getData());
+                            webAction.setSoundtrackID(audiojson.getInt("SoundtrackID"));
+                            webAction.setPageNumber(audiojson.getString("PageNumber"));
+                            webAction.setAttachmentID(audiojson.getInt("AttachmentID"));
+                            webActions.add(webAction);
                         }
                         Message msg3 = Message.obtain();
-                        msg3.obj = recordActions;
+                        msg3.obj = webActions;
                         msg3.what = code;
                         handler.sendMessage(msg3);
                     } else {
@@ -2395,6 +2396,20 @@ public class ServiceInterfaceTools {
         Log.e("syncGetSoundtrackList","url:" + url + ",result:" + response);
         return response;
 
+    }
+
+    public JSONObject syncGetSoundtrackDetail(SoundTrack soundTrack){
+        String url = AppConfig.URL_PUBLIC + "Soundtrack/Item?soundtrackID=" + soundTrack.getSoundtrackID();
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetSoundtrackDetail","url:" + url + ",result:" + response);
+        return response;
+    }
+
+    public JSONObject syncDeleteSoundtrack(SoundTrack soundTrack) {
+        String url = AppConfig.URL_PUBLIC + "Soundtrack/Delete?soundtrackID=" + soundTrack.getSoundtrackID();
+        JSONObject response = ConnectService.getIncidentDataattachment(url);
+        Log.e("syncDeleteSoundtrack","url:" + url + ",result:" + response);
+        return response;
     }
 
 

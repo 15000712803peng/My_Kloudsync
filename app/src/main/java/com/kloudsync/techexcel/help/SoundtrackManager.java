@@ -14,6 +14,7 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -55,9 +56,16 @@ public class SoundtrackManager {
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetSoundtrackList(config);
                 if(result.has("RetCode")){
                     if(result.getInt("RetCode") == 0){
+                        if(result.getJSONArray("RetData").length() == 0){
+                            if(onSoundtrackResponse != null){
+                                soundtrackList.setSoundTracks(new ArrayList<SoundTrack>());
+                                onSoundtrackResponse.soundtrackList(soundtrackList);
+                                return soundtrackList;
+                            }
+                        }
                         List<SoundTrack> soundTracks = new Gson().fromJson(result.getJSONArray("RetData").toString(), new TypeToken<List<SoundTrack>>() {
                         }.getType());
-                        if(soundTracks != null && soundTracks.size() > 0){
+                        if(soundTracks != null && soundTracks.size() >= 0){
                             soundtrackList.setSoundTracks(soundTracks);
                         }
                     }

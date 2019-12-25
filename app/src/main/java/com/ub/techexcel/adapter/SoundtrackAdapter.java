@@ -29,29 +29,23 @@ public class SoundtrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private Uri defaultImageUri;
     private View outView;
 
+    public interface OnSoundtrackClickedListener{
+        void onSoundtrackClicked(View itemView,SoundTrack soundTrack);
+    }
+
+    private OnSoundtrackClickedListener onSoundtrackClickedListener;
+
+
+    public void setOnSoundtrackClickedListener(OnSoundtrackClickedListener onSoundtrackClickedListener) {
+        this.onSoundtrackClickedListener = onSoundtrackClickedListener;
+    }
+
     public SoundtrackAdapter(Context context) {
         this.mContext = context;
         defaultImageUri = Tools.getUriFromDrawableRes(context, R.drawable.hello);
     }
 
-    private  OnSoundtrackOperationListener soundtrackOperationListener;
 
-    public interface OnSoundtrackOperationListener {
-
-        void editSoundTrack(SoundTrack soundTrack);
-
-        void deleteSoundTrack(SoundTrack soundTrack);
-
-        void playSoundTrack(SoundTrack soundTrack);
-
-        void shareSoundTrack(SoundTrack soundTrack);
-
-        void copyUrl(SoundTrack soundTrack);
-
-        void shareInApp(SoundTrack soundTrack);
-
-        void sharePopup(SoundTrack soundTrack);
-    }
 
     public void setSoundTracks(List<SoundTrack> soundTracks){
         this.soundTracks.clear();
@@ -59,11 +53,6 @@ public class SoundtrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyDataSetChanged();
     }
 
-
-
-    public void setSoundtrackOperationListener(OnSoundtrackOperationListener soundtrackOperationListener) {
-        this.soundtrackOperationListener = soundtrackOperationListener;
-    }
 
     public void setView(View outView) {
         this.outView = outView;
@@ -96,6 +85,15 @@ public class SoundtrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             imageUri2 = defaultImageUri;
         }
         holder.image.setImageURI(imageUri2);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(onSoundtrackClickedListener != null){
+                    onSoundtrackClickedListener.onSoundtrackClicked(holder.operationmore,soundTrack);
+                }
+            }
+        });
     }
 
     @Override

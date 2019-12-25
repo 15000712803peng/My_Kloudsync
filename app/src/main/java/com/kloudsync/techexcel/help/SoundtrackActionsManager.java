@@ -28,13 +28,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+
 /**
  * Created by tonyan on 2019/11/21.
  */
 
-public class RecordActionsManager {
+public class SoundtrackActionsManager {
 
-    private static RecordActionsManager instance;
+    private static SoundtrackActionsManager instance;
     private volatile long playTime;
     private Activity context;
     private List<WebAction> webActions = new ArrayList<>();
@@ -73,18 +77,18 @@ public class RecordActionsManager {
     }
 
     //
-    private RecordActionsManager(Activity context) {
+    private SoundtrackActionsManager(Activity context) {
         this.context = context;
         pageCache = RecordingPageCache.getInstance(context);
         webVedioManager = WebVedioManager.getInstance(context);
         gson = new Gson();
     }
 
-    public static RecordActionsManager getInstance(Activity context) {
+    public static SoundtrackActionsManager getInstance(Activity context) {
         if (instance == null) {
-            synchronized (RecordActionsManager.class) {
+            synchronized (SoundtrackActionsManager.class) {
                 if (instance == null) {
-                    instance = new RecordActionsManager(context);
+                    instance = new SoundtrackActionsManager(context);
                 }
             }
         }
@@ -98,7 +102,6 @@ public class RecordActionsManager {
         WebVedio nearestVedio = getNearestWebvedio(playTime);
         Log.e("nearestVedio",nearestVedio +"");
         webVedioManager.safePrepare(nearestVedio);
-//        Log.e("getRecordActions", "actions" + webActions);
 
     }
 
@@ -147,12 +150,13 @@ public class RecordActionsManager {
             }
 
             action.setExecuted(true);
-            context.runOnUiThread(new Runnable() {
+            Observable.just(action).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<WebAction>() {
                 @Override
-                public void run() {
+                public void accept(WebAction action) throws Exception {
                     doExecuteAction(action);
                 }
             });
+
         }
     }
 

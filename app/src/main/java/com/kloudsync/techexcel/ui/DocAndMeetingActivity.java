@@ -44,6 +44,7 @@ import com.kloudsync.techexcel.bean.EventMute;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
 import com.kloudsync.techexcel.bean.EventPageNotes;
+import com.kloudsync.techexcel.bean.EventPlaySoundtrack;
 import com.kloudsync.techexcel.bean.EventRefreshDocs;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.EventSetPresenter;
@@ -55,6 +56,7 @@ import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
+import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -63,6 +65,7 @@ import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
+import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -2123,6 +2126,26 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void setPresenter(EventSetPresenter setPresenter) {
         messageManager.sendMessage_MakePresenter(meetingConfig, setPresenter.getMeetingMember());
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void playSoundtrack(EventPlaySoundtrack soundtrack){
+        Log.e("check_play","playSoundtrack");
+        showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
+    }
+
+    private SoundtrackPlayDialog soundtrackPlayDialog;
+
+    private void showSoundtrackPlayDialog(SoundtrackDetail soundtrackDetail){
+        if(soundtrackPlayDialog != null){
+            if(soundtrackPlayDialog.isShowing()){
+                soundtrackPlayDialog.dismiss();
+                soundtrackPlayDialog = null;
+            }
+        }
+        soundtrackPlayDialog = new SoundtrackPlayDialog(this,soundtrackDetail);
+        soundtrackPlayDialog.show();
 
     }
 

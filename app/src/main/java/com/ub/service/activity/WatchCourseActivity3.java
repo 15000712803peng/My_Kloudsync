@@ -6648,6 +6648,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
      * @param locateTime
      */
     private void newAudioActionTime(int locateTime) {
+        //
         Log.e("newAudioActionTime", audioActionBeanList.size() + "    当前播放器的位置 " + locateTime);
         for (int i1 = 0; i1 < audioActionBeanList.size(); i1++) {
             AudioActionBean audioActionBean = audioActionBeanList.get(i1);
