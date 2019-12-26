@@ -8,15 +8,23 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.RelativeLayout;
 
+import com.kloudsync.techexcel.bean.EventCloseWebView;
 import com.kloudsync.techexcel.bean.WebVedio;
 import com.ub.techexcel.bean.SectionVO;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Observable;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by tonyan on 2019/11/21.
@@ -46,8 +54,11 @@ public class WebVedioManager implements MediaPlayer.OnPreparedListener, MediaPla
         return instance;
     }
 
-    public void execute(WebVedio webVedio){
+    private long playTime = 0;
+    public void execute(WebVedio webVedio,long playTime){
 
+        Log.e("execute_play","play_web_vedio");
+        this.playTime = playTime;
         if(currentWebVedio == null || webVedio == null){
             return;
         }
@@ -61,21 +72,15 @@ public class WebVedioManager implements MediaPlayer.OnPreparedListener, MediaPla
                     if(surfaceView.getVisibility() != View.VISIBLE){
                         surfaceView.setVisibility(View.VISIBLE);
                     }
-                    vedioPlayer.seekTo((int)(webVedio.getTime() * 1000));
                     vedioPlayer.start();
                 }
                 break;
 
             case 2:
                 //close
-                if(surfaceView != null){
-                    surfaceView.setVisibility(View.GONE);
-                    if(vedioPlayer.isPlaying()){
-                        vedioPlayer.stop();
-                    }
-                    vedioPlayer.reset();
-                }
+
 //                release();
+                closeVedio();
                 break;
 
             case 0:
@@ -102,6 +107,7 @@ public class WebVedioManager implements MediaPlayer.OnPreparedListener, MediaPla
             if(webVedio.equals(currentWebVedio)){
                 return;
             }else {
+                this.currentWebVedio = webVedio;
                 this.currentWebVedio.setPreparing(false);
             }
         }
@@ -113,7 +119,7 @@ public class WebVedioManager implements MediaPlayer.OnPreparedListener, MediaPla
                 initSurface(surfaceView);
             }
 
-            if (webVedio.isPreparing() || vedioPlayer.isPlaying() || webVedio.isPrepared()) {
+            if (webVedio.isPreparing() || vedioPlayer.isPlaying()) {
                 return;
             }
             this.currentWebVedio = webVedio;
@@ -162,17 +168,28 @@ public class WebVedioManager implements MediaPlayer.OnPreparedListener, MediaPla
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        Log.e("nearestVedio","onPrepared:" + currentWebVedio);
         if(currentWebVedio != null){
             currentWebVedio.setPrepared(true);
             currentWebVedio.setPreparing(false);
-            vedioPlayer.seekTo((int)(currentWebVedio.getTime() * 1000));
+        }
+        if(vedioPlayer != null && !vedioPlayer.isPlaying() && playTime >= currentWebVedio.getSavetime()){
+            io.reactivex.Observable.just(vedioPlayer).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<MediaPlayer>() {
+                @Override
+                public void accept(MediaPlayer mediaPlayer) throws Exception {
+                    if(surfaceView.getVisibility() != View.VISIBLE){
+                        surfaceView.setVisibility(View.VISIBLE);
+                    }
+                    vedioPlayer.start();
+                }
+            });
+
         }
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        mp.reset();
-
+        closeVedio();
     }
 
     @Override
@@ -183,6 +200,7 @@ public class WebVedioManager implements MediaPlayer.OnPreparedListener, MediaPla
 
 
     public void release(){
+        playTime = 0;
         if (vedioPlayer != null) {
             vedioPlayer.stop();
             vedioPlayer.reset();
@@ -193,6 +211,8 @@ public class WebVedioManager implements MediaPlayer.OnPreparedListener, MediaPla
         }
         this.currentWebVedio = null;
     }
+
+
 
     public void initSurface(SurfaceView surfaceView){
         //给surfaceHolder设置一个callback
@@ -234,6 +254,18 @@ public class WebVedioManager implements MediaPlayer.OnPreparedListener, MediaPla
         public void surfaceDestroyed(SurfaceHolder holder) {
             release();
         }
+    }
+
+    public void closeVedio(){
+        if(surfaceView != null){
+            surfaceView.setVisibility(View.GONE);
+            if(vedioPlayer.isPlaying()){
+                vedioPlayer.stop();
+            }
+            vedioPlayer.reset();
+            SoundtrackAudioManager.getInstance(context).restart();
+        }
+        EventBus.getDefault().post(new EventCloseWebView());
     }
 
 }

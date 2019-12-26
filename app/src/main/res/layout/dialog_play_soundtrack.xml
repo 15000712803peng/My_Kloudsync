@@ -16,7 +16,7 @@
 
     <LinearLayout
         android:id="@+id/layout_soundtrack_controller"
-        android:layout_width="380dp"
+        android:layout_width="420dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
@@ -45,7 +45,7 @@
             android:thumbOffset="0dp" />
 
         <LinearLayout
-            android:layout_width="360dp"
+            android:layout_width="400dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginTop="6dp"
@@ -116,12 +116,12 @@
                 android:background="@color/white" />
 
             <TextView
-                android:id="@+id/audiotime"
+                android:id="@+id/txt_play_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:text="00:00:00"
+                android:text="00:00/00:00"
                 android:textColor="@color/white" />
 
             <View
@@ -170,15 +170,35 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <SurfaceView
-        android:layout_marginTop="10dp"
+    <RelativeLayout
         android:visibility="gone"
-        android:id="@+id/web_vedio_surface"
+        android:background="@color/black"
+        android:id="@+id/layout_web_vedio"
         android:layout_width="match_parent"
-        android:layout_marginRight="140dp"
-        android:layout_marginBottom="32dp"
-        android:layout_marginLeft="16dp"
-        android:layout_height="match_parent"></SurfaceView>
+        android:layout_height="match_parent">
+
+        <SurfaceView
+            android:layout_marginTop="26dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginRight="48dp"
+            android:layout_marginLeft="26dp"
+            android:padding="10dp"
+            android:id="@+id/web_vedio_surface"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></SurfaceView>
+
+
+        <ImageView
+            android:id="@+id/image_close_veido"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/btn_close" />
+    </RelativeLayout>
+
+
 
 
 </RelativeLayout>

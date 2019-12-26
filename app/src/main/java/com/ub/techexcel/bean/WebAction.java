@@ -99,14 +99,17 @@ public class WebAction implements Comparable<WebAction>{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        WebAction that = (WebAction) o;
+        WebAction webAction = (WebAction) o;
 
-        return Time == that.Time;
+        if (Time != webAction.Time) return false;
+        return Data != null ? Data.equals(webAction.Data) : webAction.Data == null;
     }
 
     @Override
     public int hashCode() {
-        return (int) (Time ^ (Time >>> 32));
+        int result = (int) (Time ^ (Time >>> 32));
+        result = 31 * result + (Data != null ? Data.hashCode() : 0);
+        return result;
     }
 
     @Override

@@ -15,6 +15,24 @@ public class WebVedio {
     private int save;
     private boolean isPreparing;
     private boolean isPrepared;
+    private boolean isExecuted;
+    private long savetime;
+
+    public long getSavetime() {
+        return savetime;
+    }
+
+    public void setSavetime(long savetime) {
+        this.savetime = savetime;
+    }
+
+    public boolean isExecuted() {
+        return isExecuted;
+    }
+
+    public void setExecuted(boolean executed) {
+        isExecuted = executed;
+    }
 
     public boolean isPreparing() {
         return isPreparing;
@@ -89,22 +107,37 @@ public class WebVedio {
     }
 
     @Override
+    public String toString() {
+        return "WebVedio{" +
+                "actionType=" + actionType +
+                ", stat=" + stat +
+                ", time=" + time +
+                ", vid=" + vid +
+                ", url='" + url + '\'' +
+                ", type=" + type +
+                ", save=" + save +
+                ", isPreparing=" + isPreparing +
+                ", isPrepared=" + isPrepared +
+                ", isExecuted=" + isExecuted +
+                ", savetime=" + savetime +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         WebVedio webVedio = (WebVedio) o;
 
-        if (actionType != webVedio.actionType) return false;
-        if (vid != webVedio.vid) return false;
-        return url != null ? url.equals(webVedio.url) : webVedio.url == null;
+        if (stat != webVedio.stat) return false;
+        return savetime == webVedio.savetime;
     }
 
     @Override
     public int hashCode() {
-        int result = actionType;
-        result = 31 * result + vid;
-        result = 31 * result + (url != null ? url.hashCode() : 0);
+        int result = stat;
+        result = 31 * result + (int) (savetime ^ (savetime >>> 32));
         return result;
     }
 }

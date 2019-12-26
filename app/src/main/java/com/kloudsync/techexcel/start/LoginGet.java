@@ -1272,7 +1272,6 @@ public class LoginGet {
 				((Activity) mContext).finish();*/
                 URL_RONGTOKEN = AppConfig.URL_PUBLIC + "RongCloudUserToken";
                 newThreadGetResultBytoken(URL_RONGTOKEN, AppConfig.RONGUSERTOKEN);
-
             } else {
                 Toast.makeText(mContext, ErrorMessage, Toast.LENGTH_SHORT).show();
                 GoToLogin();

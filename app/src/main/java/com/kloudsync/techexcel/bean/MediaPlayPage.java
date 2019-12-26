@@ -4,11 +4,11 @@ package com.kloudsync.techexcel.bean;
  * Created by tonyan on 2019/10/11.
  */
 
-public class RecordingPage {
+public class MediaPlayPage {
     private String pageUrl;
     private String savedLocalPath;
     private int pageNumber;
-    private long recordingTime;
+    private long time;
     private boolean isDownloading;
     private String itemId;
     private String showUrl;
@@ -37,12 +37,12 @@ public class RecordingPage {
         isDownloading = downloading;
     }
 
-    public long getRecordingTime() {
-        return recordingTime;
+    public long getTime() {
+        return time;
     }
 
-    public void setRecordingTime(long recordingTime) {
-        this.recordingTime = recordingTime;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     public int getPageNumber() {
@@ -72,11 +72,11 @@ public class RecordingPage {
 
     @Override
     public String toString() {
-        return "RecordingPage{" +
+        return "MediaPlayPage{" +
                 "pageUrl='" + pageUrl + '\'' +
                 ", savedLocalPath='" + savedLocalPath + '\'' +
                 ", pageNumber=" + pageNumber +
-                ", recordingTime=" + recordingTime +
+                ", recordingTime=" + time +
                 ", isDownloading=" + isDownloading +
                 '}';
     }
@@ -86,13 +86,13 @@ public class RecordingPage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RecordingPage page = (RecordingPage) o;
+        MediaPlayPage page = (MediaPlayPage) o;
 
-        return recordingTime == page.recordingTime;
+        return time == page.time;
     }
 
     @Override
     public int hashCode() {
-        return (int) (recordingTime ^ (recordingTime >>> 32));
+        return (int) (time ^ (time >>> 32));
     }
 }

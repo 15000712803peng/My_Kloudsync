@@ -2144,7 +2144,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 soundtrackPlayDialog = null;
             }
         }
-        soundtrackPlayDialog = new SoundtrackPlayDialog(this,soundtrackDetail);
+        soundtrackPlayDialog = new SoundtrackPlayDialog(this,soundtrackDetail,meetingConfig);
         soundtrackPlayDialog.show();
 
     }

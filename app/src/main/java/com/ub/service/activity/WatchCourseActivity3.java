@@ -6681,6 +6681,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             JSONObject jsonObject = new JSONObject(json);
             int actionType = jsonObject.getInt("actionType");
             if (actionType == 19) {
+                Log.e("check_vedio_data","vedio_data:" + jsonObject);
+
                 final int stat = jsonObject.getInt("stat");
                 if (stat == 1) { // 播放视频  暂停音响的播放
                     pauseMedia();

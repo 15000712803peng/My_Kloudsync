@@ -7,8 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.kloudsync.techexcel.bean.DocumentPage;
-import com.kloudsync.techexcel.bean.RecordingPage;
+import com.kloudsync.techexcel.bean.MediaPlayPage;
 
 import org.feezu.liuli.timeselector.Utils.TextUtil;
 
@@ -34,7 +33,7 @@ public class RecordingPageCache {
     }
 
 
-    public void cachePageFile(RecordingPage page) {
+    public void cachePageFile(MediaPlayPage page) {
 
         if (page == null || TextUtils.isEmpty(page.getPageUrl())) {
             return;
@@ -86,12 +85,12 @@ public class RecordingPageCache {
         cachePreference.edit().putString("preload_page_map", new Gson().toJson(map)).commit();
     }
 
-    private Map<String,RecordingPage> getPageMap() {
+    private Map<String,MediaPlayPage> getPageMap() {
         String json = cachePreference.getString("page_map", "");
         if (TextUtil.isEmpty(json)) {
             return new HashMap<>();
         }
-        return gson.fromJson(json, new TypeToken<Map<String,RecordingPage>>() {
+        return gson.fromJson(json, new TypeToken<Map<String,MediaPlayPage>>() {
         }.getType());
     }
 
@@ -104,8 +103,8 @@ public class RecordingPageCache {
         }.getType());
     }
 
-    public RecordingPage getPageCache(String url){
-        Map<String,RecordingPage> map = getPageMap();
+    public MediaPlayPage getPageCache(String url){
+        Map<String,MediaPlayPage> map = getPageMap();
         Log.e("RecordingPageCache","getPageCache, map:" + map);
         if(map != null){
             return map.get(url);

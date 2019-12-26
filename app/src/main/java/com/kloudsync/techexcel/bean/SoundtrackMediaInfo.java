@@ -25,6 +25,33 @@ public class SoundtrackMediaInfo {
     private String VideoDuration;
     private boolean IsTemporary;
     private String QueryToken;
+    private boolean isPreparing;
+    private boolean isPrepared;
+    private boolean isPlaying;
+
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+    }
+
+    public boolean isPreparing() {
+        return isPreparing;
+    }
+
+    public void setPreparing(boolean preparing) {
+        isPreparing = preparing;
+    }
+
+    public boolean isPrepared() {
+        return isPrepared;
+    }
+
+    public void setPrepared(boolean prepared) {
+        isPrepared = prepared;
+    }
 
     public int getItemID() {
         return ItemID;

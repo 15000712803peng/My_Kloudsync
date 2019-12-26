@@ -6,12 +6,21 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.webkit.WebSettings;
+import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
+import com.kloudsync.techexcel.bean.DocumentPage;
+import com.kloudsync.techexcel.bean.EventPlayWebVedio;
+import com.kloudsync.techexcel.bean.MediaPlayPage;
+import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.PreloadPage;
-import com.kloudsync.techexcel.bean.RecordingPage;
 import com.kloudsync.techexcel.bean.WebVedio;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.info.Uploadao;
+import com.kloudsync.techexcel.tool.DocumentModel;
+import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.RecordingPageCache;
 import com.ub.techexcel.bean.WebAction;
 import com.ub.techexcel.tools.DownloadUtil;
@@ -19,18 +28,25 @@ import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xwalk.core.XWalkView;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import Decoder.BASE64Encoder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by tonyan on 2019/11/21.
@@ -42,27 +58,31 @@ public class SoundtrackActionsManager {
     private volatile long playTime;
     private Activity context;
     private List<WebAction> webActions = new ArrayList<>();
+    private List<WebVedio> webVedios = new ArrayList<>();
     private List<Request> requests = new ArrayList<>();
-    private List<RecordingPage> recordingPages = new ArrayList<>();
+    private List<MediaPlayPage> mediaPlayPages = new ArrayList<>();
     private int recordId;
     private volatile long totalTime = 0;
     private XWalkView web;
     private SurfaceView surfaceView;
     private WebVedioManager webVedioManager;
-    private String  downloadUrlPre = "";
+    private String downloadUrlPre = "";
     private UserVedioManager userVedioManager;
+    private MeetingConfig meetingConfig;
+    private RelativeLayout webVedioPlayLayout;
 
     public void setUserVedioManager(UserVedioManager userVedioManager) {
         this.userVedioManager = userVedioManager;
     }
 
-    public void setWeb(XWalkView web) {
+    public void setWeb(XWalkView web, MeetingConfig meetingConfig) {
+        this.meetingConfig = meetingConfig;
         this.web = web;
     }
 
     public void setSurfaceView(SurfaceView surfaceView) {
         this.surfaceView = surfaceView;
-        if(webVedioManager != null){
+        if (webVedioManager != null) {
             webVedioManager.initSurface(surfaceView);
         }
     }
@@ -79,7 +99,7 @@ public class SoundtrackActionsManager {
     //
     private SoundtrackActionsManager(Activity context) {
         this.context = context;
-        pageCache = RecordingPageCache.getInstance(context);
+        pageCache = DocumentPageCache.getInstance(context);
         webVedioManager = WebVedioManager.getInstance(context);
         gson = new Gson();
     }
@@ -95,34 +115,56 @@ public class SoundtrackActionsManager {
         return instance;
     }
 
-    public void setPlayTime(long playTime) {
+
+
+    public void setPlayTime(final long playTime) {
         this.playTime = playTime;
         requestActions();
         executeActions(getActions());
         WebVedio nearestVedio = getNearestWebvedio(playTime);
-        Log.e("nearestVedio",nearestVedio +"");
+        if(nearestVedio != null){
+            Log.e("nearestVedio", nearestVedio.getSavetime() + ",play_time:" + playTime + ",is_executed:" + nearestVedio.isExecuted());
+        }
+
         webVedioManager.safePrepare(nearestVedio);
+        if(nearestVedio != null && playTime >= nearestVedio.getSavetime() && !nearestVedio.isExecuted()){
+            Log.e("nearestVedio", "start_play");
+            SoundtrackAudioManager.getInstance(context).pause();
+            nearestVedio.setExecuted(true);
+            EventPlayWebVedio eventPlayWebVedio = new EventPlayWebVedio();
+            eventPlayWebVedio.setWebVedio(nearestVedio);
+            EventBus.getDefault().post(eventPlayWebVedio);
+//                                webVedioManager.execute(nearestVedio,playTime);
+
+//            Observable.just(nearestVedio).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<WebVedio>() {
+//                @Override
+//                public void accept(WebVedio webVedio) throws Exception {
+//                }
+//            });
+        }
+
+
 
     }
 
     private WebVedio getNearestWebvedio(long playTime) {
 
-        if (webActions.size() > 0) {
+        if (webVedios.size() > 0) {
             int index = 0;
-            for (int i = 0; i < webActions.size(); ++i) {
-                WebAction action = webActions.get(i);
-                if(action.getWebVedio() == null || action.isExecuted()){
-                    continue;
+            for (int i = 0; i < webVedios.size(); ++i) {
+                WebVedio webVedio = webVedios.get(i);
+                if (!webVedio.isExecuted()) {
+                    return webVedio;
                 }
                 //4591,37302
-                long interval = webActions.get(i).getTime() - playTime;
-                if(interval > 0){
+                long interval = webVedio.getSavetime() - playTime;
+                if (interval > 0) {
                     index = i;
                     break;
                 }
 
             }
-            return webActions.get(index).getWebVedio();
+            return webVedios.get(index);
 
         }
         return null;
@@ -144,12 +186,10 @@ public class SoundtrackActionsManager {
 
     private void executeActions(List<WebAction> actions) {
         for (final WebAction action : actions) {
-//            Log.e("check_action","action:" + action);
+            Log.e("check_action", "action:" + action);
             if (action.isExecuted()) {
                 continue;
             }
-
-            action.setExecuted(true);
             Observable.just(action).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<WebAction>() {
                 @Override
                 public void accept(WebAction action) throws Exception {
@@ -170,45 +210,18 @@ public class SoundtrackActionsManager {
             return;
         }
 
+        action.setExecuted(true);
 
         try {
             JSONObject data = new JSONObject(action.getData());
             Log.e("doExecuteAction", "data:" + data);
-            if (data.has("actionType")) {
-
-                switch (data.getInt("actionType")) {
-                    case 8:
-                        RecordingPage page = new RecordingPage();
-                        page.setRecordingTime(action.getTime());
-                        int index = recordingPages.indexOf(page);
-                        if (index >= 0) {
-                            RecordingPage recordingPage = recordingPages.get(index);
-                            recordingPage = pageCache.getPageCache(recordingPage.getPageUrl());
-                            if (!TextUtils.isEmpty(recordingPage.getSavedLocalPath())) {
-                                web.load("javascript:ShowPDF('" + recordingPage.getShowUrl() + "', " + recordingPage.getPageNumber() + ",0,'" + 0 + "'," + false + ")", null);
-                                downloadUrlPre =recordingPage.getPageUrl().substring(0, recordingPage.getPageUrl().lastIndexOf("/"));
-                                Log.e("ShowPDF", recordingPage + "");
-                                web.load("javascript:ShowToolbar(" + false + ")", null);
-                                web.load("javascript:Record()", null);
-                            }
-                        }
-
-                        //just show pdf
-                        break;
-                    case 19:
-                        webVedioManager.execute(action.getWebVedio());
-                        break;
-                    case 202:
-                        break;
-
-                }
+            if (data.getInt("type") == 2) {
+                downLoadDocumentPageAndShow(data.getInt("page"));
             } else {
-                if (!TextUtils.isEmpty(action.getData())) {
-//                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
-                    web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                    web.load("javascript:Record()", null);
-                }
+                web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
+                web.load("javascript:Record()", null);
             }
+//                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -216,7 +229,7 @@ public class SoundtrackActionsManager {
 
     }
 
-    private volatile RecordingPage recordingPage;
+    private volatile MediaPlayPage mediaPlayPage;
     private Gson gson;
 
     private void requestActions() {
@@ -258,6 +271,7 @@ public class SoundtrackActionsManager {
                             if (webActions.contains(action)) {
                                 continue;
                             }
+
                             webActions.add(action);
 
                             if (!TextUtils.isEmpty(action.getData())) {
@@ -266,37 +280,17 @@ public class SoundtrackActionsManager {
                                     if (data.has("actionType")) {
                                         int actionType = data.getInt("actionType");
                                         switch (actionType) {
-                                            case 8: {
-                                                recordingPage = new RecordingPage();
-                                                recordingPage.setPageNumber(data.getInt("pageNumber"));
-                                                recordingPage.setRecordingTime(action.getTime());
-                                                recordingPage.setItemId(data.getString("itemId"));
-
-                                                if (recordingPages.contains(recordingPage)) {
-                                                    continue;
-                                                }
-
-                                                recordingPages.add(recordingPage);
-                                                String url = data.getString("attachmentUrl");
-
-                                                if (!TextUtils.isEmpty(url)) {
-                                                    String endfix = url.substring(url.lastIndexOf("."), url.length());
-                                                    String path = url.substring(0, url.lastIndexOf("<"));
-                                                    recordingPage.setPageUrl(path + recordingPage.getPageNumber() + endfix);
-                                                    recordingPage.setShowUrl(FileUtils.getBaseDir() + "/recording/" + url.substring(url.lastIndexOf("/"), url.length()));
-                                                }
-
-                                                Log.e("check_page", "page:" + recordingPage);
-                                                downLoadPage(recordingPage, true);
-                                            }
-                                            break;
                                             case 19:
-                                                action.setWebVedio(gson.fromJson(action.getData(), WebVedio.class));
-//                                                webVedioManager.safePrepare(action.getWebVedio());
+                                                Log.e("check_action","action:setWebVedio:" + action.getData());
+//                                                action.setWebVedio(gson.fromJson(action.getData(), WebVedio.class));
+                                                WebVedio webVedio = gson.fromJson(action.getData(), WebVedio.class);
+                                                if(!webVedios.contains(webVedio)){
+                                                    webVedios.add(webVedio);
+                                                }
                                                 break;
                                             case 202:
-                                                if(userVedioManager != null){
-                                                    userVedioManager.refreshUserInfo(data.getString("userId"),data.getString("userName"),data.getString("avatarUrl"));
+                                                if (userVedioManager != null) {
+                                                    userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"));
                                                 }
                                                 break;
                                         }
@@ -312,7 +306,7 @@ public class SoundtrackActionsManager {
 
                     Collections.sort(requests);
                     Collections.sort(webActions);
-                    Log.e("webActions","webActions:" + webActions);
+                    Log.e("webActions", "webActions:" + webActions);
                 }
 
             }
@@ -386,136 +380,9 @@ public class SoundtrackActionsManager {
         return request;
     }
 
-    private synchronized void downLoadPage(final RecordingPage recordingPage, final boolean needRedownload) {
-
-        if (recordingPage.isDownloading()) {
-            return;
-        }
-        String pageUrl = recordingPage.getPageUrl();
-        final RecordingPage page = pageCache.getPageCache(pageUrl);
-
-        if (page != null && !TextUtils.isEmpty(page.getPageUrl())
-                && !TextUtils.isEmpty(page.getSavedLocalPath())) {
-            if (new File(page.getSavedLocalPath()).exists()) {
-                return;
-            } else {
-                pageCache.removeFile(pageUrl);
-            }
-        }
-
-        recordingPage.setSavedLocalPath(FileUtils.getBaseDir() + "/recording/" + pageUrl.substring(pageUrl.lastIndexOf("/"), pageUrl.length()));
-        recordingPage.setDownloading(true);
-
-        Log.e("downLoadPage", "get cach page:" + page);
-        DownloadUtil.get().download(pageUrl, recordingPage.getSavedLocalPath(), new DownloadUtil.OnDownloadListener() {
-            @SuppressLint("LongLogTag")
-            @Override
-            public void onDownloadSuccess(int arg0) {
-                Log.e("downLoadPage", "success:" + recordingPage);
-                recordingPage.setDownloading(false);
-                pageCache.cachePageFile(recordingPage);
-            }
-
-            @Override
-            public void onDownloading(final int progress) {
-
-            }
-
-            @Override
-            public void onDownloadFailed() {
-
-                recordingPage.setDownloading(false);
-                if (needRedownload) {
-                    downLoadPage(recordingPage, false);
-                }
-            }
-        });
-
-    }
-
-    private PreloadPage preloadPage;
-    public void preloadFile(String url,int pageNumber){
-        PreloadPage preloadPage = new PreloadPage();
-        preloadPage.setPageNumber(pageNumber);
-        if(!TextUtils.isEmpty(downloadUrlPre)){
-            String pageUrl = downloadUrlPre;
-            String type = url.substring(url.lastIndexOf("."));
-            String end = url.substring(url.lastIndexOf( "/"));
-            end = end.substring(0,end.lastIndexOf("<")) + pageNumber + type;
-            preloadPage.setPageUrl(pageUrl + end);
-        }
-        preloadPage.setNotifyUrl(url);
-        downPreoadPage(preloadPage,true);
-
-    }
-
-    private synchronized void downPreoadPage(final PreloadPage preloadPage, final boolean needRedownload) {
-        Log.e("downLoadPreloadPage", "page:" + preloadPage);
-        if(preloadPage == null || (this.preloadPage != null && this.preloadPage.equals(preloadPage))){
-            return;
-        }
-
-        String pageUrl = preloadPage.getPageUrl();
-        String localSavePage  = pageCache.getPreloadCache(pageUrl);
-        if (!TextUtils.isEmpty(localSavePage)) {
-            if (new File(localSavePage).exists()) {
-                context.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(web != null){
-                            Log.e("downLoadPreloadPage", "AfterDownloadFile,page:" + preloadPage);
-                            web.load("javascript:AfterDownloadFile('" + preloadPage.getNotifyUrl() + "', " + preloadPage.getPageNumber() + ")", null);
-
-                        }
-                    }
-                });
-                return;
-            } else {
-                pageCache.removePreloadFile(pageUrl);
-            }
-        }
-
-        preloadPage.setSavedLocalPath(FileUtils.getBaseDir() + "/recording/" + pageUrl.substring(pageUrl.lastIndexOf("/"), pageUrl.length()));
-        preloadPage.setDownloading(true);
-
-        Log.e("downLoadPreloadPage", "download,page:" + preloadPage);
-        this.preloadPage = preloadPage;
-        DownloadUtil.get().download(pageUrl, preloadPage.getSavedLocalPath(), new DownloadUtil.OnDownloadListener() {
-            @SuppressLint("LongLogTag")
-            @Override
-            public void onDownloadSuccess(int arg0) {
-                Log.e("downPreoadPage", "success:" + recordingPage);
-                pageCache.cachePreloadFile(preloadPage.getPageUrl(),preloadPage.getSavedLocalPath());
-                context.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(web != null){
-                            web.load("javascript:AfterDownloadFile('" + preloadPage.getNotifyUrl() + "', " + preloadPage.getPageNumber() + ")", null);
-
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onDownloading(final int progress) {
-
-            }
-
-            @Override
-            public void onDownloadFailed() {
-
-                recordingPage.setDownloading(false);
-                if (needRedownload) {
-                    downPreoadPage(preloadPage, false);
-                }
-            }
-        });
-
-    }
 
 
-    private RecordingPageCache pageCache;
+    private DocumentPageCache pageCache; ;
 
     public void release() {
         if (web != null) {
@@ -524,11 +391,155 @@ public class SoundtrackActionsManager {
             web = null;
         }
         webActions.clear();
-        recordingPages.clear();
+        mediaPlayPages.clear();
         requests.clear();
+        if(webVedioManager != null){
+            webVedioManager.release();
+        }
         instance = null;
     }
 
+    private void downLoadDocumentPageAndShow(final int pageNumber) {
 
+        Observable.just(meetingConfig.getDocument()).observeOn(Schedulers.io()).map(new Function<MeetingDocument, Object>() {
+            @Override
+            public Object apply(MeetingDocument document) throws Exception {
+
+                DocumentPage page = document.getDocumentPages().get(pageNumber - 1);
+                queryAndDownLoadPageToShow(page, true);
+                return page;
+            }
+        }).subscribe();
+    }
+
+    private void showCurrentPage(final DocumentPage documentPage){
+        Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
+            @Override
+            public void accept(DocumentPage page) throws Exception {
+                web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+                web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                web.load("javascript:Record()", null);
+            }
+        }).subscribe();
+
+    }
+
+    private void queryAndDownLoadPageToShow(final DocumentPage documentPage, final boolean needRedownload) {
+        String pageUrl = documentPage.getPageUrl();
+        DocumentPage page = pageCache.getPageCache(pageUrl);
+        Log.e("-", "get_cach_page:" + page + "--> url:" + documentPage.getPageUrl());
+        if (page != null && !TextUtils.isEmpty(page.getPageUrl())
+                && !TextUtils.isEmpty(page.getSavedLocalPath()) && !TextUtils.isEmpty(page.getShowingPath())) {
+            if (new File(page.getSavedLocalPath()).exists()) {
+                page.setDocumentId(documentPage.getDocumentId());
+                page.setPageNumber(documentPage.getPageNumber());
+                pageCache.cacheFile(page);
+                showCurrentPage(page);
+                return;
+            } else {
+                pageCache.removeFile(pageUrl);
+            }
+        }
+        MeetingDocument document = meetingConfig.getDocument();
+        String meetingId = meetingConfig.getMeetingId();
+
+        JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+                document.getNewPath());
+        if (queryDocumentResult != null) {
+            Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+            String fileName = pageUrl.substring(pageUrl.lastIndexOf("/") + 1);
+            String part = "";
+            if (1 == uploadao.getServiceProviderId()) {
+                part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + document.getNewPath()
+                        + "/" + fileName;
+            } else if (2 == uploadao.getServiceProviderId()) {
+                part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + document.getNewPath() + "/" + fileName;
+            }
+
+            String pathLocalPath = FileUtils.getBaseDir() +
+                    meetingId + "_" + encoderByMd5(part).replaceAll("/", "_") +
+                    "_" + (documentPage.getPageNumber()) +
+                    pageUrl.substring(pageUrl.lastIndexOf("."));
+            final String showUrl = FileUtils.getBaseDir() +
+                    meetingId + "_" + encoderByMd5(part).replaceAll("/", "_") +
+                    "_<" + document.getPageCount() + ">" +
+                    pageUrl.substring(pageUrl.lastIndexOf("."));
+            int pageIndex = 1;
+            if (meetingConfig.getPageNumber() == 0) {
+                pageIndex = 1;
+            } else if (meetingConfig.getPageNumber() > 0) {
+                pageIndex = meetingConfig.getPageNumber();
+            }
+
+            Log.e("-", "showUrl:" + showUrl);
+
+            documentPage.setSavedLocalPath(pathLocalPath);
+
+            Log.e("-", "page:" + documentPage);
+            //保存在本地的地址
+
+            DownloadUtil.get().download(pageUrl, pathLocalPath, new DownloadUtil.OnDownloadListener() {
+                @SuppressLint("LongLogTag")
+                @Override
+                public void onDownloadSuccess(int arg0) {
+                    documentPage.setShowingPath(showUrl);
+                    Log.e("queryAndDownLoadCurrentPageToShow", "onDownloadSuccess:" + documentPage);
+                    pageCache.cacheFile(documentPage);
+                    showCurrentPage(documentPage);
+
+                }
+
+                @Override
+                public void onDownloading(final int progress) {
+
+                }
+
+                @Override
+                public void onDownloadFailed() {
+
+                    Log.e("-", "onDownloadFailed:" + documentPage);
+                    if (needRedownload) {
+                        queryAndDownLoadPageToShow(documentPage, false);
+                    }
+                }
+            });
+        }
+    }
+
+    public String encoderByMd5(String str) {
+        try {
+            //确定计算方法
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            BASE64Encoder base64en = new BASE64Encoder();
+            //加密后的字符串
+            String newstr = base64en.encode(md5.digest(str.getBytes("utf-8")));
+            return newstr;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
+    private Uploadao parseQueryResponse(final String jsonstring) {
+        try {
+            JSONObject returnjson = new JSONObject(jsonstring);
+            if (returnjson.getBoolean("Success")) {
+                JSONObject data = returnjson.getJSONObject("Data");
+
+                JSONObject bucket = data.getJSONObject("Bucket");
+                Uploadao uploadao = new Uploadao();
+                uploadao.setServiceProviderId(bucket.getInt("ServiceProviderId"));
+                uploadao.setRegionName(bucket.getString("RegionName"));
+                uploadao.setBucketName(bucket.getString("BucketName"));
+                return uploadao;
+            }
+        } catch (JSONException e) {
+            return null;
+        }
+        return null;
+    }
 
 }
