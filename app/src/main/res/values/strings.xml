@@ -49,7 +49,7 @@
     <string name="ALLEvaluation">所有评价</string>
 
     <string name="Map_mode">地图模式</string>
-    <string name="Customer">用户</string>
+    <string name="Customer">Customer</string>
     <string name="Health_Consultant">好友</string>
     <string name="Phone">Phone</string>
     <string name="Address">Address</string>
@@ -506,7 +506,11 @@
     <!--淫荡分割线-->
     <string name="house">H</string>
     <string name="mintue">M</string>
+
+
+    <!--<string name="syncroom">SyncRoom</string>-->
     <string name="syncroom">SyncRoom</string>
+    <string name="defaultsyncroom">SyncRoom</string>
 
 
     <string name="inprogress">In Progress</string>
@@ -651,6 +655,7 @@ Please input the cell phone number to add the contact
     <string name="as_email">Email</string>
     <string name="as_admin">Admin user list</string>
     <string name="as_sync">Enable SyncRoom</string>
+    <string name="as_sync_name">SyncRoom custom name</string>
     <string name="as_contact_list">Contact list</string>
     <string name="as_add_admin">Add admin user</string>
     <string name="as_save">Save</string>

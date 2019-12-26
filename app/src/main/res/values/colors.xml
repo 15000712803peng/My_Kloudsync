@@ -93,6 +93,7 @@
     <color name="qianblue">#dfefed</color>
     <color name="qianred">#f17b0d</color>
     <color name="qiangrey">#a2a8b6</color>
+    <color name="defaultgrey">#FF888888</color>
 
     <!-- 迪凯 余 -->
     <!-- 左拉回复 -->

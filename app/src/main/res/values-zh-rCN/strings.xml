@@ -360,7 +360,10 @@
     <string name="day">日</string>
     <string name="house">时</string>
     <string name="mintue">分</string>
+
     <string name="syncroom">音想房间</string>
+    <string name="defaultsyncroom">音想房间</string>
+
 
     <string name="accept">接受</string>
     <string name="added">已添加</string>
@@ -646,6 +649,7 @@
     <string name="as_address">网址</string>
     <string name="as_email">邮箱</string>
     <string name="as_sync">开启音想房间</string>
+    <string name="as_sync_name">SyncRoom自定义名称</string>
     <string name="as_admin">管理员列表</string>
     <string name="as_contact_list">联系人列表</string>
     <string name="as_add_admin">新增管理员</string>

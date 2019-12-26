@@ -5521,7 +5521,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             GetMediaPlay(favoriteAudio.getFileDownloadURL(), false);
             sendAudioSocket(1, soundtrackID);
         }
-
         if (soundtrackBean.getNewAudioAttachmentID() != 0) {
             //1  拿 Bucket 信息
             LoginGet lg = new LoginGet();

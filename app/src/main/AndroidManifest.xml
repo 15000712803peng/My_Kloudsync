@@ -439,6 +439,9 @@
             android:name=".personal.AccountSettingAdminUserActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".personal.SyncRoomNameActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:launchMode="singleTop"
             android:name=".personal.AccountSettingContactActivity"
             android:screenOrientation="portrait" />

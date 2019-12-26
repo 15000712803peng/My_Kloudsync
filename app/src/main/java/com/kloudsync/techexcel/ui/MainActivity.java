@@ -71,6 +71,7 @@ import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.service.UploadService;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.tool.DensityUtil;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
 import com.lidroid.xutils.HttpUtils;
@@ -102,6 +103,7 @@ import com.umeng.analytics.MobclickAgent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -216,7 +218,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("MainActivity","on create");
+        Log.e("MainActivity", "on create");
         systemTime = System.currentTimeMillis();
         instance = this;
         app = (App) getApplication();
@@ -486,7 +488,11 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     private void setTabName() {
         String[] tab = getResources().getStringArray(R.array.tabname);
         for (int i = 0; i < tvIDs.length; i++) {
-            tvs.get(i).setText(tab[i]);
+            if (tvs.get(i) == syncroomTab) {
+                tvs.get(i).setText(CustomSyncRoomTool.getInstance(this).getCustomyinxiang());
+            } else {
+                tvs.get(i).setText(tab[i]);
+            }
         }
 
     }
@@ -627,6 +633,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         Log.e("user_info", "user_token:" + AppConfig.UserToken + ",company_id:" + AppConfig.SchoolID);
         isOpenYinxiang();
     }
+
     private void isOpenYinxiang() {
         String url = AppConfig.URL_PUBLIC + "School/GetSettingItem?schoolID=" + AppConfig.SchoolID + "&settingID=10001";
         ServiceInterfaceTools.getinstance().getSchoolSettingItem(url, ServiceInterfaceTools.GETSCHOOLSETTINGITEM, new ServiceInterfaceListener() {
@@ -832,7 +839,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
     public void onPause() {
-        Log.e("MainActivity","on pause");
+        Log.e("MainActivity", "on pause");
         super.onPause();
         MobclickAgent.onPageEnd("MainActivity");
         MobclickAgent.onPause(this);
@@ -851,13 +858,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     public void refreshTabs(EventRefreshTab eventRefreshTab) {
         boolean enableSync = sharedPreferences.getBoolean("enable_sync", false);
         Log.e("MainActivity", "enableSync:" + enableSync);
-        if (enableSync) {
-            syncroomTab.setVisibility(View.VISIBLE);
-        } else {
-            syncroomTab.setVisibility(View.GONE);
-        }
         isOpenYinxiang();
     }
+
 
     @Override
     protected void onDestroy() {
@@ -1156,7 +1159,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             if (currentTeamFragment != null) {
                 fragmentTransaction.hide(currentTeamFragment);
             }
-;
+            ;
             fragment = getTeamFragment(v.getId());
             if (!fragment.isAdded()) {
                 fragmentTransaction.add(R.id.frame_tab_team, fragment, String.valueOf(v.getId()));
@@ -1393,7 +1396,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     }
 
                     // -- 2:如果在document,syncroom ,或者 syncbook里面
-                    Log.e("check_instance","watch3instance:" + WatchCourseActivity3.watch3instance + "--syncroomInstance:" + SyncRoomActivity.syncroomInstance + "--syncbookInstance:"+SyncBookActivity.syncbookInstance);
+                    Log.e("check_instance", "watch3instance:" + WatchCourseActivity3.watch3instance + "--syncroomInstance:" + SyncRoomActivity.syncroomInstance + "--syncbookInstance:" + SyncBookActivity.syncbookInstance);
                     if ((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
                             SyncBookActivity.syncbookInstance) {
                         String _meetingId = "";
@@ -1541,20 +1544,20 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
     @Subscribe
-    public void doc(EventDoc doc){
-        Log.e("event_bus","set doc:" + true);
+    public void doc(EventDoc doc) {
+        Log.e("event_bus", "set doc:" + true);
         WatchCourseActivity3.watch3instance = true;
     }
 
     @Subscribe
-    public void doc(EventSyncBook book){
-        Log.e("event_bus","set book:" + true);
+    public void doc(EventSyncBook book) {
+        Log.e("event_bus", "set book:" + true);
         SyncBookActivity.syncbookInstance = true;
     }
 
     @Subscribe
-    public void doc(EventSyncRoom room){
-        Log.e("event_bus","set room:" + true);
+    public void doc(EventSyncRoom room) {
+        Log.e("event_bus", "set room:" + true);
         SyncRoomActivity.syncroomInstance = true;
 
     }
@@ -1562,29 +1565,29 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Override
     protected void onStop() {
         super.onStop();
-        Log.e("MainActivity","on stop");
+        Log.e("MainActivity", "on stop");
         keepWebSocketLive();
     }
 
-    private void keepWebSocketLive(){
-        if(isServiceRunning(this,"com.ub.service.activity.SocketService")){
-            Log.e("MainActivity","SocketService is running");
+    private void keepWebSocketLive() {
+        if (isServiceRunning(this, "com.ub.service.activity.SocketService")) {
+            Log.e("MainActivity", "SocketService is running");
             KloudWebClientManager.getInstance().startHeartBeat();
-        }else {
-            Log.e("MainActivity","SocketService is not running");
+        } else {
+            Log.e("MainActivity", "SocketService is not running");
             StartWBService();
         }
     }
 
-    public static boolean isServiceRunning(Context mContext, String className){
-        boolean isRunning = false ;
+    public static boolean isServiceRunning(Context mContext, String className) {
+        boolean isRunning = false;
         ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> seviceList = activityManager.getRunningServices(300);
-        if (seviceList.size() <= 0){
+        if (seviceList.size() <= 0) {
             return false;
         }
-        for (int i=0 ;i < seviceList.size();i++){
-            if (seviceList.get(i).service.getClassName().toString().equals(className)){
+        for (int i = 0; i < seviceList.size(); i++) {
+            if (seviceList.get(i).service.getClassName().toString().equals(className)) {
                 isRunning = true;
                 break;
             }

@@ -143,6 +143,8 @@ public class ServiceInterfaceTools {
     public static final int GETSEARCHCONTACT = 0x1154;
     public static final int INVITECOMPANYMEMBERTOSPACE = 0x1155;
     public static final int ADDADMINMEMBER = 0x1156;
+    public static final int UPDATECUSTOMDISPLAYNAME = 0x1157;
+    public static final int GETCOMPANYDISPLAYNAMELIST = 0x1158;
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
 
@@ -324,7 +326,67 @@ public class ServiceInterfaceTools {
             }
         }).start();
     }
-    public void addAdminMember(final String url, final int code,ServiceInterfaceListener serviceInterfaceListener) {
+
+
+    public void updateCustomDisplayName(final String url, final int code, final JSONObject jsonObject, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject1 = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("hhh", url + "  " + jsonObject.toString() + "   " + jsonObject1.toString());
+                    if (jsonObject1.getInt("code") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = "";
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void getCompanyDisplayNameList(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("hhh", url + "    " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("code") == 0 && jsonObject1.getString("msg").equals("success")) {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = jsonObject1;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = new JSONObject();
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start(ThreadManager.getManager());
+
+
+    }
+
+
+    public void addAdminMember(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         new Thread(new Runnable() {
             @Override

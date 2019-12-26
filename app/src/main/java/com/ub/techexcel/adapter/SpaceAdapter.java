@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.tool.TextTool;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 
@@ -100,7 +101,13 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
 //        holder.tv_sort.setBackgroundResource(R.drawable.circle_expand);
 
         if (isSyncRoom) {
-            holder.attachmentcount.setText(item.getSyncRoomCount() + " " + context.getString(R.string.syncroom));
+
+
+
+//            holder.attachmentcount.setText(item.getSyncRoomCount() + " " + context.getString(R.string.syncroom));
+            holder.attachmentcount.setText(item.getSyncRoomCount() + " " + CustomSyncRoomTool.getInstance(context).getCustomyinxiang());
+
+
 //            holder.attachmentcount.setText(item.getSyncRoomCount() == 0 ? "" : item.getSyncRoomCount() + " SyncRooms");
 //            if (item.getSyncRoomCount() == 0) {
 //                holder.attachmentcount.setVisibility(View.GONE);

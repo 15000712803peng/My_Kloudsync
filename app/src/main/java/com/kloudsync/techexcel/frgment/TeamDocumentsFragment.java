@@ -638,6 +638,8 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                 /*DialogRename dr = new DialogRename();
                 dr.EditCancel(getActivity(), teamSpaceBean.getItemID(), true);*/
                 GoToTeamp();
+
+
             }
 
             @Override

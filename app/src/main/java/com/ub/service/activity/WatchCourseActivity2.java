@@ -239,7 +239,7 @@ import retrofit2.Response;
  * Created by wang on 2017/6/16.
  */
 public class WatchCourseActivity2 extends BaseActivity implements View.OnClickListener, AGEventHandler, VideoGestureRelativeLayout.VideoGestureListener,
-        YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,MeetingRecordsDialog.OnPlayRecordListener {
+        YinxiangPopup.ShareDocumentToFriendListener, AddFileFromDocumentDialog.OnDocSelectedListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener, MeetingRecordsDialog.OnPlayRecordListener {
 
     private String targetUrl;
     private String newPath;
@@ -282,6 +282,9 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     private PowerManager.WakeLock wl;
 
     private ShareSyncDialog shareSyncDialog;
+
+    private RelativeLayout playagorarl;
+    private ImageView playagora;
 
     @Override
     public void shareDocumentToFriend(SoundtrackBean soundtrackBean) {
@@ -402,7 +405,6 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     private RelativeLayout filedownprogress;
     private ProgressBar fileprogress;
     private TextView progressbartv;
-
 
 
     private static class MyHandler extends Handler {
@@ -941,7 +943,8 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
             XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
             XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
-        }}
+        }
+    }
 
     private List<Rect> exclude = new ArrayList<>();
 
@@ -1108,6 +1111,10 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         registerReceiver(broadcastReceiver, intentFilter);
         initdefault();
         initBroadcastReceiver();
+
+        getRecordList();
+
+
     }
 
     private boolean isRegistered = false;
@@ -2028,7 +2035,9 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     private void initView() {
         puo2 = new Popupdate2();
         puo2.getPopwindow(WatchCourseActivity2.this);
-
+        playagorarl = findViewById(R.id.playagorarl);
+        playagora = findViewById(R.id.playagora);
+        playagora.setOnClickListener(this);
         prompt = (TextView) findViewById(R.id.prompt);
         closenote = findViewById(R.id.closenote);
         endtextview = (TextView) findViewById(R.id.endtextview);
@@ -4557,6 +4566,12 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 timeShow.setVisibility(View.VISIBLE);
                 audiosyncll.setVisibility(View.GONE);
                 break;
+            case R.id.playagora:
+                playagorarl.setVisibility(View.GONE);
+                if (record != null) {
+                    play(record);
+                }
+                break;
             case R.id.timeshow:
                 timeShow.setVisibility(View.GONE);
                 audiosyncll.setVisibility(View.VISIBLE);
@@ -4605,7 +4620,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 break;
             case R.id.displayplay:
 //                Toast.makeText(this,"  ddd ",Toast.LENGTH_LONG).show();
-                if(recordsDialog != null){
+                if (recordsDialog != null) {
                     recordsDialog.dismiss();
                     recordsDialog = null;
                 }
@@ -4619,6 +4634,27 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         }
         refreshTouchHelper();
     }
+
+
+    private Record record;
+
+    private void getRecordList() {
+        if (isFinishCourse) {
+            String url = "https://wss.peertime.cn/MeetingServer/recording/recording_list?lessonId=" + meetingId;
+            ServiceInterfaceTools.getinstance().getRecordingList(url, ServiceInterfaceTools.GETRECORDINGLIST, new ServiceInterfaceListener() {
+                @Override
+                public void getServiceReturnData(Object object) {
+                    List<Record> records = new ArrayList<>();
+                    records.addAll((List<Record>) object);
+                    if (records.size() > 0) {
+                        record = records.get(0);
+                        playagorarl.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+        }
+    }
+
 
     MeetingRecordsDialog recordsDialog;
 
@@ -8858,6 +8894,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     NoteDetail currentNote;
     JSONObject currentLinkProperty = new JSONObject();
     private String toolName;
+
     @JavascriptInterface
     public void callAppFunction(String action, final String data) {
         Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
@@ -8929,7 +8966,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if(linkId==0){
+                                    if (linkId == 0) {
                                         drawNote(-1, currentLinkProperty, 0);
                                     }
                                 }
@@ -9099,17 +9136,18 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
 
     //---- play meeting record
     RecordPlayDialog recordPlayDialog;
+
     @Override
     public void play(Record record) {
         FileUtils.createRecordingFilesDir(this);
-        Log.e("WatchCourseActivity2","play_record:" + record);
+        Log.e("WatchCourseActivity2", "play_record:" + record);
         boolean play = true;
-        if(play){
+        if (play) {
             play = false;
-            if(recordPlayDialog != null){
+            if (recordPlayDialog != null) {
                 recordPlayDialog.dismiss();
             }
-            recordPlayDialog = new RecordPlayDialog(this,record);
+            recordPlayDialog = new RecordPlayDialog(this, record);
             recordPlayDialog.show();
         }
 

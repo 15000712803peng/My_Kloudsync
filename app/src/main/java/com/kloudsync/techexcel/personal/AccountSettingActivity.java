@@ -72,7 +72,7 @@ import java.util.Locale;
 public class AccountSettingActivity extends Activity {
 
 
-    private RelativeLayout as_rl_logo, as_rl_admin, as_rl_contact, layout_enable_sync;
+    private RelativeLayout as_rl_logo, as_rl_admin, as_rl_contact, layout_enable_sync,layout_sync_name;
     private ContainsEmojiEditText as_et_name, as__et_webaddress, as_et_email;
     private ImageView img_notice;
     private TextView as_tv_save;
@@ -199,6 +199,7 @@ public class AccountSettingActivity extends Activity {
         as_img_contact_two = findViewById(R.id.as_img_contact_two);
         as_img_contact_three = findViewById(R.id.as_img_contact_three);
         layout_enable_sync = findViewById(R.id.layout_enable_sync);
+        layout_sync_name = findViewById(R.id.layout_sync_name);
 
         as_rl_logo = findViewById(R.id.as_rl_logo);
         as_et_name = findViewById(R.id.as_et_name);
@@ -219,6 +220,7 @@ public class AccountSettingActivity extends Activity {
         as_rl_admin.setOnClickListener(new MyOnClick());
         as_rl_contact.setOnClickListener(new MyOnClick());
         as_tv_save.setOnClickListener(new MyOnClick());
+        layout_sync_name.setOnClickListener(new MyOnClick());
         syncSwitch = findViewById(R.id.switch_sync);
         syncSwitch.setChecked(userPreferences.getBoolean("enable_sync", false));
         syncSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -710,6 +712,10 @@ public class AccountSettingActivity extends Activity {
                     } else {
                         //save();
                     }
+                    break;
+                case R.id.layout_sync_name:
+                    intent = new Intent(getApplicationContext(), SyncRoomNameActivity.class);
+                    startActivity(intent);
                     break;
                 default:
                     break;
