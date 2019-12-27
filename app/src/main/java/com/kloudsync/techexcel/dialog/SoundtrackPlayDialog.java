@@ -148,7 +148,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
         closeVedioImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 WebVedioManager.getInstance(host).closeVedio();
                 webVedioLayout.setVisibility(View.GONE);
 
