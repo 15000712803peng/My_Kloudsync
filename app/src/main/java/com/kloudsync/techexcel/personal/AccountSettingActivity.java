@@ -174,7 +174,7 @@ public class AccountSettingActivity extends Activity {
     }
 
 
-
+    private boolean isAdmin = false;
 
     private void getSchoolContact() {
 
@@ -185,9 +185,10 @@ public class AccountSettingActivity extends Activity {
                 UserInCompany userInCompany = (UserInCompany) object;
                 if (userInCompany.getRole() == 7 || userInCompany.getRole() == 8) {
                     layout_enable_sync.setVisibility(View.VISIBLE);
-
+                    isAdmin = true;
                 } else {
                     layout_enable_sync.setVisibility(View.GONE);
+                    isAdmin = false;
                 }
             }
         });
@@ -704,7 +705,11 @@ public class AccountSettingActivity extends Activity {
 
                         @Override
                         public void fileDeletePhoto() {
-                            deleteCompanyLogo();
+                            if (isAdmin) {
+                                deleteCompanyLogo();
+                            } else {
+                                Toast.makeText(AccountSettingActivity.this, "当前你不是管理员,没有权限修改", Toast.LENGTH_LONG).show();
+                            }
                         }
 
                         @Override
@@ -730,7 +735,11 @@ public class AccountSettingActivity extends Activity {
                     startActivity(intent);
                     break;
                 case R.id.as_tv_save:
-                    updateCompanyInfo();
+                    if (isAdmin) {
+                        updateCompanyInfo();
+                    } else {
+                        Toast.makeText(AccountSettingActivity.this, "当前你不是管理员,没有权限修改", Toast.LENGTH_LONG).show();
+                    }
                     break;
                 case R.id.layout_sync_name:
                     intent = new Intent(getApplicationContext(), SyncRoomNameActivity.class);
