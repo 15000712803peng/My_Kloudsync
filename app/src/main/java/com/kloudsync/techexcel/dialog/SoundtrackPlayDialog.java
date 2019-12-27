@@ -93,6 +93,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
     private RelativeLayout webVedioLayout;
     private SurfaceView webVedioSurface;
     private ImageView closeVedioImage;
+    private ImageView closeDialogImage;
+    private ImageView startPauseImage;
+    private LinearLayout controllerLayout;
 
     //
     String totalTimeStr = "00:00";
@@ -101,6 +104,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
     //
     UserVedioManager userVedioManager;
     XWalkView web;
+    TextView statusText;
 
     public void setSoundtrackDetail(SoundtrackDetail soundtrackDetail) {
         this.soundtrackDetail = soundtrackDetail;
@@ -121,10 +125,25 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
         centerLoaing = view.findViewById(R.id.layout_center_loading);
         webVedioSurface = view.findViewById(R.id.web_vedio_surface);
         web = view.findViewById(R.id.web);
+        statusText = view.findViewById(R.id.txt_status);
         webVedioLayout = view.findViewById(R.id.layout_web_vedio);
         playTimeText = view.findViewById(R.id.txt_play_time);
         seekBar = view.findViewById(R.id.seek_bar);
+        controllerLayout = view.findViewById(R.id.layout_soundtrack_controller);
+        seekBar.setOnSeekBarChangeListener(this);
+        startPauseImage = view.findViewById(R.id.image_play_pause);
+        startPauseImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(soundtrackAudioManager.isPlaying()){
+                    pause();
+                }else {
+                    restart();
+                }
+            }
+        });
         closeVedioImage = view.findViewById(R.id.image_close_veido);
+        closeDialogImage = view.findViewById(R.id.close);
         closeVedioImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,6 +151,12 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
                 WebVedioManager.getInstance(host).closeVedio();
                 webVedioLayout.setVisibility(View.GONE);
 
+            }
+        });
+        closeDialogImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                close();
             }
         });
         initWeb();
@@ -284,6 +309,16 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
         isFinished = true;
         isStarted = false;
         playHandler = null;
+
+        if (userVedioManager != null) {
+            userVedioManager.release();
+        }
+        if (soundtrackAudioManager != null) {
+            soundtrackAudioManager.release();
+        }
+        if (actionsManager != null) {
+            actionsManager.release();
+        }
     }
 
     private void handlePlayMessage(Message message) {
@@ -292,6 +327,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
                 setTimeText();
                 if (centerLoaing.getVisibility() == View.VISIBLE) {
                     centerLoaing.setVisibility(View.GONE);
+                }
+                if(controllerLayout.getVisibility() != View.VISIBLE){
+                    controllerLayout.setVisibility(View.VISIBLE);
                 }
                 break;
             case MESSAGE_HIDE_CENTER_LOADING:
@@ -315,6 +353,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
         playTimeText.setText(time + "/" + _time);
         seekBar.setMax((int) (totalTime / 10));
         seekBar.setProgress((int) (playTime / 10));
+        statusText.setText(R.string.playing);
+        startPauseImage.setImageResource(R.drawable.video_play);
 
     }
 
@@ -327,12 +367,15 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
+        Log.e("seek_bar","start_tracking");
         isSeek = true;
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         isSeek = false;
+        Log.e("seek_bar","stop_tracking");
+        seekTo(seekBar.getProgress() * 10);
     }
 
 
@@ -380,6 +423,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
         Log.e("showWebVedio", "showWebVedio");
         webVedioLayout.setVisibility(View.VISIBLE);
         WebVedioManager.getInstance(host).execute(webVedio.getWebVedio(), playTime);
+        statusText.setText(R.string.paused);
+
 
     }
 
@@ -390,5 +435,28 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
 //        WebVedioManager.getInstance(host).closeVedio();
 
     }
+
+    private void pause(){
+        SoundtrackAudioManager.getInstance(host).pause();
+        statusText.setText(R.string.paused);
+        startPauseImage.setImageResource(R.drawable.video_stop);
+    }
+
+    private void restart(){
+        SoundtrackAudioManager.getInstance(host).restart();
+        statusText.setText(R.string.playing);
+        startPauseImage.setImageResource(R.drawable.video_play);
+    }
+
+    private void close(){
+        release();
+        dismiss();
+    }
+
+    private void seekTo(int time){
+        actionsManager.seekTo(time);
+    }
+
+
 
 }

@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static android.media.MediaPlayer.SEEK_CLOSEST;
+
 
 public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
@@ -50,9 +52,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
 
     public void prepareAudioAndPlay(SoundtrackMediaInfo audioData) {
         try {
-            if (audioData.isPreparing() || audioData.isPrepared()) {
-                return;
-            }
+
             try {
                 if(audioPlayer.isPlaying()){
                     return;
@@ -60,21 +60,21 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
             }catch (IllegalStateException exception){
 
             }
-            audioData.setPreparing(true);
-            audioPlayer.reset();
+            audioPlayer.setOnPreparedListener(this);
+            audioPlayer.setOnCompletionListener(this);
+            audioPlayer.setOnErrorListener(this);
             Log.e("check_play","set_data_source:" + audioData.getAttachmentUrl());
             audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
             audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
                 audioPlayer.prepareAsync();
             }catch (IllegalStateException e){
-
+                Log.e("check_play","IllegalStateException," + e.getMessage());
                 reinit(audioData);
             }
-            audioPlayer.setOnPreparedListener(this);
-            audioPlayer.setOnCompletionListener(this);
-            audioPlayer.setOnErrorListener(this);
+
         } catch (IOException e) {
+            Log.e("check_play","IOException," + e.getMessage());
             e.printStackTrace();
             audioData.setPreparing(false);
         }
@@ -88,10 +88,8 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
             audioPlayer.setDataSource(context, Uri.parse(mediaInfo.getAttachmentUrl()));
             audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             audioPlayer.prepareAsync();
-            mediaInfo.setPrepared(true);
         } catch (IOException e) {
             e.printStackTrace();
-            mediaInfo.setPreparing(false);
         }
 
     }
@@ -99,22 +97,17 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        Log.e("check_play","onPrepared");
         if (mediaInfo != null) {
             Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());
-            mediaInfo.setPrepared(true);
-            mediaInfo.setPreparing(false);
             mp.start();
-            mediaInfo.setPlaying(true);
+
         }
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-
         mp.reset();
-        mediaInfo.setPrepared(false);
-        mediaInfo.setPlaying(false);
-        mediaInfo.setPreparing(false);
     }
 
     @Override
@@ -161,6 +154,13 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     public void restart(){
         if(audioPlayer != null){
             audioPlayer.start();
+        }
+    }
+
+    public void seekTo(int time){
+        if(audioPlayer != null){
+            audioPlayer.seekTo(time);
+            Log.e("vedio_check","seek_to,time:" + time);
         }
     }
 

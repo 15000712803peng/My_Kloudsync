@@ -120,7 +120,7 @@ public class SoundtrackActionsManager {
     public void setPlayTime(final long playTime) {
         this.playTime = playTime;
         requestActions();
-        executeActions(getActions());
+        executeActions(getActions(false,playTime));
         WebVedio nearestVedio = getNearestWebvedio(playTime);
         if(nearestVedio != null){
             Log.e("nearestVedio", nearestVedio.getSavetime() + ",play_time:" + playTime + ",is_executed:" + nearestVedio.isExecuted());
@@ -172,10 +172,13 @@ public class SoundtrackActionsManager {
 
     private volatile List<WebAction> actions = new ArrayList<>();
 
-    private List<WebAction> getActions() {
+    private List<WebAction> getActions(boolean reset,long playTime) {
         actions.clear();
         for (WebAction action : webActions) {
             if (action.getTime() <= playTime) {
+                if(reset){
+                    action.setExecuted(false);
+                }
                 actions.add(action);
             } else {
                 break;
@@ -183,6 +186,7 @@ public class SoundtrackActionsManager {
         }
         return actions;
     }
+
 
     private void executeActions(List<WebAction> actions) {
         for (final WebAction action : actions) {
@@ -541,5 +545,12 @@ public class SoundtrackActionsManager {
         }
         return null;
     }
+
+    public void seekTo(int time){
+        SoundtrackAudioManager.getInstance(context).seekTo(time);
+        executeActions(getActions(true,time));
+    }
+
+
 
 }
