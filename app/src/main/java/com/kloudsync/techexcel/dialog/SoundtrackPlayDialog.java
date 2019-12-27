@@ -279,7 +279,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
                         }
                     }
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(200);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
