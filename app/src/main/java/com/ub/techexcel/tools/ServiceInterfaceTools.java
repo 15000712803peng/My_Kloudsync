@@ -18,10 +18,12 @@ import com.kloudsync.techexcel.bean.FavoriteData;
 import com.kloudsync.techexcel.bean.InviteInfo;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.PhoneItem;
 import com.kloudsync.techexcel.bean.RoleInTeam;
 import com.kloudsync.techexcel.bean.RongCloudData;
+import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.UserInCompany;
 import com.kloudsync.techexcel.bean.params.AcceptFriendsRequestParams;
@@ -59,7 +61,7 @@ import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.PageActionBean;
 import com.ub.techexcel.bean.Record;
-import com.ub.techexcel.bean.RecordAction;
+import com.ub.techexcel.bean.WebAction;
 import com.ub.techexcel.bean.RecordDetail;
 import com.ub.techexcel.bean.SectionVO;
 import com.ub.techexcel.bean.SoundtrackBean;
@@ -135,6 +137,8 @@ public class ServiceInterfaceTools {
     public static final int REMOVENOTE = 0x1146;
     public static final int GETNOTEBYLINKID = 0x1147;
     public static final int GETLESSIONID = 0x1148;
+
+
     public static final int GETSCHOOLCONTACT = 0x1149;
     public static final int SETSCHOOLSETTINGS = 0x1150;
     public static final int GETSCHOOLSETTINGITEM = 0x1151;
@@ -237,21 +241,21 @@ public class ServiceInterfaceTools {
                     if (jsonObject1.getInt("RetCode") == 0) {
                         JSONObject retdata = jsonObject1.getJSONObject("RetData");
                         JSONArray jsonArray = retdata.getJSONArray("SoundtackActions");
-                        List<RecordAction> recordActions = new ArrayList<>();
+                        List<WebAction> webActions = new ArrayList<>();
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject audiojson = jsonArray.getJSONObject(i);
-                            RecordAction recordAction = new RecordAction();
-                            recordAction.setTime(audiojson.getInt("Time"));
+                            WebAction webAction = new WebAction();
+                            webAction.setTime(audiojson.getInt("Time"));
                             String data = audiojson.getString("Data").replaceAll("\"", "");
-                            recordAction.setData(Tools.getFromBase64(data));
-                            Log.e("data__", recordAction.getData());
-                            recordAction.setSoundtrackID(audiojson.getInt("SoundtrackID"));
-                            recordAction.setPageNumber(audiojson.getString("PageNumber"));
-                            recordAction.setAttachmentID(audiojson.getInt("AttachmentID"));
-                            recordActions.add(recordAction);
+                            webAction.setData(Tools.getFromBase64(data));
+                            Log.e("data__", webAction.getData());
+                            webAction.setSoundtrackID(audiojson.getInt("SoundtrackID"));
+                            webAction.setPageNumber(audiojson.getString("PageNumber"));
+                            webAction.setAttachmentID(audiojson.getInt("AttachmentID"));
+                            webActions.add(webAction);
                         }
                         Message msg3 = Message.obtain();
-                        msg3.obj = recordActions;
+                        msg3.obj = webActions;
                         msg3.what = code;
                         handler.sendMessage(msg3);
                     } else {
@@ -370,7 +374,7 @@ public class ServiceInterfaceTools {
                         handler.sendMessage(msg3);
                     } else {
                         Message msg3 = Message.obtain();
-                        msg3.obj = new JSONObject();
+                        msg3.obj = "";
                         msg3.what = code;
                         handler.sendMessage(msg3);
                     }
@@ -1776,7 +1780,7 @@ public class ServiceInterfaceTools {
                 for (int j = 0; j < _notes.length(); j++) {
                     JSONObject note = _notes.getJSONObject(j);
                     NoteDetail _note = new Gson().fromJson(note.toString(), NoteDetail.class);
-                    String noteUrl = _note.getAttachmentUrl().substring(0, _note.getAttachmentUrl().lastIndexOf("<")) + 1 + _note.getAttachmentUrl().substring(_note.getAttachmentUrl().lastIndexOf("."));
+                    String noteUrl = _note.getAttachmentUrl().substring(0,_note.getAttachmentUrl().lastIndexOf("<")) + 1 + _note.getAttachmentUrl().substring(_note.getAttachmentUrl().lastIndexOf("."));
                     _note.setUrl(noteUrl);
                     notes.add(_note);
 
@@ -1788,6 +1792,7 @@ public class ServiceInterfaceTools {
         }
         return notes;
     }
+
 
 
     public void getNoteListV2(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
@@ -2006,6 +2011,7 @@ public class ServiceInterfaceTools {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return list;
 
     }
@@ -2429,7 +2435,7 @@ public class ServiceInterfaceTools {
     }
 
     public Call<CompanyContactsResponse> searchCompanyContactInTeam(String teamId, String keyword) {
-        return request.searchCompanyContactInTeam(AppConfig.UserToken, AppConfig.SchoolID + "", teamId, "", 0, 10);
+        return request.searchCompanyContactInTeam(AppConfig.UserToken, AppConfig.SchoolID + "", teamId, Base64.encodeToString(keyword.trim().getBytes(), 0));
     }
 
     public Call<NetworkResponse> inviteCompanyMemberAsTeamAdmin(String teamId, List<CompanyContact> contacts) {
@@ -2688,27 +2694,77 @@ public class ServiceInterfaceTools {
     }
 
 
-    public JSONObject syncGetFavoriteVedios() {
-        String url = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + 2;
+    public JSONObject syncGetFavoriteVedios(){
+        String url  = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + 2;
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
         return response;
     }
 
-    public JSONObject syncGetMeetingMembers(String meetingId, int role) {
+    public JSONObject syncGetMeetingMembers(String meetingId,int role) {
 
         String url = "";
-        if (role == MeetingConfig.MeetingRole.MEMBER) {
+        if(role == MeetingConfig.MeetingRole.MEMBER){
             url += AppConfig.URL_MEETING_BASE + "member/member_in_meeting_list?meetingId=" + meetingId;
-        } else if (role == MeetingConfig.MeetingRole.AUDIENCE) {
+        }else if(role == MeetingConfig.MeetingRole.AUDIENCE){
             url += AppConfig.URL_MEETING_BASE + "member/audience_list?meetingId=" + meetingId;
-        } else if (role == MeetingConfig.MeetingRole.BE_INVITED) {
+        }else if(role == MeetingConfig.MeetingRole.BE_INVITED){
             url += AppConfig.URL_MEETING_BASE + "member/invited_not_join_list?meetingId=" + meetingId;
         }
 
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetMeetingMembers", "url:" + url + ",result:" + response);
+        Log.e("syncGetMeetingMembers","url:" + url + ",result:" + response);
         return response;
 
+    }
+
+    public JSONObject syncMakeUserUpAndDown(String userId,int status){
+        String url = AppConfig.URL_MEETING_BASE + "member/make_user_up_or_down_stage?userId=" + userId + "&status=" + status;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userId",userId);
+            jsonObject.put("status",status);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, jsonObject);
+        Log.e("syncMakeUserUpAndDown","url:" + url + ",result:" + response);
+        return response;
+    }
+
+    public JSONObject syncGetFrindList(){
+        String url = AppConfig.URL_PUBLIC + "Friend/FriendList";
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetFrindList","url:" + url + ",result:" + response);
+        return response;
+
+    }
+
+    public JSONObject syncGetSoundtrackList(MeetingConfig meetingConfig){
+        String url = AppConfig.URL_PUBLIC;
+        if (meetingConfig.getType() == MeetingType.MEETING) {
+            url += "LessonSoundtrack/List?lessonID=" + meetingConfig.getLessionId() +
+                    "&attachmentID=" + meetingConfig.getDocument().getAttachmentID();
+        } else {
+            url += "Soundtrack/List?attachmentID=" + meetingConfig.getDocument().getAttachmentID() + "&isPublic=0";
+        }
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetSoundtrackList","url:" + url + ",result:" + response);
+        return response;
+
+    }
+
+    public JSONObject syncGetSoundtrackDetail(SoundTrack soundTrack){
+        String url = AppConfig.URL_PUBLIC + "Soundtrack/Item?soundtrackID=" + soundTrack.getSoundtrackID();
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetSoundtrackDetail","url:" + url + ",result:" + response);
+        return response;
+    }
+
+    public JSONObject syncDeleteSoundtrack(SoundTrack soundTrack) {
+        String url = AppConfig.URL_PUBLIC + "Soundtrack/Delete?soundtrackID=" + soundTrack.getSoundtrackID();
+        JSONObject response = ConnectService.getIncidentDataattachment(url);
+        Log.e("syncDeleteSoundtrack","url:" + url + ",result:" + response);
+        return response;
     }
 
     public JSONObject syncGetUserListBasicInfoByRongCloud(String rongCloudIDs){
@@ -2736,6 +2792,8 @@ public class ServiceInterfaceTools {
 
         return  response;
     }
+
+
 
 
 

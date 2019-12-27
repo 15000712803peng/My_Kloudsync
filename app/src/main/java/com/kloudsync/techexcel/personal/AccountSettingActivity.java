@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -50,6 +51,7 @@ import com.lidroid.xutils.http.client.HttpRequest;
 import com.ub.techexcel.service.ConnectService;
 import com.ub.techexcel.tools.AccountSettingTakePhotoPopup;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -72,7 +74,7 @@ import java.util.Locale;
 public class AccountSettingActivity extends Activity {
 
 
-    private RelativeLayout as_rl_logo, as_rl_admin, as_rl_contact, layout_enable_sync,layout_sync_name;
+    private RelativeLayout as_rl_logo, as_rl_admin, as_rl_contact, layout_enable_sync, layout_sync_name;
     private ContainsEmojiEditText as_et_name, as__et_webaddress, as_et_email;
     private ImageView img_notice;
     private TextView as_tv_save;
@@ -164,11 +166,14 @@ public class AccountSettingActivity extends Activity {
                 MODE_PRIVATE);
         initView();
         getSchoolImage();
-        confirmSex();
+        getCompanyInfo();
+
         GetAdminInfo();
         GetContactInfo();
         getSchoolContact();
     }
+
+
 
 
     private void getSchoolContact() {
@@ -180,6 +185,7 @@ public class AccountSettingActivity extends Activity {
                 UserInCompany userInCompany = (UserInCompany) object;
                 if (userInCompany.getRole() == 7 || userInCompany.getRole() == 8) {
                     layout_enable_sync.setVisibility(View.VISIBLE);
+
                 } else {
                     layout_enable_sync.setVisibility(View.GONE);
                 }
@@ -422,31 +428,69 @@ public class AccountSettingActivity extends Activity {
     /**
      * 获取组织个人信息
      */
-    private void confirmSex() {
-        new ApiTask(new Runnable() {
+    private void getCompanyInfo() {
+//        new ApiTask(new Runnable() {
+//            @Override
+//            public void run() {
+//                JSONObject jsonObject = ConnectService
+//                        .getIncidentData(AppConfig.URL_PUBLIC
+//                                + "School/SchoolInfo?schoolID=" + AppConfig.SchoolID);
+//                try {
+//                    if (jsonObject.getInt("RetCode") != 200
+//                            && jsonObject.getInt("RetCode") != 0) {
+//                        return;
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                asbean = formatjson(jsonObject);
+//                if (asbean != null) {
+//                    Message msg = new Message();
+//                    msg.what = 0x00;
+//                    msg.obj = asbean;
+//                    handler.sendMessage(msg);
+//                }
+//            }
+//        }).start(((App) getApplication()).getThreadMgr());
+
+        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
+        MeetingServiceTools.getInstance().getAccountInfo(url, MeetingServiceTools.GETACCOUNTINFO, new ServiceInterfaceListener() {
             @Override
-            public void run() {
-                JSONObject jsonObject = ConnectService
-                        .getIncidentData(AppConfig.URL_PUBLIC
-                                + "School/SchoolInfo?schoolID=" + AppConfig.SchoolID);
-                try {
-                    if (jsonObject.getInt("RetCode") != 200
-                            && jsonObject.getInt("RetCode") != 0) {
-                        return;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                asbean = formatjson(jsonObject);
-                if (asbean != null) {
-                    Message msg = new Message();
-                    msg.what = 0x00;
-                    msg.obj = asbean;
-                    handler.sendMessage(msg);
+            public void getServiceReturnData(Object object) {
+                AccountSettingBean accountSettingBean = (AccountSettingBean) object;
+                as_et_name.setText(accountSettingBean.getSchoolName());
+                as__et_webaddress.setText(accountSettingBean.getWebAddress());
+                as_et_email.setText(accountSettingBean.getVerifyEmailAddress());
+            }
+        });
+
+    }
+
+
+    private void updateCompanyInfo() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("companyId", AppConfig.SchoolID);
+            jsonObject.put("companyName", as_et_name.getText().toString());
+            jsonObject.put("userId", AppConfig.UserID);
+            jsonObject.put("verifyEmailAddress", as_et_email.getText().toString());
+            jsonObject.put("webAddress", as__et_webaddress.getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String url = AppConfig.URL_MEETING_BASE + "company/update_company";
+        MeetingServiceTools.getInstance().updateCompanyInfo(url, MeetingServiceTools.UPDATECOMPANYINFO, jsonObject, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                if (!TextUtils.isEmpty(path)) {
+                    uploadhead();
+                } else {
+                    finish();
                 }
             }
-        }).start(((App) getApplication()).getThreadMgr());
+        });
     }
+
 
     private AccountSettingBean formatjson(JSONObject jsonObject) {
         AccountSettingBean bean = new AccountSettingBean();
@@ -600,56 +644,8 @@ public class AccountSettingActivity extends Activity {
             as_img_logo.setImageURI(Uri.fromFile(localFile));
 
         }
-        // 截图后返回
-/*        if (requestCode == 2 && data != null) {
-            Bundle bundle = data.getExtras();
-            Log.e("duang", (bundle != null) + "   ");
-            if (bundle != null) {
-
-                Bitmap bitmap = bundle.getParcelable("data");
-                Log.e("duang", bitmap + "   ");
-                // 创建助手类的实例
-                int size = bitmap.getWidth() * bitmap.getHeight() * 4;
-                //创建一个字节数组输出流,流的大小为size
-                ByteArrayOutputStream baos = new ByteArrayOutputStream(size);
-                //设置位图的压缩格式，质量为100%，并放入字节数组输出流中
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                //将字节数组输出流转化为字节数组byte[]
-                byte[] imagedata1 = baos.toByteArray();
-
-//				SetAvCircle();
-                Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null));
-                as_img_logo.setImageURI(uri);
-//				tv_head.setImageBitmap(bitmap);
-                //关闭字节数组输出流
-                try {
-                    baos.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                file = new File(path);
-*//*                saveBitmap2file(
-                        bitmap,
-                        file.getName().toString());*//*
-            }
-        }*/
     }
 
-    private void startPhotoZoom(Uri data, int size) {
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(data, "image/*");
-        // crop为true时表示显示的view可以剪裁
-        intent.putExtra("crop", "true");
-        // aspectX aspectY 是宽高的比例
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        // outputX,outputY 是剪裁图片的宽高
-        intent.putExtra("outputX", size);
-        intent.putExtra("outputY", size);
-        intent.putExtra("return-data", true);
-        startActivityForResult(intent, 2);
-    }
 
     private void SetAvCircle() {
         GenericDraweeHierarchyBuilder builder = new GenericDraweeHierarchyBuilder(getResources());
@@ -657,6 +653,29 @@ public class AccountSettingActivity extends Activity {
         GenericDraweeHierarchy hierarchy = builder.setRoundingParams(parames).build();
         as_img_logo.setHierarchy(hierarchy);
     }
+
+
+    private void deleteCompanyLogo() {
+
+        String url = AppConfig.URL_MEETING_BASE + "company/remove_company_logo?companyId=" + AppConfig.SchoolID;
+        MeetingServiceTools.getInstance().deleteCompanyLogo(url, MeetingServiceTools.DELETECOMPANYLOGO, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                JSONObject returnJson = (JSONObject) object;
+                try {
+                    if (returnJson.getInt("code") == 0 && returnJson.getString("msg").equals("success")) {
+                        as_img_logo.setImageResource(R.drawable.hello);
+                    } else {
+                        Toast.makeText(AccountSettingActivity.this, returnJson.getString("msg"), Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
 
     protected class MyOnClick implements View.OnClickListener {
 
@@ -684,9 +703,12 @@ public class AccountSettingActivity extends Activity {
                         }
 
                         @Override
-                        public void dismiss() {
+                        public void fileDeletePhoto() {
+                            deleteCompanyLogo();
+                        }
 
-                            Log.e("哈哈哈哈哈", "sdoafjiasdfasdfasdf");
+                        @Override
+                        public void dismiss() {
                             getWindow().getDecorView().setAlpha(1.0f);
                         }
 
@@ -695,6 +717,7 @@ public class AccountSettingActivity extends Activity {
                             getWindow().getDecorView().setAlpha(0.5f);
                         }
                     });
+                    accountSettingTakePhotoPopup.setVisible();
                     accountSettingTakePhotoPopup.StartPop(as_img_logo);
                     break;
 
@@ -707,11 +730,7 @@ public class AccountSettingActivity extends Activity {
                     startActivity(intent);
                     break;
                 case R.id.as_tv_save:
-                    if (path != null && path.length() > 0) {
-                        uploadhead();
-                    } else {
-                        //save();
-                    }
+                    updateCompanyInfo();
                     break;
                 case R.id.layout_sync_name:
                     intent = new Intent(getApplicationContext(), SyncRoomNameActivity.class);

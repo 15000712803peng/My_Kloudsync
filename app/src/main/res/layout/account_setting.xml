@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Account setting"
+            android:text="@string/as_setting"
             android:textColor="@color/black" />
 
         <RelativeLayout
@@ -122,7 +122,6 @@
                 android:background="@drawable/radio"
                 android:drawablePadding="5dp"
                 android:gravity="right|center"
-                android:maxLength="20"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:singleLine="true"
@@ -166,7 +165,6 @@
                 android:background="@drawable/radio"
                 android:drawablePadding="5dp"
                 android:gravity="right|center"
-                android:maxLength="10"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:singleLine="true"
@@ -210,7 +208,6 @@
                 android:background="@drawable/radio"
                 android:drawablePadding="5dp"
                 android:gravity="right|center"
-                android:maxLength="10"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:singleLine="true"
