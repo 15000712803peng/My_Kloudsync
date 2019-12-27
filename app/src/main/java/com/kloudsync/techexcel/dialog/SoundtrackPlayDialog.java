@@ -457,6 +457,4 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
         actionsManager.seekTo(time);
     }
 
-
-
 }

@@ -121,7 +121,7 @@ public class SoundtrackActionsManager {
     public void setPlayTime(final long playTime) {
         this.playTime = playTime;
         requestActions();
-        executeActions(getActions());
+        executeActions(getActions(),playTime);
         WebVedio nearestVedio = getNearestWebvedio(playTime);
         if(nearestVedio != null){
             Log.e("nearestVedio", nearestVedio.getSavetime() + ",play_time:" + playTime + ",is_executed:" + nearestVedio.isExecuted());
@@ -196,6 +196,26 @@ public class SoundtrackActionsManager {
                 }
             } else {
                 break;
+
+            }
+        }
+        return _actions;
+    }
+
+
+    private List<WebAction> getActions(int playTime){
+        _actions.clear();
+        int index = lastActionIndex;
+        if(index < 0){
+            index = 0;
+        }
+
+        for (int i = index;i < webActions.size(); ++i) {
+            WebAction action = webActions.get(i);
+            if (action.getTime() <= playTime) {
+                _actions.add(action);
+            } else {
+                break;
             }
         }
         return _actions;
@@ -220,7 +240,7 @@ public class SoundtrackActionsManager {
     }
 
 
-    private void executeActions(List<WebAction> actions) {
+    private void executeActions(List<WebAction> actions,long playTime) {
         for (final WebAction action : actions) {
             Log.e("check_action", "action:" + action);
             if (action.isExecuted() ||  playTime < action.getTime()) {
@@ -280,6 +300,8 @@ public class SoundtrackActionsManager {
             e.printStackTrace();
         }
         _actions.remove(action);
+
+
 
     }
 
@@ -631,10 +653,18 @@ public class SoundtrackActionsManager {
             @Override
             public void accept(Integer time) throws Exception {
                 SoundtrackAudioManager.getInstance(context).seekTo(time);
-                executeActions(getActions(true,time));
+                clearExecuted();
+                lastActionIndex = 0;
+                executeActions(getActions(time),time);
             }
         }).subscribe();
 
+    }
+
+    private void clearExecuted(){
+        for(WebAction webAction : webActions){
+            webAction.setExecuted(false);
+        }
     }
 
     private void requestActionsBySeek(int time) {
@@ -665,6 +695,7 @@ public class SoundtrackActionsManager {
             @Override
             public void getServiceReturnData(Object object) {
                 List<WebAction> actions = (List<WebAction>) object;
+
                 if (actions != null && actions.size() > 0) {
                     request.hasRequest = true;
                     if (!requests.contains(request)) {
