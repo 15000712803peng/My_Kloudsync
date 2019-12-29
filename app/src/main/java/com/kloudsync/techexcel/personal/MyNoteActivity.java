@@ -16,6 +16,7 @@ import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.SelectNoteDialog;
 import com.ub.techexcel.adapter.SyncRoomNoteListAdapter;
+import com.ub.techexcel.adapter.UserNotesAdapter;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -34,7 +35,7 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
     private RelativeLayout layout_back;
     private LinearLayout search_layout;
     private RecyclerView rv_pc;
-    private SyncRoomNoteListAdapter syncRoomNoteListAdapter;
+    private UserNotesAdapter notesAdapter;
 
 
     @Override
@@ -56,8 +57,6 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
     private void initView() {
         tv_title = findViewById(R.id.tv_title);
         tv_title.setText(R.string.mynote);
-        search_layout = findViewById(R.id.search_layout);
-        search_layout.setOnClickListener(this);
         layout_back = findViewById(R.id.layout_back);
         layout_back.setOnClickListener(this);
         rv_pc = findViewById(R.id.rv_pc);
@@ -72,20 +71,8 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
             public void getServiceReturnData(Object object) {
                 List<Note> list = new ArrayList<>();
                 list.addAll((List<Note>) object);
-                syncRoomNoteListAdapter = new SyncRoomNoteListAdapter(MyNoteActivity.this, list);
-                rv_pc.setAdapter(syncRoomNoteListAdapter);
-                syncRoomNoteListAdapter.setWebCamPopupListener(new SyncRoomNoteListAdapter.WebCamPopupListener() {
-                    @Override
-                    public void select(Note noteDetail) {
-
-                    }
-
-                    @Override
-                    public void notifychangeUserid(String userId) {
-
-                    }
-
-                });
+                notesAdapter = new UserNotesAdapter(MyNoteActivity.this, list);
+                rv_pc.setAdapter(notesAdapter);
             }
         });
     }

@@ -900,11 +900,13 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 //                startActivity(intent);
 //                Toast.makeText(getActivity(),"my note",Toast.LENGTH_LONG).show();
                 intent = new Intent(getActivity(), MyNoteActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
                 //切换语言
             case R.id.rl_pc_language:
                 intent = new Intent(getActivity(), LanguageActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
             case R.id.rl_pc_professionalField:

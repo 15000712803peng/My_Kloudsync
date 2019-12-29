@@ -14,7 +14,7 @@
 
         <include layout="@layout/common_title" />
 
-        <include layout="@layout/searchcontact" />
+        <!--<include layout="@layout/searchcontact" />-->
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_pc"

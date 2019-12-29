@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
@@ -37,6 +38,7 @@ public class StartUbao extends Activity {
     private String telephone;
     private String password;
     private int countrycode;
+    private ImageView welcomeImage;
 
     public static StartUbao instance;
     String wechatFilePath;
@@ -48,6 +50,7 @@ public class StartUbao extends Activity {
         setContentView(R.layout.activity_start);
         instance = this;
         LoginGet.wechatFilePaht = "";
+        welcomeImage = (ImageView) findViewById(R.id.image_welcome);
         wechatFilePath = getIntent().getStringExtra("wechat_data_path");
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
@@ -73,6 +76,12 @@ public class StartUbao extends Activity {
         countrycode = sharedPreferences.getInt("countrycode", 86);
 
         AppConfig.LANGUAGEID = getLocaleLanguage();
+        if(AppConfig.LANGUAGEID == 1){
+            //English
+            welcomeImage.setImageResource(R.drawable.welcome_english);
+        }else if(AppConfig.LANGUAGEID == 2){
+            welcomeImage.setImageResource(R.drawable.welcome);
+        }
         AppConfig.deviceType = DeviceManager.getDeviceType(this);
         Log.e("deviceType","type:" + AppConfig.deviceType);
 
