@@ -485,6 +485,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     try {
                         String _frame = Tools.getFromBase64(socketMessage.getData().getString("data"));
                         if (web != null) {
+//                            Log.e("check_play_txt","PlayActionByTxt:" + _frame);
                             web.load("javascript:PlayActionByTxt('" + _frame + "','" + 1 + "')", null);
                         }
                     } catch (JSONException e) {
@@ -563,6 +564,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         String data = pageActions.getData();
         if (!TextUtils.isEmpty(data)) {
             if (pageActions.getPageNumber() == meetingConfig.getPageNumber()) {
+//                Log.e("check_play_txt","PlayActionByArray:" + data);
                 web.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
             }
         }
@@ -585,6 +587,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             if (!TextUtils.isEmpty(note.getLinkProperty())) {
                                 message.put("LinkProperty", new JSONObject(note.getLinkProperty()));
                             }
+//                            Log.e("check_play_txt","notes_PlayActionByTxt:" + message);
                             web.load("javascript:PlayActionByTxt('" + message + "')", null);
                         } catch (JSONException e) {
                             e.printStackTrace();

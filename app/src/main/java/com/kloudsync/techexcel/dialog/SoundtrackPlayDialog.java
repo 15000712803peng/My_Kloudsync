@@ -397,19 +397,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
         if (deviceType == SupportDevice.BOOK) {
             indexUrl += "?devicetype=4";
         }
-        final String url = indexUrl;
-        host.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (web == null) {
-                    return;
-                }
-                web.load(url, null);
-                web.load("javascript:ShowToolbar(" + false + ")", null);
-                web.load("javascript:Record()", null);
-
-            }
-        });
+        web.load(indexUrl, null);
+        web.load("javascript:ShowToolbar(" + false + ")", null);
+        web.load("javascript:Record()", null);
     }
 
     @org.xwalk.core.JavascriptInterface
