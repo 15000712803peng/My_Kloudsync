@@ -2613,7 +2613,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (data == null) {
             return;
         }
-
         if (data.has("retCode")) {
             try {
                 if (data.getInt("retCode") == 0) {
