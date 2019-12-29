@@ -6,8 +6,11 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
 
+import com.kloudsync.techexcel.bean.EventCloseSoundtrack;
 import com.kloudsync.techexcel.bean.SoundtrackMediaInfo;
 import com.ub.techexcel.bean.SectionVO;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,6 +111,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     @Override
     public void onCompletion(MediaPlayer mp) {
         mp.reset();
+        EventBus.getDefault().post(new EventCloseSoundtrack());
     }
 
     @Override

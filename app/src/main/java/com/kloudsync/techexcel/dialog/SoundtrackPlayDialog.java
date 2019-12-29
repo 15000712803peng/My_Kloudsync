@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.HeaderRecyclerAdapter;
 import com.kloudsync.techexcel.bean.DocumentPage;
+import com.kloudsync.techexcel.bean.EventCloseSoundtrack;
 import com.kloudsync.techexcel.bean.EventCloseWebView;
 import com.kloudsync.techexcel.bean.EventPlayWebVedio;
 import com.kloudsync.techexcel.bean.MeetingConfig;
@@ -397,9 +398,22 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
         if (deviceType == SupportDevice.BOOK) {
             indexUrl += "?devicetype=4";
         }
+
         web.load(indexUrl, null);
-        web.load("javascript:ShowToolbar(" + false + ")", null);
-        web.load("javascript:Record()", null);
+
+    }
+
+
+    @org.xwalk.core.JavascriptInterface
+    public void afterLoadFileFunction() {
+        host.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                web.load("javascript:ShowToolbar(" + false + ")", null);
+                web.load("javascript:Record()", null);
+            }
+        });
+
     }
 
     @org.xwalk.core.JavascriptInterface
@@ -424,6 +438,11 @@ public class SoundtrackPlayDialog implements View.OnClickListener, HeaderRecycle
         webVedioLayout.setVisibility(View.GONE);
 //        WebVedioManager.getInstance(host).closeVedio();
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void closeSoundtrackDialog(EventCloseSoundtrack closeSoundtrack){
+        dismiss();
     }
 
     private void pause(){
