@@ -6517,9 +6517,10 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         currentShowPdf = new LineItem();
         currentShowPdf.setUrl(note.getAttachmentUrl());
         currentShowPdf.setItemId(note.getNoteID() + ""); //同步笔记noteid
-        currentShowPdf.setAttachmentID(note.getDocumentItemID() + "");
+        currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
+        currentShowPdf.setDocumentItemID(note.getDocumentItemID());
         localFileID = note.getLocalFileID();
-//        currentAttachmentId = currentShowPdf.getAttachmentID();
+        currentAttachmentId = currentShowPdf.getAttachmentID();
         currentItemId = "0";
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
@@ -6628,9 +6629,10 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             currentShowPdf = new LineItem();
             currentShowPdf.setUrl(note.getAttachmentUrl());
             currentShowPdf.setItemId(note.getNoteID() + ""); // 同步笔记noteid
-            currentShowPdf.setAttachmentID(note.getDocumentItemID() + "");
+            currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
+            currentShowPdf.setDocumentItemID(note.getDocumentItemID());
             localFileID = note.getLocalFileID();
-//            currentAttachmentId = currentShowPdf.getAttachmentID();
+            currentAttachmentId = currentShowPdf.getAttachmentID();
             currentItemId = "0";
             targetUrl = currentShowPdf.getUrl();
             newPath = currentShowPdf.getNewPath();
@@ -6648,9 +6650,10 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         currentShowPdf = new LineItem();
         currentShowPdf.setUrl(note.getAttachmentUrl());
         currentShowPdf.setItemId(note.getNoteID() + ""); //同步笔记noteid
-        currentShowPdf.setAttachmentID(note.getDocumentItemID() + "");
+        currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
+        currentShowPdf.setDocumentItemID(note.getDocumentItemID());
         localFileID = note.getLocalFileID();
-//        currentAttachmentId = currentShowPdf.getAttachmentID();
+        currentAttachmentId = currentShowPdf.getAttachmentID();
         currentItemId = "0";
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();

@@ -788,6 +788,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
 
     private void GoToVIew(Document lesson) {
         Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
+//        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", "Doc-" + AppConfig.UserID);

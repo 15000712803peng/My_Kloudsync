@@ -3840,8 +3840,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     wv_show.load("javascript:Record()", null);
                 } else {
                     Log.e("---------", currentPresenterId.equals(AppConfig.UserID) + "  dd  " + (wv_show == null));
-                    wv_show.load("javascript:ShowToolbar(" + false + ")", null);
-                    wv_show.load("javascript:StopRecord()", null);
+                    wv_show.load("javascript:ShowToolbar(" + true + ")", null);
+                    wv_show.load("javascript:Record()", null);
                 }
 
 
@@ -8318,7 +8318,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             timer1.cancel();
             timer1 = null;
         }
-
         StopMedia2();
         if (audioRecorder != null) {
             audioRecorder.canel();  //取消录音
@@ -9338,32 +9337,59 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         closenote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isHavePresenter()) {
-                    if (!TextUtils.isEmpty(currentShowPdf2.getItemId())) {
-                        closenote.setVisibility(View.GONE);
-                        for (int i = 0; i < documentList.size(); i++) {
-                            LineItem lineItem = documentList.get(i);
-                            if (currentShowPdf2.getItemId().equals(lineItem.getItemId())) {
-                                lineItem.setSelect(true);
-                            } else {
-                                lineItem.setSelect(false);
-                            }
+
+                if (!TextUtils.isEmpty(currentShowPdf2.getItemId())) {
+                    closenote.setVisibility(View.GONE);
+                    for (int i = 0; i < documentList.size(); i++) {
+                        LineItem lineItem = documentList.get(i);
+                        if (currentShowPdf2.getItemId().equals(lineItem.getItemId())) {
+                            lineItem.setSelect(true);
+                        } else {
+                            lineItem.setSelect(false);
                         }
-                        currentAttachmentPage = currentAttachmentPage2;
-                        AppConfig.currentPageNumber = currentAttachmentPage2;
-                        currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
-                        currentShowPdf.setUrl(currentShowPdf2.getUrl());
-                        currentShowPdf.setItemId(currentShowPdf2.getItemId());
-                        currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
-                        localFileID = "";
-                        currentAttachmentId = currentShowPdf.getAttachmentID();
-                        currentItemId = currentShowPdf.getItemId();
-                        targetUrl = currentShowPdf.getUrl();
-                        newPath = currentShowPdf.getNewPath();
-                        notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
-                        loadWebIndex();
                     }
+                    currentAttachmentPage = currentAttachmentPage2;
+                    AppConfig.currentPageNumber = currentAttachmentPage2;
+                    currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
+                    currentShowPdf.setUrl(currentShowPdf2.getUrl());
+                    currentShowPdf.setItemId(currentShowPdf2.getItemId());
+                    currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
+                    localFileID = "";
+                    currentAttachmentId = currentShowPdf.getAttachmentID();
+                    currentItemId = currentShowPdf.getItemId();
+                    targetUrl = currentShowPdf.getUrl();
+                    newPath = currentShowPdf.getNewPath();
+                    notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
+                    loadWebIndex();
                 }
+
+
+//                if (isHavePresenter()) {
+//                    if (!TextUtils.isEmpty(currentShowPdf2.getItemId())) {
+//                        closenote.setVisibility(View.GONE);
+//                        for (int i = 0; i < documentList.size(); i++) {
+//                            LineItem lineItem = documentList.get(i);
+//                            if (currentShowPdf2.getItemId().equals(lineItem.getItemId())) {
+//                                lineItem.setSelect(true);
+//                            } else {
+//                                lineItem.setSelect(false);
+//                            }
+//                        }
+//                        currentAttachmentPage = currentAttachmentPage2;
+//                        AppConfig.currentPageNumber = currentAttachmentPage2;
+//                        currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
+//                        currentShowPdf.setUrl(currentShowPdf2.getUrl());
+//                        currentShowPdf.setItemId(currentShowPdf2.getItemId());
+//                        currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
+//                        localFileID = "";
+//                        currentAttachmentId = currentShowPdf.getAttachmentID();
+//                        currentItemId = currentShowPdf.getItemId();
+//                        targetUrl = currentShowPdf.getUrl();
+//                        newPath = currentShowPdf.getNewPath();
+//                        notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
+//                        loadWebIndex();
+//                    }
+//                }
             }
         });
 
@@ -9382,9 +9408,10 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         currentShowPdf = new LineItem();
         currentShowPdf.setUrl(note.getAttachmentUrl());
         currentShowPdf.setItemId(note.getNoteID() + ""); //同步笔记noteid
-        currentShowPdf.setAttachmentID(note.getDocumentItemID() + "");
+        currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
+        currentShowPdf.setDocumentItemID(note.getDocumentItemID());
         localFileID = note.getLocalFileID();
-//        currentAttachmentId = currentShowPdf.getAttachmentID();
+        currentAttachmentId = currentShowPdf.getAttachmentID();
         currentItemId = "0";
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
@@ -9490,9 +9517,10 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             currentShowPdf = new LineItem();
             currentShowPdf.setUrl(note.getAttachmentUrl());
             currentShowPdf.setItemId(note.getNoteID() + ""); //同步笔记noteid
-            currentShowPdf.setAttachmentID(note.getDocumentItemID() + "");
+            currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
+            currentShowPdf.setDocumentItemID(note.getDocumentItemID());
             localFileID = note.getLocalFileID();
-//            currentAttachmentId = currentShowPdf.getAttachmentID();
+            currentAttachmentId = currentShowPdf.getAttachmentID();
             currentItemId = "0";
             targetUrl = currentShowPdf.getUrl();
             newPath = currentShowPdf.getNewPath();
@@ -9503,6 +9531,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     }
 
     /**
+     *
+     * 切换笔记
      * @param note
      * @param isSend
      */
@@ -9513,9 +9543,10 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         currentShowPdf = new LineItem();
         currentShowPdf.setUrl(note.getAttachmentUrl());
         currentShowPdf.setItemId(note.getNoteID() + ""); //同步笔记noteid
-        currentShowPdf.setAttachmentID(note.getDocumentItemID() + "");
+        currentShowPdf.setAttachmentID(note.getAttachmentID() + "");
+        currentShowPdf.setDocumentItemID(note.getDocumentItemID());
         localFileID = note.getLocalFileID();
-//        currentAttachmentId = currentShowPdf.getAttachmentID();
+        currentAttachmentId = currentShowPdf.getAttachmentID();
         currentItemId = "0";
         targetUrl = currentShowPdf.getUrl();
         newPath = currentShowPdf.getNewPath();
@@ -9845,7 +9876,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                 wv_show.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
             }
         });
-
     }
 
 
