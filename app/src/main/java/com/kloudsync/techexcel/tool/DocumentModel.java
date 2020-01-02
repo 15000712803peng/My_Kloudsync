@@ -29,7 +29,7 @@ import java.util.List;
 
 public class DocumentModel {
 
-    public static void asyncGetDocumentsInDocAndShowPage(final MeetingConfig meetingConfig) {
+    public static void asyncGetDocumentsInDocAndShowPage(final MeetingConfig meetingConfig, final boolean needShow) {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
@@ -82,7 +82,10 @@ public class DocumentModel {
                                 }
                                 EventMeetingDocuments meetingDocuments = new EventMeetingDocuments();
                                 meetingDocuments.setDocuments(documents);
-                                EventBus.getDefault().post(meetingDocuments);
+                                if(needShow){
+                                    EventBus.getDefault().post(meetingDocuments);
+                                }
+
                             }
                         }
                     } catch (JSONException e) {
@@ -110,7 +113,7 @@ public class DocumentModel {
         return null;
     }
 
-    public static void asyncGetDocumentsInDocAndRefreshFileList(final MeetingConfig meetingConfig,final int itemId) {
+    public static void asyncGetDocumentsInDocAndRefreshFileList(final MeetingConfig meetingConfig, final int itemId, final int pageNumber) {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
@@ -161,6 +164,7 @@ public class DocumentModel {
                                     documents.add(document);
                                 }
                                 EventRefreshDocs refreshDocs = new EventRefreshDocs();
+                                refreshDocs.setPageNumber(pageNumber);
                                 refreshDocs.setItemId(itemId);
                                 refreshDocs.setRefresh(true);
                                 refreshDocs.setDocuments(documents);

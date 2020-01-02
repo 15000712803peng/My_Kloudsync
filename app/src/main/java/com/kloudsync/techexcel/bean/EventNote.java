@@ -10,7 +10,16 @@ import java.util.List;
 
 public class EventNote {
     private int linkId;
+    private int noteId;
     private Note note;
+
+    public int getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(int noteId) {
+        this.noteId = noteId;
+    }
 
     public int getLinkId() {
         return linkId;

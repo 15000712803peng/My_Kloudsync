@@ -10,6 +10,15 @@ public class EventRefreshDocs {
     private boolean refresh;
     private List<MeetingDocument> documents;
     private int itemId;
+    private int pageNumber;
+
+    public int getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
+    }
 
     public boolean isRefresh() {
         return refresh;

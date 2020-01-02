@@ -8996,7 +8996,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     }
 
 
-
     private void openNote(String noteId) {
         BookNote bookNote = null;
         if (TextUtils.isEmpty(noteId)) {
@@ -9284,7 +9283,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                                                         currentNote.setLinkProperty(currentLinkProperty.toString());
                                                         openNote(currentNote.getLocalFileID());
                                                     }
-
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -9308,6 +9306,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void uploadNodeSuccess(NoteId noteId) {
         Log.e("addLocalNote", "draw note by id:" + noteId);
+
         if (noteId.getLinkID() == 0) {
             return;
         }

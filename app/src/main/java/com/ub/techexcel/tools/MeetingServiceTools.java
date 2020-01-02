@@ -9,7 +9,9 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventNote;
+import com.kloudsync.techexcel.bean.EventNotePageActions;
 import com.kloudsync.techexcel.bean.EventPageActions;
 import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.MeetingConfig;
@@ -321,6 +323,65 @@ public class MeetingServiceTools {
     }
 
 
+    public EventNotePageActions syncGetPageActions(MeetingConfig config,Note note) {
+        String url = "";
+        switch (config.getType()) {
+            case MeetingType.DOC:
+                url = "https://api.peertime.cn/peertime/V1/PageObject/GetPageObjects?lessonID=0&itemID=" + 0 + "&pageNumber=" + config.getPageNumber() +
+                        "&attachmentID=" + config.getDocument().getAttachmentID() + "&soundtrackID=0&displayDrawingLine=0";
+                break;
+            case MeetingType.MEETING:
+                url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=" + config.getLessionId() + "&itemID=" +
+                        note.getNoteID() + "&pageNumber=" + 1;
+                break;
+            case MeetingType.SYNCBOOK:
+                break;
+            case MeetingType.SYNCROOM:
+                break;
+            default:
+        }
+
+
+        JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetPageActions", url + "   " + returnJson.toString());
+        EventNotePageActions pageActions = new EventNotePageActions();
+        pageActions.setPageNumber(config.getPageNumber());
+        try {
+            if (returnJson.getInt("RetCode") == 0) {
+                JSONArray data = returnJson.getJSONArray("RetData");
+                String dataJson = "";
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonObject1 = data.getJSONObject(i);
+                    String _data = jsonObject1.getString("Data");
+                    if (!TextUtil.isEmpty(_data)) {
+                        String dd = "'" + Tools.getFromBase64(_data) + "'";
+                        if (i == 0) {
+                            dataJson += "[" + dd;
+                        } else {
+                            dataJson += "," + dd;
+                        }
+                        if (i == data.length() - 1) {
+                            dataJson += "]";
+                        }
+                    }
+                }
+
+                pageActions.setData(dataJson);
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return pageActions;
+
+    }
+
+
+
+
+
+
     public EventPageNotes syncGetPageNotes(MeetingConfig meetingConfig) {
         String url  = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + meetingConfig.getDocument().getAttachmentID() +
                 "&pageNumber=" + meetingConfig.getPageNumber() + "&userID=" + AppConfig.UserID;
@@ -363,12 +424,102 @@ public class MeetingServiceTools {
                 note.setDocumentItemID(lineitem.getInt("DocumentItemID"));
                 note.setFileName(lineitem.getString("Title"));
                 note.setAttachmentUrl(attachmentUrl);
+                note.setPageCount(lineitem.getInt("PageCount"));
                 note.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
                 note.setAttachmentID(lineitem.getInt("AttachmentID"));
                 String noteUrl = attachmentUrl.substring(0,attachmentUrl.lastIndexOf("<")) + 1 + attachmentUrl.substring(attachmentUrl.lastIndexOf("."));
                 note.setUrl(noteUrl);
-                eventNote.setNote(note);
 
+                String preUrl = "";
+                String endUrl = "";
+                if (!TextUtils.isEmpty(attachmentUrl)) {
+                    int index = attachmentUrl.lastIndexOf("<");
+                    int index2 = attachmentUrl.lastIndexOf(">");
+                    if (index > 0) {
+                        preUrl = attachmentUrl.substring(0, index);
+                    }
+                    if (index2 > 0) {
+                        endUrl = attachmentUrl.substring(index2 + 1, attachmentUrl.length());
+                    }
+                }
+
+                List<DocumentPage> pages = new ArrayList<>();
+                for (int j = 0; j < note.getPageCount(); ++j) {
+                    String pageUrl = "";
+                    DocumentPage  page= new DocumentPage();
+                    page.setPageNumber(j + 1);
+                    page.setDocumentId(note.getDocumentItemID());
+                    if (TextUtils.isEmpty(preUrl)) {
+                        page.setPageUrl(pageUrl);
+                    } else {
+                        page.setPageUrl(preUrl + (j + 1) + endUrl);
+                    }
+                    pages.add(page);
+                }
+                note.setDocumentPages(pages);
+                eventNote.setNote(note);
+            } else {
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return eventNote;
+    }
+
+
+    public EventNote syncGetNoteByNoteId(int noteId) {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/Item?noteID=" + noteId;
+        JSONObject returnjson = com.kloudsync.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetNoteByNoteId", url + "  " + returnjson.toString());
+        EventNote eventNote = new EventNote();
+        eventNote.setNoteId(noteId);
+        try {
+            if (returnjson.getInt("RetCode") == 0) {
+                JSONObject lineitem = returnjson.getJSONObject("RetData");
+                Note note = new Note();
+                String attachmentUrl = lineitem.getString("AttachmentUrl");
+                note.setLocalFileID(lineitem.getString("LocalFileID"));
+                note.setNoteID(lineitem.getInt("NoteID"));
+//                note.setLinkID(lineitem.getInt("LinkID"));
+
+                note.setDocumentItemID(lineitem.getInt("AttachmentFileID"));
+                note.setFileName(lineitem.getString("Title"));
+                note.setAttachmentUrl(attachmentUrl);
+                note.setPageCount(lineitem.getInt("PageCount"));
+                note.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                note.setAttachmentID(lineitem.getInt("AttachmentID"));
+                String noteUrl = attachmentUrl.substring(0,attachmentUrl.lastIndexOf("<")) + 1 + attachmentUrl.substring(attachmentUrl.lastIndexOf("."));
+                note.setUrl(noteUrl);
+
+                String preUrl = "";
+                String endUrl = "";
+                if (!TextUtils.isEmpty(attachmentUrl)) {
+                    int index = attachmentUrl.lastIndexOf("<");
+                    int index2 = attachmentUrl.lastIndexOf(">");
+                    if (index > 0) {
+                        preUrl = attachmentUrl.substring(0, index);
+                    }
+                    if (index2 > 0) {
+                        endUrl = attachmentUrl.substring(index2 + 1, attachmentUrl.length());
+                    }
+                }
+
+                List<DocumentPage> pages = new ArrayList<>();
+                for (int j = 0; j < note.getPageCount(); ++j) {
+                    String pageUrl = "";
+                    DocumentPage  page= new DocumentPage();
+                    page.setPageNumber(j + 1);
+                    page.setDocumentId(note.getDocumentItemID());
+                    if (TextUtils.isEmpty(preUrl)) {
+                        page.setPageUrl(pageUrl);
+                    } else {
+                        page.setPageUrl(preUrl + (j + 1) + endUrl);
+                    }
+                    pages.add(page);
+                }
+                note.setDocumentPages(pages);
+                eventNote.setNote(note);
             } else {
 
             }

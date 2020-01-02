@@ -233,7 +233,7 @@ public class FileUtils {
         return null;
     }
 
-    private final static String FOLDER_KLOUD = "/kloud";
+    private final static String FOLDER_KLOUD = File.separator + "kloud" + File.separator;
     private final static String FOLDER_KLOUD_RECORDING = "/kloud/recording";
     private static String baseDir;
 

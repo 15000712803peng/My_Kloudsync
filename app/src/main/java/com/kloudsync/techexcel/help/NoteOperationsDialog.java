@@ -13,15 +13,18 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.ub.kloudsync.activity.Document;
+import com.ub.techexcel.adapter.UserNotesAdapter;
+import com.ub.techexcel.bean.Note;
 
 public class NoteOperationsDialog implements OnClickListener {
-    public Context mContext;
+    private Context mContext;
+    private Note note;
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
             case R.id.lin_edit:
-
+                if(notesOperationsListener != null)
                 dialog.dismiss();
                 break;
             case R.id.lin_delete:
@@ -44,13 +47,14 @@ public class NoteOperationsDialog implements OnClickListener {
         }
     }
 
-    public interface PopDocumentListener {
-        void PopDelete();
+    private UserNotesAdapter.OnNotesOperationsListener notesOperationsListener;
 
-        void PopEdit();
+    public UserNotesAdapter.OnNotesOperationsListener getNotesOperationsListener() {
+        return notesOperationsListener;
+    }
 
-        void PopShare();
-
+    public void setNotesOperationsListener(UserNotesAdapter.OnNotesOperationsListener notesOperationsListener) {
+        this.notesOperationsListener = notesOperationsListener;
     }
 
     public void getPopwindow(Context context) {
@@ -106,10 +110,12 @@ public class NoteOperationsDialog implements OnClickListener {
         img_close.setOnClickListener(this);
     }
 
-    public void show() {
+    public void show(Note note) {
+        this.note = note;
         if (dialog != null && !dialog.isShowing()) {
             dialog.show();
         }
+
     }
 
 

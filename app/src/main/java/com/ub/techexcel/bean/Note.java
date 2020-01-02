@@ -1,11 +1,12 @@
 package com.ub.techexcel.bean;
 
+import com.kloudsync.techexcel.bean.DocumentPage;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class Note implements Serializable {
-    /**
-     * 解决方案具体信息(片段)
-     */
+
     private static final long serialVersionUID = 0x110;
 
     private int documentItemID;
@@ -24,6 +25,24 @@ public class Note implements Serializable {
     private int linkID;
     private String localFilePath;
     private String url;
+    private int PageCount;
+    private List<DocumentPage> documentPages;
+
+    public List<DocumentPage> getDocumentPages() {
+        return documentPages;
+    }
+
+    public void setDocumentPages(List<DocumentPage> documentPages) {
+        this.documentPages = documentPages;
+    }
+
+    public int getPageCount() {
+        return PageCount;
+    }
+
+    public void setPageCount(int pageCount) {
+        PageCount = pageCount;
+    }
 
     public String getUrl() {
         return url;

@@ -68,13 +68,11 @@ public class StartUbao extends Activity {
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         editor = sharedPreferences.edit();
-
         isFirst = sharedPreferences.getBoolean("isFirst", true);
         isLogIn = sharedPreferences.getBoolean("isLogIn", false);
         telephone = sharedPreferences.getString("telephone", null);
         password = LoginGet.DecodeBase64Password(sharedPreferences.getString("password", ""));
         countrycode = sharedPreferences.getInt("countrycode", 86);
-
         AppConfig.LANGUAGEID = getLocaleLanguage();
         if(AppConfig.LANGUAGEID == 1){
             //English

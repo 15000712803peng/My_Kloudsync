@@ -159,6 +159,9 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
     }
 
     protected final void stripSurfaceView(SurfaceView view) {
+        if(view == null){
+            return;
+        }
         ViewParent parent = view.getParent();
         if (parent != null) {
             ((FrameLayout) parent).removeView(view);

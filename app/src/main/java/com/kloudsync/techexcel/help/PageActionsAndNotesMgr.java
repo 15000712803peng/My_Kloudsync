@@ -7,6 +7,7 @@ import android.util.Log;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventNote;
+import com.kloudsync.techexcel.bean.EventNotePageActions;
 import com.kloudsync.techexcel.bean.EventPageActions;
 import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.MeetingConfig;
@@ -63,6 +64,23 @@ public class PageActionsAndNotesMgr {
 
     }
 
+    public static void requestActionsForNotePage(MeetingConfig config, final Note note){
+        Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventNotePageActions>() {
+            @Override
+            public EventNotePageActions apply(MeetingConfig config) throws Exception {
+                return MeetingServiceTools.getInstance().syncGetPageActions(config,note);
+            }
+        }).doOnNext(new Consumer<EventNotePageActions>() {
+            @Override
+            public void accept(EventNotePageActions eventPageActions) throws Exception {
+                EventBus.getDefault().post(eventPageActions);
+            }
+        }).subscribe();
+
+
+
+    }
+
     public static void requestActionsSaved(final MeetingConfig config){
 
         new ApiTask(new Runnable() {
@@ -79,11 +97,10 @@ public class PageActionsAndNotesMgr {
     public static void handleNoteActions(Context context,String action,JSONObject data) throws JSONException{
         switch (action){
             case "BookNoteSelect":
-
                 break;
             case "BookNoteView":
                 if (data.has("LinkID")) {
-                    getNoteDetail(context,data.getInt("LinkID"));
+                    getNoteDetail(data.getInt("LinkID"));
                 }
                 break;
             case "BookNoteMove":
@@ -95,45 +112,11 @@ public class PageActionsAndNotesMgr {
         }
     }
 
-    public static synchronized void getNoteDetail(Context context,int linkId){
-
-        final NoteImageCache noteCache = NoteImageCache.getInstance(context);
-        Observable.just(linkId).observeOn(Schedulers.io()).map(new Function<Integer, EventNote>() {
+    public static synchronized void getNoteDetail(int linkId){
+        Observable.just(linkId).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
             @Override
-            public EventNote apply(Integer _linkId) throws Exception {
-                return MeetingServiceTools.getInstance().syncGetNoteByLinkId(_linkId);
-            }
-
-        }).doOnNext(new Consumer<EventNote>() {
-            @Override
-            public void accept(EventNote eventNote) throws Exception {
-                Note note  = eventNote.getNote();
-                Log.e("check_note","one_event_note:" + eventNote);
-                if(note != null && !TextUtils.isEmpty(note.getUrl())){
-//                    Log.e("getNoteDetail","note url:" + note.getAttachmentUrl());
-                    if(noteCache.containFile(note.getUrl())){
-                        if(new File(noteCache.getNoteImage(note.getUrl())).exists()){
-                            note.setLocalFilePath(noteCache.getNoteImage(note.getUrl()));
-                            Log.e("check_note","post note:" + note);
-                            EventBus.getDefault().post(eventNote);
-                            return;
-                        }else {
-                            noteCache.removeNoteImage(note.getUrl());
-                        }
-                    }
-                }
-            }
-        }).doOnNext(new Consumer<EventNote>() {
-            @Override
-            public void accept(EventNote eventNote) throws Exception {
-                Log.e("check_note","two_event_note:" + eventNote);
-                Note note  = eventNote.getNote();
-                if(note != null && !TextUtils.isEmpty(note.getLocalFilePath())){
-                    return;
-                }
-                note.setLocalFilePath(FileUtils.getBaseDir() + note.getUrl().substring(note.getUrl().lastIndexOf("/")));
-                safeDownloadNote(eventNote,noteCache,true);
-
+            public void accept(Integer _linkId) throws Exception {
+                EventBus.getDefault().post(MeetingServiceTools.getInstance().syncGetNoteByLinkId(_linkId));
             }
         }).subscribe();
     }

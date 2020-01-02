@@ -34,8 +34,14 @@ public abstract class BaseDocAndMeetingActivity extends FragmentActivity{
     @Bind(R.id.web)
     protected XWalkView web;
 
+    @Bind(R.id.web_note)
+    protected XWalkView noteWeb;
+
     @Bind(R.id.menu)
     protected ImageView menuIcon;
+
+    @Bind(R.id.layout_note_users)
+    LinearLayout noteUsersLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

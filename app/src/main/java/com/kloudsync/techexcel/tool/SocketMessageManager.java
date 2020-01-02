@@ -15,6 +15,7 @@ import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.ub.techexcel.bean.AgoraMember;
+import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -39,6 +40,8 @@ public class SocketMessageManager {
     public static final String MESSAGE_ATTACHMENT_UPLOADED = "ATTACHMENT_UPLOADED";
     public static final String MESSAGE_AGORA_STATUS_CHANGE = "AGORA_STATUS_CHANGE";
     public static final String MESSAGE_MEMBER_LIST_CHANGE = "MEMBER_LIST_CHANGE";
+    public static final String MESSAGE_NOTE_DATA = "NOTE_DATA";
+    public static final String MESSAGE_NOTE_CHANGE = "NOTE_CHANGE";
     public static final int MESSAGE_VIDEO_PAUSE = 0;
     public static final int MESSAGE_VIDEO_PLAY = 1;
     public static final int MESSAGE_VIDEO_CLOSE = 2;
@@ -183,6 +186,29 @@ public class SocketMessageManager {
         sendMessage_UpdateAttchment(config);
     }
 
+    public void sendMessage_ViewNote(MeetingConfig config,Note note) {
+
+        try {
+            JSONObject message = new JSONObject();
+            MeetingDocument document = config.getDocument();
+            message.put("actionType", 8);
+            message.put("roleType", 1);
+//            message.put("eventID", config.getDocument().getEventID());
+            message.put("attachmentUrl", note.getAttachmentUrl());
+            message.put("meetingID", config.getMeetingId());
+            message.put("itemId", note.getNoteID());
+            message.put("incidentID", config.getPageNumber());
+            message.put("pageNumber", 1);
+            message.put("docType", 1);
+            message.put("isH5", true);
+            //---------
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessage_UpdateAttchment(config);
+    }
+
     public void sendMessage_LeaveMeeting(MeetingConfig config) {
         try {
             JSONObject message = new JSONObject();
@@ -218,6 +244,23 @@ public class SocketMessageManager {
             message.put("retCode", 1);
             message.put("data", _actions);
             message.put("itemId", meetingConfig.getDocument().getItemID());
+            message.put("sequenceNumber", "3837");
+            message.put("ideaType", "document");
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessage_MyNoteActionFrame(String actions, MeetingConfig meetingConfig,Note note) {
+        String _actions = Tools.getBase64(actions).replaceAll("[\\s*\t\n\r]", "");
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "ACT_FRAME");
+            message.put("sessionId", AppConfig.UserToken);
+            message.put("retCode", 1);
+            message.put("data", _actions);
+            message.put("itemId", note.getNoteID());
             message.put("sequenceNumber", "3837");
             message.put("ideaType", "document");
             doSendMessage(message.toString());

@@ -403,24 +403,11 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <com.kloudsync.techexcel.ui.MaskViewGroup
-                app:containerCornerRadius="16dp"
-                app:containerDeltaLength="10dp"
-                app:containerShadowColor="#B9C0E4"
-                app:containerShadowRadius="6dp"
-                app:deltaX="0dp"
-                app:deltaY="3dp"
-                app:enable="true"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
+            <org.xwalk.core.XWalkView
+                android:id="@+id/web_note"
                 android:layout_width="0dp"
-                android:layout_height="match_parent">
-                <ImageView
-                    android:id="@+id/image_note"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitXY" />
-            </com.kloudsync.techexcel.ui.MaskViewGroup>
+                android:layout_weight="1"
+                android:layout_height="match_parent"></org.xwalk.core.XWalkView>
 
             <View
                 android:background="@color/divider_line"
@@ -428,6 +415,7 @@
                 android:layout_height="match_parent"/>
 
             <LinearLayout
+                android:id="@+id/layout_note_users"
                 android:orientation="vertical"
                 android:layout_width="260dp"
                 android:layout_height="match_parent">

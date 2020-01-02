@@ -166,6 +166,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         rtcManager = RtcManager.getDefault(host);
         rtcManager.doConfigEngine(CLIENT_ROLE_BROADCASTER);
         Log.e("MeetingKit", "joinChannel:" + meetingConfig.getMeetingId());
+        getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
         rtcManager.joinRtcChannle(meetingConfig.getMeetingId());
 
     }
@@ -280,11 +281,14 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             if (!meetingConfig.isInRealMeeting()) {
                 return;
             }
+
             Observable.just(meetingConfig).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<MeetingConfig>() {
                 @Override
                 public void accept(MeetingConfig meetingConfig) throws Exception {
+                    // 屏幕共享
                     if (uid > 1000000000 && uid < 1500000000) {
-                        SurfaceView surfaceView = RtcEngine.CreateRendererView(host);
+                        getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
+                        SurfaceView surfaceView = RtcEngine.CreateRendererView(host.getBaseContext());
                         surfaceView.setZOrderOnTop(true);
                         surfaceView.setZOrderMediaOverlay(true);
                         surfaceView.setTag(uid);
@@ -294,7 +298,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                         shareScreen.setShareView(surfaceView);
                         EventBus.getDefault().post(shareScreen);
                     }else {
-//
+                     //  成员的camera
                         refreshMembersAndPost(meetingConfig,uid,false);
                     }
                 }
