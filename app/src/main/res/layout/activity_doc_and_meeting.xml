@@ -12,6 +12,7 @@
         android:layout_height="match_parent"></org.xwalk.core.XWalkView>
 
     <LinearLayout
+        android:visibility="visible"
         android:id="@+id/layout_enter_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,6 +21,7 @@
 
         <com.kloudsync.techexcel.dialog.loading.KloudLoadingView
             android:id="@+id/enter_loading"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -319,65 +321,6 @@
                 android:layout_height="38dp" />
         </RelativeLayout>
 
-        <RelativeLayout
-            android:background="@color/black"
-            android:id="@+id/layout_vedio"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <com.ub.teacher.gesture.VideoGestureRelativeLayout
-                android:id="@+id/vedio_gesture"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/black"
-                >
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <com.ub.techexcel.view.ControllerVideoView
-                        android:id="@+id/doc_video"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_centerInParent="true"
-                        android:visibility="visible" />
-
-                    <com.ub.teacher.gesture.ShowChangeLayout
-                        android:id="@+id/layout_vedio_status"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_centerInParent="true" />
-
-
-                </RelativeLayout>
-
-
-            </com.ub.teacher.gesture.VideoGestureRelativeLayout>
-
-            <TextView
-                android:background="@color/black"
-                android:id="@+id/txt_vedio_loading"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:layout_centerInParent="true"
-                android:textSize="14sp"
-                android:text="loading..."
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <ImageView
-                android:id="@+id/image_vedio_close"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
-                android:src="@drawable/btn_close" />
-
-
-
-        </RelativeLayout>
 
 
         <ImageView
@@ -390,6 +333,67 @@
             android:src="@drawable/icon_command" />
 
     </RelativeLayout>
+
+    <RelativeLayout
+        android:background="@color/black"
+        android:id="@+id/layout_vedio"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.ub.teacher.gesture.VideoGestureRelativeLayout
+            android:id="@+id/vedio_gesture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black"
+            >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.ub.techexcel.view.ControllerVideoView
+                    android:id="@+id/doc_video"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:visibility="visible" />
+
+                <com.ub.teacher.gesture.ShowChangeLayout
+                    android:id="@+id/layout_vedio_status"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerInParent="true" />
+
+
+            </RelativeLayout>
+
+
+        </com.ub.teacher.gesture.VideoGestureRelativeLayout>
+
+        <TextView
+            android:background="@color/black"
+            android:id="@+id/txt_vedio_loading"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:textSize="14sp"
+            android:text="loading..."
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/image_vedio_close"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/btn_close" />
+
+
+
+    </RelativeLayout>
+
 
     <RelativeLayout
         android:orientation="horizontal"

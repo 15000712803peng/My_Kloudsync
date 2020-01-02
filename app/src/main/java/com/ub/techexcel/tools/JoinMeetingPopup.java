@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -143,9 +144,10 @@ public class JoinMeetingPopup implements View.OnClickListener {
     }
 
 
+    Disposable disposable;
     private void doJoin(final String meetingRoom){
         final EventJoinMeeting joinMeeting = new EventJoinMeeting();
-        Observable.just(joinMeeting).observeOn(Schedulers.io()).doOnNext(new Consumer<EventJoinMeeting>() {
+        disposable = Observable.just(joinMeeting).observeOn(Schedulers.io()).doOnNext(new Consumer<EventJoinMeeting>() {
             @Override
             public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
                 JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomLessonID?classRoomID=" + meetingRoom);
@@ -158,7 +160,55 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         joinMeeting.setRole(MeetingConfig.MeetingRole.MEMBER);
                     }
                 }
-                EventBus.getDefault().post(joinMeeting);
+
+            }
+        }).doOnNext(new Consumer<EventJoinMeeting>() {
+            @Override
+            public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+                if(joinMeeting.getLessionId() <= 0){
+                    JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomTeacherID?classroomID=" + meetingRoom);
+                    Log.e("GetClassRoomTeacherID","meetingRoom:" + meetingRoom + ",result:" + result);
+                    int hostId = result.getInt("RetData");
+                    eventJoinMeeting.setHostId(hostId);
+
+                }else {
+                    EventBus.getDefault().post(joinMeeting);
+                    if(disposable != null && !disposable.isDisposed()){
+                        disposable.dispose();
+                        disposable = null;
+                    }
+                }
+
+
+            }
+        }).doOnNext(new Consumer<EventJoinMeeting>() {
+            @Override
+            public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+                if(eventJoinMeeting.getHostId() <= 0){
+                    EventBus.getDefault().post(eventJoinMeeting);
+                    if(disposable != null && !disposable.isDisposed()){
+                        disposable.dispose();
+                        disposable = null;
+                    }
+
+                }else {
+                    JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/UpcomingLessonList?teacherID=" + eventJoinMeeting.getHostId());
+                    Log.e("UpcomingLessonList","hostID:" + eventJoinMeeting.getHostId() + ",result:" + result);
+
+                    int retCode = result.getInt("RetCode");
+                    if(retCode == 0){
+                        JSONArray jsonArray = result.getJSONArray("RetData");
+                        if(jsonArray != null && jsonArray.length() > 0){
+                            JSONObject data = jsonArray.getJSONObject(0);
+                            if(data.has("LessonID")){
+                                eventJoinMeeting.setLessionId(data.getInt("LessonID"));
+                                eventJoinMeeting.setMeetingId(data.getInt("LessonID")+"");
+                            }
+                        }
+                    }
+                    EventBus.getDefault().post(eventJoinMeeting);
+
+                }
             }
         }).subscribe();
     }

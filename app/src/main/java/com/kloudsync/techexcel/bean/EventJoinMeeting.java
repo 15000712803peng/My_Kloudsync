@@ -8,6 +8,15 @@ public class EventJoinMeeting {
     private String meetingId;
     private int lessionId;
     private int role;
+    private int hostId;
+
+    public int getHostId() {
+        return hostId;
+    }
+
+    public void setHostId(int hostId) {
+        this.hostId = hostId;
+    }
 
     public int getRole() {
         return role;
