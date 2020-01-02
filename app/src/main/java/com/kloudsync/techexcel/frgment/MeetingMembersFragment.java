@@ -98,6 +98,9 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
     private void loadMembers() {
         meetingMembers.clear();
+        if(meetingConfig.getMeetingMembers() == null || meetingConfig.getMeetingMembers().size() <= 0){
+            return;
+        }
         if (type == 1) {
             meetingMembers.addAll(meetingConfig.getMeetingMembers());
             Collections.sort(meetingMembers);

@@ -404,7 +404,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     }
 
     private void downLoadNotePageAndShow(Note note) {
-        if(note == null){
+        if(note == null || note.getDocumentPages() == null || note.getDocumentPages().size() <= 0){
             return;
         }
         Observable.just(note).observeOn(Schedulers.io()).doOnNext(new Consumer<Note>() {
