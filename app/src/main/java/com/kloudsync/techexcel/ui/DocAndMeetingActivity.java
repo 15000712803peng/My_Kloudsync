@@ -2044,7 +2044,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             uploadFileWhenAddDoc(picture);
                         }
                     }
-
                     break;
                 case REQUEST_SCAN:
                     if (meetingConfig.getType() == MeetingType.MEETING) {
@@ -2072,7 +2071,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             bottomFilePop.addTempDoc(tempDoc);
                         }
                     });
-
 
                 }
             }
@@ -2117,7 +2115,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             addDocSucc(document.getInt("ItemID"));
                         }
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -2154,7 +2151,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     if (document != null && document.has("ItemID")) {
                         addDocSucc(document.getInt("ItemID"));
                     }
-
                 }
             }
         }).subscribe();

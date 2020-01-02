@@ -410,7 +410,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         Observable.just(note).observeOn(Schedulers.io()).doOnNext(new Consumer<Note>() {
             @Override
             public void accept(Note note) throws Exception {
-                queryAndDownLoadNoteToShow(note.getDocumentPages().get(0),true);
+                queryAndDownLoadNoteToShow(note.getDocumentPages().get(0),note,true);
             }
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Note>() {
             @Override
@@ -422,7 +422,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
 
     DocumentPageCache pageCache;
 
-    private void queryAndDownLoadNoteToShow(final DocumentPage documentPage, final boolean needRedownload) {
+    private void queryAndDownLoadNoteToShow(final DocumentPage documentPage, final Note note,final boolean needRedownload) {
         String pageUrl = documentPage.getPageUrl();
         DocumentPage page = pageCache.getPageCache(pageUrl);
         final EventShowNotePage notePage = new EventShowNotePage();
@@ -442,20 +442,20 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
             }
         }
 
-        MeetingDocument document = meetingConfig.getDocument();
+
         String meetingId = meetingConfig.getMeetingId();
 
         JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
-                document.getNewPath());
+                note.getNewPath());
         if (queryDocumentResult != null) {
             Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
             String fileName = pageUrl.substring(pageUrl.lastIndexOf("/") + 1);
             String part = "";
             if (1 == uploadao.getServiceProviderId()) {
-                part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + document.getNewPath()
+                part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + note.getNewPath()
                         + "/" + fileName;
             } else if (2 == uploadao.getServiceProviderId()) {
-                part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + document.getNewPath() + "/" + fileName;
+                part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + note.getNewPath() + "/" + fileName;
             }
 
             String pathLocalPath = FileUtils.getBaseDir() +
@@ -496,7 +496,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
 
                     Log.e("-", "onDownloadFailed:" + documentPage);
                     if (needRedownload) {
-                        queryAndDownLoadNoteToShow(documentPage, false);
+                        queryAndDownLoadNoteToShow(documentPage, note,false);
                     }
                 }
             });

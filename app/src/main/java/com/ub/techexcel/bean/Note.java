@@ -27,6 +27,15 @@ public class Note implements Serializable {
     private String url;
     private int PageCount;
     private List<DocumentPage> documentPages;
+    private String newPath;
+
+    public String getNewPath() {
+        return newPath;
+    }
+
+    public void setNewPath(String newPath) {
+        this.newPath = newPath;
+    }
 
     public List<DocumentPage> getDocumentPages() {
         return documentPages;

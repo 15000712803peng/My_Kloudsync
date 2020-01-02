@@ -141,33 +141,33 @@ public class MeetingServiceTools {
     public void syncGetDocuments(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
 
 
-                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
-                Log.e("meetingservicrtools", url + returnJson.toString());
-                try {
-                    if (returnJson.getInt("RetCode") == 0) {
-                        JSONObject service = returnJson.getJSONObject("RetData");
-                        JSONArray lineitems = service.getJSONArray("AttachmentList");
-                        List<LineItem> items = new ArrayList<LineItem>();
-                        for (int j = 0; j < lineitems.length(); j++) {
-                            JSONObject lineitem = lineitems.getJSONObject(j);
-                            LineItem item = new LineItem();
-                            item.setFileName(lineitem.getString("Title"));
-                            item.setUrl(lineitem.getString("AttachmentUrl"));
-                            item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
-                            item.setHtml5(false);
-                            item.setItemId(lineitem.getString("ItemID"));
-                            item.setAttachmentID(lineitem.getString("AttachmentID"));
-                            item.setNewPath(lineitem.getString("NewPath"));
-                            item.setFlag(0);
-                            if (lineitem.getInt("Status") == 0) {
-                                items.add(item);
-                            }
-                        }
-
+        JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+        Log.e("meetingservicrtools", url + returnJson.toString());
+        try {
+            if (returnJson.getInt("RetCode") == 0) {
+                JSONObject service = returnJson.getJSONObject("RetData");
+                JSONArray lineitems = service.getJSONArray("AttachmentList");
+                List<LineItem> items = new ArrayList<LineItem>();
+                for (int j = 0; j < lineitems.length(); j++) {
+                    JSONObject lineitem = lineitems.getJSONObject(j);
+                    LineItem item = new LineItem();
+                    item.setFileName(lineitem.getString("Title"));
+                    item.setUrl(lineitem.getString("AttachmentUrl"));
+                    item.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                    item.setHtml5(false);
+                    item.setItemId(lineitem.getString("ItemID"));
+                    item.setAttachmentID(lineitem.getString("AttachmentID"));
+                    item.setNewPath(lineitem.getString("NewPath"));
+                    item.setFlag(0);
+                    if (lineitem.getInt("Status") == 0) {
+                        items.add(item);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -283,7 +283,7 @@ public class MeetingServiceTools {
                 break;
             case MeetingType.SYNCROOM:
                 break;
-                default:
+            default:
         }
 
 
@@ -323,7 +323,7 @@ public class MeetingServiceTools {
     }
 
 
-    public EventNotePageActions syncGetPageActions(MeetingConfig config,Note note) {
+    public EventNotePageActions syncGetPageActions(MeetingConfig config, Note note) {
         String url = "";
         switch (config.getType()) {
             case MeetingType.DOC:
@@ -378,12 +378,8 @@ public class MeetingServiceTools {
     }
 
 
-
-
-
-
     public EventPageNotes syncGetPageNotes(MeetingConfig meetingConfig) {
-        String url  = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + meetingConfig.getDocument().getAttachmentID() +
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + meetingConfig.getDocument().getAttachmentID() +
                 "&pageNumber=" + meetingConfig.getPageNumber() + "&userID=" + AppConfig.UserID;
         JSONObject returnJson = com.kloudsync.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
         Log.e("syncGetPageNotes", url + "   " + returnJson.toString());
@@ -427,7 +423,7 @@ public class MeetingServiceTools {
                 note.setPageCount(lineitem.getInt("PageCount"));
                 note.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
                 note.setAttachmentID(lineitem.getInt("AttachmentID"));
-                String noteUrl = attachmentUrl.substring(0,attachmentUrl.lastIndexOf("<")) + 1 + attachmentUrl.substring(attachmentUrl.lastIndexOf("."));
+                String noteUrl = attachmentUrl.substring(0, attachmentUrl.lastIndexOf("<")) + 1 + attachmentUrl.substring(attachmentUrl.lastIndexOf("."));
                 note.setUrl(noteUrl);
 
                 String preUrl = "";
@@ -443,10 +439,12 @@ public class MeetingServiceTools {
                     }
                 }
 
+                note.setNewPath(attachmentUrl.substring(attachmentUrl.indexOf(".com") + 5, attachmentUrl.lastIndexOf("/")));
+
                 List<DocumentPage> pages = new ArrayList<>();
                 for (int j = 0; j < note.getPageCount(); ++j) {
                     String pageUrl = "";
-                    DocumentPage  page= new DocumentPage();
+                    DocumentPage page = new DocumentPage();
                     page.setPageNumber(j + 1);
                     page.setDocumentId(note.getDocumentItemID());
                     if (TextUtils.isEmpty(preUrl)) {
@@ -489,7 +487,7 @@ public class MeetingServiceTools {
                 note.setPageCount(lineitem.getInt("PageCount"));
                 note.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
                 note.setAttachmentID(lineitem.getInt("AttachmentID"));
-                String noteUrl = attachmentUrl.substring(0,attachmentUrl.lastIndexOf("<")) + 1 + attachmentUrl.substring(attachmentUrl.lastIndexOf("."));
+                String noteUrl = attachmentUrl.substring(0, attachmentUrl.lastIndexOf("<")) + 1 + attachmentUrl.substring(attachmentUrl.lastIndexOf("."));
                 note.setUrl(noteUrl);
 
                 String preUrl = "";
@@ -505,10 +503,12 @@ public class MeetingServiceTools {
                     }
                 }
 
+                note.setNewPath(attachmentUrl.substring(attachmentUrl.indexOf(".com") + 5, attachmentUrl.lastIndexOf("/")));
+
                 List<DocumentPage> pages = new ArrayList<>();
                 for (int j = 0; j < note.getPageCount(); ++j) {
                     String pageUrl = "";
-                    DocumentPage  page= new DocumentPage();
+                    DocumentPage page = new DocumentPage();
                     page.setPageNumber(j + 1);
                     page.setDocumentId(note.getDocumentItemID());
                     if (TextUtils.isEmpty(preUrl)) {
