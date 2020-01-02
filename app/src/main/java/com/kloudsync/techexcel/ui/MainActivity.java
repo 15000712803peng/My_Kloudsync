@@ -1209,7 +1209,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         Fragment fragment = null;
         Log.e("currentSpaceFragment", "space:" + spaceFragment);
         if (spaceFragment.getType() == 1) {
-
             //go to space documents
             teamFrame.setVisibility(View.GONE);
             spaceFrame.setVisibility(View.VISIBLE);

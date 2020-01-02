@@ -596,6 +596,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     }
 
     private ShowMyMeetingIdDialog showMyMeetingIdDialog;
+    private JoinMeetingPopup joinMeetingPopup;
 
     @Override
     public void onClick(View view) {
@@ -657,29 +658,30 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                                     Toast.makeText(getActivity(), "你加入的课堂不存在!", Toast.LENGTH_LONG).show();
                                 } else {
                                     getClassRoomLessonID(AppConfig.ClassRoomID);
-//                              doStartMeeting(AppConfig.ClassRoomID);
+//                                  doStartMeeting(AppConfig.ClassRoomID);
                                 }
                             }
                         }
                     });
-
                 }
                 showMyMeetingIdDialog.show();
                 break;
             case R.id.lin_join: // join meeting
-                JoinMeetingPopup joinMeetingPopup = new JoinMeetingPopup();
-                joinMeetingPopup.getPopwindow(getActivity());
-                joinMeetingPopup.setFavoritePoPListener(new JoinMeetingPopup.FavoritePoPListener() {
-                    @Override
-                    public void dismiss() {
+                if (joinMeetingPopup == null) {
+                    joinMeetingPopup = new JoinMeetingPopup();
+                    joinMeetingPopup.getPopwindow(getActivity());
+                    joinMeetingPopup.setFavoritePoPListener(new JoinMeetingPopup.FavoritePoPListener() {
+                        @Override
+                        public void dismiss() {
 
-                    }
+                        }
 
-                    @Override
-                    public void open() {
+                        @Override
+                        public void open() {
 
-                    }
-                });
+                        }
+                    });
+                }
                 joinMeetingPopup.StartPop(lin_schedule);
                 break;
             case R.id.lin_schedule:
