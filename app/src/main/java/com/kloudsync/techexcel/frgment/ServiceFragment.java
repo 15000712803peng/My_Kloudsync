@@ -40,6 +40,8 @@ import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
+import com.kloudsync.techexcel.help.ShowMyMeetingIdDialog;
+import com.kloudsync.techexcel.help.SpaceMemberOperationDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.school.SelectSchoolActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
@@ -61,6 +63,8 @@ import com.ub.techexcel.tools.EventSchoolPopup;
 import com.ub.techexcel.tools.JoinMeetingPopup;
 import com.ub.techexcel.tools.MeetingMoreOperationPopup;
 import com.ub.techexcel.tools.MenuEventPopup;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.ServiceTool;
 import com.ub.techexcel.tools.Tools;
 
@@ -382,12 +386,12 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     }
 
 
-
     View view;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if(view == null){
+        if (view == null) {
             view = inflater.inflate(R.layout.service, container, false);
             initView(view);
         }
@@ -431,7 +435,6 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     }
 
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -447,7 +450,6 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     private int schoolid = -1;
 
 
-
     private void initView(View view) {
         Fresco.initialize(getActivity());
         lin_myroom = (RelativeLayout) view.findViewById(R.id.lin_myroom);
@@ -456,7 +458,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         lin_myroom.setOnClickListener(this);
         lin_join.setOnClickListener(this);
         lin_schedule.setOnClickListener(this);
-        search_layout = (RelativeLayout)view.findViewById(R.id.search_layout);
+        search_layout = (RelativeLayout) view.findViewById(R.id.search_layout);
         search_layout.setOnClickListener(this);
         switchCompanyImage = (ImageView) view.findViewById(R.id.image_switch_company);
         switchCompanyImage.setOnClickListener(this);
@@ -542,7 +544,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     }
 
 
-    class MeetingAdapter extends FragmentPagerAdapter{
+    class MeetingAdapter extends FragmentPagerAdapter {
 
         public MeetingAdapter(FragmentManager fm) {
             super(fm);
@@ -551,7 +553,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         @Override
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
-            bundle.putInt("type",position + 1);
+            bundle.putInt("type", position + 1);
             MeetingFragment fragment = new MeetingFragment();
             fragment.setArguments(bundle);
             return fragment;
@@ -586,13 +588,14 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 sum++;
             }
         }
-        if(tv_ns != null){
+        if (tv_ns != null) {
             tv_ns.setText(sum + "");
             tv_ns.setVisibility(sum == 0 ? View.GONE : View.VISIBLE);
         }
 
     }
 
+    private ShowMyMeetingIdDialog showMyMeetingIdDialog;
 
     @Override
     public void onClick(View view) {
@@ -644,15 +647,24 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 startActivity(searchIntnt);
                 break;
             case R.id.lin_myroom:
-                if (!Tools.isFastClick()) {
-                    if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
-                        Toast.makeText(getActivity(), "你加入的课堂不存在!", Toast.LENGTH_LONG).show();
-                    } else {
-//                        getClassRoomLessonID(AppConfig.ClassRoomID);
-                        doStartMeeting(AppConfig.ClassRoomID);
-                    }
-                }
+                if (showMyMeetingIdDialog == null) {
+                    showMyMeetingIdDialog = new ShowMyMeetingIdDialog(getActivity(), AppConfig.ClassRoomID.replaceAll("-", ""));
+                    showMyMeetingIdDialog.setOptionsLinstener(new ShowMyMeetingIdDialog.InviteOptionsLinstener() {
+                        @Override
+                        public void enter() {
+                            if (!Tools.isFastClick()) {
+                                if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
+                                    Toast.makeText(getActivity(), "你加入的课堂不存在!", Toast.LENGTH_LONG).show();
+                                } else {
+                                    getClassRoomLessonID(AppConfig.ClassRoomID);
+//                              doStartMeeting(AppConfig.ClassRoomID);
+                                }
+                            }
+                        }
+                    });
 
+                }
+                showMyMeetingIdDialog.show();
                 break;
             case R.id.lin_join: // join meeting
                 JoinMeetingPopup joinMeetingPopup = new JoinMeetingPopup();
@@ -727,28 +739,28 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         finished.setTextColor(getResources().getColor(R.color.c5));
     }
 
-    private void doStartMeeting(final String meetingRoom){
-            final EventJoinMeeting joinMeeting = new EventJoinMeeting();
-            Observable.just(joinMeeting).observeOn(Schedulers.io()).doOnNext(new Consumer<EventJoinMeeting>() {
-                @Override
-                public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
-                    JSONObject params = new JSONObject();
-                    params.put("classroomID", meetingRoom.toUpperCase());
-                    params.put("addBlankPage", 0);
-                    JSONObject result = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/AddInstantLesson?classRoomID=" + meetingRoom + "&addBlankPage=0",params);
-                    Log.e("GetClassRoomLessonID","meetingRoom:" + meetingRoom + ",result:" + result);
-                    if(result.has("RetCode")){
-                        int retCode = result.getInt("RetCode");
-                        if(retCode == 0){
-                            joinMeeting.setLessionId(result.getInt("RetData"));
-                            joinMeeting.setMeetingId(meetingRoom.toUpperCase());
-                            joinMeeting.setRole(MeetingConfig.MeetingRole.HOST);
-                        }
+    private void doStartMeeting(final String meetingRoom) {
+        final EventJoinMeeting joinMeeting = new EventJoinMeeting();
+        Observable.just(joinMeeting).observeOn(Schedulers.io()).doOnNext(new Consumer<EventJoinMeeting>() {
+            @Override
+            public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+                JSONObject params = new JSONObject();
+                params.put("classroomID", meetingRoom.toUpperCase());
+                params.put("addBlankPage", 0);
+                JSONObject result = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/AddInstantLesson?classRoomID=" + meetingRoom + "&addBlankPage=0", params);
+                Log.e("GetClassRoomLessonID", "meetingRoom:" + meetingRoom + ",result:" + result);
+                if (result.has("RetCode")) {
+                    int retCode = result.getInt("RetCode");
+                    if (retCode == 0) {
+                        joinMeeting.setLessionId(result.getInt("RetData"));
+                        joinMeeting.setMeetingId(meetingRoom.toUpperCase());
+                        joinMeeting.setRole(MeetingConfig.MeetingRole.HOST);
                     }
-
-                    EventBus.getDefault().post(joinMeeting);
                 }
-            }).subscribe();
+
+                EventBus.getDefault().post(joinMeeting);
+            }
+        }).subscribe();
     }
 
 
@@ -805,9 +817,9 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void joinMeeting(EventJoinMeeting eventJoinMeeting){
-        if(eventJoinMeeting.getLessionId() <= 0){
-            Toast.makeText(getActivity(),"加入的meeting不存在或没有开始" ,Toast.LENGTH_SHORT).show();
+    public void joinMeeting(EventJoinMeeting eventJoinMeeting) {
+        if (eventJoinMeeting.getLessionId() <= 0) {
+            Toast.makeText(getActivity(), "加入的meeting不存在或没有开始", Toast.LENGTH_SHORT).show();
             return;
         }
         Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
@@ -818,7 +830,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         intent.putExtra("meeting_type", 0);
         intent.putExtra("lession_id", eventJoinMeeting.getLessionId());
         intent.putExtra("meeting_role", eventJoinMeeting.getRole());
-        intent.putExtra("from_meeting",true);
+        intent.putExtra("from_meeting", true);
         startActivity(intent);
     }
 }

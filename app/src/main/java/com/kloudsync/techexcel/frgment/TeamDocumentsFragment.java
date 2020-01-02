@@ -704,7 +704,6 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
 
     private int itemID;
 
-
     private void AddFavorite(final Document fa) {
         final JSONObject jsonObject = null;
         new ApiTask(new Runnable() {
@@ -787,8 +786,8 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     };
 
     private void GoToVIew(Document lesson) {
-        Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
-//        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
+//        Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
+        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", "Doc-" + AppConfig.UserID);

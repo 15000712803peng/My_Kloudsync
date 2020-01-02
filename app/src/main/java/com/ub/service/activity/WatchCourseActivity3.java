@@ -6958,7 +6958,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             JSONObject jsonObject = new JSONObject(json);
             int actionType = jsonObject.getInt("actionType");
             if (actionType == 19) {
-                Log.e("check_vedio_data","vedio_data:" + jsonObject);
+                Log.e("check_vedio_data", "vedio_data:" + jsonObject);
 
                 final int stat = jsonObject.getInt("stat");
                 if (stat == 1) { // 播放视频  暂停音响的播放
@@ -9337,7 +9337,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         closenote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+//                if (isHavePresenter()) {
                 if (!TextUtils.isEmpty(currentShowPdf2.getItemId())) {
                     closenote.setVisibility(View.GONE);
                     for (int i = 0; i < documentList.size(); i++) {
@@ -9362,33 +9362,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
                     loadWebIndex();
                 }
-
-
-//                if (isHavePresenter()) {
-//                    if (!TextUtils.isEmpty(currentShowPdf2.getItemId())) {
-//                        closenote.setVisibility(View.GONE);
-//                        for (int i = 0; i < documentList.size(); i++) {
-//                            LineItem lineItem = documentList.get(i);
-//                            if (currentShowPdf2.getItemId().equals(lineItem.getItemId())) {
-//                                lineItem.setSelect(true);
-//                            } else {
-//                                lineItem.setSelect(false);
-//                            }
-//                        }
-//                        currentAttachmentPage = currentAttachmentPage2;
-//                        AppConfig.currentPageNumber = currentAttachmentPage2;
-//                        currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
-//                        currentShowPdf.setUrl(currentShowPdf2.getUrl());
-//                        currentShowPdf.setItemId(currentShowPdf2.getItemId());
-//                        currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
-//                        localFileID = "";
-//                        currentAttachmentId = currentShowPdf.getAttachmentID();
-//                        currentItemId = currentShowPdf.getItemId();
-//                        targetUrl = currentShowPdf.getUrl();
-//                        newPath = currentShowPdf.getNewPath();
-//                        notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
-//                        loadWebIndex();
-//                    }
 //                }
             }
         });
@@ -9426,79 +9399,79 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
             closenote.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (isHavePresenter()) {
-                        if (!TextUtils.isEmpty(prevItemId)) {   //进入之前文档
-                            closenote.setVisibility(View.GONE);
-                            LineItem prevItem = new LineItem();
-                            for (int i = 0; i < documentList.size(); i++) {
-                                LineItem lineItem = documentList.get(i);
-                                if (prevItemId.equals(lineItem.getItemId())) {
-                                    prevItem = lineItem;
-                                    lineItem.setSelect(true);
-                                    break;
-                                } else {
-                                    lineItem.setSelect(false);
-                                }
+//                    if (isHavePresenter()) {
+                    if (!TextUtils.isEmpty(prevItemId)) {   //进入之前文档
+                        closenote.setVisibility(View.GONE);
+                        LineItem prevItem = new LineItem();
+                        for (int i = 0; i < documentList.size(); i++) {
+                            LineItem lineItem = documentList.get(i);
+                            if (prevItemId.equals(lineItem.getItemId())) {
+                                prevItem = lineItem;
+                                lineItem.setSelect(true);
+                                break;
+                            } else {
+                                lineItem.setSelect(false);
                             }
-                            if (!TextUtils.isEmpty(prevItem.getItemId())) {
-                                currentAttachmentPage = prevAttachmentPage;
-                                AppConfig.currentPageNumber = prevAttachmentPage;
-                                currentShowPdf.setPageNumber(currentAttachmentPage);
-                                currentShowPdf.setNewPath(prevItem.getNewPath());
-                                currentShowPdf.setUrl(prevItem.getUrl());
-                                currentShowPdf.setItemId(prevItem.getItemId());
-                                currentShowPdf.setAttachmentID(prevItem.getAttachmentID());
-                                localFileID = "";
-                                currentAttachmentId = currentShowPdf.getAttachmentID();
-                                currentItemId = currentShowPdf.getItemId();
-                                targetUrl = currentShowPdf.getUrl();
-                                newPath = currentShowPdf.getNewPath();
-                                notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
-                                loadWebIndex();
-                                prevItemId = null;
-                            } else {   //  没找到 回到欢迎页面 显示空白文档
-                                findViewById(R.id.defaultpagehaha).setVisibility(View.VISIBLE);
-                                TextView tv = (TextView) findViewById(R.id.ashoast);
-                                if (identity == 2) {
-                                    findViewById(R.id.ppromat).setVisibility(View.GONE);
-                                    tv.setText(getString(R.string.shYcan));
-                                    createblabkpage.setOnClickListener(this);
-                                    inviteattendee.setOnClickListener(this);
-                                    sharedocument.setOnClickListener(this);
-                                } else if (identity == 1) {
-                                    findViewById(R.id.ppromat).setVisibility(View.VISIBLE);
-                                    tv.setText(getString(R.string.shAcan));
-                                    createblabkpage.setVisibility(View.GONE);
-                                } else {
-                                    findViewById(R.id.defaultpagehaha).setVisibility(View.GONE);
-                                }
-                            }
-                        } else if (!TextUtils.isEmpty(currentShowPdf2.getItemId())) {
-                            Log.e("displayNotelog", "3");
-                            closenote.setVisibility(View.GONE);
-                            for (int i = 0; i < documentList.size(); i++) {
-                                LineItem lineItem = documentList.get(i);
-                                if (currentShowPdf2.getItemId().equals(lineItem.getItemId())) {
-                                    lineItem.setSelect(true);
-                                } else {
-                                    lineItem.setSelect(false);
-                                }
-                            }
-                            currentAttachmentPage = currentAttachmentPage2;
-                            AppConfig.currentPageNumber = currentAttachmentPage2;
+                        }
+                        if (!TextUtils.isEmpty(prevItem.getItemId())) {
+                            currentAttachmentPage = prevAttachmentPage;
+                            AppConfig.currentPageNumber = prevAttachmentPage;
                             currentShowPdf.setPageNumber(currentAttachmentPage);
-                            currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
-                            currentShowPdf.setUrl(currentShowPdf2.getUrl());
-                            currentShowPdf.setItemId(currentShowPdf2.getItemId());
-                            currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
+                            currentShowPdf.setNewPath(prevItem.getNewPath());
+                            currentShowPdf.setUrl(prevItem.getUrl());
+                            currentShowPdf.setItemId(prevItem.getItemId());
+                            currentShowPdf.setAttachmentID(prevItem.getAttachmentID());
+                            localFileID = "";
                             currentAttachmentId = currentShowPdf.getAttachmentID();
                             currentItemId = currentShowPdf.getItemId();
                             targetUrl = currentShowPdf.getUrl();
                             newPath = currentShowPdf.getNewPath();
                             notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
                             loadWebIndex();
+                            prevItemId = null;
+                        } else {   //  没找到 回到欢迎页面 显示空白文档
+                            findViewById(R.id.defaultpagehaha).setVisibility(View.VISIBLE);
+                            TextView tv = (TextView) findViewById(R.id.ashoast);
+                            if (identity == 2) {
+                                findViewById(R.id.ppromat).setVisibility(View.GONE);
+                                tv.setText(getString(R.string.shYcan));
+                                createblabkpage.setOnClickListener(this);
+                                inviteattendee.setOnClickListener(this);
+                                sharedocument.setOnClickListener(this);
+                            } else if (identity == 1) {
+                                findViewById(R.id.ppromat).setVisibility(View.VISIBLE);
+                                tv.setText(getString(R.string.shAcan));
+                                createblabkpage.setVisibility(View.GONE);
+                            } else {
+                                findViewById(R.id.defaultpagehaha).setVisibility(View.GONE);
+                            }
                         }
+                    } else if (!TextUtils.isEmpty(currentShowPdf2.getItemId())) {
+                        Log.e("displayNotelog", "3");
+                        closenote.setVisibility(View.GONE);
+                        for (int i = 0; i < documentList.size(); i++) {
+                            LineItem lineItem = documentList.get(i);
+                            if (currentShowPdf2.getItemId().equals(lineItem.getItemId())) {
+                                lineItem.setSelect(true);
+                            } else {
+                                lineItem.setSelect(false);
+                            }
+                        }
+                        currentAttachmentPage = currentAttachmentPage2;
+                        AppConfig.currentPageNumber = currentAttachmentPage2;
+                        currentShowPdf.setPageNumber(currentAttachmentPage);
+                        currentShowPdf.setNewPath(currentShowPdf2.getNewPath());
+                        currentShowPdf.setUrl(currentShowPdf2.getUrl());
+                        currentShowPdf.setItemId(currentShowPdf2.getItemId());
+                        currentShowPdf.setAttachmentID(currentShowPdf2.getAttachmentID());
+                        currentAttachmentId = currentShowPdf.getAttachmentID();
+                        currentItemId = currentShowPdf.getItemId();
+                        targetUrl = currentShowPdf.getUrl();
+                        newPath = currentShowPdf.getNewPath();
+                        notifySwitchDocumentSocket(currentShowPdf, currentAttachmentPage, 0);
+                        loadWebIndex();
                     }
+//                    }
                 }
             });
             //保存
@@ -9531,8 +9504,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     }
 
     /**
-     *
      * 切换笔记
+     *
      * @param note
      * @param isSend
      */

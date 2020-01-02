@@ -709,7 +709,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             if (pageNotes.getPageNumber() == meetingConfig.getPageNumber()) {
                 if (messageManager != null) {
                     for (NoteDetail note : notes) {
-
                         try {
                             JSONObject message = new JSONObject();
                             message.put("type", 38);
@@ -901,13 +900,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         for (AgoraMember member : meetingConfig.getAgoraMembers()) {
             copyMembers.add(member);
         }
-
         if (cameraList.getVisibility() == View.VISIBLE) {
             if (cameraAdapter != null) {
                 cameraAdapter.reset();
                 cameraAdapter = null;
             }
-
             cameraAdapter = new AgoraCameraAdapter(this);
             cameraAdapter.setMembers(copyMembers);
             cameraAdapter.setOnCameraOptionsListener(this);

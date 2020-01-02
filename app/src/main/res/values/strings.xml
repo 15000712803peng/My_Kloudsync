@@ -16,6 +16,8 @@
     <string name="personal_center">Me</string>
     <string name="Meeting">Meeting</string>
     <string name="Topic">Topic</string>
+    <string name="enter">Enter</string>
+    <string name="mymeetingid">My Meeting ID:</string>
 
     <string-array name="tabname">
         <item>Document</item>

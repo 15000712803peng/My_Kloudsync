@@ -224,11 +224,11 @@ public class JoinMeetingPopup implements View.OnClickListener {
                     imm.hideSoftInputFromWindow(roomet.getWindowToken(), 0);
                     roomid = roomet.getText().toString();
                     if (!TextUtils.isEmpty(roomid)) {
-//                        checkClassRoomExist(roomid);
-                        roomid = roomid.toUpperCase();
-                        mContext.getSharedPreferences(AppConfig.LOGININFO,
-                                MODE_PRIVATE).edit().putString("join_meeting_room",roomid).commit();
-                        doJoin(roomid);
+                        checkClassRoomExist(roomid);
+//                        roomid = roomid.toUpperCase();
+//                        mContext.getSharedPreferences(AppConfig.LOGININFO,
+//                                MODE_PRIVATE).edit().putString("join_meeting_room",roomid).commit();
+//                        doJoin(roomid);
                     } else {
                         Toast.makeText(mContext, mContext.getString(R.string.joinroom), Toast.LENGTH_LONG).show();
                     }

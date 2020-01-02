@@ -194,12 +194,10 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
 
                             @Override
                             public void dismiss() {
-                                getActivity().getWindow().getDecorView().setAlpha(1.0f);
                             }
 
                             @Override
                             public void open() {
-                                getActivity().getWindow().getDecorView().setAlpha(0.5f);
                             }
                         });
                     }
