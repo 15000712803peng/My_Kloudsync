@@ -2008,8 +2008,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
         }
         chatBottomPop = new PopBottomChat(this);
-        chatBottomPop.show(web,chatRoomId);
-        ChatManager.getManager().setPopBottomChat(chatBottomPop,chatRoomId);
+        chatBottomPop.show(web, chatRoomId);
+        ChatManager.getManager().setPopBottomChat(chatBottomPop, chatRoomId);
     }
 
     //--------
@@ -2231,14 +2231,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }).subscribe();
 
     }
-
-
+    
     private void gotoScanTv() {
         if (!isCameraCanUse()) {
             Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
             return;
         }
-
         Log.e("gotoScanTv", "meeting_type:" + meetingConfig.getType());
         if (meetingConfig.getType() == MeetingType.MEETING) {
             MeetingKit.getInstance().templeDisableLocalVideo();
@@ -2400,7 +2398,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 //        GridLayoutManager s = (GridLayoutManager) fullCameraList.getLayoutManager();
 //        int currentSpanCount = s.getSpanCount();
 //    }
-
 
     // ----handle_message
 
@@ -2607,10 +2604,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
         }
     }
-
-
-
-
 
 
 }

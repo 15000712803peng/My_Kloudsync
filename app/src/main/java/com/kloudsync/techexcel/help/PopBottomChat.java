@@ -31,6 +31,9 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
@@ -46,9 +49,8 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
     private ChatAdapter adapter;
     private EditText editText;
     private ImageView sendImage;
+    private ImageView closeImage;
     private String roomId;
-
-
 
     @Override
     public void onClick(View v) {
@@ -59,6 +61,9 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
                     Tools.sendMessageInRoom(content,roomId,this);
                 }
                 break;
+            case R.id.close:
+                hide();
+                break;
         }
     }
 
@@ -67,7 +72,6 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
         getPopupWindow();
         bottomChatWindow.setAnimationStyle(R.style.PopupAnimation5);
     }
-
 
     public void getPopupWindow() {
         if (null != bottomChatWindow) {
@@ -85,6 +89,8 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
         editText = view.findViewById(R.id.edit);
         sendImage = view.findViewById(R.id.send);
         sendImage.setOnClickListener(this);
+        closeImage = view.findViewById(R.id.close);
+        closeImage.setOnClickListener(this);
         chatList.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.VERTICAL,false));
         bottomChatWindow = new PopupWindow(view, LinearLayout.LayoutParams.MATCH_PARENT,
                 mContext.getResources().getDimensionPixelSize(R.dimen.chat_pop_height), false);
@@ -95,8 +101,6 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
         bottomChatWindow.setFocusable(true);
         adapter = new ChatAdapter();
         chatList.setAdapter(adapter);
-
-
     }
 
 
@@ -139,6 +143,15 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
     @Override
     public void onSuccess(Message message) {
         Log.e("send_chat_message","on_success");
+        ChatManager.getManager().wrapMessage(message);
+        Observable.just(message).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Message>() {
+            @Override
+            public void accept(Message message) throws Exception {
+                if(editText != null){
+                    editText.setText("");
+                }
+            }
+        }).subscribe();
     }
 
     @Override
@@ -193,7 +206,6 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
             }else {
                 holder.content.setText("");
             }
-
         }
 
         @Override

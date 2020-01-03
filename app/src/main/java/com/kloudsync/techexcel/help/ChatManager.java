@@ -38,7 +38,6 @@ public class ChatManager extends RongIMClient.OperationCallback {
         caches = new HashMap<>();
         messages = new ArrayList<>();
     }
-
     PopBottomChat popBottomChat;
 
     public void setPopBottomChat(PopBottomChat popBottomChat,String roomId) {
@@ -123,7 +122,7 @@ public class ChatManager extends RongIMClient.OperationCallback {
         public String avatorUrl;
     }
 
-    private void wrapMessage(final Message message){
+    public void wrapMessage(final Message message){
 
         if(!(message.getContent() instanceof TextMessage)){
             return;
