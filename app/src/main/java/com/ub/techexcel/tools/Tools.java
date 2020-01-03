@@ -35,7 +35,9 @@ import io.rong.imkit.RongIM;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
+import io.rong.message.TextMessage;
 
 public class Tools {
 
@@ -182,6 +184,7 @@ public class Tools {
 
     /**
      * 检查是否存在虚拟按键栏
+     *
      * @param context
      * @return
      */
@@ -205,6 +208,7 @@ public class Tools {
 
     /**
      * 判断虚拟按键栏是否重写
+     *
      * @return
      */
     private static String getNavBarOverride() {
@@ -245,8 +249,24 @@ public class Tools {
 
     }
 
+    public static void sendMessageInRoom(String firstmsg, String roomId, IRongCallback.ISendMessageCallback callback) {
+        TextMessage message = new TextMessage(firstmsg);
+        io.rong.imlib.model.Message msg = io.rong.imlib.model.Message.obtain(roomId, Conversation.ConversationType.GROUP, message);
+        RongIM.getInstance().sendMessage(msg, null, null, callback);
+
+    }
+
     public static void openGroup(Context context, String mGroupId) {
         RongIM.getInstance().startGroupChat(context, mGroupId, "");
+    }
+
+    public static void joinChatRoom(String roomId, RongIMClient.OperationCallback callback) {
+        RongIM.getInstance().joinChatRoom(roomId, 10, callback);
+
+    }
+
+    public static void getChatroomHistoryMessage(String roomId, RongIMClient.ResultCallback<List<Message>> callback) {
+        RongIM.getInstance().getLatestMessages(Conversation.ConversationType.CHATROOM, roomId, 10, callback);
     }
 
 

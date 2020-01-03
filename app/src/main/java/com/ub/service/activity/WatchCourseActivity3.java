@@ -4187,7 +4187,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         }
     };
 
-
     public synchronized void getGroupinfo(int messageNumber) {
         RongIM.getInstance().getLatestMessages(Conversation.ConversationType.GROUP, mGroupId, messageNumber, new RongIMClient.ResultCallback<List<io.rong.imlib.model.Message>>() {
             @Override

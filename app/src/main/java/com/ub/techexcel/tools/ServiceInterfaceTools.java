@@ -2412,6 +2412,13 @@ public class ServiceInterfaceTools {
         return response;
     }
 
+    public JSONObject syncGetUserListBasicInfoByRongCloud(String rongCloudIDs){
+        String url = AppConfig.URL_PUBLIC + "User/UserListBasicInfoByRongCloud?rongCloudIDs=" + rongCloudIDs;
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetUserListBasicInfoByRongCloud","url:" + url + ",result:" + response);
+        return response;
+    }
+
 
 
 

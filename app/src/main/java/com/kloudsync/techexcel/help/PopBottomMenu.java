@@ -91,6 +91,13 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                     bottomMenuOperationsListener.menuSyncClicked();
                 }
                 break;
+
+            case R.id.bottom_menu_chat:
+                hide();
+                if(bottomMenuOperationsListener != null){
+                    bottomMenuOperationsListener.menuChatClicked();
+                }
+                break;
         }
     }
 
@@ -103,6 +110,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
         void menuScanTvClicked();
         void menuMeetingMembersClicked();
         void menuSyncClicked();
+        void menuChatClicked();
 
     }
 

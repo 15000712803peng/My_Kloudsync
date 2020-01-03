@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.webkit.WebSettings;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -73,12 +76,14 @@ import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
+import com.kloudsync.techexcel.help.ChatManager;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.DocVedioManager;
 import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.help.BottomMenuManager;
 import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
+import com.kloudsync.techexcel.help.PopBottomChat;
 import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.SetPresenterDialog;
@@ -388,11 +393,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void requestDocumentsAndShowPage() {
-        DocumentModel.asyncGetDocumentsInDocAndShowPage(meetingConfig,true);
+        DocumentModel.asyncGetDocumentsInDocAndShowPage(meetingConfig, true);
     }
 
     private void requestDocuments() {
-        DocumentModel.asyncGetDocumentsInDocAndShowPage(meetingConfig,false);
+        DocumentModel.asyncGetDocumentsInDocAndShowPage(meetingConfig, false);
     }
 
     // ------- @Subscribe
@@ -467,7 +472,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         } else {
             noteUsersLayout.setVisibility(View.VISIBLE);
         }
-        NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb,meetingConfig);
+        NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig);
         notifyViewNote(note.getNote());
     }
 
@@ -480,7 +485,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             noteUsersLayout.setVisibility(View.VISIBLE);
         }
         hideEnterLoading();
-        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb,noteId, meetingConfig);
+        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig);
 
     }
 
@@ -524,12 +529,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (socketMessage.getData().has("data")) {
                     try {
                         String _frame = Tools.getFromBase64(socketMessage.getData().getString("data"));
-                        if(noteLayout.getVisibility() == View.VISIBLE){
-                            if(noteWeb != null){
+                        if (noteLayout.getVisibility() == View.VISIBLE) {
+                            if (noteWeb != null) {
                                 noteWeb.load("javascript:PlayActionByTxt('" + _frame + "','" + 1 + "')", null);
                             }
-                        }else {
-                            if(web != null){
+                        } else {
+                            if (web != null) {
                                 web.load("javascript:PlayActionByTxt('" + _frame + "','" + 1 + "')", null);
                             }
                         }
@@ -601,8 +606,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     try {
                         String noteData = socketMessage.getData().getJSONObject("retData").getString("data");
                         String key = "ShowDotPanData";
-                        if(noteLayout.getVisibility() == View.VISIBLE){
-                            if(noteWeb != null){
+                        if (noteLayout.getVisibility() == View.VISIBLE) {
+                            if (noteWeb != null) {
                                 noteWeb.load("javascript:FromApp('" + key + "'," + Tools.getFromBase64(noteData) + ")", null);
                             }
                         }
@@ -648,7 +653,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public void receiveNotePageActions(EventNotePageActions pageActions) {
         String data = pageActions.getData();
         if (!TextUtils.isEmpty(data)) {
-            if(noteLayout.getVisibility() == View.VISIBLE){
+            if (noteLayout.getVisibility() == View.VISIBLE) {
                 noteWeb.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
             }
         }
@@ -1249,7 +1254,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private synchronized void changeDocument(int itemId, int pageNumber) {
-        if(hasLoadedFile){
+        if (hasLoadedFile) {
             int index = documents.indexOf(new MeetingDocument(itemId));
             if (index < 0) {
                 return;
@@ -1260,8 +1265,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
             changeDocument(_document, pageNumber);
 
-        }else {
-            DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, itemId,pageNumber);
+        } else {
+            DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, itemId, pageNumber);
         }
 
     }
@@ -1431,6 +1436,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
 
     private boolean hasLoadedFile = false;
+
     @org.xwalk.core.JavascriptInterface
     public void afterLoadFileFunction() {
         Log.e("JavascriptInterface", "afterLoadFileFunction");
@@ -1501,13 +1507,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    private void notifyMyNoteWebActions(String actions,Note note) {
+    private void notifyMyNoteWebActions(String actions, Note note) {
         if (meetingConfig.getType() != MeetingType.MEETING) {
             if (messageManager == null) {
                 messageManager = SocketMessageManager.getManager(this);
                 messageManager.registerMessageReceiver();
             }
-            messageManager.sendMessage_MyNoteActionFrame(actions, meetingConfig,note);
+            messageManager.sendMessage_MyNoteActionFrame(actions, meetingConfig, note);
 
         } else {
             Log.e("notifyMyWebActions", "role:" + meetingConfig.getRole());
@@ -1518,7 +1524,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 messageManager = SocketMessageManager.getManager(this);
                 messageManager.registerMessageReceiver();
             }
-            messageManager.sendMessage_MyNoteActionFrame(actions, meetingConfig,note);
+            messageManager.sendMessage_MyNoteActionFrame(actions, meetingConfig, note);
         }
     }
 
@@ -1545,14 +1551,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private void notifyViewNote(Note note) {
         if (meetingConfig.getType() != MeetingType.MEETING) {
             if (messageManager != null) {
-                messageManager.sendMessage_ViewNote(meetingConfig,note);
+                messageManager.sendMessage_ViewNote(meetingConfig, note);
             }
         } else {
             if (!TextUtils.isEmpty(meetingConfig.getPresenterSessionId())) {
                 if (AppConfig.UserToken.equals(meetingConfig.getPresenterSessionId())) {
                     if (meetingConfig.isInRealMeeting()) {
                         if (messageManager != null) {
-                            messageManager.sendMessage_ViewNote(meetingConfig,note);
+                            messageManager.sendMessage_ViewNote(meetingConfig, note);
                         }
 
                     }
@@ -1731,6 +1737,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         showSoundtrackDialog();
     }
 
+    @Override
+    public void menuChatClicked() {
+        showChatPop();
+    }
+
     private UserSoundtrackDialog soundtrackDialog;
 
     private void showSoundtrackDialog() {
@@ -1864,6 +1875,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (messageManager != null && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
             messageManager.sendMessage_MeetingStatus(meetingConfig);
         }
+
+        ChatManager.getManager().joinChatRoom(getResources().getString(R.string.Classroom) + meetingConfig.getLessionId());
     }
 
     private void initViews() {
@@ -1981,6 +1994,22 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingMembersDialog = new MeetingMembersDialog();
         meetingMembersDialog.init(this, meetingConfig);
         meetingMembersDialog.show(getSupportFragmentManager());
+    }
+
+
+    PopBottomChat chatBottomPop;
+
+    private void showChatPop() {
+        String chatRoomId = getResources().getString(R.string.Classroom) + meetingConfig.getLessionId();
+        if (chatBottomPop != null) {
+            if (chatBottomPop.isShowing()) {
+                chatBottomPop.hide();
+                chatBottomPop = null;
+            }
+        }
+        chatBottomPop = new PopBottomChat(this);
+        chatBottomPop.show(web,chatRoomId);
+        ChatManager.getManager().setPopBottomChat(chatBottomPop,chatRoomId);
     }
 
     //--------
@@ -2157,7 +2186,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void addDocSucc(int newItemid) {
-        DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, newItemid,1);
+        DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, newItemid, 1);
         if (bottomFilePop != null && bottomFilePop.isShowing()) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -2392,7 +2421,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         case 2:
                             // 切换文档
                         default:
-                            if(noteLayout.getVisibility() == View.VISIBLE){
+                            if (noteLayout.getVisibility() == View.VISIBLE) {
                                 noteWeb.setVisibility(View.GONE);
                                 noteLayout.setVisibility(View.GONE);
                             }
@@ -2401,7 +2430,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
 
                 } else {
-                    if(noteLayout.getVisibility() == View.VISIBLE){
+                    if (noteLayout.getVisibility() == View.VISIBLE) {
                         noteWeb.setVisibility(View.GONE);
                         noteLayout.setVisibility(View.GONE);
                     }
@@ -2450,7 +2479,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         Observable.just(meetingConfig).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingConfig>() {
             @Override
             public void accept(MeetingConfig meetingConfig) throws Exception {
-                DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, Integer.parseInt(_id),1);
+                DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, Integer.parseInt(_id), 1);
             }
         }).subscribe();
     }
@@ -2476,10 +2505,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     meetingConfig.setPageNumber((int) page);
                     meetingConfig.setType(dataJson.getInt("type"));
                     if (documents == null || documents.size() <= 0) {
-                        if(dataJson.has("noteId") && dataJson.getInt("noteId") > 0){
+                        if (dataJson.has("noteId") && dataJson.getInt("noteId") > 0) {
                             followShowNote(dataJson.getInt("noteId"));
                             requestDocuments();
-                        }else {
+                        } else {
                             requestDocumentsAndShowPage();
                         }
 
@@ -2562,7 +2591,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    public class NoteJavascriptInterface{
+    public class NoteJavascriptInterface {
         @org.xwalk.core.JavascriptInterface
         public void afterChangePageFunction(final int pageNum, int type) {
 //            Log.e("JavascriptInterface", "note_afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
@@ -2573,11 +2602,15 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         public void reflect(String result) {
             Log.e("JavascriptInterface", "reflect,result:  " + result);
             Note note = NoteViewManager.getInstance().getNote();
-            if(note != null){
-                notifyMyNoteWebActions(result,note);
+            if (note != null) {
+                notifyMyNoteWebActions(result, note);
             }
         }
     }
+
+
+
+
 
 
 }
