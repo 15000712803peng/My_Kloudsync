@@ -21,6 +21,7 @@ import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventCloseNoteView;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.EventNote;
+import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventShowNotePage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
@@ -129,8 +130,13 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         this.note = note;
         initWeb();
         downLoadNotePageAndShow(note);
-        view.setVisibility(View.VISIBLE);
+
+        if(meetingConfig.getDocument() == null){
+            view.setVisibility(View.GONE);
+            return;
+        }
         process(AppConfig.UserID, meetingConfig);
+        view.setVisibility(View.VISIBLE);
     }
 
     private void close(){
@@ -224,6 +230,8 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     private void process(final String userId, final MeetingConfig meetingConfig) {
         user = new UserNotes();
         user.setUserId(userId);
+
+        close();
         Observable.just(user).observeOn(Schedulers.io()).doOnNext(new Consumer<UserNotes>() {
             @Override
             public void accept(UserNotes userNotes) throws Exception {
@@ -574,14 +582,19 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }).doOnNext(new Consumer<EventNote>() {
             @Override
             public void accept(EventNote note) throws Exception {
-                NoteViewManager.this.note = note.getNote();
-                Log.e("requestNoteToShow","note:" + note.getNote());
-                downLoadNotePageAndShow(note.getNote());
+                if(note.getNote() == null){
+                    EventBus.getDefault().post(new EventNoteErrorShowDocument());
+                }else {
+                    NoteViewManager.this.note = note.getNote();
+                    Log.e("requestNoteToShow","note:" + note.getNote());
+                    downLoadNotePageAndShow(note.getNote());
+                }
+
             }
         }).subscribe();
     }
 
-    public void followShowNote(Context context, final View view,XWalkView noteWeb,final int noteId,MeetingConfig meetingConfig){
+    public void followShowNote(Context context, final View view,XWalkView noteWeb,final int noteId,MeetingConfig meetingConfig,ImageView menuIcon){
         this.meetingConfig = meetingConfig;
         this.context = context;
         noteList = view.findViewById(R.id.list_note);
@@ -602,6 +615,11 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         usersSpinner.setOnSpinnerItemSelectedListener(this);
         initWeb();
         requestNoteToShow(noteId);
+        if(meetingConfig.getDocument() == null){
+            view.setVisibility(View.GONE);
+            menuIcon.setVisibility(View.VISIBLE);
+            return;
+        }
         if(meetingConfig.getType() == MeetingType.MEETING){
 
         }else {

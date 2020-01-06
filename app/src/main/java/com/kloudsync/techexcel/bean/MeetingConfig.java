@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.AgoraUser;
 
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +37,31 @@ public class MeetingConfig{
     private List<MeetingMember> meetingMembers = new ArrayList<>();
     private List<MeetingMember> meetingAuditor = new ArrayList<>();
     private List<MeetingMember> meetingInvitors = new ArrayList<>();
-    private String meetingHostId;
+    private String meetingHostId ="";
     private String agoraChannelId;
     private String presenterId;
     private List<AgoraMember> agoraMembers = new ArrayList<>();
     private boolean fromMeeting;
     private int mode;
     private int shareScreenUid;
+    private JSONObject currentLinkProperty;
+    private int spaceId;
+
+    public int getSpaceId() {
+        return spaceId;
+    }
+
+    public void setSpaceId(int spaceId) {
+        this.spaceId = spaceId;
+    }
+
+    public JSONObject getCurrentLinkProperty() {
+        return currentLinkProperty;
+    }
+
+    public void setCurrentLinkProperty(JSONObject currentLinkProperty) {
+        this.currentLinkProperty = currentLinkProperty;
+    }
 
     public int getShareScreenUid() {
         return shareScreenUid;

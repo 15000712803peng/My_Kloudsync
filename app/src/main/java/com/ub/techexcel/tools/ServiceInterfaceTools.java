@@ -2313,6 +2313,21 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncGetSimpleNoteInfoByLinkId(String linkId){
+
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("linkID", linkId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.getIncidentData(url + "?linkId=" + linkId);
+        Log.e("syncGetSimpleNoteInfoByLinkId", url + jsonObject.toString() + "  " + response.toString());
+        return response;
+    }
+
+
     public interface OnJsonResponseReceiver {
         void jsonResponse(JSONObject jsonResponse);
     }

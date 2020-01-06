@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.ui;
 
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
@@ -32,9 +34,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.BookNote;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventClose;
 import com.kloudsync.techexcel.bean.EventCloseNoteView;
@@ -45,7 +49,9 @@ import com.kloudsync.techexcel.bean.EventInviteUsers;
 import com.kloudsync.techexcel.bean.EventMeetingDocuments;
 import com.kloudsync.techexcel.bean.EventMute;
 import com.kloudsync.techexcel.bean.EventNote;
+import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventNotePageActions;
+import com.kloudsync.techexcel.bean.EventOpenNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
 import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.EventPlaySoundtrack;
@@ -61,6 +67,7 @@ import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
+import com.kloudsync.techexcel.bean.NoteId;
 import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TagItem;
@@ -95,7 +102,9 @@ import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
+import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
+import com.kloudsync.techexcel.tool.QueryLocalNoteTool;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
@@ -111,6 +120,7 @@ import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
 import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.UserSoundtrackDialog;
@@ -332,6 +342,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingConfig.setRole(data.getIntExtra("meeting_role", MeetingConfig.MeetingRole.HOST));
         meetingConfig.setUserToken(UserData.getUserToken(this));
         meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting", false));
+        meetingConfig.setSpaceId(getIntent().getIntExtra("spaceId", 0));
         return meetingConfig;
     }
 
@@ -483,8 +494,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             noteUsersLayout.setVisibility(View.VISIBLE);
         }
         hideEnterLoading();
-        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig);
+        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig,menuIcon);
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showDocumentIfRequestNoteError(EventNoteErrorShowDocument showDocument){
+        requestDocumentsAndShowPage();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -751,6 +767,57 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public void inviteUsers(EventInviteUsers inviteUsers) {
         messageManager.sendMessage_InviteToMeeting(meetingConfig, inviteUsers.getUsers());
         MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void uploadNodeSuccess(NoteId noteId) {
+        Log.e("event_bus", "draw_note_by_id:" + noteId);
+        if (noteId.getLinkID() == 0) {
+            return;
+        }
+        deleteTempNote();
+        drawNote(noteId.getLinkID(), meetingConfig.getCurrentLinkProperty(),0);
+    }
+
+    private void drawNote(int linkId, JSONObject linkProperty, int isOther) {
+        JSONObject noteData = new JSONObject();
+        try {
+            noteData.put("type", 38);
+            noteData.put("LinkID", linkId);
+            noteData.put("IsOther", isOther);
+            noteData.put("LinkProperty", linkProperty);
+            Log.e("noteeeeadd", "note:" + noteData.toString());
+            if (web != null) {
+                web.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void drawTempNote(){
+        drawNote(-1,meetingConfig.getCurrentLinkProperty(),0);
+    }
+
+    private void deleteTempNote() {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/RemoveNote?linkIDs=" + -1;
+        JSONObject noteData = new JSONObject();
+        try {
+            noteData.put("type", 102);
+            noteData.put("id", "BooXNote_" + -1);
+            Log.e("deleteTempNote", "note:" + noteData.toString());
+            if (web != null) {
+                web.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ServiceInterfaceTools.getinstance().removeNote(url, ServiceInterfaceTools.REMOVENOTE, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+
+            }
+        });
     }
 
     public void refreshAgoraMember(AgoraMember member) {
@@ -1627,17 +1694,19 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @org.xwalk.core.JavascriptInterface
-    public synchronized void callAppFunction(String action, final String data) {
+    public synchronized void callAppFunction(final String action, final String data) {
         Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
         if (TextUtils.isEmpty(action) || TextUtils.isEmpty(data)) {
             return;
         }
 
-        try {
-            PageActionsAndNotesMgr.handleNoteActions(this, action, new JSONObject(data));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
+        Observable.just(data).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                PageActionsAndNotesMgr.handleNoteActions(DocAndMeetingActivity.this, action, new JSONObject(data), meetingConfig);
+            }
+        }).subscribe();
 
     }
 
@@ -2051,6 +2120,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private static final int REQUEST_CAMEIA_ADD_DOC = 1;
     private static final int REQUEST_PICTURE_ADD_DOC = 2;
     private static final int REQUEST_SCAN = 3;
+    private static final int REQUEST_CODE_ADD_NOTE = 100;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -2077,9 +2147,37 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         MeetingKit.getInstance().restoreLocalVedeo();
                     }
                     break;
+                case REQUEST_CODE_ADD_NOTE:
+                    String json = data.getStringExtra("OPEN_NOTE_BEAN_JSON");
+                    BookNote note = new Gson().fromJson(json, BookNote.class);
+                    if (web != null) {
+                        uploadNote(note);
+                    }
+                    drawTempNote();
+                    break;
             }
         }
     }
+
+    LocalNoteManager noteManager;
+
+    private void uploadNote(BookNote note) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject();
+            jsonObject.put("ID", note.documentId);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
+        web.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
+        noteManager = LocalNoteManager.getMgr(this);
+        String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
+        Log.e("upload_note","link_property:" + meetingConfig.getCurrentLinkProperty());
+        noteManager.exportPdfAndUpload(this, note, exportPath, meetingConfig.getDocument().getAttachmentID()+"", meetingConfig.getPageNumber()+"", meetingConfig.getSpaceId(), "0", meetingConfig.getCurrentLinkProperty().toString());
+    }
+
 
     private void uploadFileWhenAddDoc(File file) {
 
@@ -2229,7 +2327,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }).subscribe();
 
     }
-    
+
     private void gotoScanTv() {
 
         if (!isCameraCanUse()) {
@@ -2295,8 +2393,39 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void closeViewNote(EventCloseNoteView closeNoteView) {
         Log.e("check_play", "playSoundtrack");
+        menuIcon.setVisibility(View.VISIBLE);
         notifyDocumentChanged();
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void openNoteByEvent(EventOpenNote openNote) {
+        openNote(openNote.getNoteId());
+    }
+
+    private void openNote(String noteId) {
+        BookNote bookNote = null;
+        if (TextUtils.isEmpty(noteId)) {
+            bookNote = new BookNote().setTitle("new note").setJumpBackToNote(false);
+        } else {
+            bookNote = new BookNote().setDocumentId(noteId).setJumpBackToNote(false);
+            if (!QueryLocalNoteTool.noteIsExist(this, noteId)) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(DocAndMeetingActivity.this, "笔记在本地设备不存在", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return;
+            }
+        }
+
+        Intent intent = new Intent();
+        intent.putExtra("OPEN_NOTE_BEAN", new Gson().toJson(bookNote));
+        ComponentName comp = new ComponentName("com.onyx.android.note", "com.onyx.android.note.note.ui.ScribbleActivity");
+        intent.setComponent(comp);
+        startActivityForResult(intent, REQUEST_CODE_ADD_NOTE);
+    }
+
 
     private SoundtrackPlayDialog soundtrackPlayDialog;
 
@@ -2434,14 +2563,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 }
                 break;
             case 9:
-                Log.e("check_share_screen","data:" + data + "，uid:" + meetingConfig.getShareScreenUid());
-                if(data.has("videoMode")){
+                Log.e("check_share_screen", "data:" + data + "，uid:" + meetingConfig.getShareScreenUid());
+                if (data.has("videoMode")) {
                     String mode = data.getString("videoMode");
                     meetingConfig.setMode(Integer.parseInt(mode));
-                    if(meetingConfig.getMode() == 3){
-                        Log.e("check_share_screen","data:" + data + "，uid:" + meetingConfig.getShareScreenUid() + ",mode:" + meetingConfig.getMode() + ",post_share_screen");
+                    if (meetingConfig.getMode() == 3) {
+                        Log.e("check_share_screen", "data:" + data + "，uid:" + meetingConfig.getShareScreenUid() + ",mode:" + meetingConfig.getMode() + ",post_share_screen");
                         MeetingKit.getInstance().postShareScreen(meetingConfig.getShareScreenUid());
-                    }else {
+                    } else {
                         meetingConfig.setShareScreenUid(0);
                     }
                 }
@@ -2513,7 +2642,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     meetingConfig.setPageNumber((int) page);
                     meetingConfig.setType(dataJson.getInt("type"));
 
-                    if(dataJson.has("currentMode")){
+                    if (dataJson.has("currentMode")) {
                         meetingConfig.setMode(dataJson.getInt("currentMode"));
                     }
                     if (documents == null || documents.size() <= 0) {

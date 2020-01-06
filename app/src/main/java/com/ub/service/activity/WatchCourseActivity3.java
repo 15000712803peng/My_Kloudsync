@@ -9387,7 +9387,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
     }
 
     private void displayNoteByLinkId(int linkId) {
-
         String url = AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID?linkID=" + linkId;
         ServiceInterfaceTools.getinstance().getNoteByLinkID(url, ServiceInterfaceTools.GETNOTEBYLINKID, new ServiceInterfaceListener() {
             @Override

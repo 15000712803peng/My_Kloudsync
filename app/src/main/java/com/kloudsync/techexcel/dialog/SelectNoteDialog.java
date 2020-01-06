@@ -211,14 +211,11 @@ public class SelectNoteDialog implements View.OnClickListener {
         private Context mContext;
         private List<Note> mDatas;
         int selectPosition = -1;
-
-
         public DocumentAdapter(Context context, List<Note> mDatas) {
             this.mContext = context;
             this.mDatas = mDatas;
 
         }
-
 
         @Override
         public int getItemCount() {

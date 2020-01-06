@@ -282,6 +282,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         if(uid <= 1000000000 || uid > 1500000000){
             return;
         }
+
         getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
         SurfaceView surfaceView = RtcEngine.CreateRendererView(host.getBaseContext());
         surfaceView.setZOrderOnTop(true);
@@ -316,7 +317,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                     }
                 }
             }).subscribe();
-
 
         }
     }
