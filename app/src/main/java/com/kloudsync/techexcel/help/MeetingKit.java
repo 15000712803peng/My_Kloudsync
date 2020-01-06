@@ -223,6 +223,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     public void onUserOffline(int uid, int reason) {
         Log.e("MeetingKit", "onUserOffline:" + uid);
         if (uid > 1000000000 && uid < 1500000000) {
+            meetingConfig.setShareScreenUid(0);
             EventBus.getDefault().post(new EventCloseShare());
         }else {
             AgoraMember member = new AgoraMember();
@@ -274,6 +275,24 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     }
 
+    public void postShareScreen(int uid){
+        if(meetingConfig.getMode() != 3){
+            return;
+        }
+        if(uid <= 1000000000 || uid > 1500000000){
+            return;
+        }
+        getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
+        SurfaceView surfaceView = RtcEngine.CreateRendererView(host.getBaseContext());
+        surfaceView.setZOrderOnTop(true);
+        surfaceView.setZOrderMediaOverlay(true);
+        surfaceView.setTag(uid);
+        getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, uid));
+        EventShareScreen shareScreen = new EventShareScreen();
+        shareScreen.setUid(uid);
+        shareScreen.setShareView(surfaceView);
+        EventBus.getDefault().post(shareScreen);
+    }
     @Override
     public void onUserJoined(final int uid, int elapsed) {
         Log.e("MeetingKit", "onUserJoined,uid:" + uid);
@@ -287,16 +306,10 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 public void accept(MeetingConfig meetingConfig) throws Exception {
                     // 屏幕共享
                     if (uid > 1000000000 && uid < 1500000000) {
-                        getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
-                        SurfaceView surfaceView = RtcEngine.CreateRendererView(host.getBaseContext());
-                        surfaceView.setZOrderOnTop(true);
-                        surfaceView.setZOrderMediaOverlay(true);
-                        surfaceView.setTag(uid);
-                        getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, uid));
-                        EventShareScreen shareScreen = new EventShareScreen();
-                        shareScreen.setUid(uid);
-                        shareScreen.setShareView(surfaceView);
-                        EventBus.getDefault().post(shareScreen);
+                        Log.e("check_share_screen","uid:" + uid);
+                        meetingConfig.setShareScreenUid(uid);
+                        postShareScreen(meetingConfig.getShareScreenUid());
+
                     }else {
                      //  成员的camera
                         refreshMembersAndPost(meetingConfig,uid,false);

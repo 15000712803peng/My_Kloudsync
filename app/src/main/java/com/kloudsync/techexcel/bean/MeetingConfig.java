@@ -40,6 +40,24 @@ public class MeetingConfig{
     private String presenterId;
     private List<AgoraMember> agoraMembers = new ArrayList<>();
     private boolean fromMeeting;
+    private int mode;
+    private int shareScreenUid;
+
+    public int getShareScreenUid() {
+        return shareScreenUid;
+    }
+
+    public void setShareScreenUid(int shareScreenUid) {
+        this.shareScreenUid = shareScreenUid;
+    }
+
+    public int getMode() {
+        return mode;
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
 
     public boolean isFromMeeting() {
         return fromMeeting;

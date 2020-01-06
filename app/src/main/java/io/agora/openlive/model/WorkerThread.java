@@ -9,15 +9,11 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
-
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.File;
-
 import io.agora.commom.Constant;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;

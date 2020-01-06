@@ -32,7 +32,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
@@ -360,7 +359,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         meetingConfig = null;
     }
-
 
     private synchronized void getMeetingMembers(JSONArray users) {
         List<MeetingMember> allMembers = (List<MeetingMember>) new Gson().fromJson(users.toString(), new TypeToken<List<MeetingMember>>() {
@@ -2233,6 +2231,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
     
     private void gotoScanTv() {
+
         if (!isCameraCanUse()) {
             Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
             return;
@@ -2251,6 +2250,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }, 500);
 
         } else {
+
             Intent intent = new Intent(DocAndMeetingActivity.this, MipcaActivityCapture.class);
             intent.putExtra("isHorization", true);
             intent.putExtra("type", 0);
@@ -2266,7 +2266,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 //                });
 
     }
-
 
     SetPresenterDialog setPresenterDialog;
 
@@ -2433,7 +2432,19 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
                     changeDocument(data.getInt("itemId"), Integer.parseInt(data.getString("pageNumber")));
                 }
-
+                break;
+            case 9:
+                Log.e("check_share_screen","data:" + data + "，uid:" + meetingConfig.getShareScreenUid());
+                if(data.has("videoMode")){
+                    String mode = data.getString("videoMode");
+                    meetingConfig.setMode(Integer.parseInt(mode));
+                    if(meetingConfig.getMode() == 3){
+                        Log.e("check_share_screen","data:" + data + "，uid:" + meetingConfig.getShareScreenUid() + ",mode:" + meetingConfig.getMode() + ",post_share_screen");
+                        MeetingKit.getInstance().postShareScreen(meetingConfig.getShareScreenUid());
+                    }else {
+                        meetingConfig.setShareScreenUid(0);
+                    }
+                }
                 break;
         }
     }
@@ -2501,6 +2512,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     float page = Float.parseFloat(datas[1]);
                     meetingConfig.setPageNumber((int) page);
                     meetingConfig.setType(dataJson.getInt("type"));
+
+                    if(dataJson.has("currentMode")){
+                        meetingConfig.setMode(dataJson.getInt("currentMode"));
+                    }
                     if (documents == null || documents.size() <= 0) {
                         if (dataJson.has("noteId") && dataJson.getInt("noteId") > 0) {
                             followShowNote(dataJson.getInt("noteId"));
@@ -2508,7 +2523,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         } else {
                             requestDocumentsAndShowPage();
                         }
-
                     }
 
                     if (meetingConfig.getType() == MeetingType.DOC) {

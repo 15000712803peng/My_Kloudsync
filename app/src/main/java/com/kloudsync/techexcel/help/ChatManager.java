@@ -38,6 +38,7 @@ public class ChatManager extends RongIMClient.OperationCallback {
         caches = new HashMap<>();
         messages = new ArrayList<>();
     }
+
     PopBottomChat popBottomChat;
 
     public void setPopBottomChat(PopBottomChat popBottomChat,String roomId) {
@@ -63,6 +64,7 @@ public class ChatManager extends RongIMClient.OperationCallback {
             if(size - 1 < 0){
                 return;
             }
+
             int begin = size - 10;
             if(begin < 0){
                 begin = 0;
