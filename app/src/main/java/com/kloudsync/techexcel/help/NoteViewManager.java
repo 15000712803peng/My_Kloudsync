@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,7 +18,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventCloseNoteView;
-import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventShowNotePage;
@@ -130,7 +128,6 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         this.note = note;
         initWeb();
         downLoadNotePageAndShow(note);
-
         if(meetingConfig.getDocument() == null){
             view.setVisibility(View.GONE);
             return;
@@ -230,7 +227,6 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     private void process(final String userId, final MeetingConfig meetingConfig) {
         user = new UserNotes();
         user.setUserId(userId);
-
         close();
         Observable.just(user).observeOn(Schedulers.io()).doOnNext(new Consumer<UserNotes>() {
             @Override
@@ -291,7 +287,6 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
             }
         }).subscribe();
     }
-
 
 
     private void refreshUserList(UserNotes user) {
@@ -380,7 +375,6 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
                     if (note.getLinkID() == noteDetail.getLinkID()) {
                         return;
                     }
-
                     changeNote(noteDetail.getLinkID());
 
                 }
@@ -435,7 +429,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         DocumentPage page = pageCache.getPageCache(pageUrl);
         final EventShowNotePage notePage = new EventShowNotePage();
         notePage.setAttachmendId(note.getAttachmentID());
-        Log.e("-", "get cach page:" + page + "--> url:" + documentPage.getPageUrl());
+        Log.e("queryAndDownLoadNoteToShow", "get cach page:" + page + "--> url:" + documentPage.getPageUrl());
         if (page != null && !TextUtils.isEmpty(page.getPageUrl())
                 && !TextUtils.isEmpty(page.getSavedLocalPath()) && !TextUtils.isEmpty(page.getShowingPath())) {
             if (new File(page.getSavedLocalPath()).exists()) {
@@ -620,6 +614,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
             menuIcon.setVisibility(View.VISIBLE);
             return;
         }
+
         if(meetingConfig.getType() == MeetingType.MEETING){
 
         }else {

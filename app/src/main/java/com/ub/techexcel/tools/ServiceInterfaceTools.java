@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.kloudsync.techexcel.bean.CompanyContact;
 import com.kloudsync.techexcel.bean.DocumentData;
 import com.kloudsync.techexcel.bean.DocumentDetail;
+import com.kloudsync.techexcel.bean.EventSelectNote;
 import com.kloudsync.techexcel.bean.FavoriteData;
 import com.kloudsync.techexcel.bean.InviteInfo;
 import com.kloudsync.techexcel.bean.LoginData;
@@ -2433,6 +2434,26 @@ public class ServiceInterfaceTools {
         Log.e("syncGetUserListBasicInfoByRongCloud","url:" + url + ",result:" + response);
         return response;
     }
+
+    public JSONObject syncImportNote(MeetingConfig meetingConfig,EventSelectNote note) {
+        JSONObject response = null;
+        try {
+            final JSONObject jsonObject = new JSONObject();
+            jsonObject.put("SyncRoomID", meetingConfig.getLessionId());
+            jsonObject.put("DocumentItemID", meetingConfig.getDocument().getAttachmentID());
+            jsonObject.put("PageNumber", meetingConfig.getPageNumber() +"");
+            jsonObject.put("NoteID", note.getNote().getNoteID());
+            jsonObject.put("LinkProperty", note.getLinkProperty().toString());
+            response = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "DocumentNote/ImportNote", jsonObject);
+            Log.e("syncImportNote", AppConfig.URL_PUBLIC + "DocumentNote/ImportNote" + "    " + jsonObject.toString() + "     " + response.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return  response;
+    }
+
 
 
 

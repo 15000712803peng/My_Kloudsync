@@ -12,9 +12,11 @@ import com.kloudsync.techexcel.bean.EventNotePageActions;
 import com.kloudsync.techexcel.bean.EventOpenNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
 import com.kloudsync.techexcel.bean.EventPageNotes;
+import com.kloudsync.techexcel.bean.EventSelectNote;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.NoteSelectedDialog;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.NoteImageCache;
 import com.ub.techexcel.bean.Note;
@@ -96,9 +98,30 @@ public class PageActionsAndNotesMgr {
         }).start(ThreadManager.getManager());
     }
 
+
+    private static NoteSelectedDialog noteSelectedDialog;
+    private static void showNoteSelectedDialog(Context context,EventSelectNote selectNote){
+        if(noteSelectedDialog != null){
+            if(noteSelectedDialog.isShowing()){
+                noteSelectedDialog.dismiss();
+                noteSelectedDialog = null;
+            }
+        }
+        noteSelectedDialog = new NoteSelectedDialog(context);
+        noteSelectedDialog.show(selectNote);
+    }
+
     public static void handleNoteActions(Context context, String action, JSONObject data, MeetingConfig meetingConfig) throws JSONException {
         switch (action) {
             case "BookNoteSelect":
+                if(data.has("LinkID")){
+                    final int linkId = data.getInt("LinkID");
+                    final JSONObject linkProperty = data.getJSONObject("LinkProperty");
+                    EventSelectNote selectNote = new EventSelectNote();
+                    selectNote.setLinkId(linkId);
+                    selectNote.setLinkProperty(linkProperty);
+                    showNoteSelectedDialog(context,selectNote);
+                }
                 break;
             case "BookNoteView":
                 if (data.has("LinkID")) {
@@ -152,6 +175,7 @@ public class PageActionsAndNotesMgr {
     }
 
     public static synchronized void getNoteDetail(int linkId) {
+
         Observable.just(linkId).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer _linkId) throws Exception {

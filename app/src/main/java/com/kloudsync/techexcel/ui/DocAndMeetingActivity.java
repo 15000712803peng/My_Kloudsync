@@ -57,6 +57,7 @@ import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.EventPlaySoundtrack;
 import com.kloudsync.techexcel.bean.EventRefreshDocs;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
+import com.kloudsync.techexcel.bean.EventSelectNote;
 import com.kloudsync.techexcel.bean.EventSetPresenter;
 import com.kloudsync.techexcel.bean.EventShareScreen;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
@@ -468,6 +469,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showNotePage(final EventShowNotePage page) {
+        Log.e("showNotePage","page:" + page);
+        noteWeb.setVisibility(View.VISIBLE);
         noteWeb.load("javascript:ShowPDF('" + page.getNotePage().getShowingPath() + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
         noteWeb.load("javascript:Record()", null);
     }
@@ -483,6 +486,31 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig);
         notifyViewNote(note.getNote());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public synchronized void showSelectedNote(EventSelectNote selectNote){
+        Observable.just(selectNote).observeOn(Schedulers.io()).doOnNext(new Consumer<EventSelectNote>() {
+            @Override
+            public void accept(EventSelectNote selectNote) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().syncImportNote(meetingConfig,selectNote);
+                if(response != null && response.has("RetCode")){
+                    if(response.getInt("RetCode") == 0){
+                        selectNote.setNewLinkId(response.getInt("RetData"));
+                    }
+                }
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<EventSelectNote>() {
+            @Override
+            public void accept(EventSelectNote selectNote) throws Exception {
+                if(selectNote.getLinkId() > 0){
+                    deleteNote(selectNote.getLinkId());
+                }
+                if(selectNote.getNewLinkId() > 0){
+                    drawNote(selectNote.getNewLinkId(),selectNote.getLinkProperty(),0);
+                }
+            }
+        }).subscribe();
     }
 
 
@@ -786,7 +814,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             noteData.put("LinkID", linkId);
             noteData.put("IsOther", isOther);
             noteData.put("LinkProperty", linkProperty);
-            Log.e("noteeeeadd", "note:" + noteData.toString());
+            Log.e("drawNote", "note:" + noteData.toString());
             if (web != null) {
                 web.load("javascript:PlayActionByTxt('" + noteData + "')", null);
             }
@@ -799,12 +827,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         drawNote(-1,meetingConfig.getCurrentLinkProperty(),0);
     }
 
-    private void deleteTempNote() {
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/RemoveNote?linkIDs=" + -1;
+    private void deleteNote(int linkId) {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/RemoveNote?linkIDs=" + linkId;
         JSONObject noteData = new JSONObject();
         try {
             noteData.put("type", 102);
-            noteData.put("id", "BooXNote_" + -1);
+            noteData.put("id", "BooXNote_" + linkId);
             Log.e("deleteTempNote", "note:" + noteData.toString());
             if (web != null) {
                 web.load("javascript:PlayActionByTxt('" + noteData + "')", null);
@@ -818,6 +846,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
             }
         });
+    }
+
+    private void deleteTempNote(){
+        deleteNote(-1);
     }
 
     public void refreshAgoraMember(AgoraMember member) {
