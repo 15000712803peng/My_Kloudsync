@@ -2,10 +2,14 @@ package com.kloudsync.techexcel.help;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -28,8 +32,12 @@ import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -103,7 +111,6 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
         chatList.setAdapter(adapter);
     }
 
-
     public void show(View view,String roomId) {
         this.roomId = roomId;
         if (bottomChatWindow == null) {
@@ -142,7 +149,7 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
 
     @Override
     public void onSuccess(Message message) {
-        Log.e("send_chat_message","on_success");
+        Log.e("send_chat_message","on_success:" + message);
         ChatManager.getManager().wrapMessage(message);
         Observable.just(message).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Message>() {
             @Override
@@ -162,6 +169,7 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
     class ChatAdapter extends RecyclerView.Adapter<ChatHolder>{
 
         List<ChatMessage> messages = new ArrayList<>();
+        SimpleDateFormat dateFormat;
 
         public ChatAdapter(List<ChatMessage> messages){
             this.messages.clear();
@@ -169,7 +177,7 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
         }
 
         public ChatAdapter(){
-
+            dateFormat = new SimpleDateFormat("aa K:mm:ss");
         }
 
         public void setMessages(List<ChatMessage> messages){
@@ -190,14 +198,16 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
 
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public void onBindViewHolder(@NonNull ChatHolder holder, int position) {
             ChatMessage message = messages.get(position);
+
             if(TextUtils.isEmpty(message.getUserName())){
                 holder.name.setVisibility(View.INVISIBLE);
             }else {
                 holder.name.setVisibility(View.VISIBLE);
-                holder.name.setText(message.getUserName());
+                holder.name.setText(message.getUserName() + ":");
             }
 
             TextMessage textMessage = (TextMessage) message.getMessage().getContent();
@@ -206,6 +216,8 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
             }else {
                 holder.content.setText("");
             }
+            holder.time.setText(dateFormat.format(new Date(message.getTime())));
+
         }
 
         @Override
@@ -216,7 +228,6 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
 
 
     class ChatHolder extends RecyclerView.ViewHolder{
-
         public TextView time;
         public TextView name;
         public TextView content;

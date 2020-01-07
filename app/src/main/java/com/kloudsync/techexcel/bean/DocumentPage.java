@@ -13,6 +13,15 @@ public class DocumentPage implements Serializable{
     private String savedLocalPath;
     private String showingPath;
     private int pageNumber;
+    private String localFileId;
+
+    public String getLocalFileId() {
+        return localFileId;
+    }
+
+    public void setLocalFileId(String localFileId) {
+        this.localFileId = localFileId;
+    }
 
     public int getPageNumber() {
         return pageNumber;

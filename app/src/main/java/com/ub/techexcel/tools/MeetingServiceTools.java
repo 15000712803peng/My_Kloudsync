@@ -509,6 +509,7 @@ public class MeetingServiceTools {
                 for (int j = 0; j < note.getPageCount(); ++j) {
                     String pageUrl = "";
                     DocumentPage page = new DocumentPage();
+                    page.setLocalFileId(note.getLocalFileID());
                     page.setPageNumber(j + 1);
                     page.setDocumentId(note.getDocumentItemID());
                     if (TextUtils.isEmpty(preUrl)) {

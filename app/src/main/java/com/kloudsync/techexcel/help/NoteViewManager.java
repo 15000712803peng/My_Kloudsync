@@ -609,15 +609,15 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         usersSpinner.setOnSpinnerItemSelectedListener(this);
         initWeb();
         requestNoteToShow(noteId);
-        if(meetingConfig.getDocument() == null){
-            view.setVisibility(View.GONE);
-            menuIcon.setVisibility(View.VISIBLE);
-            return;
-        }
 
         if(meetingConfig.getType() == MeetingType.MEETING){
 
         }else {
+            if(meetingConfig.getDocument() == null){
+                view.setVisibility(View.GONE);
+                menuIcon.setVisibility(View.VISIBLE);
+                return;
+            }
             process(AppConfig.UserID, meetingConfig);
         }
         view.setVisibility(View.VISIBLE);

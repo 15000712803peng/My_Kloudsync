@@ -10,6 +10,15 @@ public class ChatMessage {
     private String userName;
     private String avatorUrl;
     private Message message;
+    private long time;
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
 
     public String getUserName() {
         return userName;

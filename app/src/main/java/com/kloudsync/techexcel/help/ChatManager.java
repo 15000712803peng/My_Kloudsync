@@ -19,7 +19,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import io.rong.imkit.RongIM;
+
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
 import io.rong.message.TextMessage;
@@ -49,16 +49,9 @@ public class ChatManager extends RongIMClient.OperationCallback {
 
     @Override
     public void onSuccess() {
-        Log.e("ChatManager","Join_Success");
+        Log.e("ChatManager","Join_Success:messages_size:" + messages.size());
         getHistoryMessage();
         RongIMClient.setOnReceiveMessageListener(messageReceiver);
-//        RongIM.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageListener() {
-//            @Override
-//            public boolean onReceived(Message message, int i) {
-//                Log.e("ChatManager","on_receive:" + message);
-//                return false;
-//            }
-//        });
         if(popBottomChat != null){
             int size = messages.size();
             if(size - 1 < 0){
@@ -133,6 +126,10 @@ public class ChatManager extends RongIMClient.OperationCallback {
             @Override
             public ChatMessage apply(Message message) throws Exception {
                 ChatMessage chatMessage = new ChatMessage();
+                chatMessage.setTime(message.getReceivedTime());
+                if(chatMessage.getTime() <= 0){
+                    chatMessage.setTime(message.getSentTime());
+                }
                 if(caches.containsKey(message.getSenderUserId())){
                     chatMessage.setUserName(caches.get(message.getSenderUserId()).name);
                     chatMessage.setAvatorUrl(caches.get(message.getSenderUserId()).avatorUrl);
@@ -160,6 +157,7 @@ public class ChatManager extends RongIMClient.OperationCallback {
                     }
                 }
                 messages.add(chatMessage);
+                Log.e("ChatManager","Add_Message:" + messages.size());
             }
 
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<ChatMessage>() {

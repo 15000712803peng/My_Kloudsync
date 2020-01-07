@@ -515,7 +515,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
 
     public synchronized void followShowNote(int noteId) {
-
         if (meetingConfig.getType() == MeetingType.MEETING) {
             noteUsersLayout.setVisibility(View.GONE);
         } else {
@@ -591,6 +590,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (socketMessage.getData() == null) {
                     return;
                 }
+
                 if (socketMessage.getData().has("data")) {
                     try {
                         handleMessageSendMessage(new JSONObject(Tools.getFromBase64(socketMessage.getData().getString("data"))));
@@ -1288,7 +1288,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
 
         String meetingId = meetingConfig.getMeetingId();
-
         JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
                 document.getNewPath());
         if (queryDocumentResult != null) {
@@ -2659,6 +2658,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
 
         if (data.has("retCode")) {
+
             try {
                 if (data.getInt("retCode") == 0) {
                     // 成功收到JOIN_MEETING的返回
@@ -2667,13 +2667,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 //                        Toast.makeText(this, "join meeting failed", Toast.LENGTH_SHORT).show();
 //                        return;
 //                    }
+
                     String pageData = dataJson.getString("CurrentDocumentPage");
                     String[] datas = pageData.split("-");
                     meetingConfig.setFileId(Integer.parseInt(datas[0]));
                     float page = Float.parseFloat(datas[1]);
                     meetingConfig.setPageNumber((int) page);
                     meetingConfig.setType(dataJson.getInt("type"));
-
                     if (dataJson.has("currentMode")) {
                         meetingConfig.setMode(dataJson.getInt("currentMode"));
                     }
