@@ -676,6 +676,16 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     public void changeSelectedTab(int id) {
         for (int i = 0; i < tvs.size(); i++) {
             TextView tabText = tvs.get(i);
+
+            if (tabText.getId() == R.id.txt_tab_document) {
+                if (isDisplayProjectOne) {
+                    tabText.setText("项目");
+                } else {
+                    tabText.setText(getString(R.string.service));
+                }
+            }
+
+
             if (tabText.getId() == id) {
                 // 必须设置图片大小，否则不显示ad
                 Drawable d = getResources().getDrawable(draw_selectIDs[tvs.indexOf(tabText)]);
@@ -1156,15 +1166,38 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
 
+    private boolean isDisplayProjectOne = false;
+
+    @Subscribe
+    public void changeProjectOne(EventProjectFragment eventProjectFragment) {
+        Log.e("eventProjectFragment", eventProjectFragment.getSubSystemId() + "");
+        isDisplayProjectOne = true;
+
+        TextView v = documentTab;
+        teamFrame.setVisibility(View.VISIBLE);
+        spaceFrame.setVisibility(View.GONE);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment fragment = getTeamFragment(v.getId());
+        if (currentTeamFragment != null) {
+            fragmentTransaction.hide(currentTeamFragment);
+        }
+        if (!fragment.isAdded()) {
+            fragmentTransaction.add(R.id.frame_tab_team, fragment, String.valueOf(v.getId()));
+        }
+        fragmentTransaction.commitAllowingStateLoss();
+        currentTeamFragment = fragment;
+        changeSelectedTab(v.getId());
+
+    }
+
+
     public void changeTeamFragment(TextView v) {
 //        isDisplayProjectOne
         teamFrame.setVisibility(View.VISIBLE);
         spaceFrame.setVisibility(View.GONE);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment fragment = null;
-
         fragment = fragmentManager.findFragmentByTag(String.valueOf(v.getId()));
-
         Log.e("changeFragment", "fragment:" + fragment);
         if (fragment == null) {
             if (currentTeamFragment != null) {
@@ -1174,19 +1207,14 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             if (!fragment.isAdded()) {
                 fragmentTransaction.add(R.id.frame_tab_team, fragment, String.valueOf(v.getId()));
             }
-
         } else if (fragment == currentTeamFragment) {
 
         } else {
             if (currentTeamFragment != null) {
                 fragmentTransaction.hide(currentTeamFragment);
             }
-            Log.e("fragment_operation", "hide fragment:" + currentTeamFragment);
             fragmentTransaction.show(fragment);
-            Log.e("fragment_operation", "show fragment:" + fragment);
-
         }
-
         fragmentTransaction.commitAllowingStateLoss();
         currentTeamFragment = fragment;
         changeSelectedTab(v.getId());
@@ -1213,16 +1241,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         } else if (teamFragment.getType() == 2) {
             changeTeamFragment(syncroomTab);
         }
-
-    }
-
-
-    private boolean isDisplayProjectOne = true;
-
-    @Subscribe
-    public void changeProjectOne(EventProjectFragment eventProjectFragment) {
-        Log.e("eventProjectFragment", eventProjectFragment.getSubSystemId() + "");
-        isDisplayProjectOne = true;
     }
 
 

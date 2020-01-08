@@ -469,7 +469,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showNotePage(final EventShowNotePage page) {
-        Log.e("showNotePage","page:" + page);
+        Log.e("showNotePage", "page:" + page);
         noteWeb.setVisibility(View.VISIBLE);
         noteWeb.load("javascript:ShowPDF('" + page.getNotePage().getShowingPath() + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
         noteWeb.load("javascript:Record()", null);
@@ -489,13 +489,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public synchronized void showSelectedNote(EventSelectNote selectNote){
+    public synchronized void showSelectedNote(EventSelectNote selectNote) {
         Observable.just(selectNote).observeOn(Schedulers.io()).doOnNext(new Consumer<EventSelectNote>() {
             @Override
             public void accept(EventSelectNote selectNote) throws Exception {
-                JSONObject response = ServiceInterfaceTools.getinstance().syncImportNote(meetingConfig,selectNote);
-                if(response != null && response.has("RetCode")){
-                    if(response.getInt("RetCode") == 0){
+                JSONObject response = ServiceInterfaceTools.getinstance().syncImportNote(meetingConfig, selectNote);
+                if (response != null && response.has("RetCode")) {
+                    if (response.getInt("RetCode") == 0) {
                         selectNote.setNewLinkId(response.getInt("RetData"));
                     }
                 }
@@ -503,11 +503,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<EventSelectNote>() {
             @Override
             public void accept(EventSelectNote selectNote) throws Exception {
-                if(selectNote.getLinkId() > 0){
+                if (selectNote.getLinkId() > 0) {
                     deleteNote(selectNote.getLinkId());
                 }
-                if(selectNote.getNewLinkId() > 0){
-                    drawNote(selectNote.getNewLinkId(),selectNote.getLinkProperty(),0);
+                if (selectNote.getNewLinkId() > 0) {
+                    drawNote(selectNote.getNewLinkId(), selectNote.getLinkProperty(), 0);
                 }
             }
         }).subscribe();
@@ -521,12 +521,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             noteUsersLayout.setVisibility(View.VISIBLE);
         }
         hideEnterLoading();
-        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig,menuIcon);
+        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menuIcon);
 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void showDocumentIfRequestNoteError(EventNoteErrorShowDocument showDocument){
+    public void showDocumentIfRequestNoteError(EventNoteErrorShowDocument showDocument) {
         requestDocumentsAndShowPage();
     }
 
@@ -803,7 +803,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
         deleteTempNote();
-        drawNote(noteId.getLinkID(), meetingConfig.getCurrentLinkProperty(),0);
+        drawNote(noteId.getLinkID(), meetingConfig.getCurrentLinkProperty(), 0);
     }
 
     private void drawNote(int linkId, JSONObject linkProperty, int isOther) {
@@ -822,8 +822,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    private void drawTempNote(){
-        drawNote(-1,meetingConfig.getCurrentLinkProperty(),0);
+    private void drawTempNote() {
+        drawNote(-1, meetingConfig.getCurrentLinkProperty(), 0);
     }
 
     private void deleteNote(int linkId) {
@@ -847,7 +847,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         });
     }
 
-    private void deleteTempNote(){
+    private void deleteTempNote() {
         deleteNote(-1);
     }
 
@@ -2201,8 +2201,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         web.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(this);
         String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
-        Log.e("upload_note","link_property:" + meetingConfig.getCurrentLinkProperty());
-        noteManager.exportPdfAndUpload(this, note, exportPath, meetingConfig.getDocument().getAttachmentID()+"", meetingConfig.getPageNumber()+"", meetingConfig.getSpaceId(), "0", meetingConfig.getCurrentLinkProperty().toString());
+        Log.e("upload_note", "link_property:" + meetingConfig.getCurrentLinkProperty());
+        noteManager.exportPdfAndUpload(this, note, exportPath, meetingConfig.getDocument().getAttachmentID() + "", meetingConfig.getPageNumber() + "", meetingConfig.getSpaceId(), "0", meetingConfig.getCurrentLinkProperty().toString());
     }
 
 

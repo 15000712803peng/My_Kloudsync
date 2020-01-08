@@ -14,6 +14,7 @@ import com.kloudsync.techexcel.bean.CompanyContact;
 import com.kloudsync.techexcel.bean.CompanySubsystem;
 import com.kloudsync.techexcel.bean.DocumentData;
 import com.kloudsync.techexcel.bean.DocumentDetail;
+import com.kloudsync.techexcel.bean.EventSelectNote;
 import com.kloudsync.techexcel.bean.FavoriteData;
 import com.kloudsync.techexcel.bean.InviteInfo;
 import com.kloudsync.techexcel.bean.LoginData;
@@ -397,11 +398,11 @@ public class ServiceInterfaceTools {
                 Log.e("hhh", url + "    " + jsonObject1.toString());
                 try {
                     if (jsonObject1.getInt("code") == 0 && jsonObject1.getString("msg").equals("success")) {
-                        JSONArray data=jsonObject1.getJSONArray("data");
-                        List<CompanySubsystem> list=new ArrayList<>();
-                        for(int i=0;i<data.length();i++){
-                            JSONObject jsonObject=data.getJSONObject(i);
-                            CompanySubsystem subSystemBean=new CompanySubsystem();
+                        JSONArray data = jsonObject1.getJSONArray("data");
+                        List<CompanySubsystem> list = new ArrayList<>();
+                        for (int i = 0; i < data.length(); i++) {
+                            JSONObject jsonObject = data.getJSONObject(i);
+                            CompanySubsystem subSystemBean = new CompanySubsystem();
                             subSystemBean.setCompanyId(jsonObject.getString("companyId"));
                             subSystemBean.setSubSystemId(jsonObject.getString("subSystemId"));
                             subSystemBean.setSubSystemName(jsonObject.getString("subSystemName"));
@@ -1852,7 +1853,7 @@ public class ServiceInterfaceTools {
                 for (int j = 0; j < _notes.length(); j++) {
                     JSONObject note = _notes.getJSONObject(j);
                     NoteDetail _note = new Gson().fromJson(note.toString(), NoteDetail.class);
-                    String noteUrl = _note.getAttachmentUrl().substring(0,_note.getAttachmentUrl().lastIndexOf("<")) + 1 + _note.getAttachmentUrl().substring(_note.getAttachmentUrl().lastIndexOf("."));
+                    String noteUrl = _note.getAttachmentUrl().substring(0, _note.getAttachmentUrl().lastIndexOf("<")) + 1 + _note.getAttachmentUrl().substring(_note.getAttachmentUrl().lastIndexOf("."));
                     _note.setUrl(noteUrl);
                     notes.add(_note);
 
@@ -1864,7 +1865,6 @@ public class ServiceInterfaceTools {
         }
         return notes;
     }
-
 
 
     public void getNoteListV2(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
@@ -2678,7 +2678,7 @@ public class ServiceInterfaceTools {
 
     }
 
-    public JSONObject syncGetSimpleNoteInfoByLinkId(String linkId){
+    public JSONObject syncGetSimpleNoteInfoByLinkId(String linkId) {
 
         String url = AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID";
         JSONObject jsonObject = new JSONObject();
@@ -2766,52 +2766,52 @@ public class ServiceInterfaceTools {
     }
 
 
-    public JSONObject syncGetFavoriteVedios(){
-        String url  = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + 2;
+    public JSONObject syncGetFavoriteVedios() {
+        String url = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + 2;
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
         return response;
     }
 
-    public JSONObject syncGetMeetingMembers(String meetingId,int role) {
+    public JSONObject syncGetMeetingMembers(String meetingId, int role) {
 
         String url = "";
-        if(role == MeetingConfig.MeetingRole.MEMBER){
+        if (role == MeetingConfig.MeetingRole.MEMBER) {
             url += AppConfig.URL_MEETING_BASE + "member/member_in_meeting_list?meetingId=" + meetingId;
-        }else if(role == MeetingConfig.MeetingRole.AUDIENCE){
+        } else if (role == MeetingConfig.MeetingRole.AUDIENCE) {
             url += AppConfig.URL_MEETING_BASE + "member/audience_list?meetingId=" + meetingId;
-        }else if(role == MeetingConfig.MeetingRole.BE_INVITED){
+        } else if (role == MeetingConfig.MeetingRole.BE_INVITED) {
             url += AppConfig.URL_MEETING_BASE + "member/invited_not_join_list?meetingId=" + meetingId;
         }
 
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetMeetingMembers","url:" + url + ",result:" + response);
+        Log.e("syncGetMeetingMembers", "url:" + url + ",result:" + response);
         return response;
 
     }
 
-    public JSONObject syncMakeUserUpAndDown(String userId,int status){
+    public JSONObject syncMakeUserUpAndDown(String userId, int status) {
         String url = AppConfig.URL_MEETING_BASE + "member/make_user_up_or_down_stage?userId=" + userId + "&status=" + status;
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("userId",userId);
-            jsonObject.put("status",status);
+            jsonObject.put("userId", userId);
+            jsonObject.put("status", status);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         JSONObject response = ConnectService.submitDataByJson(url, jsonObject);
-        Log.e("syncMakeUserUpAndDown","url:" + url + ",result:" + response);
+        Log.e("syncMakeUserUpAndDown", "url:" + url + ",result:" + response);
         return response;
     }
 
-    public JSONObject syncGetFrindList(){
+    public JSONObject syncGetFrindList() {
         String url = AppConfig.URL_PUBLIC + "Friend/FriendList";
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetFrindList","url:" + url + ",result:" + response);
+        Log.e("syncGetFrindList", "url:" + url + ",result:" + response);
         return response;
 
     }
 
-    public JSONObject syncGetSoundtrackList(MeetingConfig meetingConfig){
+    public JSONObject syncGetSoundtrackList(MeetingConfig meetingConfig) {
         String url = AppConfig.URL_PUBLIC;
         if (meetingConfig.getType() == MeetingType.MEETING) {
             url += "LessonSoundtrack/List?lessonID=" + meetingConfig.getLessionId() +
@@ -2820,33 +2820,50 @@ public class ServiceInterfaceTools {
             url += "Soundtrack/List?attachmentID=" + meetingConfig.getDocument().getAttachmentID() + "&isPublic=0";
         }
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetSoundtrackList","url:" + url + ",result:" + response);
+        Log.e("syncGetSoundtrackList", "url:" + url + ",result:" + response);
         return response;
 
     }
 
-    public JSONObject syncGetSoundtrackDetail(SoundTrack soundTrack){
+    public JSONObject syncGetSoundtrackDetail(SoundTrack soundTrack) {
         String url = AppConfig.URL_PUBLIC + "Soundtrack/Item?soundtrackID=" + soundTrack.getSoundtrackID();
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetSoundtrackDetail","url:" + url + ",result:" + response);
+        Log.e("syncGetSoundtrackDetail", "url:" + url + ",result:" + response);
         return response;
     }
 
     public JSONObject syncDeleteSoundtrack(SoundTrack soundTrack) {
         String url = AppConfig.URL_PUBLIC + "Soundtrack/Delete?soundtrackID=" + soundTrack.getSoundtrackID();
         JSONObject response = ConnectService.getIncidentDataattachment(url);
-        Log.e("syncDeleteSoundtrack","url:" + url + ",result:" + response);
+        Log.e("syncDeleteSoundtrack", "url:" + url + ",result:" + response);
         return response;
     }
 
-    public JSONObject syncGetUserListBasicInfoByRongCloud(String rongCloudIDs){
+    public JSONObject syncGetUserListBasicInfoByRongCloud(String rongCloudIDs) {
         String url = AppConfig.URL_PUBLIC + "User/UserListBasicInfoByRongCloud?rongCloudIDs=" + rongCloudIDs;
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetUserListBasicInfoByRongCloud","url:" + url + ",result:" + response);
+        Log.e("syncGetUserListBasicInfoByRongCloud", "url:" + url + ",result:" + response);
         return response;
     }
 
+    public JSONObject syncImportNote(MeetingConfig meetingConfig, EventSelectNote note) {
+        JSONObject response = null;
+        try {
+            final JSONObject jsonObject = new JSONObject();
+            jsonObject.put("SyncRoomID", meetingConfig.getLessionId());
+            jsonObject.put("DocumentItemID", meetingConfig.getDocument().getAttachmentID());
+            jsonObject.put("PageNumber", meetingConfig.getPageNumber() + "");
+            jsonObject.put("NoteID", note.getNote().getNoteID());
+            jsonObject.put("LinkProperty", note.getLinkProperty().toString());
+            response = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "DocumentNote/ImportNote", jsonObject);
+            Log.e("syncImportNote", AppConfig.URL_PUBLIC + "DocumentNote/ImportNote" + "    " + jsonObject.toString() + "     " + response.toString());
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
 
 
 }

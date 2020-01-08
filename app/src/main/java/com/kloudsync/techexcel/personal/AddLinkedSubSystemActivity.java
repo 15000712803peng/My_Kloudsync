@@ -52,25 +52,36 @@ public class AddLinkedSubSystemActivity extends AppCompatActivity {
 
 
     private void updateSyncroomName() {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("authenticateUrl", subsystemaddress.getText().toString());
-            jsonObject.put("companyId", AppConfig.SchoolID);
-            jsonObject.put("subSystemName", subsystemname.getText().toString());
-            jsonObject.put("token", token);
-            jsonObject.put("type", 1);
 
-            String url = AppConfig.URL_MEETING_BASE + "subsystem/create_subsystem";
-            ServiceInterfaceTools.getinstance().createSubsystem(url, ServiceInterfaceTools.CREATESUBSYSTEM, jsonObject, new ServiceInterfaceListener() {
-                @Override
-                public void getServiceReturnData(Object object) {
-                    EventBus.getDefault().post(new EventProjectFragment());
-                    finish();
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        EventBus.getDefault().post(new EventProjectFragment());
+        finish();
+
+
+//        JSONObject jsonObject = new JSONObject();
+//        try {
+//            jsonObject.put("authenticateUrl", subsystemaddress.getText().toString());
+//            jsonObject.put("companyId", AppConfig.SchoolID);
+//            jsonObject.put("subSystemName", subsystemname.getText().toString());
+//            jsonObject.put("token", token);
+//            jsonObject.put("type", 1);
+//
+//            String url = AppConfig.URL_MEETING_BASE + "subsystem/create_subsystem";
+//            ServiceInterfaceTools.getinstance().createSubsystem(url, ServiceInterfaceTools.CREATESUBSYSTEM, jsonObject, new ServiceInterfaceListener() {
+//                @Override
+//                public void getServiceReturnData(Object object) {
+//
+//                    EventProjectFragment eventProjectFragment=new EventProjectFragment();
+//                    eventProjectFragment.setSubSystemId((int)object);
+//                    EventBus.getDefault().post(new EventProjectFragment());
+//                    finish();
+//                }
+//            });
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+
+
     }
 
 

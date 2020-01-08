@@ -61,7 +61,6 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/white"
-                android:enabled="false"
                 android:gravity="right"
                 android:hint="输入名称"
                 android:textColor="@color/defaultgrey"
@@ -94,9 +93,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="10dp"
                 android:background="@color/white"
-                android:gravity="right"
                 android:hint="请输入包含有效appkey的子系统地址"
                 android:textColor="@color/defaultgrey"
                 android:textSize="14sp" />
