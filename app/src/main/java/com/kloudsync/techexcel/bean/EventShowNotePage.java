@@ -7,6 +7,15 @@ package com.kloudsync.techexcel.bean;
 public class EventShowNotePage {
     private DocumentPage notePage;
     private int attachmendId;
+    private long noteId;
+
+    public long getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(long noteId) {
+        this.noteId = noteId;
+    }
 
     public int getAttachmendId() {
         return attachmendId;
@@ -22,5 +31,13 @@ public class EventShowNotePage {
 
     public void setNotePage(DocumentPage notePage) {
         this.notePage = notePage;
+    }
+
+    @Override
+    public String toString() {
+        return "EventShowNotePage{" +
+                "notePage=" + notePage +
+                ", attachmendId=" + attachmendId +
+                '}';
     }
 }

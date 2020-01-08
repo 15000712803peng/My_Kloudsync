@@ -39,7 +39,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp">
 
-
             <FrameLayout
                 android:id="@+id/frame_tab_team"
                 android:layout_width="match_parent"

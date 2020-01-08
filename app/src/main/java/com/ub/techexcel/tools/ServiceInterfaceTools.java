@@ -2866,4 +2866,11 @@ public class ServiceInterfaceTools {
     }
 
 
+    public JSONObject syncGetNotePageJson(String url){
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetNotePageJson","url:" + url + ",result:" + response);
+        return response;
+    }
+
+
 }

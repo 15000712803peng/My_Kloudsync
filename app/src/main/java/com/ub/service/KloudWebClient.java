@@ -78,6 +78,7 @@ public class KloudWebClient extends WebSocketClient {
     public void onOpen(ServerHandshake handshakedata) {
         Log.e("KloudWebClient", "onOpen");
         AppConfig.webSocketClient = this;
+        KloudWebClientManager.getInstance().startHeartBeat();
     }
 
     @Override
