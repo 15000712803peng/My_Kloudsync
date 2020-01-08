@@ -86,12 +86,12 @@ public class DocumentPage implements Serializable{
     public String toString() {
         return "DocumentPage{" +
                 "documentId=" + documentId +
+                ", fileId=" + fileId +
                 ", pageUrl='" + pageUrl + '\'' +
                 ", savedLocalPath='" + savedLocalPath + '\'' +
                 ", showingPath='" + showingPath + '\'' +
                 ", pageNumber=" + pageNumber +
+                ", localFileId='" + localFileId + '\'' +
                 '}';
     }
-
-
 }

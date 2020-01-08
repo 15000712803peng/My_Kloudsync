@@ -429,6 +429,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         DocumentPage page = pageCache.getPageCache(pageUrl);
         final EventShowNotePage notePage = new EventShowNotePage();
         notePage.setAttachmendId(note.getAttachmentID());
+        notePage.setNoteId(note.getNoteID());
         Log.e("queryAndDownLoadNoteToShow", "get cach page:" + page + "--> url:" + documentPage.getPageUrl());
         if (page != null && !TextUtils.isEmpty(page.getPageUrl())
                 && !TextUtils.isEmpty(page.getSavedLocalPath()) && !TextUtils.isEmpty(page.getShowingPath())) {

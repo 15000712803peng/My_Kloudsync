@@ -766,9 +766,6 @@
             android:screenOrientation="landscape"
              />
 
-
-
-
         <service android:name="com.ub.service.activity.SocketService" />
 
         <activity

@@ -135,6 +135,8 @@ import org.json.JSONObject;
 import org.xwalk.core.XWalkPreferences;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -142,6 +144,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import Decoder.BASE64Encoder;
@@ -240,6 +243,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
 
+        writeNoteBlankPageImage();
+
         initViews();
         //----
         RealMeetingSetting realMeetingSetting = MeetingSettingCache.getInstance(this).getMeetingSetting();
@@ -260,6 +265,43 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         initWeb();
         bottomFilePop = new PopBottomFile(this);
 
+    }
+
+    private void writeNoteBlankPageImage(){
+        File localNoteFile = new File(FileUtils.getBaseDir() + "note" + File.separator +"blank_note_1.jpg");
+        if(localNoteFile.exists()){
+            return;
+        }
+        new File(FileUtils.getBaseDir() + "note").mkdirs();
+        Observable.just(localNoteFile).observeOn(Schedulers.io()).doOnNext(new Consumer<File>() {
+            @Override
+            public void accept(File file) throws Exception {
+                copyAssetsToDst("blank_note_1.jpg",file);
+            }
+        }).subscribe();
+
+    }
+
+    private void copyAssetsToDst(String srcPath, File dstPath) {
+        try {
+            InputStream is = getAssets().open(srcPath);
+            Log.e("copy_file","is:" + is);
+            FileOutputStream fos = new FileOutputStream(dstPath);
+            Log.e("copy_file","fos:" + fos);
+            byte[] buffer = new byte[1024];
+            int byteCount;
+            while ((byteCount = is.read(buffer)) != -1) {
+                fos.write(buffer, 0, byteCount);
+            }
+            fos.flush();
+            is.close();
+            fos.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("copy_file","Exception:" + e.getMessage());
+
+        }
     }
 
     @Override
@@ -467,12 +509,94 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
+    private long currentNoteId;
+    class TempNoteData{
+        private String data;
+        private long noteId;
+
+        public String getData() {
+            return data;
+        }
+
+        public void setData(String data) {
+            this.data = data;
+        }
+
+        public long getNoteId() {
+            return noteId;
+        }
+
+        public void setNoteId(long noteId) {
+            this.noteId = noteId;
+        }
+    }
+    private CopyOnWriteArrayList<TempNoteData> newNoteDatas = new CopyOnWriteArrayList<>();
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showNotePage(final EventShowNotePage page) {
         Log.e("showNotePage","page:" + page);
+        if(!TextUtils.isEmpty(page.getNotePage().getLocalFileId())){
+            if(page.getNotePage().getLocalFileId().contains(".")){
+                noteWeb.setVisibility(View.VISIBLE);
+                currentNoteId = page.getNoteId();
+                String localNoteBlankPage = FileUtils.getBaseDir()  +"note" + File.separator + "blank_note_1.jpg";
+                Log.e("show_PDF","javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")");
+                noteWeb.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
+                noteWeb.load("javascript:Record()", null);
+                handleBluetoothNote(page.getNotePage().getPageUrl());
+                return;
+            }
+        }
         noteWeb.setVisibility(View.VISIBLE);
         noteWeb.load("javascript:ShowPDF('" + page.getNotePage().getShowingPath() + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
         noteWeb.load("javascript:Record()", null);
+
+    }
+
+    private void handleBluetoothNote(final String url){
+            Observable.just(url).observeOn(Schedulers.io()).map(new Function<String, String>() {
+                @Override
+                public String apply(String s) throws Exception {
+                    String newUrl = "";
+                    int index = url.lastIndexOf("/");
+                    if(index > 0 && index < url.length() - 2){
+                        newUrl  = url.substring(0,index + 1) + "book_page_data.json";
+                    }
+                    return newUrl;
+                }
+            }).map(new Function<String, JSONObject>() {
+                @Override
+                public JSONObject apply(String url) throws Exception {
+                    JSONObject jsonObject = new JSONObject();
+                    if(!TextUtils.isEmpty(url)){
+                        Log.e("check_url","url:" + url);
+                        jsonObject =  ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
+                    }
+                    return jsonObject;
+                }
+            }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
+                @Override
+                public void accept(JSONObject jsonObject) throws Exception {
+                    String key = "ShowDotPanData";
+                    noteWeb.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
+                }
+            }).doOnNext(new Consumer<JSONObject>() {
+                @Override
+                public void accept(JSONObject jsonObject) throws Exception {
+                    if(!newNoteDatas.isEmpty()){
+                        Observable.fromIterable(newNoteDatas).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<TempNoteData>() {
+                            @Override
+                            public void accept(TempNoteData tempNoteData) throws Exception {
+                                Log.e("draw_new_note","temp_note_note");
+                                if(tempNoteData.getNoteId() == currentNoteId){
+                                    String key = "ShowDotPanData";
+                                    noteWeb.load("javascript:FromApp('" + key + "'," + tempNoteData.getData() + ")", null);
+                                }
+                                newNoteDatas.remove(tempNoteData);
+                            }
+                        }).subscribe();
+                    }
+                }
+            }).subscribe();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -515,6 +639,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
 
     public synchronized void followShowNote(int noteId) {
+
         if (meetingConfig.getType() == MeetingType.MEETING) {
             noteUsersLayout.setVisibility(View.GONE);
         } else {
@@ -646,7 +771,16 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             case SocketMessageManager.MESSAGE_NOTE_DATA:
                 if (socketMessage.getData().has("retData")) {
                     try {
-                        String noteData = socketMessage.getData().getJSONObject("retData").getString("data");
+                        JSONObject retData = socketMessage.getData().getJSONObject("retData");
+                        String noteData = retData.getString("data");
+                        long noteId = retData.getInt("noteId");
+                        if(currentNoteId != noteId){
+                            TempNoteData _noteData = new TempNoteData();
+                            _noteData.setData(Tools.getFromBase64(noteData));
+                            _noteData.setNoteId(noteId);
+                            newNoteDatas.add(_noteData);
+                            return;
+                        }
                         String key = "ShowDotPanData";
                         if (noteLayout.getVisibility() == View.VISIBLE) {
                             if (noteWeb != null) {
@@ -2424,6 +2558,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void closeViewNote(EventCloseNoteView closeNoteView) {
         Log.e("check_play", "playSoundtrack");
+        currentNoteId = 0;
+        newNoteDatas.clear();
         menuIcon.setVisibility(View.VISIBLE);
         notifyDocumentChanged();
     }
@@ -2658,8 +2794,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
 
         if (data.has("retCode")) {
-
             try {
+
                 if (data.getInt("retCode") == 0) {
                     // 成功收到JOIN_MEETING的返回
                     JSONObject dataJson = data.getJSONObject("retData");
