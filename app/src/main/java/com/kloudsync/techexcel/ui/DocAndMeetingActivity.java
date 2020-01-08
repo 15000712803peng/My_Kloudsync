@@ -4,6 +4,7 @@ package com.kloudsync.techexcel.ui;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.PersistableBundle;
+import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -401,6 +403,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             menuManager.release();
         }
 
+        if(wakeLock != null){
+            wakeLock.release();
+        }
+
         MeetingKit.getInstance().release();
         if (web != null) {
             web.removeAllViews();
@@ -412,6 +418,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             meetingConfig.reset();
         }
         meetingConfig = null;
+
     }
 
     private synchronized void getMeetingMembers(JSONArray users) {
@@ -2101,7 +2108,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
-
+        keepScreenWake();
         MeetingKit.getInstance().startMeeting();
         meetingLayout.setVisibility(View.VISIBLE);
         if (messageManager != null && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
@@ -2916,5 +2923,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
+    private PowerManager.WakeLock wakeLock;
+    private void keepScreenWake(){
+        wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK, "TEST");
+        wakeLock.acquire();
+    }
 
 }
