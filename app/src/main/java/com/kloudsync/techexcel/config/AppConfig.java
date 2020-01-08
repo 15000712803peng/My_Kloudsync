@@ -36,12 +36,12 @@ public class AppConfig {
 
 //    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
 
-//     正式
+    //     正式
     public static String URL_PUBLIC = "https://api.peertime.cn/peertime/V1/";
     public static String URL_MEETING_BASE = "https://wss.peertime.cn/MeetingServer/";
     public static String COURSE_SOCKET = "wss://wss.peertime.cn:8443/MeetingServer/websocket";
     public static String liveToken = "02912174-3dcb-49eb-b9fa-6d90b390d495";
-    public static String  wssServer = "https://wss.peertime.cn:8443/MeetingServer";
+    public static String wssServer = "https://wss.peertime.cn:8443/MeetingServer";
 
 //    // 测试
 //    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
@@ -62,15 +62,16 @@ public class AppConfig {
 //    public static String COURSE_SOCKET = "wss://testwss.peertime.cn:8443/MeetingServer/websocket";
 
     // 访问的endpoint地址
-    public static  String OSS_ENDPOINT = "oss-cn-shanghai.aliyuncs.com";
+    public static String OSS_ENDPOINT = "oss-cn-shanghai.aliyuncs.com";
     public static final String BUCKET_NAME = "ptfiles";
     public static final String OSS_ACCESS_KEY_ID = "LTAIcw5JmsTiae9F";
     public static final String OSS_ACCESS_KEY_SECRET = "J0b1dc9RBwteROJoTiEMHr8w57SsyH";
     public static final String STS_SERVER_URL = "https://doc.peertime.cn/v1/";
-    public static final String SHARE_DOCUMENT = "https://kloudsync.peertime.cn/document/";
-    public static final String SHARE_SYNC = "https://kloudsync.peertime.cn/sync/";
-    public static final String SHARE_RECORD = "https://kloudsync.peertime.cn/record/";
-    public static final String SHARE_ATTACHMENT = "https://kloudsync.peertime.cn/attachment/";
+    public static final String SHARE_DOCUMENT = "https://kloud.cn/document/";
+    public static final String SHARE_SYNC = "https://kloud.cn/sync/";
+    public static final String SHARE_RECORD = "https://kloud.cn/record/";
+//    public static final String SHARE_RECORD = "https://kloudsync.peertime.cn/record/";
+    public static final String SHARE_ATTACHMENT = "https://kloud.cn/attachment/";
 
 
     public static String LOGININFO = "LOGININFO";

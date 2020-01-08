@@ -57,7 +57,7 @@ public class InviteUserPopup implements View.OnClickListener {
         htmlUrl = (TextView) view.findViewById(R.id.htmlurl);
         idString = (TextView) view.findViewById(R.id.idstring);
         closebtn = (ImageView) view.findViewById(R.id.closebtn);
-        htmlUrl.setText("https://peertime.cn/join?id=" + lessonId);
+        htmlUrl.setText("https://kloud.cn/join?id=" + lessonId);
         idString.setText("2.Enter meeting ID:" + lessonId);
         copyLink.setOnClickListener(this);
         closebtn.setOnClickListener(this);

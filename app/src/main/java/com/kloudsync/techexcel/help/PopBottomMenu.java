@@ -84,6 +84,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuMeetingMembersClicked();
                 }
+                break;
             case R.id.bottom_menu_sync:
                 hide();
                 if (bottomMenuOperationsListener != null) {
