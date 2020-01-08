@@ -1712,8 +1712,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
                     } else if (jsonObject.getInt("actionType") == 9) { // 直播视频大小切换
                         Log.e("dddddddddddd", currentMode);
+                        currentMode = jsonObject.getInt("videoMode") + "";
                         if (currentMode.equals("4")) {
-                            currentMode = jsonObject.getInt("videoMode") + "";
                             if (currentMode.equals(0 + "")) {  // 关闭video
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -1723,7 +1723,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                                 });
                             }
                         } else {
-                            currentMode = jsonObject.getInt("videoMode") + "";
                             if (!currentMode.equals("4")) {  // 4 为播放视频   0 1 2
                                 try {
                                     currentMaxVideoUserId = jsonObject.getString("currentSessionID");
@@ -8615,6 +8614,8 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         }
     }
 
+    private int screenShareUid;
+
     @Override
     public void onUserJoined(final int uid, int elapsed) {
         Log.e("RRRRRRRRRRRRRRRRRR", "onUserJoined    " + uid + "  " + mUidsList.size());
@@ -8649,7 +8650,10 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                     openVideoByViewType();
                 } else {
                     if (uid > 1000000000 && uid < 1500000000) {
-                        openScreenShare(uid);
+                        screenShareUid = uid;
+                        if (currentMode.equals("3")) {
+                            openScreenShare(uid);
+                        }
                     }
                 }
             }
@@ -8904,9 +8908,13 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
      * socket 切換
      */
     private void switchMode() {
-        if (currentMode.equals("0") || currentMode.equals("3")) {
+        if (currentMode.equals("0")) {
             switchToDefaultVideoView();
             Log.e("wahaha", 4 + "");
+        } else if (currentMode.equals("3")) {
+            if (screenShareUid > 1000000000 && screenShareUid < 1500000000) {
+                openScreenShare(screenShareUid);
+            }
         } else if (currentMode.equals("1")) {
             if (mUidsList.size() >= 1) {
                 switchToBigVideoView();

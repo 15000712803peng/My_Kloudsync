@@ -178,8 +178,6 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         disposable = null;
                     }
                 }
-
-
             }
         }).doOnNext(new Consumer<EventJoinMeeting>() {
             @Override

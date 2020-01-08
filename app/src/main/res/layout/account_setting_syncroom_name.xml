@@ -77,6 +77,7 @@
 
             <EditText
                 android:id="@+id/syncroomedit"
+                android:enabled="false"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -212,6 +213,7 @@
                 android:textColor="@color/black" />
 
             <EditText
+                android:enabled="false"
                 android:id="@+id/syncroomediten"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

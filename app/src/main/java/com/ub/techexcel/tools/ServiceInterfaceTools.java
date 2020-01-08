@@ -11,9 +11,9 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.bean.CompanyContact;
+import com.kloudsync.techexcel.bean.CompanySubsystem;
 import com.kloudsync.techexcel.bean.DocumentData;
 import com.kloudsync.techexcel.bean.DocumentDetail;
-import com.kloudsync.techexcel.bean.EventSelectNote;
 import com.kloudsync.techexcel.bean.FavoriteData;
 import com.kloudsync.techexcel.bean.InviteInfo;
 import com.kloudsync.techexcel.bean.LoginData;
@@ -149,6 +149,8 @@ public class ServiceInterfaceTools {
     public static final int ADDADMINMEMBER = 0x1156;
     public static final int UPDATECUSTOMDISPLAYNAME = 0x1157;
     public static final int GETCOMPANYDISPLAYNAMELIST = 0x1158;
+    public static final int CREATESUBSYSTEM = 0x1159;
+    public static final int GETSUBSYSMTEMLIST = 0x1160;
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
 
@@ -358,6 +360,76 @@ public class ServiceInterfaceTools {
         }).start();
     }
 
+
+    public void createSubsystem(final String url, final int code, final JSONObject jsonObject, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject1 = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("hhh", url + "  " + jsonObject.toString() + "   " + jsonObject1.toString());
+                    if (jsonObject1.getInt("code") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = jsonObject1.getInt("data");
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void getSubsysmtemList(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("hhh", url + "    " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("code") == 0 && jsonObject1.getString("msg").equals("success")) {
+                        JSONArray data=jsonObject1.getJSONArray("data");
+                        List<CompanySubsystem> list=new ArrayList<>();
+                        for(int i=0;i<data.length();i++){
+                            JSONObject jsonObject=data.getJSONObject(i);
+                            CompanySubsystem subSystemBean=new CompanySubsystem();
+                            subSystemBean.setCompanyId(jsonObject.getString("companyId"));
+                            subSystemBean.setSubSystemId(jsonObject.getString("subSystemId"));
+                            subSystemBean.setSubSystemName(jsonObject.getString("subSystemName"));
+                            subSystemBean.setType(jsonObject.getInt("type"));
+                            subSystemBean.setCreateDate(jsonObject.getString("createDate"));
+                            subSystemBean.setIntegrationUrl(jsonObject.getString("integrationUrl"));
+                            list.add(subSystemBean);
+                        }
+                        Message msg3 = Message.obtain();
+                        msg3.obj = list;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = "";
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start(ThreadManager.getManager());
+
+
+    }
 
     public void getCompanyDisplayNameList(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
@@ -2773,26 +2845,6 @@ public class ServiceInterfaceTools {
         Log.e("syncGetUserListBasicInfoByRongCloud","url:" + url + ",result:" + response);
         return response;
     }
-
-    public JSONObject syncImportNote(MeetingConfig meetingConfig,EventSelectNote note) {
-        JSONObject response = null;
-        try {
-            final JSONObject jsonObject = new JSONObject();
-            jsonObject.put("SyncRoomID", meetingConfig.getLessionId());
-            jsonObject.put("DocumentItemID", meetingConfig.getDocument().getAttachmentID());
-            jsonObject.put("PageNumber", meetingConfig.getPageNumber() +"");
-            jsonObject.put("NoteID", note.getNote().getNoteID());
-            jsonObject.put("LinkProperty", note.getLinkProperty().toString());
-            response = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "DocumentNote/ImportNote", jsonObject);
-            Log.e("syncImportNote", AppConfig.URL_PUBLIC + "DocumentNote/ImportNote" + "    " + jsonObject.toString() + "     " + response.toString());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return  response;
-    }
-
 
 
 

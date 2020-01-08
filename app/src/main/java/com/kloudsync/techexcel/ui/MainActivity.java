@@ -42,6 +42,7 @@ import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.FollowInfo;
 import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.UserPath;
+import com.kloudsync.techexcel.bean.params.EventProjectFragment;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddDocToSpaceDialog;
@@ -57,6 +58,7 @@ import com.kloudsync.techexcel.dialog.message.ShareMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.SystemMessageItemProvider;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.kloudsync.techexcel.frgment.ContactFragment;
+import com.kloudsync.techexcel.frgment.ProjectOneFragment;
 import com.kloudsync.techexcel.frgment.SpaceDocumentsFragment;
 import com.kloudsync.techexcel.frgment.SpaceSyncRoomFragment;
 import com.kloudsync.techexcel.frgment.TeamDocumentsFragment;
@@ -611,6 +613,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     TwoToOneFragment twoToOneFragment;
     ServiceFragment serviceFragment;
     PersonalCenterFragment personalCenterFragment;
+    ProjectOneFragment projectOneFragment;
 
     private void initDatas() {
         documentsFragment = new TeamDocumentsFragment();
@@ -619,6 +622,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         serviceFragment = new ServiceFragment();
         topicFragment = new TopicFragment();
         personalCenterFragment = new PersonalCenterFragment();
+        projectOneFragment = new ProjectOneFragment();
         if (sharedPreferences.getBoolean("enable_sync", false)) {
             syncroomTab.setVisibility(View.VISIBLE);
         } else {
@@ -1120,7 +1124,11 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         Bundle bundle = new Bundle();
         switch (id) {
             case R.id.txt_tab_document:
-                fragment = documentsFragment;
+                if (isDisplayProjectOne) {
+                    fragment = projectOneFragment;
+                } else {
+                    fragment = documentsFragment;
+                }
                 fragment.setArguments(bundle);
                 break;
             case R.id.txt_tab_chat:
@@ -1149,17 +1157,19 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
 
     public void changeTeamFragment(TextView v) {
+//        isDisplayProjectOne
         teamFrame.setVisibility(View.VISIBLE);
         spaceFrame.setVisibility(View.GONE);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment fragment = null;
+
         fragment = fragmentManager.findFragmentByTag(String.valueOf(v.getId()));
+
         Log.e("changeFragment", "fragment:" + fragment);
         if (fragment == null) {
             if (currentTeamFragment != null) {
                 fragmentTransaction.hide(currentTeamFragment);
             }
-            ;
             fragment = getTeamFragment(v.getId());
             if (!fragment.isAdded()) {
                 fragmentTransaction.add(R.id.frame_tab_team, fragment, String.valueOf(v.getId()));
@@ -1168,7 +1178,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         } else if (fragment == currentTeamFragment) {
 
         } else {
-            fragmentTransaction.hide(currentTeamFragment);
+            if (currentTeamFragment != null) {
+                fragmentTransaction.hide(currentTeamFragment);
+            }
             Log.e("fragment_operation", "hide fragment:" + currentTeamFragment);
             fragmentTransaction.show(fragment);
             Log.e("fragment_operation", "show fragment:" + fragment);
@@ -1203,6 +1215,16 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
 
     }
+
+
+    private boolean isDisplayProjectOne = true;
+
+    @Subscribe
+    public void changeProjectOne(EventProjectFragment eventProjectFragment) {
+        Log.e("eventProjectFragment", eventProjectFragment.getSubSystemId() + "");
+        isDisplayProjectOne = true;
+    }
+
 
     public void handleChangeSpaceFragment(EventSpaceFragment spaceFragment) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.AccountSettingBean;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNotePageActions;
@@ -48,6 +49,9 @@ public class MeetingServiceTools {
     public static final int STARTRECORDING = 0x2101;
     public static final int ENDRECORDING = 0x2102;
     public static final int GETMEETINGMEMBERS = 0x2103;
+    public static final int GETACCOUNTINFO = 0x2104;
+    public static final int UPDATECOMPANYINFO = 0x2105;
+    public static final int DELETECOMPANYLOGO = 0x2106;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -140,8 +144,85 @@ public class MeetingServiceTools {
         }).start();
     }
 
-    public void syncGetDocuments(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
 
+    public void getAccountInfo(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                Log.e("meetingservicrtools", url + returnJson.toString());
+                try {
+                    if (returnJson.getInt("code") == 0 && returnJson.getString("msg").equals("success")) {
+                        AccountSettingBean accountSettingBean = new AccountSettingBean();
+
+                        JSONObject datajson = returnJson.getJSONObject("data");
+                        accountSettingBean.setSchoolName(datajson.getString("companyName"));
+                        accountSettingBean.setVerifyEmailAddress(datajson.getString("verifyEmailAddress"));
+                        accountSettingBean.setWebAddress(datajson.getString("webAddress"));
+                        Message msg = Message.obtain();
+                        msg.obj = accountSettingBean;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnJson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void deleteCompanyLogo(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject returnJson = com.kloudsync.techexcel.service.ConnectService.getIncidentDataattachment(url);
+                Log.e("meetingservicrtools", url + returnJson.toString());
+                Message msg = Message.obtain();
+                msg.obj = returnJson;
+                msg.what = code;
+                handler.sendMessage(msg);
+            }
+        }).start();
+    }
+
+
+    public void updateCompanyInfo(final String url, final int code, final JSONObject jsonObject, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject returnJson = com.ub.techexcel.service.ConnectService.submitDataByJson(url, jsonObject);
+                Log.e("meetingservicrtools", url + returnJson.toString());
+                try {
+                    if (returnJson.getInt("code") == 0 && returnJson.getString("msg").equals("success")) {
+                        Message msg = Message.obtain();
+                        msg.obj = "";
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnJson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+
+    public void syncGetDocuments(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
 
         JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
         Log.e("meetingservicrtools", url + returnJson.toString());
@@ -511,7 +592,6 @@ public class MeetingServiceTools {
                 for (int j = 0; j < note.getPageCount(); ++j) {
                     String pageUrl = "";
                     DocumentPage page = new DocumentPage();
-                    page.setLocalFileId(note.getLocalFileID());
                     page.setPageNumber(j + 1);
                     page.setDocumentId(note.getDocumentItemID());
                     if (TextUtils.isEmpty(preUrl)) {
@@ -700,38 +780,31 @@ public class MeetingServiceTools {
     /**
      * 是否举手
      */
-    public void  raiseHandOnStage(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener){
-            putInterface(code, serviceInterfaceListener);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
-                    Log.e("getMeetingMembers", url + returnJson.toString());
-                    try {
-                        if (returnJson.getInt("RetCode") == 0 && returnJson.getString("msg").equals("success")) {
-
-
-
-
-
-                            Message msg = Message.obtain();
+    public void raiseHandOnStage(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("getMeetingMembers", url + returnJson.toString());
+                try {
+                    if (returnJson.getInt("RetCode") == 0 && returnJson.getString("msg").equals("success")) {
+                        Message msg = Message.obtain();
 //                            msg.obj = meetingMembers;
-                            msg.what = code;
-                            handler.sendMessage(msg);
-                        } else {
-                            Message msg3 = Message.obtain();
-                            msg3.what = ERRORMESSAGE;
-                            msg3.obj = returnJson.getString("ErrorMessage");
-                            handler.sendMessage(msg3);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnJson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }).start();
+            }
+        }).start();
     }
-
-
 
 
     public void startRecording(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {

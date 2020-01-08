@@ -74,7 +74,7 @@ import java.util.Locale;
 public class AccountSettingActivity extends Activity {
 
 
-    private RelativeLayout as_rl_logo, as_rl_admin, as_rl_contact, layout_enable_sync, layout_sync_name;
+    private RelativeLayout as_rl_logo, as_rl_admin, as_rl_contact, layout_enable_sync, layout_sync_name,as_rl_account_link;
     private ContainsEmojiEditText as_et_name, as__et_webaddress, as_et_email;
     private ImageView img_notice;
     private TextView as_tv_save;
@@ -209,6 +209,7 @@ public class AccountSettingActivity extends Activity {
         layout_sync_name = findViewById(R.id.layout_sync_name);
 
         as_rl_logo = findViewById(R.id.as_rl_logo);
+        as_rl_account_link = findViewById(R.id.as_rl_account_link);
         as_et_name = findViewById(R.id.as_et_name);
         as__et_webaddress = findViewById(R.id.as__et_webaddress);
         as_et_email = findViewById(R.id.as_et_email);
@@ -223,6 +224,7 @@ public class AccountSettingActivity extends Activity {
 
         img_notice.setOnClickListener(new MyOnClick());
         as_rl_logo.setOnClickListener(new MyOnClick());
+        as_rl_account_link.setOnClickListener(new MyOnClick());
         as_img_logo.setOnClickListener(new MyOnClick());
         as_rl_admin.setOnClickListener(new MyOnClick());
         as_rl_contact.setOnClickListener(new MyOnClick());
@@ -743,6 +745,10 @@ public class AccountSettingActivity extends Activity {
                     break;
                 case R.id.layout_sync_name:
                     intent = new Intent(getApplicationContext(), SyncRoomNameActivity.class);
+                    startActivity(intent);
+                    break;
+                case R.id.as_rl_account_link:
+                    intent = new Intent(getApplicationContext(), AddLinkedSubSystemActivity.class);
                     startActivity(intent);
                     break;
                 default:
