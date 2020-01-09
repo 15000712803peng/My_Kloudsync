@@ -100,7 +100,6 @@ public class FavoriteDocumentShareDialog {
     private LinearLayout lin_moment;
     private LinearLayout lin_Scan;
     private List<LinearLayout> lin_all = new ArrayList<>();
-    private ImageView closeImage;
 
 
     @SuppressWarnings("deprecation")
@@ -111,7 +110,6 @@ public class FavoriteDocumentShareDialog {
         lin_wechat = (LinearLayout) popupWindow.findViewById(R.id.lin_wechat);
         lin_moment = (LinearLayout) popupWindow.findViewById(R.id.lin_moment);
         lin_Scan = (LinearLayout) popupWindow.findViewById(R.id.lin_Scan);
-        closeImage = popupWindow.findViewById(R.id.image_close);
         lin_all.add(lin_copy);
         lin_all.add(lin_wechat);
         lin_all.add(lin_moment);
@@ -130,7 +128,6 @@ public class FavoriteDocumentShareDialog {
         lin_wechat.setOnClickListener(new MyOnClick());
         lin_moment.setOnClickListener(new MyOnClick());
         lin_Scan.setOnClickListener(new MyOnClick());
-        closeImage.setOnClickListener(new MyOnClick());
 
         new Handler().postDelayed(new Runnable() {
             @Override

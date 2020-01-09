@@ -72,6 +72,7 @@ public class AppConfig {
     public static final String SHARE_RECORD = "https://kloud.cn/record/";
 //    public static final String SHARE_RECORD = "https://kloudsync.peertime.cn/record/";
     public static final String SHARE_ATTACHMENT = "https://kloud.cn/attachment/";
+    public static final String SHARE_LIVE = "https://kloud.cn/live/";
 
 
     public static String LOGININFO = "LOGININFO";

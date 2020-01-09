@@ -140,7 +140,7 @@ public class PopShareMeeting {
     private ClipboardManager mClipboard = null;
 
     private void copyLink() {
-        String url = "https://kloudsync.peertime.cn/live/" + document.getId();
+        String url =AppConfig.SHARE_LIVE + document.getId();
         if (null == mClipboard) {
             mClipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
         }
@@ -199,7 +199,7 @@ public class PopShareMeeting {
      * @param st       true：对话 false:朋友圈
      */
     private void weiXinShare(ServiceBean document, Bitmap b, final boolean st) {
-        String url = "https://kloudsync.peertime.cn/live/" + document.getId();
+        String url = AppConfig.SHARE_LIVE  + document.getId();
         if (isWXAppInstalledAndSupported(WeiXinApi.getInstance().GetApi())) {
             WXWebpageObject webpage = new WXWebpageObject();
             webpage.webpageUrl = url;

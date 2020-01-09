@@ -1,10 +1,8 @@
 
 package com.kloudsync.techexcel.personal;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -12,16 +10,8 @@ import android.widget.RelativeLayout;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.params.EventProjectFragment;
-import com.kloudsync.techexcel.config.AppConfig;
-import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
-import com.kloudsync.techexcel.ui.MainActivity;
-import com.ub.techexcel.tools.ServiceInterfaceListener;
-import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 public class AddLinkedSubSystemActivity extends AppCompatActivity {

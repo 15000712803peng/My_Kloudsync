@@ -82,12 +82,14 @@ public class ProjectOneFragment extends Fragment implements View.OnClickListener
 
     @JavascriptInterface
     public void userSettingChangeFunction(final String opt) {
+
         Observable.just(opt).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
                 Toast.makeText(getActivity(), opt, Toast.LENGTH_LONG).show();
             }
         }).subscribe();
+        Log.e("userSettingChange", opt + "");
 
     }
 
