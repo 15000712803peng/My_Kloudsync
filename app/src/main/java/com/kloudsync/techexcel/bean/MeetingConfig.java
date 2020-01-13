@@ -151,9 +151,13 @@ public class MeetingConfig{
         return meetingMembers;
     }
 
-    public void setMeetingMembers(List<MeetingMember> meetingMembers) {
-        this.meetingMembers.clear();
-        this.meetingMembers.addAll(meetingMembers);
+    public synchronized void setMeetingMembers(List<MeetingMember> meetingMembers) {
+        try {
+            this.meetingMembers.clear();
+            this.meetingMembers.addAll(meetingMembers);
+        }catch (Exception e){
+        }
+
     }
 
     public String getNotifyUrl() {
