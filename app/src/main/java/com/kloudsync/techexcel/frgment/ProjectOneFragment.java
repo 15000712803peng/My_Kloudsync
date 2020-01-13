@@ -82,7 +82,6 @@ public class ProjectOneFragment extends Fragment implements View.OnClickListener
 
     @JavascriptInterface
     public void userSettingChangeFunction(final String opt) {
-
         Observable.just(opt).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
@@ -90,9 +89,10 @@ public class ProjectOneFragment extends Fragment implements View.OnClickListener
             }
         }).subscribe();
         Log.e("userSettingChange", opt + "");
-
     }
 
+
+    private boolean isfirst = true;
 
     @Override
     public void onClick(View v) {
@@ -106,7 +106,11 @@ public class ProjectOneFragment extends Fragment implements View.OnClickListener
                 if (backType == 0) {
                     webView.loadUrl("javascript:backToProjectList()"); //从修改projectdetail 返回到project list
                 } else if (backType == 1) {
-                    webView.loadUrl("javascript:backToTaskList()"); // 从task detail返回到task list
+                    if (isfirst) {
+                        webView.loadUrl("javascript:history.back()"); // 从task detail返回到task list
+                    } else {
+                        webView.loadUrl("javascript:backToTaskList()"); // 从task detail返回到task list
+                    }
                 }
 
                 break;
