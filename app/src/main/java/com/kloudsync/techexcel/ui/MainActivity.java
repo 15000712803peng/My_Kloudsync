@@ -817,6 +817,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
         MobclickAgent.onPageStart("MainActivity");
         MobclickAgent.onResume(this);
+        Tools.keepSocketServiceOn(this);
         Log.e("time_interval", "interval:" + (System.currentTimeMillis() - systemTime));//统计时长
 
     }

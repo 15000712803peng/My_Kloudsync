@@ -334,6 +334,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             menuIcon.setImageResource(R.drawable.icon_menu);
             menuIcon.setEnabled(true);
         }
+        Tools.keepSocketServiceOn(this);
         super.onResume();
     }
 
