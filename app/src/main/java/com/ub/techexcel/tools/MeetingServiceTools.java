@@ -548,7 +548,6 @@ public class MeetingServiceTools {
         return eventNote;
     }
 
-
     public EventNote syncGetNoteByNoteId(int noteId) {
         String url = AppConfig.URL_PUBLIC + "DocumentNote/Item?noteID=" + noteId;
         JSONObject returnjson = com.kloudsync.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
@@ -594,6 +593,7 @@ public class MeetingServiceTools {
                     DocumentPage page = new DocumentPage();
                     page.setPageNumber(j + 1);
                     page.setDocumentId(note.getDocumentItemID());
+                    page.setLocalFileId(note.getLocalFileID());
                     if (TextUtils.isEmpty(preUrl)) {
                         page.setPageUrl(pageUrl);
                     } else {
@@ -602,6 +602,7 @@ public class MeetingServiceTools {
                     pages.add(page);
                 }
                 note.setDocumentPages(pages);
+                Log.e("check_note","local_file_id:" + note.getLocalFileID());
                 eventNote.setNote(note);
             } else {
 
