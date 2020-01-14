@@ -42,6 +42,7 @@ public class SocketMessageManager {
     public static final String MESSAGE_MEMBER_LIST_CHANGE = "MEMBER_LIST_CHANGE";
     public static final String MESSAGE_NOTE_DATA = "NOTE_DATA";
     public static final String MESSAGE_NOTE_CHANGE = "NOTE_CHANGE";
+    public static final String MESSAGE_NOTE_P1_CREATEAD = "NOTE_ITEM_4_P1_CREATED";
     public static final int MESSAGE_VIDEO_PAUSE = 0;
     public static final int MESSAGE_VIDEO_PLAY = 1;
     public static final int MESSAGE_VIDEO_CLOSE = 2;

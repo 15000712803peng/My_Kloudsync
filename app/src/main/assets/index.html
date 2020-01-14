@@ -208,6 +208,9 @@
             whiteboard.SetCallBack("BookNoteDelete",function(data){
                 CallApp("BookNoteDelete",data);
             });
+            whiteboard.SetCallBack("OnLinkAreaClick",function(data){
+                CallApp("OnLinkAreaClick",data);
+            });
 
         }
         function initializeControlWindow() {
@@ -734,24 +737,48 @@
             console.log("FromApp:Key:" + key);
             console.log(data);
             if (key == "ClearBookNote") {
-                whiteboard.ClearBookNote(data.ClearMe,data.ClearOther);
+                whiteboard.ClearBookNote(data.ClearMe, data.ClearOther);
             }
             else if (key == "TwinkleBookNote") {
                 whiteboard.TwinkleBookNote(data.LinkID);
             }
             else if (key == "OnToolStart") {
-                whiteboard.OnToolStart(data.x,data.y);
+                whiteboard.OnToolStart(data.x, data.y);
             }
             else if (key == "OnToolMove") {
-                whiteboard.OnToolMove(data.x,data.y);
+                whiteboard.OnToolMove(data.x, data.y);
             }
             else if (key == "OnToolEnd") {
-                whiteboard.OnToolEnd(data.x,data.y);
+                whiteboard.OnToolEnd(data.x, data.y);
             }
-            else if (key == "ShowDotPanData")
-            {
-                var info= ConvertPoints2Line(data);
-                whiteboard.ShowDotpenLine(info.lines,info.width,info.height);
+            else if (key == "ShowDotPanData") {
+                var info = ConvertPoints2Line(data.LinesData);
+                whiteboard.ShowDotpenLine(info.lines, info.width, info.height, data.ShowInCenter ? true : false, data.TriggerEvent ? true : false);
+            }
+            else if (key == "ChangeMovePageButton") {
+                if (data.Left) {
+                    if (typeof(data.Left.Show)!="undefined") {
+                        if (data.Left.Show) {
+                            $("#moveleft").show();
+                        }
+                        else {
+                            $("#moveleft").hide();
+                        }
+                    }
+                }
+                if (data.Right) {
+                    if (typeof(data.Right.Show)!="undefined") {
+                        if (data.Right.Show) {
+                            $("#moveright").show();
+                        }
+                        else {
+                            $("#moveright").hide();
+                        }
+                    }
+                }
+            }
+            else if (key == "ClearByType") {
+                whiteboard.ClearByType(data.type);
             }
         }
         function ConvertPoints2Line(d)

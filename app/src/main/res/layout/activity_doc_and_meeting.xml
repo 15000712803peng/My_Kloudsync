@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-
     <org.xwalk.core.XWalkView
         android:id="@+id/web"
         android:layout_width="match_parent"
@@ -252,9 +251,6 @@
 
             </RelativeLayout>
 
-
-
-
         </LinearLayout>
     </RelativeLayout>
 
@@ -262,7 +258,6 @@
         android:id="@+id/layout_real_meeting"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         android:visibility="gone">
 
         <LinearLayout
@@ -323,14 +318,6 @@
 
 
 
-        <ImageView
-            android:layout_marginTop="12dp"
-            android:id="@+id/meeting_menu"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="56dp"
-            android:src="@drawable/icon_command" />
 
     </RelativeLayout>
 
@@ -464,12 +451,7 @@
             android:layout_width="40dp"
             android:layout_height="30dp" />
 
-
     </RelativeLayout>
-
-
-
-
 
     <ImageView
         android:id="@+id/menu"
@@ -480,7 +462,17 @@
         android:layout_marginBottom="16dp"
         android:layout_marginRight="50dp"
         android:src="@drawable/icon_menu"
-        android:visibility="invisible" />
+        android:visibility="visible" />
+
+    <ImageView
+        android:visibility="gone"
+        android:layout_marginTop="12dp"
+        android:id="@+id/meeting_menu"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="56dp"
+        android:src="@drawable/icon_command" />
 
 
 </RelativeLayout>

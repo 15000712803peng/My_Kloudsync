@@ -4158,6 +4158,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
 
     private void getOnstageMemberCount(final String meetingId) {
+
         ServiceInterfaceTools.getinstance().getOnstageMemberCount(AppConfig.URL_PUBLIC_AUDIENCE + "MeetingServer/member/join_role?meetingId=" + meetingId, ServiceInterfaceTools.GETONSTAGEMEMBERCOUNT, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
@@ -4169,7 +4170,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
 
     private void showAudienceList() {
-
         syncroomll.setVisibility(View.GONE);
         menu.setImageResource(R.drawable.icon_menu);
 

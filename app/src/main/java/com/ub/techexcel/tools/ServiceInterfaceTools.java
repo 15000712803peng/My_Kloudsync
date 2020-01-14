@@ -2461,5 +2461,11 @@ public class ServiceInterfaceTools {
         return response;
     }
 
+    public JSONObject syncGetNoteP1Item(long noteId){
+        JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_MEETING_BASE + "note/p1_item?noteId=" + noteId);
+        Log.e("syncGetNoteP1Item","url:" + AppConfig.URL_MEETING_BASE + "note/p1_item?noteId=" + noteId + ",result:" + response);
+        return response;
+    }
+
 
 }
