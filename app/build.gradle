@@ -61,8 +61,8 @@ android {
         applicationId "com.kloudsync.techexcel"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 41
-        versionName "3.2.21"
+        versionCode 42
+        versionName "3.2.22"
         flavorDimensions "versionCode"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
