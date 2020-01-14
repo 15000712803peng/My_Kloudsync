@@ -59,8 +59,8 @@ public class ChangePhoneActivity extends Activity {
 
 		ChangeNameLanguage();
 
-		tv_back.setOnClickListener(new ChangePhoneActivity.myOnClick());
-		tv_pc_done.setOnClickListener(new ChangePhoneActivity.myOnClick());
+		tv_back.setOnClickListener(new myOnClick());
+		tv_pc_done.setOnClickListener(new myOnClick());
 
 	}
 

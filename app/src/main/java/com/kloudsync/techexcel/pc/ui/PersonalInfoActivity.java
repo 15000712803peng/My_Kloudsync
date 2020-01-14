@@ -609,6 +609,11 @@ public class PersonalInfoActivity extends AppCompatActivity {
 						}
 
 						@Override
+						public void fileDeletePhoto() {
+
+						}
+
+						@Override
 						public void dismiss() {
 
 							Log.e("哈哈哈哈哈", "sdoafjiasdfasdfasdf");

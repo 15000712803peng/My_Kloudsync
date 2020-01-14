@@ -23,11 +23,14 @@ import com.kloudsync.techexcel.bean.EventSpaceFragment;
 import com.kloudsync.techexcel.bean.UserInCompany;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.docment.AddSyncRoomActivity;
+import com.kloudsync.techexcel.docment.EditTeamActivity;
 import com.kloudsync.techexcel.docment.RenameActivity;
 import com.kloudsync.techexcel.help.ApiTask;
+import com.kloudsync.techexcel.help.PopDeleteDocument;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
 import com.ub.kloudsync.activity.CreateNewSpaceActivityV2;
@@ -66,6 +69,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
     private SharedPreferences sharedPreferences;
     private SyncRoomAdapter syncRoomAdapter;
     private ImageView moreOpation;
+    private TextView currentsyncroomtv;
     RelativeLayout addSyncRoomLayout;
     View view;
     private ImageView switchCompanyImage;
@@ -73,7 +77,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if(view == null){
+        if (view == null) {
             view = inflater.inflate(R.layout.topicfragment, container, false);
             EventBus.getDefault().register(this);
             initView(view);
@@ -129,14 +133,14 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
         }
     }
 
-    private void load(){
+    private void load() {
         getSpaceList();
     }
 
 
     List<TeamSpaceBean> spaceList;
 
-    private  void getSpaceList() {
+    private void getSpaceList() {
         TeamSpaceInterfaceTools.getinstance().getTeamSpaceList(AppConfig.URL_PUBLIC + "TeamSpace/List?companyID=" + AppConfig.SchoolID + "&type=2&parentID=" + teamSpaceBean.getItemID(),
                 TeamSpaceInterfaceTools.GETTEAMSPACELIST, new TeamSpaceInterfaceListener() {
                     @Override
@@ -211,7 +215,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
     }
 
     private void enterSyncroom(SyncRoomBean syncRoomBean) {
-        if(syncRoomBean.getTopicType() == 7){
+        if (syncRoomBean.getTopicType() == 7) {
             //syncbook
             Intent intent = new Intent(getActivity(), SyncBookActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -227,7 +231,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
             intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
             intent.putExtra("isStartCourse", true);
             startActivity(intent);
-        }else {
+        } else {
             Intent intent = new Intent(getActivity(), SyncRoomActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra("userid", AppConfig.UserID);
@@ -252,12 +256,20 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
         spaceRecycleView = (RecyclerView) view.findViewById(R.id.spacerecycleview);
         syncroomRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         spaceRecycleView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        spaceAdapter = new SpaceAdapter(getActivity(), spacesList, true,false);
+        spaceAdapter = new SpaceAdapter(getActivity(), spacesList, true, false);
         spaceRecycleView.setAdapter(spaceAdapter);
         spaceAdapter.setOnItemLectureListener(this);
         syncroomRecyclerView.setNestedScrollingEnabled(false);
         spaceRecycleView.setNestedScrollingEnabled(false);
         teamRl = (RelativeLayout) view.findViewById(R.id.teamrl);
+        currentsyncroomtv = view.findViewById(R.id.currentsyncroomtv);
+
+        if (AppConfig.LANGUAGEID == 1) {
+            currentsyncroomtv.setText(CustomSyncRoomTool.getInstance(getActivity()).getCustomyinxiang() + " of Current Project");
+        } else if (AppConfig.LANGUAGEID == 2) {
+            currentsyncroomtv.setText("当前项目的" + CustomSyncRoomTool.getInstance(getActivity()).getCustomyinxiang());
+        }
+
         createNewSpace = (RelativeLayout) view.findViewById(R.id.createnewspace);
         switchTeam = (ImageView) view.findViewById(R.id.switchteam);
         teamSpacename = (TextView) view.findViewById(R.id.teamspacename);
@@ -301,6 +313,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
 
 
     String teamName;
+
     private void getTeamhaha() {
 
         sharedPreferences = getActivity().getSharedPreferences(AppConfig.LOGININFO,
@@ -360,7 +373,7 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
     }
 
     private void MoreForTeam() {
-        TeamMorePopup teamMorePopup=new TeamMorePopup();
+        TeamMorePopup teamMorePopup = new TeamMorePopup();
         teamMorePopup.setIsTeam(true);
         teamMorePopup.setTSid(teamSpaceBean.getItemID());
         teamMorePopup.setTName(sharedPreferences.getString("teamname", ""));
@@ -378,23 +391,60 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
 
             @Override
             public void delete() {
-                LoginGet lg = new LoginGet();
-                lg.setBeforeDeleteTeamListener(new LoginGet.BeforeDeleteTeamListener() {
+
+                PopDeleteDocument pdd = new PopDeleteDocument();
+                pdd.getPopwindow(getActivity());
+                pdd.setPoPDismissListener(new PopDeleteDocument.PopDeleteDismissListener() {
                     @Override
-                    public void getBDT(int retdata) {
-                        if(retdata > 0){
-                            Toast.makeText(getActivity(), "Please delete space first", Toast.LENGTH_LONG).show();
-                        } else {
-                            DeleteTeam();
-                        }
+                    public void PopDelete() {
+
+//                        LoginGet lg = new LoginGet();
+//                        lg.setBeforeDeleteTeamListener(new LoginGet.BeforeDeleteTeamListener() {
+//                            @Override
+//                            public void getBDT(int retdata) {
+//                                if (retdata > 0) {
+//                                    Toast.makeText(getActivity(), "Please delete space first", Toast.LENGTH_LONG).show();
+//                                } else {
+//                                    DeleteTeam();
+//                                }
+//                            }
+//                        });
+//                        lg.GetBeforeDeleteTeam(getActivity(), teamSpaceBean.getItemID() + "");
+
+                        LoginGet lg = new LoginGet();
+                        lg.setBeforeDeleteTeamListener(new LoginGet.BeforeDeleteTeamListener() {
+                            @Override
+                            public void getBDT(int retdata) {
+                                if (retdata > 0) {
+                                    Toast.makeText(getActivity(), "Please delete space first", Toast.LENGTH_LONG).show();
+                                } else {
+                                    DeleteTeam();
+                                }
+                            }
+                        });
+                        lg.GetBeforeDeleteTeam(getActivity(), teamSpaceBean.getItemID() + "");
+                    }
+
+                    @Override
+                    public void Open() {
+
+                    }
+
+                    @Override
+                    public void Close() {
+
                     }
                 });
-                lg.GetBeforeDeleteTeam(getActivity(), teamSpaceBean.getItemID() + "");
+                pdd.StartPop(moreOpation);
+
+
             }
 
             @Override
             public void rename() {
-                GoToRename();
+//                GoToRename();
+
+                GoToTeamp();
             }
 
             @Override
@@ -404,19 +454,38 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
 
             @Override
             public void edit() {
-                GoToTeamp();
+//                GoToTeamp();
+                Intent intent = new Intent(getActivity(), EditTeamActivity.class);
+                intent.putExtra("team_id", teamSpaceBean.getItemID());
+                intent.putExtra("team_name", teamSpaceBean.getName());
+                startActivityForResult(intent, REQUEST_UPDATE_TEAM);
+
             }
         });
 
         teamMorePopup.StartPop(moreOpation);
     }
 
+    private static final int REQUEST_UPDATE_TEAM = 1;
+
     private void GoToRename() {
         Intent intent = new Intent(getActivity(), RenameActivity.class);
-        intent.putExtra("itemID",teamSpaceBean.getItemID());
+        intent.putExtra("itemID", teamSpaceBean.getItemID());
         intent.putExtra("isteam", true);
         startActivity(intent);
     }
+
+
+    private void GoToTeamp() {
+        Intent intent = new Intent(getActivity(), TeamPropertyActivity.class);
+        if (teamSpaceBean.getItemID() != 0) {
+            intent.putExtra("ItemID", teamSpaceBean.getItemID());
+            startActivity(intent);
+        } else {
+            Toast.makeText(getActivity(), "请先选择Team", Toast.LENGTH_LONG).show();
+        }
+    }
+
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -474,15 +543,6 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
         }).start(ThreadManager.getManager());
     }
 
-    private void GoToTeamp() {
-        Intent intent = new Intent(getActivity(), TeamPropertyActivity.class);
-        if (teamSpaceBean.getItemID() != 0) {
-            intent.putExtra("ItemID", teamSpaceBean.getItemID());
-            startActivity(intent);
-        } else {
-            Toast.makeText(getActivity(), "请先选择Team", Toast.LENGTH_LONG).show();
-        }
-    }
 
     @Override
     public void onItem(TeamSpaceBean teamSpaceBean2) {
@@ -496,8 +556,8 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
         eventSpaceFragment.setSpaceId(teamSpaceBean2.getItemID());
         eventSpaceFragment.setSpaceName(teamSpaceBean2.getName());
         eventSpaceFragment.setType(2);
-        eventSpaceFragment.setTeamName(sharedPreferences.getString("teamname",""));
-        eventSpaceFragment.setTeamId(sharedPreferences.getInt("teamid",0));
+        eventSpaceFragment.setTeamName(sharedPreferences.getString("teamname", ""));
+        eventSpaceFragment.setTeamId(sharedPreferences.getInt("teamid", 0));
         EventBus.getDefault().post(eventSpaceFragment);
     }
 

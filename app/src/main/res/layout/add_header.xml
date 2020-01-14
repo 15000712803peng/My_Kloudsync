@@ -37,7 +37,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/image_add_new"
-            android:text="Add team admin" />
+            android:text="@string/addteamadmin" />
     </RelativeLayout>
 
     <View

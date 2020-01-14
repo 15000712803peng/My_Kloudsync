@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 
@@ -19,8 +20,9 @@ public class AccountSettingTakePhotoPopup implements View.OnClickListener {
     public int width;
     public PopupWindow mPopupWindow;
     private View viewroot;
-    private RelativeLayout as_rl_takephoto, as_rl_filephoto,as_rl_cancel;
+    private RelativeLayout as_rl_takephoto, as_rl_filephoto, as_rl_cancel, as_rl_deletephoto;
     private FavoritePoPListener mFavoritePoPListener;
+    private TextView as_rl_deletephoto_line;
 
 
     public interface FavoritePoPListener {
@@ -28,6 +30,8 @@ public class AccountSettingTakePhotoPopup implements View.OnClickListener {
         void takePhoto();
 
         void filePhoto();
+
+        void fileDeletePhoto();
 
         void dismiss();
 
@@ -63,14 +67,14 @@ public class AccountSettingTakePhotoPopup implements View.OnClickListener {
 
         as_rl_takephoto = (RelativeLayout) viewroot.findViewById(R.id.as_rl_takephoto);
         as_rl_filephoto = (RelativeLayout) viewroot.findViewById(R.id.as_rl_filephoto);
+        as_rl_deletephoto = (RelativeLayout) viewroot.findViewById(R.id.as_rl_deletephoto);
         as_rl_cancel = (RelativeLayout) viewroot.findViewById(R.id.as_rl_cancel);
-
-
+        as_rl_deletephoto_line = (TextView) viewroot.findViewById(R.id.as_rl_deletephoto_line);
 
         as_rl_takephoto.setOnClickListener(this);
         as_rl_filephoto.setOnClickListener(this);
         as_rl_cancel.setOnClickListener(this);
-
+        as_rl_deletephoto.setOnClickListener(this);
 
         mPopupWindow = new PopupWindow(viewroot, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, false);
@@ -88,10 +92,17 @@ public class AccountSettingTakePhotoPopup implements View.OnClickListener {
     }
 
 
+    public void setVisible() {
+
+        as_rl_deletephoto.setVisibility(View.VISIBLE);
+        as_rl_deletephoto_line.setVisibility(View.VISIBLE);
+
+    }
+
     @SuppressLint("NewApi")
     public void StartPop(View v) {
-            mPopupWindow.showAtLocation(v, Gravity.BOTTOM, 0, 0);
-            mFavoritePoPListener.open();
+        mPopupWindow.showAtLocation(v, Gravity.BOTTOM, 0, 0);
+        mFavoritePoPListener.open();
 
     }
 
@@ -119,6 +130,10 @@ public class AccountSettingTakePhotoPopup implements View.OnClickListener {
             case R.id.as_rl_filephoto:
                 dismiss();
                 mFavoritePoPListener.filePhoto();
+                break;
+            case R.id.as_rl_deletephoto:
+                dismiss();
+                mFavoritePoPListener.fileDeletePhoto();
                 break;
             default:
                 break;

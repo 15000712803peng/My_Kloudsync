@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Kloudsync</string>
+    <string name="app_name">Kloud</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
 
@@ -20,6 +20,8 @@
     <string name="personal_center">我</string>
     <string name="Meeting">会议</string>
     <string name="Topic">话题</string>
+    <string name="enter">进入</string>
+    <string name="mymeetingid">我的会议室ID:</string>
 
     <string-array name="tabname">
         <item>文档</item>
@@ -360,7 +362,10 @@
     <string name="day">日</string>
     <string name="house">时</string>
     <string name="mintue">分</string>
+
     <string name="syncroom">音想房间</string>
+    <string name="defaultsyncroom">音想房间</string>
+
 
     <string name="accept">接受</string>
     <string name="added">已添加</string>
@@ -646,6 +651,7 @@
     <string name="as_address">网址</string>
     <string name="as_email">邮箱</string>
     <string name="as_sync">开启音想房间</string>
+    <string name="as_sync_name">SyncRoom自定义名称</string>
     <string name="as_admin">管理员列表</string>
     <string name="as_contact_list">联系人列表</string>
     <string name="as_add_admin">新增管理员</string>
@@ -715,7 +721,16 @@
     <string name="docs_in_spaces">当前文件夹的文件</string>
     <string name="syncrooms_in_spaces">当前空间的音想房间</string>
     <string name="team_memers">团队成员</string>
-    <string name="space_memers">团队成员</string>
+    <string name="space_memers">空间成员</string>
+
+    <string name="invite_form_company">从公司中添加</string>
+    <string name="invite_form_admin">邀请新管理员</string>
+    <string name="invite_form_new">邀请新联系人</string>
+    <string name="addmemberfromcomcomtact">从公司联系人和个人联系人中添加成员</string>
+
+    <string name="addteamadmin">增加团队管理员</string>
+    <string name="addspaceadmin">增加空间管理员</string>
+    <string name="addnewmember">邀请新成员</string>
 
     <string name="Mobile_phone">手机号</string>
     <string name="Password_hint">密码(6-20)</string>
@@ -769,7 +784,6 @@
 
     <string name="playing">播放中</string>
     <string name="paused">已暂停</string>
-
 
 
 </resources>

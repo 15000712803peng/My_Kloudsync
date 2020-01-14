@@ -86,6 +86,11 @@ public class TeamMorePopup implements View.OnClickListener {
     };
 
     private static FavoritePoPListener mFavoritePoPListener;
+    private String title;
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public interface FavoritePoPListener {
 

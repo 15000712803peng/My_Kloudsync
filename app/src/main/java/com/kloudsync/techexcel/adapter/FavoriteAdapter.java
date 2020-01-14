@@ -286,9 +286,9 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
-            final MyBaseAdapter.ViewHolder viewHolder;
+            final ViewHolder viewHolder;
             if (view == null) {
-                viewHolder = new MyBaseAdapter.ViewHolder();
+                viewHolder = new ViewHolder();
                 view = LayoutInflater.from(context).inflate(R.layout.yinxiang_item3, null);
                 viewHolder.title = (TextView) view.findViewById(R.id.title);
                 viewHolder.username = (TextView) view.findViewById(R.id.username);
@@ -299,7 +299,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 viewHolder.morepopup = (ImageView) view.findViewById(R.id.morepopup);
                 view.setTag(viewHolder);
             } else {
-                viewHolder = (MyBaseAdapter.ViewHolder) view.getTag();
+                viewHolder = (ViewHolder) view.getTag();
             }
             viewHolder.morepopup.setVisibility(View.VISIBLE);
             final SoundtrackBean soundtrackBean = list.get(position);

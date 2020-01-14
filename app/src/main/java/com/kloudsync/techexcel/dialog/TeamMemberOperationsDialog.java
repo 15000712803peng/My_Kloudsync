@@ -59,6 +59,7 @@ public class TeamMemberOperationsDialog implements View.OnClickListener {
         requestFriendLayout.setOnClickListener(this);
         adminLayout.setOnClickListener(this);
         removeLayout.setOnClickListener(this);
+
         img_close = (ImageView) view.findViewById(R.id.img_close);
         img_close.setOnClickListener(this);
         dialog = new Dialog(mContext, R.style.bottom_dialog);
@@ -90,7 +91,7 @@ public class TeamMemberOperationsDialog implements View.OnClickListener {
                 adminText.setText("Cancel team admin");
                 adminLayout.setTag(TeamMember.OPERATION_CANCEL_ADMIN);
                 adminLayout.setVisibility(View.VISIBLE);
-                removeLayout.setVisibility(View.VISIBLE);
+                removeLayout.setVisibility(View.GONE);
             } else if (memberType == TeamMember.TYPE_OWNER) {
                 requestFriendLayout.setVisibility(View.VISIBLE);
                 adminLayout.setVisibility(View.GONE);
@@ -100,7 +101,7 @@ public class TeamMemberOperationsDialog implements View.OnClickListener {
                 adminText.setText("Set team admin");
                 adminLayout.setTag(TeamMember.OPERATION_SET_ADMIN);
                 adminLayout.setVisibility(View.VISIBLE);
-                removeLayout.setVisibility(View.VISIBLE);
+                removeLayout.setVisibility(View.GONE);
             }
         } else if (myRole == TeamMember.TYPE_ADMIN) {
             if (memberType == TeamMember.TYPE_ADMIN) {
@@ -116,7 +117,7 @@ public class TeamMemberOperationsDialog implements View.OnClickListener {
                 adminText.setText("Set team admin");
                 adminLayout.setTag(TeamMember.OPERATION_SET_ADMIN);
                 adminLayout.setVisibility(View.VISIBLE);
-                removeLayout.setVisibility(View.VISIBLE);
+                removeLayout.setVisibility(View.GONE);
             }
         } else if (myRole == TeamMember.TYPE_MEMBER) {
             requestFriendLayout.setVisibility(View.VISIBLE);

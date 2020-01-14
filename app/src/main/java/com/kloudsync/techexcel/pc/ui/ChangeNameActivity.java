@@ -82,8 +82,8 @@ public class ChangeNameActivity extends Activity {
 
 		ChangeNameLanguage();
 
-		tv_back.setOnClickListener(new ChangeNameActivity.myOnClick());
-		tv_pc_done.setOnClickListener(new ChangeNameActivity.myOnClick());
+		tv_back.setOnClickListener(new myOnClick());
+		tv_pc_done.setOnClickListener(new myOnClick());
 
 	}
 

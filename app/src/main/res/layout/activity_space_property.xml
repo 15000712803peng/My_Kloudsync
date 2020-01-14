@@ -12,9 +12,12 @@
         android:padding="12sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Space members"
+        android:text="@string/space_memers"
         android:textColor="@color/newgrey"
         android:textSize="12sp" />
+
+
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycleview"
         android:layout_width="match_parent"

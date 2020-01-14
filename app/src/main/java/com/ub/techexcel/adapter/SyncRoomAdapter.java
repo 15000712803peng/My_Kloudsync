@@ -65,11 +65,11 @@ public class SyncRoomAdapter extends RecyclerView.Adapter<SyncRoomAdapter.Recycl
 
     }
 
-    public void setOnItemLectureListener(SyncRoomAdapter.OnItemLectureListener onItemLectureListener) {
+    public void setOnItemLectureListener(OnItemLectureListener onItemLectureListener) {
         this.onItemLectureListener = onItemLectureListener;
     }
 
-    private SyncRoomAdapter.OnItemLectureListener onItemLectureListener;
+    private OnItemLectureListener onItemLectureListener;
 
 
     @Override

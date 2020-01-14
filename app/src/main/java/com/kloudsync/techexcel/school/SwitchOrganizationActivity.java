@@ -23,6 +23,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.OrganizationAdapterV2;
 import com.kloudsync.techexcel.bean.Company;
 import com.kloudsync.techexcel.bean.CompanySubsystem;
+import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DialogSelectSchool;
@@ -31,15 +32,20 @@ import com.kloudsync.techexcel.info.School;
 import com.kloudsync.techexcel.response.InvitationsResponse;
 import com.kloudsync.techexcel.search.ui.OrganizationSearchActivity;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.ui.InvitationsActivity;
+import com.kloudsync.techexcel.ui.MainActivity;
 import com.kloudsync.techexcel.view.ClearEditText;
+import com.ub.kloudsync.activity.SwitchSpaceActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.techexcel.service.ConnectService;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -122,14 +128,27 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                     editor.putInt("teamid", -1);
                     editor.commit();
                 }
-                EventBus.getDefault().post(new TeamSpaceBean());
-                finish();
-//                initDatas();
+                getCompanyNameList();
             }
         });
         lg.GetUserPreference(this, 10001 + "");
-
     }
+
+    public void getCompanyNameList() {
+        String url = AppConfig.URL_MEETING_BASE + "company_custom_display_name/name_list?companyId=" + AppConfig.SchoolID;
+        ServiceInterfaceTools.getinstance().getCompanyDisplayNameList(url, ServiceInterfaceTools.GETCOMPANYDISPLAYNAMELIST, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                JSONObject jsonObject = (JSONObject) object;
+                CustomSyncRoomTool.getInstance(SwitchOrganizationActivity.this).setCustomSyncRoomContent(jsonObject);
+                MainActivity.RESUME = true;
+                EventBus.getDefault().post(new TeamSpaceBean());
+//                EventBus.getDefault().post(new EventRefreshTab());
+                finish();
+            }
+        });
+    }
+
 
     private void SaveSchoolInfo() {
         editor = sharedPreferences.edit();

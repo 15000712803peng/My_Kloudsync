@@ -50,7 +50,7 @@ public class OrganizationAdapter extends HeaderRecyclerAdapter<School> implement
     }
 
     @Override
-    public void onBind(RecyclerView.ViewHolder viewHolder, final int realPosition, final com.kloudsync.techexcel.info.School data) {
+    public void onBind(RecyclerView.ViewHolder viewHolder, final int realPosition, final School data) {
         ItemHolder holder = (ItemHolder) viewHolder;
         if (!TextUtils.isEmpty(keyword)) {
             holder.tv_school.setText(TextTool.setSearchColor(Color.parseColor("#72AEFF"), data.getSchoolName(), keyword));

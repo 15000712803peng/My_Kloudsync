@@ -54,20 +54,10 @@
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
@@ -449,6 +439,12 @@
             android:name=".personal.AccountSettingAdminUserActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".personal.SyncRoomNameActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".personal.AddLinkedSubSystemActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:launchMode="singleTop"
             android:name=".personal.AccountSettingContactActivity"
             android:screenOrientation="portrait" />
@@ -476,6 +472,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.InviteFromPhoneActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.InviteFromSpaceActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".dialog.plugin.SingleCallActivity2"
@@ -600,15 +599,15 @@
 
 
 
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.kloudsync.techexcel.FileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/rc_file_path" />
-        </provider>
+        <!--<provider-->
+            <!--android:name="android.support.v4.content.FileProvider"-->
+            <!--android:authorities="com.kloudsync.techexcel.FileProvider"-->
+            <!--android:exported="false"-->
+            <!--android:grantUriPermissions="true">-->
+            <!--<meta-data-->
+                <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
+                <!--android:resource="@xml/rc_file_path" />-->
+        <!--</provider>-->
 
         <!-- 测试key -->
         <!--
@@ -652,9 +651,6 @@
         -->
 
 
-        <meta-data
-            android:name="android.max_aspect"
-            android:value="2.1" />
 
         <!-- umeng -->
         <meta-data

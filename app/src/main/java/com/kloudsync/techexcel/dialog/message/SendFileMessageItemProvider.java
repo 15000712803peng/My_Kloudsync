@@ -35,7 +35,7 @@ public class SendFileMessageItemProvider extends IContainerItemProvider.MessageP
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void bindView(View view, int i, SendFileMessage content, UIMessage uiMessage) {
-        SendFileMessageItemProvider.ViewHolder holder = (SendFileMessageItemProvider.ViewHolder) view.getTag();
+        ViewHolder holder = (ViewHolder) view.getTag();
         holder.tv_name.setText(content.getFileName());
         if (uiMessage.getMessageDirection() == Message.MessageDirection.SEND) {
             holder.lin_main.setBackgroundColor(view.getContext().getResources().getColor(R.color.green));
@@ -62,7 +62,7 @@ public class SendFileMessageItemProvider extends IContainerItemProvider.MessageP
     @Override
     public View newView(Context context, ViewGroup viewGroup) {
         View view = LayoutInflater.from(context).inflate(R.layout.sendfilemessage, null);
-        SendFileMessageItemProvider.ViewHolder holder = new SendFileMessageItemProvider.ViewHolder();
+        ViewHolder holder = new ViewHolder();
         holder.tv_name = (TextView) view.findViewById(R.id.tv_name);
         holder.lin_main = (LinearLayout) view.findViewById(lin_main);
         view.setTag(holder);

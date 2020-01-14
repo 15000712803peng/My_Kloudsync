@@ -43,6 +43,7 @@ import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.FollowInfo;
 import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.UserPath;
+import com.kloudsync.techexcel.bean.params.EventProjectFragment;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddDocToSpaceDialog;
@@ -58,6 +59,7 @@ import com.kloudsync.techexcel.dialog.message.ShareMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.SystemMessageItemProvider;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.kloudsync.techexcel.frgment.ContactFragment;
+import com.kloudsync.techexcel.frgment.ProjectOneFragment;
 import com.kloudsync.techexcel.frgment.SpaceDocumentsFragment;
 import com.kloudsync.techexcel.frgment.SpaceSyncRoomFragment;
 import com.kloudsync.techexcel.frgment.TeamDocumentsFragment;
@@ -72,6 +74,7 @@ import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.service.UploadService;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.tool.DensityUtil;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
 import com.lidroid.xutils.HttpUtils;
@@ -103,6 +106,7 @@ import com.umeng.analytics.MobclickAgent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -219,7 +223,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("MainActivity","on create");
+        Log.e("MainActivity", "on create");
         systemTime = System.currentTimeMillis();
         instance = this;
         app = (App) getApplication();
@@ -489,7 +493,11 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     private void setTabName() {
         String[] tab = getResources().getStringArray(R.array.tabname);
         for (int i = 0; i < tvIDs.length; i++) {
-            tvs.get(i).setText(tab[i]);
+            if (tvs.get(i) == syncroomTab) {
+                tvs.get(i).setText(CustomSyncRoomTool.getInstance(this).getCustomyinxiang());
+            } else {
+                tvs.get(i).setText(tab[i]);
+            }
         }
 
     }
@@ -608,6 +616,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     TwoToOneFragment twoToOneFragment;
     ServiceFragment serviceFragment;
     PersonalCenterFragment personalCenterFragment;
+    ProjectOneFragment projectOneFragment;
 
     private void initDatas() {
         documentsFragment = new TeamDocumentsFragment();
@@ -616,6 +625,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         serviceFragment = new ServiceFragment();
         topicFragment = new TopicFragment();
         personalCenterFragment = new PersonalCenterFragment();
+        projectOneFragment = new ProjectOneFragment();
         if (sharedPreferences.getBoolean("enable_sync", false)) {
             syncroomTab.setVisibility(View.VISIBLE);
         } else {
@@ -628,9 +638,23 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         mTabs.add(personalCenterFragment);
         changeTeamFragment(documentTab);
         Log.e("user_info", "user_token:" + AppConfig.UserToken + ",company_id:" + AppConfig.SchoolID);
-
+        isOpenYinxiang();
     }
 
+    private void isOpenYinxiang() {
+        String url = AppConfig.URL_PUBLIC + "School/GetSettingItem?schoolID=" + AppConfig.SchoolID + "&settingID=10001";
+        ServiceInterfaceTools.getinstance().getSchoolSettingItem(url, ServiceInterfaceTools.GETSCHOOLSETTINGITEM, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                int settingValue = (int) object;
+                if (settingValue == 1) {
+                    syncroomTab.setVisibility(View.VISIBLE);
+                } else if (settingValue == 0) {
+                    syncroomTab.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
 
     public void GoTOTab(int s) {
         for (int i = 0; i < tvs.size(); i++) {
@@ -655,6 +679,16 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     public void changeSelectedTab(int id) {
         for (int i = 0; i < tvs.size(); i++) {
             TextView tabText = tvs.get(i);
+
+            if (tabText.getId() == R.id.txt_tab_document) {
+                if (isDisplayProjectOne) {
+                    tabText.setText("项目");
+                } else {
+                    tabText.setText(getString(R.string.service));
+                }
+            }
+
+
             if (tabText.getId() == id) {
                 // 必须设置图片大小，否则不显示ad
                 Drawable d = getResources().getDrawable(draw_selectIDs[tvs.indexOf(tabText)]);
@@ -823,7 +857,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
     public void onPause() {
-        Log.e("MainActivity","on pause");
+        Log.e("MainActivity", "on pause");
         super.onPause();
         MobclickAgent.onPageEnd("MainActivity");
         MobclickAgent.onPause(this);
@@ -842,12 +876,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     public void refreshTabs(EventRefreshTab eventRefreshTab) {
         boolean enableSync = sharedPreferences.getBoolean("enable_sync", false);
         Log.e("MainActivity", "enableSync:" + enableSync);
-        if (enableSync) {
-            syncroomTab.setVisibility(View.VISIBLE);
-        } else {
-            syncroomTab.setVisibility(View.GONE);
-        }
+        isOpenYinxiang();
     }
+
 
     @Override
     protected void onDestroy() {
@@ -1107,7 +1138,11 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         Bundle bundle = new Bundle();
         switch (id) {
             case R.id.txt_tab_document:
-                fragment = documentsFragment;
+                if (isDisplayProjectOne) {
+                    fragment = projectOneFragment;
+                } else {
+                    fragment = documentsFragment;
+                }
                 fragment.setArguments(bundle);
                 break;
             case R.id.txt_tab_chat:
@@ -1135,7 +1170,33 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
 
+    private boolean isDisplayProjectOne = false;
+
+    @Subscribe
+    public void changeProjectOne(EventProjectFragment eventProjectFragment) {
+        Log.e("eventProjectFragment", eventProjectFragment.getSubSystemId() + "");
+        isDisplayProjectOne = true;
+
+        TextView v = documentTab;
+        teamFrame.setVisibility(View.VISIBLE);
+        spaceFrame.setVisibility(View.GONE);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment fragment = getTeamFragment(v.getId());
+        if (currentTeamFragment != null) {
+            fragmentTransaction.hide(currentTeamFragment);
+        }
+        if (!fragment.isAdded()) {
+            fragmentTransaction.add(R.id.frame_tab_team, fragment, String.valueOf(v.getId()));
+        }
+        fragmentTransaction.commitAllowingStateLoss();
+        currentTeamFragment = fragment;
+        changeSelectedTab(v.getId());
+
+    }
+
+
     public void changeTeamFragment(TextView v) {
+//        isDisplayProjectOne
         teamFrame.setVisibility(View.VISIBLE);
         spaceFrame.setVisibility(View.GONE);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -1146,22 +1207,18 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             if (currentTeamFragment != null) {
                 fragmentTransaction.hide(currentTeamFragment);
             }
-;
             fragment = getTeamFragment(v.getId());
             if (!fragment.isAdded()) {
                 fragmentTransaction.add(R.id.frame_tab_team, fragment, String.valueOf(v.getId()));
             }
-
         } else if (fragment == currentTeamFragment) {
 
         } else {
-            fragmentTransaction.hide(currentTeamFragment);
-            Log.e("fragment_operation", "hide fragment:" + currentTeamFragment);
+            if (currentTeamFragment != null) {
+                fragmentTransaction.hide(currentTeamFragment);
+            }
             fragmentTransaction.show(fragment);
-            Log.e("fragment_operation", "show fragment:" + fragment);
-
         }
-
         fragmentTransaction.commitAllowingStateLoss();
         currentTeamFragment = fragment;
         changeSelectedTab(v.getId());
@@ -1188,15 +1245,14 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         } else if (teamFragment.getType() == 2) {
             changeTeamFragment(syncroomTab);
         }
-
     }
+
 
     public void handleChangeSpaceFragment(EventSpaceFragment spaceFragment) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment fragment = null;
         Log.e("currentSpaceFragment", "space:" + spaceFragment);
         if (spaceFragment.getType() == 1) {
-
             //go to space documents
             teamFrame.setVisibility(View.GONE);
             spaceFrame.setVisibility(View.VISIBLE);
@@ -1211,7 +1267,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             fragmentTransaction.commitAllowingStateLoss();
             changeSelectedTab(R.id.txt_tab_document);
         } else if (spaceFragment.getType() == 2) {
-
             // go to space syncrooms
             teamFrame.setVisibility(View.GONE);
             spaceFrame.setVisibility(View.VISIBLE);
@@ -1384,7 +1439,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     }
 
                     // -- 2:如果在document,syncroom ,或者 syncbook里面
-                    Log.e("check_instance","watch3instance:" + WatchCourseActivity3.watch3instance + "--syncroomInstance:" + SyncRoomActivity.syncroomInstance + "--syncbookInstance:"+SyncBookActivity.syncbookInstance);
+                    Log.e("check_instance", "watch3instance:" + WatchCourseActivity3.watch3instance + "--syncroomInstance:" + SyncRoomActivity.syncroomInstance + "--syncbookInstance:" + SyncBookActivity.syncbookInstance);
                     if ((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
                             SyncBookActivity.syncbookInstance) {
                         String _meetingId = "";
@@ -1532,20 +1587,20 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
     @Subscribe
-    public void doc(EventDoc doc){
-        Log.e("event_bus","set doc:" + true);
+    public void doc(EventDoc doc) {
+        Log.e("event_bus", "set doc:" + true);
         WatchCourseActivity3.watch3instance = true;
     }
 
     @Subscribe
-    public void doc(EventSyncBook book){
-        Log.e("event_bus","set book:" + true);
+    public void doc(EventSyncBook book) {
+        Log.e("event_bus", "set book:" + true);
         SyncBookActivity.syncbookInstance = true;
     }
 
     @Subscribe
-    public void doc(EventSyncRoom room){
-        Log.e("event_bus","set room:" + true);
+    public void doc(EventSyncRoom room) {
+        Log.e("event_bus", "set room:" + true);
         SyncRoomActivity.syncroomInstance = true;
 
     }
@@ -1553,29 +1608,29 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Override
     protected void onStop() {
         super.onStop();
-        Log.e("MainActivity","on stop");
+        Log.e("MainActivity", "on stop");
         keepWebSocketLive();
     }
 
-    private void keepWebSocketLive(){
-        if(isServiceRunning(this,"com.ub.service.activity.SocketService")){
-            Log.e("MainActivity","SocketService is running");
+    private void keepWebSocketLive() {
+        if (isServiceRunning(this, "com.ub.service.activity.SocketService")) {
+            Log.e("MainActivity", "SocketService is running");
             KloudWebClientManager.getInstance().startHeartBeat();
-        }else {
-            Log.e("MainActivity","SocketService is not running");
+        } else {
+            Log.e("MainActivity", "SocketService is not running");
             StartWBService();
         }
     }
 
-    public static boolean isServiceRunning(Context mContext, String className){
-        boolean isRunning = false ;
+    public static boolean isServiceRunning(Context mContext, String className) {
+        boolean isRunning = false;
         ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> seviceList = activityManager.getRunningServices(300);
-        if (seviceList.size() <= 0){
+        if (seviceList.size() <= 0) {
             return false;
         }
-        for (int i=0 ;i < seviceList.size();i++){
-            if (seviceList.get(i).service.getClassName().toString().equals(className)){
+        for (int i = 0; i < seviceList.size(); i++) {
+            if (seviceList.get(i).service.getClassName().toString().equals(className)) {
                 isRunning = true;
                 break;
             }

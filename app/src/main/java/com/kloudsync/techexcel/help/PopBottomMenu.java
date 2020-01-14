@@ -62,35 +62,36 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 break;
             case R.id.bottom_menu_share:
                 hide();
-                if(bottomMenuOperationsListener != null){
+                if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuShareDocClicked();
                 }
                 break;
             case R.id.bottom_menu_notes:
                 hide();
-                if(bottomMenuOperationsListener != null){
+                if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuNoteClicked();
                 }
                 break;
             case R.id.bottom_menu_scan:
                 hide();
-                if(bottomMenuOperationsListener != null){
+                if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuScanTvClicked();
                 }
                 break;
 
             case R.id.bottom_menu_members:
                 hide();
-                if(bottomMenuOperationsListener != null){
+                if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuMeetingMembersClicked();
                 }
                 break;
             case R.id.bottom_menu_sync:
                 hide();
-                if(bottomMenuOperationsListener != null){
+                if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuSyncClicked();
                 }
                 break;
+
 
             case R.id.bottom_menu_chat:
                 hide();
@@ -103,14 +104,21 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
 
     public interface BottomMenuOperationsListener {
         void menuClosedClicked();
+
         void menuFileClicked();
+
         void menuStartMeetingClicked();
+
         void menuShareDocClicked();
+
         void menuNoteClicked();
+
         void menuScanTvClicked();
+
         void menuMeetingMembersClicked();
-        void menuSyncClicked();
         void menuChatClicked();
+
+        void menuSyncClicked();
 
     }
 
@@ -207,7 +215,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     }
 
 
-    public void show(ImageView menu,PopBottomMenu.BottomMenuOperationsListener bottomMenuOperationsListener) {
+    public void show(ImageView menu, PopBottomMenu.BottomMenuOperationsListener bottomMenuOperationsListener) {
         this.menuIcon = menu;
         this.bottomMenuOperationsListener = bottomMenuOperationsListener;
         bottomMenuWindow.showAtLocation(menu, Gravity.BOTTOM | Gravity.LEFT,

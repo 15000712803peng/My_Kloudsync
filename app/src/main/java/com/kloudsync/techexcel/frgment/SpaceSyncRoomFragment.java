@@ -19,6 +19,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DialogRename;
+import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.ub.kloudsync.activity.CreateNewSyncRoomActivity;
 import com.ub.kloudsync.activity.SpacePropertyActivity;
 import com.ub.kloudsync.activity.SwitchSpaceActivity;
@@ -56,7 +57,10 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
 
     private TextView dirText;
     private TextView projectText;
+    private TextView tv_title;
+    private TextView currentspacetv;
     private String projectName;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,15 +74,15 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if(view == null){
-            view = inflater.inflate(R.layout.spacesyncroomteam,container,false);
+        if (view == null) {
+            view = inflater.inflate(R.layout.spacesyncroomteam, container, false);
             initView(view);
         }
         load();
         return view;
     }
 
-    private void load(){
+    private void load() {
         spaceId = getArguments().getInt("ItemID", 0);
         spaceName = getArguments().getString("space_name");
         teamId = getArguments().getInt("team_id", 0);
@@ -103,7 +107,15 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
         syncroomRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         teamspacename = (TextView) view.findViewById(R.id.teamspacename);
         projectText = view.findViewById(R.id.txt_project_name);
+        tv_title = view.findViewById(R.id.tv_title);
+        tv_title.setText(CustomSyncRoomTool.getInstance(getActivity()).getCustomyinxiang());
         addImage = view.findViewById(R.id.image_add);
+        currentspacetv = view.findViewById(R.id.currentspacetv);
+        if (AppConfig.LANGUAGEID == 1) {
+            currentspacetv.setText(CustomSyncRoomTool.getInstance(getActivity()).getCustomyinxiang() + " in current space");
+        } else if (AppConfig.LANGUAGEID == 2) {
+            currentspacetv.setText("当前空间的" + CustomSyncRoomTool.getInstance(getActivity()).getCustomyinxiang());
+        }
         addImage.setOnClickListener(this);
         img_back = (ImageView) view.findViewById(R.id.img_notice);
         teamRl = (RelativeLayout) view.findViewById(R.id.teamrl);
@@ -145,7 +157,7 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
 
                             @Override
                             public void item(SyncRoomBean syncRoomBean) {
-                                if(syncRoomBean.getTopicType() == 7){
+                                if (syncRoomBean.getTopicType() == 7) {
                                     //syncbook
                                     Intent intent = new Intent(getActivity(), SyncBookActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -162,7 +174,7 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
                                     intent.putExtra("spaceId", spaceId);
                                     intent.putExtra("isStartCourse", true);
                                     startActivity(intent);
-                                }else {
+                                } else {
                                     Intent intent = new Intent(getActivity(), SyncRoomActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     intent.putExtra("userid", AppConfig.UserID);
@@ -182,12 +194,10 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
 
                             @Override
                             public void dismiss() {
-                                getActivity().getWindow().getDecorView().setAlpha(1.0f);
                             }
 
                             @Override
                             public void open() {
-                                getActivity().getWindow().getDecorView().setAlpha(0.5f);
                             }
                         });
                     }
@@ -224,7 +234,7 @@ public class SpaceSyncRoomFragment extends Fragment implements View.OnClickListe
                 Intent intent2 = new Intent(getActivity(), SwitchSpaceActivity.class);
                 intent2.putExtra("ItemID", spaceId);
                 intent2.putExtra("team_id", teamId);
-                intent2.putExtra("isSyncRoom",true);
+                intent2.putExtra("isSyncRoom", true);
                 intent2.putExtra("project_name", projectName);
                 startActivityForResult(intent2, REQUEST_CODE_CHANGESPACE);
                 break;

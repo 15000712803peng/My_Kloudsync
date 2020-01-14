@@ -32,10 +32,12 @@
                 android:text="选择"
                 android:textColor="@color/newgrey" />
         </RelativeLayout>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider_line" />
+
         <RelativeLayout
             android:id="@+id/as_rl_takephoto"
             android:layout_width="wrap_content"
@@ -52,10 +54,12 @@
                 android:text="相机拍照"
                 android:textColor="@color/skyblue" />
         </RelativeLayout>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider_line" />
+
         <RelativeLayout
             android:id="@+id/as_rl_filephoto"
             android:layout_width="wrap_content"
@@ -72,6 +76,32 @@
                 android:text="从相册中选择"
                 android:textColor="@color/skyblue" />
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/as_rl_deletephoto_line"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="1dp"
+            android:background="@color/divider_line" />
+
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/as_rl_deletephoto"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="删除"
+                android:textColor="@color/skyblue" />
+        </RelativeLayout>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -80,19 +110,19 @@
         <RelativeLayout
             android:id="@+id/as_rl_cancel"
             android:layout_width="wrap_content"
-            android:layout_marginTop="5dp"
             android:layout_height="40dp"
+            android:layout_marginTop="5dp"
             android:layout_weight="1"
             android:gravity="center_vertical">
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:text="取消"
-            android:textColor="@color/skyblue" />
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="取消"
+                android:textColor="@color/skyblue" />
         </RelativeLayout>
     </LinearLayout>
 

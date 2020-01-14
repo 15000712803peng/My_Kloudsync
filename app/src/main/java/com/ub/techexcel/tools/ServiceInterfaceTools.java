@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.bean.CompanyContact;
+import com.kloudsync.techexcel.bean.CompanySubsystem;
 import com.kloudsync.techexcel.bean.DocumentData;
 import com.kloudsync.techexcel.bean.DocumentDetail;
 import com.kloudsync.techexcel.bean.EventSelectNote;
@@ -25,6 +26,7 @@ import com.kloudsync.techexcel.bean.RoleInTeam;
 import com.kloudsync.techexcel.bean.RongCloudData;
 import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.bean.SyncBook;
+import com.kloudsync.techexcel.bean.UserInCompany;
 import com.kloudsync.techexcel.bean.params.AcceptFriendsRequestParams;
 import com.kloudsync.techexcel.bean.params.AcceptInvitationsParams;
 import com.kloudsync.techexcel.bean.params.InviteMultipleParams;
@@ -136,6 +138,20 @@ public class ServiceInterfaceTools {
     public static final int REMOVENOTE = 0x1146;
     public static final int GETNOTEBYLINKID = 0x1147;
     public static final int GETLESSIONID = 0x1148;
+
+
+    public static final int GETSCHOOLCONTACT = 0x1149;
+    public static final int SETSCHOOLSETTINGS = 0x1150;
+    public static final int GETSCHOOLSETTINGITEM = 0x1151;
+    public static final int REMOVEMEMBER = 0x1152;
+    public static final int CHANGEMEMBERTYPE = 0x1153;
+    public static final int GETSEARCHCONTACT = 0x1154;
+    public static final int INVITECOMPANYMEMBERTOSPACE = 0x1155;
+    public static final int ADDADMINMEMBER = 0x1156;
+    public static final int UPDATECUSTOMDISPLAYNAME = 0x1157;
+    public static final int GETCOMPANYDISPLAYNAMELIST = 0x1158;
+    public static final int CREATESUBSYSTEM = 0x1159;
+    public static final int GETSUBSYSMTEMLIST = 0x1160;
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
 
@@ -267,6 +283,194 @@ public class ServiceInterfaceTools {
                 JSONObject jsonObject1 = ConnectService.submitDataByJson4(url, jsonarray);
                 Log.e("userSettingChan", url + "  " + jsonarray.toString() + "   " + jsonObject1.toString());
                 try {
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = "";
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public void inviteCompanyMemberToSpace(final String url, final int code, final int inviteId, final List<CompanyContact> contacts, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("InviteTo", inviteId);
+                    JSONArray jsonArray = new JSONArray();
+                    for (int i = 0; i < contacts.size(); i++) {
+                        jsonArray.put(contacts.get(i).getUserID() + "");
+                    }
+                    jsonObject.put("UserIDList", jsonArray);
+                    JSONObject jsonObject1 = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("userSettingChan", url + "  " + jsonObject.toString() + "   " + jsonObject1.toString());
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = "";
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void updateCustomDisplayName(final String url, final int code, final JSONObject jsonObject, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject1 = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("hhh", url + "  " + jsonObject.toString() + "   " + jsonObject1.toString());
+                    if (jsonObject1.getInt("code") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = "";
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void createSubsystem(final String url, final int code, final JSONObject jsonObject, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject1 = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("hhh", url + "  " + jsonObject.toString() + "   " + jsonObject1.toString());
+                    if (jsonObject1.getInt("code") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = jsonObject1.getInt("data");
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void getSubsysmtemList(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("hhh", url + "    " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("code") == 0 && jsonObject1.getString("msg").equals("success")) {
+                        JSONArray data = jsonObject1.getJSONArray("data");
+                        List<CompanySubsystem> list = new ArrayList<>();
+                        for (int i = 0; i < data.length(); i++) {
+                            JSONObject jsonObject = data.getJSONObject(i);
+                            CompanySubsystem subSystemBean = new CompanySubsystem();
+                            subSystemBean.setCompanyId(jsonObject.getString("companyId"));
+                            subSystemBean.setSubSystemId(jsonObject.getString("subSystemId"));
+                            subSystemBean.setSubSystemName(jsonObject.getString("subSystemName"));
+                            subSystemBean.setType(jsonObject.getInt("type"));
+                            subSystemBean.setCreateDate(jsonObject.getString("createDate"));
+                            subSystemBean.setIntegrationUrl(jsonObject.getString("integrationUrl"));
+                            list.add(subSystemBean);
+                        }
+                        Message msg3 = Message.obtain();
+                        msg3.obj = list;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = "";
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start(ThreadManager.getManager());
+
+
+    }
+
+    public void getCompanyDisplayNameList(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("hhh", url + "    " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("code") == 0 && jsonObject1.getString("msg").equals("success")) {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = jsonObject1;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = "";
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start(ThreadManager.getManager());
+
+
+    }
+
+
+    public void addAdminMember(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject1 = ConnectService.submitDataByJson(url, null);
+                    Log.e("addAdminMember", url + "  " + "   " + jsonObject1.toString());
                     if (jsonObject1.getInt("RetCode") == 0) {
                         Message msg3 = Message.obtain();
                         msg3.obj = "";
@@ -454,6 +658,59 @@ public class ServiceInterfaceTools {
             public void run() {
                 try {
                     JSONObject returnjson = ConnectService.getIncidentDataattachment(url);
+                    Log.e("hhh", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.what = code;
+                        msg3.obj = "";
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+    public void removeMember(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.getIncidentDataattachment(url);
+                    Log.e("hhh", url + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.what = code;
+                        msg3.obj = "";
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+
+    public void changeMemberType(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject returnjson = ConnectService.submitDataByJson(url, null);
                     Log.e("hhh", url + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         Message msg3 = Message.obtain();
@@ -1587,28 +1844,27 @@ public class ServiceInterfaceTools {
 
     public List<NoteDetail> syncGetUserNotes(final String url) {
         List<NoteDetail> notes = new ArrayList<NoteDetail>();
-            try {
-                JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
-                Log.e("syncGetUserNotes", url + "  " + returnjson.toString());
-                if (returnjson.getInt("RetCode") == 0) {
-                    JSONArray _notes = returnjson.getJSONArray("RetData");
+        try {
+            JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+            Log.e("syncGetUserNotes", url + "  " + returnjson.toString());
+            if (returnjson.getInt("RetCode") == 0) {
+                JSONArray _notes = returnjson.getJSONArray("RetData");
 
-                    for (int j = 0; j < _notes.length(); j++) {
-                        JSONObject note = _notes.getJSONObject(j);
-                        NoteDetail _note = new Gson().fromJson(note.toString(), NoteDetail.class);
-                        String noteUrl = _note.getAttachmentUrl().substring(0,_note.getAttachmentUrl().lastIndexOf("<")) + 1 + _note.getAttachmentUrl().substring(_note.getAttachmentUrl().lastIndexOf("."));
-                        _note.setUrl(noteUrl);
-                        notes.add(_note);
+                for (int j = 0; j < _notes.length(); j++) {
+                    JSONObject note = _notes.getJSONObject(j);
+                    NoteDetail _note = new Gson().fromJson(note.toString(), NoteDetail.class);
+                    String noteUrl = _note.getAttachmentUrl().substring(0, _note.getAttachmentUrl().lastIndexOf("<")) + 1 + _note.getAttachmentUrl().substring(_note.getAttachmentUrl().lastIndexOf("."));
+                    _note.setUrl(noteUrl);
+                    notes.add(_note);
 
-                    }
                 }
-            } catch (Exception e) {
-                Log.e("getNoteListV2", "Exception:" + e);
-                e.printStackTrace();
             }
-            return notes;
+        } catch (Exception e) {
+            Log.e("getNoteListV2", "Exception:" + e);
+            e.printStackTrace();
+        }
+        return notes;
     }
-
 
 
     public void getNoteListV2(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
@@ -2001,6 +2257,114 @@ public class ServiceInterfaceTools {
         }).start(ThreadManager.getManager());
     }
 
+    public void getSchoolSettingItem(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("getSchoolSettingItem", url + "   " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        JSONObject jsonObject = jsonObject1.getJSONObject("RetData");
+                        int settingValue = jsonObject.getInt("SettingValue");
+                        Message msg3 = Message.obtain();
+                        msg3.obj = settingValue;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void getSearchContact(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("SearchContact", url + "   " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        JSONObject jsonObject = jsonObject1.getJSONObject("RetData");
+                        List<CompanyContact> contacts = new ArrayList<>();
+                        JSONArray jsonArray = jsonObject.getJSONArray("UserList");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            CompanyContact companyContact = new CompanyContact();
+                            JSONObject js = jsonArray.getJSONObject(i);
+                            companyContact.setUserID(js.getInt("UserID") + "");
+                            companyContact.setAvatarUrl(js.getString("AvatarUrl"));
+                            companyContact.setUserName(js.getString("UserName"));
+                            companyContact.setPhone(js.getString("Phone"));
+                            companyContact.setRole(js.getInt("Role"));
+                            contacts.add(companyContact);
+                        }
+                        Message msg3 = Message.obtain();
+                        msg3.obj = contacts;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void setSchoolSettings(final String url, final int code, final int schoolId, final int settingvalue, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject subJson = new JSONObject();
+                    subJson.put("SchoolID", schoolId);
+
+                    JSONArray jsonArray = new JSONArray();
+                    JSONObject settings = new JSONObject();
+                    settings.put("SettingID", "10001");
+                    settings.put("SettingValue", settingvalue + "");
+                    settings.put("SettingText", "");
+                    settings.put("SettingNotes", "");
+                    jsonArray.put(settings);
+
+                    subJson.put("Settings", jsonArray);
+
+                    JSONObject returnjson = ConnectService.submitDataByJson(url, subJson);
+                    Log.e("setSchoolSettings", url + "   " + subJson + "   " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.what = code;
+                        msg3.obj = "";
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnjson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
 
     /**
      * 根据lessonid  获取 录课的信息
@@ -2314,7 +2678,7 @@ public class ServiceInterfaceTools {
 
     }
 
-    public JSONObject syncGetSimpleNoteInfoByLinkId(String linkId){
+    public JSONObject syncGetSimpleNoteInfoByLinkId(String linkId) {
 
         String url = AppConfig.URL_PUBLIC + "DocumentNote/NoteByLinkID";
         JSONObject jsonObject = new JSONObject();
@@ -2355,52 +2719,99 @@ public class ServiceInterfaceTools {
         }
     }
 
-    public JSONObject syncGetFavoriteVedios(){
-        String url  = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + 2;
+    public void getSchoolContact(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("getSchoolContact", url + "   " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        JSONObject retdata = jsonObject1.getJSONObject("RetData");
+
+                        UserInCompany userInCompany = new UserInCompany();
+
+                        userInCompany.setUserID(retdata.getString("UserID"));
+                        userInCompany.setLoginName(retdata.getString("LoginName"));
+                        userInCompany.setNickname(retdata.getString("Nickname"));
+                        userInCompany.setUserName(retdata.getString("UserName"));
+                        userInCompany.setFirstName(retdata.getString("FirstName"));
+                        userInCompany.setMiddleName(retdata.getString("MiddleName"));
+                        userInCompany.setLastName(retdata.getString("LastName"));
+                        userInCompany.setAvatarUrl(retdata.getString("AvatarUrl"));
+                        userInCompany.setGender(retdata.getInt("Gender"));
+                        userInCompany.setPhone(retdata.getString("Phone"));
+                        userInCompany.setEmail(retdata.getString("Email"));
+                        userInCompany.setBirthDate(retdata.getString("BirthDate"));
+                        userInCompany.setGrade(retdata.getString("Grade"));
+                        userInCompany.setSchoolName(retdata.getString("SchoolName"));
+                        userInCompany.setRole(retdata.getInt("Role"));
+
+                        Message msg3 = Message.obtain();
+                        msg3.obj = userInCompany;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public JSONObject syncGetFavoriteVedios() {
+        String url = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + 2;
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
         return response;
     }
 
-    public JSONObject syncGetMeetingMembers(String meetingId,int role) {
+    public JSONObject syncGetMeetingMembers(String meetingId, int role) {
 
         String url = "";
-        if(role == MeetingConfig.MeetingRole.MEMBER){
+        if (role == MeetingConfig.MeetingRole.MEMBER) {
             url += AppConfig.URL_MEETING_BASE + "member/member_in_meeting_list?meetingId=" + meetingId;
-        }else if(role == MeetingConfig.MeetingRole.AUDIENCE){
+        } else if (role == MeetingConfig.MeetingRole.AUDIENCE) {
             url += AppConfig.URL_MEETING_BASE + "member/audience_list?meetingId=" + meetingId;
-        }else if(role == MeetingConfig.MeetingRole.BE_INVITED){
+        } else if (role == MeetingConfig.MeetingRole.BE_INVITED) {
             url += AppConfig.URL_MEETING_BASE + "member/invited_not_join_list?meetingId=" + meetingId;
         }
 
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetMeetingMembers","url:" + url + ",result:" + response);
+        Log.e("syncGetMeetingMembers", "url:" + url + ",result:" + response);
         return response;
 
     }
 
-    public JSONObject syncMakeUserUpAndDown(String userId,int status){
+    public JSONObject syncMakeUserUpAndDown(String userId, int status) {
         String url = AppConfig.URL_MEETING_BASE + "member/make_user_up_or_down_stage?userId=" + userId + "&status=" + status;
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("userId",userId);
-            jsonObject.put("status",status);
+            jsonObject.put("userId", userId);
+            jsonObject.put("status", status);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         JSONObject response = ConnectService.submitDataByJson(url, jsonObject);
-        Log.e("syncMakeUserUpAndDown","url:" + url + ",result:" + response);
+        Log.e("syncMakeUserUpAndDown", "url:" + url + ",result:" + response);
         return response;
     }
 
-    public JSONObject syncGetFrindList(){
+    public JSONObject syncGetFrindList() {
         String url = AppConfig.URL_PUBLIC + "Friend/FriendList";
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetFrindList","url:" + url + ",result:" + response);
+        Log.e("syncGetFrindList", "url:" + url + ",result:" + response);
         return response;
 
     }
 
-    public JSONObject syncGetSoundtrackList(MeetingConfig meetingConfig){
+    public JSONObject syncGetSoundtrackList(MeetingConfig meetingConfig) {
         String url = AppConfig.URL_PUBLIC;
         if (meetingConfig.getType() == MeetingType.MEETING) {
             url += "LessonSoundtrack/List?lessonID=" + meetingConfig.getLessionId() +
@@ -2409,39 +2820,39 @@ public class ServiceInterfaceTools {
             url += "Soundtrack/List?attachmentID=" + meetingConfig.getDocument().getAttachmentID() + "&isPublic=0";
         }
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetSoundtrackList","url:" + url + ",result:" + response);
+        Log.e("syncGetSoundtrackList", "url:" + url + ",result:" + response);
         return response;
 
     }
 
-    public JSONObject syncGetSoundtrackDetail(SoundTrack soundTrack){
+    public JSONObject syncGetSoundtrackDetail(SoundTrack soundTrack) {
         String url = AppConfig.URL_PUBLIC + "Soundtrack/Item?soundtrackID=" + soundTrack.getSoundtrackID();
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetSoundtrackDetail","url:" + url + ",result:" + response);
+        Log.e("syncGetSoundtrackDetail", "url:" + url + ",result:" + response);
         return response;
     }
 
     public JSONObject syncDeleteSoundtrack(SoundTrack soundTrack) {
         String url = AppConfig.URL_PUBLIC + "Soundtrack/Delete?soundtrackID=" + soundTrack.getSoundtrackID();
         JSONObject response = ConnectService.getIncidentDataattachment(url);
-        Log.e("syncDeleteSoundtrack","url:" + url + ",result:" + response);
+        Log.e("syncDeleteSoundtrack", "url:" + url + ",result:" + response);
         return response;
     }
 
-    public JSONObject syncGetUserListBasicInfoByRongCloud(String rongCloudIDs){
+    public JSONObject syncGetUserListBasicInfoByRongCloud(String rongCloudIDs) {
         String url = AppConfig.URL_PUBLIC + "User/UserListBasicInfoByRongCloud?rongCloudIDs=" + rongCloudIDs;
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetUserListBasicInfoByRongCloud","url:" + url + ",result:" + response);
+        Log.e("syncGetUserListBasicInfoByRongCloud", "url:" + url + ",result:" + response);
         return response;
     }
 
-    public JSONObject syncImportNote(MeetingConfig meetingConfig,EventSelectNote note) {
+    public JSONObject syncImportNote(MeetingConfig meetingConfig, EventSelectNote note) {
         JSONObject response = null;
         try {
             final JSONObject jsonObject = new JSONObject();
             jsonObject.put("SyncRoomID", meetingConfig.getLessionId());
             jsonObject.put("DocumentItemID", meetingConfig.getDocument().getAttachmentID());
-            jsonObject.put("PageNumber", meetingConfig.getPageNumber() +"");
+            jsonObject.put("PageNumber", meetingConfig.getPageNumber() + "");
             jsonObject.put("NoteID", note.getNote().getNoteID());
             jsonObject.put("LinkProperty", note.getLinkProperty().toString());
             response = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "DocumentNote/ImportNote", jsonObject);
@@ -2451,7 +2862,7 @@ public class ServiceInterfaceTools {
             e.printStackTrace();
         }
 
-        return  response;
+        return response;
     }
 
 

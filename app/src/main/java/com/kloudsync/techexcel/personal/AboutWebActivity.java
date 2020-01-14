@@ -36,7 +36,7 @@ public class AboutWebActivity extends AppCompatActivity {
         language = sharedPreferences.getInt("language",1);
 
 
-        img_notice.setOnClickListener(new AboutWebActivity.MyOnClick());
+        img_notice.setOnClickListener(new MyOnClick());
 
         OpenWeb();
     }

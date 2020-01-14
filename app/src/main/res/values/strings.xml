@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Kloudsync</string>
+    <string name="app_name">Kloud</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
 
@@ -16,6 +16,8 @@
     <string name="personal_center">Me</string>
     <string name="Meeting">Meeting</string>
     <string name="Topic">Topic</string>
+    <string name="enter">Enter</string>
+    <string name="mymeetingid">My Meeting ID:</string>
 
     <string-array name="tabname">
         <item>Document</item>
@@ -49,7 +51,7 @@
     <string name="ALLEvaluation">所有评价</string>
 
     <string name="Map_mode">地图模式</string>
-    <string name="Customer">用户</string>
+    <string name="Customer">Customer</string>
     <string name="Health_Consultant">好友</string>
     <string name="Phone">Phone</string>
     <string name="Address">Address</string>
@@ -506,7 +508,11 @@
     <!--淫荡分割线-->
     <string name="house">H</string>
     <string name="mintue">M</string>
+
+
+    <!--<string name="syncroom">SyncRoom</string>-->
     <string name="syncroom">SyncRoom</string>
+    <string name="defaultsyncroom">SyncRoom</string>
 
 
     <string name="inprogress">In Progress</string>
@@ -651,6 +657,7 @@ Please input the cell phone number to add the contact
     <string name="as_email">Email</string>
     <string name="as_admin">Admin user list</string>
     <string name="as_sync">Enable SyncRoom</string>
+    <string name="as_sync_name">SyncRoom custom name</string>
     <string name="as_contact_list">Contact list</string>
     <string name="as_add_admin">Add admin user</string>
     <string name="as_save">Save</string>
@@ -724,8 +731,18 @@ Please input the cell phone number to add the contact
     <string name="current_space">current dir</string>
     <string name="docs_in_spaces">documents in current dir</string>
     <string name="team_memers">Team Members</string>
-    <string name="space_memers">Team Members</string>
+    <string name="space_memers">Space Members</string>
     <string name="syncrooms_in_spaces">syncrooms in current space</string>
+    <string name="invite_form_company">Add from contact</string>
+    <string name="invite_form_admin">Invite new admin</string>
+    <string name="invite_form_new">Invite new</string>
+    <string name="addteamadmin">Add team admin</string>
+    <string name="addspaceadmin">Add space admin</string>
+    <string name="addnewmember">Add new member</string>
+    <string name="addmemberfromcomcomtact">add member from company contact</string>
+
+
+
 
     <string name="KloudSync">KloudSync</string>
     <string name="Mobile_phone">Mobile phone</string>
