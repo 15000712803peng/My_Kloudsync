@@ -578,7 +578,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }).doOnNext(new Consumer<EventNote>() {
             @Override
             public void accept(EventNote note) throws Exception {
-                Log.e("check_note","event_note_local_file_id:" + note.getNote().getLocalFileID());
+//                Log.e("check_note","event_note_local_file_id:" + note.getNote().getLocalFileID());
                 if(note.getNote() == null){
                     EventBus.getDefault().post(new EventNoteErrorShowDocument());
                 }else {

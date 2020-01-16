@@ -49,6 +49,8 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.rong.imlib.MD5;
+
 public class DocumentUploadUtil {
 
     private Context mContext;
@@ -371,6 +373,7 @@ public class DocumentUploadUtil {
 
 
     private long totalSizee;
+    private String fileUuidName;
 
     private void UpdateVideo3(final LineItem attachmentBean, final Uploadao ud) {
 
@@ -379,8 +382,12 @@ public class DocumentUploadUtil {
         fileName = mfile.getName();
         String name2 = AppConfig.UserID + mfile.getName();
 
-//        TargetFolderKey
-        MD5Hash = Md5Tool.transformMD5(name2);
+        if (isNeedConvert == false) {
+            fileUuidName = Md5Tool.getUUID();
+            MD5Hash = targetFolderKey + "/" + fileUuidName + ".mp4";
+        } else {
+            MD5Hash = Md5Tool.transformMD5(name2);
+        }
 
        /* PutObjectRequest put = new PutObjectRequest(ud.getBucketName(),
                 MD5Hash, path);
@@ -474,18 +481,7 @@ public class DocumentUploadUtil {
 
             ConvertingResult convertingResult = new ConvertingResult();
             convertingResult.setCount(1);
-            String newfilename = fileName.substring(0, fileName.lastIndexOf("."));
-            try {
-                //                String vname = URLEncoder.encode(LoginGet.getBase64Password(newfilename), "UTF-8");
-                Log.e("biang", newfilename + "   ");
-                newfilename = Md5Tool.transformMD5(newfilename);
-                convertingResult.setFileName(newfilename);
-                Log.e("biang", newfilename + "   ");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //{"Title":"apple.mp4","SchoolID":-1,"Description":"apple.mp4","Hash":"3682bdf6fce14e971da2f4b6c7f57591","FileID":80483,"FileSize":49895046,"PageCount":1,"FileName":"97c381f3-9dbd-7792-9d8b-ce9323e80b57"}
+            convertingResult.setFileName(fileUuidName);
             ServiceInterfaceTools.getinstance().uploadFavoritevideo(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
                     ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
                     fileName, MD5Hash, totalSizee,
