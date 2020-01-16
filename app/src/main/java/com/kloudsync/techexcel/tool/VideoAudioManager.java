@@ -7,7 +7,6 @@ import android.widget.Toast;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.start.LoginGet;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
@@ -91,21 +90,6 @@ public class VideoAudioManager {
                     Toast.LENGTH_LONG).show();
         }
     }
-
-
-//https://api.peertime.cn/peertime/V1/FavoriteAttachment/UploadFileWithHash?Title=YXBwbGUubXA0&Description=&Hash=3682bdf6fce14e971da2f4b6c7f57591
-//https://api.peertime.cn/peertime/V1/FavoriteAttachment/UploadFileWithHash?Title=VklEXzIwMTkxMjIyXzEyMjAxOS5tcDQ%3D%0A&Hash=53a62198e4ad6012f5b5709837400823
-
-
-
-
-
-
-
-
-
-
-
 
 
 

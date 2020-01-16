@@ -389,10 +389,6 @@ public class DocumentUploadUtil {
             MD5Hash = Md5Tool.transformMD5(name2);
         }
 
-       /* PutObjectRequest put = new PutObjectRequest(ud.getBucketName(),
-                MD5Hash, path);
-        put.setCRC64(OSSRequest.CRC64Config.YES);*/
-
         //开始下载
         attachmentBean.setAttachmentID(-1 + "");
         attachmentBean.setFlag(1);
