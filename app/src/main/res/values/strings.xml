@@ -716,6 +716,7 @@ Please input the cell phone number to add the contact
     <string name="title_join_as_audience">Join as audience</string>
     <string name="msg_join_as_audience">The maximum number of panellists has\nbeen reached。You will be joining as a\n listen-only audience</string>
     <string name="share">Share</string>
+    <string name="share_success">Share Success</string>
     <string name="rename">Rename</string>
     <string name="move">Move</string>
     <string name="quit_team">Quit team</string>

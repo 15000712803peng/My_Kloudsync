@@ -188,10 +188,25 @@ public class Note implements Serializable {
     @Override
     public String toString() {
         return "Note{" +
-                "noteID=" + noteID +
+                "documentItemID=" + documentItemID +
+                ", pageNumber=" + pageNumber +
+                ", localFileID='" + localFileID + '\'' +
+                ", noteID=" + noteID +
+                ", title='" + title + '\'' +
+                ", attachmentFileID=" + attachmentFileID +
+                ", attachmentID=" + attachmentID +
+                ", fileID=" + fileID +
+                ", fileName='" + fileName + '\'' +
                 ", attachmentUrl='" + attachmentUrl + '\'' +
+                ", sourceFileUrl='" + sourceFileUrl + '\'' +
+                ", createdDate='" + createdDate + '\'' +
+                ", status=" + status +
+                ", linkID=" + linkID +
                 ", localFilePath='" + localFilePath + '\'' +
                 ", url='" + url + '\'' +
+                ", PageCount=" + PageCount +
+                ", documentPages=" + documentPages +
+                ", newPath='" + newPath + '\'' +
                 '}';
     }
 }

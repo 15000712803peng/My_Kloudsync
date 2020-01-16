@@ -19,13 +19,13 @@
             android:textSize="14sp" />
 
         <ImageView
-            android:layout_centerVertical="true"
             android:id="@+id/image_close"
-            android:padding="2dp"
-            android:layout_marginRight="12dp"
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="12dp"
+            android:padding="2dp"
             android:src="@drawable/close" />
     </RelativeLayout>
 
@@ -39,10 +39,10 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:visibility="gone"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/savevideo"
@@ -54,28 +54,27 @@
                 android:textSize="14sp" />
 
             <View
-                android:layout_marginTop="3dp"
-                android:background="@color/blue"
                 android:layout_width="60dp"
-                android:layout_height="3dp" />
+                android:layout_height="3dp"
+                android:layout_marginTop="3dp"
+                android:background="@color/blue" />
         </LinearLayout>
 
 
     </RelativeLayout>
 
     <LinearLayout
-        android:gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:background="@color/bgColor"
+        android:gravity="center_vertical"
         android:orientation="horizontal">
-
 
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center"
             android:text="Name"
             android:textColor="@color/black"
@@ -84,8 +83,8 @@
         <TextView
             android:id="@+id/totalTime"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center"
             android:text="Total time"
             android:textColor="@color/black"
@@ -104,11 +103,12 @@
     <ListView
         android:id="@+id/listview"
         android:layout_width="match_parent"
-        android:layout_weight="1"
         android:layout_height="0dp"
-        android:dividerHeight="0px"
+        android:layout_weight="1"
         android:divider="@android:color/transparent"
+        android:dividerHeight="0px"
         android:scrollbars="none"></ListView>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -151,7 +151,7 @@
                 android:layout_marginLeft="20dp"
                 android:background="@drawable/peertimeselect_bg2"
                 android:gravity="center"
-                android:text="@string/OK"
+                android:text="@string/satOk"
                 android:textColor="@color/white"
                 android:textSize="14sp" />
         </LinearLayout>

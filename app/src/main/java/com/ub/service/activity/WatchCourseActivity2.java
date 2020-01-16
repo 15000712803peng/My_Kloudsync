@@ -3467,8 +3467,6 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 } else {
                     wv_show.load("javascript:ShowToolbar(" + false + ")", null);
                     wv_show.load("javascript:StopRecord()", null);
-//                    wv_show.load("javascript:ShowToolbar(" + true + ")", null);
-//                    wv_show.load("javascript:Record()", null);
                 }
 
                 isWebViewLoadFinish = true;
@@ -3545,7 +3543,6 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                             line.setSelect(false);
                             currentShowPdf = documentList.get(i + 1);
                         }
-
                     } else if (diff == -1) {  //往前一页
                         if (i == 0) {
                             line.setSelect(false);
@@ -3564,9 +3561,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
             currentItemId = currentShowPdf.getItemId();
             targetUrl = currentShowPdf.getUrl();
             newPath = currentShowPdf.getNewPath();
-
             isHtml = currentShowPdf.isHtml5();
-
             if (diff == 1) {
                 currentAttachmentPage = "1";
                 notifySwitchDocumentSocket(currentShowPdf, "0", 0);
@@ -3616,8 +3611,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     // 录制
     @JavascriptInterface
     public void audioSyncFunction(final int id, final int isRecording) {
-        runOnUiThread(
-                new Runnable() {
+        runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         webVideoPlay(id, true, isRecording);  //录音和录action
@@ -6395,6 +6389,8 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 ServiceInterfaceTools.getinstance().endSync(url2, ServiceInterfaceTools.ENDSYNC, new ServiceInterfaceListener() {
                     @Override
                     public void getServiceReturnData(Object object) {
+
+
 
                     }
                 });

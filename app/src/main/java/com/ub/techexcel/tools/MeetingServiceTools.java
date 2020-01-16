@@ -531,6 +531,7 @@ public class MeetingServiceTools {
                     page.setLocalFileId(note.getLocalFileID());
                     page.setPageNumber(j + 1);
                     page.setDocumentId(note.getDocumentItemID());
+                    page.setLocalFileId(note.getLocalFileID());
                     if (TextUtils.isEmpty(preUrl)) {
                         page.setPageUrl(pageUrl);
                     } else {
@@ -561,6 +562,7 @@ public class MeetingServiceTools {
                 Note note = new Note();
                 String attachmentUrl = lineitem.getString("AttachmentUrl");
                 note.setLocalFileID(lineitem.getString("LocalFileID"));
+                Log.e("syncGetNoteByNoteId","set_local_file_id:" + lineitem.getString("LocalFileID"));
                 note.setNoteID(lineitem.getInt("NoteID"));
 //                note.setLinkID(lineitem.getInt("LinkID"));
 
@@ -609,6 +611,8 @@ public class MeetingServiceTools {
 
             }
         } catch (JSONException e) {
+            Log.e("syncGetNoteByNoteId","JSONException:" + e.getMessage());
+
             e.printStackTrace();
         }
         return eventNote;

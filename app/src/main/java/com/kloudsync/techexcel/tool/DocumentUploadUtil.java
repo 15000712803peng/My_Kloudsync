@@ -43,6 +43,8 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -330,77 +332,6 @@ public class DocumentUploadUtil {
 
     }
 
-    /*
-    public void uploadWithTransferUtility(final LineItem attachmentBean, final Uploadao ud) {
-        mfile = new File(attachmentBean.getUrl());
-        fileName = mfile.getName();
-        String name2 = AppConfig.UserID + mfile.getName();
-        MD5Hash = Md5Tool.transformMD5(name2);
-
-        BasicSessionCredentials sessionCredentials = new BasicSessionCredentials(
-                ud.getAccessKeyId(),
-                ud.getAccessKeySecret(),
-                ud.getSecurityToken());
-        AmazonS3Client s3 = new AmazonS3Client(sessionCredentials);
-
-        TransferUtility transferUtility =
-                TransferUtility.builder()
-                        .context(mContext)
-                        .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
-                        .s3Client(s3)
-                        .build();
-        TransferObserver uploadObserver =
-                transferUtility.upload(
-                        ud.getBucketName(),
-                        MD5Hash,
-                        mfile);
-
-        initFavorite(attachmentBean);
-
-
-        uploadObserver.setTransferListener(new TransferListener() {
-            @Override
-            public void onStateChanged(int id, TransferState state) {
-                Log.e("YourActivity", "id:" + id + "  state:" + state);
-                if (TransferState.COMPLETED == state) {
-                    attachmentBean.setFlag(2);
-                    if (flags) {
-                        if (puo != null) {
-                            puo.DissmissPop();
-                        }
-                    } else {
-//                        favorite.setAttachmentID(attachmentid);
-                        favorite.setFlag(2);
-                        favorite.setProgressbar(0);
-                    }
-                    startConverting(ud, attachmentBean);
-                }
-            }
-
-            @Override
-            public void onProgressChanged(int id, final long bytesCurrent, final long bytesTotal) {
-                float percentDonef = ((float) bytesCurrent / (float) bytesTotal) * 100;
-                int percentDone = (int) percentDonef;
-                if (flags) {
-                    if (puo != null) {
-                        puo.setProgress(bytesTotal, bytesCurrent);
-                    }
-                } else {
-                    fAdapter.SetMyProgress(bytesTotal, bytesCurrent, favorite);
-                }
-
-                Log.e("YourActivity", "ID:" + id + " bytesCurrent: " + bytesCurrent
-                        + " bytesTotal: " + bytesTotal + " " + percentDone + "%");
-            }
-
-            @Override
-            public void onError(int id, Exception ex) {
-                Log.e("YourActivity", "onError");
-            }
-
-        });
-
-    }*/
 
     private void initFavorite(LineItem attachmentBean) {
         if (!flags) {
@@ -438,12 +369,17 @@ public class DocumentUploadUtil {
         }).start(ThreadManager.getManager());
     }
 
+
+    private long totalSizee;
+
     private void UpdateVideo3(final LineItem attachmentBean, final Uploadao ud) {
 
-        String path = attachmentBean.getUrl();
+        final String path = attachmentBean.getUrl();
         mfile = new File(path);
         fileName = mfile.getName();
         String name2 = AppConfig.UserID + mfile.getName();
+
+//        TargetFolderKey
         MD5Hash = Md5Tool.transformMD5(name2);
 
        /* PutObjectRequest put = new PutObjectRequest(ud.getBucketName(),
@@ -475,7 +411,8 @@ public class DocumentUploadUtil {
         request.setProgressCallback(new OSSProgressCallback<ResumableUploadRequest>() {
             @Override
             public void onProgress(ResumableUploadRequest request, final long currentSize, final long totalSize) {
-                Log.e("biang", currentSize + ":" + totalSize + ":" + flags);
+                Log.e("biang", currentSize + ":" + totalSize + ":" + flags + "     " + MD5Hash + "   " + path);
+                totalSizee = totalSize;
                 ((Activity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -518,63 +455,12 @@ public class DocumentUploadUtil {
             }
         });
 
-        /*put.setProgressCallback(new OSSProgressCallback<PutObjectRequest>() {
-            @Override
-            public void onProgress(PutObjectRequest request, final long currentSize, final long totalSize) {
-                Log.e("biang", currentSize + ":" + totalSize + ":" + flags);
-                ((Activity) mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (flags) {
-                            if (puo != null) {
-                                puo.setProgress(totalSize, currentSize);
-                            }
-                        } else {
-                            fAdapter.SetMyProgress(totalSize, currentSize, favorite);
-
-                        }
-                    }
-                });
-            }
-        });
-
-        oss.asyncPutObject(put, new OSSCompletedCallback<PutObjectRequest, PutObjectResult>() {
-            @Override
-            public void onSuccess(PutObjectRequest request, PutObjectResult result) {
-                attachmentBean.setFlag(2);
-                Log.e("biang", "onSuccess");
-
-                ((Activity) mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        if (flags) {
-                            if (puo != null) {
-                                puo.DissmissPop();
-                            }
-                        } else {
-//                        favorite.setAttachmentID(attachmentid);
-                            favorite.setFlag(2);
-                            favorite.setProgressbar(0);
-                        }
-                        startConverting(ud, attachmentBean);
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(PutObjectRequest request, ClientException clientExcepion, ServiceException serviceException) {
-                Log.e("biang", "onFailure");
-
-            }
-        });*/
-
 
     }
 
     private void startConverting(final Uploadao ud, final LineItem attachmentBean) {
         uploadao = ud;
-        if(isNeedConvert){
+        if (isNeedConvert) {
             ServiceInterfaceTools.getinstance().startConverting(AppConfig.URL_LIVEDOC + "startConverting", ServiceInterfaceTools.STARTCONVERTING,
                     uploadao, MD5Hash, fileName, targetFolderKey,
                     new ServiceInterfaceListener() {
@@ -584,25 +470,35 @@ public class DocumentUploadUtil {
                             convertingPercentage(attachmentBean);
                         }
                     });
-        }else{
+        } else {
 
-            ConvertingResult convertingResult =new ConvertingResult();
-            convertingResult.setCount(0);
-            convertingResult.setFileName(fileName);
+            ConvertingResult convertingResult = new ConvertingResult();
+            convertingResult.setCount(1);
+            String newfilename = fileName.substring(0, fileName.lastIndexOf("."));
+            try {
+                //                String vname = URLEncoder.encode(LoginGet.getBase64Password(newfilename), "UTF-8");
+                Log.e("biang", newfilename + "   ");
+                newfilename = Md5Tool.transformMD5(newfilename);
+                convertingResult.setFileName(newfilename);
+                Log.e("biang", newfilename + "   ");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-            ServiceInterfaceTools.getinstance().uploadFavoriteNewFile(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
+            //{"Title":"apple.mp4","SchoolID":-1,"Description":"apple.mp4","Hash":"3682bdf6fce14e971da2f4b6c7f57591","FileID":80483,"FileSize":49895046,"PageCount":1,"FileName":"97c381f3-9dbd-7792-9d8b-ce9323e80b57"}
+            ServiceInterfaceTools.getinstance().uploadFavoritevideo(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
                     ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
-                    fileName, "", MD5Hash,
+                    fileName, MD5Hash, totalSizee,
                     convertingResult, field, new ServiceInterfaceListener() {
                         @Override
                         public void getServiceReturnData(Object object) {
-                            Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
+                            Toast.makeText(mContext, "video upload success", Toast.LENGTH_LONG).show();
                         }
                     }
             );
         }
 
-        isNeedConvert=true;
+        isNeedConvert = true;
 
 
     }
@@ -645,7 +541,7 @@ public class DocumentUploadUtil {
                 timer1.cancel();
                 timer1 = null;
             }
-            if (timerTask1 !=  null) {
+            if (timerTask1 != null) {
                 timerTask1.cancel();
                 timerTask1 = null;
             }

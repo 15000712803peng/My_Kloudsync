@@ -3,9 +3,11 @@ package com.kloudsync.techexcel.contact;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -13,11 +15,14 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.CustomerAdapter;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.message.ShareMessage;
+import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.SideBar;
 import com.kloudsync.techexcel.help.SideBarSortHelp;
 import com.kloudsync.techexcel.info.Customer;
@@ -26,6 +31,12 @@ import com.kloudsync.techexcel.tool.MessageTool;
 import com.kloudsync.techexcel.view.ClearEditText;
 import com.ub.friends.activity.AddFriendsActivity;
 import com.ub.kloudsync.activity.Document;
+import com.ub.techexcel.service.ConnectService;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -51,15 +62,16 @@ public class MyFriendsActivity extends Activity implements View.OnClickListener 
     private Document document;
     private int Syncid;
     private RelativeLayout titleRightLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_myfriends);
-//        flag_s = getIntent().getBooleanExtra("isShare", false);
-//        if (flag_s) {
-//            Syncid = getIntent().getIntExtra("Syncid", -1);
-//            document = (Document) getIntent().getSerializableExtra("document");
-//        }
+        flag_s = getIntent().getBooleanExtra("isShare", false);
+        if (flag_s) {
+            Syncid = getIntent().getIntExtra("Syncid", -1);
+            document = (Document) getIntent().getSerializableExtra("document");
+        }
 
         initView();
         getData();
@@ -128,7 +140,8 @@ public class MyFriendsActivity extends Activity implements View.OnClickListener 
         });
 
     }
-//搜索
+
+    //搜索
     private void editCustomers() {
         et_search.addTextChangedListener(new TextWatcher() {
 
@@ -236,27 +249,37 @@ public class MyFriendsActivity extends Activity implements View.OnClickListener 
 
     }
 
-    private void ShareToMyFriend(Customer cus) {
-        ShareMessage sm = new ShareMessage();
-        sm.setShareDocTitle(document.getTitle());
-        sm.setAttachmentID(document.getAttachmentID() + "");
-        String url = AppConfig.SHARE_ATTACHMENT + document.getAttachmentID();
-        String thumurl = document.getSourceFileUrl();
-        if (url.contains("<") && url.contains(">")) {
-            thumurl = thumurl.substring(0, thumurl.lastIndexOf("<")) + "1_thumbnail"
-                    + thumurl.substring(thumurl.lastIndexOf("."), thumurl.length());
-        } else {
-            thumurl = thumurl.substring(0, thumurl.lastIndexOf(".")) + "_1_thumbnail"
-                    + thumurl.substring(thumurl.lastIndexOf("."), thumurl.length());
-        }
-        sm.setShareDocThumbnailUrl(thumurl);
-        sm.setShareDocUrl(url);
-        sm.setShareDocAvatarUrl("");
-        String date = (String) DateFormat.format("yy.MM.dd", System.currentTimeMillis());
-        sm.setShareDocTime(date);
-        sm.setShareDocUsername(AppConfig.UserName);
-        MessageTool.sendMessage(sm, cus.getUBAOUserID(), Conversation.ConversationType.PRIVATE);
-        finish();
+
+    private void ShareToMyFriend(final Customer cus) {
+        String url = AppConfig.URL_PUBLIC + "User/UserProfile";
+        ServiceInterfaceTools.getinstance().getLoginUserInfo(url, ServiceInterfaceTools.GETLOGINUSERINFO, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                String loginavatarurl = (String) object;
+                ShareMessage sm = new ShareMessage();
+                sm.setShareDocTitle(document.getTitle());
+                sm.setAttachmentID(document.getAttachmentID() + "");
+                String url = AppConfig.SHARE_ATTACHMENT + document.getAttachmentID();
+                String thumurl = document.getAttachmentUrl();
+                Log.e("thumurl", thumurl + "  " + loginavatarurl);
+                if (thumurl.contains("<") && thumurl.contains(">")) {
+                    thumurl = thumurl.substring(0, thumurl.lastIndexOf("<")) + "1"
+                            + thumurl.substring(thumurl.lastIndexOf("."), thumurl.length());
+                }
+                Log.e("thumurl", thumurl);
+                sm.setShareDocThumbnailUrl(thumurl);
+                sm.setShareDocUrl(url);
+                sm.setShareDocAvatarUrl(loginavatarurl);
+                String date = (String) DateFormat.format("yyyy_MM_dd", System.currentTimeMillis());
+                sm.setShareDocTime(date);
+                sm.setShareDocUsername(AppConfig.UserName);
+                MessageTool.sendMessage(sm, cus.getUBAOUserID(), Conversation.ConversationType.PRIVATE);
+                Toast.makeText(MyFriendsActivity.this, getString(R.string.share_success), Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
+
+
     }
 
 }

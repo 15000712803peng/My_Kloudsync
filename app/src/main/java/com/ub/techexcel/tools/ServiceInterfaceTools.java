@@ -72,6 +72,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -152,6 +153,7 @@ public class ServiceInterfaceTools {
     public static final int GETCOMPANYDISPLAYNAMELIST = 0x1158;
     public static final int CREATESUBSYSTEM = 0x1159;
     public static final int GETSUBSYSMTEMLIST = 0x1160;
+    public static final int GETLOGINUSERINFO = 0x1161;
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
 
@@ -462,6 +464,38 @@ public class ServiceInterfaceTools {
 
     }
 
+
+    public void getLoginUserInfo(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject1 = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("hhh", url + "    " + jsonObject1.toString());
+                try {
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        JSONObject object = jsonObject1.getJSONObject("RetData");
+                        String AvatarUrl = object.getString("AvatarUrl");
+                        Message msg3 = Message.obtain();
+                        msg3.obj = AvatarUrl;
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = "";
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start(ThreadManager.getManager());
+
+
+    }
 
     public void addAdminMember(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
@@ -1479,6 +1513,40 @@ public class ServiceInterfaceTools {
 //                    jsonObject.put("FolderID", convertingResult.getFileName());
                     JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
                     Log.e("hhh", url + jsonObject.toString() + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.what = code;
+                        msg3.obj = "";
+                        handler.sendMessage(msg3);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+
+
+    public void uploadFavoritevideo(final String url, final int code, final String fileName,
+                                    final String hash, final long totalSizee, final ConvertingResult convertingResult, final int fieldId,
+                                    ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("Title", fileName);
+                    jsonObject.put("SchoolID", -1);
+                    jsonObject.put("Description", fileName);
+                    jsonObject.put("Hash", hash);
+                    jsonObject.put("FileID", fieldId);
+                    jsonObject.put("FileSize", totalSizee);
+                    jsonObject.put("PageCount", 1);
+                    jsonObject.put("FileName", convertingResult.getFileName());
+                    JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("biang", url + jsonObject.toString() + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         Message msg3 = Message.obtain();
                         msg3.what = code;
@@ -2866,15 +2934,15 @@ public class ServiceInterfaceTools {
     }
 
 
-    public JSONObject syncGetNotePageJson(String url){
+    public JSONObject syncGetNotePageJson(String url) {
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetNotePageJson","url:" + url + ",result:" + response);
+        Log.e("syncGetNotePageJson", "url:" + url + ",result:" + response);
         return response;
     }
 
-    public JSONObject syncGetNoteP1Item(long noteId){
+    public JSONObject syncGetNoteP1Item(long noteId) {
         JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_MEETING_BASE + "note/p1_item?noteId=" + noteId);
-        Log.e("syncGetNoteP1Item","url:" + AppConfig.URL_MEETING_BASE + "note/p1_item?noteId=" + noteId + ",result:" + response);
+        Log.e("syncGetNoteP1Item", "url:" + AppConfig.URL_MEETING_BASE + "note/p1_item?noteId=" + noteId + ",result:" + response);
         return response;
     }
 

@@ -219,7 +219,6 @@ public class SendFileMessage extends MessageContent implements Serializable {
 
 	  /**
 	   * 将类的数据写入外部提供的 Parcel 中。
-	   *
 	   * @param dest  对象被写入的 Parcel。
 	   * @param flags 对象如何被写入的附加标志。
 	   */

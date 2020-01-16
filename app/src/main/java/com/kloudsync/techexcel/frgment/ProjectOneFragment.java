@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.frgment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.params.EventLabelFragment;
+
+import org.greenrobot.eventbus.EventBus;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -26,6 +30,9 @@ public class ProjectOneFragment extends Fragment implements View.OnClickListener
     private RelativeLayout layout_back;
     private WebView webView;
     private String url = "http://jiaxing.techexcel.com.cn/p1/#/p1ForKSApp?token=43106500-5f16-48a8-9dc9-f42ca3344f97";
+
+
+
 
 
     @Override
@@ -60,6 +67,7 @@ public class ProjectOneFragment extends Fragment implements View.OnClickListener
                     tv_title.setText("项目列表");
                     backType = 0;
                 }
+                EventBus.getDefault().post(new EventLabelFragment(backType));
                 Log.e("WebViewClient", view.getTitle() + "     " + url + "  " + backType);
                 super.onPageFinished(view, url);
             }

@@ -43,6 +43,7 @@ import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.FollowInfo;
 import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.UserPath;
+import com.kloudsync.techexcel.bean.params.EventLabelFragment;
 import com.kloudsync.techexcel.bean.params.EventProjectFragment;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -129,7 +130,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 
 public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener, OnClickListener {
@@ -1176,7 +1176,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     public void changeProjectOne(EventProjectFragment eventProjectFragment) {
         Log.e("eventProjectFragment", eventProjectFragment.getSubSystemId() + "");
         isDisplayProjectOne = true;
-
         TextView v = documentTab;
         teamFrame.setVisibility(View.VISIBLE);
         spaceFrame.setVisibility(View.GONE);
@@ -1192,6 +1191,20 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         currentTeamFragment = fragment;
         changeSelectedTab(v.getId());
 
+    }
+
+    @Subscribe
+    public void changeLabelName(EventLabelFragment eventLabelFragment) {
+        int type = eventLabelFragment.getType();
+        if (isDisplayProjectOne) {
+            if (type == 1) {
+                documentTab.setText("任务");
+            } else {
+                documentTab.setText("项目");
+            }
+        } else {
+            documentTab.setText(getString(R.string.service));
+        }
     }
 
 
@@ -1637,7 +1650,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
         return isRunning;
     }
-
 
 
 }

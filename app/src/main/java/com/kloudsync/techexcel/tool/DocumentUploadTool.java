@@ -633,7 +633,6 @@ public class DocumentUploadTool {
                     @Override
                     public void getServiceReturnData(Object object) {
                         Log.e("hhh", "startConvertingstartConverting");
-
                         convertingPercentage();
                     }
                 });
