@@ -120,9 +120,6 @@ public class SpacePropertyActivity extends Activity implements SpaceMembersAdapt
     }
 
 
-
-
-
     private int getRoleInSchool() {
         return KloudCache.getInstance(this).getTeamRole().getTeamRole();
     }
@@ -130,9 +127,8 @@ public class SpacePropertyActivity extends Activity implements SpaceMembersAdapt
 
     private void fillByRole() {
         int role = KloudCache.getInstance(this).getUserRole();
-        int teamRole = KloudCache.getInstance(this).getTeamRole().getTeamRole();
+        int teamRole = KloudCache.getInstance(this).getTeamRole().getTeamRole(); //登录用户的身份
         Log.e("ddddd", teamRole + "");
-
         if (teamRole == RoleInTeam.ROLE_OWENER || teamRole == RoleInTeam.ROLE_ADMIN) {
             View view = getLayoutInflater().inflate(R.layout.add_space_member_header, mTeamRecyclerView, false);
             LinearLayout addAdminLayout = view.findViewById(R.id.layout_add_admin);

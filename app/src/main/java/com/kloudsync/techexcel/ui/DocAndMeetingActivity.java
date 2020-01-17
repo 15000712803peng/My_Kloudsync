@@ -121,11 +121,14 @@ import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
 import com.ub.techexcel.adapter.MeetingMembersAdapter;
 import com.ub.techexcel.bean.AgoraMember;
+import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.Note;
+import com.ub.techexcel.tools.AccountSettingTakePhotoPopup;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
 import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.SelectLocalVideoPopup;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
@@ -1967,8 +1970,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     @Override
                     public void uploadFile() {
                         selectVideoDialog.dismiss();
-                        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(intent, REQUEST_CODE_CAPTURE_SAVE_MEDIA);
+                        selectLocalVideo();
                     }
 
                     @Override
@@ -1985,7 +1987,32 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 selectVideoDialog.setData(2, false);
             }
         }).subscribe();
+    }
 
+    private SelectLocalVideoPopup selectLocalVideoPopup;
+
+    private void selectLocalVideo() {
+        if (selectLocalVideoPopup == null) {
+            selectLocalVideoPopup = new SelectLocalVideoPopup();
+            selectLocalVideoPopup.getPopwindow(this);
+            selectLocalVideoPopup.setFavoritePoPListener(new SelectLocalVideoPopup.FavoritePoPListener() {
+
+                @Override
+                public void takeVideo() {
+                    Intent intent = new Intent();
+                    intent.setAction(MediaStore.ACTION_VIDEO_CAPTURE);
+                    intent.addCategory(Intent.CATEGORY_DEFAULT);
+                    startActivityForResult(intent, REQUEST_CODE_TAKE_PHOTO);
+                }
+
+                @Override
+                public void filePhoto() {
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(intent, REQUEST_CODE_CAPTURE_SAVE_MEDIA);
+                }
+            });
+        }
+        selectLocalVideoPopup.StartPop(web);
     }
 
 
@@ -2427,6 +2454,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private static final int REQUEST_SCAN = 3;
     private static final int REQUEST_CODE_ADD_NOTE = 100;
     private static final int REQUEST_CODE_CAPTURE_SAVE_MEDIA = 104;
+    private static final int REQUEST_CODE_TAKE_PHOTO = 105;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -2437,7 +2465,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     if (cameraFile != null && cameraFile.exists()) {
                         Log.e("onActivityResult", "camera_file:" + cameraFile);
                         uploadFileWhenAddDoc(cameraFile);
-
                     }
                     break;
                 case REQUEST_PICTURE_ADD_DOC:
@@ -2461,14 +2488,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
                     drawTempNote();
                     break;
+                case REQUEST_CODE_TAKE_PHOTO:
+                    uploadVideo(data);
+                    break;
                 case REQUEST_CODE_CAPTURE_SAVE_MEDIA:
-                    Uri uri = data.getData();
-                    Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-                    cursor.moveToFirst();
-                    String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
-                    cursor.close();
-                    String title = path.substring(path.lastIndexOf("/") + 1);
-                    uploadVideo(path, title);
+                    uploadVideo(data);
                     break;
             }
         }
@@ -2476,8 +2500,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     private VideoAudioManager mVideoAudioManager;
 
-    private void uploadVideo(String videoPath, String videoName) {
-        Log.e("path  00", videoPath + "   " + videoName);
+    private void uploadVideo(Intent data) {
+        Uri uri = data.getData();
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        String videoPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
+        cursor.close();
+        String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1);
+        Log.e("videoPath", videoPath + "   " + videoName);
         mVideoAudioManager = VideoAudioManager.getMgr(this);
         mVideoAudioManager.uploadLocalVideo(videoPath, videoName, web);
     }

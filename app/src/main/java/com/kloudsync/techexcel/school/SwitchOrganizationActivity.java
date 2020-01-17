@@ -179,8 +179,6 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         loginGet.setMySchoolGetListener(new LoginGet.MySchoolGetListener() {
             @Override
             public void getSchool(ArrayList<School> list) {
-//                School.selectedId = GetSaveInfo();
-//                Collections.sort(list);
                 mlist = list;
                 sAdapter.setCompanies(mlist);
                 okText.setVisibility(View.VISIBLE);
@@ -195,18 +193,6 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         loginGet.GetSchoolInfo(getApplicationContext());
     }
 
-    private void getCompanySubsystems(final String companyId) {
-        LoginGet loginGet = new LoginGet();
-        loginGet.setMyCompanySubsystemsGetListener(new LoginGet.MyCompanySubsystemsGetListener() {
-            @Override
-            public void getCompanySubsystems(List<CompanySubsystem> list) {
-                if (list != null && list.size() > 0) {
-                    sAdapter.setSubsystems(list, Integer.parseInt(companyId), AppConfig.selectedSubSystemId);
-                }
-            }
-        });
-        loginGet.getCompanySubsystems(this, companyId);
-    }
 
     private void getCompanySubsystemsAndExpand(final String companyId, final int index) {
         LoginGet loginGet = new LoginGet();
@@ -216,6 +202,20 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                 if (list != null && list.size() > 0) {
                     sAdapter.setSubsystems(list, Integer.parseInt(companyId), AppConfig.selectedSubSystemId);
                     organiztionList.expandGroup(index);
+                }
+            }
+        });
+        loginGet.getCompanySubsystems(this, companyId);
+    }
+
+
+    private void getCompanySubsystems(final String companyId) {
+        LoginGet loginGet = new LoginGet();
+        loginGet.setMyCompanySubsystemsGetListener(new LoginGet.MyCompanySubsystemsGetListener() {
+            @Override
+            public void getCompanySubsystems(List<CompanySubsystem> list) {
+                if (list != null && list.size() > 0) {
+                    sAdapter.setSubsystems(list, Integer.parseInt(companyId), AppConfig.selectedSubSystemId);
                 }
             }
         });
@@ -309,6 +309,9 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         titleText.setText(getResources().getString(R.string.pc_sorganization));
         rightTitleText.setVisibility(View.GONE);
     }
+
+
+
 
     private int GetSaveInfo() {
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,

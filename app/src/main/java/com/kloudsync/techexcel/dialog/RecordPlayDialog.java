@@ -68,7 +68,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAdapter.OnItemClickListener ,Dialog.OnDismissListener,SeekBar.OnSeekBarChangeListener{
+public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAdapter.OnItemClickListener, Dialog.OnDismissListener, SeekBar.OnSeekBarChangeListener {
     public Activity host;
     public Dialog dialog;
     public int width;
@@ -90,7 +90,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     private volatile long playTime;
     private volatile long totalTime;
     private volatile boolean isFinished;
-    private volatile  boolean isStarted;
+    private volatile boolean isStarted;
     private long maxProgress;
     private volatile long currentProgress;
     private volatile boolean isSeek;
@@ -101,7 +101,8 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     private static final int MESSAGE_PLAY_TIME_REFRESHED = 1;
     private static final int MESSAGE_HIDE_CENTER_LOADING = 2;
     private static final int MESSAGE_PLAY_START = 3;
-    private static final int MESSAGE_PLAY_FINISH= 4;
+    private static final int MESSAGE_PLAY_FINISH = 4;
+    private ImageView close;
 
     //
     String totalTimeStr = "00:00";
@@ -118,8 +119,8 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         this.record = record;
     }
 
-    public RecordPlayDialog(Activity host,Record record) {
-        Log.e("check_dialog","new_dialog");
+    public RecordPlayDialog(Activity host, Record record) {
+        Log.e("check_dialog", "new_dialog");
         this.host = host;
         this.record = record;
         initDialog();
@@ -139,6 +140,8 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         seekBar = view.findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(this);
         userList = view.findViewById(R.id.list_user);
+        close = view.findViewById(R.id.close);
+        close.setOnClickListener(this);
         userList.setLayoutManager(new LinearLayoutManager(host, LinearLayoutManager.VERTICAL, false));
         webVedioSurface = view.findViewById(R.id.web_vedio_surface);
         shareVedioSurface = view.findViewById(R.id.share_vedio_surface);
@@ -156,10 +159,10 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         lp.height = heigth;
         dialog.getWindow().setAttributes(lp);
         meetingTimeTask = new MeetingTimeTask();
-        playHandler = new Handler(){
+        playHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                if(playHandler == null || dialog == null || !dialog.isShowing()){
+                if (playHandler == null || dialog == null || !dialog.isShowing()) {
                     return;
                 }
                 handlePlayMessage(msg);
@@ -184,7 +187,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     }
 
     public void dismiss() {
-        Log.e("check_dialog","dialog_dismiss");
+        Log.e("check_dialog", "dialog_dismiss");
         release();
         if (dialog != null) {
             dialog.cancel();
@@ -202,6 +205,11 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
             case R.id.img_close:
                 dismiss();
                 break;
+            case R.id.close:
+                dismiss();
+                release();
+                //结束播放
+                break;
 
             case R.id.doc_img_close:
                 dismiss();
@@ -210,10 +218,10 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 dismiss();
                 break;
             case R.id.image_record_start:
-                Log.e("RecordPlayDialog","start");
+                Log.e("RecordPlayDialog", "start");
                 break;
             case R.id.image_center_start:
-                if(playHandler != null){
+                if (playHandler != null) {
                     playHandler.obtainMessage(MESSAGE_PLAY_START).sendToTarget();
                 }
                 break;
@@ -241,14 +249,14 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         dismiss();
     }
 
-    private void requestMeetingRecord(){
-        if(record != null){
+    private void requestMeetingRecord() {
+        if (record != null) {
             String url = "https://wss.peertime.cn/MeetingServer/recording/recording_item?recordingId=" + record.getRecordingId();
             ServiceInterfaceTools.getinstance().getRecordingItem(url, ServiceInterfaceTools.GETRECORDINGITEM, new ServiceInterfaceListener() {
                 @Override
                 public void getServiceReturnData(Object object) {
                     recordDetail = (RecordDetail) object;
-                    if(recordDetail != null){
+                    if (recordDetail != null) {
                         parseRecordDetail(recordDetail);
                     }
                     playHandler.obtainMessage(MESSAGE_HIDE_CENTER_LOADING).sendToTarget();
@@ -259,7 +267,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
     }
 
-    class MeetingTimeTask extends AsyncTask<Void,Void,Void> {
+    class MeetingTimeTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -270,21 +278,20 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
         @Override
         protected Void doInBackground(Void... voids) {
-
             // 播放完成或者手动关闭dialog isFinished = true;
-            while (!isFinished){
-                Log.e("RecordPlayDialog","is finish:" + isFinished);
-                if(isStarted){
-                    if(isPlayFinished()){
+            while (!isFinished) {
+                Log.e("RecordPlayDialog", "is finish:" + isFinished);
+                if (isStarted) {
+                    if (isPlayFinished()) {
                         isFinished = true;
                         playHandler.obtainMessage(MESSAGE_PLAY_FINISH).sendToTarget();
                         break;
                     }
-                    if(isSeek){
+                    if (isSeek) {
                         continue;
                     }
                     playTime += 200;
-                    if(playHandler != null){
+                    if (playHandler != null) {
                         playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
                         audioManager.setPlayTime(playTime);
                         actionsManager.setPlayTime(playTime);
@@ -305,40 +312,41 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Log.e("check_dialog","time_task_post_execute");
-            if(actionsManager != null){
+            Log.e("check_dialog", "time_task_post_execute");
+            if (actionsManager != null) {
                 actionsManager.release();
             }
-            if(audioManager != null){
+            if (audioManager != null) {
                 audioManager.release();
             }
-            if(recordShareVedioManager != null){
+            if (recordShareVedioManager != null) {
                 recordShareVedioManager.release();
             }
-            if(userVedioManager != null){
+            if (userVedioManager != null) {
                 userVedioManager.release();
             }
         }
+
     }
 
 
-    private void release(){
+    private void release() {
         isFinished = true;
         isStarted = false;
         playHandler = null;
     }
 
-    private void handlePlayMessage(Message message){
-        switch (message.what){
+    private void handlePlayMessage(Message message) {
+        switch (message.what) {
             case MESSAGE_PLAY_TIME_REFRESHED:
                 setTimeText();
                 break;
             case MESSAGE_HIDE_CENTER_LOADING:
                 centerLoaing.setVisibility(View.GONE);
                 playLayout.setVisibility(View.VISIBLE);
-                if(totalTime > 0){
-                    maxProgress = (long)(totalTime / 100);
-                    seekBar.setMax((int)maxProgress);
+                if (totalTime > 0) {
+                    maxProgress = (long) (totalTime / 100);
+                    seekBar.setMax((int) maxProgress);
                 }
                 break;
             case MESSAGE_PLAY_START:
@@ -353,28 +361,28 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
     }
 
-    private void setTimeText(){
-        if(playTimeText != null){
+    private void setTimeText() {
+        if (playTimeText != null) {
             timeStr = DateUtil.getMeetingTime(playTime) + "/" + totalTimeStr;
             playTimeText.setText(timeStr);
             currentProgress = playTime / 100;
-            seekBar.setProgress((int)(currentProgress));
+            seekBar.setProgress((int) (currentProgress));
         }
     }
 
-    private void refreshTimeText(){
-        if(playTimeText != null){
+    private void refreshTimeText() {
+        if (playTimeText != null) {
             timeStr = DateUtil.getMeetingTime(playTime) + "/" + totalTimeStr;
             playTimeText.setText(timeStr);
         }
     }
 
 
-    private boolean isPlayFinished(){
+    private boolean isPlayFinished() {
         return playTime >= totalTime;
     }
 
-    private void resetPlay(){
+    private void resetPlay() {
 
     }
 
@@ -394,23 +402,23 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         isSeek = false;
     }
 
-    private void parseRecordDetail(RecordDetail recordDetail){
+    private void parseRecordDetail(RecordDetail recordDetail) {
         totalTime = recordDetail.getDuration();
         totalTimeStr = DateUtil.getMeetingTime(totalTime);
         List<ChannelVO> channels = recordDetail.getChannelVOList();
-        if(channels != null && channels.size() > 0){
-            for(ChannelVO channel : channels){
-                if(channel.getType() == 1){
+        if (channels != null && channels.size() > 0) {
+            for (ChannelVO channel : channels) {
+                if (channel.getType() == 1) {
                     audioManager.setAudioDatas(channel.getSectionVOList());
                 }
-                if(channel.getType() == 2){
+                if (channel.getType() == 2) {
                     recordShareVedioManager.setVedioDatas(channel.getSectionVOList());
                 }
-                if(channel.getType() == 3){
-                    userVedioManager.addUserVedios(channel.getUserId() +"",channel.getSectionVOList());
+                if (channel.getType() == 3) {
+                    userVedioManager.addUserVedios(channel.getUserId() + "", channel.getSectionVOList());
                 }
-                if(channel.getType() == 4){
-                    userVedioManager.addUserVedios(channel.getUserId() +"",channel.getSectionVOList());
+                if (channel.getType() == 4) {
+                    userVedioManager.addUserVedios(channel.getUserId() + "", channel.getSectionVOList());
                 }
 
             }
@@ -419,7 +427,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         actionsManager.setTotalTime(recordDetail.getDuration());
     }
 
-    private void initWeb(){
+    private void initWeb() {
         web.setZOrderOnTop(false);
         web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setDomStorageEnabled(true);
@@ -454,7 +462,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
     @org.xwalk.core.JavascriptInterface
     public void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
-        if(actionsManager != null){
+        if (actionsManager != null) {
             actionsManager.preloadFile(url, currentpageNum);
         }
         Log.e("JavascriptInterface", "preLoadFileFunctiona," + url + "     currentpageNum   " + currentpageNum + "   showLoading    " + showLoading);

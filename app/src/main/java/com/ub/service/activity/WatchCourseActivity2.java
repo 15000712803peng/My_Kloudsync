@@ -530,9 +530,14 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                                     activity.wv_show.load("javascript:ShowToolbar(" + true + ")", null);
                                     activity.wv_show.load("javascript:Record()", null);
                                 } else {
-                                    Log.e("---------", activity.currentPresenterId.equals(AppConfig.UserID) + "  dd  " + (activity.wv_show == null));
-                                    activity.wv_show.load("javascript:ShowToolbar(" + false + ")", null);
-                                    activity.wv_show.load("javascript:StopRecord()", null);
+                                    if(activity.isFinishCourse){
+                                        activity.wv_show.load("javascript:ShowToolbar(" + true + ")", null);
+                                        activity.wv_show.load("javascript:Record()", null);
+                                    }else{
+                                        Log.e("---------", activity.currentPresenterId.equals(AppConfig.UserID) + "  dd  " + (activity.wv_show == null));
+                                        activity.wv_show.load("javascript:ShowToolbar(" + false + ")", null);
+                                        activity.wv_show.load("javascript:StopRecord()", null);
+                                    }
                                 }
                             }
                         });
@@ -3465,8 +3470,14 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                     wv_show.load("javascript:ShowToolbar(" + true + ")", null);
                     wv_show.load("javascript:Record()", null);
                 } else {
-                    wv_show.load("javascript:ShowToolbar(" + false + ")", null);
-                    wv_show.load("javascript:StopRecord()", null);
+                    if(isFinishCourse){
+                        wv_show.load("javascript:ShowToolbar(" + true + ")", null);
+                        wv_show.load("javascript:Record()", null);
+                    }else{
+                        Log.e("---------", currentPresenterId.equals(AppConfig.UserID) + "  dd  " + (wv_show == null));
+                        wv_show.load("javascript:ShowToolbar(" + false + ")", null);
+                        wv_show.load("javascript:StopRecord()", null);
+                    }
                 }
 
                 isWebViewLoadFinish = true;
