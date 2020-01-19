@@ -17,16 +17,38 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.LoginData;
+import com.kloudsync.techexcel.bean.LoginResult;
+import com.kloudsync.techexcel.bean.RongCloudData;
+import com.kloudsync.techexcel.bean.UserPreferenceData;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DeviceManager;
+import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.tool.SystemUtil;
+import com.kloudsync.techexcel.ui.MainActivity;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
+import com.ub.techexcel.tools.Tools;
 import com.umeng.analytics.MobclickAgent;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Locale;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Response;
+
+import static com.kloudsync.techexcel.config.AppConfig.ClassRoomID;
 
 public class StartUbao extends Activity {
 
@@ -100,9 +122,12 @@ public class StartUbao extends Activity {
             finish();
         } else {
             if (isLogIn) {
+                String name = sharedPreferences.getString("name", null);
+                String pwd = LoginGet.DecodeBase64Password(sharedPreferences.getString("password", null));
+                String telephone = sharedPreferences.getString("telephone", null);
+                Log.e("autoLogin","name:" + name + ",pwd:" + pwd + ",telephone:" + telephone);
                 Log.e("StartUbao", "step four");
-                LoginGet.LoginRequest(StartUbao.this, "+" + countrycode
-                        + telephone, password, 1, sharedPreferences, editor, wechatFilePath, ((App) getApplication()).getThreadMgr());
+                processLogin(name,pwd,telephone);
             } else {
                 Log.e("StartUbao", "step five");
                 Intent intent = new Intent(getApplicationContext(),
@@ -229,7 +254,90 @@ public class StartUbao extends Activity {
         MobclickAgent.onPause(this);
     }
 
+    Disposable loginDisposable;
+    String rongCloudUrl = "";
+    private void processLogin(final String name, final String password, final String phoneNumber) {
+        loginDisposable = Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, String>() {
+            @Override
+            public String apply(String o) throws Exception {
+                try {
+                    Response<NetworkResponse<LoginData>> response = ServiceInterfaceTools.getinstance().login(name, password).execute();
+                    Log.e("processLogin","LoginData:" + response);
+                    if (response == null || !response.isSuccessful() || response.body() == null) {
 
+                    } else {
+                        if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
+                            saveLoginData(response.body().getRetData());
+                            rongCloudUrl = AppConfig.URL_PUBLIC + "RongCloudUserToken";
+                            editor.putString("name",name);
+                            editor.putString("telephone", phoneNumber);
+                            editor.putString("password", LoginGet.getBase64Password(password));
+                            editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
+                            editor.commit();
+                        } else {
+
+                        }
+                    }
+                } catch (UnknownHostException e) {
+
+                } catch (SocketTimeoutException exception) {
+
+                }
+                return rongCloudUrl;
+            }
+        }).map(new Function<String, String>() {
+            @Override
+            public String apply(String s) throws Exception {
+                if (loginDisposable == null || loginDisposable.isDisposed()) {
+                    return s;
+                }
+                if (!TextUtils.isEmpty(s)) {
+                    try {
+                        Response<NetworkResponse<RongCloudData>> response = ServiceInterfaceTools.getinstance().getRongCloudInfo().execute();
+                        Log.e("processLogin","RongCloudData:" + response.isSuccessful() + ",body:" + response.body());
+                        if (response != null && response.isSuccessful() && response.body() != null) {
+                            if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
+                                RongCloudData data = response.body().getRetData();
+                                AppConfig.RongUserToken = data.getUserToken();
+                                AppConfig.RongUserID = data.getRongCloudUserID();
+                                goToMainActivity();
+
+                            }
+                        }
+                    } catch (UnknownHostException e) {
+
+                    } catch (SocketTimeoutException exception) {
+
+                    }
+                }
+                return s;
+            }
+        }).subscribe();
+
+    }
+
+
+    private void goToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
+
+    private void saveLoginData(LoginData data) {
+        AppConfig.UserToken = data.getUserToken();
+        AppConfig.UserID = data.getUserID() + "";
+        AppConfig.UserName = data.getName();
+        AppConfig.SchoolID = Integer.parseInt(data.getSchoolID() + "");
+        AppConfig.Role = data.getRole();
+        AppConfig.UserExpirationDate = data.getExpirationDate();
+        ClassRoomID = data.getClassRoomID();
+        AppConfig.Mobile = data.getMobile();
+        editor.putString("UserID", AppConfig.UserID);
+        editor.putString("UserToken", AppConfig.UserToken);
+        editor.putString("Name", AppConfig.UserName);
+        editor.commit();
+    }
 
 
 }

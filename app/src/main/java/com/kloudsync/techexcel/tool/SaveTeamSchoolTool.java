@@ -33,6 +33,7 @@ public class SaveTeamSchoolTool {
     private void AUUserInfo() {
 
         final JSONObject jsonObject = format();
+
         new ApiTask(new Runnable() {
             @Override
             public void run() {

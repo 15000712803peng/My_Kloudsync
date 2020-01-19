@@ -430,7 +430,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         final EventShowNotePage notePage = new EventShowNotePage();
         notePage.setAttachmendId(note.getAttachmentID());
         notePage.setNoteId(note.getNoteID());
-        Log.e("queryAndDownLoadNoteTo", "get cach page:" + page + "--> url:" + documentPage.getPageUrl());
+        Log.e("queryAndDownLoadNoteToShow", "get cach page:" + page + "--> url:" + documentPage.getPageUrl());
         if (page != null && !TextUtils.isEmpty(page.getPageUrl())
                 && !TextUtils.isEmpty(page.getSavedLocalPath()) && !TextUtils.isEmpty(page.getShowingPath())) {
             if (new File(page.getSavedLocalPath()).exists()) {
@@ -578,7 +578,6 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }).doOnNext(new Consumer<EventNote>() {
             @Override
             public void accept(EventNote note) throws Exception {
-//                Log.e("check_note","event_note_local_file_id:" + note.getNote().getLocalFileID());
                 if(note.getNote() == null){
                     EventBus.getDefault().post(new EventNoteErrorShowDocument());
                 }else {
@@ -597,7 +596,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         noteList = view.findViewById(R.id.list_note);
         backImage = view.findViewById(R.id.image_back);
         this.noteWeb = noteWeb;
-        noteWeb.setVisibility(View.VISIBLE);
+//        noteWeb.setVisibility(View.VISIBLE);
         backImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

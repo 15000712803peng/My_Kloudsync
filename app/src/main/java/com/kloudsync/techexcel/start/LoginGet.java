@@ -443,7 +443,7 @@ public class LoginGet {
                     break;
 
                 case AppConfig.GET_INVITATIONS:
-                    getInvitations();
+//                    getInvitations();
                     break;
                 case AppConfig.COMPANY_SUBSYSTEMS:
                     result = (String) msg.obj;
@@ -460,29 +460,29 @@ public class LoginGet {
 
     };
 
-    private static void getInvitations() {
-        ServiceInterfaceTools.getinstance().getInvitations().enqueue(new Callback<InvitationsResponse>() {
-            @Override
-            public void onResponse(Call<InvitationsResponse> call, Response<InvitationsResponse> response) {
-                sharedPreferences = mContext.getSharedPreferences(AppConfig.LOGININFO,
-                        mContext.MODE_PRIVATE);
-                if (response != null && response.isSuccessful()) {
-                    List<Company> companies = response.body().getRetData();
-                    if (companies != null && companies.size() > 0 && !sharedPreferences.getBoolean("isLogIn", false)) {
-                        goToInvitationsActivity(companies);
-                    } else {
-                        goToMainActivity();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<InvitationsResponse> call, Throwable t) {
-                goToMainActivity();
-            }
-        });
-
-    }
+//    private static void getInvitations() {
+//        ServiceInterfaceTools.getinstance().getInvitations().enqueue(new Callback<InvitationsResponse>() {
+//            @Override
+//            public void onResponse(Call<InvitationsResponse> call, Response<InvitationsResponse> response) {
+//                sharedPreferences = mContext.getSharedPreferences(AppConfig.LOGININFO,
+//                        mContext.MODE_PRIVATE);
+//                if (response != null && response.isSuccessful()) {
+//                    List<Company> companies = response.body().getRetData();
+//                    if (companies != null && companies.size() > 0 && !sharedPreferences.getBoolean("isLogIn", false)) {
+//                        goToInvitationsActivity(companies);
+//                    } else {
+//                        goToMainActivity();
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<InvitationsResponse> call, Throwable t) {
+//                goToMainActivity();
+//            }
+//        });
+//
+//    }
 
     private static void GoToLogin() {
         if (mContext != null && mContext.getClass().equals(StartUbao.class)) {
@@ -2296,9 +2296,7 @@ public class LoginGet {
                 teamSpaceBean.setName(TeamName);
                 school.setTeamSpaceBean(teamSpaceBean);
 
-
                 if(pt.has("SubSystemData")){
-
                     List<CompanySubsystem> list = new ArrayList<>();
                     CompanySubsystem companySubsystem = new CompanySubsystem();
                     JSONObject subSystemData = pt.getJSONObject("SubSystemData");

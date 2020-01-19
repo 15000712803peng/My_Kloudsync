@@ -26,13 +26,14 @@ dependencies {
     compile files('libs/aws-android-sdk-s3-2.13.0.jar')
     compile files('libs/aws-android-sdk-cognito-2.13.0.jar')
     compile files('libs/aws-android-sdk-mobile-client-2.13.0-sources.jar')
+    compile files('libs/TQLPenComm_V2.4.3.jar')
     compile('com.onyx.android.sdk:onyxsdk-notedata:1.0.6@aar')
     compile "com.github.Raizlabs.DBFlow:dbflow:4.2.2"
     compile "com.github.Raizlabs.DBFlow:dbflow-core:4.2.2"
     annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:4.2.2"
 //    compile('com.onyx.android.sdk:onyxsdk-base:1.5.2')
-//    compile('com.onyx.android.sdk:onyxsdk-data:1.1.4')
-//    compile('com.onyx.android.sdk:onyxsdk-pen:1.0.8')
+    compile('com.onyx.android.sdk:onyxsdk-data:1.1.4')
+    compile('com.onyx.android.sdk:onyxsdk-pen:1.0.8')
 //    compile('com.onyx.android.sdk:onyxsdk-device:1.0.3')
 
 }
@@ -59,8 +60,8 @@ android {
         applicationId "com.kloudsync.techexcel"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 50
-        versionName "3.5.0"
+        versionCode 32
+        versionName "3.2.26"
         flavorDimensions "versionCode"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

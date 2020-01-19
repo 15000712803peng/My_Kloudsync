@@ -652,6 +652,45 @@
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/ll_digital_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/pc_white"
+                android:padding="12dp">
+
+                <ImageView
+                    android:id="@+id/img_digital_note"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/icon_digital_pen" />
+
+                <TextView
+                    android:textSize="16sp"
+                    android:id="@+id/tv_digital_note"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@+id/img_digital_note"
+                    android:text="@string/my_digital_note"
+                    android:textColor="@color/pc_black_text" />
+
+
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="16dp"
+                    android:padding="2dp"
+                    android:src="@drawable/arrow2" />
+            </RelativeLayout>
+
+
 
             <!-- 我的资格认证 -->
 

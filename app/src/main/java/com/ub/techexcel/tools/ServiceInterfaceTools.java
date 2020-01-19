@@ -2,6 +2,7 @@ package com.ub.techexcel.tools;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -2944,6 +2945,32 @@ public class ServiceInterfaceTools {
         JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_MEETING_BASE + "note/p1_item?noteId=" + noteId);
         Log.e("syncGetNoteP1Item", "url:" + AppConfig.URL_MEETING_BASE + "note/p1_item?noteId=" + noteId + ",result:" + response);
         return response;
+    }
+
+    public JSONObject syncMakePresenter(String userId) {
+        JSONObject response = null;
+        try {
+            final JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userId", userId);
+            response = ConnectService.submitDataByJson(AppConfig.URL_MEETING_BASE + "member/make_presenter?userId=" + userId, jsonObject);
+            Log.e("syncMakePresenter", AppConfig.URL_MEETING_BASE + "member/make_presenter" + "    " + jsonObject.toString() + "     " + response.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public JSONObject syncGetUserPreference(){
+        JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "User/GetUserPreference?fieldID=10001");
+        Log.e("syncGetUserPreference","url:" + AppConfig.URL_PUBLIC + "User/GetUserPreference?fieldID=10001" + ",result:" + response);
+        return response;
+    }
+
+    public JSONObject syncGetCompanies(String userId){
+        JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "School/UserSchoolList?userID=" + userId);
+        Log.e("syncGetUserPreference","url:" + AppConfig.URL_PUBLIC + "School/UserSchoolList?userID=" + userId + " + response:" + response);
+        return response;
+
     }
 
 

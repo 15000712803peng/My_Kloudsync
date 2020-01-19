@@ -37,6 +37,8 @@ public abstract class BaseDocAndMeetingActivity extends FragmentActivity{
     @Bind(R.id.layout_note_users)
     LinearLayout noteUsersLayout;
 
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

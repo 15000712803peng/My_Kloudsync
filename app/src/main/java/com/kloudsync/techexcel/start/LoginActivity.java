@@ -24,22 +24,28 @@ import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.Company;
+import com.kloudsync.techexcel.bean.InviteCompany;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.LoginResult;
 import com.kloudsync.techexcel.bean.RongCloudData;
+import com.kloudsync.techexcel.bean.SimpleCompanyData;
+import com.kloudsync.techexcel.bean.UserPreferenceData;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.LoadingDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
+import com.kloudsync.techexcel.response.InvitationsResponse;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.ui.InvitationsActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
 
+import com.kloudsync.techexcel.ui.WelcomeAndCreateActivity;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -47,6 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -72,6 +79,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     private TextView rightTitleText;
     private View divider;
     LoadingDialog loadingDialog;
+    Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +88,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         setContentView(R.layout.activity_login_v2);
 
         instance = this;
+        gson = new Gson();
         threadManager = ((App) getApplication()).getThreadMgr();
         initView();
         EventBus.getDefault().register(this);
@@ -298,7 +307,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     private String rongCloudUrl = "";
     private String rongUserToken = "";
-    private List<Company> companies = new ArrayList<>();
+    private List<SimpleCompanyData> companies = new ArrayList<>();
 
     private void processLogin(final String name, final String password, final String phoneNumber) {
 
@@ -314,6 +323,11 @@ public class LoginActivity extends Activity implements OnClickListener {
                         if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
                             saveLoginData(response.body().getRetData());
                             rongCloudUrl = AppConfig.URL_PUBLIC + "RongCloudUserToken";
+                            editor.putString("name",name);
+                            editor.putString("telephone", phoneNumber);
+                            editor.putString("password", LoginGet.getBase64Password(password));
+                            editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
+                            editor.commit();
                         } else {
                             sendEventLoginFail(response.body().getErrorMessage());
                         }
@@ -350,55 +364,116 @@ public class LoginActivity extends Activity implements OnClickListener {
                 }
                 return rongUserToken;
             }
-        }).map(new Function<String, List<Company>>() {
+        }).doOnNext(new Consumer<String>() {
             @Override
-            public List<Company> apply(String rongToken) throws Exception {
-                if (loginDisposable == null || loginDisposable.isDisposed()) {
-                    return companies;
-                }
-                if (TextUtils.isEmpty(rongToken)) {
-                    //get rong data failed
-                }
-//                try {
-//                    Response<InvitationsResponse> response = ServiceInterfaceTools.getinstance().getInvitations().execute();
-//                    if (response != null && response.isSuccessful() && response.body() != null) {
-//                        if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
-//                            List<Company> companiesData = response.body().getRetData();
-//                            if (companiesData != null && companiesData.size() > 0) {
-//                                companies.clear();
-//                                companies.addAll(companiesData);
-//                            }
-//                        }
-//                    }
-//                } catch (UnknownHostException e) {
-//
-//                } catch (SocketTimeoutException exception) {
-//
-//                }
+            public void accept(String s) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().syncGetUserPreference();
 
-                return companies;
-            }
-        }).doOnNext(new Consumer<List<Company>>() {
-            @Override
-            public void accept(List<Company> companies) throws Exception {
-                if (loginDisposable == null || loginDisposable.isDisposed()) {
-                    return;
-                }
-                editor.putString("telephone", phoneNumber);
-                editor.putString("password", LoginGet.getBase64Password(password));
-                editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
-                editor.commit();
-                if (companies != null && companies.size() > 0) {
-                    goToInvitationsActivity(companies);
-                } else {
-                    LoginResult loginResult = new LoginResult();
-                    loginResult.setSuccessful(true);
-                    EventBus.getDefault().post(loginResult);
+                if(response.has("RetCode")){
+                    if(response.getInt("RetCode") == 0){
+                        UserPreferenceData userPreferenceData= gson.fromJson(response.toString(),UserPreferenceData.class);
+                        if(userPreferenceData.getRetData() == null){
+                            handleNoCompany();
+                        }else {
+                            JSONObject retData = response.getJSONObject("RetData");
+                            LoginResult loginResult = new LoginResult();
+                            loginResult.setSuccessful(true);
+                            EventBus.getDefault().post(loginResult);
+                        }
+
+                    }else {
+                        sendEventLoginFail("网络异常");
+                    }
                 }
             }
         }).subscribe();
 
     }
+
+
+    class SimpleCompanyResponse{
+
+        private int RetCode;
+        private String ErrorMessage;
+        private String DetailMessage;
+        private List<SimpleCompanyData> RetData;
+
+        public int getRetCode() {
+            return RetCode;
+        }
+
+        public void setRetCode(int retCode) {
+            RetCode = retCode;
+        }
+
+        public String getErrorMessage() {
+            return ErrorMessage;
+        }
+
+        public void setErrorMessage(String errorMessage) {
+            ErrorMessage = errorMessage;
+        }
+
+        public String getDetailMessage() {
+            return DetailMessage;
+        }
+
+        public void setDetailMessage(String detailMessage) {
+            DetailMessage = detailMessage;
+        }
+
+        public List<SimpleCompanyData> getRetData() {
+            return RetData;
+        }
+
+        public void setRetData(List<SimpleCompanyData> retData) {
+            RetData = retData;
+        }
+    }
+
+    private void handleNoCompany(){
+        companies.clear();
+        Observable.just("no_company").observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                if(loadingDialog != null){
+                    loadingDialog.cancel();
+                }
+            }
+        }).observeOn(Schedulers.io()).map(new Function<String, List<SimpleCompanyData>>() {
+            @Override
+            public List<SimpleCompanyData> apply(String rongToken) throws Exception {
+                try {
+                    JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetCompanies(AppConfig.UserID);
+                    if(jsonObject.has("RetCode")){
+                        if(jsonObject.getInt("RetCode") == 0){
+                            SimpleCompanyResponse response = gson.fromJson(jsonObject.toString(),SimpleCompanyResponse.class);
+                            if(response.getRetData() != null && response.getRetData().size() > 0){
+                                companies.addAll(response.getRetData());
+                            }
+                        }
+                    }
+
+                } catch (Exception exception) {
+
+                }
+
+                return companies;
+            }
+        }).doOnNext(new Consumer<List<SimpleCompanyData>>() {
+            @Override
+            public void accept(List<SimpleCompanyData> companies) throws Exception {
+
+                if (companies != null && companies.size() > 0) {
+                    goToInvitationsActivity(companies);
+                } else {
+                    goToWelcomeCreateCompany();
+                }
+            }
+        }).subscribe();
+
+    }
+
 
     private void saveLoginData(LoginData data) {
         AppConfig.UserToken = data.getUserToken();
@@ -457,10 +532,11 @@ public class LoginActivity extends Activity implements OnClickListener {
 //	    MobclickAgent.onPause(this);
     }
 
-    private void goToInvitationsActivity(List<Company> companies) {
+    private void goToInvitationsActivity(List<SimpleCompanyData> companies) {
         Intent intent = new Intent(this, InvitationsActivity.class);
         intent.putExtra("companies", new Gson().toJson(companies));
         intent.putExtra("from", 1);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }
@@ -471,5 +547,15 @@ public class LoginActivity extends Activity implements OnClickListener {
         startActivity(intent);
         finish();
     }
+
+    private void goToWelcomeCreateCompany(){
+        Intent intent = new Intent(this, WelcomeAndCreateActivity.class);
+        intent.putExtra("companies", new Gson().toJson(companies));
+        intent.putExtra("from", 1);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
+
 
 }

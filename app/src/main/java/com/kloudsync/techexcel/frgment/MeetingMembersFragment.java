@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.DeviceType;
@@ -39,6 +40,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -315,9 +317,21 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
     @Override
     public void setPresenter(MeetingMember meetingMember) {
-        EventSetPresenter setPresenter = new EventSetPresenter();
-        setPresenter.setMeetingMember(meetingMember);
-        EventBus.getDefault().post(setPresenter);
+        Observable.just(meetingMember).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<MeetingMember>() {
+            @Override
+            public void accept(MeetingMember meetingMember) throws Exception {
+                if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+                    //不是presenter
+                    if(!(meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+                        Toast.makeText(getActivity(),"没有权限进行此操作",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                EventSetPresenter setPresenter = new EventSetPresenter();
+                setPresenter.setMeetingMember(meetingMember);
+                EventBus.getDefault().post(setPresenter);
+            }
+        });
     }
 
     @Override

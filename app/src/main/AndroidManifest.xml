@@ -391,6 +391,12 @@
             android:name=".docment.InviteNew3Activity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" />
+
+        <activity
+            android:name="com.kloudsync.techexcel.ui.WelcomeAndCreateActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
         <activity
             android:launchMode="singleTop"
             android:name=".docment.SearchContactActivity"
@@ -1024,6 +1030,11 @@
             android:name=".ui.GuideActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:launchMode="singleTop" />
+
+        <activity
+            android:name=".ui.DigitalPensActivity"
+            android:launchMode="singleTop" />
+
         <activity
             android:name="com.ub.service.activity.MeetingActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
@@ -1031,6 +1042,10 @@
         <activity
             android:name=".personal.SyncTvActivity"
             android:launchMode="singleTop" />
+
+        <service android:name="com.kloudsync.techexcel.service.BluetoothLEService"
+            android:enabled="true"
+            />
 
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for

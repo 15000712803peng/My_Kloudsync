@@ -236,7 +236,6 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
                         userNotes.getParamsId()+"&pageNumber=0&userID=" + userNotes.getUserId();
                 userNotes.setNotes(ServiceInterfaceTools.getinstance().syncGetUserNotes(url));
                 refreshUserList(userNotes);
-
             }
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<UserNotes>() {
             @Override

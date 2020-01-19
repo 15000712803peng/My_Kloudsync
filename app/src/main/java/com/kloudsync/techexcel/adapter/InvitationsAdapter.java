@@ -7,25 +7,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.Company;
+import com.kloudsync.techexcel.bean.EventCompanyClicked;
+import com.kloudsync.techexcel.bean.SimpleCompanyData;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InvitationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    List<Company> companies = new ArrayList<>();
+    List<SimpleCompanyData> companies = new ArrayList<>();
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_invitation, null));
     }
 
-    public void setCompanies(List<Company> companies) {
+    public void setCompanies(List<SimpleCompanyData> companies) {
         this.companies.clear();
         this.companies.addAll(companies);
         notifyDataSetChanged();
@@ -34,22 +39,21 @@ public class InvitationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final Holder myHolder = (Holder) holder;
-        final Company company = companies.get(position);
-        if (position == 0) {
-            myHolder.divider.setVisibility(View.GONE);
-        } else {
-            myHolder.divider.setVisibility(View.VISIBLE);
+        final SimpleCompanyData company = companies.get(position);
+
+        if (!TextUtils.isEmpty(company.getSchoolName())) {
+            myHolder.nameText.setText(company.getSchoolName());
         }
-        if (!TextUtils.isEmpty(company.getCompanyName())) {
-            myHolder.nameText.setText(company.getCompanyName());
-        }
-        myHolder.cardItem.setOnClickListener(new View.OnClickListener() {
+        myHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clearSelected(company.getSchoolID());
                 company.setSelected(!company.isSelected());
                 myHolder.checkBox.setChecked(!myHolder.checkBox.isChecked());
+                EventBus.getDefault().post(new EventCompanyClicked());
             }
         });
+        myHolder.checkBox.setEnabled(false);
     }
 
     @Override
@@ -61,14 +65,9 @@ public class InvitationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView nameText;
         ImageView icon;
         CheckBox checkBox;
-        View divider;
-        CardView cardItem;
-
         public Holder(View itemView) {
             super(itemView);
             nameText = itemView.findViewById(R.id.txt_company_name);
-            divider = itemView.findViewById(R.id.item_divider);
-            cardItem = itemView.findViewById(R.id.card_item);
             checkBox = itemView.findViewById(R.id.checkbox);
         }
     }
@@ -87,13 +86,27 @@ public class InvitationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.onItemClickLisent = onItemClickLisent;
     }
 
-    public String getSelectedCompanies() {
+    public SimpleCompanyData getSelectedCompanies() {
         String companiesStr = "";
-        for (Company company : companies) {
+        for (SimpleCompanyData company : companies) {
             if (company.isSelected()) {
-                companiesStr += company.getCompanyID() + ",";
+                return company;
             }
         }
-        return companiesStr;
+        return null;
+
     }
+
+    private void clearSelected(int companyId){
+        for(SimpleCompanyData company : companies){
+            if(company.getSchoolID() == companyId){
+                continue;
+            }
+            company.setSelected(false);
+        }
+    }
+
+
+
+
 }

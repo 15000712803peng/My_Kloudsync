@@ -123,7 +123,7 @@ public class CustomerAdapter extends CommonAdapter<Customer> {
 
                     switch (i % 3){
                         case 0:
-                            tv_sort.setBackgroundResource(R.drawable.blue_circle);
+                            tv_sort.setBackgroundResource(R.drawable.blue_circle_v2);
                             break;
                         case 1:
                             tv_sort.setBackgroundResource(R.drawable.orange_cicle);

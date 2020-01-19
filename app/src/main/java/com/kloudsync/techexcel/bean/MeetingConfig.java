@@ -1,14 +1,10 @@
 package com.kloudsync.techexcel.bean;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.ub.techexcel.bean.AgoraMember;
-import com.ub.techexcel.bean.AgoraUser;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +35,14 @@ public class MeetingConfig{
     private List<MeetingMember> meetingInvitors = new ArrayList<>();
     private String meetingHostId ="";
     private String agoraChannelId;
-    private String presenterId;
+    private String presenterId = "";
     private List<AgoraMember> agoraMembers = new ArrayList<>();
     private boolean fromMeeting;
     private int mode;
     private int shareScreenUid;
     private JSONObject currentLinkProperty;
     private int spaceId;
+
 
     public int getSpaceId() {
         return spaceId;
@@ -110,6 +107,11 @@ public class MeetingConfig{
     }
 
     public void setPresenterId(String presenterId) {
+        if(!this.presenterId.equals(presenterId)){
+            EventPresnterChanged presnterChanged = new EventPresnterChanged();
+            presnterChanged.setPresenterId(presenterId);
+            EventBus.getDefault().post(presnterChanged);
+        }
         this.presenterId = presenterId;
     }
 

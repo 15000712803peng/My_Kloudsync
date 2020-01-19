@@ -786,5 +786,8 @@
     <string name="playing">播放中</string>
     <string name="paused">已暂停</string>
 
+    <string name="my_digital_note">我的电子笔</string>
+    <string name="title_select_digital_pen">选择电子笔</string>
+
 
 </resources>

@@ -62,6 +62,7 @@ import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.start.LoginActivity;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.DensityUtil;
+import com.kloudsync.techexcel.ui.DigitalPensActivity;
 import com.kloudsync.techexcel.ui.GuideActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
 import com.ub.kloudsync.activity.Document;
@@ -79,7 +80,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
     private View view;
     private RelativeLayout rl_pc_portrait,
             rl_pc_professionalField, rl_pc_effective, rl_pc_password,
-            rl_pc_loginout, rl_pc_language, rl_pc_synctv;
+            rl_pc_loginout, rl_pc_language, rl_pc_synctv,ll_digital_note;
 
     private RelativeLayout rl_pc_klassroomID;
     private RelativeLayout rl_cn_account_setting;
@@ -266,6 +267,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         rl_pc_synctv = (RelativeLayout) view.findViewById(R.id.rl_pc_synctv);
         rl_pc_loginout = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_loginout);
+        ll_digital_note = (RelativeLayout)view.findViewById(R.id.ll_digital_note);
         rl_pc_language = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_language);
         rl_pc_klassroomID = (RelativeLayout) view
@@ -332,6 +334,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         rl_cn_account.setOnClickListener(this);
         contacts_portrait.setOnClickListener(this);
         lin_switch.setOnClickListener(this);
+        ll_digital_note.setOnClickListener(this);
     }
 
     private void ShowLanguage() {
@@ -945,16 +948,24 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
             case R.id.rl_pc_loginout:
                 LoginoutDialog(getActivity());
                 break;
-
             case R.id.rl_guide:
                 startActivity(new Intent(getActivity(), GuideActivity.class));
                 break;
             case R.id.rl_pc_synctv:
                 startActivity(new Intent(getActivity(), SyncTvActivity.class));
                 break;
+            case R.id.ll_digital_note:
+                startDigitalPens();
+                break;
             default:
                 break;
         }
+    }
+
+    private void startDigitalPens(){
+        Intent intent = new Intent(getActivity(), DigitalPensActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     @Override

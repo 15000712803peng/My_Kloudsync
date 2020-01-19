@@ -38,4 +38,14 @@ public class NetworkResponse<T> {
     public void setRetData(T retData) {
         RetData = retData;
     }
+
+    @Override
+    public String toString() {
+        return "NetworkResponse{" +
+                "RetCode=" + RetCode +
+                ", ErrorMessage='" + ErrorMessage + '\'' +
+                ", DetailMessage='" + DetailMessage + '\'' +
+                ", RetData=" + RetData +
+                '}';
+    }
 }

@@ -71,7 +71,7 @@ public class ShowSpaceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 holder.tv_avatar.setBackgroundResource(R.drawable.circle_expand);
                 break;
             case 2:
-                holder.tv_avatar.setBackgroundResource(R.drawable.blue_circle);
+                holder.tv_avatar.setBackgroundResource(R.drawable.blue_circle_v2);
                 break;
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {

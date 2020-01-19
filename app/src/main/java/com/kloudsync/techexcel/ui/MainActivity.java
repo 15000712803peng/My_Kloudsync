@@ -43,7 +43,6 @@ import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.FollowInfo;
 import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.UserPath;
-import com.kloudsync.techexcel.bean.params.EventLabelFragment;
 import com.kloudsync.techexcel.bean.params.EventProjectFragment;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -70,6 +69,7 @@ import com.kloudsync.techexcel.frgment.TopicFragment;
 import com.kloudsync.techexcel.frgment.TwoToOneFragment;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ContactHelpInterface;
+import com.kloudsync.techexcel.help.EverPenManger;
 import com.kloudsync.techexcel.info.School;
 import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.NetworkResponse;
@@ -130,6 +130,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 
 public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener, OnClickListener {
@@ -238,6 +239,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         setContentView(R.layout.activity_main);
 //        PgyUpdateManager.register(this);
         initView();
+        EverPenManger.getInstance(this).init();
         requestRongCloudOnlineStatus();
         GetSchoolInfo();
         initUpdate();
@@ -312,7 +314,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     AppConfig.SchoolID = school.getSchoolID();
                     editor.putInt("SchoolID", school.getSchoolID());
                     editor.putString("SchoolName", school.getSchoolName());
-                    if (teamSpaceBean != null) {
+                    if(teamSpaceBean != null){
                         editor.putString("teamname", teamSpaceBean.getName());
                         editor.putInt("teamid", teamSpaceBean.getItemID());
                     }
@@ -323,6 +325,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     editor.putInt("teamid", -1);
                     editor.commit();
                 }
+
                 initDatas();
             }
         });
@@ -619,7 +622,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     ServiceFragment serviceFragment;
     PersonalCenterFragment personalCenterFragment;
     ProjectOneFragment projectOneFragment;
-
     private void initDatas() {
         documentsFragment = new TeamDocumentsFragment();
         spaceDocumentsFragment = new SpaceDocumentsFragment();
@@ -1178,6 +1180,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     public void changeProjectOne(EventProjectFragment eventProjectFragment) {
         Log.e("eventProjectFragment", eventProjectFragment.getSubSystemId() + "");
         isDisplayProjectOne = true;
+
         TextView v = documentTab;
         teamFrame.setVisibility(View.VISIBLE);
         spaceFrame.setVisibility(View.GONE);
@@ -1193,20 +1196,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         currentTeamFragment = fragment;
         changeSelectedTab(v.getId());
 
-    }
-
-    @Subscribe
-    public void changeLabelName(EventLabelFragment eventLabelFragment) {
-        int type = eventLabelFragment.getType();
-        if (isDisplayProjectOne) {
-            if (type == 1) {
-                documentTab.setText("任务");
-            } else {
-                documentTab.setText("项目");
-            }
-        } else {
-            documentTab.setText(getString(R.string.service));
-        }
     }
 
 
@@ -1652,6 +1641,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
         return isRunning;
     }
+
 
 
 }

@@ -53,7 +53,7 @@
         android:visibility="gone"
         android:layout_centerVertical="true"
         android:drawablePadding="10dp"
-        android:drawableLeft="@drawable/blue_circle"
+        android:drawableLeft="@drawable/blue_circle_v2"
         android:gravity="center_vertical"
         android:layout_marginLeft="10dp"
         android:text="Invate new"

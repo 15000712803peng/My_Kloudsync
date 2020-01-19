@@ -370,21 +370,21 @@ public class SelectSchoolActivity extends Activity implements View.OnClickListen
     }
 
     //检测是否有人邀请
-    private void getInvitations() {
-        ServiceInterfaceTools.getinstance().getInvitations().enqueue(new Callback<InvitationsResponse>() {
-            @Override
-            public void onResponse(Call<InvitationsResponse> call, Response<InvitationsResponse> response) {
-                if (response != null && response.isSuccessful()) {
-                    handleInvitations(response.body().getRetData());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<InvitationsResponse> call, Throwable t) {
-
-            }
-        });
-    }
+//    private void getInvitations() {
+//        ServiceInterfaceTools.getinstance().getInvitations().enqueue(new Callback<InvitationsResponse>() {
+//            @Override
+//            public void onResponse(Call<InvitationsResponse> call, Response<InvitationsResponse> response) {
+//                if (response != null && response.isSuccessful()) {
+//                    handleInvitations(response.body().getRetData());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<InvitationsResponse> call, Throwable t) {
+//
+//            }
+//        });
+//    }
 
     public void handleInvitations(List<Company> companies) {
         this.companies = companies;
