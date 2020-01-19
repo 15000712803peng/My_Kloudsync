@@ -312,8 +312,10 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     AppConfig.SchoolID = school.getSchoolID();
                     editor.putInt("SchoolID", school.getSchoolID());
                     editor.putString("SchoolName", school.getSchoolName());
-                    editor.putString("teamname", teamSpaceBean.getName());
-                    editor.putInt("teamid", teamSpaceBean.getItemID());
+                    if (teamSpaceBean != null) {
+                        editor.putString("teamname", teamSpaceBean.getName());
+                        editor.putInt("teamid", teamSpaceBean.getItemID());
+                    }
                     editor.commit();
                 } else {
                     editor.putString("SchoolName", "");

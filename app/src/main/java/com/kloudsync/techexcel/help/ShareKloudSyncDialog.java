@@ -216,6 +216,12 @@ public class ShareKloudSyncDialog {
         if (popShareKloudSyncDismissListener != null) {
             popShareKloudSyncDismissListener.Scan();
         }
+
+        Document document1 = new Document();
+        document1.setTitle(document.getFileName());
+        document1.setAttachmentID(document.getAttachmentID() + "");
+        document1.setAttachmentUrl(document.getUrl());
+
         Intent i = new Intent(mContext, MyFriendsActivity.class);
         i.putExtra("document", document);
         i.putExtra("Syncid", id);

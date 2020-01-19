@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.ViewConfiguration;
 
@@ -368,10 +369,15 @@ public class Tools {
         return -1;
     }
 
-    public static void keepSocketServiceOn(Context context){
-        if(!isServiceRunning(context,"com.ub.service.activity.SocketService")){
+    public static void keepSocketServiceOn(Context context) {
+        if (!isServiceRunning(context, "com.ub.service.activity.SocketService")) {
             Intent service = new Intent(context.getApplicationContext(), SocketService.class);
-            context.startService(service);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(service);
+            } else {
+                context.startService(service);
+            }
+
         }
     }
 

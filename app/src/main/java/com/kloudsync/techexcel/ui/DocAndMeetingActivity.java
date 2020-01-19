@@ -374,12 +374,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         final String url = indexUrl;
         web.load(url, null);
-        web.load("javascript:ShowToolbar(" + false + ")", null);
-        web.load("javascript:Record()", null);
-
-        noteWeb.load(url, null);
-        noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
-        noteWeb.load("javascript:Record()", null);
     }
 
     private MeetingConfig getConfig() {
@@ -520,6 +514,21 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             bottomFilePop.removeTempDoc();
         } else {
             menuIcon.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    private void isShowToolBar() {
+        if (meetingConfig.getType() == MeetingType.MEETING) { //meeting中只有presenter使用工具栏
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                Log.e("是否有权限", "有权限");
+                web.load("javascript:ShowToolbar(" + true + ")", null);
+                web.load("javascript:Record()", null);
+            } else {
+                Log.e("是否有权限", "没有权限");
+                web.load("javascript:ShowToolbar(" + false + ")", null);
+                web.load("javascript:StopRecord()", null);
+            }
         }
     }
 
@@ -1262,6 +1271,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             Log.e("refreshMeetingMembers", "dialog_is_show");
             meetingMembersDialog.refresh(refreshMembers);
         }
+        isShowToolBar();
         checkAgoraMemberName();
 
     }
@@ -2520,7 +2530,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         try {
             jsonObject = new JSONObject();
             jsonObject.put("ID", note.documentId);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -2566,7 +2575,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         }
                     });
                 }
-
             }
 
             @Override
@@ -3014,6 +3022,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         meetingLayout.setVisibility(View.GONE);
                         meetingMenu.setVisibility(View.GONE);
                     } else if (meetingConfig.getType() == MeetingType.MEETING) {
+
                         if (dataJson.has("presenterSessionId")) {
                             meetingConfig.setPresenterSessionId(dataJson.getString("presenterSessionId"));
                         }
@@ -3022,6 +3031,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             JSONArray users = dataJson.getJSONArray("usersList");
                             if (users.length() >= 0) {
                                 getMeetingMembers(users);
+                                isShowToolBar();
                             }
                         }
 

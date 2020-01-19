@@ -216,7 +216,6 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         tab3.setText("被邀请人" +"(" + meetingConfig.getMeetingInvitors().size() + ")");
         if(meetingConfig.getMeetingInvitors().size() > 0){
             invitorsTab.setVisibility(View.VISIBLE);
-
         }else {
             invitorsTab.setVisibility(View.GONE);
         }

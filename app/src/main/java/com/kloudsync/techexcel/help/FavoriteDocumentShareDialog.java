@@ -215,7 +215,7 @@ public class FavoriteDocumentShareDialog {
             popShareKloudSyncDismissListener.Scan();
         }
         Intent i = new Intent(mContext, MyFriendsActivity.class);
-        i.putExtra("TeamSpaceBeanFile", lesson);
+        i.putExtra("document", lesson);
         i.putExtra("Syncid", id);
         i.putExtra("isShare", true);
         mContext.startActivity(i);

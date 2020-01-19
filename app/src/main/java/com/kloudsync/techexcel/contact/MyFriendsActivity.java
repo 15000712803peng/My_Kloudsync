@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -239,7 +240,6 @@ public class MyFriendsActivity extends Activity implements View.OnClickListener 
                         AppConfig.DEVICE_ID + AppConfig.RongUserID,
                         AppConfig.Name);
             } else {
-//                Intent intent = new Intent(getActivity(), isCustomer ? UserDetail.class : MemberDetail.class);
                 Intent intent = new Intent(MyFriendsActivity.this, UserDetail.class);
                 intent.putExtra("UserID", cus.getUserID());
                 startActivity(intent);
@@ -262,11 +262,15 @@ public class MyFriendsActivity extends Activity implements View.OnClickListener 
                 String url = AppConfig.SHARE_ATTACHMENT + document.getAttachmentID();
                 String thumurl = document.getAttachmentUrl();
                 Log.e("thumurl", thumurl + "  " + loginavatarurl);
-                if (thumurl.contains("<") && thumurl.contains(">")) {
-                    thumurl = thumurl.substring(0, thumurl.lastIndexOf("<")) + "1"
-                            + thumurl.substring(thumurl.lastIndexOf("."), thumurl.length());
+
+                if(!TextUtils.isEmpty(thumurl)){
+                    if (thumurl.contains("<") && thumurl.contains(">")) {
+                        thumurl = thumurl.substring(0, thumurl.lastIndexOf("<")) + "1"
+                                + thumurl.substring(thumurl.lastIndexOf("."), thumurl.length());
+                    }
+                    Log.e("thumurl", thumurl);
                 }
-                Log.e("thumurl", thumurl);
+
                 sm.setShareDocThumbnailUrl(thumurl);
                 sm.setShareDocUrl(url);
                 sm.setShareDocAvatarUrl(loginavatarurl);
@@ -278,8 +282,6 @@ public class MyFriendsActivity extends Activity implements View.OnClickListener 
                 finish();
             }
         });
-
-
     }
 
 }

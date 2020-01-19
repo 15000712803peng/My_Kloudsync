@@ -94,7 +94,7 @@ public class ShareMessageItemProvider extends IContainerItemProvider.MessageProv
         fa.setAttachmentID(Integer.parseInt(cc.getAttachmentID()) + "");
         getTempLesson(fa);
         Log.e("biang", fa.getAttachmentID() + ":" + fa.getTitle());
-		
+
 	}
 
     private void getTempLesson(final Document fa) {

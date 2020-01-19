@@ -33,7 +33,12 @@ import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.tencent.mm.sdk.openapi.WXWebpageObject;
+import com.ub.kloudsync.activity.Document;
+import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.ServiceBean;
+import com.ub.techexcel.tools.MeetingServiceTools;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -128,19 +133,39 @@ public class PopShareMeeting {
 
     }
 
-    private void goToShare(ServiceBean document) {
-        Intent i = new Intent(mContext, MyFriendsActivity.class);
-        i.putExtra("document", document);
-        i.putExtra("Syncid", document.getId());
-        i.putExtra("isShare", true);
-        mContext.startActivity(i);
-        mPopupWindow.dismiss();
+
+    private void goToShare(final ServiceBean document) {
+        final String lessonId = document.getId() + "";
+        if (lessonId.equals("-1")) {
+            return;
+        }
+        String url = AppConfig.URL_PUBLIC + "Lesson/Item?lessonID=" + lessonId;
+        MeetingServiceTools.getInstance().getPdfList(url, MeetingServiceTools.GETPDFLIST, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                List<LineItem> list = (List<LineItem>) object;
+                if (list.size() > 0) {
+                    LineItem lineItem = list.get(0);
+                    Document document1 = new Document();
+                    document1.setTitle(lineItem.getFileName());
+                    document1.setAttachmentID(lineItem.getAttachmentID() + "");
+                    document1.setAttachmentUrl(lineItem.getUrl());
+                    Intent i = new Intent(mContext, MyFriendsActivity.class);
+                    i.putExtra("document", document1);
+                    i.putExtra("Syncid", lessonId);
+                    i.putExtra("isShare", true);
+                    mContext.startActivity(i);
+                    mPopupWindow.dismiss();
+                }
+            }
+        });
+
     }
 
     private ClipboardManager mClipboard = null;
 
     private void copyLink() {
-        String url =AppConfig.SHARE_LIVE + document.getId();
+        String url = AppConfig.SHARE_LIVE + document.getId();
         if (null == mClipboard) {
             mClipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
         }
@@ -199,7 +224,7 @@ public class PopShareMeeting {
      * @param st       true：对话 false:朋友圈
      */
     private void weiXinShare(ServiceBean document, Bitmap b, final boolean st) {
-        String url = AppConfig.SHARE_LIVE  + document.getId();
+        String url = AppConfig.SHARE_LIVE + document.getId();
         if (isWXAppInstalledAndSupported(WeiXinApi.getInstance().GetApi())) {
             WXWebpageObject webpage = new WXWebpageObject();
             webpage.webpageUrl = url;

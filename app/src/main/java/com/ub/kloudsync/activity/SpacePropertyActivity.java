@@ -214,7 +214,6 @@ public class SpacePropertyActivity extends Activity implements SpaceMembersAdapt
                     }
                 });
                 addSpaceMemberDialog.show(0);
-
                 break;
             case R.id.layout_add_member:
                 addSpaceMemberDialog = new AddSpaceMemberDialog(this);
