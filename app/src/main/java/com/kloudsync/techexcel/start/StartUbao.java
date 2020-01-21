@@ -96,14 +96,14 @@ public class StartUbao extends Activity {
         password = LoginGet.DecodeBase64Password(sharedPreferences.getString("password", ""));
         countrycode = sharedPreferences.getInt("countrycode", 86);
         AppConfig.LANGUAGEID = getLocaleLanguage();
-        if(AppConfig.LANGUAGEID == 1){
+        if (AppConfig.LANGUAGEID == 1) {
             //English
             welcomeImage.setImageResource(R.drawable.welcome_english);
-        }else if(AppConfig.LANGUAGEID == 2){
+        } else if (AppConfig.LANGUAGEID == 2) {
             welcomeImage.setImageResource(R.drawable.welcome);
         }
         AppConfig.deviceType = DeviceManager.getDeviceType(this);
-        Log.e("deviceType","type:" + AppConfig.deviceType);
+        Log.e("deviceType", "type:" + AppConfig.deviceType);
 
 		/*Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
@@ -120,14 +120,15 @@ public class StartUbao extends Activity {
                     LoginActivity.class);*/
             startActivity(intent);
             finish();
+
         } else {
             if (isLogIn) {
                 String name = sharedPreferences.getString("name", null);
                 String pwd = LoginGet.DecodeBase64Password(sharedPreferences.getString("password", null));
                 String telephone = sharedPreferences.getString("telephone", null);
-                Log.e("autoLogin","name:" + name + ",pwd:" + pwd + ",telephone:" + telephone);
+                Log.e("autoLogin", "name:" + name + ",pwd:" + pwd + ",telephone:" + telephone);
                 Log.e("StartUbao", "step four");
-                processLogin(name,pwd,telephone);
+                processLogin(name, pwd, telephone);
             } else {
                 Log.e("StartUbao", "step five");
                 Intent intent = new Intent(getApplicationContext(),
@@ -188,7 +189,7 @@ public class StartUbao extends Activity {
         AppConfig.SystemModel = SystemUtil.getSystemModel();
         Log.e("hahaha", "手机型号：" + SystemUtil.getSystemModel());
         /*String TAG = "系统参数：";
-		Log.e(TAG, "手机厂商：" + SystemUtil.getDeviceBrand());
+                Log.e(TAG, "手机厂商：" + SystemUtil.getDeviceBrand());
 		Log.e(TAG, "手机型号：" + SystemUtil.getSystemModel());
 		Log.e(TAG, "手机当前系统语言：" + SystemUtil.getSystemLanguage());
 		Log.e(TAG, "Android系统版本号：" + SystemUtil.getSystemVersion());
@@ -256,20 +257,29 @@ public class StartUbao extends Activity {
 
     Disposable loginDisposable;
     String rongCloudUrl = "";
+
     private void processLogin(final String name, final String password, final String phoneNumber) {
         loginDisposable = Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, String>() {
             @Override
             public String apply(String o) throws Exception {
                 try {
                     Response<NetworkResponse<LoginData>> response = ServiceInterfaceTools.getinstance().login(name, password).execute();
-                    Log.e("processLogin","LoginData:" + response);
+                    Log.e("processLogin", "LoginData,success:" + response.isSuccessful() + ",body:" + response.body());
                     if (response == null || !response.isSuccessful() || response.body() == null) {
-
+                        Observable.just("go_to_login").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                Intent intent = new Intent(getApplicationContext(),
+                                        LoginActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
                     } else {
                         if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
                             saveLoginData(response.body().getRetData());
                             rongCloudUrl = AppConfig.URL_PUBLIC + "RongCloudUserToken";
-                            editor.putString("name",name);
+                            editor.putString("name", name);
                             editor.putString("telephone", phoneNumber);
                             editor.putString("password", LoginGet.getBase64Password(password));
                             editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
@@ -294,7 +304,7 @@ public class StartUbao extends Activity {
                 if (!TextUtils.isEmpty(s)) {
                     try {
                         Response<NetworkResponse<RongCloudData>> response = ServiceInterfaceTools.getinstance().getRongCloudInfo().execute();
-                        Log.e("processLogin","RongCloudData:" + response.isSuccessful() + ",body:" + response.body());
+                        Log.e("processLogin", "RongCloudData:" + response.isSuccessful() + ",body:" + response.body());
                         if (response != null && response.isSuccessful() && response.body() != null) {
                             if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
                                 RongCloudData data = response.body().getRetData();

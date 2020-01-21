@@ -121,7 +121,6 @@ public class InvitationsActivity extends BaseActivity implements View.OnClickLis
                 break;
             case R.id.txt_skip:
                 goToWelcomeCreateCompany();
-
                 break;
 
             default:
@@ -149,7 +148,7 @@ public class InvitationsActivity extends BaseActivity implements View.OnClickLis
         intent.putExtra("from", 1);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-        finish();
+//        finish();
     }
 
     private void initBySelected() {

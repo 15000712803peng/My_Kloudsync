@@ -86,7 +86,6 @@ public class LoginActivity extends Activity implements OnClickListener {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_v2);
-
         instance = this;
         gson = new Gson();
         threadManager = ((App) getApplication()).getThreadMgr();
@@ -246,7 +245,6 @@ public class LoginActivity extends Activity implements OnClickListener {
                 tv_login.setAlpha(0.6f);
                 tv_login.setEnabled(false);
             }
-
         }
 
         @Override
@@ -330,6 +328,9 @@ public class LoginActivity extends Activity implements OnClickListener {
                             editor.commit();
                         } else {
                             sendEventLoginFail(response.body().getErrorMessage());
+                            if(loginDisposable != null && !loginDisposable.isDisposed()){
+                                loginDisposable.dispose();
+                            }
                         }
                     }
                 } catch (UnknownHostException e) {
@@ -367,6 +368,9 @@ public class LoginActivity extends Activity implements OnClickListener {
         }).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
+                if (loginDisposable == null || loginDisposable.isDisposed()) {
+                    return ;
+                }
                 JSONObject response = ServiceInterfaceTools.getinstance().syncGetUserPreference();
 
                 if(response.has("RetCode")){
@@ -514,6 +518,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         switch (requestCode) {
             case com.kloudsync.techexcel.start.RegisterActivity.CHANGE_COUNTRY_CODE:
                 tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
+                editor.putInt("countrycode",AppConfig.COUNTRY_CODE).commit();
                 break;
             default:
                 break;
@@ -556,6 +561,5 @@ public class LoginActivity extends Activity implements OnClickListener {
         startActivity(intent);
         finish();
     }
-
 
 }

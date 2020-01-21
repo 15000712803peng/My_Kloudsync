@@ -21,6 +21,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public class WelcomeAndCreateActivity extends BaseActivity implements View.OnClickListener{
     TextView createText;
     TextView joinMeetingText;
+    TextView backText;
     @Override
     protected int setLayout() {
         return R.layout.activity_welcome_to_create;
@@ -32,6 +33,8 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
         createText.setOnClickListener(this);
         joinMeetingText = findViewById(R.id.txt_join_meeting);
         joinMeetingText.setOnClickListener(this);
+        backText = findViewById(R.id.txt_back);
+        backText.setOnClickListener(this);
 
     }
 
@@ -42,6 +45,10 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
                 goToCreate();
                 break;
             case R.id.txt_join_meeting:
+                showJoinDialog();
+                break;
+            case R.id.txt_back:
+                finish();
                 break;
                 default:
                     break;

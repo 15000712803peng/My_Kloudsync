@@ -44,12 +44,15 @@ public class InvitationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (!TextUtils.isEmpty(company.getSchoolName())) {
             myHolder.nameText.setText(company.getSchoolName());
         }
+
+        myHolder.checkBox.setChecked(company.isSelected());
+
         myHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clearSelected(company.getSchoolID());
                 company.setSelected(!company.isSelected());
-                myHolder.checkBox.setChecked(!myHolder.checkBox.isChecked());
+                notifyDataSetChanged();
                 EventBus.getDefault().post(new EventCompanyClicked());
             }
         });
@@ -105,8 +108,5 @@ public class InvitationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             company.setSelected(false);
         }
     }
-
-
-
 
 }
