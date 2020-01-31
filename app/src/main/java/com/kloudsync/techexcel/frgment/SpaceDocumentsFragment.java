@@ -161,7 +161,6 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
                     break;
                 case AppConfig.SUCCESS:
                     EventBus.getDefault().post(new TeamSpaceBean());
-
                     break;
                 case AppConfig.AddTempLesson:
                     GoToVIew((Document) msg.obj);
