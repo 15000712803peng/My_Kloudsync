@@ -262,7 +262,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     TvDevice tvDevice = (TvDevice) object;
                     if (tvDevice != null) {
                         if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
-                            openWarningInfo();
+                            openWarningInfo(0);
                         } else {
                             MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
                         }
@@ -283,7 +283,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private MeetingWarningDialog meetingWarningDialog;
 
     //开始会议警告信息
-    private void openWarningInfo() {
+    private void openWarningInfo(final int type) {
         if (meetingWarningDialog != null) {
             if (meetingWarningDialog.isShowing()) {
                 meetingWarningDialog.dismiss();
@@ -294,7 +294,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingWarningDialog.setOnUserOptionsListener(new MeetingWarningDialog.OnUserOptionsListener() {
             @Override
             public void onUserStart() {
-                MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                if (type == 1) {
+                    meetingKit = MeetingKit.getInstance();
+                    meetingKit.prepareStart(DocAndMeetingActivity.this, meetingConfig, meetingConfig.getLessionId() + "");
+                } else {
+                    MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                }
             }
         });
         if (meetingWarningDialog.isShowing()) {
@@ -2068,8 +2073,23 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Override
     public void menuStartMeetingClicked() {
-        meetingKit = MeetingKit.getInstance();
-        meetingKit.prepareStart(this, meetingConfig, meetingConfig.getLessionId() + "");
+
+        String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getLessionId();
+        MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                TvDevice tvDevice = (TvDevice) object;
+                if (tvDevice != null) {
+                    if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
+                        openWarningInfo(1);
+                    } else {
+                        meetingKit = MeetingKit.getInstance();
+                        meetingKit.prepareStart(DocAndMeetingActivity.this, meetingConfig, meetingConfig.getLessionId() + "");
+                    }
+                }
+            }
+        });
+
     }
 
     @Override
