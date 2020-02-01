@@ -120,6 +120,9 @@ import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
 import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.MeetingServiceTools;
+import com.ub.techexcel.tools.MeetingSettingDialog;
+import com.ub.techexcel.tools.MeetingWarningDialog;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
@@ -252,9 +255,21 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getType() != MeetingType.MEETING) {
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
-            MeetingKit.getInstance().prepareJoin(this, meetingConfig);
+            String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
+            MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
+                @Override
+                public void getServiceReturnData(Object object) {
+                    TvDevice tvDevice = (TvDevice) object;
+                    if (tvDevice != null) {
+                        if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
+                            openWarningInfo();
+                        } else {
+                            MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                        }
+                    }
+                }
+            });
         }
-
         pageCache = DocumentPageCache.getInstance(this);
         //--
         menuManager = BottomMenuManager.getInstance(this, meetingConfig);
@@ -262,19 +277,42 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         menuManager.setMenuIcon(menuIcon);
         initWeb();
         bottomFilePop = new PopBottomFile(this);
-
     }
 
-    private void writeNoteBlankPageImage(){
-        File localNoteFile = new File(FileUtils.getBaseDir() + "note" + File.separator +"blank_note_1.jpg");
-        if(localNoteFile.exists()){
+
+    private MeetingWarningDialog meetingWarningDialog;
+
+    //开始会议警告信息
+    private void openWarningInfo() {
+        if (meetingWarningDialog != null) {
+            if (meetingWarningDialog.isShowing()) {
+                meetingWarningDialog.dismiss();
+            }
+            meetingWarningDialog = null;
+        }
+        meetingWarningDialog = new MeetingWarningDialog(this);
+        meetingWarningDialog.setOnUserOptionsListener(new MeetingWarningDialog.OnUserOptionsListener() {
+            @Override
+            public void onUserStart() {
+                MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+            }
+        });
+        if (meetingWarningDialog.isShowing()) {
+            return;
+        }
+        meetingWarningDialog.show(this, meetingConfig);
+    }
+
+    private void writeNoteBlankPageImage() {
+        File localNoteFile = new File(FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg");
+        if (localNoteFile.exists()) {
             return;
         }
         new File(FileUtils.getBaseDir() + "note").mkdirs();
         Observable.just(localNoteFile).observeOn(Schedulers.io()).doOnNext(new Consumer<File>() {
             @Override
             public void accept(File file) throws Exception {
-                copyAssetsToDst("blank_note_1.jpg",file);
+                copyAssetsToDst("blank_note_1.jpg", file);
             }
         }).subscribe();
 
@@ -283,9 +321,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private void copyAssetsToDst(String srcPath, File dstPath) {
         try {
             InputStream is = getAssets().open(srcPath);
-            Log.e("copy_file","is:" + is);
+            Log.e("copy_file", "is:" + is);
             FileOutputStream fos = new FileOutputStream(dstPath);
-            Log.e("copy_file","fos:" + fos);
+            Log.e("copy_file", "fos:" + fos);
             byte[] buffer = new byte[1024];
             int byteCount;
             while ((byteCount = is.read(buffer)) != -1) {
@@ -297,7 +335,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("copy_file","Exception:" + e.getMessage());
+            Log.e("copy_file", "Exception:" + e.getMessage());
 
         }
     }
@@ -400,7 +438,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             menuManager.release();
         }
 
-        if(wakeLock != null){
+        if (wakeLock != null) {
             wakeLock.release();
         }
 
@@ -514,7 +552,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private long currentNoteId;
-    class TempNoteData{
+
+    class TempNoteData {
         private String data;
         private long noteId;
 
@@ -534,16 +573,18 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             this.noteId = noteId;
         }
     }
+
     private CopyOnWriteArrayList<TempNoteData> newNoteDatas = new CopyOnWriteArrayList<>();
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showNotePage(final EventShowNotePage page) {
-        Log.e("showNotePage","page:" + page);
-        if(!TextUtils.isEmpty(page.getNotePage().getLocalFileId())){
-            if(page.getNotePage().getLocalFileId().contains(".")){
+        Log.e("showNotePage", "page:" + page);
+        if (!TextUtils.isEmpty(page.getNotePage().getLocalFileId())) {
+            if (page.getNotePage().getLocalFileId().contains(".")) {
                 currentNoteId = page.getNoteId();
                 noteWeb.setVisibility(View.VISIBLE);
-                String localNoteBlankPage = FileUtils.getBaseDir()  +"note" + File.separator + "blank_note_1.jpg";
-                Log.e("show_PDF","javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")");
+                String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
+                Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")");
                 noteWeb.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
                 noteWeb.load("javascript:Record()", null);
                 handleBluetoothNote(page.getNotePage().getPageUrl());
@@ -555,85 +596,84 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         noteWeb.load("javascript:Record()", null);
 
 
-
     }
 
-    private void handleBluetoothNote(final String url){
-            Observable.just(url).observeOn(Schedulers.io()).map(new Function<String, String>() {
-                @Override
-                public String apply(String s) throws Exception {
-                    String newUrl = "";
-                    int index = url.lastIndexOf("/");
-                    if(index > 0 && index < url.length() - 2){
-                        newUrl  = url.substring(0,index + 1) + "book_page_data.json";
-                    }
-                    return newUrl;
+    private void handleBluetoothNote(final String url) {
+        Observable.just(url).observeOn(Schedulers.io()).map(new Function<String, String>() {
+            @Override
+            public String apply(String s) throws Exception {
+                String newUrl = "";
+                int index = url.lastIndexOf("/");
+                if (index > 0 && index < url.length() - 2) {
+                    newUrl = url.substring(0, index + 1) + "book_page_data.json";
                 }
-            }).map(new Function<String, JSONObject>() {
-                @Override
-                public JSONObject apply(String url) throws Exception {
-                    JSONObject jsonObject = new JSONObject();
-                    if(!TextUtils.isEmpty(url)){
-                        Log.e("check_url","url:" + url);
-                        jsonObject =  ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    }
-                    return jsonObject;
+                return newUrl;
+            }
+        }).map(new Function<String, JSONObject>() {
+            @Override
+            public JSONObject apply(String url) throws Exception {
+                JSONObject jsonObject = new JSONObject();
+                if (!TextUtils.isEmpty(url)) {
+                    Log.e("check_url", "url:" + url);
+                    jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
                 }
-            }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
-                @Override
-                public void accept(JSONObject jsonObject) throws Exception {
-                    String key = "ShowDotPanData";
-                    JSONObject _data = new JSONObject();
-                    _data.put("LinesData",jsonObject);
-                    _data.put("ShowInCenter",false);
-                    _data.put("TriggerEvent",false);
-                    Log.e("ShowDotPanData","ShowDotPanData");
-                    noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                return jsonObject;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                String key = "ShowDotPanData";
+                JSONObject _data = new JSONObject();
+                _data.put("LinesData", jsonObject);
+                _data.put("ShowInCenter", false);
+                _data.put("TriggerEvent", false);
+                Log.e("ShowDotPanData", "ShowDotPanData");
+                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+            }
+        }).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                if (!newNoteDatas.isEmpty()) {
+                    Observable.fromIterable(newNoteDatas).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<TempNoteData>() {
+                        @Override
+                        public void accept(TempNoteData tempNoteData) throws Exception {
+                            Log.e("draw_new_note", "temp_note_note");
+                            if (tempNoteData.getNoteId() == currentNoteId) {
+                                String key = "ShowDotPanData";
+                                JSONObject _data = new JSONObject();
+                                _data.put("LinesData", tempNoteData.getData());
+                                _data.put("ShowInCenter", true);
+                                _data.put("TriggerEvent", true);
+                                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                            }
+                            newNoteDatas.remove(tempNoteData);
+                        }
+                    }).subscribe();
                 }
-            }).doOnNext(new Consumer<JSONObject>() {
-                @Override
-                public void accept(JSONObject jsonObject) throws Exception {
-                    if(!newNoteDatas.isEmpty()){
-                        Observable.fromIterable(newNoteDatas).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<TempNoteData>() {
+            }
+        }).observeOn(Schedulers.io()).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                JSONObject result = ServiceInterfaceTools.getinstance().syncGetNoteP1Item(currentNoteId);
+                if (result.has("code")) {
+                    if (result.getInt("code") == 0) {
+                        JSONArray dataArray = result.getJSONArray("data");
+                        Observable.just(dataArray).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONArray>() {
                             @Override
-                            public void accept(TempNoteData tempNoteData) throws Exception {
-                                Log.e("draw_new_note","temp_note_note");
-                                if(tempNoteData.getNoteId() == currentNoteId){
-                                    String key = "ShowDotPanData";
-                                    JSONObject _data = new JSONObject();
-                                    _data.put("LinesData",tempNoteData.getData());
-                                    _data.put("ShowInCenter",true);
-                                    _data.put("TriggerEvent",true);
-                                    noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                            public void accept(JSONArray _jsonArray) throws Exception {
+                                for (int i = 0; i < _jsonArray.length(); ++i) {
+                                    JSONObject data = _jsonArray.getJSONObject(i);
+                                    addLinkBorderForDTNew(data);
                                 }
-                                newNoteDatas.remove(tempNoteData);
+
                             }
                         }).subscribe();
+
+
                     }
                 }
-            }).observeOn(Schedulers.io()).doOnNext(new Consumer<JSONObject>() {
-                @Override
-                public void accept(JSONObject jsonObject) throws Exception {
-                    JSONObject result = ServiceInterfaceTools.getinstance().syncGetNoteP1Item(currentNoteId);
-                    if(result.has("code")){
-                        if(result.getInt("code") == 0){
-                            JSONArray dataArray = result.getJSONArray("data");
-                            Observable.just(dataArray).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONArray>() {
-                                @Override
-                                public void accept(JSONArray _jsonArray) throws Exception {
-                                    for(int i = 0 ; i < _jsonArray.length(); ++i){
-                                        JSONObject data = _jsonArray.getJSONObject(i);
-                                        addLinkBorderForDTNew(data);
-                                    }
-
-                                }
-                            }).subscribe();
-
-
-                        }
-                    }
-                }
-            }).subscribe();
+            }
+        }).subscribe();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -650,13 +690,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public synchronized void showSelectedNote(EventSelectNote selectNote){
+    public synchronized void showSelectedNote(EventSelectNote selectNote) {
         Observable.just(selectNote).observeOn(Schedulers.io()).doOnNext(new Consumer<EventSelectNote>() {
             @Override
             public void accept(EventSelectNote selectNote) throws Exception {
-                JSONObject response = ServiceInterfaceTools.getinstance().syncImportNote(meetingConfig,selectNote);
-                if(response != null && response.has("RetCode")){
-                    if(response.getInt("RetCode") == 0){
+                JSONObject response = ServiceInterfaceTools.getinstance().syncImportNote(meetingConfig, selectNote);
+                if (response != null && response.has("RetCode")) {
+                    if (response.getInt("RetCode") == 0) {
                         selectNote.setNewLinkId(response.getInt("RetData"));
                     }
                 }
@@ -664,11 +704,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<EventSelectNote>() {
             @Override
             public void accept(EventSelectNote selectNote) throws Exception {
-                if(selectNote.getLinkId() > 0){
+                if (selectNote.getLinkId() > 0) {
                     deleteNote(selectNote.getLinkId());
                 }
-                if(selectNote.getNewLinkId() > 0){
-                    drawNote(selectNote.getNewLinkId(),selectNote.getLinkProperty(),0);
+                if (selectNote.getNewLinkId() > 0) {
+                    drawNote(selectNote.getNewLinkId(), selectNote.getLinkProperty(), 0);
                 }
             }
         }).subscribe();
@@ -683,12 +723,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             noteUsersLayout.setVisibility(View.VISIBLE);
         }
         hideEnterLoading();
-        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig,menuIcon);
+        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menuIcon);
 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void showDocumentIfRequestNoteError(EventNoteErrorShowDocument showDocument){
+    public void showDocumentIfRequestNoteError(EventNoteErrorShowDocument showDocument) {
         requestDocumentsAndShowPage();
     }
 
@@ -811,7 +851,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         JSONObject retData = socketMessage.getData().getJSONObject("retData");
                         String noteData = retData.getString("data");
                         long noteId = retData.getInt("noteId");
-                        if(currentNoteId != noteId){
+                        if (currentNoteId != noteId) {
                             TempNoteData _noteData = new TempNoteData();
                             _noteData.setData(Tools.getFromBase64(noteData));
                             _noteData.setNoteId(noteId);
@@ -822,9 +862,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         if (noteLayout.getVisibility() == View.VISIBLE) {
                             if (noteWeb != null) {
                                 JSONObject _data = new JSONObject();
-                                _data.put("LinesData",Tools.getFromBase64(noteData));
-                                _data.put("ShowInCenter",true);
-                                _data.put("TriggerEvent",true);
+                                _data.put("LinesData", Tools.getFromBase64(noteData));
+                                _data.put("ShowInCenter", true);
+                                _data.put("TriggerEvent", true);
                                 noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
                             }
                         }
@@ -846,7 +886,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 break;
 
             case SocketMessageManager.MESSAGE_NOTE_P1_CREATEAD:
-                if(socketMessage.getData().has("retData")){
+                if (socketMessage.getData().has("retData")) {
                     try {
                         JSONObject p1Created = socketMessage.getData().getJSONObject("retData");
                         addLinkBorderForDTNew(p1Created);
@@ -859,23 +899,23 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void addLinkBorderForDTNew(JSONObject p1Created) throws JSONException {
-        if(p1Created.has("noteId")){
-            if(currentNoteId == p1Created.getInt("noteId")){
+        if (p1Created.has("noteId")) {
+            if (currentNoteId == p1Created.getInt("noteId")) {
 //                noteWeb.load("javascript:whiteboard");
-                 JSONArray positionArray = new JSONArray(p1Created.getString("position"));
-                Log.e("addLinkBorderForDTNew","positionArray:" + positionArray);
+                JSONArray positionArray = new JSONArray(p1Created.getString("position"));
+                Log.e("addLinkBorderForDTNew", "positionArray:" + positionArray);
                 JSONObject info = new JSONObject();
-                 info.put("ProjectID",p1Created.getInt("projectId"));
-                 info.put("TaskID",p1Created.getInt("itemId"));
-                 for(int i = 0 ; i < positionArray.length(); ++i){
-                     JSONObject position = positionArray.getJSONObject(i);
-                     doDrawDTNewBorder(position.getInt("left"),position.getInt("top"),position.getInt("width"),position.getInt("height"),info);
-                 }
+                info.put("ProjectID", p1Created.getInt("projectId"));
+                info.put("TaskID", p1Created.getInt("itemId"));
+                for (int i = 0; i < positionArray.length(); ++i) {
+                    JSONObject position = positionArray.getJSONObject(i);
+                    doDrawDTNewBorder(position.getInt("left"), position.getInt("top"), position.getInt("width"), position.getInt("height"), info);
+                }
             }
         }
     }
 
-    private void doDrawDTNewBorder(int x,int y,int width,int height,JSONObject info) throws JSONException {
+    private void doDrawDTNewBorder(int x, int y, int width, int height, JSONObject info) throws JSONException {
         JSONObject message = new JSONObject();
         message.put("type", 40);
         message.put("CW", 678);
@@ -1024,7 +1064,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
         deleteTempNote();
-        drawNote(noteId.getLinkID(), meetingConfig.getCurrentLinkProperty(),0);
+        drawNote(noteId.getLinkID(), meetingConfig.getCurrentLinkProperty(), 0);
     }
 
     private void drawNote(int linkId, JSONObject linkProperty, int isOther) {
@@ -1043,8 +1083,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    private void drawTempNote(){
-        drawNote(-1,meetingConfig.getCurrentLinkProperty(),0);
+    private void drawTempNote() {
+        drawNote(-1, meetingConfig.getCurrentLinkProperty(), 0);
     }
 
     private void deleteNote(int linkId) {
@@ -1068,7 +1108,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         });
     }
 
-    private void deleteTempNote(){
+    private void deleteTempNote() {
         deleteNote(-1);
     }
 
@@ -1369,7 +1409,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     pageNumber = meetingConfig.getPageNumber();
                 }
 
-                if(pageNumber > document.getDocumentPages().size()){
+                if (pageNumber > document.getDocumentPages().size()) {
                     pageNumber = document.getDocumentPages().size();
                 }
                 DocumentPage page = document.getDocumentPages().get(pageNumber - 1);
@@ -1805,7 +1845,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         return false;
     }
-
 
 
     private void notifyMyWebActions(String actions) {
@@ -2432,8 +2471,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         web.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(this);
         String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
-        Log.e("upload_note","link_property:" + meetingConfig.getCurrentLinkProperty());
-        noteManager.exportPdfAndUpload(this, note, exportPath, meetingConfig.getDocument().getAttachmentID()+"", meetingConfig.getPageNumber()+"", meetingConfig.getSpaceId(), "0", meetingConfig.getCurrentLinkProperty().toString());
+        Log.e("upload_note", "link_property:" + meetingConfig.getCurrentLinkProperty());
+        noteManager.exportPdfAndUpload(this, note, exportPath, meetingConfig.getDocument().getAttachmentID() + "", meetingConfig.getPageNumber() + "", meetingConfig.getSpaceId(), "0", meetingConfig.getCurrentLinkProperty().toString());
     }
 
 
@@ -2643,9 +2682,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         Observable.just(setPresenter).observeOn(Schedulers.io()).doOnNext(new Consumer<EventSetPresenter>() {
             @Override
             public void accept(EventSetPresenter eventSetPresenter) throws Exception {
-                JSONObject result = ServiceInterfaceTools.getinstance().syncMakePresenter(eventSetPresenter.getMeetingMember().getUserId()+"");
-                if(result.has("code")){
-                    if(result.getInt("code") == 0){
+                JSONObject result = ServiceInterfaceTools.getinstance().syncMakePresenter(eventSetPresenter.getMeetingMember().getUserId() + "");
+                if (result.has("code")) {
+                    if (result.getInt("code") == 0) {
                         MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
                     }
                 }
@@ -2676,20 +2715,20 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void presenterChanged(EventPresnterChanged presnterChanged){
-        if(meetingConfig.getType() != MeetingType.MEETING){
+    public void presenterChanged(EventPresnterChanged presnterChanged) {
+        if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
 
-        if(presnterChanged.getPresenterId().equals(AppConfig.UserID)){
-            Log.e("EventPresnterChanged","presenter is me");
+        if (presnterChanged.getPresenterId().equals(AppConfig.UserID)) {
+            Log.e("EventPresnterChanged", "presenter is me");
             web.load("javascript:ShowToolbar(" + true + ")", null);
             noteWeb.load("javascript:ShowToolbar(" + true + ")", null);
 
-        }else {
+        } else {
             web.load("javascript:ShowToolbar(" + false + ")", null);
             web.load("javascript:ShowToolbar(" + false + ")", null);
-            Log.e("EventPresnterChanged","presenter is not me");
+            Log.e("EventPresnterChanged", "presenter is not me");
         }
     }
 
@@ -3051,7 +3090,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private PowerManager.WakeLock wakeLock;
-    private void keepScreenWake(){
+
+    private void keepScreenWake() {
         wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK, "TEST");
         wakeLock.acquire();
     }

@@ -373,7 +373,8 @@ public class Tools {
         if (!isServiceRunning(context, "com.ub.service.activity.SocketService")) {
             Intent service = new Intent(context.getApplicationContext(), SocketService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(service);
+//                context.startForegroundService(service);
+                context.startService(service);
             } else {
                 context.startService(service);
             }
