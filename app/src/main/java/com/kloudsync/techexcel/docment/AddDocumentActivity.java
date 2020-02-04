@@ -1,10 +1,14 @@
 package com.kloudsync.techexcel.docment;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -42,6 +46,8 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
     private static final int REQUEST_SELECTED_IMAGE = 1;
     private static final int REQUEST_SELECT_TEAM = 2;
     private static final int REQUEST_SELECT_DOC = 3;
+    private static final int REQUEST_SELECTED_FILE = 4;
+    private static final int REQUEST_SELECTED_CAMERA= 5;
     UploadFileDialog uploadFileDialog;
     int spaceId;
     TextView titleText;
@@ -125,6 +131,23 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
         startActivityForResult(intent, REQUEST_SELECT_DOC);
     }
 
+    @Override
+    public void selectFromFiles() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        this.startActivityForResult(intent, REQUEST_SELECTED_FILE);
+    }
+
+
+    /**
+     * 拍照上传
+     */
+    @Override
+    public void selectFromCamera() {
+
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -135,80 +158,81 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
                 case REQUEST_SELECTED_IMAGE:
                     if (data != null) {
                         String path = FileUtils.getPath(this, data.getData());
-                        String pathname = path.substring(path.lastIndexOf("/") + 1);
-                        LineItem file = new LineItem();
-                        file.setUrl(path);
-                        file.setFileName(pathname);
-//                        uploadFile(file, spaceId);
-                        AddDocumentTool.addDocumentToSpace(this, path, spaceId, new DocumentUploadTool.DocUploadDetailLinstener() {
-                            @Override
-                            public void uploadStart(){
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (uploadFileDialog == null) {
-                                            uploadFileDialog = new UploadFileDialog(AddDocumentActivity.this);
-                                            uploadFileDialog.setTile("uploading");
-                                            uploadFileDialog.show();
-
-                                        } else {
-                                            if (!uploadFileDialog.isShowing()) {
-                                                uploadFileDialog.show();
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void uploadFile(final int progress) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
-                                            uploadFileDialog.setProgress(progress);
-                                        }
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void convertFile(final int progress) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
-                                            uploadFileDialog.setTile("Converting");
-                                            uploadFileDialog.setProgress(progress);
-                                        }
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void uploadFinished(Object result) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        addDocSucc();
-                                    }
-                                });
-
-                            }
-
-                            @Override
-                            public void uploadError(String message) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getApplicationContext(), "add failed", Toast.LENGTH_SHORT).show();
-                                        if (uploadFileDialog != null) {
-                                            uploadFileDialog.cancel();
-                                        }
-                                    }
-                                });
-                            }
-                        });
+                        uploadFile(path);
+//                        String pathname = path.substring(path.lastIndexOf("/") + 1);
+//                        LineItem file = new LineItem();
+//                        file.setUrl(path);
+//                        file.setFileName(pathname);
+////                        uploadFile(file, spaceId);
+//                        AddDocumentTool.addDocumentToSpace(this, path, spaceId, new DocumentUploadTool.DocUploadDetailLinstener() {
+//                            @Override
+//                            public void uploadStart(){
+//                                runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        if (uploadFileDialog == null) {
+//                                            uploadFileDialog = new UploadFileDialog(AddDocumentActivity.this);
+//                                            uploadFileDialog.setTile("uploading");
+//                                            uploadFileDialog.show();
+//
+//                                        } else {
+//                                            if (!uploadFileDialog.isShowing()) {
+//                                                uploadFileDialog.show();
+//                                            }
+//                                        }
+//                                    }
+//                                });
+//                            }
+//
+//                            @Override
+//                            public void uploadFile(final int progress) {
+//                                runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+//                                            uploadFileDialog.setProgress(progress);
+//                                        }
+//                                    }
+//                                });
+//                            }
+//
+//                            @Override
+//                            public void convertFile(final int progress) {
+//                                runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+//                                            uploadFileDialog.setTile("Converting");
+//                                            uploadFileDialog.setProgress(progress);
+//                                        }
+//                                    }
+//                                });
+//                            }
+//
+//                            @Override
+//                            public void uploadFinished(Object result) {
+//                                runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        addDocSucc();
+//                                    }
+//                                });
+//
+//                            }
+//
+//                            @Override
+//                            public void uploadError(String message) {
+//                                runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        Toast.makeText(getApplicationContext(), "add failed", Toast.LENGTH_SHORT).show();
+//                                        if (uploadFileDialog != null) {
+//                                            uploadFileDialog.cancel();
+//                                        }
+//                                    }
+//                                });
+//                            }
+//                        });
                     }
                     break;
                 case REQUEST_SELECT_TEAM:
@@ -219,9 +243,119 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
                 case REQUEST_SELECT_DOC:
                     addDocSucc();
                     break;
+
+                case  REQUEST_SELECTED_FILE:
+                    if (data == null) {
+                        return;
+                    }
+                    Uri uri = data.getData(); // 获取用户选择文件的URI
+                    // 通过ContentProvider查询文件路径
+                    ContentResolver resolver = this.getContentResolver();
+                    String path="";
+                    Cursor cursor = resolver.query(uri, null, null, null, null);
+                    if (cursor == null) {
+                        // 未查询到，说明为普通文件，可直接通过URI获取文件路径
+                         path = uri.getPath();
+                        uploadFile(path);
+                        return;
+                    }
+                    if (cursor.moveToFirst()) {
+                        // 多媒体文件，从数据库中获取文件的真实路径
+                         path = cursor.getString(cursor.getColumnIndex("_data"));
+                    }
+                    cursor.close();
+                    uploadFile(path);
+                    break;
+                case REQUEST_SELECTED_CAMERA:
+
+                    break;
             }
         }
     }
+
+    private void  uploadFile(String path){
+        Log.e("uploadfile",path);
+        if(TextUtils.isEmpty(path)){
+            Toast.makeText(AddDocumentActivity.this,"path null",Toast.LENGTH_LONG).show();
+            return;
+        }
+        String pathname = path.substring(path.lastIndexOf("/") + 1);
+        LineItem file = new LineItem();
+        file.setUrl(path);
+        file.setFileName(pathname);
+//                        uploadFile(file, spaceId);
+        AddDocumentTool.addDocumentToSpace(this, path, spaceId, new DocumentUploadTool.DocUploadDetailLinstener() {
+            @Override
+            public void uploadStart(){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog == null) {
+                            uploadFileDialog = new UploadFileDialog(AddDocumentActivity.this);
+                            uploadFileDialog.setTile("uploading");
+                            uploadFileDialog.show();
+
+                        } else {
+                            if (!uploadFileDialog.isShowing()) {
+                                uploadFileDialog.show();
+                            }
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void uploadFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void convertFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setTile("Converting");
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void uploadFinished(Object result) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        addDocSucc();
+                    }
+                });
+
+            }
+
+            @Override
+            public void uploadError(String message) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "add failed", Toast.LENGTH_SHORT).show();
+                        if (uploadFileDialog != null) {
+                            uploadFileDialog.cancel();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+
 
     private void refresh(int teamId, String teamName) {
         this.teamId = teamId;
