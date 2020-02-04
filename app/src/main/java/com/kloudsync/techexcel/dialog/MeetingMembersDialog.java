@@ -49,7 +49,6 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         this.meetingConfig = meetingConfig;
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -106,6 +107,8 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
         bottomChatWindow.setBackgroundDrawable(new BitmapDrawable());
         bottomChatWindow.setOutsideTouchable(true);
         bottomChatWindow.setAnimationStyle(R.style.anination2);
+        bottomChatWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        bottomChatWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         bottomChatWindow.setFocusable(true);
         adapter = new ChatAdapter();
         chatList.setAdapter(adapter);

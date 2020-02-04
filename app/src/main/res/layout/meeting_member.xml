@@ -97,6 +97,7 @@
             android:layout_height="wrap_content" />
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/image_setting"
             android:layout_marginRight="16dp"
             android:padding="3dp"
@@ -105,23 +106,45 @@
             android:src="@drawable/member_more"
             android:layout_width="16dp"
             android:layout_height="20dp" />
+        <RelativeLayout
+            android:layout_marginRight="16dp"
 
-        <TextView
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
-            android:background="@drawable/change_auditor_bg"
-            android:id="@+id/txt_change_to_member"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="成为参会者"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:textColor="#ff999999"
-            android:textSize="13sp"
-            />
+            android:layout_height="wrap_content">
+            <TextView
+                android:visibility="gone"
+                android:background="@drawable/change_auditor_bg"
+                android:id="@+id/txt_change_to_member"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="成为参会者"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:textColor="#ff999999"
+                android:textSize="13sp"
+                />
+
+            <TextView
+                android:visibility="gone"
+                android:background="@drawable/change_auditor_bg"
+                android:id="@+id/txt_hands_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="举手"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:textColor="#ff999999"
+                android:textSize="13sp"
+                />
+
+        </RelativeLayout>
+
 
     </RelativeLayout>
 

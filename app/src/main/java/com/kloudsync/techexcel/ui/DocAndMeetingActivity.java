@@ -26,6 +26,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -252,7 +253,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             finish();
             return;
         }
-
         writeNoteBlankPageImage();
         initViews();
         //----
@@ -287,6 +287,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         bottomFilePop = new PopBottomFile(this);
     }
 
+    private void safeJoinMeetingIfAlreadyInMeeting(){
+
+    }
+
 
     private MeetingWarningDialog meetingWarningDialog;
 
@@ -310,9 +314,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 }
             }
         });
-        if (meetingWarningDialog.isShowing()) {
-            return;
-        }
         meetingWarningDialog.show(this, meetingConfig);
     }
 
@@ -2371,7 +2372,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         notesDialog.show(AppConfig.UserID, meetingConfig);
     }
 
-
     MeetingMembersDialog meetingMembersDialog;
 
     private void showMembersDialog() {
@@ -2455,7 +2455,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     if (cameraFile != null && cameraFile.exists()) {
                         Log.e("onActivityResult", "camera_file:" + cameraFile);
                         uploadFileWhenAddDoc(cameraFile);
-
                     }
                     break;
                 case REQUEST_PICTURE_ADD_DOC:

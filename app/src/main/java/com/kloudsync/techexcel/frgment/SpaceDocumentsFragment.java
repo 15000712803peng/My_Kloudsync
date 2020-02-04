@@ -3,8 +3,12 @@ package com.kloudsync.techexcel.frgment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +56,7 @@ import com.kloudsync.techexcel.bean.Team;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.UploadFileDialog;
+import com.kloudsync.techexcel.docment.AddDocumentActivity;
 import com.kloudsync.techexcel.docment.EditSpaceActivity;
 import com.kloudsync.techexcel.docment.FavoriteDocumentsActivity;
 import com.kloudsync.techexcel.docment.MoveDocumentActivity;
@@ -102,11 +108,14 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import static android.content.Context.MODE_PRIVATE;
+import static org.chromium.base.ContextUtils.getApplicationContext;
 
 public class SpaceDocumentsFragment extends Fragment implements View.OnClickListener, DocChooseDialog.SelectedOptionListener, DocumentUploadTool.DocUploadDetailLinstener {
 
@@ -134,6 +143,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
     private static final int REQUEST_CODE_CHANGESPACE = 3;
     private static final int REQUEST_EDIT_SPACE = 4;
     private static final int REQUEST_MOVE_DOCUMENT = 5;
+    private static final int REQUEST_CAMEIA_ADD_DOC = 6;
 
     private TextView dirText;
     private TextView projectText;
@@ -658,6 +668,79 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
             } else if (requestCode == REQUEST_MOVE_DOCUMENT) {
                 getTeamItem();
                 EventBus.getDefault().post(new TeamSpaceBean());
+            }else if(requestCode == REQUEST_CAMEIA_ADD_DOC){
+                if (cameraFile != null && cameraFile.exists()) {
+                    AddDocumentTool.addDocumentToSpace(getActivity(), cameraFile.getAbsolutePath(), spaceId, new DocumentUploadTool.DocUploadDetailLinstener() {
+                        @Override
+                        public void uploadStart(){
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog == null) {
+                                        uploadFileDialog = new UploadFileDialog(getActivity());
+                                        uploadFileDialog.setTile("uploading");
+                                        uploadFileDialog.show();
+
+                                    } else {
+                                        if (!uploadFileDialog.isShowing()) {
+                                            uploadFileDialog.show();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void uploadFile(final int progress) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                                        uploadFileDialog.setProgress(progress);
+                                    }
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void convertFile(final int progress) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                                        uploadFileDialog.setTile("Converting");
+                                        uploadFileDialog.setProgress(progress);
+                                    }
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void uploadFinished(Object result) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    addDocSucc();
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void uploadError(String message) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "add failed", Toast.LENGTH_SHORT).show();
+                                    if (uploadFileDialog != null) {
+                                        uploadFileDialog.cancel();
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                }
             }
         }
     }
@@ -1192,6 +1275,49 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         Intent intent = new Intent(getActivity(), FavoriteDocumentsActivity.class);
         intent.putExtra("space_id", spaceId);
         startActivityForResult(intent, REQUEST_SELECT_DOC);
+    }
+
+    private File cameraFile;
+
+    private boolean isCameraCanUse() {
+        if (!getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)
+                && !getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void openCameraForAdding() {
+        FileUtils.createFileSaveDir(getActivity());
+        if (!isCameraCanUse()) {
+            Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String mFilePath = FileUtils.getBaseDir();
+        // 文件名
+        String fileName = "Kloud_" + DateFormat.format("yyyyMMdd_hhmmss",
+                Calendar.getInstance(Locale.CHINA))
+                + ".jpg";
+        cameraFile = new File(mFilePath, fileName);
+        //Android7.0文件保存方式改变了
+        if (Build.VERSION.SDK_INT < 24) {
+            Uri uri = Uri.fromFile(cameraFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        } else {
+            ContentValues contentValues = new ContentValues(1);
+            contentValues.put(MediaStore.Images.Media.DATA, cameraFile.getAbsolutePath());
+            Uri uri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        }
+        startActivityForResult(intent, REQUEST_CAMEIA_ADD_DOC);
+    }
+
+    @Override
+    public void selectByCamera() {
+
     }
 
     private void uploadFile(final LineItem attachmentBean, final int spaceId) {

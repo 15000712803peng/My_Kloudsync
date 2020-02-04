@@ -20,8 +20,8 @@ public class DocChooseDialog implements OnClickListener {
 
     public interface SelectedOptionListener {
         void selectFromAlbum();
-
         void selectFromDocs();
+        void selectByCamera();
     }
 
     public void setSelectedOptionListener(SelectedOptionListener selectedOptionListener) {
@@ -88,24 +88,32 @@ public class DocChooseDialog implements OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.lin_album1:
-                mPopupWindow.dismiss();
                 if (selectedOptionListener != null) {
                     selectedOptionListener.selectFromAlbum();
                 }
+                mPopupWindow.dismiss();
                 break;
             case R.id.lin_album2:
-                mPopupWindow.dismiss();
                 if (selectedOptionListener != null) {
                     selectedOptionListener.selectFromDocs();
                 }
+                mPopupWindow.dismiss();
                 break;
             case R.id.lin_album3:
+                if (selectedOptionListener != null) {
+                    selectedOptionListener.selectFromDocs();
+                }
                 mPopupWindow.dismiss();
                 break;
             case R.id.lin_album4:
+                if (selectedOptionListener != null) {
+                    selectedOptionListener.selectByCamera();
+                }
+                mPopupWindow.dismiss();
                 break;
 
             case R.id.cancel:
+
                 if(mPopupWindow != null){
                     mPopupWindow.dismiss();
                 }

@@ -1137,6 +1137,11 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
         startActivityForResult(intent, REQUEST_SELECT_DOC);
     }
 
+    @Override
+    public void selectByCamera() {
+
+    }
+
     private void uploadFile(final LineItem attachmentBean, final int spaceId) {
         final JSONObject jsonobject = null;
         String url = null;

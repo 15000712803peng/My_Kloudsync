@@ -762,9 +762,9 @@
         <activity
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:name="com.kloudsync.techexcel.ui.DocAndMeetingActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="orientation|keyboardHidden|keyboard"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="adjustResize|adjustUnspecified|stateHidden"
+            android:windowSoftInputMode="stateHidden"
             android:screenOrientation="landscape"
              />
 
