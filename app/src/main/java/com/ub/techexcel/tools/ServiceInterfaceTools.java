@@ -13,6 +13,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.bean.CompanyContact;
 import com.kloudsync.techexcel.bean.CompanySubsystem;
+import com.kloudsync.techexcel.bean.ContactSearchData;
 import com.kloudsync.techexcel.bean.DocumentData;
 import com.kloudsync.techexcel.bean.DocumentDetail;
 import com.kloudsync.techexcel.bean.EventSelectNote;
@@ -2881,6 +2882,9 @@ public class ServiceInterfaceTools {
     }
 
     public JSONObject syncGetSoundtrackList(MeetingConfig meetingConfig) {
+        if(meetingConfig == null || meetingConfig == null){
+            return new JSONObject();
+        }
         String url = AppConfig.URL_PUBLIC;
         if (meetingConfig.getType() == MeetingType.MEETING) {
             url += "LessonSoundtrack/List?lessonID=" + meetingConfig.getLessionId() +
@@ -2960,18 +2964,109 @@ public class ServiceInterfaceTools {
         return response;
     }
 
-    public JSONObject syncGetUserPreference(){
+    public JSONObject syncGetUserPreference() {
         JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "User/GetUserPreference?fieldID=10001");
-        Log.e("syncGetUserPreference","url:" + AppConfig.URL_PUBLIC + "User/GetUserPreference?fieldID=10001" + ",result:" + response);
+        Log.e("syncGetUserPreference", "url:" + AppConfig.URL_PUBLIC + "User/GetUserPreference?fieldID=10001" + ",result:" + response);
         return response;
     }
 
-    public JSONObject syncGetCompanies(String userId){
+    public JSONObject syncGetCompanies(String userId) {
         JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "School/UserSchoolList?userID=" + userId);
-        Log.e("syncGetUserPreference","url:" + AppConfig.URL_PUBLIC + "School/UserSchoolList?userID=" + userId + " + response:" + response);
+        Log.e("syncGetUserPreference", "url:" + AppConfig.URL_PUBLIC + "School/UserSchoolList?userID=" + userId + " + response:" + response);
         return response;
 
     }
+
+    public JSONObject syncGetFriendList(int companyId, int filterType) {
+        JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_MEETING_BASE + "friend/friend_list_group_by_first_letter?companyId=" + companyId + "&filterType=" + filterType);
+        Log.e("syncGetFriendList", "url:" + AppConfig.URL_MEETING_BASE + "friend/friend_list_group_by_first_letter?companyId=" + companyId + " + response:" + response);
+        return response;
+    }
+
+    public List<WebAction> syncGetRecordActions(final String url) {
+
+        JSONObject response = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetRecordActions", url + "    " + response.toString());
+        List<WebAction> webActions = new ArrayList<>();
+        try {
+            if (response.getInt("RetCode") == 0) {
+                JSONObject retdata = response.getJSONObject("RetData");
+                JSONArray jsonArray = retdata.getJSONArray("SoundtackActions");
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject audiojson = jsonArray.getJSONObject(i);
+                    WebAction webAction = new WebAction();
+                    webAction.setTime(audiojson.getInt("Time"));
+                    String data = audiojson.getString("Data").replaceAll("\"", "");
+                    webAction.setData(Tools.getFromBase64(data));
+                    Log.e("data__", webAction.getData());
+                    webAction.setSoundtrackID(audiojson.getInt("SoundtrackID"));
+                    webAction.setPageNumber(audiojson.getString("PageNumber"));
+                    webAction.setAttachmentID(audiojson.getInt("AttachmentID"));
+                    webActions.add(webAction);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return webActions;
+
+    }
+
+    public RecordDetail syncGetRecordingItemDetail(final String url) {
+
+            JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+            Log.e("Recording item", url + "  " + returnjson.toString());
+            RecordDetail recordDetail = null;
+            try {
+                if (returnjson.getInt("code") == 0) {
+                    JSONObject data = returnjson.getJSONObject("data");
+                    recordDetail = new Gson().fromJson(data.toString(),RecordDetail.class);
+                } else {
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+        return recordDetail;
+
+    }
+
+    public ContactSearchData syncSearchContact(int companyId, int filterType,String searchText) {
+        JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_MEETING_BASE + "friend/search_contact?companyId=" + companyId + "&filterType=" + filterType +"&searchText=" + searchText);
+        ContactSearchData contactSearchData = null;
+        if(response != null && response.has("code")){
+            try {
+                if(response.getInt("code") == 0){
+                    contactSearchData = new Gson().fromJson(response.getJSONObject("data").toString(),ContactSearchData.class);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.e("syncSearchContact", "url:" + AppConfig.URL_MEETING_BASE + "friend/search_contact?companyId=" + companyId + "&filterType=" + filterType +"&searchText=" + searchText + " + response:" + response);
+        return contactSearchData;
+    }
+
+    public JSONObject syncGetFavoriteAttachments(int type){
+        String url  = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + type;
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetFavoriteAttachments","url:" + url + ",response:" + response);
+        return response;
+    }
+
+    public JSONObject syncRequstCreateSoundtrack(JSONObject params){
+        String url = AppConfig.URL_PUBLIC + "Soundtrack/CreateSoundtrack";
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncRequstCreateSoundtrack","url:" + url +",params:" + params + ",response:" + response);
+        return response;
+
+    }
+
+
 
 
 }

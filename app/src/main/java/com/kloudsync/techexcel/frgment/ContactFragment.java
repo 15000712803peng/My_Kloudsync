@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,12 +27,20 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.ContactAdapter;
+import com.kloudsync.techexcel.adapter.FriendContactAdapter;
+import com.kloudsync.techexcel.bean.EventFilterContact;
 import com.kloudsync.techexcel.bean.EventSearchContact;
+import com.kloudsync.techexcel.bean.FriendContact;
+import com.kloudsync.techexcel.bean.MeetingMember;
+import com.kloudsync.techexcel.bean.SameLetterFriends;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.contact.ContactMap;
 import com.kloudsync.techexcel.contact.MyFriendsActivity;
+import com.kloudsync.techexcel.dialog.PopFilterContact;
+import com.kloudsync.techexcel.dialog.PopMeetingMemberSetting;
 import com.kloudsync.techexcel.docment.InviteNewActivity;
 import com.kloudsync.techexcel.help.ContactHelpInterface;
 import com.kloudsync.techexcel.help.PopContactHAHA;
@@ -45,18 +54,27 @@ import com.kloudsync.techexcel.view.ClearEditText;
 import com.ub.friends.activity.NewFriendsActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.service.activity.NotifyActivity;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import io.rong.imkit.RongIM;
 
-public class ContactFragment extends Fragment implements ContactHelpInterface {
+public class ContactFragment extends Fragment implements ContactHelpInterface, OnClickListener {
 
     private View view;
     private TextView tv_ns;
@@ -80,10 +98,16 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
     private boolean isFragmentVisible = false;
     private boolean flagRf;
     private SharedPreferences sharedPreferences;
+    private FriendContactAdapter adapter;
+    private ImageView filterImage;
+    private TextView contactTitle;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = getActivity().getSharedPreferences(AppConfig.LOGININFO,
+                getActivity().MODE_PRIVATE);
+
     }
 
     @Override
@@ -109,7 +133,6 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
         super.onStart();
     }
 
-
     private void initView() {
         Fresco.initialize(getActivity());
         img_addCustomer = (ImageView) view.findViewById(R.id.img_addCustomer);
@@ -121,10 +144,14 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
         lin_none = (LinearLayout) view.findViewById(R.id.lin_none);
         sidebar = (SideBar) view.findViewById(R.id.sidebar);
         list = (ListView) view.findViewById(R.id.lv_contact);
-        list.addHeaderView(initHeader());
+        filterImage = view.findViewById(R.id.image_filter_contact);
+        contactTitle = view.findViewById(R.id.txt_contact_title);
+//        list.addHeaderView(initHeader());
         cAdapter = new ContactAdapter(getActivity(), cuslist);
         list.setAdapter(cAdapter);
         list.setOnItemClickListener(new MyOnitem());
+        filterImage.setOnClickListener(this);
+        showContactByType(sharedPreferences.getInt("contact_type",1));
 
     }
 
@@ -134,6 +161,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
         lin_my_friend.setOnClickListener(new myOnClick());
         lin_new = (LinearLayout) header.findViewById(R.id.lin_new);
         lin_new.setOnClickListener(new myOnClick());
+        header.setVisibility(View.GONE);
         return header;
     }
 
@@ -166,6 +194,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
     }
 
     private void getData() {
+
         final LoginGet loginget = new LoginGet();
 
         loginget.setSchoolContactListener(new LoginGet.SchoolContactListener() {
@@ -187,8 +216,8 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
 
             }
         });
-        loginget.GetSchoolContact(getActivity());
 
+        loginget.GetSchoolContact(getActivity());
     }
 
     private void getSide() {
@@ -205,16 +234,26 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
                 } else {
                     list.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
                 }
-
             }
         });
 
     }
 
-
     @Override
     public void RefreshRed(boolean flag_r) {
         tv_red.setVisibility(flag_r ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.image_filter_contact:
+                showFilterPop(v);
+                break;
+            default:
+                break;
+        }
+
     }
 
     private class MyOnitem implements OnItemClickListener {
@@ -223,20 +262,27 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
 
-            if (position == 0) {
+            if(adapter == null){
                 return;
             }
-            Customer cus = isCustomer ? cuslist.get(position - 1) : sclist
-                    .get(position - 1);
-            if (cus.isTeam()) {
-            } else {
-                if (cus.isEnableChat()) {
-                    AppConfig.Name = cus.getName();
-                    AppConfig.isUpdateDialogue = true;
-                    RongIM.getInstance().startPrivateChat(getActivity(),
-                            cus.getUBAOUserID(), cus.getName());
-                }
+            if(adapter.getItem(position) instanceof FriendContact){
+                FriendContact friendContact = (FriendContact) adapter.getItem(position);
+                AppConfig.Name = friendContact.getUserName();
+                RongIM.getInstance().startPrivateChat(getActivity(),
+                        friendContact.getRongCloudId()+"", friendContact.getUserName());
             }
+
+//            Customer cus = isCustomer ? cuslist.get(position - 1) : sclist
+//                    .get(position - 1);
+//            if (cus.isTeam()) {
+//            } else {
+//                if (cus.isEnableChat()) {
+//                    AppConfig.Name = cus.getName();
+//                    AppConfig.isUpdateDialogue = true;
+//                    RongIM.getInstance().startPrivateChat(getActivity(),
+//                            cus.getUBAOUserID(), cus.getName());
+//                }
+//            }
 
         }
 
@@ -328,12 +374,12 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         // TODO Auto-generated method stub
         super.setUserVisibleHint(isVisibleToUser);
-        isFragmentVisible = isVisibleToUser;
-        if (isFirst && isVisibleToUser) {
-            isFirst = false;
-            initFunction();
-        }
-        RefreshInfo();
+//        isFragmentVisible = isVisibleToUser;
+//        if (isFirst && isVisibleToUser) {
+//            isFirst = false;
+//            initFunction();
+//        }
+//        RefreshInfo();
     }
 
     private void RefreshInfo() {
@@ -345,7 +391,6 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
     }
 
     private void initFunction() {
-        EventBus.getDefault().register(this);
         GetSchoolInfo();
         getData();
         getSide();
@@ -371,20 +416,27 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
         startActivity(intent);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void filterContact(EventFilterContact filterContact){
+        Log.e("EventBus","filterContact");
+        showContactByType(filterContact.getTpye());
+    }
+
     @Override
     public void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
-        if (isFragmentVisible) {
-            RefreshInfo();
-        }
-        if (tv_title != null) {
-            GetSchoolInfo();
-        }
-        if (flagRf) {
-            getData();
-            flagRf = false;
-        }
+        EventBus.getDefault().register(this);
+//        if (isFragmentVisible) {
+//            RefreshInfo();
+//        }
+//        if (tv_title != null) {
+//            GetSchoolInfo();
+//        }
+//        if (flagRf) {
+//            getData();
+//            flagRf = false;
+//        }
     }
 
 
@@ -395,9 +447,83 @@ public class ContactFragment extends Fragment implements ContactHelpInterface {
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
             broadcastReceiver = null;
         }
+
+    }
+
+    List<SameLetterFriends> letterFriendsList = new ArrayList<>();
+
+    private void showContactByType(final int type) {
+        Log.e("showContactByType","type:"+ type);
+        final int schoolId = sharedPreferences.getInt("SchoolID", -1);
+
+        if (schoolId <= 0) {
+            return;
+        }
+
+        letterFriendsList.clear();
+        final Gson gson = new Gson();
+
+        Observable.just(type).observeOn(Schedulers.io()).map(new Function<Integer, List<SameLetterFriends>>() {
+            @Override
+            public List<SameLetterFriends> apply(Integer integer) throws Exception {
+                JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetFriendList(schoolId, type);
+                if (jsonObject.has("code")) {
+                    if (jsonObject.getInt("code") == 0) {
+                        sharedPreferences.edit().putInt("contact_type",type).commit();
+                        JSONArray dataArray = jsonObject.getJSONArray("data");
+                        Log.e("check_contact", "data_array:" + dataArray);
+                        if (dataArray != null) {
+                            for (int i = 0; i < dataArray.length(); ++i) {
+                                SameLetterFriends letterFriends = gson.fromJson(dataArray.getJSONObject(i).toString(),
+                                        SameLetterFriends.class);
+                                Log.e("check_contact", "letterFriends:" + letterFriends);
+                                letterFriendsList.add(letterFriends);
+                            }
+                        }
+                    }
+                }
+                return letterFriendsList;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<List<SameLetterFriends>>() {
+            @Override
+            public void accept(List<SameLetterFriends> sameLetterFriends) throws Exception {
+                if (sameLetterFriends == null || sameLetterFriends.size() <= 0) {
+                    sameLetterFriends = new ArrayList<>();
+                }
+                if(type == 0){
+                    contactTitle.setText("联系人(公司)");
+                }else if(type == 1){
+                    contactTitle.setText("联系人(所有)");
+                }
+
+                adapter = new FriendContactAdapter(getActivity(), sameLetterFriends);
+                Log.e("check_contact", "set_adapter:" + sameLetterFriends.size());
+                list.setAdapter(adapter);
+            }
+        }).subscribe();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
+    }
+
+
+
+    PopFilterContact filterContactPop;
+    private void showFilterPop(View view) {
+        if (filterContactPop != null) {
+            if (filterContactPop.isShowing()) {
+                filterContactPop.dismiss();
+            }
+            filterContactPop = null;
+        }
+
+        filterContactPop = new PopFilterContact(getActivity());
+        filterContactPop.showAtBottom(view,sharedPreferences.getInt("contact_type",1));
     }
 
 }

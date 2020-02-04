@@ -22,6 +22,8 @@ import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.RecordingPageCache;
+import com.kloudsync.techexcel.tool.SyncWebActionsCache;
+import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.WebAction;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.FileUtils;
@@ -71,6 +73,7 @@ public class SoundtrackActionsManager {
     private UserVedioManager userVedioManager;
     private MeetingConfig meetingConfig;
     private RelativeLayout webVedioPlayLayout;
+    private SyncWebActionsCache webActionsCache;
 
     public void setUserVedioManager(UserVedioManager userVedioManager) {
         this.userVedioManager = userVedioManager;
@@ -94,7 +97,7 @@ public class SoundtrackActionsManager {
 
     public void setRecordId(int recordId) {
         this.recordId = recordId;
-        requestActions();
+//        requestActions();
     }
 
     //
@@ -102,6 +105,7 @@ public class SoundtrackActionsManager {
         this.context = context;
         pageCache = DocumentPageCache.getInstance(context);
         webVedioManager = WebVedioManager.getInstance(context);
+        webActionsCache = SyncWebActionsCache.getInstance(context);
         gson = new Gson();
     }
 
@@ -117,26 +121,28 @@ public class SoundtrackActionsManager {
     }
 
 
-
     public void setPlayTime(final long playTime) {
         this.playTime = playTime;
-        requestActions();
-        executeActions(getActions(),playTime);
-        WebVedio nearestVedio = getNearestWebvedio(playTime);
-        if(nearestVedio != null){
-            Log.e("nearestVedio", nearestVedio.getSavetime() + ",play_time:" + playTime + ",is_executed:" + nearestVedio.isExecuted());
-        }
-        webVedioManager.safePrepare(nearestVedio);
-        if(nearestVedio != null && playTime >= nearestVedio.getSavetime() && !nearestVedio.isExecuted()){
-            Log.e("nearestVedio", "start_play");
-            SoundtrackAudioManager.getInstance(context).pause();
-            nearestVedio.setExecuted(true);
-            EventPlayWebVedio eventPlayWebVedio = new EventPlayWebVedio();
-            eventPlayWebVedio.setWebVedio(nearestVedio);
-            EventBus.getDefault().post(eventPlayWebVedio);
-        }
-
-
+        Observable.just("do_now").observeOn(Schedulers.io()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+//                syncRequestActions();
+                executeActions(getActions(), playTime);
+                WebVedio nearestVedio = getNearestWebvedio(playTime);
+                if (nearestVedio != null) {
+                    Log.e("nearestVedio", nearestVedio.getSavetime() + ",play_time:" + playTime + ",is_executed:" + nearestVedio.isExecuted());
+                }
+                webVedioManager.safePrepare(nearestVedio);
+                if (nearestVedio != null && playTime >= nearestVedio.getSavetime() && !nearestVedio.isExecuted()) {
+                    Log.e("nearestVedio", "start_play");
+                    SoundtrackAudioManager.getInstance(context).pause();
+                    nearestVedio.setExecuted(true);
+                    EventPlayWebVedio eventPlayWebVedio = new EventPlayWebVedio();
+                    eventPlayWebVedio.setWebVedio(nearestVedio);
+                    EventBus.getDefault().post(eventPlayWebVedio);
+                }
+            }
+        });
 
     }
 
@@ -165,11 +171,11 @@ public class SoundtrackActionsManager {
 
     private volatile List<WebAction> actions = new ArrayList<>();
 
-    private List<WebAction> getActions(boolean reset,long playTime) {
+    private List<WebAction> getActions(boolean reset, long playTime) {
         actions.clear();
         for (WebAction action : webActions) {
             if (action.getTime() <= playTime) {
-                if(reset){
+                if (reset) {
                     action.setExecuted(false);
                 }
                 actions.add(action);
@@ -180,37 +186,64 @@ public class SoundtrackActionsManager {
         return actions;
     }
 
-    private List<WebAction> getActions(){
-        int index = lastActionIndex;
-        if(index < 0){
-            index = 0;
+
+    PartWebActions currentPartWebActions;
+
+
+    public PartWebActions getCurrentPartWebActions() {
+        return currentPartWebActions;
+    }
+
+    public void setCurrentPartWebActions(PartWebActions currentPartWebActions) {
+        this.currentPartWebActions = currentPartWebActions;
+    }
+
+    private List<WebAction> getActions() {
+        if (currentPartWebActions == null) {
+            currentPartWebActions = webActionsCache.getPartWebActions(playTime, recordId);
         }
-
-        for (int i = index;i < webActions.size(); ++i) {
-            WebAction action = webActions.get(i);
-            if (action.getTime() <= playTime) {
-                if(!action.isExecuted()){
-                    if(!_actions.contains(action)){
-                        _actions.add(action);
-                    }
-                }
-            } else {
-                break;
-
+        if (currentPartWebActions != null) {
+            if (!(playTime >= currentPartWebActions.getStartTime() && playTime <= currentPartWebActions.getEndTime())) {
+                Log.e("check_part_actions", "get_new_part");
+                currentPartWebActions = webActionsCache.getPartWebActions(playTime, recordId);
             }
         }
-        return _actions;
+
+        if (currentPartWebActions == null) {
+            return new ArrayList<>();
+        }
+
+
+//        int index = lastActionIndex;
+//        if(index < 0){
+//            index = 0;
+//        }
+//
+//        for (int i = index;i < webActions.size(); ++i) {
+//            WebAction action = webActions.get(i);
+//            if (action.getTime() <= playTime) {
+//                if(!action.isExecuted()){
+//                    if(!_actions.contains(action)){
+//                        _actions.add(action);
+//                    }
+//                }
+//            } else {
+//                break;
+//
+//            }
+//        }
+        return currentPartWebActions.getWebActions();
     }
 
 
-    private List<WebAction> getActions(int playTime){
+    private List<WebAction> getActions(int playTime) {
         _actions.clear();
         int index = lastActionIndex;
-        if(index < 0){
+        if (index < 0) {
             index = 0;
         }
 
-        for (int i = index;i < webActions.size(); ++i) {
+        for (int i = index; i < webActions.size(); ++i) {
             WebAction action = webActions.get(i);
             if (action.getTime() <= playTime) {
                 _actions.add(action);
@@ -223,27 +256,63 @@ public class SoundtrackActionsManager {
 
     private volatile CopyOnWriteArrayList<WebAction> _actions = new CopyOnWriteArrayList<>();
 
-    private WebAction getNearestAction() {
-        if(webActions.size() <= 0){
-            return null;
-        }
-        if(lastActionIndex == -1){
-            return webActions.get(0);
-        }
+//    private WebAction getNearestAction() {
+//        if (webActions.size() <= 0) {
+//            return null;
+//        }
+//        if (lastActionIndex == -1) {
+//            return webActions.get(0);
+//        }
+//
+//        if (lastActionIndex < webActions.size() - 1) {
+//            if (webActions.get(lastActionIndex + 1).getIndex() == lastActionIndex + 1) {
+//                return webActions.get(lastActionIndex + 1);
+//            }
+//        }
+//        return null;
+//    }
 
-        if(lastActionIndex < webActions.size() - 1){
-            if(webActions.get(lastActionIndex + 1).getIndex() == lastActionIndex + 1){
-                return webActions.get(lastActionIndex + 1);
-            }
-        }
-        return null;
-    }
 
-
-    private void executeActions(List<WebAction> actions,long playTime) {
+    private void executeActions(List<WebAction> actions, long playTime) {
         for (final WebAction action : actions) {
-            Log.e("check_action", "action:" + action);
-            if (action.isExecuted() ||  playTime < action.getTime()) {
+//            Log.e("check_action", "action:" + action);
+            Log.e("SoundtrackActionsManager", "executeActions" + actions + ",action_executed:" + action.isExecuted());
+            if (action.isExecuted()) {
+                continue;
+            }
+
+            if (!TextUtils.isEmpty(action.getData())) {
+                try {
+                    JSONObject data = new JSONObject(action.getData());
+                    if (data.has("actionType")) {
+                        int actionType = data.getInt("actionType");
+                        switch (actionType) {
+                            case 19:
+//                                                Log.e("check_action","action:setWebVedio:" + action.getData());
+//                                               action.setWebVedio(gson.fromJson(action.getData(), WebVedio.class));
+                                action.setExecuted(true);
+                                WebVedio webVedio = gson.fromJson(action.getData(), WebVedio.class);
+                                if (!webVedios.contains(webVedio)) {
+                                    webVedios.add(webVedio);
+                                }
+                                break;
+                            case 202:
+                                action.setExecuted(true);
+                                if (userVedioManager != null) {
+                                    userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"));
+                                }
+                                break;
+                        }
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+
+            if (playTime < action.getTime() || isLoadingPage) {
                 continue;
             }
 
@@ -253,30 +322,36 @@ public class SoundtrackActionsManager {
                     doExecuteAction(action);
                 }
             });
-
         }
     }
 
     private void executeAction(WebAction action) {
-            Log.e("check_action", "action:" + action);
-            if (action == null || action.isExecuted()) {
-                return;
-            }
-            if(action.getTime() == 0 || (!action.isExecuted() && action.getTime() >= playTime)){
-                Observable.just(action).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<WebAction>() {
-                    @Override
-                    public void accept(WebAction action) throws Exception {
-                        doExecuteAction(action);
-                    }
-                });
-            }
+        Log.e("check_action", "action:" + action);
+        if (action == null || action.isExecuted()) {
+            return;
+        }
+        if (action.getTime() == 0 || (!action.isExecuted() && action.getTime() >= playTime)) {
+            Observable.just(action).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<WebAction>() {
+                @Override
+                public void accept(WebAction action) throws Exception {
+                    doExecuteAction(action);
+                }
+            });
+        }
 
 
     }
 
     private int lastActionIndex = -1;
+    private boolean isLoadingPage;
+
+
+    public void setLoadingPage(boolean loadingPage) {
+        isLoadingPage = loadingPage;
+    }
+
     private void doExecuteAction(WebAction action) {
-        lastActionIndex = action.getIndex();
+
         if (web == null) {
             action.setExecuted(false);
             return;
@@ -289,6 +364,7 @@ public class SoundtrackActionsManager {
             JSONObject data = new JSONObject(action.getData());
             Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
             if (data.getInt("type") == 2) {
+                isLoadingPage = true;
                 downLoadDocumentPageAndShow(data.getInt("page"));
             } else {
                 web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
@@ -299,16 +375,96 @@ public class SoundtrackActionsManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        _actions.remove(action);
+
+    }
 
 
+    private int currentPage = -1;
+
+    public void doChangePageAction(WebAction action) {
+        try {
+            JSONObject data = new JSONObject(action.getData());
+            Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
+            if (data.getInt("type") == 2) {
+                int page = data.getInt("page");
+//                if(currentPage == page){
+//                    return;
+//                }
+                isLoadingPage = true;
+                downLoadDocumentPageAndShow(page);
+                currentPage = page;
+            } else {
+                web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
+                web.load("javascript:Record()", null);
+            }
+//                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 
     private volatile MediaPlayPage mediaPlayPage;
     private Gson gson;
 
-    private void requestActions() {
+
+    private void syncRequestActions() {
+        Request r = getRequest();
+        Log.e("SoundtrackActionsManager", "step_one:get_request:" + r);
+        if (r == null) {
+            return;
+        }
+
+        final String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + request.startTime + "&endTime=" + (request.startTime + 20000);
+        final String cacheUrl = url + "__time__separator__" + request.startTime + "__" + (request.startTime + 20000) + "__" + recordId;
+        boolean isContain = webActionsCache.containPartWebActions(cacheUrl);
+        Log.e("SoundtrackActionsManager", "step_two:have_cache_by_url:" + isContain + ",url:" + url);
+
+        if (isContain) {
+            return;
+        }
+
+        if (requests.contains(r)) {
+            r = requests.get(requests.indexOf(r));
+        } else {
+            requests.add(r);
+        }
+
+        if (r.hasRequest) {
+            return;
+        }
+
+        if (r.isRequesting) {
+            return;
+        }
+
+        r.isRequesting = true;
+        request = r;
+        Log.e("SoundtrackActionsManager", "step_three:no_cache_by_url_and_request" + url);
+        List<WebAction> actions = ServiceInterfaceTools.getinstance().syncGetRecordActions(url);
+        if (actions != null && actions.size() > 0) {
+            PartWebActions partWebActions = new PartWebActions();
+            partWebActions.setStartTime(request.startTime);
+            partWebActions.setEndTime(request.startTime + 20000);
+            partWebActions.setUrl(cacheUrl);
+            partWebActions.setWebActions(actions);
+            webActionsCache.cacheActions(partWebActions);
+            Log.e("SoundtrackActionsManager", "step_four:request_success_and_cache:web_actions_size:" + partWebActions.getWebActions().size());
+            if (!requests.contains(request)) {
+                requests.add(request);
+            }
+            Collections.sort(requests);
+//                    Collections.sort(webActions);
+        }
+    }
+
+    public void preLoad(int recordId) {
+        this.recordId = recordId;
+        syncRequestActions();
+    }
+
+    private void requestActionsAndSave() {
         Request r = getRequest();
         if (r == null) {
             return;
@@ -328,9 +484,7 @@ public class SoundtrackActionsManager {
         }
 
         r.isRequesting = true;
-
         request = r;
-
         String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + request.startTime + "&endTime=" + (request.startTime + 20000);
         ServiceInterfaceTools.getinstance().getRecordActions(url, ServiceInterfaceTools.GETSOUNDTRACKACTIONS, new ServiceInterfaceListener() {
             @Override
@@ -349,7 +503,6 @@ public class SoundtrackActionsManager {
                             }
 
                             webActions.add(action);
-                            action.setIndex(webActions.indexOf(action));
 
                             if (!TextUtils.isEmpty(action.getData())) {
                                 try {
@@ -361,7 +514,7 @@ public class SoundtrackActionsManager {
 //                                                Log.e("check_action","action:setWebVedio:" + action.getData());
 //                                                action.setWebVedio(gson.fromJson(action.getData(), WebVedio.class));
                                                 WebVedio webVedio = gson.fromJson(action.getData(), WebVedio.class);
-                                                if(!webVedios.contains(webVedio)){
+                                                if (!webVedios.contains(webVedio)) {
                                                     webVedios.add(webVedio);
                                                 }
                                                 break;
@@ -389,6 +542,7 @@ public class SoundtrackActionsManager {
             }
         });
     }
+
 
     class Request implements Comparable<Request> {
         long startTime;
@@ -433,11 +587,12 @@ public class SoundtrackActionsManager {
     }
 
     private volatile Request request;
+    private Request firstRequest = new Request(0);
 
     private Request getRequest() {
 
         if (playTime == 0) {
-            request = new Request(0);
+            request = firstRequest;
             return request;
         }
 
@@ -453,6 +608,7 @@ public class SoundtrackActionsManager {
         if (startTime > totalTime) {
             return null;
         }
+
         request = new Request(secend * 2 * 1000);
         return request;
     }
@@ -481,20 +637,21 @@ public class SoundtrackActionsManager {
     }
 
 
-
-
-    private DocumentPageCache pageCache; ;
+    private DocumentPageCache pageCache;
+    ;
 
     public void release() {
+        currentPage = -1;
         if (web != null) {
             web.removeAllViews();
             web.onDestroy();
             web = null;
         }
         webActions.clear();
+        currentPartWebActions =  null;
         mediaPlayPages.clear();
         requests.clear();
-        if(webVedioManager != null){
+        if (webVedioManager != null) {
             webVedioManager.release();
         }
         instance = null;
@@ -513,7 +670,7 @@ public class SoundtrackActionsManager {
         }).subscribe();
     }
 
-    private void showCurrentPage(final DocumentPage documentPage){
+    private void showCurrentPage(final DocumentPage documentPage) {
         Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
             @Override
             public void accept(DocumentPage page) throws Exception {
@@ -643,26 +800,27 @@ public class SoundtrackActionsManager {
         return null;
     }
 
-    public void seekTo(int time){
-        Observable.just(time).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer time) throws Exception {
-                requestActionsBySeek(time);
-            }
-        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer time) throws Exception {
-                SoundtrackAudioManager.getInstance(context).seekTo(time);
-                clearExecuted();
-                lastActionIndex = 0;
-                executeActions(getActions(time),time);
-            }
-        }).subscribe();
+    public void seekTo(int time) {
+//        Observable.just(time).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
+//            @Override
+//            public void accept(Integer time) throws Exception {
+//                requestActionsBySeek(time);
+//            }
+//        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Integer>() {
+//            @Override
+//            public void accept(Integer time) throws Exception {
+//
+//                clearExecuted();
+//
+//                executeActions(getActions(time), time);
+//            }
+//        }).subscribe();
+        SoundtrackAudioManager.getInstance(context).seekTo(time);
 
     }
 
-    private void clearExecuted(){
-        for(WebAction webAction : webActions){
+    private void clearExecuted() {
+        for (WebAction webAction : webActions) {
             webAction.setExecuted(false);
         }
     }
@@ -720,7 +878,7 @@ public class SoundtrackActionsManager {
 //                                                Log.e("check_action","action:setWebVedio:" + action.getData());
 //                                                action.setWebVedio(gson.fromJson(action.getData(), WebVedio.class));
                                                 WebVedio webVedio = gson.fromJson(action.getData(), WebVedio.class);
-                                                if(!webVedios.contains(webVedio)){
+                                                if (!webVedios.contains(webVedio)) {
                                                     webVedios.add(webVedio);
                                                 }
                                                 break;
@@ -748,8 +906,6 @@ public class SoundtrackActionsManager {
             }
         });
     }
-
-
 
 
 }

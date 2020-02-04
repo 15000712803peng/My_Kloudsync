@@ -9157,7 +9157,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 recordPlayDialog.dismiss();
             }
             recordPlayDialog = new RecordPlayDialog(this, record);
-            recordPlayDialog.show();
+            recordPlayDialog.show(showpdfurl,currentAttachmentPage,currentAttachmentId);
         }
 
     }

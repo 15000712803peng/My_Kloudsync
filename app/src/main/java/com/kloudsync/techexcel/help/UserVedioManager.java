@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -14,6 +15,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -21,6 +23,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.FavouriteDocAdapter;
 import com.kloudsync.techexcel.adapter.ShowSpaceAdapter;
 import com.kloudsync.techexcel.bean.WebVedio;
+import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.info.Space;
 import com.ub.techexcel.bean.SectionVO;
 
@@ -29,6 +32,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by tonyan on 2019/11/21.
@@ -42,12 +51,14 @@ public class UserVedioManager {
     private volatile long playTime;
     private Context context;
     private UserVedioAdapter adapter;
+    private ImageLoader imageLoader;
     //
     private List<UserVedioData> userVedioDatas = new ArrayList<>();
 
     private UserVedioManager(Context context) {
         this.context = context;
         audioPlayer = new MediaPlayer();
+        imageLoader = new ImageLoader(context);
 
     }
 
@@ -69,35 +80,42 @@ public class UserVedioManager {
         return instance;
     }
 
-    public void addUserVedios(String userId,List<SectionVO> vediosData) {
+    public void saveUserVedios(final String userId,final List<SectionVO> vediosData) {
         UserVedioData _user = new UserVedioData(userId);
-        if(userVedioDatas.contains(_user)){
-            UserVedioData userVedioData = userVedioDatas.get(userVedioDatas.indexOf(_user));
+        int index = userVedioDatas.indexOf(_user);
+        if(index >= 0){
+            Log.e("add_user_vedio","set_user_vedio:" + userId);
+            UserVedioData userVedioData = userVedioDatas.get(index);
             userVedioData.setVedios(vediosData);
-        }else {
-            UserVedioData vedioData = new UserVedioData(userId);
-            vedioData.setVedios(vediosData);
-            userVedioDatas.add(vedioData);
+            adapter.notifyItemChanged(index);
         }
-
         Log.e("userVedioDatas",userVedioDatas+"");
 
     }
 
-    public void refreshUserInfo(String userId,String userName,String avatarUrl){
-        UserVedioData _user = new UserVedioData(userId);
-        if(userVedioDatas.contains(_user)){
-            UserVedioData userVedioData = userVedioDatas.get(userVedioDatas.indexOf(_user));
-            userVedioData.setAvatarUrl(avatarUrl);
-            userVedioData.setUserName(userName);
-        }else {
-            UserVedioData vedioData = new UserVedioData(userId);
-            vedioData.setAvatarUrl(avatarUrl);
-            vedioData.setUserName(userName);
-            userVedioDatas.add(vedioData);
-        }
+    public void refreshUserInfo(final String userId,final String userName,final String avatarUrl){
 
-        Log.e("userVedioDatas",userVedioDatas+"");
+        Observable.just("on_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                UserVedioData _user = new UserVedioData(userId);
+                int index  = userVedioDatas.indexOf(_user);
+                if(index >= 0){
+                    UserVedioData userVedioData = userVedioDatas.get(index);
+                    userVedioData.setAvatarUrl(avatarUrl);
+                    userVedioData.setUserName(userName);
+                    adapter.notifyItemChanged(index);
+                }else {
+                    UserVedioData vedioData = new UserVedioData(userId);
+                    vedioData.setAvatarUrl(avatarUrl);
+                    vedioData.setUserName(userName);
+                    userVedioDatas.add(vedioData);
+                    adapter.notifyItemInserted(userVedioDatas.indexOf(vedioData));
+                }
+
+                Log.e("userVedioDatas",userVedioDatas+"");
+            }
+        });
 
     }
 
@@ -282,8 +300,6 @@ public class UserVedioManager {
     }
 
     class UserVedioAdapter extends RecyclerView.Adapter<VedioHolder>{
-
-
         @NonNull
         @Override
         public VedioHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -295,10 +311,14 @@ public class UserVedioManager {
         public void onBindViewHolder(@NonNull VedioHolder holder, int position) {
             final UserVedioData vedioData = userVedioDatas.get(position);
             holder.nameText.setText(vedioData.getUserName());
+            if(TextUtils.isEmpty(vedioData.getAvatarUrl())){
+                holder.iconImage.setImageResource(R.drawable.hello);
+            }else {
+                imageLoader.DisplayImage(vedioData.getAvatarUrl(), holder.iconImage);
+            }
             if(vedioData.getVedios() != null){
                 SectionVO data  = getNearestVedioData(playTime,vedioData.getVedios());
                 toPlay(vedioData,data,holder.surface);
-
             }
         }
 
@@ -312,10 +332,12 @@ public class UserVedioManager {
     class VedioHolder extends RecyclerView.ViewHolder{
         SurfaceView surface;
         TextView nameText;
+        ImageView iconImage;
         public VedioHolder(View itemView) {
             super(itemView);
             surface = itemView.findViewById(R.id.user_surface);
             nameText = itemView.findViewById(R.id.txt_name);
+            iconImage = itemView.findViewById(R.id.member_icon);
         }
     }
 

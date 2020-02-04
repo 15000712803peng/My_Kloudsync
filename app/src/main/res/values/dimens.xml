@@ -14,6 +14,7 @@
     <dimen name="menu_top_margin">52dp</dimen>
     <dimen name="meeting_setting_dialog_width">320dp</dimen>
     <dimen name="meeting_members_setting_width">160dp</dimen>
+    <dimen name="filter_contact_width">170dp</dimen>
     <dimen name="pop_setting_left_margin">30dp</dimen>
 
 </resources>

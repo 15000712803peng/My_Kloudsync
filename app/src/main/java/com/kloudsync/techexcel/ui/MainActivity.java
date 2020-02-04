@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -243,7 +244,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         requestRongCloudOnlineStatus();
         GetSchoolInfo();
         initUpdate();
-        StartWBService();
+        startWBService();
         GetMaZhang();
         GetMyPermission();
         String wechatFilePath = getIntent().getStringExtra("wechat_data_path");
@@ -363,8 +364,14 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
     }
 
-    private void StartWBService() {
-        service = new Intent(getApplicationContext(), SocketService.class);
+    private void startWBService() {
+
+        service = new Intent(this, SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(service);
+        }else {
+            startService(service);
+        }
         startService(service);
     }
 
@@ -893,10 +900,16 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         AppConfig.isUpdateCustomer = false;
         AppConfig.isUpdateDialogue = false;
         AppConfig.HASUPDATAINFO = false;
-        stopService(service);
+        stopService();
         EventBus.getDefault().unregister(this);
         app.getThreadMgr().shutDown();
         KillFile();
+    }
+
+    private void stopService(){
+        if(isServiceRunning(this, "com.ub.service.activity.SocketService")){
+            Intent service = new Intent(this, SocketService.class);
+        }
     }
 
     AddWxDocDialog addWxDocDialog;
@@ -1306,7 +1319,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
         switch (info.getActionType()) {
             case "HELLO":
-                handleHeartMessage(info);
+//                handleHeartMessage(info);
                 break;
             case "ENABLE_TV_FOLLOW":
                 handleEnableTvFollow(info);
@@ -1622,7 +1635,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             KloudWebClientManager.getInstance().startHeartBeat();
         } else {
             Log.e("MainActivity", "SocketService is not running");
-            StartWBService();
+            startWBService();
         }
     }
 

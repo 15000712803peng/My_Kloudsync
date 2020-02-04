@@ -52,7 +52,7 @@ public class PlayRecordKit {
     }
 
     public void load(){
-        playDialog.show();
+//        playDialog.show();
     }
 
     public void pause(){

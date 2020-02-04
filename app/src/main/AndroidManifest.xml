@@ -103,7 +103,6 @@
             android:name=".ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name"
-            android:screenOrientation="sensor"
             android:theme="@style/ThemeActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="stateHidden|adjustPan">

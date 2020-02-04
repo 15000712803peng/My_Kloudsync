@@ -29,6 +29,8 @@ import android.widget.ViewFlipper;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.HeaderRecyclerAdapter;
+import com.kloudsync.techexcel.bean.EventCloseWebView;
+import com.kloudsync.techexcel.bean.EventPlayWebVedio;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.Team;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -37,23 +39,34 @@ import com.kloudsync.techexcel.help.PlayRecordKit;
 import com.kloudsync.techexcel.help.RecordActionsManager;
 import com.kloudsync.techexcel.help.RecordAudioManager;
 import com.kloudsync.techexcel.help.RecordShareVedioManager;
+
+import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.UserVedioManager;
+import com.kloudsync.techexcel.help.WebVedioManager;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.response.TeamsResponse;
+import com.kloudsync.techexcel.tool.SyncWebActionsCache;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.ChannelVO;
+import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.Record;
 import com.ub.techexcel.bean.RecordDetail;
+import com.ub.techexcel.bean.WebAction;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.feezu.liuli.timeselector.Utils.DateUtil;
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.xwalk.core.JavascriptInterface;
 import org.xwalk.core.XWalkPreferences;
 import org.xwalk.core.XWalkView;
 
@@ -63,6 +76,11 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -78,10 +96,10 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     //view
     private View view;
     private TextView playTimeText;
-    private ImageView recordStartImage;
+
     private LinearLayout centerLoaing;
-    private RelativeLayout playLayout;
-    private ImageView centerStartImage;
+    private LinearLayout playLayout;
+//    private ImageView centerStartImage;
     private SeekBar seekBar;
     private SurfaceView webVedioSurface;
     private SurfaceView shareVedioSurface;
@@ -96,13 +114,14 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     private volatile boolean isSeek;
     // data
     private static Handler playHandler;
-    private MeetingTimeTask meetingTimeTask;
+    private PlayTask playTask;
     // message
     private static final int MESSAGE_PLAY_TIME_REFRESHED = 1;
     private static final int MESSAGE_HIDE_CENTER_LOADING = 2;
     private static final int MESSAGE_PLAY_START = 3;
     private static final int MESSAGE_PLAY_FINISH = 4;
     private ImageView close;
+    private RelativeLayout webVedioLayout;
 
     //
     String totalTimeStr = "00:00";
@@ -114,6 +133,12 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     RecordShareVedioManager recordShareVedioManager;
     UserVedioManager userVedioManager;
     XWalkView web;
+
+    TextView statusText;
+    ImageView startPauseImage;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss");
+    private SyncWebActionsCache webActionsCache;
+    private ImageView closeVedioImage;
 
     public void setRecord(Record record) {
         this.record = record;
@@ -131,18 +156,43 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         view = layoutInflater.inflate(R.layout.dialog_play_record, null);
         dialog = new Dialog(host, R.style.my_dialog);
         playTimeText = view.findViewById(R.id.txt_play_time);
-        recordStartImage = view.findViewById(R.id.image_record_start);
-        recordStartImage.setOnClickListener(this);
+        startPauseImage = view.findViewById(R.id.image_play_pause);
+        startPauseImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("check_clicked","startPauseImage clicked,isStarted:" + isStarted);
+                if(isStarted){
+                    pause();
+                    isStarted = false;
+                }else {
+                    restart();
+                    isStarted = true;
+                }
+            }
+        });
+        statusText = view.findViewById(R.id.txt_status);
         centerLoaing = view.findViewById(R.id.layout_center_loading);
         playLayout = view.findViewById(R.id.layout_play);
-        centerStartImage = view.findViewById(R.id.image_center_start);
-        centerStartImage.setOnClickListener(this);
-        seekBar = view.findViewById(R.id.seekBar);
+        webActionsCache = SyncWebActionsCache.getInstance(host);
+//        centerStartImage = view.findViewById(R.id.image_center_start);
+//        centerStartImage.setOnClickListener(this);
+        seekBar = view.findViewById(R.id.seek_bar);
         seekBar.setOnSeekBarChangeListener(this);
         userList = view.findViewById(R.id.list_user);
+
         close = view.findViewById(R.id.close);
         close.setOnClickListener(this);
-        userList.setLayoutManager(new LinearLayoutManager(host, LinearLayoutManager.VERTICAL, false));
+        closeVedioImage = view.findViewById(R.id.image_close_veido);
+        closeVedioImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebVedioManager.getInstance(host).closeVedio();
+                webVedioLayout.setVisibility(View.GONE);
+
+            }
+        });
+        webVedioLayout = view.findViewById(R.id.layout_web_vedio);
+        userList.setLayoutManager(new LinearLayoutManager(host, RecyclerView.HORIZONTAL, false));
         webVedioSurface = view.findViewById(R.id.web_vedio_surface);
         shareVedioSurface = view.findViewById(R.id.share_vedio_surface);
         web = view.findViewById(R.id.web);
@@ -158,7 +208,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         lp.width = width;
         lp.height = heigth;
         dialog.getWindow().setAttributes(lp);
-        meetingTimeTask = new MeetingTimeTask();
+        playTask = new PlayTask();
         playHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -206,8 +256,9 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 dismiss();
                 break;
             case R.id.close:
-                dismiss();
                 release();
+                dismiss();
+
                 //结束播放
                 break;
 
@@ -217,27 +268,149 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
             case R.id.cancel:
                 dismiss();
                 break;
-            case R.id.image_record_start:
-                Log.e("RecordPlayDialog", "start");
-                break;
-            case R.id.image_center_start:
-                if (playHandler != null) {
-                    playHandler.obtainMessage(MESSAGE_PLAY_START).sendToTarget();
-                }
-                break;
+
+//            case R.id.image_center_start:
+//                if (playHandler != null) {
+//                    playHandler.obtainMessage(MESSAGE_PLAY_START).sendToTarget();
+//                }
+//                break;
             default:
                 break;
 
         }
     }
 
-    public void show() {
+
+    private String showPdfUrl;
+    private String page;
+    private String currentAttachmentId;
+    public void show(final String showpdfurl,final String page,final String currentAttachmentId) {
+        this.showPdfUrl = showpdfurl;
+        this.page = page;
+        this.currentAttachmentId = currentAttachmentId;
         if (dialog != null && !dialog.isShowing()) {
             dialog.show();
-            requestMeetingRecord();
-            meetingTimeTask.execute();
+            Observable.just("load_detail").observeOn(Schedulers.io()).map(new Function<String, RecordDetail>() {
+                @Override
+                public RecordDetail apply(String s) throws Exception {
+                    recordDetail = syncGetMeetingRecordDetail();
+                    Log.e("check_play_step", "step_one:load_detail");
+                    return recordDetail;
+                }
+            }).map(new Function<RecordDetail, Integer>() {
+                @Override
+                public Integer apply(RecordDetail s) throws Exception {
+                    Log.e("check_play_step", "step_two:parse_detail,record_detail:" + recordDetail);
+                    return  parseRecordDetail(recordDetail);
+
+                }
+            }).doOnNext(new Consumer<Integer>() {
+                @Override
+                public void accept(Integer result) throws Exception {
+                    if(result == 1){
+                        Log.e("check_play_step", "step_three:start_execute");
+                        downloadActions(recordDetail.getDuration(),recordDetail.getRecordingId());
+                        syncDownloadFirst(recordDetail.getRecordingId());
+                        playTask.execute();
+                    }
+                }
+            }).subscribe();
+
         }
     }
+
+    private void downloadActions(long totalTime,final int recordId){
+        int secends=  (int)(totalTime / 1000) + 1;
+        int partSize = secends / 20 + 1;
+        Integer[] parts = new Integer[partSize];
+        for(int i = 0 ; i < parts.length; ++i){
+            parts[i] = i;
+        }
+        Observable.fromArray(parts).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer index) throws Exception {
+                long startTime = index * 20000;
+                long endTime = (index + 1) * 20000;
+                final String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + startTime + "&endTime=" + endTime;
+                final String cacheUrl = url + "__time__separator__" + startTime + "__" + endTime+"__" + recordId;
+                boolean isContain = webActionsCache.containPartWebActions(cacheUrl);
+                if(!isContain){
+                    List<WebAction> actions = ServiceInterfaceTools.getinstance().syncGetRecordActions(url);
+                    Log.e("check_download","download_response:" + actions);
+                    if (actions != null) {
+                        PartWebActions partWebActions = new PartWebActions();
+                        partWebActions.setStartTime(startTime);
+                        partWebActions.setEndTime(endTime);
+                        partWebActions.setUrl(cacheUrl);
+                        if(actions.size() > 0){
+                            partWebActions.setWebActions(actions);
+                        }else {
+                            partWebActions.setWebActions(new ArrayList<WebAction>());
+                        }
+                        Log.e("check_download","cache:" + cacheUrl);
+                        webActionsCache.cacheActions(partWebActions);
+                        Log.e("SoundtrackActionsManager", "step_four:request_success_and_cache:web_actions_size:" + partWebActions.getWebActions().size());
+//
+                    }
+                }
+                fetchPageActions(webActionsCache.getPartWebActions(cacheUrl));
+                Log.e("check_part","url:" + url);
+            }
+        }).subscribe();
+//        Log.e("check_part","part_size:" + partSize +", total_time:" + totalTime);
+    }
+
+
+    private List<WebAction> pageActions = new ArrayList<>();
+    private void fetchPageActions(PartWebActions webActions){
+        List<WebAction> actions = webActions.getWebActions();
+        if(actions != null && actions.size() > 0){
+            for(WebAction action : actions){
+                if(!TextUtils.isEmpty(action.getData()))
+                    try {
+                        JSONObject data = new JSONObject(action.getData());
+                        if (data.getInt("type") == 2) {
+                            if(!pageActions.contains(action)){
+                                pageActions.add(action);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+            }
+        }
+
+        Log.e("check_page_actions","page_actions_size:" + pageActions.size());
+    }
+
+
+    private void syncDownloadFirst(int recordId){
+        final String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + 0 + "&endTime=" + 20000;
+        final String cacheUrl = url + "__time__separator__" + 0 + "__" + 20000+"__" + recordId;
+        boolean isContain = webActionsCache.containPartWebActions(cacheUrl);
+        if(!isContain){
+            List<WebAction> actions = ServiceInterfaceTools.getinstance().syncGetRecordActions(url);
+            Log.e("check_download","download_response:" + actions);
+            if (actions != null) {
+                PartWebActions partWebActions = new PartWebActions();
+                partWebActions.setStartTime(0);
+                partWebActions.setEndTime(20000);
+                partWebActions.setUrl(cacheUrl);
+                if(actions.size() > 0){
+                    partWebActions.setWebActions(actions);
+                }else {
+                    partWebActions.setWebActions(new ArrayList<WebAction>());
+                }
+                Log.e("check_download","cache:" + cacheUrl);
+                webActionsCache.cacheActions(partWebActions);
+                Log.e("SoundtrackActionsManager", "step_four:request_success_and_cache:web_actions_size:" + partWebActions.getWebActions().size());
+//
+            }
+        }
+
+
+    }
+
 
     @Override
     public void onItemClick(int position, Object data) {
@@ -259,7 +432,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                     if (recordDetail != null) {
                         parseRecordDetail(recordDetail);
                     }
-                    playHandler.obtainMessage(MESSAGE_HIDE_CENTER_LOADING).sendToTarget();
+//                    playHandler.obtainMessage(MESSAGE_HIDE_CENTER_LOADING).sendToTarget();
 
                 }
             });
@@ -267,12 +440,20 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
     }
 
-    class MeetingTimeTask extends AsyncTask<Void, Void, Void> {
+    private RecordDetail syncGetMeetingRecordDetail() {
+        String url = "https://wss.peertime.cn/MeetingServer/recording/recording_item?recordingId=" + record.getRecordingId();
+        return ServiceInterfaceTools.getinstance().syncGetRecordingItemDetail(url);
+
+    }
+
+
+    class PlayTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             playTime = 0;
             isFinished = false;
+            isStarted = true;
             super.onPreExecute();
         }
 
@@ -280,28 +461,39 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         protected Void doInBackground(Void... voids) {
             // 播放完成或者手动关闭dialog isFinished = true;
             while (!isFinished) {
-                Log.e("RecordPlayDialog", "is finish:" + isFinished);
-                if (isStarted) {
-                    if (isPlayFinished()) {
-                        isFinished = true;
-                        playHandler.obtainMessage(MESSAGE_PLAY_FINISH).sendToTarget();
-                        break;
-                    }
-                    if (isSeek) {
-                        continue;
-                    }
-                    playTime += 200;
-                    if (playHandler != null) {
-                        playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
-                        audioManager.setPlayTime(playTime);
-                        actionsManager.setPlayTime(playTime);
-                        recordShareVedioManager.setPlayTime(playTime);
-                        userVedioManager.setPlayTime(playTime);
-                    }
+                boolean isPlaying = RecordAudioManager.getInstance(host).isPlaying();
 
+                Log.e("PlayTask","audio_is_playing:" + isPlaying + ",is_started:" + isStarted);
+
+                if (!isStarted) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    continue;
                 }
+
+                if (playTime >= totalTime) {
+                    playTime = totalTime;
+                    playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
+                    break;
+                }
+                playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
+
+                if(isPlaying){
+                    playTime = RecordAudioManager.getInstance(host).getPlayTime();
+                }else {
+                    playTime += 500;
+                }
+                actionsManager.setTotalTime(totalTime);
+                actionsManager.setPlayTime(playTime);
+                RecordAudioManager.getInstance(host).setPlayTime(playTime);
+                recordShareVedioManager.setPlayTime(playTime);
+                userVedioManager.setPlayTime(playTime);
                 try {
-                    Thread.sleep(200);
+
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -340,6 +532,12 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         switch (message.what) {
             case MESSAGE_PLAY_TIME_REFRESHED:
                 setTimeText();
+                if (centerLoaing.getVisibility() == View.VISIBLE) {
+                    centerLoaing.setVisibility(View.GONE);
+                }
+                if(playLayout.getVisibility() != View.VISIBLE){
+                    playLayout.setVisibility(View.VISIBLE);
+                }
                 break;
             case MESSAGE_HIDE_CENTER_LOADING:
                 centerLoaing.setVisibility(View.GONE);
@@ -351,7 +549,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 break;
             case MESSAGE_PLAY_START:
                 isStarted = true;
-                centerStartImage.setVisibility(View.GONE);
+//                centerStartImage.setVisibility(View.GONE);
                 break;
 
             case MESSAGE_PLAY_FINISH:
@@ -361,14 +559,6 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
     }
 
-    private void setTimeText() {
-        if (playTimeText != null) {
-            timeStr = DateUtil.getMeetingTime(playTime) + "/" + totalTimeStr;
-            playTimeText.setText(timeStr);
-            currentProgress = playTime / 100;
-            seekBar.setProgress((int) (currentProgress));
-        }
-    }
 
     private void refreshTimeText() {
         if (playTimeText != null) {
@@ -402,12 +592,33 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         isSeek = false;
     }
 
-    private void parseRecordDetail(RecordDetail recordDetail) {
+
+    private int parseRecordDetail(RecordDetail recordDetail) {
+        if(recordDetail == null){
+            return -1;
+        }
+
         totalTime = recordDetail.getDuration();
-        totalTimeStr = DateUtil.getMeetingTime(totalTime);
+        if(totalTime < 1000 * 60 * 60){
+            _time = new SimpleDateFormat("mm:ss").format(totalTime);
+
+        }else {
+            int hour = (int)(totalTime / (1000 * 60 * 60));
+            if(hour < 10){
+                _time = "0" + hour + ":";
+            }else {
+                _time = hour +":";
+            }
+            _time += new SimpleDateFormat("mm:ss").format(totalTime);
+        }
+
+        Log.e("parseRecordDetail","total_time:" + totalTime + ",time_str:" + _time);
+//        totalTimeStr = DateUtil.getMeetingTime(totalTime);
         List<ChannelVO> channels = recordDetail.getChannelVOList();
         if (channels != null && channels.size() > 0) {
             for (ChannelVO channel : channels) {
+                Log.e("check_parse_detail","type:" + channel.getType());
+
                 if (channel.getType() == 1) {
                     audioManager.setAudioDatas(channel.getSectionVOList());
                 }
@@ -415,16 +626,17 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                     recordShareVedioManager.setVedioDatas(channel.getSectionVOList());
                 }
                 if (channel.getType() == 3) {
-                    userVedioManager.addUserVedios(channel.getUserId() + "", channel.getSectionVOList());
+                    userVedioManager.saveUserVedios(channel.getUserId() + "", channel.getSectionVOList());
                 }
                 if (channel.getType() == 4) {
-                    userVedioManager.addUserVedios(channel.getUserId() + "", channel.getSectionVOList());
+                    userVedioManager.saveUserVedios(channel.getUserId() + "", channel.getSectionVOList());
                 }
 
             }
         }
         actionsManager.setRecordId(recordDetail.getRecordingId());
         actionsManager.setTotalTime(recordDetail.getDuration());
+        return 1;
     }
 
     private void initWeb() {
@@ -468,5 +680,65 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         Log.e("JavascriptInterface", "preLoadFileFunctiona," + url + "     currentpageNum   " + currentpageNum + "   showLoading    " + showLoading);
 
     }
+
+    @JavascriptInterface
+    public void afterLoadPageFunction() {
+        Log.e("JavascriptInterface", "afterLoadPageFunction");
+        if(!TextUtils.isEmpty(showPdfUrl)){
+            Observable.just("load_parent_page").observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+                @Override
+                public void accept(String s) throws Exception {
+                    if(!TextUtils.isEmpty(showPdfUrl)){
+                        Log.e("check_show","javascript:ShowPDF('" + showPdfUrl + "', " + page + ",0,'" + currentAttachmentId + "'," + true + ")");
+                        web.load("javascript:ShowPDF('" + showPdfUrl + "', " + page + ",0,'" + currentAttachmentId + "'," + true + ")", null);
+                        web.load("javascript:Record()", null);
+
+                    }
+                }
+            }).subscribe();
+        }
+    }
+
+    private String time;
+    private String _time;
+    private void setTimeText() {
+        time = simpleDateFormat.format(playTime);
+        playTimeText.setText(time + "/" + _time);
+        seekBar.setMax((int) (totalTime / 10));
+        seekBar.setProgress((int) (playTime / 10));
+        statusText.setText(R.string.playing);
+        startPauseImage.setImageResource(R.drawable.video_stop);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showWebVedio(EventPlayWebVedio webVedio) {
+        Log.e("showWebVedio", "showWebVedio");
+        pause();
+        webVedioLayout.setVisibility(View.VISIBLE);
+        WebVedioManager.getInstance(host).execute(webVedio.getWebVedio(), playTime);
+    }
+
+    private void pause(){
+        isStarted = false;
+        RecordAudioManager.getInstance(host).pause();
+        statusText.setText(R.string.paused);
+        startPauseImage.setImageResource(R.drawable.video_play);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void closeWebView(EventCloseWebView webVedio) {
+        Log.e("showWebVedio", "showWebVedio");
+        webVedioLayout.setVisibility(View.GONE);
+        restart();
+//        WebVedioManager.getInstance(host).closeVedio();
+    }
+
+    private void restart(){
+        RecordAudioManager.getInstance(host).restart();
+        isStarted = true;
+        statusText.setText(R.string.playing);
+        startPauseImage.setImageResource(R.drawable.video_stop);
+    }
+
 
 }

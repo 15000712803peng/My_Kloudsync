@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.SurfaceView;
 
 import com.google.gson.Gson;
+import com.kloudsync.techexcel.bean.EventPlayWebVedio;
 import com.kloudsync.techexcel.bean.PreloadPage;
 import com.kloudsync.techexcel.bean.MediaPlayPage;
 import com.kloudsync.techexcel.bean.WebVedio;
@@ -19,6 +20,7 @@ import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xwalk.core.XWalkView;
@@ -27,6 +29,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by tonyan on 2019/11/21.
@@ -91,35 +98,59 @@ public class RecordActionsManager {
         return instance;
     }
 
-    public void setPlayTime(long playTime) {
+    public void setPlayTime(final long playTime) {
+
         this.playTime = playTime;
-        requestActions();
-        executeActions(getActions());
-        WebVedio nearestVedio = getNearestWebvedio(playTime);
-        Log.e("nearestVedio",nearestVedio +"");
-        webVedioManager.safePrepare(nearestVedio);
+        Observable.just("do_now").observeOn(Schedulers.io()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+//                syncRequestActions();
+                executeActions(getActions(), playTime);
+                WebVedio nearestVedio = getNearestWebvedio(playTime);
+                if (nearestVedio != null) {
+                    Log.e("nearestVedio", nearestVedio.getSavetime() + ",play_time:" + playTime + ",is_executed:" + nearestVedio.isExecuted());
+                }
+                webVedioManager.safePrepare(nearestVedio);
+                if (nearestVedio != null && playTime >= nearestVedio.getSavetime() && !nearestVedio.isExecuted()) {
+                    Log.e("nearestVedio", "start_play");
+                    SoundtrackAudioManager.getInstance(context).pause();
+                    nearestVedio.setExecuted(true);
+                    EventPlayWebVedio eventPlayWebVedio = new EventPlayWebVedio();
+                    eventPlayWebVedio.setWebVedio(nearestVedio);
+                    EventBus.getDefault().post(eventPlayWebVedio);
+                }
+            }
+        });
+//        this.playTime = playTime;
+//        requestActions();
+//        executeActions(getActions());
+//        WebVedio nearestVedio = getNearestWebvedio(playTime);
+//        Log.e("nearestVedio",nearestVedio +"");
+//        webVedioManager.safePrepare(nearestVedio);
 //        Log.e("getRecordActions", "actions" + webActions);
 
     }
 
+    private List<WebVedio> webVedios = new ArrayList<>();
+
     private WebVedio getNearestWebvedio(long playTime) {
 
-        if (webActions.size() > 0) {
+        if (webVedios.size() > 0) {
             int index = 0;
-            for (int i = 0; i < webActions.size(); ++i) {
-                WebAction action = webActions.get(i);
-                if(action.getWebVedio() == null || action.isExecuted()){
-                    continue;
+            for (int i = 0; i < webVedios.size(); ++i) {
+                WebVedio webVedio = webVedios.get(i);
+                if (!webVedio.isExecuted()) {
+                    return webVedio;
                 }
                 //4591,37302
-                long interval = webActions.get(i).getTime() - playTime;
-                if(interval > 0){
+                long interval = webVedio.getSavetime() - playTime;
+                if (interval > 0) {
                     index = i;
                     break;
                 }
 
             }
-            return webActions.get(index).getWebVedio();
+            return webVedios.get(index);
 
         }
         return null;
@@ -155,6 +186,60 @@ public class RecordActionsManager {
             });
         }
     }
+
+    private void executeActions(List<WebAction> actions, long playTime) {
+        for (final WebAction action : actions) {
+//            Log.e("check_action", "action:" + action);
+//            Log.e("SoundtrackActionsManager", "executeActions" + actions + ",action_executed:" + action.isExecuted());
+            if (action.isExecuted()) {
+                continue;
+            }
+
+            if (!TextUtils.isEmpty(action.getData())) {
+                try {
+                    JSONObject data = new JSONObject(action.getData());
+                    if (data.has("actionType")) {
+                        int actionType = data.getInt("actionType");
+                        switch (actionType) {
+                            case 19:
+//                                                Log.e("check_action","action:setWebVedio:" + action.getData());
+//                                               action.setWebVedio(gson.fromJson(action.getData(), WebVedio.class));
+                                action.setExecuted(true);
+                                WebVedio webVedio = gson.fromJson(action.getData(), WebVedio.class);
+                                if (!webVedios.contains(webVedio)) {
+                                    webVedios.add(webVedio);
+                                }
+                                break;
+                            case 202:
+                                action.setExecuted(true);
+                                Log.e("check_type_202","data:" + data +"----------------------------");
+                                if (userVedioManager != null) {
+                                    userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"));
+                                }
+                                break;
+                        }
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+
+            if (playTime < action.getTime()) {
+                continue;
+            }
+
+            Observable.just(action).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<WebAction>() {
+                @Override
+                public void accept(WebAction action) throws Exception {
+                    doExecuteAction(action);
+                }
+            });
+        }
+    }
+
 
     private void doExecuteAction(WebAction action) {
 

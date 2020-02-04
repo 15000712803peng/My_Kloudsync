@@ -287,7 +287,7 @@ public class BindTvCapture extends MipcaActivityCapture implements Callback, Tex
             @Override
             public void run() {
                 try {
-                    Log.e("BindTV", jsonobject.toString() + "");
+                    Log.e("BindTV", jsonobject.toString() + ",TvToken:" + AppConfig.UserToken);
                     JSONObject responsedata = ConnectService.submitDataByJson(
                             AppConfig.URL_PUBLIC + "TV/BindTV",
                             jsonobject);

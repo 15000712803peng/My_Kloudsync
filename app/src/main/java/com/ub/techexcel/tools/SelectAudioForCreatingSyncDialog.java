@@ -18,14 +18,20 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.kloudsync.activity.Document;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoriteVideoPopup {
+import io.reactivex.Observable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
+
+public class SelectAudioForCreatingSyncDialog {
 
     public Context mContext;
     public int width;
-    public Dialog mPopupWindow;
+    public Dialog dialog;
     private List<Document> list = new ArrayList<Document>();
     private AudiosAdapter adapter;
     private ListView listView;
@@ -33,24 +39,18 @@ public class FavoriteVideoPopup {
     private View view;
     private ImageView cancel;
     private TextView uploadfile;
-    private int type = 0;
-    private boolean isYinxiang=false;
     private TextView cancelText;
 
-    public void getPopwindow(Context context) {
+    public SelectAudioForCreatingSyncDialog(Context context) {
         this.mContext = context;
         width = mContext.getResources().getDisplayMetrics().widthPixels;
         getPopupWindowInstance();
     }
 
-    public FavoriteVideoPopup(Context context) {
-        this.mContext = context;
-        initPopuptWindow();
-    }
 
     public void getPopupWindowInstance() {
-        if (null != mPopupWindow) {
-            mPopupWindow.dismiss();
+        if (null != dialog) {
+            dialog.dismiss();
             return;
         } else {
             initPopuptWindow();
@@ -58,73 +58,18 @@ public class FavoriteVideoPopup {
     }
 
 
-    public void setData(int type,boolean isYinxiang) {  // 2   video  3   audio
-        selectPosition=-1;
-        this.type = type;
-        this.isYinxiang=isYinxiang;
-        savevideo.setVisibility(View.VISIBLE);
-
-        if(type==2){
-            savevideo.setTextColor(mContext.getResources().getColor(R.color.blue));
-            savevideo.setVisibility(View.VISIBLE);
-            uploadfile.setVisibility(View.VISIBLE);
-        }else if(type==3){
-            uploadfile.setVisibility(View.INVISIBLE);
-            savevideo.setTextColor(mContext.getResources().getColor(R.color.black));
-            savevideo.setVisibility(View.GONE);
-        }
-
-        LoginGet loginGet = new LoginGet();
-        loginGet.setMyFavoritesGetListener(new LoginGet.MyFavoritesGetListener() {
-            @Override
-            public void getFavorite(ArrayList<Document> list2) {
-                list.clear();
-                list.addAll(list2);
-                adapter.notifyDataSetChanged();
-            }
-        });
-        loginGet.MyFavoriteRequest(mContext, type);
-
-    }
-
-    public List<Document> getData() {
-        return list;
-    }
-
-
-    private static FavoriteVideoPoPListener mFavoritePoPListener;
-
-    public interface FavoriteVideoPoPListener {
-
-        void selectFavorite(int position);
-
-        void cancel();
-
-        void save(int type, boolean isYinxiang);
-
-        void uploadFile();
-
-        void dismiss();
-
-        void open();
-    }
-
-    public void setFavoritePoPListener(FavoriteVideoPoPListener documentPoPListener) {
-        this.mFavoritePoPListener = documentPoPListener;
-    }
-
     int selectPosition = -1;
 
     public void initPopuptWindow() {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-        view = layoutInflater.inflate(R.layout.popup_save_video, null);
+        view = layoutInflater.inflate(R.layout.dialog_select_audio_for_sync, null);
         listView = (ListView) view.findViewById(R.id.listview);
         cancel = (ImageView) view.findViewById(R.id.image_close);
         savevideo = (TextView) view.findViewById(R.id.savevideo);
         savevideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setData(2,false);
+
             }
         });
         uploadfile = (TextView) view.findViewById(R.id.uploadfile);
@@ -132,7 +77,7 @@ public class FavoriteVideoPopup {
         cancelText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPopupWindow.cancel();
+                dialog.cancel();
             }
         });
         adapter = new AudiosAdapter(mContext, list,
@@ -142,7 +87,6 @@ public class FavoriteVideoPopup {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                mFavoritePoPListener.selectFavorite(position);
                 selectPosition = position;
                 adapter.notifyDataSetChanged();
             }
@@ -151,54 +95,62 @@ public class FavoriteVideoPopup {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPopupWindow.cancel();
+                dialog.cancel();
             }
         });
         view.findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFavoritePoPListener.save(type,isYinxiang);
-                mPopupWindow.dismiss();
+                dialog.dismiss();
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFavoritePoPListener.cancel();
-                mPopupWindow.dismiss();
+
+                dialog.dismiss();
             }
         });
         uploadfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                mFavoritePoPListener.uploadFile();
             }
         });
 
-        mPopupWindow = new Dialog(mContext, R.style.my_dialog);
-        mPopupWindow.setContentView(view);
-        mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
+        dialog = new Dialog(mContext, R.style.my_dialog);
+        dialog.setContentView(view);
+        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
         params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5 + 80;
         View root = ((Activity) mContext).getWindow().getDecorView();
         params.height = mContext.getResources().getDisplayMetrics().heightPixels * 4 / 5 - 30;
-        mPopupWindow.getWindow().setAttributes(params);
+        dialog.getWindow().setAttributes(params);
+
     }
 
     @SuppressLint("NewApi")
-    public void StartPop(View v) {
-        if (mPopupWindow != null) {
-            mFavoritePoPListener.open();
-            mPopupWindow.show();
+    public void show() {
+        if (dialog != null) {
+            dialog.show();
+            fetchAudiosForSelected();
         }
+    }
+
+    private void fetchAudiosForSelected(){
+        Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, Object>() {
+            @Override
+            public Object apply(String s) throws Exception {
+                JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetFavoriteAttachments(3);
+                return jsonObject;
+            }
+        }).subscribe();
     }
 
 
     public void dismiss() {
-        if (mPopupWindow != null) {
-            mFavoritePoPListener.open();
-            mPopupWindow.dismiss();
+        if (dialog != null) {
+            dialog.dismiss();
         }
     }
 
@@ -268,6 +220,13 @@ public class FavoriteVideoPopup {
             TextView time;
             TextView size;
             ImageView imageview;
+        }
+    }
+
+
+    public void cancel(){
+        if(dialog != null && dialog.isShowing()){
+            dialog.cancel();
         }
     }
 

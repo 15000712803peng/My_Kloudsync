@@ -18,13 +18,14 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.TvDeviceAdapter;
+import com.kloudsync.techexcel.adapter.TvDeviceAdapterV3;
 import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.view.UISwitchButton;
 
 import java.util.List;
 
 
-public class TvDevicesListPopup implements View.OnClickListener {
+public class DevicesListDialog implements View.OnClickListener {
 
     public Context mContext;
     public int width;
@@ -32,7 +33,7 @@ public class TvDevicesListPopup implements View.OnClickListener {
     private View view;
     private RecyclerView deviceList;
     private TextView scantv;
-    private TvDeviceAdapter adapter;
+    private TvDeviceAdapterV3 adapter;
     private LinearLayout devicesLayout;
     private TextView noDeviceText;
     private UISwitchButton isChangeStatus;
@@ -87,9 +88,9 @@ public class TvDevicesListPopup implements View.OnClickListener {
 
 
     @SuppressLint("NewApi")
-    public void StartPop(View v, List<TvDevice> devices, boolean enable, boolean isbeike) {
+    public void show(List<TvDevice> devices, boolean enable) {
         if (mPopupWindow != null) {
-            getBindTvs(devices, enable, isbeike);
+            getBindTvs(devices, enable);
             isChangeStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -165,14 +166,14 @@ public class TvDevicesListPopup implements View.OnClickListener {
         }
     }
 
-    private void getBindTvs(List<TvDevice> devices, boolean enable, boolean isbeike) {
+    private void getBindTvs(List<TvDevice> devices, boolean enable) {
         isChangeStatus.setChecked(enable);
         if (devices != null && devices.size() > 0) {
             devicesLayout.setVisibility(View.VISIBLE);
             noDeviceText.setVisibility(View.GONE);
-            adapter = new TvDeviceAdapter(mContext, devices, isbeike);
+            adapter = new TvDeviceAdapterV3(mContext, devices);
             deviceList.setAdapter(adapter);
-            adapter.setOnItemClickListener(new TvDeviceAdapter.OnRecyclerViewItemClickListener() {
+            adapter.setOnItemClickListener(new TvDeviceAdapterV3.OnRecyclerViewItemClickListener() {
                 @Override
                 public void openTransfer(TvDevice tvDevice) {
                     webCamPopupListener.openTransfer(tvDevice);

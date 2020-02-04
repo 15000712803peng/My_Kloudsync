@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.multidex.MultiDex;
@@ -30,9 +31,12 @@ import com.kloudsync.techexcel.ui.MainActivity;
 import com.pgyersdk.Pgyer;
 import com.pgyersdk.PgyerActivityManager;
 import com.pgyersdk.crash.PgyCrashManager;
+import com.ub.service.activity.SocketService;
 
 import org.xutils.x;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Locale;
 
 import io.agora.openlive.model.WorkerThread;
@@ -50,6 +54,8 @@ public class App extends Application {
         threadMgr = ThreadManager.getManager();
         mainHandler = new Handler(Looper.getMainLooper());
         instance = this;
+        startWBService();
+        disableAPIDialog();
 //        getApplicationContext().startService(new Intent(getApplicationContext(), TransferService.class));
         asyncInit();
     }
@@ -200,4 +206,32 @@ public class App extends Application {
         super.attachBaseContext(base);
         MultiDex.install(App.this);
     }
+
+    private void disableAPIDialog(){
+        if (Build.VERSION.SDK_INT < 28)return;
+        try {
+            Class clazz = Class.forName("android.app.ActivityThread");
+            Method currentActivityThread = clazz.getDeclaredMethod("currentActivityThread");
+            currentActivityThread.setAccessible(true);
+            Object activityThread = currentActivityThread.invoke(null);
+            Field mHiddenApiWarningShown = clazz.getDeclaredField("mHiddenApiWarningShown");
+            mHiddenApiWarningShown.setAccessible(true);
+            mHiddenApiWarningShown.setBoolean(activityThread, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startWBService() {
+
+        Intent service = new Intent(this, SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(service);
+        }else {
+            startService(service);
+        }
+        startService(service);
+    }
+
+
 }

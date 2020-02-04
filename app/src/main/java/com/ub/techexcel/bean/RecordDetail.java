@@ -58,4 +58,5 @@ public class RecordDetail {
     public void setChannelVOList(List<ChannelVO> channelVOList) {
         this.channelVOList = channelVOList;
     }
+
 }

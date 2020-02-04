@@ -1,10 +1,14 @@
 package com.ub.service.activity;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -48,16 +52,20 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
     KloudWebClientManager kloudWebClientManager;
     @Override
     public void onCreate() {
+
         super.onCreate();
-        init();
+        Log.e("check_socket_service","on_create");
+//        init();
 //        registerNumberReceiver();
     }
 
 
     private void init() {
+
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         AppConfig.UserToken = sharedPreferences.getString("UserToken", null);
+
         try {
             kloudWebClientManager = KloudWebClientManager.getDefault(getApplicationContext(), new URI(AppConfig.COURSE_SOCKET + File.separator + AppConfig.UserToken
                     + File.separator + "2" + File.separator + Md5Tool.getUUID()));
@@ -66,6 +74,14 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
             kloudWebClientManager.startHeartBeat();
         } catch (URISyntaxException e) {
             e.printStackTrace();
+        }
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            //数字是随便写的“40”，
+            nm.createNotificationChannel(new NotificationChannel("40", "App Service", NotificationManager.IMPORTANCE_DEFAULT));
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "40");
+            //其中的2，是也随便写的，正式项目也是随便写
+            startForeground(2 ,builder.build());
         }
     }
 
@@ -103,6 +119,7 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
 
     @Override
     public void onDestroy() {
+        Log.e("check_socket_service","on_destroy");
         super.onDestroy();
         if(kloudWebClientManager != null){
             kloudWebClientManager.release();
@@ -159,6 +176,8 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.e("check_socket_service","on_start_command");
+        init();
         if(KloudWebClientManager.getInstance() != null){
             KloudWebClientManager.getInstance().startHeartBeat();
         }
@@ -339,4 +358,6 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
         intent.putExtra("message", message);
         sendBroadcast(intent);
     }
+
+
 }

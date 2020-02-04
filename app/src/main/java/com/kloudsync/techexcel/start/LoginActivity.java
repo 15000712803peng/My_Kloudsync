@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -40,6 +41,7 @@ import com.kloudsync.techexcel.ui.InvitationsActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
 
 import com.kloudsync.techexcel.ui.WelcomeAndCreateActivity;
+import com.ub.service.activity.SocketService;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -80,7 +82,16 @@ public class LoginActivity extends Activity implements OnClickListener {
     private View divider;
     LoadingDialog loadingDialog;
     Gson gson;
+    Intent service;
 
+    private void startWBService() {
+        service = new Intent(getApplicationContext(), SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(service);
+        }else {
+            startService(service);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -90,6 +101,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         gson = new Gson();
         threadManager = ((App) getApplication()).getThreadMgr();
         initView();
+        startWBService();
         EventBus.getDefault().register(this);
     }
 
@@ -559,7 +571,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         intent.putExtra("from", 1);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-        finish();
+//        finish();
     }
 
 }

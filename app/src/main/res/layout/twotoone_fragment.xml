@@ -136,6 +136,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:paddingBottom="6dp"
                 android:layout_marginLeft="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

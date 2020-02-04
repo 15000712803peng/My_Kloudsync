@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.ui;
 
 import android.content.Intent;
+import android.os.Build;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -9,8 +10,10 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.BaseActivity;
 import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.personal.CreateOrganizationActivityV2;
+import com.ub.service.activity.SocketService;
 import com.ub.techexcel.tools.JoinMeetingPopup;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -29,6 +32,8 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
 
     @Override
     protected void initView() {
+        startWBService();
+        EventBus.getDefault().register(this);
         createText = findViewById(R.id.txt_create);
         createText.setOnClickListener(this);
         joinMeetingText = findViewById(R.id.txt_join_meeting);
@@ -36,6 +41,12 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
         backText = findViewById(R.id.txt_back);
         backText.setOnClickListener(this);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -97,5 +108,14 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
         intent.putExtra("meeting_role", eventJoinMeeting.getRole());
         intent.putExtra("from_meeting", true);
         startActivity(intent);
+    }
+
+    private void startWBService() {
+        Intent service = new Intent(getApplicationContext(), SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(service);
+        }else {
+            startService(service);
+        }
     }
 }

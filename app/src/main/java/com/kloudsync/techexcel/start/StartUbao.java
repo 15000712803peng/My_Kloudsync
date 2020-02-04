@@ -95,6 +95,12 @@ public class StartUbao extends Activity {
         telephone = sharedPreferences.getString("telephone", null);
         password = LoginGet.DecodeBase64Password(sharedPreferences.getString("password", ""));
         countrycode = sharedPreferences.getInt("countrycode", 86);
+        if(countrycode == 0){
+            countrycode = 86;
+        }
+
+        sharedPreferences.edit().putInt("countrycode", countrycode).commit();
+        AppConfig.COUNTRY_CODE = countrycode = sharedPreferences.getInt("countrycode", 86);
         AppConfig.LANGUAGEID = getLocaleLanguage();
         if (AppConfig.LANGUAGEID == 1) {
             //English

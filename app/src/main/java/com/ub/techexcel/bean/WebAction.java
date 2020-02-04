@@ -6,7 +6,6 @@ import com.kloudsync.techexcel.bean.WebVedio;
 
 public class WebAction implements Comparable<WebAction>{
 
-    private int index;
     private int SoundtrackID;
     private long Time;
     private String Data;
@@ -16,15 +15,6 @@ public class WebAction implements Comparable<WebAction>{
     private boolean executed;
     private String savedLocalUrl;
     private WebVedio webVedio;
-
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
 
     public WebVedio getWebVedio() {
         return webVedio;
@@ -125,8 +115,9 @@ public class WebAction implements Comparable<WebAction>{
     @Override
     public String toString() {
         return "WebAction{" +
-                "index=" + index +
-                ", Time=" + Time +
+                "Time=" + Time +
+                ", Data='" + Data + '\'' +
+                ", executed=" + executed +
                 '}';
     }
 }

@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -27,6 +28,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.*;
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.EventPlaySoundtrack;
 import com.kloudsync.techexcel.bean.EventSoundtrackList;
 import com.kloudsync.techexcel.bean.MeetingConfig;
@@ -68,6 +70,7 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
     private MeetingConfig meetingConfig;
     private RecyclerView soundtrackListView;
     private SoundtrackAdapter soundtrackAdapter;
+    private LinearLayout createLayout;
 
     private void init() {
         if (null != dialog) {
@@ -88,6 +91,8 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
         view = layoutInflater.inflate(R.layout.dialog_soundtrack, null);
         close = (ImageView) view.findViewById(R.id.close);
         close.setOnClickListener(this);
+        createLayout = view.findViewById(R.id.layout_create);
+        createLayout.setOnClickListener(this);
         soundtrackListView = view.findViewById(R.id.list_soundtrack);
         soundtrackListView.setLayoutManager(new LinearLayoutManager(host, RecyclerView.VERTICAL, false));
         dialog = new Dialog(host, R.style.my_dialog);
@@ -128,6 +133,11 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.close:
+                dismiss();
+                break;
+
+            case R.id.layout_create:
+                EventBus.getDefault().post(new EventCreateSync());
                 dismiss();
                 break;
 
