@@ -332,13 +332,13 @@
     <string name="Submit">提交</string>
 
 
-    <string name="Team">当前项目</string>
-    <string name="Space">当前项目的文件夹</string>
-    <string name="Create_Space">新建文件夹</string>
-    <string name="Current_file">当前项目的文件</string>
-    <string name="Swtich_team">切换项目</string>
-    <string name="Swtich_space">切换文件夹</string>
-    <string name="Create_team">创建新的项目</string>
+    <string name="Team">当前团队</string>
+    <string name="Space">当前团队的空间</string>
+    <string name="Create_Space">新建空间</string>
+    <string name="Current_file">当前团队的文件</string>
+    <string name="Swtich_team">切换团队</string>
+    <string name="Swtich_space">切换空间</string>
+    <string name="Create_team">创建新的团队</string>
     <string name="autosync">自动同步允许将内容显示在您的电视设备上</string>
     <string name="tvappname">TV APP 名称</string>
     <string name="tvapplogintime">登录时间</string>
@@ -347,8 +347,8 @@
     <string name="closetrans">关闭传送声音</string>
     <string name="tvlogout">设备登出</string>
 
-    <string name="Select_at">选项目</string>
-    <string name="Select_af">选文件</string>
+    <string name="Select_at">选团队</string>
+    <string name="Select_af">选空间</string>
 
     <string name="in_hint">邀请电话号码</string>
     <string name="in_fp_contact">从通讯录邀人</string>
@@ -372,7 +372,7 @@
     <string name="add">添加</string>
     <string name="waitVerification">等待验证</string>
 
-    <string name="currentsyncroom">当前项目的音想房间</string>
+    <string name="currentsyncroom">当前团队的音想房间</string>
 
     <string name="modify_success">个人资料修改成功</string>
     <string name="province">省</string>
@@ -718,8 +718,8 @@
     <string name="no_data">没有符合条件的数据</string>
     <string name="select_a_space">选择一个文件夹</string>
     <string name="from_favorite">从我的收藏</string>
-    <string name="current_space">当前文件夹</string>
-    <string name="docs_in_spaces">当前文件夹的文件</string>
+    <string name="current_space">当前空间</string>
+    <string name="docs_in_spaces">当前空间的文件</string>
     <string name="syncrooms_in_spaces">当前空间的音想房间</string>
     <string name="team_memers">团队成员</string>
     <string name="space_memers">空间成员</string>

@@ -265,9 +265,9 @@ public class TopicFragment extends MyFragment implements View.OnClickListener, S
         currentsyncroomtv = view.findViewById(R.id.currentsyncroomtv);
 
         if (AppConfig.LANGUAGEID == 1) {
-            currentsyncroomtv.setText(CustomSyncRoomTool.getInstance(getActivity()).getCustomyinxiang() + " of Current Project");
+            currentsyncroomtv.setText(CustomSyncRoomTool.getInstance(getActivity()).getCustomyinxiang() + " of Current Team");
         } else if (AppConfig.LANGUAGEID == 2) {
-            currentsyncroomtv.setText("当前项目的" + CustomSyncRoomTool.getInstance(getActivity()).getCustomyinxiang());
+            currentsyncroomtv.setText("当前团队的" + CustomSyncRoomTool.getInstance(getActivity()).getCustomyinxiang());
         }
 
         createNewSpace = (RelativeLayout) view.findViewById(R.id.createnewspace);

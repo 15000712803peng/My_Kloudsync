@@ -125,6 +125,9 @@ import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
 import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.MeetingServiceTools;
+import com.ub.techexcel.tools.MeetingSettingDialog;
+import com.ub.techexcel.tools.MeetingWarningDialog;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
@@ -260,9 +263,21 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getType() != MeetingType.MEETING) {
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
-            MeetingKit.getInstance().prepareJoin(this, meetingConfig);
+            String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
+            MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
+                @Override
+                public void getServiceReturnData(Object object) {
+                    TvDevice tvDevice = (TvDevice) object;
+                    if (tvDevice != null) {
+                        if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
+                            openWarningInfo(0);
+                        } else {
+                            MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                        }
+                    }
+                }
+            });
         }
-
         pageCache = DocumentPageCache.getInstance(this);
         //--
         menuManager = BottomMenuManager.getInstance(this, meetingConfig);
@@ -270,7 +285,35 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         menuManager.setMenuIcon(menuIcon);
         initWeb();
         bottomFilePop = new PopBottomFile(this);
+    }
 
+
+    private MeetingWarningDialog meetingWarningDialog;
+
+    //开始会议警告信息
+    private void openWarningInfo(final int type) {
+        if (meetingWarningDialog != null) {
+            if (meetingWarningDialog.isShowing()) {
+                meetingWarningDialog.dismiss();
+            }
+            meetingWarningDialog = null;
+        }
+        meetingWarningDialog = new MeetingWarningDialog(this);
+        meetingWarningDialog.setOnUserOptionsListener(new MeetingWarningDialog.OnUserOptionsListener() {
+            @Override
+            public void onUserStart() {
+                if (type == 1) {
+                    meetingKit = MeetingKit.getInstance();
+                    meetingKit.prepareStart(DocAndMeetingActivity.this, meetingConfig, meetingConfig.getLessionId() + "");
+                } else {
+                    MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                }
+            }
+        });
+        if (meetingWarningDialog.isShowing()) {
+            return;
+        }
+        meetingWarningDialog.show(this, meetingConfig);
     }
 
     private void writeNoteBlankPageImage() {
@@ -2037,8 +2080,23 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Override
     public void menuStartMeetingClicked() {
-        meetingKit = MeetingKit.getInstance();
-        meetingKit.prepareStart(this, meetingConfig, meetingConfig.getLessionId() + "");
+
+        String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getLessionId();
+        MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                TvDevice tvDevice = (TvDevice) object;
+                if (tvDevice != null) {
+                    if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
+                        openWarningInfo(1);
+                    } else {
+                        meetingKit = MeetingKit.getInstance();
+                        meetingKit.prepareStart(DocAndMeetingActivity.this, meetingConfig, meetingConfig.getLessionId() + "");
+                    }
+                }
+            }
+        });
+
     }
 
     @Override

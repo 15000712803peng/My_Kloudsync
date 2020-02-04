@@ -336,13 +336,13 @@
     <string name="Submit">Submit</string>
 
 
-    <string name="Team">Current project</string>
-    <string name="Space">Spaces of Current project</string>
-    <string name="Create_Space">Create New Dirs</string>
-    <string name="Current_file">Documents of Current Project</string>
-    <string name="Swtich_team">Switch Project</string>
-    <string name="Swtich_space">Switch Dir</string>
-    <string name="Create_team">Create New Project</string>
+    <string name="Team">Current Team</string>
+    <string name="Space">Spaces of Current Team</string>
+    <string name="Create_Space">Create New Space</string>
+    <string name="Current_file">Documents of Current Team</string>
+    <string name="Swtich_team">Switch Team</string>
+    <string name="Swtich_space">Switch Space</string>
+    <string name="Create_team">Create New Team</string>
     <string name="autosync">AutoSync enables content be displayed on your TV devices</string>
     <string name="tvappname">TV APP Name</string>
     <string name="tvapplogintime">Login Time</string>
@@ -354,7 +354,7 @@
 
 
     <string name="Select_at">Select a Team</string>
-    <string name="Select_af">Select a file</string>
+    <string name="Select_af">Select a space</string>
 
     <string name="in_hint">Invite phone number to invite</string>
     <string name="in_fp_contact">Invite from phone contacts</string>
@@ -712,7 +712,7 @@ Please input the cell phone number to add the contact
     <string name="upcoming">Upcoming</string>
     <string name="pastdue">Past Due</string>
     <string name="pastfinish">Finish</string>
-    <string name="currentsyncroom">SyncRoom of Current Project</string>
+    <string name="currentsyncroom">SyncRoom of Current Team</string>
     <string name="addnewdoc">Add new document</string>
     <string name="title_join_as_audience">Join as audience</string>
     <string name="msg_join_as_audience">The maximum number of panellists has\nbeen reached。You will be joining as a\n listen-only audience</string>
@@ -730,8 +730,8 @@ Please input the cell phone number to add the contact
     <string name="no_data">no data found</string>
     <string name="select_a_space">Select a dir</string>
     <string name="from_favorite">From favorite</string>
-    <string name="current_space">current dir</string>
-    <string name="docs_in_spaces">documents in current dir</string>
+    <string name="current_space">current space</string>
+    <string name="docs_in_spaces">documents in current space</string>
     <string name="team_memers">Team Members</string>
     <string name="space_memers">Space Members</string>
     <string name="syncrooms_in_spaces">syncrooms in current space</string>

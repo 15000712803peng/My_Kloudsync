@@ -188,7 +188,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:paddingLeft="18dp"
-            android:text="@string/Space"
+            android:text="@string/docs_in_spaces"
             android:textColor="@color/brunette" />
 
 

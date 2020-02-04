@@ -31,10 +31,6 @@ public class ProjectOneFragment extends Fragment implements View.OnClickListener
     private WebView webView;
     private String url = "http://jiaxing.techexcel.com.cn/p1/#/p1ForKSApp?token=43106500-5f16-48a8-9dc9-f42ca3344f97";
 
-
-
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

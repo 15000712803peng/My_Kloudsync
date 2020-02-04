@@ -19,6 +19,7 @@ import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
+import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
@@ -52,6 +53,7 @@ public class MeetingServiceTools {
     public static final int GETACCOUNTINFO = 0x2104;
     public static final int UPDATECOMPANYINFO = 0x2105;
     public static final int DELETECOMPANYLOGO = 0x2106;
+    public static final int MEMBERONOTHERDEVICE = 0x2107;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -305,6 +307,43 @@ public class MeetingServiceTools {
         }).start();
     }
 
+
+    public void getMemberOnOtherDevice(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                Log.e("meetingservicrtools", url + returnJson.toString());
+                TvDevice tvDevice = new TvDevice();
+                try {
+                    if (returnJson.getInt("code") == 0 && returnJson.getString("msg").equals("success")) {
+                        JSONObject jsonObject = returnJson.getJSONObject("data");
+                        if (jsonObject != null) {
+                            tvDevice.setUserID(jsonObject.getString("userId"));
+                            tvDevice.setDeviceType(jsonObject.getInt("deviceType"));
+                        }
+                        Message msg = Message.obtain();
+                        msg.obj = tvDevice;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = code;
+                        msg3.obj = tvDevice;
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    Message msg3 = Message.obtain();
+                    msg3.what = code;
+                    msg3.obj = tvDevice;
+                    handler.sendMessage(msg3);
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     public void getGetPageObjects(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         new Thread(new Runnable() {
@@ -336,7 +375,6 @@ public class MeetingServiceTools {
                         msg.what = code;
                         msg.obj = mmm;
                         handler.sendMessage(msg);
-
                     } else {
                         Message msg3 = Message.obtain();
                         msg3.what = ERRORMESSAGE;
@@ -562,7 +600,7 @@ public class MeetingServiceTools {
                 Note note = new Note();
                 String attachmentUrl = lineitem.getString("AttachmentUrl");
                 note.setLocalFileID(lineitem.getString("LocalFileID"));
-                Log.e("syncGetNoteByNoteId","set_local_file_id:" + lineitem.getString("LocalFileID"));
+                Log.e("syncGetNoteByNoteId", "set_local_file_id:" + lineitem.getString("LocalFileID"));
                 note.setNoteID(lineitem.getInt("NoteID"));
 //                note.setLinkID(lineitem.getInt("LinkID"));
 
@@ -605,13 +643,13 @@ public class MeetingServiceTools {
                     pages.add(page);
                 }
                 note.setDocumentPages(pages);
-                Log.e("check_note","local_file_id:" + note.getLocalFileID());
+                Log.e("check_note", "local_file_id:" + note.getLocalFileID());
                 eventNote.setNote(note);
             } else {
 
             }
         } catch (JSONException e) {
-            Log.e("syncGetNoteByNoteId","JSONException:" + e.getMessage());
+            Log.e("syncGetNoteByNoteId", "JSONException:" + e.getMessage());
 
             e.printStackTrace();
         }
