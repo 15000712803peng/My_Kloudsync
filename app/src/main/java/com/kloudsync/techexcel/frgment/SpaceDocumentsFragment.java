@@ -3,17 +3,26 @@ package com.kloudsync.techexcel.frgment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +60,7 @@ import com.kloudsync.techexcel.bean.Team;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.UploadFileDialog;
+import com.kloudsync.techexcel.docment.AddDocumentActivity;
 import com.kloudsync.techexcel.docment.EditSpaceActivity;
 import com.kloudsync.techexcel.docment.FavoriteDocumentsActivity;
 import com.kloudsync.techexcel.docment.MoveDocumentActivity;
@@ -102,7 +112,9 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -550,6 +562,9 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
     }
 
 
+    private static final int REQUEST_SELECTED_FILE = 40;
+    private static final int REQUEST_SELECTED_CAMERA= 50;
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
@@ -658,9 +673,151 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
             } else if (requestCode == REQUEST_MOVE_DOCUMENT) {
                 getTeamItem();
                 EventBus.getDefault().post(new TeamSpaceBean());
+            } else if (requestCode == REQUEST_SELECTED_FILE) {
+                    if (Build.VERSION.SDK_INT >= 19) {
+                        handleImageOkKitKat(data);
+                    } else {
+                        handleImageBeforeKitKat(data);
+                    }
+            } else if (requestCode == REQUEST_SELECTED_CAMERA) {
+                if (cameraFile != null && cameraFile.exists()) {
+                    Log.e("onActivityResult", "camera_file:" + cameraFile);
+                    uploadFile(cameraFile.getAbsolutePath());
+                }
             }
         }
     }
+
+    private void handleImageBeforeKitKat(Intent data) {
+        Uri uri = data.getData();
+        String imagePath = getImagePath(uri,null);
+        uploadFile(imagePath);
+    }
+
+    public String getImagePath(Uri uri,String selection) {
+        String path = null;
+        Cursor cursor = getActivity().getContentResolver().query(uri,null,selection,null,null);   //内容提供器
+        if (cursor!=null){
+            if (cursor.moveToFirst()){
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));   //获取路径
+            }
+        }
+        cursor.close();
+        return path;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void handleImageOkKitKat(Intent data) {
+        String imagePath=null;
+        Uri uri = data.getData();
+        Log.d("uri=intent.getData :",""+uri);
+        if (DocumentsContract.isDocumentUri(getActivity(),uri)){
+            String docId = DocumentsContract.getDocumentId(uri);        //数据表里指定的行
+            Log.d("getDocumentId(uri) :",""+docId);
+            Log.d("uri.getAuthority() :",""+uri.getAuthority());
+            if ("com.android.providers.media.documents".equals(uri.getAuthority())){
+                String id = docId.split(":")[1];
+                String selection = MediaStore.Images.Media._ID + "=" + id;
+                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,selection);
+            }
+            else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),Long.valueOf(docId));
+                imagePath = getImagePath(contentUri,null);
+            }
+
+        }
+        else if ("content".equalsIgnoreCase(uri.getScheme())){
+            imagePath = getImagePath(uri,null);
+        }
+        uploadFile(imagePath);
+    }
+
+
+
+    private void  uploadFile(String path){
+        if(TextUtils.isEmpty(path)){
+            Toast.makeText(  getActivity(),"path null",Toast.LENGTH_LONG).show();
+            return;
+        }
+        Log.e("onActivityResult",path);
+        String pathname = path.substring(path.lastIndexOf("/") + 1);
+        LineItem file = new LineItem();
+        file.setUrl(path);
+        file.setFileName(pathname);
+//                        uploadFile(file, spaceId);
+        AddDocumentTool.addDocumentToSpace(getActivity(), path, spaceId, new DocumentUploadTool.DocUploadDetailLinstener() {
+            @Override
+            public void uploadStart(){
+                getActivity(). runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog == null) {
+                            uploadFileDialog = new UploadFileDialog(  getActivity());
+                            uploadFileDialog.setTile("uploading");
+                            uploadFileDialog.show();
+
+                        } else {
+                            if (!uploadFileDialog.isShowing()) {
+                                uploadFileDialog.show();
+                            }
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void uploadFile(final int progress) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void convertFile(final int progress) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setTile("Converting");
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void uploadFinished(Object result) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        addDocSucc();
+                    }
+                });
+
+            }
+
+            @Override
+            public void uploadError(String message) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), "add failed", Toast.LENGTH_SHORT).show();
+                        if (uploadFileDialog != null) {
+                            uploadFileDialog.cancel();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+
+
 
     private Popupdate puo;
 
@@ -1196,12 +1353,60 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
 
     @Override
     public void selectFromFiles() {
-
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_SELECTED_FILE);
     }
 
+    /**
+     * 拍照上传
+     */
     @Override
     public void selectFromCamera() {
+        boolean createSuccess = FileUtils.createFileSaveDir(getActivity());
+        if (!createSuccess) {
+            Toast.makeText(getActivity(), "文件系统异常，打开失败", Toast.LENGTH_SHORT).show();
+        }else{
+            openCameraForAddDoc();
+        }
+    }
 
+    private File cameraFile;
+
+    private void openCameraForAddDoc() {
+        if (!isCameraCanUse()) {
+            Toast.makeText(getActivity(), "相机不可用", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String mFilePath = FileUtils.getBaseDir();
+        // 文件名
+        String fileName = "Kloud_" + DateFormat.format("yyyyMMdd_hhmmss",
+                Calendar.getInstance(Locale.CHINA))
+                + ".jpg";
+        cameraFile = new File(mFilePath, fileName);
+        //Android7.0文件保存方式改变了
+        if (Build.VERSION.SDK_INT < 24) {
+            Uri uri = Uri.fromFile(cameraFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        } else {
+            ContentValues contentValues = new ContentValues(1);
+            contentValues.put(MediaStore.Images.Media.DATA, cameraFile.getAbsolutePath());
+            Uri uri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        }
+        startActivityForResult(intent, REQUEST_SELECTED_CAMERA);
+    }
+
+    private boolean isCameraCanUse() {
+        if (!getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)
+                && !getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void uploadFile(final LineItem attachmentBean, final int spaceId) {
