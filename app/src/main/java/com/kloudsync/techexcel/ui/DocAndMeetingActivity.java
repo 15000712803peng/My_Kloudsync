@@ -263,20 +263,25 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getType() != MeetingType.MEETING) {
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
-            String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
-            MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
-                @Override
-                public void getServiceReturnData(Object object) {
-                    TvDevice tvDevice = (TvDevice) object;
-                    if (tvDevice != null) {
-                        if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
-                            openWarningInfo(0);
-                        } else {
-                            MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+            if(meetingConfig.getRole()==MeetingConfig.MeetingRole.HOST){ //主持人
+                String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
+                MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        TvDevice tvDevice = (TvDevice) object;
+                        if (tvDevice != null) {
+                            if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
+                                openWarningInfo(0);
+                            } else {
+                                MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }else {
+                MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+            }
+
         }
         pageCache = DocumentPageCache.getInstance(this);
         //--
@@ -310,6 +315,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 }
             }
         });
+
         if (meetingWarningDialog.isShowing()) {
             return;
         }
@@ -2081,6 +2087,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Override
     public void menuStartMeetingClicked() {
 
+        if(meetingConfig.getRole()==MeetingConfig.MeetingRole.HOST){ //主持人
         String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getLessionId();
         MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
             @Override
@@ -2095,7 +2102,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
                 }
             }
-        });
+        });}
 
     }
 
