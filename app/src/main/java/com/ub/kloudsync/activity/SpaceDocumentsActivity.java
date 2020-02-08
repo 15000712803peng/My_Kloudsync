@@ -1138,7 +1138,12 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
     }
 
     @Override
-    public void selectByCamera() {
+    public void selectFromFiles() {
+
+    }
+
+    @Override
+    public void selectFromCamera() {
 
     }
 
