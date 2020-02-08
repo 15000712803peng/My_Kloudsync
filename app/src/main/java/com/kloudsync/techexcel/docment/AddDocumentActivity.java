@@ -146,7 +146,7 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
     public void selectFromFiles() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("image/*");
+        intent.setType("*/*");
         startActivityForResult(intent, REQUEST_SELECTED_FILE);
     }
 
