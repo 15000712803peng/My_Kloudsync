@@ -73,7 +73,7 @@ public class DocumentModel {
                                         if (TextUtils.isEmpty(preUrl)) {
                                             page.setPageUrl(pageUrl);
                                         } else {
-                                            page.setPageUrl(preUrl + (j + 1) + endUrl);
+                                            page.setPageUrl(preUrl + (j + 1)+"_4K" + endUrl);
                                         }
                                         pages.add(page);
                                     }
@@ -156,7 +156,7 @@ public class DocumentModel {
                                         if (TextUtils.isEmpty(preUrl)) {
                                             page.setPageUrl(pageUrl);
                                         } else {
-                                            page.setPageUrl(preUrl + (j + 1) + endUrl);
+                                            page.setPageUrl(preUrl + (j + 1)+"_4K" + endUrl);
                                         }
                                         pages.add(page);
                                     }
@@ -223,7 +223,7 @@ public class DocumentModel {
                                     if (TextUtils.isEmpty(preUrl)) {
                                         page.setPageUrl(pageUrl);
                                     } else {
-                                        page.setPageUrl(preUrl + (j + 1) + endUrl);
+                                        page.setPageUrl(preUrl + (j + 1)+"_4K" + endUrl);
                                     }
                                     pages.add(page);
                                 }

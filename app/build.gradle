@@ -60,8 +60,8 @@ android {
         applicationId "com.kloudsync.techexcel"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 57
-        versionName "5.0.7"
+        versionCode 62
+        versionName "6.0.2"
         flavorDimensions "versionCode"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -73,8 +73,6 @@ android {
     dexOptions {
         javaMaxHeapSize "4096M"
     }
-
-
 
     buildTypes {
         release {

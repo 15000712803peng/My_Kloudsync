@@ -4111,7 +4111,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
         if (worker().getRtcEngine() != null) {
             RtcEngineImpl engine = (RtcEngineImpl) worker().getRtcEngine();
-            engine.setVideoCamera(0);
+//            engine.setVideoCamera(0);
 
         }
 

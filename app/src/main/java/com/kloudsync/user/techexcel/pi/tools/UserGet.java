@@ -42,10 +42,10 @@ public class UserGet {
 				if (result != null) {
 					mJsonCusDetail(result);
 				} else {
-					Toast.makeText(
-							mContext,
-							mContext.getResources().getString(R.string.No_Data),
-							Toast.LENGTH_SHORT).show();
+//					Toast.makeText(
+//							mContext,
+//							mContext.getResources().getString(R.string.No_Data),
+//							Toast.LENGTH_SHORT).show();
 				}
 				break;
 			case AppConfig.GETMEMBERDETAIL:
@@ -53,10 +53,10 @@ public class UserGet {
 				if (result != null) {
 					mJsonMemDetail(result);
 				} else {
-					Toast.makeText(
-							mContext,
-							mContext.getResources().getString(R.string.No_Data),
-							Toast.LENGTH_SHORT).show();
+//					Toast.makeText(
+//							mContext,
+//							mContext.getResources().getString(R.string.No_Data),
+//							Toast.LENGTH_SHORT).show();
 				}
 				break;
 			case AppConfig.NO_NETWORK:

@@ -406,10 +406,10 @@ public class LoginGet {
                     if (result != null) {
                         mJsonSA(result);
                     } else {
-                        Toast.makeText(
-                                mContext,
-                                mContext.getResources().getString(R.string.No_Data),
-                                Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(
+//                                mContext,
+//                                mContext.getResources().getString(R.string.No_Data),
+//                                Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case AppConfig.prepareUploading:
@@ -418,10 +418,10 @@ public class LoginGet {
                     if (result != null) {
                         mJsonPU(result);
                     } else {
-                        Toast.makeText(
-                                mContext,
-                                mContext.getResources().getString(R.string.No_Data),
-                                Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(
+//                                mContext,
+//                                mContext.getResources().getString(R.string.No_Data),
+//                                Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case AppConfig.NO_NETWORK:

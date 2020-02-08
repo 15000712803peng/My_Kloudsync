@@ -1,9 +1,11 @@
 package com.kloudsync.techexcel.help;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.kloudsync.techexcel.bean.ChatMessage;
+import com.kloudsync.techexcel.tool.ChatMessagesCache;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
 
@@ -11,6 +13,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,11 +35,22 @@ public class ChatManager extends RongIMClient.OperationCallback {
 
     private static ChatManager manager;
     private String roomId;
-    private List<ChatMessage> messages;
+//    private List<ChatMessage> messages;
+    ChatMessagesCache messagesCache;
     private Map<String,UserInfo> caches;
-    private ChatManager(){
+    private static String meetingId;
+
+    public String getMeetingId() {
+        return meetingId;
+    }
+
+    public void setMeetingId(String meetingId) {
+        this.meetingId = meetingId;
+    }
+
+    private ChatManager(Context context){
         caches = new HashMap<>();
-        messages = new ArrayList<>();
+        messagesCache = ChatMessagesCache.getInstance(context);
     }
 
     PopBottomChat popBottomChat;
@@ -49,20 +63,12 @@ public class ChatManager extends RongIMClient.OperationCallback {
 
     @Override
     public void onSuccess() {
-        Log.e("ChatManager","Join_Success:messages_size:" + messages.size());
         getHistoryMessage();
         RongIMClient.setOnReceiveMessageListener(messageReceiver);
         if(popBottomChat != null){
-            int size = messages.size();
-            if(size - 1 < 0){
-                return;
-            }
-
-            int begin = size - 10;
-            if(begin < 0){
-                begin = 0;
-            }
-            popBottomChat.initMessages(messages.subList(begin,size - 1));
+            LinkedList<ChatMessage> messages = messagesCache.getChatMessage(meetingId);
+            Log.e("ChatManager","meeting_id:" + meetingId + ",cache_messages:" + messages);
+            popBottomChat.initMessages(messages);
         }
     }
 
@@ -71,11 +77,12 @@ public class ChatManager extends RongIMClient.OperationCallback {
         Log.e("ChatManager","Join_Error:" + errorCode.getMessage());
     }
 
-    public static ChatManager getManager() {
+    public static ChatManager getManager(Context context,String _meetingId) {
+        meetingId = _meetingId;
         if (manager == null) {
             synchronized (ChatManager.class) {
                 if (manager == null) {
-                    manager = new ChatManager();
+                    manager = new ChatManager(context);
                 }
             }
         }
@@ -156,8 +163,9 @@ public class ChatManager extends RongIMClient.OperationCallback {
                         }
                     }
                 }
-                messages.add(chatMessage);
-                Log.e("ChatManager","Add_Message:" + messages.size());
+//                messages.add(chatMessage);
+                messagesCache.cacheChatMessage(chatMessage,meetingId);
+                Log.e("ChatManager","Cache_Message:" + messagesCache.getChatMessage(meetingId).size());
             }
 
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<ChatMessage>() {

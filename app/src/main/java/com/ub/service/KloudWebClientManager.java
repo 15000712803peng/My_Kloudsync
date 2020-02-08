@@ -42,7 +42,6 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
     }
 
     public static KloudWebClientManager getDefault(Context context, URI uri) {
-
         if (instance == null) {
             synchronized (KloudWebClientManager.class) {
                 if (instance == null) {
@@ -53,7 +52,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
         return instance;
     }
 
-    public static KloudWebClientManager getInstance(){
+    public static KloudWebClientManager getInstance() {
         return instance;
     }
 
@@ -111,7 +110,8 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
     class HeartBeatTask extends TimerTask {
         @Override
         public void run() {
-            Log.e("KloundWebClientManager","send heart beat,thread:" + Thread.currentThread());
+
+            Log.e("KloundWebClientManager", "send heart beat,thread:" + Thread.currentThread());
             JSONObject heartBeatMessage = new JSONObject();
             try {
                 heartBeatMessage.put("action", "HELLO");
@@ -126,22 +126,19 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
 //                    heartBeatMessage.put("currentItemId", AppConfig.currentDocId);
 //                }
                 MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
-                if(meetingConfig != null && meetingConfig.isInRealMeeting()){
+                if (meetingConfig != null && meetingConfig.isInRealMeeting()) {
                     heartBeatMessage.put("status", "0");
                     heartBeatMessage.put("currentLine", 0);
                     heartBeatMessage.put("currentMode", "0");
                     heartBeatMessage.put("currentPageNumber", meetingConfig.getPageNumber());
-                    if(meetingConfig.getDocument() != null){
+                    if (meetingConfig.getDocument() != null) {
                         heartBeatMessage.put("currentItemId", meetingConfig.getDocument().getItemID());
                     }
 
                 }
-
                 if (kloudWebClient != null) {
-                    Log.e("check_web_client","is_closed:" + kloudWebClient.isClosed() + ","+kloudWebClient.isClosing() + ",is_connecting" +
-                            kloudWebClient.isConnecting() + ",is_open" + kloudWebClient.isOpen() + ",ready_state:" + kloudWebClient.getReadyState());
                     kloudWebClient.send(heartBeatMessage.toString());
-                    Log.e("KloundWebClientManager","send heart beat message:" + heartBeatMessage.toString());
+                    Log.e("KloundWebClientManager", "send heart beat message:" + heartBeatMessage.toString());
                 }
                 heartBeatStarted = true;
             } catch (JSONException e) {

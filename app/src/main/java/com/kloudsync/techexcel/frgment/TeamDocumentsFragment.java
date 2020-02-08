@@ -790,8 +790,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
 //        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("userid", AppConfig.UserID);
-        intent.putExtra("meetingId", "Doc-" + AppConfig.UserID);
-
+        intent.putExtra("meetingId", Integer.parseInt(lesson.getLessonId()) + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);
         intent.putExtra("yinxiangmode", 0);
         intent.putExtra("identity", 2);
@@ -804,7 +803,8 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
         //-----
-        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
+        intent.putExtra("meeting_id", Integer.parseInt(lesson.getLessonId()) + "," + AppConfig.UserID);
+//        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
         intent.putExtra("document_id", lesson.getTempItemId());
         intent.putExtra("meeting_type", 2);
         intent.putExtra("space_id", itemID);

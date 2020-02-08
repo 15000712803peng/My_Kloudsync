@@ -264,10 +264,16 @@ public class Tools {
         RongIM.getInstance().startGroupChat(context, mGroupId, "");
     }
 
+    public static void openChatRoom(Context context, String chatRoom) {
+        RongIM.getInstance().startChatRoomChat(context, chatRoom, true);
+    }
+
     public static void joinChatRoom(String roomId, RongIMClient.OperationCallback callback) {
         RongIM.getInstance().joinChatRoom(roomId, 10, callback);
 
     }
+
+
 
     public static void getChatroomHistoryMessage(String roomId, RongIMClient.ResultCallback<List<Message>> callback) {
         RongIM.getInstance().getLatestMessages(Conversation.ConversationType.CHATROOM, roomId, 10, callback);

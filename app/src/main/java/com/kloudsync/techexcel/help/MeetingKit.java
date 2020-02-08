@@ -2,8 +2,11 @@ package com.kloudsync.techexcel.help;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageView;
@@ -42,6 +45,7 @@ import org.json.JSONObject;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.agora.openlive.model.AGEventHandler;
 import io.agora.rtc.IRtcEngineEventHandler;
@@ -193,7 +197,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {
-
+        Log.e("check_agora_status","onFirstRemoteVideoDecoded:" + "uid:" + uid + ",elapsed:" + elapsed);
     }
 
     @Override
@@ -254,7 +258,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         eventMute.setAgoraMember(member);
         EventBus.getDefault().post(eventMute);
 
-
     }
 
     @Override
@@ -272,31 +275,65 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onRemoteVideoStats(IRtcEngineEventHandler.RemoteVideoStats stats) {
+        Log.e("check_agora_status","onRemoteVideoStats:" + "RemoteVideoStats:" + stats.uid + "," + stats.rxStreamType);
+    }
+
+    public void postShareScreenDelay(final int uid){
+//        if(meetingConfig.getMode() != 3){
+//            return;
+//        }
+        Observable.just("main_thread").delay(10000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                if(uid <= 1000000000 || uid > 1500000000){
+                    return;
+                }
+
+                getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
+                SurfaceView surfaceView = RtcEngine.CreateRendererView(host);
+                surfaceView.setZOrderOnTop(true);
+                surfaceView.setZOrderMediaOverlay(true);
+                surfaceView.setTag(uid);
+                getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_FIT, uid));
+                EventShareScreen shareScreen = new EventShareScreen();
+                shareScreen.setUid(uid);
+                shareScreen.setShareView(surfaceView);
+                EventBus.getDefault().post(shareScreen);
+            }
+        });
 
     }
 
-    public void postShareScreen(int uid){
+    public void postShareScreen(final int uid){
         if(meetingConfig.getMode() != 3){
             return;
         }
-        if(uid <= 1000000000 || uid > 1500000000){
-            return;
-        }
+        Observable.just("main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                if(uid <= 1000000000 || uid > 1500000000){
+                    return;
+                }
 
-        getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
-        SurfaceView surfaceView = RtcEngine.CreateRendererView(host.getBaseContext());
-        surfaceView.setZOrderOnTop(true);
-        surfaceView.setZOrderMediaOverlay(true);
-        surfaceView.setTag(uid);
-        getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, uid));
-        EventShareScreen shareScreen = new EventShareScreen();
-        shareScreen.setUid(uid);
-        shareScreen.setShareView(surfaceView);
-        EventBus.getDefault().post(shareScreen);
+                getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
+                SurfaceView surfaceView = RtcEngine.CreateRendererView(host.getBaseContext());
+                surfaceView.setZOrderOnTop(true);
+                surfaceView.setZOrderMediaOverlay(true);
+                surfaceView.setTag(uid);
+                getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_FIT, uid));
+                EventShareScreen shareScreen = new EventShareScreen();
+                shareScreen.setUid(uid);
+                shareScreen.setShareView(surfaceView);
+                EventBus.getDefault().post(shareScreen);
+            }
+        });
+
     }
+
+
     @Override
     public void onUserJoined(final int uid, int elapsed) {
-        Log.e("MeetingKit", "onUserJoined,uid:" + uid);
+        Log.e("MeetingKit", "onUserJoined,uid:" + uid + ",user_id:" + AppConfig.UserID);
         if (meetingConfig != null) {
             if (!meetingConfig.isInRealMeeting()) {
                 return;
@@ -307,10 +344,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 public void accept(MeetingConfig meetingConfig) throws Exception {
                     // 屏幕共享
                     if (uid > 1000000000 && uid < 1500000000) {
-                        Log.e("check_share_screen","uid:" + uid);
+                        Log.e("check_share_screen_onUserJoined","uid:" + uid);
                         meetingConfig.setShareScreenUid(uid);
                         postShareScreen(meetingConfig.getShareScreenUid());
-
                     }else {
                      //  成员的camera
                         refreshMembersAndPost(meetingConfig,uid,false);
@@ -499,7 +535,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
             @Override
             public void email(String url) {
-
                 String[] targetemail = {"214176156@qq.com"};
                 String[] email = {"1599528112@qq.com"};
                 Intent intent = new Intent(Intent.ACTION_SEND);
@@ -574,7 +609,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
         try {
             RtcEngineImpl engine = (RtcEngineImpl) getRtcManager().worker().getRtcEngine();
-            engine.setVideoCamera(0);
+//            engine.setVideoCamera(0);
         } catch (Exception e) {
 
         }

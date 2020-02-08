@@ -7,80 +7,99 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.kloudsync.techexcel.bean.ChatMessage;
 import com.kloudsync.techexcel.bean.DocumentPage;
+
 import org.feezu.liuli.timeselector.Utils.TextUtil;
+
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
-public class DocumentPageCache {
-    private final SharedPreferences cachePreference;
-    private static DocumentPageCache instance;
+public class ChatMessagesCache {
+    //    private final SharedPreferences cachePreference;
+    private static ChatMessagesCache instance;
     Gson gson;
 
-    private DocumentPageCache(Context context) {
-        cachePreference = context.getSharedPreferences("kloud_document_page_cache", Context.MODE_PRIVATE);
-        gson = new Gson();
+    private ChatMessagesCache(Context context) {
+//        cachePreference = context.getSharedPreferences("kloud_chat_messages_cache", Context.MODE_PRIVATE);
+//        gson = new Gson();
+        cacheMaps = new LinkedHashMap<>();
+
     }
 
-    public static synchronized DocumentPageCache getInstance(Context context) {
+    public static synchronized ChatMessagesCache getInstance(Context context) {
         if (instance == null) {
-            instance = new DocumentPageCache(context);
+            instance = new ChatMessagesCache(context);
         }
         return instance;
     }
 
+    public void cacheChatMessage(ChatMessage message, String meetingId) {
 
-    public void cacheFile(DocumentPage page) {
-
-        if (page == null || TextUtils.isEmpty(page.getPageUrl())) {
+        if (TextUtils.isEmpty(meetingId)) {
             return;
         }
-        Map map = getPageMap();
-        if(map == null){
-            return;
+        Map<String, LinkedList<ChatMessage>> map = getPageMap();
+        if (map == null) {
+            cacheMaps = new LinkedHashMap<>();
         }
-        map.put(page.getPageUrl(),page);
-        cachePreference.edit().putString("page_map", new Gson().toJson(map)).commit();
+        LinkedList<ChatMessage> chatMessages = map.get(meetingId);
+        if (chatMessages == null) {
+            chatMessages = new LinkedList<>();
+        }
+        chatMessages.addFirst(message);
+        if (chatMessages.size() > 10) {
+            chatMessages.removeLast();
+
+        }
+        map.put(meetingId, chatMessages);
+//        cachePreference.edit().putString("chat_messaes_map", new Gson().toJson(map)).commit();
     }
 
-    public void removeFile(String url) {
+    public LinkedList<ChatMessage> getChatMessage(String meetingId) {
 
-        if (TextUtils.isEmpty(url)) {
-            return;
+        if (TextUtils.isEmpty(meetingId)) {
+            return null;
         }
-        Map map = getPageMap();
-        if(map == null){
-            return;
+        Map<String, LinkedList<ChatMessage>> map = getPageMap();
+        if (map == null) {
+            return null;
         }
-        map.remove(url);
-        cachePreference.edit().putString("page_map", new Gson().toJson(map)).commit();
+        LinkedList<ChatMessage> chatMessages = map.get(meetingId);
+        if (chatMessages == null) {
+            chatMessages = new LinkedList<>();
+        }
+        return chatMessages;
     }
 
-    private Map<String,DocumentPage> getPageMap() {
-        String json = cachePreference.getString("page_map", "");
-        if (TextUtil.isEmpty(json)) {
-            return new HashMap<>();
-        }
-        return gson.fromJson(json, new TypeToken<Map<String,DocumentPage>>() {
-        }.getType());
+
+    Map<String, LinkedList<ChatMessage>> cacheMaps;
+
+    private Map<String, LinkedList<ChatMessage>> getPageMap() {
+        return cacheMaps;
+//        String json = cachePreference.getString("chat_messaes_map", "");
+//        if (TextUtil.isEmpty(json)) {
+//            return new HashMap<>();
+//        }
+//        return gson.fromJson(json, new TypeToken<Map<String,LinkedList<ChatMessage>>>() {
+//        }.getType());
     }
 
-    public DocumentPage getPageCache(String url){
-        Map<String,DocumentPage> map = getPageMap();
-        Log.e("TvFileCache","getPageCache, map:" + map);
-        if(map != null){
-            return map.get(url);
+    public LinkedList<ChatMessage> getMeetingChatMessages(String meetingId) {
+        Map<String, LinkedList<ChatMessage>> map = getPageMap();
+        Log.e("chat_message", "getPageCache, map:" + map);
+        if (map != null) {
+            return map.get(meetingId);
         }
         return null;
     }
 
-    public boolean containFile(String url){
-        return getPageMap().containsKey(url);
-    }
-
 
     public void clear() {
-        cachePreference.edit().putString("page_map", "").commit();
+        cacheMaps.clear();
+//        cachePreference.edit().putString("chat_messaes_map", "").commit();
     }
 
 

@@ -5346,7 +5346,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
 
         if (worker().getRtcEngine() != null) {
             RtcEngineImpl engine = (RtcEngineImpl) worker().getRtcEngine();
-            engine.setVideoCamera(0);
+//            engine.setVideoCamera(0);
 
         }
 
@@ -8243,7 +8243,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         int vProfile = Constants.VIDEO_PROFILE_480P;
         worker().configEngine(cRole, vProfile);
         //启用说话者音量提示
-        worker().getRtcEngine().enableAudioVolumeIndication(200, 3);
+        worker().getRtcEngine().enableAudioVolumeIndication(200, 3,false);
         worker().getRtcEngine().enableWebSdkInteroperability(true);
         //记录当前时间
         currentTime = System.currentTimeMillis();

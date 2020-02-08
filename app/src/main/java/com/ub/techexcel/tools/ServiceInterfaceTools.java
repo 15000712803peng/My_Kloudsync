@@ -2873,6 +2873,20 @@ public class ServiceInterfaceTools {
         return response;
     }
 
+    public JSONObject syncRaiseHandOnStage(int status) {
+        String url = AppConfig.URL_MEETING_BASE + "member/raise_hand_on_stage?status=" + status;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("status", status);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, jsonObject);
+        Log.e("syncRaiseHandOnStage", "url:" + url + ",result:" + response);
+        return response;
+    }
+
+
     public JSONObject syncGetFrindList() {
         String url = AppConfig.URL_PUBLIC + "Friend/FriendList";
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);

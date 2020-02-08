@@ -210,12 +210,15 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
                 if (member.getPresenter() == 1) {
                     holder.settingImage.setVisibility(View.GONE);
+                    holder.presenter.setVisibility(View.VISIBLE);
                 } else {
                     holder.settingImage.setVisibility(View.VISIBLE);
+                    holder.presenter.setVisibility(View.GONE);
                 }
-                fillViewByRole(member,holder);
+                fillViewByRoleForMembers(member, holder);
                 //------
             } else if (type == 2) {
+                fillViewByRoleForAuditors(member, holder);
 
             } else if (type == 3) {
 
@@ -297,7 +300,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         popMeetingMemberSetting.showAtBottom(member, view, meetingConfig);
     }
 
-    private void fillViewByRole(final MeetingMember meetingMember, final ViewHolder holder) {
+    private void fillViewByRoleForMembers(final MeetingMember meetingMember, final ViewHolder holder) {
 
         int role = meetingMember.getRole();
         holder.settingImage.setOnClickListener(new View.OnClickListener() {
@@ -310,19 +313,19 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 //        meetingConfig.getMeetingHostId().equals(member.getUserId() + "")  是否是host
         //
 
-        if(!(meetingMember.getUserId() + "").equals(AppConfig.UserID)){
+        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
             // 当前的member不是自己
-            if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
                 // 如果自己是presenter
                 holder.settingImage.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 holder.settingImage.setVisibility(View.GONE);
             }
 
-        }else {
-            if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+        } else {
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
                 holder.settingImage.setVisibility(View.GONE);
-            }else {
+            } else {
                 holder.settingImage.setVisibility(View.VISIBLE);
             }
         }
@@ -333,17 +336,57 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 //        } else if (role == MeetingConfig.MeetingRole.AUDIENCE) {
 //            holder.settingImage.setVisibility(View.GONE);
 //            holder.changeToMember.setVisibility(View.VISIBLE);
-//            holder.changeToMember.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    setMember(meetingMember);
-//                }
-//            });
+
 //
 //        } else if (role == MeetingConfig.MeetingRole.BE_INVITED) {
 //            holder.settingImage.setVisibility(View.GONE);
 //            holder.changeToMember.setVisibility(View.GONE);
 //        }
+    }
+
+    private void fillViewByRoleForAuditors(final MeetingMember meetingMember, final ViewHolder holder) {
+
+        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
+            // 当前的member不是自己
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                // 如果自己是presenter
+                holder.changeToMember.setVisibility(View.VISIBLE);
+                holder.changeToMember.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setMember(meetingMember);
+                    }
+                });
+            } else {
+                holder.changeToMember.setVisibility(View.GONE);
+                holder.changeToMember.setOnClickListener(null);
+            }
+
+        } else {
+            holder.handsUpText.setVisibility(View.VISIBLE);
+            if (meetingMember.getHandStatus() == 0) {
+                holder.handsUpText.setText("举手");
+                holder.handsUpText.setBackground(getResources().getDrawable(R.drawable.change_auditor_bg));
+                holder.handsUpText.setTextColor(Color.parseColor("#ff999999"));
+                holder.handsUpText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        handsUp();
+                    }
+                });
+
+            } else {
+                holder.handsUpText.setOnClickListener(null);
+                holder.handsUpText.setText("已举手");
+                holder.handsUpText.setTextColor(getResources().getColor(R.color.white));
+                holder.handsUpText.setBackground(getResources().getDrawable(R.drawable.has_handed_up_bg));
+            }
+//            if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+//                holder.settingImage.setVisibility(View.GONE);
+//            }else {
+//                holder.settingImage.setVisibility(View.VISIBLE);
+//            }
+        }
     }
 
     @Override
@@ -375,6 +418,13 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
                         MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                    } else if (response.getInt("code") == 22) {
+                        Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                Toast.makeText(getActivity(), "没有权限进行此操作", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 }
             }
@@ -387,6 +437,21 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             public void accept(MeetingMember meetingMember) throws Exception {
                 JSONObject response = ServiceInterfaceTools.getinstance().
                         syncMakeUserUpAndDown(meetingMember.getUserId() + "", 1);
+                if (response.has("code")) {
+                    if (response.getInt("code") == 0) {
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                    }
+                }
+            }
+        }).subscribe();
+    }
+
+    public void handsUp() {
+        Observable.just("hands_up").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String str) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().
+                        syncRaiseHandOnStage(1);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
                         MeetingKit.getInstance().requestMeetingMembers(meetingConfig);

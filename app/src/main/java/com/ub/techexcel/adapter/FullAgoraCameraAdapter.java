@@ -84,7 +84,7 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
 
         SurfaceView target = member.getSurfaceView();
         holderView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
-        if (!member.isMuteVideo()) {
+        if (!member.isMuteVideo() && target != null) {
             target.setVisibility(View.VISIBLE);
             stripSurfaceView(target);
             Log.e("FullAgoraCameraAdapter", "add_surface_view:" + framelayoutHeight);

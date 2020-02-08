@@ -87,8 +87,6 @@ public class ConversationActivity extends FragmentActivity {
     private ConversationType mConversationType;
 
     private static RongIM.LocationProvider.LocationCallback mLastLocationCallback;
-
-
     private TextView tv_title;
     private ImageView img_add;
     private RelativeLayout backLayout;
@@ -156,7 +154,7 @@ public class ConversationActivity extends FragmentActivity {
                     break;
 
                 case AppConfig.LOAD_FINISH:
-                    GoToVIew();
+//                    GoToVIew();
                     break;
                 default:
                     break;
@@ -209,6 +207,7 @@ public class ConversationActivity extends FragmentActivity {
         conversationActivity = this;
         instance = this;
         RongIM.getInstance();
+        Log.e("ConversationActivity","on_create");
 
 		/*RongIM.resetInputExtensionProvider(
                 ConversationType.PRIVATE, provider);

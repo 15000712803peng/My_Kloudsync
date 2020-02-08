@@ -19,6 +19,7 @@ import android.widget.VideoView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingType;
+import com.kloudsync.techexcel.bean.VedioData;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
@@ -56,6 +57,8 @@ public class DocVedioManager  implements MediaPlayer.OnPreparedListener,MediaPla
         this.context = context;
 
     }
+
+
 
     public static DocVedioManager getInstance(Context context) {
         if (instance == null) {
@@ -114,8 +117,35 @@ public class DocVedioManager  implements MediaPlayer.OnPreparedListener,MediaPla
         });
     }
 
-    private void doPlay(VedioData vedioData){
+    public void doPlay(VedioData vedioData){
+        this.vedioData = vedioData;
+        Observable.just(vedioData).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<VedioData>() {
+            @Override
+            public void accept(VedioData vedioData) throws Exception {
+                initPlayerAndPlay(vedioData);
+            }
+        }).subscribe();
+    }
 
+
+    public void doPlay(Context context,RelativeLayout vedioLayout,MeetingConfig meetingConfig,VedioData vedioData){
+
+        this.context = context;
+        this.vedioLayout = vedioLayout;
+        this.meetingConfig = meetingConfig;
+        if(isPlaying()){
+            return;
+        }else {
+            try {
+                if(this.vedioData != null && this.vedioData.isPrepared()){
+                    vedioPlayer.start();
+                    return;
+                }
+            }catch (Exception e){
+
+            }
+        }
+        this.vedioData = vedioData;
         Observable.just(vedioData).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<VedioData>() {
             @Override
             public void accept(VedioData vedioData) throws Exception {
@@ -146,6 +176,7 @@ public class DocVedioManager  implements MediaPlayer.OnPreparedListener,MediaPla
         vedioPlayer.setOnErrorListener(this);
         vedioPlayer.setVideoURI(Uri.parse(vedioData.getUrl()));
         vedioPlayer.start();
+        vedioData.setPrepared(true);
         this.vedioData = vedioData;
     }
 
@@ -223,6 +254,13 @@ public class DocVedioManager  implements MediaPlayer.OnPreparedListener,MediaPla
         }).subscribe();
         vedioData = null;
 
+    }
+
+    public void doPause(){
+
+        if(isPlaying()){
+            vedioPlayer.pause();
+        }
     }
 
     @Override
@@ -397,35 +435,6 @@ public class DocVedioManager  implements MediaPlayer.OnPreparedListener,MediaPla
     }
 
 
-    private class VedioData{
-        private int id;
-        private String url;
-        private boolean isPrepared;
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        public boolean isPrepared() {
-            return isPrepared;
-        }
-
-        public void setPrepared(boolean prepared) {
-            isPrepared = prepared;
-        }
-    }
 
     private void notifyVedioState(int state,VedioData vedioData) {
         Log.e("notifyVedioState", "vedioData:" + vedioData);
@@ -443,6 +452,9 @@ public class DocVedioManager  implements MediaPlayer.OnPreparedListener,MediaPla
 
         }
     }
+
+
+
 
 
 

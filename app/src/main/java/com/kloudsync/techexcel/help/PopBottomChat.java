@@ -59,7 +59,19 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
     private EditText editText;
     private ImageView sendImage;
     private ImageView closeImage;
+    private ImageView chatDetailImage;
     private String roomId;
+    private String meetingId;
+    private String chatRoomId;
+
+
+    public String getMeetingId() {
+        return meetingId;
+    }
+
+    public void setMeetingId(String meetingId) {
+        this.meetingId = meetingId;
+    }
 
     @Override
     public void onClick(View v) {
@@ -73,11 +85,16 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
             case R.id.close:
                 hide();
                 break;
+            case R.id.image_chat_detail:
+                Tools.openGroup(mContext,chatRoomId);
+                break;
         }
     }
 
-    public PopBottomChat(Context context) {
+    public PopBottomChat(Context context,String meetingId,String chatRoomId) {
+        this.meetingId = meetingId;
         this.mContext = context;
+        this.chatRoomId = chatRoomId;
         getPopupWindow();
         bottomChatWindow.setAnimationStyle(R.style.PopupAnimation5);
     }
@@ -97,6 +114,8 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
         chatList = (RecyclerView) view.findViewById(R.id.chat_list);
         editText = view.findViewById(R.id.edit);
         sendImage = view.findViewById(R.id.send);
+        chatDetailImage = view.findViewById(R.id.image_chat_detail);
+        chatDetailImage.setOnClickListener(this);
         sendImage.setOnClickListener(this);
         closeImage = view.findViewById(R.id.close);
         closeImage.setOnClickListener(this);
@@ -153,7 +172,7 @@ public class PopBottomChat implements PopupWindow.OnDismissListener, OnClickList
     @Override
     public void onSuccess(Message message) {
         Log.e("send_chat_message","on_success:" + message);
-        ChatManager.getManager().wrapMessage(message);
+        ChatManager.getManager(mContext,meetingId).wrapMessage(message);
         Observable.just(message).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Message>() {
             @Override
             public void accept(Message message) throws Exception {

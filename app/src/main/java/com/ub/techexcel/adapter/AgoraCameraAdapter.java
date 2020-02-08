@@ -81,7 +81,8 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             }
             holder.vedioFrame.addView(videoname);
             SurfaceView target = user.getSurfaceView();
-            if (!user.isMuteVideo()) {
+            Log.e("agora_camera_adapter","is_mute_video:" +user.isMuteVideo() + ",surfaceview:" + target);
+            if (!user.isMuteVideo() && target != null) {
                 target.setVisibility(View.VISIBLE);
                 stripSurfaceView(target);
                 holder.vedioFrame.addView(target, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));

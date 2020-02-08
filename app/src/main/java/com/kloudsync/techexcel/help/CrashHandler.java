@@ -10,6 +10,8 @@ import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.ub.techexcel.tools.FileUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -36,13 +38,16 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     private Thread.UncaughtExceptionHandler mDefaultHandler;
 
+    private DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+    private Map<String, String> infos = new HashMap<String, String>();
+
+
     //用来存储设备信息和异常信息
     private Map<String, String> mInfo = new HashMap<>();
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private CrashHandler() {
-
-
     }
 
     /**
@@ -67,6 +72,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
      */
     public void init(Context context) {
         mContext = context;
+        FileUtils.createCrashFilesDir(mContext);
         mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
 
@@ -107,72 +113,94 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             return false;
         }
         Log.e("Throwable e",e.toString() + ";;;");
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                Looper.prepare();
-//                Toast.makeText(mContext, "UncaugthException", Toast.LENGTH_SHORT).show();
-                Looper.loop();
-            }
-        }.start();
-
         //收集错误信息
         collectErrorInfo();
         //保存错误信息
-//        saveErrorInfo(e);
+        try {
+            saveCrashInfoFile(e);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
 
         return false;
     }
 
-    private void saveErrorInfo(Throwable e) {
-        StringBuffer stringBuffer = new StringBuffer();
-        for (Map.Entry<String, String> entry : mInfo.entrySet()) {
-            String keyName = entry.getKey();
-            String value = entry.getValue();
-            stringBuffer.append(keyName + "=" + value + "\n");
-        }
-        Writer writer = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(writer);
-        e.printStackTrace(printWriter);
-        Throwable cause = e.getCause();
-        while (cause != null) {
-            cause.printStackTrace(printWriter);
-            cause = e.getCause();
-        }
-
-        printWriter.close();
-        String result = writer.toString();
-        stringBuffer.append(result);
-
-        long curTime = System.currentTimeMillis();
-        String time = dateFormat.format(new Date());
-        String fileName = "crash-" + time + "-" + curTime + ".log";
-
-        //判断有没有SD卡
-        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-            String path = "sdcard/crash/";
+    private String writeFile(String crashStr) throws Exception {
+        String time = formatter.format(new Date());
+        String fileName = "crash-" + time + ".log";
+        if (FileUtils.createCrashFilesDir(mContext)) {
+            String path = FileUtils.getBaseCrashDir();
             File dir = new File(path);
-            if(dir.exists()){
-                dir.mkdirs();
+            File txtFile = new File(dir,fileName);
+            if (!txtFile.exists())
+                txtFile.createNewFile();
+            FileOutputStream fos = new FileOutputStream(txtFile, true);
+            fos.write(crashStr.getBytes());
+            fos.flush();
+            fos.close();
+        }
+        return fileName;
+    }
+
+    public void collectDeviceInfo(Context ctx) {
+        try {
+            PackageManager pm = ctx.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(ctx.getPackageName(),
+                    PackageManager.GET_ACTIVITIES);
+            if (pi != null) {
+                String versionName = pi.versionName + "";
+                String versionCode = pi.versionCode + "";
+                infos.put("versionName", versionName);
+                infos.put("versionCode", versionCode);
             }
-            FileOutputStream fos = null;
+        } catch (PackageManager.NameNotFoundException e) {
+
+        }
+        Field[] fields = Build.class.getDeclaredFields();
+        for (Field field : fields) {
             try {
-                fos = new FileOutputStream(path + fileName);
-                fos.write(stringBuffer.toString().getBytes());
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }finally {
-                try {
-                    fos.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                field.setAccessible(true);
+                infos.put(field.getName(), field.get(null).toString());
+            } catch (Exception e) {
+
             }
         }
     }
+
+    private String saveCrashInfoFile(Throwable ex) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        try {
+            SimpleDateFormat sDateFormat = new SimpleDateFormat(
+                    "yyyy-MM-dd HH:mm:ss");
+            String date = sDateFormat.format(new java.util.Date());
+            sb.append("\r\n" + date + "\n");
+            for (Map.Entry<String, String> entry : infos.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                sb.append(key + "=" + value + "\n");
+            }
+
+            Writer writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            ex.printStackTrace(printWriter);
+            Throwable cause = ex.getCause();
+            while (cause != null) {
+                cause.printStackTrace(printWriter);
+                cause = cause.getCause();
+            }
+            printWriter.flush();
+            printWriter.close();
+            String result = writer.toString();
+            sb.append(result);
+            String fileName = writeFile(sb.toString());
+            return fileName;
+        } catch (Exception e) {
+            sb.append("an error occured while writing file...\r\n");
+            writeFile(sb.toString());
+        }
+        return null;
+    }
+
 
     private void collectErrorInfo() {
         PackageManager pm = mContext.getPackageManager();

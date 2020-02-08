@@ -304,6 +304,9 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     }
 
     private void showUserNotes(UserNotes user) {
+        if(this.note == null){
+            return;
+        }
         this.user = user;
         usersSpinner.setVisibility(View.VISIBLE);
         noteAdapter = new NoteAdapter(context, user.getNotes());

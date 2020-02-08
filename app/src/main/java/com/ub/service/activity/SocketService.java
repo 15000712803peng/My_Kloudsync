@@ -61,7 +61,6 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
 
 
     private void init() {
-
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         AppConfig.UserToken = sharedPreferences.getString("UserToken", null);

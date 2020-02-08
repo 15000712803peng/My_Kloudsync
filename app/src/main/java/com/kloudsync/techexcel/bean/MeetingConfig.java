@@ -115,6 +115,10 @@ public class MeetingConfig{
         this.presenterId = presenterId;
     }
 
+    public void justSetPresenterId(String presenterId) {
+        this.presenterId = presenterId;
+    }
+
     public String getAgoraChannelId() {
         return agoraChannelId;
     }

@@ -491,8 +491,10 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
                     sameLetterFriends = new ArrayList<>();
                 }
                 if(type == 0){
+                    filterImage.setImageResource(R.drawable.icon_filter);
                     contactTitle.setText("联系人(公司)");
                 }else if(type == 1){
+                    filterImage.setImageResource(R.drawable.filter_red);
                     contactTitle.setText("联系人(所有)");
                 }
 

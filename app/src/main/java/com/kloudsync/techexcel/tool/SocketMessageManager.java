@@ -13,6 +13,7 @@ import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
+import com.kloudsync.techexcel.bean.VedioData;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.Note;
@@ -22,6 +23,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.java_websocket.client.WebSocketClient;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import io.reactivex.Observable;
 
 /**
  * Created by tonyan on 2019/11/19.
@@ -43,6 +46,7 @@ public class SocketMessageManager {
     public static final String MESSAGE_NOTE_DATA = "NOTE_DATA";
     public static final String MESSAGE_NOTE_CHANGE = "NOTE_CHANGE";
     public static final String MESSAGE_NOTE_P1_CREATEAD = "NOTE_ITEM_4_P1_CREATED";
+    public static final String MESSAGE_HELLO = "HELLO";
     public static final int MESSAGE_VIDEO_PAUSE = 0;
     public static final int MESSAGE_VIDEO_PLAY = 1;
     public static final int MESSAGE_VIDEO_CLOSE = 2;
@@ -111,7 +115,7 @@ public class SocketMessageManager {
             message.put("type", config.getType());
             message.put("lessonId", config.getLessionId());
             message.put("isInstantMeeting", 1);
-            if(config.getDocument() != null){
+            if (config.getDocument() != null) {
                 message.put("itemId", config.getDocument().getItemID());
             }
             doSendMessage(message.toString());
@@ -135,7 +139,7 @@ public class SocketMessageManager {
             message.put("type", 0);
             message.put("lessonId", config.getLessionId());
             message.put("isInstantMeeting", 1);
-            if(config.getDocument() != null){
+            if (config.getDocument() != null) {
                 message.put("itemId", config.getDocument().getItemID());
             }
             doSendMessage(message.toString());
@@ -187,7 +191,7 @@ public class SocketMessageManager {
         sendMessage_UpdateAttchment(config);
     }
 
-    public void sendMessage_ViewNote(MeetingConfig config,Note note) {
+    public void sendMessage_ViewNote(MeetingConfig config, Note note) {
 
         try {
             JSONObject message = new JSONObject();
@@ -247,13 +251,15 @@ public class SocketMessageManager {
             message.put("itemId", meetingConfig.getDocument().getItemID());
             message.put("sequenceNumber", "3837");
             message.put("ideaType", "document");
+            Log.e("check_send", "sendMessage_MyActionFrame,doSendMessage");
             doSendMessage(message.toString());
         } catch (JSONException e) {
+            Log.e("check_send", "sendMessage_MyActionFrame:" + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public void sendMessage_MyNoteActionFrame(String actions, MeetingConfig meetingConfig,Note note) {
+    public void sendMessage_MyNoteActionFrame(String actions, MeetingConfig meetingConfig, Note note) {
         String _actions = Tools.getBase64(actions).replaceAll("[\\s*\t\n\r]", "");
         try {
             JSONObject message = new JSONObject();
@@ -285,7 +291,7 @@ public class SocketMessageManager {
         }
     }
 
-    public void sendMessage_MakePresenter(MeetingConfig config, MeetingMember member){
+    public void sendMessage_MakePresenter(MeetingConfig config, MeetingMember member) {
 
         try {
             JSONObject message = new JSONObject();
@@ -301,7 +307,7 @@ public class SocketMessageManager {
 
     }
 
-    public void sendMessage_VedioPlayedStatus(int state, float time, String vid, String url){
+    public void sendMessage_VedioPlayedStatus(int state, float time, String vid, String url) {
         JSONObject message = new JSONObject();
         try {
             message.put("stat", state);
@@ -309,23 +315,23 @@ public class SocketMessageManager {
             message.put("time", time);
             message.put("vid", vid);
             message.put("url", url);
-            message.put("type", 1 );
+            message.put("type", 1);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        doSendMessage(wrapperSendMessage(AppConfig.UserToken,0,Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+        doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
     }
 
 
-    public void sendMessage_AgoraStatusChange(MeetingConfig config, AgoraMember member){
+    public void sendMessage_AgoraStatusChange(MeetingConfig config, AgoraMember member) {
         try {
             JSONObject message = new JSONObject();
             message.put("action", "AGORA_STATUS_CHANGE");
             message.put("sessionId", config.getUserToken());
             message.put("agoraStatus", 1);
-            message.put("microphoneStatus", member.isMuteAudio()?3:2);
-            message.put("cameraStatus", member.isMuteVideo() ? 3: 2);
+            message.put("microphoneStatus", member.isMuteAudio() ? 3 : 2);
+            message.put("cameraStatus", member.isMuteVideo() ? 3 : 2);
             message.put("screenStatus", 0);
             doSendMessage(message.toString());
         } catch (JSONException e) {
@@ -334,7 +340,7 @@ public class SocketMessageManager {
 
     }
 
-    public void sendMessage_InviteToMeeting(MeetingConfig config,String users){
+    public void sendMessage_InviteToMeeting(MeetingConfig config, String users) {
         try {
             JSONObject message = new JSONObject();
             message.put("action", "INVITE_TO_MEETING");
@@ -347,10 +353,23 @@ public class SocketMessageManager {
         }
     }
 
-    private WebSocketClient getClient() {
-        if (socketClient == null) {
-            socketClient = AppConfig.webSocketClient;
+    public void sendMessage_DocVedioStatus(VedioData vedioData, int stat, long time) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("stat", stat);
+            message.put("actionType", 19);
+            message.put("time", time);
+            message.put("vid", vedioData.getId());
+            message.put("url", vedioData.getUrl());
+            message.put("type", 1);
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+    }
+
+    private WebSocketClient getClient() {
+        socketClient = AppConfig.webSocketClient;
         return socketClient;
     }
 
@@ -358,11 +377,17 @@ public class SocketMessageManager {
         if (getClient() != null) {
             try {
                 getClient().send(message);
-                Log.e("SocketMessageManager", "send:" + message);
+                Log.e("doSendMessage", "send:" + message);
             } catch (Exception exception) {
-
+                Log.e("doSendMessage", "send_exception:" + exception.getMessage());
             }
+        } else {
+            Log.e("doSendMessage", "send_exception,client_is_null");
         }
+    }
+
+    private void sendMessageAgain(String message) {
+//        Observable.just("send_again").
     }
 
     private String wrapperSendMessage(String sessionId, int type, String data) {
@@ -391,5 +416,6 @@ public class SocketMessageManager {
         context.unregisterReceiver(messageReceiver);
         instance = null;
     }
+
 
 }

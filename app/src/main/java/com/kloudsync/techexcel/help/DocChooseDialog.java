@@ -19,6 +19,7 @@ public class DocChooseDialog implements OnClickListener {
     private SelectedOptionListener selectedOptionListener;
 
     public interface SelectedOptionListener {
+
         void selectFromAlbum();
 
         void selectFromDocs();

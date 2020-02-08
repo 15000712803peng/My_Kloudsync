@@ -235,6 +235,7 @@ public class FileUtils {
 
     private final static String FOLDER_KLOUD = File.separator + "kloud" + File.separator;
     private final static String FOLDER_KLOUD_RECORDING = "/kloud/recording";
+    private final static String FOLDER_KLOUD_CRASH = "/kloud/crashlog";
     private static String baseDir;
 
     public static boolean createFileSaveDir(Context context){
@@ -261,8 +262,24 @@ public class FileUtils {
         }
     }
 
+    public static boolean createCrashFilesDir(Context context){
+        mDataRootPath = context.getCacheDir().getPath();
+        baseDir = Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED) ?  mSdRootPath :  mDataRootPath;
+        File file = new File(baseDir + FOLDER_KLOUD_CRASH);
+        if(file.exists()){
+            return true;
+        }else {
+            return file.mkdirs();
+        }
+    }
+
     public static String getBaseDir(){
         return  baseDir + FOLDER_KLOUD;
+    }
+
+    public static String getBaseCrashDir(){
+        return baseDir + FOLDER_KLOUD_CRASH;
     }
 
 
