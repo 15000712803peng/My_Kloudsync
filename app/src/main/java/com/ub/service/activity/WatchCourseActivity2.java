@@ -5339,15 +5339,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         yinxiangCreatePopup = new YinxiangCreatePopup();
         yinxiangCreatePopup.getPopwindow(WatchCourseActivity2.this);
         yinxiangCreatePopup.setFavoritePoPListener(new YinxiangCreatePopup.FavoritePoPListener() {
-            @Override
-            public void dismiss() {
-                getWindow().getDecorView().setAlpha(1.0f);
-            }
 
-            @Override
-            public void open() {
-                getWindow().getDecorView().setAlpha(0.5f);
-            }
 
             @Override
             public void addrecord(int ii) {

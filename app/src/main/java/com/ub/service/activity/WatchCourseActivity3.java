@@ -5586,14 +5586,6 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
         yinxiangCreatePopup = new YinxiangCreatePopup();
         yinxiangCreatePopup.getPopwindow(WatchCourseActivity3.this);
         yinxiangCreatePopup.setFavoritePoPListener(new YinxiangCreatePopup.FavoritePoPListener() {
-            @Override
-            public void dismiss() {
-            }
-
-            @Override
-            public void open() {
-
-            }
 
             @Override
             public void addrecord(int ii) {

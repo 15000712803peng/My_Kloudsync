@@ -4605,14 +4605,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         yinxiangCreatePopup = new YinxiangCreatePopup();
         yinxiangCreatePopup.getPopwindow(SyncRoomActivity.this);
         yinxiangCreatePopup.setFavoritePoPListener(new YinxiangCreatePopup.FavoritePoPListener() {
-            @Override
-            public void dismiss() {
-            }
-
-            @Override
-            public void open() {
-
-            }
 
             @Override
             public void addrecord(int ii) {

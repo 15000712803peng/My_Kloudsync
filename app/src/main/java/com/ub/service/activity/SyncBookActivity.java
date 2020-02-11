@@ -4615,14 +4615,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         yinxiangCreatePopup = new YinxiangCreatePopup();
         yinxiangCreatePopup.getPopwindow(SyncBookActivity.this);
         yinxiangCreatePopup.setFavoritePoPListener(new YinxiangCreatePopup.FavoritePoPListener() {
-            @Override
-            public void dismiss() {
-            }
 
-            @Override
-            public void open() {
-
-            }
 
             @Override
             public void addrecord(int ii) {

@@ -20,6 +20,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
@@ -27,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -77,6 +79,7 @@ import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.bean.VedioData;
+import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
@@ -84,6 +87,7 @@ import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
+import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -123,6 +127,7 @@ import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
 import com.ub.techexcel.adapter.MeetingMembersAdapter;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.Note;
+import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.CreateSyncDialog;
 import com.ub.techexcel.tools.DevicesListDialog;
 import com.ub.techexcel.tools.DownloadUtil;
@@ -134,9 +139,11 @@ import com.ub.techexcel.tools.MeetingSettingDialog;
 import com.ub.techexcel.tools.MeetingWarningDialog;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
+import com.ub.techexcel.tools.SpliteSocket;
 import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.TvDevicesListPopup;
 import com.ub.techexcel.tools.UserSoundtrackDialog;
+import com.ub.techexcel.tools.YinxiangCreatePopup;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -218,6 +225,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Bind(R.id.layout_create_blank_page)
     LinearLayout createBlankPageLayout;
 
+    @Bind(R.id.audiosyncll)
+    LinearLayout audiosyncll;
+
+    @Bind(R.id.recordstatus)
+    ImageView recordstatus;
+
     @Bind(R.id.layout_role_host)
     LinearLayout roleHostLayout;
 
@@ -268,20 +281,25 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getType() != MeetingType.MEETING) {
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
-            String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
-            MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
-                @Override
-                public void getServiceReturnData(Object object) {
-                    TvDevice tvDevice = (TvDevice) object;
-                    if (tvDevice != null) {
-                        if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
-                            openWarningInfo(0);
-                        } else {
-                            MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+            if(meetingConfig.getRole()== MeetingConfig.MeetingRole.HOST){
+                String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
+                MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        TvDevice tvDevice = (TvDevice) object;
+                        if (tvDevice != null) {
+                            if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
+                                openWarningInfo(0);
+                            } else {
+                                MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }else{
+                MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+            }
+
         }
         pageCache = DocumentPageCache.getInstance(this);
         //--
@@ -1928,8 +1946,19 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 messageManager = SocketMessageManager.getManager(this);
                 messageManager.registerMessageReceiver();
             }
+            if (isSyncing) {
+                if (!TextUtils.isEmpty(actions)) {
+                    Log.e("syncing---", SoundtrackRecordManager.getManager(this).getCurrentTime()+"");
+                    try {
+                        JSONObject jsonObject = new JSONObject(actions);
+                        jsonObject.put("time", SoundtrackRecordManager.getManager(this).getCurrentTime());
+                        actions = jsonObject.toString();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
             messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
-
         } else {
             Log.e("notifyMyWebActions", "role:" + meetingConfig.getRole());
             if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())) {
@@ -2149,7 +2178,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Override
     public void menuStartMeetingClicked() {
-
+        if(meetingConfig.getRole()== MeetingConfig.MeetingRole.HOST){
         String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getLessionId();
         MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
             @Override
@@ -2164,7 +2193,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
                 }
             }
-        });
+        }); }else{
+            meetingKit = MeetingKit.getInstance();
+            meetingKit.prepareStart(DocAndMeetingActivity.this, meetingConfig, meetingConfig.getLessionId() + "");
+        }
 
     }
 
@@ -2915,21 +2947,151 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void createSync(EventCreateSync createSync) {
+        openSaveVideoPopup();
         showCreateSyncDialog();
     }
 
-    private CreateSyncDialog createSyncDialog;
+//    private CreateSyncDialog createSyncDialog;
+//
+//    private void showCreateSyncDialog() {
+//        if (createSyncDialog != null) {
+//            if (createSyncDialog.isShowing()) {
+//                createSyncDialog.dismiss();
+//                createSyncDialog = null;
+//            }
+//        }
+//        createSyncDialog = new CreateSyncDialog(this);
+//        createSyncDialog.show(meetingConfig.getDocument().getAttachmentID() + "");
+//    }
 
+    private YinxiangCreatePopup yinxiangCreatePopup;
+    private int isrecord = 0; //判斷是背景音頻還是新的聲音
+    private SoundtrackRecordManager soundtrackRecordManager;
     private void showCreateSyncDialog() {
-        if (createSyncDialog != null) {
-            if (createSyncDialog.isShowing()) {
-                createSyncDialog.dismiss();
-                createSyncDialog = null;
+        yinxiangCreatePopup = new YinxiangCreatePopup();
+        yinxiangCreatePopup.getPopwindow(DocAndMeetingActivity.this);
+        yinxiangCreatePopup.setFavoritePoPListener(new YinxiangCreatePopup.FavoritePoPListener() {
+            @Override
+            public void addrecord(int ii) {
+                if (favoritePopup != null) {
+                    isrecord = ii;
+                    favoritePopup.StartPop(web);
+                    favoritePopup.setData(3, true);
+                }
             }
-        }
-        createSyncDialog = new CreateSyncDialog(this);
-        createSyncDialog.show(meetingConfig.getDocument().getAttachmentID() + "");
+
+            @Override
+            public void addaudio(int ii) {
+                if (favoritePopup != null) {
+                    isrecord = ii;
+                    favoritePopup.StartPop(web);
+                    favoritePopup.setData(3, true);
+                }
+            }
+
+            @Override
+            public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
+                soundtrackRecordManager=SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
+                soundtrackRecordManager.setInitParams(checked,soundtrackBean2,audiosyncll);
+            }
+        });
+        yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID()+"");
     }
+
+
+    private  boolean isSyncing=false;
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveEventSoundSync(EventSoundSync eventSoundSync) {
+        Log.e("syncing---", eventSoundSync.getSoundtrackID()+"  "+eventSoundSync.getStatus()+"  "+eventSoundSync.getTime());
+        int soundtrackID=eventSoundSync.getSoundtrackID();
+        if(eventSoundSync.getStatus()==1){ //開始錄音
+            isSyncing=true;
+            getJspPagenumber();
+            messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
+            recordstatus.setVisibility(View.VISIBLE);
+        }else if(eventSoundSync.getStatus()==0){   //录音结束
+            recordstatus.setVisibility(View.GONE);
+            isSyncing=false;
+            String url2 = AppConfig.URL_PUBLIC + "Soundtrack/EndSync?soundtrackID=" + soundtrackID + "&syncDuration=" + eventSoundSync.getTime();
+            ServiceInterfaceTools.getinstance().endSync(url2, ServiceInterfaceTools.ENDSYNC, new ServiceInterfaceListener() {
+                @Override
+                public void getServiceReturnData(Object object) {
+                }
+            });
+        }
+    }
+
+    private void getJspPagenumber() {
+        web.evaluateJavascript("javascript:GetCurrentPageNumber()", new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String s) {
+                int id = 1;
+                if (!TextUtils.isEmpty(s)) {
+                    Log.e("syncing---", s+"");
+                    id = Integer.parseInt(s);
+                }
+                JSONObject js = new JSONObject();
+                try {
+                    js.put("type", 2);
+                    js.put("page", id);
+                    js.put("time", 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                messageManager.sendMessage_MyActionFrame(js.toString(),meetingConfig);
+            }
+        });
+    }
+
+
+    private int currentPosition = -1;
+    private FavoriteVideoPopup favoritePopup;
+
+    private void openSaveVideoPopup() {
+        favoritePopup = new FavoriteVideoPopup(this);
+        favoritePopup.setFavoritePoPListener(new FavoriteVideoPopup.FavoriteVideoPoPListener() {
+            @Override
+            public void dismiss() {
+
+            }
+
+            @Override
+            public void open() {
+
+            }
+
+            @Override
+            public void selectFavorite(int position) {
+                currentPosition = position;
+            }
+
+            @Override
+            public void cancel() {
+
+            }
+
+            @Override
+            public void save(int type, boolean isYinxiang) {
+                if (isYinxiang) {
+                    if (yinxiangCreatePopup != null && currentPosition >= 0) {
+                        if (isrecord == 0) {
+                            yinxiangCreatePopup.setAudioBean(favoritePopup.getData().get(currentPosition));
+                        } else if (isrecord == 1) {
+                            yinxiangCreatePopup.setRecordBean(favoritePopup.getData().get(currentPosition));
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void uploadFile() {
+
+            }
+        });
+    }
+
+
 
     private void openNote(String noteId) {
         BookNote bookNote = null;
