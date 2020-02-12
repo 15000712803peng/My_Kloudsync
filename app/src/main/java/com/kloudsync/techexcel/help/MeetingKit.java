@@ -85,7 +85,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         this.cameraAdapter = cameraAdapter;
     }
 
-    public void setFullCameraAdaptero(FullAgoraCameraAdapter fullCameraAdapter) {
+    public void setFullCameraAdapter(FullAgoraCameraAdapter fullCameraAdapter) {
         this.fullCameraAdapter = fullCameraAdapter;
     }
 
@@ -138,6 +138,14 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             return;
         }
         settingDialog.show(host,meetingConfig);
+    }
+
+    public void init(Activity host,MeetingConfig meetingConfig){
+        this.host = host;
+        this.meetingConfig = meetingConfig;
+        ((App) host.getApplication()).initWorkerThread();
+        getRtcManager().setHost(host);
+        getRtcManager().addEventHandler(this);
     }
 
     public void prepareJoin(Activity host, MeetingConfig meetingConfig) {
@@ -385,9 +393,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         AgoraMember member = new AgoraMember();
         member.setUserId(userId);
         boolean isMuteVedio = !MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn();
-        Log.e("check_agora","one");
+        Log.e("check_agora","one:"+ isMuteVedio);
         boolean isMuteAudio = !MeetingSettingCache.getInstance(host).getMeetingSetting().isMicroOn();
-        Log.e("check_agora","two");
+        Log.e("check_agora","two:" + isMuteAudio);
         member.setMuteVideo(isMuteVedio);
         member.setMuteAudio(isMuteAudio);
         member.setAdd(true);

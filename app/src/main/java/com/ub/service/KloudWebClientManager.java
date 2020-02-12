@@ -165,13 +165,15 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
     }
 
     public void release() {
-        if (heartBeatTimer != null && heartBeatTask != null) {
-            heartBeatStarted = false;
-            heartBeatTask.cancel();
-            heartBeatTimer.cancel();
-            heartBeatTimer = null;
-            heartBeatTask = null;
-            heartBeatStarted = false;
+        if(instance != null){
+            if (heartBeatTimer != null && heartBeatTask != null) {
+                heartBeatStarted = false;
+                heartBeatTask.cancel();
+                heartBeatTimer.cancel();
+                heartBeatTimer = null;
+                heartBeatTask = null;
+                heartBeatStarted = false;
+            }
             instance = null;
         }
     }

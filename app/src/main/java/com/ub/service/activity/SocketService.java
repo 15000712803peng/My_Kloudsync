@@ -61,10 +61,13 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
 
 
     private void init() {
+        KloudWebClientManager clientManager = KloudWebClientManager.getInstance();
+        if(clientManager != null){
+            clientManager.release();
+        }
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         AppConfig.UserToken = sharedPreferences.getString("UserToken", null);
-
         try {
             kloudWebClientManager = KloudWebClientManager.getDefault(getApplicationContext(), new URI(AppConfig.COURSE_SOCKET + File.separator + AppConfig.UserToken
                     + File.separator + "2" + File.separator + Md5Tool.getUUID()));

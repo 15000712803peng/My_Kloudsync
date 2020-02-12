@@ -37,6 +37,7 @@ public class KloudWebClient extends WebSocketClient {
 
     public KloudWebClient(URI serverUri) {
         super(serverUri);
+        Log.e("KloudWebClient","new_client");
         SSLContext sslContext = null;
         try {
             sslContext = SSLContext.getInstance("TLS");

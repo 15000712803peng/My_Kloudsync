@@ -316,6 +316,78 @@
                 android:layout_height="38dp" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/single_layout_item_full_screen"
+            android:layout_width="match_parent"
+            android:background="@color/darkblack2"
+            android:layout_height="match_parent"
+            >
+
+            <FrameLayout
+                android:id="@+id/layout_fullsceen_vedio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"></FrameLayout>
+
+            <TextView
+                android:background="@drawable/user_name_bg"
+                android:layout_marginTop="6dp"
+                android:id="@+id/single_txt_name"
+                android:textSize="13sp"
+                android:textColor="@color/white"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_marginRight="16dp"
+                android:orientation="horizontal"
+                android:gravity="right|center_vertical"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="33dp">
+
+
+                <ImageView
+                    android:id="@+id/single_image_audio_status"
+                    android:src="@drawable/icon_command_mic_disable"
+                    android:layout_width="32dp"
+                    android:layout_height="36dp" />
+
+                <ImageView
+                    android:id="@+id/single_image_vedio_status"
+                    android:src="@drawable/icon_command_webcam_disable"
+                    android:layout_width="32dp"
+                    android:layout_height="36dp" />
+
+
+            </LinearLayout>
+
+            <com.kloudsync.techexcel.view.CircleImageView
+                android:id="@+id/single_member_icon"
+                android:layout_marginBottom="6dp"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="10dp"
+                android:padding="2dp"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                />
+
+            <ImageView
+                android:layout_margin="10dp"
+                android:src="@drawable/icon_back"
+                android:id="@+id/icon_back_single_full_screen"
+                android:layout_width="38dp"
+                android:layout_height="38dp" />
+
+
+        </RelativeLayout>
+
+
 
 
 
@@ -473,6 +545,17 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="56dp"
         android:src="@drawable/icon_command" />
+
+    <ImageView
+        android:visibility="gone"
+        android:layout_marginBottom="12dp"
+        android:id="@+id/meeting_menu_member"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="56dp"
+        android:src="@drawable/icon_menu_audience" />
 
     <com.kloudsync.techexcel.view.TipTextView
         android:id="@+id/txt_top_tip"

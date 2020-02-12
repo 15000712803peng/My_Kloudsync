@@ -381,4 +381,11 @@ public class StringUtils {
 
         return content;
     }
+
+    public static boolean hasChar(String str) {
+        String regex=".*[a-zA-Z]+.*";
+        Matcher m=Pattern.compile(regex).matcher(str);
+        return m.matches();
+    }
+
 }

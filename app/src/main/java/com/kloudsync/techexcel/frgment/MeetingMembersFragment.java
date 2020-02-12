@@ -350,6 +350,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             // 当前的member不是自己
             if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
                 // 如果自己是presenter
+                holder.handsUpText.setVisibility(View.VISIBLE);
                 holder.changeToMember.setVisibility(View.VISIBLE);
                 holder.changeToMember.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -358,34 +359,31 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     }
                 });
             } else {
+                holder.handsUpText.setVisibility(View.GONE);
                 holder.changeToMember.setVisibility(View.GONE);
                 holder.changeToMember.setOnClickListener(null);
             }
 
         } else {
             holder.handsUpText.setVisibility(View.VISIBLE);
-            if (meetingMember.getHandStatus() == 0) {
-                holder.handsUpText.setText("举手");
-                holder.handsUpText.setBackground(getResources().getDrawable(R.drawable.change_auditor_bg));
-                holder.handsUpText.setTextColor(Color.parseColor("#ff999999"));
-                holder.handsUpText.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        handsUp();
-                    }
-                });
+        }
 
-            } else {
-                holder.handsUpText.setOnClickListener(null);
-                holder.handsUpText.setText("已举手");
-                holder.handsUpText.setTextColor(getResources().getColor(R.color.white));
-                holder.handsUpText.setBackground(getResources().getDrawable(R.drawable.has_handed_up_bg));
-            }
-//            if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){
-//                holder.settingImage.setVisibility(View.GONE);
-//            }else {
-//                holder.settingImage.setVisibility(View.VISIBLE);
-//            }
+        if (meetingMember.getHandStatus() == 0) {
+            holder.handsUpText.setText("举手");
+            holder.handsUpText.setBackground(getResources().getDrawable(R.drawable.change_auditor_bg));
+            holder.handsUpText.setTextColor(Color.parseColor("#ff999999"));
+            holder.handsUpText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    handsUp();
+                }
+            });
+
+        } else {
+            holder.handsUpText.setOnClickListener(null);
+            holder.handsUpText.setText("已举手");
+            holder.handsUpText.setTextColor(getResources().getColor(R.color.white));
+            holder.handsUpText.setBackground(getResources().getDrawable(R.drawable.has_handed_up_bg));
         }
     }
 

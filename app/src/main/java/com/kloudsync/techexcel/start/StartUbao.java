@@ -29,6 +29,7 @@ import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.tool.SystemUtil;
 import com.kloudsync.techexcel.ui.MainActivity;
+import com.ub.service.activity.SocketService;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
 import com.umeng.analytics.MobclickAgent;
@@ -74,6 +75,7 @@ public class StartUbao extends Activity {
         LoginGet.wechatFilePaht = "";
         welcomeImage = (ImageView) findViewById(R.id.image_welcome);
         wechatFilePath = getIntent().getStringExtra("wechat_data_path");
+        startWBService();
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
@@ -354,6 +356,19 @@ public class StartUbao extends Activity {
         editor.putString("Name", AppConfig.UserName);
         editor.commit();
     }
+
+    private void startWBService() {
+
+        Intent service = new Intent(this, SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(service);
+        }else {
+            startService(service);
+        }
+
+    }
+
+
 
 
 }

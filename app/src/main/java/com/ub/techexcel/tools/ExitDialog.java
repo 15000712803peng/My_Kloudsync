@@ -60,6 +60,16 @@ public class ExitDialog extends Dialog implements DialogInterface.OnDismissListe
         }
     }
 
+    @Override
+    public void show() {
+        super.show();
+        if(meetingConfig.getType() == MeetingType.MEETING){
+            saveAndLeaveText.setVisibility(View.GONE);
+        }else {
+            saveAndLeaveText.setVisibility(View.VISIBLE);
+        }
+    }
+
     private ExitDialogClickListener dialogClickListener;
 
 
