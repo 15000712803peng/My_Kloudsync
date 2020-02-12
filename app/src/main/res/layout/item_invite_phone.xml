@@ -37,7 +37,7 @@
             android:layout_weight="1"
             android:layout_height="42dp"
             android:background="@android:color/transparent"
-            android:hint="input phone number"
+            android:hint="@string/input_phone_number"
             android:inputType="phone"
             android:maxLength="11"
             android:maxLines="1"
@@ -74,7 +74,7 @@
                     android:layout_centerInParent="true"
                     android:id="@+id/txt_role"
                     android:gravity="center_vertical"
-                    android:text="member"
+                    android:text="@string/member"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 

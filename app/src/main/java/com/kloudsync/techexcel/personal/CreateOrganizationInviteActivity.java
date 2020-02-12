@@ -23,6 +23,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.MemberRoleDialog;
 import com.kloudsync.techexcel.response.NetworkResponse;
+import com.kloudsync.techexcel.start.SelectedCountryCodeActivity;
 import com.kloudsync.techexcel.tool.ContactsTool;
 import com.kloudsync.techexcel.ui.MainActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
@@ -51,6 +52,8 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
     LinearLayout inviteMoreLayout;
     private TextView inviteText;
     private int firstSpaceId;
+    private TextView skipText;
+    private static final int REQUEST_SELECT_COUNTRY_CODE = 2;
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -67,7 +70,6 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
         JSONObject obj = null;
         Toast.makeText(this, R.string.create_success, Toast.LENGTH_SHORT).show();
         try {
-
             obj = new JSONObject(result);
             int RetData = obj.getInt("RetData");
             editor = sharedPreferences.edit();
@@ -102,12 +104,23 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
     }
 
     MemberRoleDialog roleDialog;
+
     private void addPhoneItem() {
         PhoneItem item = new PhoneItem();
         AppConfig.COUNTRY_CODE = sharedPreferences.getInt("countrycode", 86);
         item.setRegion("+" + AppConfig.COUNTRY_CODE);
         LinearLayout itemLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.item_invite_phone, null);
         TextView regionText = itemLayout.findViewById(R.id.txt_region);
+        regionText.setTag(System.currentTimeMillis() + "");
+        regionText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CreateOrganizationInviteActivity.this, SelectedCountryCodeActivity.class);
+                intent.putExtra("view_tag", (String) view.getTag());
+                startActivityForResult(intent, REQUEST_SELECT_COUNTRY_CODE);
+            }
+        });
+
         regionText.setText(item.getRegion());
         LinearLayout selectedRoleLayout = itemLayout.findViewById(R.id.layout_select_role);
         final TextView roleText = itemLayout.findViewById(R.id.txt_role);
@@ -116,9 +129,9 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
             public void onClick(View v) {
                 RoleInTeam role = new RoleInTeam();
                 String currentRole = roleText.getText().toString().trim();
-                if (currentRole.equals("member")) {
+                if (currentRole.equals(getString(R.string.member))) {
                     role.setTeamRole(RoleInTeam.ROLE_MEMBER);
-                } else if (currentRole.equals("admin")) {
+                } else if (currentRole.equals(getString(R.string.admin))) {
                     role.setTeamRole(RoleInTeam.ROLE_ADMIN);
                 }
                 roleDialog = new MemberRoleDialog(CreateOrganizationInviteActivity.this);
@@ -142,6 +155,8 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
         inviteText.setOnClickListener(this);
         titleText = (TextView) findViewById(R.id.tv_title);
         titleText.setText(R.string.invite_members);
+        skipText = findViewById(R.id.txt_skip);
+        skipText.setOnClickListener(this);
         phoneItemsParentLayout = findViewById(R.id.layout_phone_item_parent);
         backLayout.setOnClickListener(this);
         inviteMoreLayout = findViewById(R.id.layout_invite_more);
@@ -163,33 +178,34 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
                 contactsTool.getContact(this);
                 break;
             case R.id.txt_invite:
-                List<String> phoneNumbers = fetchInivtePhoneNumbers();
+                List<PhoneItem> phoneNumbers = fetchInivtePhoneNumbers();
                 if (phoneNumbers.size() == 0) {
                     Toast.makeText(getApplicationContext(), "please enter or select least one phone number", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (inviteItems.size() > 0) {
-                        ServiceInterfaceTools.getinstance().inviteMultipleToCompany(AppConfig.SchoolID + "", inviteItems, firstSpaceId).enqueue(new Callback<NetworkResponse>() {
-                            @Override
-                            public void onResponse(Call<NetworkResponse> call, Response<NetworkResponse> response) {
-                                if (response != null && response.isSuccessful() && response.body() != null) {
-                                    if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
-                                        Toast.makeText(getApplicationContext(), "invite success", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "invite failed", Toast.LENGTH_SHORT).show();
-                                    }
+                    ServiceInterfaceTools.getinstance().inviteMultipleToCompany(AppConfig.SchoolID + "", phoneNumbers, firstSpaceId).enqueue(new Callback<NetworkResponse>() {
+                        @Override
+                        public void onResponse(Call<NetworkResponse> call, Response<NetworkResponse> response) {
+                            if (response != null && response.isSuccessful() && response.body() != null) {
+                                if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
+                                    Toast.makeText(getApplicationContext(), "invite success", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "invite failed", Toast.LENGTH_SHORT).show();
                                 }
-                                goToMainActivity();
                             }
+                            goToMainActivity();
+                        }
 
-                            @Override
-                            public void onFailure(Call<NetworkResponse> call, Throwable t) {
-                                Toast.makeText(getApplicationContext(), "invite failed", Toast.LENGTH_SHORT).show();
-                                goToMainActivity();
-                            }
-                        });
+                        @Override
+                        public void onFailure(Call<NetworkResponse> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "invite failed", Toast.LENGTH_SHORT).show();
+                            goToMainActivity();
+                        }
+                    });
 
-                    }
                 }
+                break;
+            case R.id.txt_skip:
+                goToMainActivity();
                 break;
             default:
                 break;
@@ -204,6 +220,7 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
     }
 
     private JSONObject format() {
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("SchoolName", et_name.getText().toString().trim());
@@ -219,7 +236,6 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
         return jsonObject;
     }
 
-
     private RelativeLayout openContactLayout;
 
     @Override
@@ -229,13 +245,28 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
             if (requestCode == ContactsTool.REQUEST_CONTACTS) {
                 String phoneNume = contactsTool.contactResponse(this, data);
                 fillPhoneNumber(phoneNume);
+            } else if (requestCode == REQUEST_SELECT_COUNTRY_CODE) {
+                String viewTag = data.getStringExtra("view_tag");
+                String code = "+" + data.getStringExtra("code");
+                fillCodeByTag(viewTag, code);
+            }
+        }
+    }
+
+    private void fillCodeByTag(String viewTag, String code) {
+        for (int i = 0; i < phoneItemsParentLayout.getChildCount(); ++i) {
+            LinearLayout item = (LinearLayout) phoneItemsParentLayout.getChildAt(i);
+            TextView regionText = item.findViewById(R.id.txt_region);
+            if (regionText.getTag().equals(viewTag)) {
+                regionText.setText(code);
+                break;
             }
         }
     }
 
     private void fillPhoneNumber(String phoneNumber) {
         int index = -1;
-        for (PhoneItem phoneItem : phoneItems) {
+        for (PhoneItem phoneItem : fetchInivtePhoneNumbers()) {
             if (phoneItem.getPhoneNumber().equals(phoneNumber)) {
                 Toast.makeText(getApplicationContext(), "该联系人已经添加", Toast.LENGTH_SHORT).show();
                 return;
@@ -247,9 +278,9 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
                 index = phoneItems.indexOf(phoneItem);
                 phoneItem.setPhoneNumber(phoneNumber);
                 break;
-
             }
         }
+
         if (index == -1 || index >= phoneItemsParentLayout.getChildCount()) {
             return;
         }
@@ -260,15 +291,40 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
 
     List<PhoneItem> inviteItems = new ArrayList<>();
 
-    private List<String> fetchInivtePhoneNumbers() {
-        List<String> numbers = new ArrayList<>();
-        for (PhoneItem item : phoneItems) {
-            if (!TextUtils.isEmpty(item.getPhoneNumber())) {
-                numbers.add(item.getPhoneNumber());
-                inviteItems.add(item);
+    List<PhoneItem> _inviteItems = new ArrayList<>();
+
+
+    private List<PhoneItem> fetchInivtePhoneNumbers() {
+        _inviteItems.clear();
+        for (int i = 0; i < phoneItemsParentLayout.getChildCount(); ++i) {
+            LinearLayout item = (LinearLayout) phoneItemsParentLayout.getChildAt(i);
+            EditText editText = item.findViewById(R.id.edit_telephone);
+            TextView roleText = item.findViewById(R.id.txt_role);
+            TextView codeText = item.findViewById(R.id.txt_region);
+            String phoneNumber = editText.getText().toString().trim();
+            String role = roleText.getText().toString().trim();
+            String code = codeText.getText().toString().trim();
+            if (!TextUtils.isEmpty(phoneNumber)) {
+                PhoneItem phoneItem = new PhoneItem();
+                phoneItem.setPhoneNumber(phoneNumber);
+                phoneItem.setRegion(code);
+                if (role.equals(getString(R.string.member))) {
+                    phoneItem.setRole(RoleInTeam.ROLE_MEMBER);
+                } else if (role.equals(getString(R.string.admin))) {
+                    phoneItem.setRole(RoleInTeam.ROLE_ADMIN);
+                }
+                _inviteItems.add(phoneItem);
             }
+
         }
-        return numbers;
+//        List<String> numbers = new ArrayList<>();
+//        for (PhoneItem item : phoneItems) {
+//            if (!TextUtils.isEmpty(item.getPhoneNumber())) {
+//                numbers.add(item.getPhoneNumber());
+//                inviteItems.add(item);
+//            }
+//        }
+        return _inviteItems;
     }
 
 }

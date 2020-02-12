@@ -795,6 +795,13 @@
     <string name="tips_orginzaiton_name_not_empty">组织名不能是空</string>
     <string name="invite_members">邀请成员</string>
     <string name="invite_now">立即邀请</string>
+    <string name="add_more">+ 添加更多</string>
+    <string name="skip">跳过</string>
+    <string name="input_phone_number">输入手机号码</string>
+    <string name="member">成员</string>
+    <string name="admin">管理员</string>
+    <string name="invite_as_member">邀请为成员</string>
+    <string name="invite_as_admin">邀请为管理员</string>
 
 
 

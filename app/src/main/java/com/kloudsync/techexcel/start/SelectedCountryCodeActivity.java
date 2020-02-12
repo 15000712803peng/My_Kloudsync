@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.start;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,14 +23,12 @@ import com.kloudsync.techexcel.help.SideBar;
 import com.kloudsync.techexcel.help.SideBar.OnTouchingLetterChangedListener;
 import com.kloudsync.techexcel.help.SideBarSortHelp;
 import com.kloudsync.techexcel.info.CountryCodeInfo;
-import com.kloudsync.techexcel.tool.PinyinComparatorCC;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class ChangeCountryCode extends Activity {
+public class SelectedCountryCodeActivity extends Activity {
 
 	private RelativeLayout backLayout;
 	private EditText et_search;
@@ -43,6 +42,7 @@ public class ChangeCountryCode extends Activity {
 	private ChangeCountryCodeAdapter cadapter;
 	
 	private boolean normal;
+	private String viewTag;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +50,7 @@ public class ChangeCountryCode extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_change_countrycode);
 		normal = getIntent().getBooleanExtra("normal", false);
+		viewTag = getIntent().getStringExtra("view_tag");
 		initView();		
 	}
 
@@ -69,7 +70,7 @@ public class ChangeCountryCode extends Activity {
 	private void getData() {
 		mlist = new CountryCodeShow().ccl;
 //		Collections.sort(mlist, new PinyinComparatorCC());
-		cadapter = new ChangeCountryCodeAdapter(ChangeCountryCode.this, mlist);
+		cadapter = new ChangeCountryCodeAdapter(SelectedCountryCodeActivity.this, mlist);
 		lv_group.setAdapter(cadapter);
 		lv_group.setOnItemClickListener(new myOnItem());
 	}
@@ -156,10 +157,15 @@ public class ChangeCountryCode extends Activity {
 			} else {
 				ci = mlist.get(position);
 			}
-			AppConfig.COUNTRY_CODE = ci.getCode();
-			AppConfig.COUNTRY_NAME = ci.getName();
-			CancelActivity();
-			
+//			AppConfig.COUNTRY_CODE = ci.getCode();
+//			AppConfig.COUNTRY_NAME = ci.getName();
+			Intent intent = new Intent();
+			intent.putExtra("view_tag",viewTag);
+			intent.putExtra("code",ci.getCode() +"");
+//			CancelActivity();
+			setResult(RESULT_OK,intent);
+			finish();
+
 		}
 		
 	}
