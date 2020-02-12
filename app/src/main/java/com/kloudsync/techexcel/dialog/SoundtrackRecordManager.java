@@ -329,7 +329,6 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                     stopAudioRecord(soundtrackID);
                 }
                 break;
-
         }
 
     }
