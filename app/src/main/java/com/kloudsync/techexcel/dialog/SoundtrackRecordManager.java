@@ -22,12 +22,14 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventCreateSync;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.kloudsync.activity.Document;
 import com.ub.service.audiorecord.AudioRecorder;
 import com.ub.service.audiorecord.RecordEndListener;
 import com.ub.techexcel.bean.SoundtrackBean;
+import com.ub.techexcel.tools.UploadAudioTool;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -89,6 +91,7 @@ public class SoundtrackRecordManager implements View.OnClickListener {
     private int soundtrackID;
     private int fieldId;
     private String fieldNewPath;
+    private MeetingConfig meetingConfig;
 
     /**
      *
@@ -96,9 +99,10 @@ public class SoundtrackRecordManager implements View.OnClickListener {
      * @param soundtrackBean
      * @param audiosyncll
      */
-    public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll) {
+    public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, MeetingConfig meetingConfig) {
         this.audiosyncll=audiosyncll;
         this.isrecordvoice=isrecordvoice;
+        this.meetingConfig=meetingConfig;
         soundtrackID = soundtrackBean.getSoundtrackID();
         fieldId = soundtrackBean.getFileId();
         fieldNewPath = soundtrackBean.getPath();
@@ -282,6 +286,7 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                     if (file != null) {
                         Log.e("syncing---", file.getAbsolutePath() + "   " + file.getName());
 //                        uploadAudioFile(file, soundtrackID, false, false);
+                        UploadAudioTool.getManager(mContext).uploadAudio(file,soundtrackID,fieldId,fieldNewPath,audiosyncll,meetingConfig);
                     }
                 }
             });
@@ -324,7 +329,6 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                     stopAudioRecord(soundtrackID);
                 }
                 break;
-
         }
 
     }

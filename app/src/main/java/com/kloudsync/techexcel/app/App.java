@@ -54,7 +54,7 @@ public class App extends Application {
         threadMgr = ThreadManager.getManager();
         mainHandler = new Handler(Looper.getMainLooper());
         instance = this;
-//        startWBService();
+        startWBService();
         disableAPIDialog();
 //        getApplicationContext().startService(new Intent(getApplicationContext(), TransferService.class));
         asyncInit();
@@ -222,7 +222,16 @@ public class App extends Application {
         }
     }
 
+    private void startWBService() {
 
+        Intent service = new Intent(this, SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(service);
+        }else {
+            startService(service);
+        }
+        startService(service);
+    }
 
 
 }

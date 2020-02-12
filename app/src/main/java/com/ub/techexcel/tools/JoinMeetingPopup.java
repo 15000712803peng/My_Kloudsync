@@ -2,11 +2,9 @@ package com.ub.techexcel.tools;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -29,7 +27,6 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.service.ConnectService;
-import com.ub.service.activity.SocketService;
 import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.UpcomingLesson;
@@ -160,8 +157,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                     if(retCode == 0){
                         joinMeeting.setLessionId(result.getInt("RetData"));
                         joinMeeting.setMeetingId(meetingRoom);
-                        joinMeeting.setOrginalMeetingId(meetingRoom);
-//                        joinMeeting.setRole(MeetingConfig.MeetingRole.MEMBER);
+                        joinMeeting.setRole(MeetingConfig.MeetingRole.MEMBER);
                     }
                 }
 
@@ -174,13 +170,26 @@ public class JoinMeetingPopup implements View.OnClickListener {
                     Log.e("GetClassRoomTeacherID","meetingRoom:" + meetingRoom + ",result:" + result);
                     int hostId = result.getInt("RetData");
                     eventJoinMeeting.setHostId(hostId);
+
+                }else {
+                    EventBus.getDefault().post(joinMeeting);
+                    if(disposable != null && !disposable.isDisposed()){
+                        disposable.dispose();
+                        disposable = null;
+                    }
                 }
             }
         }).doOnNext(new Consumer<EventJoinMeeting>() {
             @Override
             public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
-                if(eventJoinMeeting.getHostId() > 0){
-//                    EventBus.getDefault().post(eventJoinMeeting);
+                if(eventJoinMeeting.getHostId() <= 0){
+                    EventBus.getDefault().post(eventJoinMeeting);
+                    if(disposable != null && !disposable.isDisposed()){
+                        disposable.dispose();
+                        disposable = null;
+                    }
+
+                }else {
                     JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/UpcomingLessonList?teacherID=" + eventJoinMeeting.getHostId());
                     Log.e("UpcomingLessonList","hostID:" + eventJoinMeeting.getHostId() + ",result:" + result);
 
@@ -195,21 +204,9 @@ public class JoinMeetingPopup implements View.OnClickListener {
                             }
                         }
                     }
-                }
-            }
-        }).doOnNext(new Consumer<EventJoinMeeting>() {
-            @Override
-            public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
-                JSONObject result = ServiceInterfaceTools.getinstance().syncGetJoinMeetingDefaultStatus(eventJoinMeeting.getOrginalMeetingId());
-                if(result.has("code")){
-                    int code = result.getInt("code");
-                    if(code == 0){
-                        JSONObject data = result.getJSONObject("data");
-                        eventJoinMeeting.setRole(data.getInt("role"));
-                    }
-                }
+                    EventBus.getDefault().post(eventJoinMeeting);
 
-                EventBus.getDefault().post(eventJoinMeeting);
+                }
             }
         }).subscribe();
     }
@@ -229,8 +226,6 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         roomid = roomid.toUpperCase();
                         mContext.getSharedPreferences(AppConfig.LOGININFO,
                                 MODE_PRIVATE).edit().putString("join_meeting_room",roomid).commit();
-//                        mContext.startService()
-                        startWBService();
                         doJoin(roomid);
                     } else {
                         Toast.makeText(mContext, mContext.getString(R.string.joinroom), Toast.LENGTH_LONG).show();
@@ -245,15 +240,6 @@ public class JoinMeetingPopup implements View.OnClickListener {
 
             default:
                 break;
-        }
-    }
-
-    private void startWBService() {
-        Intent service = new Intent(mContext, SocketService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mContext.startForegroundService(service);
-        }else {
-            mContext.startService(service);
         }
     }
 

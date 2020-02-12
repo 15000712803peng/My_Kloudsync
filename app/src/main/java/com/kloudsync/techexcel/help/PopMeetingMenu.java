@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
@@ -55,10 +54,6 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.meeting_camera:
-                if(meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE){
-                    Toast.makeText(host,"没有权限操作",Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 boolean isCameraOn = !getSettingCache(host).getMeetingSetting().isCameraOn();
                 cameraImage.setImageResource(isCameraOn ? R.drawable.icon_command_webcam_enable :
                         R.drawable.icon_command_webcam_disable);
@@ -69,10 +64,6 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 break;
 
             case R.id.meeting_camera_switch:
-                if(meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE){
-                    Toast.makeText(host,"没有权限操作",Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 if (operationsListener != null) {
                     operationsListener.menuSwitchCamera();
                 }
@@ -90,10 +81,6 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 hide();
                 break;
             case R.id.meeting_mic_enabel: {
-                if(meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE){
-                    Toast.makeText(host,"没有权限操作",Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 boolean isMicroOn = !getSettingCache(host).getMeetingSetting().isMicroOn();
                 microImage.setImageResource(isMicroOn ? R.drawable.icon_command_mic_enabel :
                         R.drawable.icon_command_mic_disable);
