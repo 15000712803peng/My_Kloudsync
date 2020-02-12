@@ -372,7 +372,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }else {
             startService(service);
         }
-        startService(service);
     }
 
     ProgressDialog progressDialog;

@@ -82,6 +82,7 @@ public class DocVedioManager  implements MediaPlayer.OnPreparedListener,MediaPla
         }else if(vedioData.getId() == id && !TextUtils.isEmpty(vedioData.getUrl())){
             doPlay(vedioData);
         }
+        notifyVedioState(1,vedioData);
     }
 
     private void requestAndPlay(VedioData vedioData){
@@ -452,9 +453,6 @@ public class DocVedioManager  implements MediaPlayer.OnPreparedListener,MediaPla
 
         }
     }
-
-
-
 
 
 

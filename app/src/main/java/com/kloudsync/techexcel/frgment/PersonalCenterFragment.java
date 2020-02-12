@@ -62,6 +62,7 @@ import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.start.LoginActivity;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.DensityUtil;
+import com.kloudsync.techexcel.tool.StringUtils;
 import com.kloudsync.techexcel.ui.DigitalPensActivity;
 import com.kloudsync.techexcel.ui.GuideActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
@@ -139,7 +140,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                     if (retdate.equals(AppConfig.ClassRoomID)) {
                     } else {
                         AppConfig.ClassRoomID = retdate;
-                        tv_roomid.setText(AppConfig.ClassRoomID.replaceAll("-", ""));
+                        tv_roomid.setText(AppConfig.ClassRoomID.replaceAll("-", "").toUpperCase());
                     }
                     if (dialog != null && dialog.isShowing()) {
                         dialog.dismiss();
@@ -301,7 +302,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         tv_pc_hc = (TextView) view.findViewById(R.id.tv_pc_hc);
         tv_pc_about = view.findViewById(R.id.tv_pc_about);
         if (!TextUtils.isEmpty(AppConfig.ClassRoomID)) {
-            tv_roomid.setText(AppConfig.ClassRoomID.replaceAll("-", ""));
+            tv_roomid.setText(AppConfig.ClassRoomID.replaceAll("-", "").toUpperCase());
         }
         sharedPreferences = getActivity().getSharedPreferences(
                 AppConfig.LOGININFO, Context.MODE_PRIVATE);
@@ -486,35 +487,40 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 
         String regex = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{3,12}$";
 
-        if (TextUtils.isEmpty(classRoomId) || (classRoomId.length() < 3)) {
-            Toast.makeText(getActivity(),
-                    "Room ID must be greater than 3 digits in length",
-                    Toast.LENGTH_SHORT).show();
-
-        } else if (!classRoomId.matches(regex)) {
-            Toast.makeText(getActivity(),
-                    "Room ID must contain numbers and letters. Room ID must be greater than 3 digits in length ",
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            new ApiTask(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        JSONObject js = new JSONObject();
-                        js.put("classroomID", classRoomId);
-                        JSONObject jsonObject = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/UpdateClassRoomID?classRoomID=" + classRoomId, js);
-                        Log.e("getClassRoomLessonID2", jsonObject.toString()); //{"RetCode":0,"ErrorMessage":null,"DetailMessage":null,"RetData":2477}
-                        int retCode = jsonObject.getInt("RetCode");
-                        Message msg = Message.obtain();
-                        msg.what = 0x1006;
-                        msg.obj = retCode;
-                        handler.sendMessage(msg);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start(ThreadManager.getManager());
+        if(TextUtils.isEmpty(classRoomId)){
+            Toast.makeText(getActivity(),"会议id不能是空",Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        if((classRoomId.length() < 3)){
+            Toast.makeText(getActivity(),"会议id的长度需要大于等于3",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(!StringUtils.hasChar(classRoomId)){
+            Toast.makeText(getActivity(),"会议id至少包含一个字母",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject js = new JSONObject();
+                    js.put("classroomID", classRoomId);
+                    JSONObject jsonObject = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/UpdateClassRoomID?classRoomID=" + classRoomId, js);
+                    Log.e("getClassRoomLessonID2", jsonObject.toString()); //{"RetCode":0,"ErrorMessage":null,"DetailMessage":null,"RetData":2477}
+                    int retCode = jsonObject.getInt("RetCode");
+                    Message msg = Message.obtain();
+                    msg.what = 0x1006;
+                    msg.obj = retCode;
+                    handler.sendMessage(msg);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+
     }
 
     private void GetClassRoomID(final String classRoomId) {

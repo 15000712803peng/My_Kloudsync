@@ -18,12 +18,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventShowFullAgora;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.view.CircleImageView;
 import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,6 +68,11 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
         ViewHolder myHolder = holder;
         Log.e("FullAgoraCameraAdapter", "members_size:" + members.size());
         final AgoraMember member = members.get(position);
+        if(member.getIsMember() == 1){
+            holder.itemView.setVisibility(View.VISIBLE);
+        }else {
+            holder.itemView.setVisibility(View.GONE);
+        }
         final FrameLayout holderView = (FrameLayout) myHolder.vedioLayout;
         holderView.removeAllViews();
         int height = mContext.getResources().getDisplayMetrics().heightPixels;
@@ -124,6 +132,15 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
             holder.iconImage.setVisibility(View.GONE);
         }
 
+        holder.fullScreenImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventShowFullAgora showFullAgora = new EventShowFullAgora();
+                showFullAgora.setAgoraMember(member);
+                EventBus.getDefault().post(showFullAgora);
+            }
+        });
+
 
     }
 
@@ -175,6 +192,7 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
             nameText = view.findViewById(R.id.txt_name);
             audioStatusImage = view.findViewById(R.id.image_audio_status);
             vedioStatusImage = view.findViewById(R.id.image_vedio_status);
+            fullScreenImage  = view.findViewById(R.id.image_vedio_full);
             iconImage = view.findViewById(R.id.member_icon);
         }
 
@@ -182,7 +200,9 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
         public TextView nameText;
         public ImageView audioStatusImage;
         public ImageView vedioStatusImage;
+        public ImageView fullScreenImage;
         public CircleImageView iconImage;
+
     }
 
     public void reset() {
@@ -210,6 +230,15 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
         }
     }
 
+    public void refreshAgoraMember(AgoraMember agoraMember){
+
+        int index = this.members.indexOf(agoraMember);
+        if(index >= 0){
+            Log.e("FullAgoraCameraAdapter","refresh_agora_member");
+            notifyItemChanged(index);
+        }
+    }
+
 
     public void addUser(AgoraMember user) {
 
@@ -228,7 +257,12 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
             Collections.sort(members);
             notifyItemRemoved(this.members.indexOf(user));
         }
+    }
 
+    public void showFull(int position){
+        EventShowFullAgora showFullAgora = new EventShowFullAgora();
+        showFullAgora.setAgoraMember(members.get(position));
+        EventBus.getDefault().post(showFullAgora);
     }
 
 }

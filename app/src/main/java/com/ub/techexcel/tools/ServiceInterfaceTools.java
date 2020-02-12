@@ -2900,11 +2900,15 @@ public class ServiceInterfaceTools {
             return new JSONObject();
         }
         String url = AppConfig.URL_PUBLIC;
+        int attachmentId = -1;
         if (meetingConfig.getType() == MeetingType.MEETING) {
+            if(meetingConfig.getDocument() != null){
+                attachmentId = meetingConfig.getDocument().getAttachmentID();
+            }
             url += "LessonSoundtrack/List?lessonID=" + meetingConfig.getLessionId() +
-                    "&attachmentID=" + meetingConfig.getDocument().getAttachmentID();
+                    "&attachmentID=" +meetingConfig.getDocument();
         } else {
-            url += "Soundtrack/List?attachmentID=" + meetingConfig.getDocument().getAttachmentID() + "&isPublic=0";
+            url += "Soundtrack/List?attachmentID=" + attachmentId + "&isPublic=0";
         }
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
         Log.e("syncGetSoundtrackList", "url:" + url + ",result:" + response);
@@ -3078,6 +3082,13 @@ public class ServiceInterfaceTools {
         Log.e("syncRequstCreateSoundtrack","url:" + url +",params:" + params + ",response:" + response);
         return response;
 
+    }
+
+    public JSONObject syncGetJoinMeetingDefaultStatus(String meetingId){
+        String url = AppConfig.URL_MEETING_BASE + "member/join_default_status?meetingId=" + meetingId;
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetJoinMeetingDefaultStatus","url:" + url + ",response:" + response);
+        return response;
     }
 
 
