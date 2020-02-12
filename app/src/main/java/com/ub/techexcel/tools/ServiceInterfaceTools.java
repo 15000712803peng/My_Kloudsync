@@ -1436,7 +1436,7 @@ public class ServiceInterfaceTools {
                 try {
                     JSONObject jsonObject = new JSONObject();
                     JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
-                    Log.e("hhh endSync", url + "      " + jsonObject.toString() + "  " + returnjson.toString());
+                    Log.e("syncing---", url + "      " + jsonObject.toString() + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         Message msg3 = Message.obtain();
                         msg3.what = code;

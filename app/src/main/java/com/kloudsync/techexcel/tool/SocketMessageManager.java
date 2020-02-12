@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 
+import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
@@ -14,9 +16,13 @@ import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.VedioData;
+import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.Note;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
+import com.ub.techexcel.tools.SpliteSocket;
 import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -252,7 +258,7 @@ public class SocketMessageManager {
             message.put("itemId", meetingConfig.getDocument().getItemID());
             message.put("sequenceNumber", "3837");
             message.put("ideaType", "document");
-            Log.e("check_send", "sendMessage_MyActionFrame,doSendMessage");
+            Log.e("check_send", "sendMessage_MyActionFrame,doSendMessage ");
             doSendMessage(message.toString());
         } catch (JSONException e) {
             Log.e("check_send", "sendMessage_MyActionFrame:" + e.getMessage());
@@ -340,6 +346,22 @@ public class SocketMessageManager {
         }
 
     }
+
+    public void  sendMessage_audio_sync(MeetingConfig config, EventSoundSync eventSoundSync){
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "AUDIO_SYNC");
+            message.put("sessionId", config.getUserToken());
+            message.put("status", eventSoundSync.getStatus());
+            message.put("soundtrackId", eventSoundSync.getSoundtrackID());
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 
     public void sendMessage_InviteToMeeting(MeetingConfig config, String users) {
         try {

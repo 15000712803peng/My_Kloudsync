@@ -4717,15 +4717,7 @@ public class KeyActivity extends BaseActivity implements View.OnClickListener, A
         yinxiangCreatePopup = new YinxiangCreatePopup();
         yinxiangCreatePopup.getPopwindow(KeyActivity.this);
         yinxiangCreatePopup.setFavoritePoPListener(new YinxiangCreatePopup.FavoritePoPListener() {
-            @Override
-            public void dismiss() {
-                getWindow().getDecorView().setAlpha(1.0f);
-            }
 
-            @Override
-            public void open() {
-                getWindow().getDecorView().setAlpha(0.5f);
-            }
 
             @Override
             public void addrecord(int ii) {

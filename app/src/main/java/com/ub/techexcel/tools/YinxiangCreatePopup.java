@@ -77,10 +77,6 @@ public class YinxiangCreatePopup implements View.OnClickListener {
 
     public interface FavoritePoPListener {
 
-        void dismiss();
-
-        void open();
-
         void addrecord(int isrecord);
 
         void addaudio(int isrecord);
@@ -240,7 +236,7 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     @SuppressLint("NewApi")
     public void StartPop(View v, String attachmentId) {
         if (mPopupWindow != null) {
-            mFavoritePoPListener.open();
+
             this.attachmentId = attachmentId;
             mPopupWindow.show();
         }
