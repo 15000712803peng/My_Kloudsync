@@ -788,10 +788,6 @@
 
     <string name="my_digital_note">我的电子笔</string>
     <string name="title_select_digital_pen">选择电子笔</string>
-    <string name="msg_join_as_audience">已经达到了最大数量的会议成员,\n您将作为一个旁听者加入。</string>
-    <string name="title_join_as_audience">旁听者加入</string>
-
-
 
 
 </resources>

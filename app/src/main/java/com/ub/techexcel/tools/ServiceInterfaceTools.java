@@ -1370,7 +1370,7 @@ public class ServiceInterfaceTools {
                     jsonObject.put("Bucket", buckjson);
 
                     JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
-                    Log.e("hhh", url + "      " + jsonObject.toString() + "  " + returnjson.toString());
+                    Log.e("syncing---", url + "      " + jsonObject.toString() + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         Message msg3 = Message.obtain();
                         msg3.what = code;
@@ -2900,15 +2900,11 @@ public class ServiceInterfaceTools {
             return new JSONObject();
         }
         String url = AppConfig.URL_PUBLIC;
-        int attachmentId = -1;
         if (meetingConfig.getType() == MeetingType.MEETING) {
-            if(meetingConfig.getDocument() != null){
-                attachmentId = meetingConfig.getDocument().getAttachmentID();
-            }
             url += "LessonSoundtrack/List?lessonID=" + meetingConfig.getLessionId() +
-                    "&attachmentID=" +meetingConfig.getDocument();
+                    "&attachmentID=" + meetingConfig.getDocument().getAttachmentID();
         } else {
-            url += "Soundtrack/List?attachmentID=" + attachmentId + "&isPublic=0";
+            url += "Soundtrack/List?attachmentID=" + meetingConfig.getDocument().getAttachmentID() + "&isPublic=0";
         }
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
         Log.e("syncGetSoundtrackList", "url:" + url + ",result:" + response);
@@ -3082,13 +3078,6 @@ public class ServiceInterfaceTools {
         Log.e("syncRequstCreateSoundtrack","url:" + url +",params:" + params + ",response:" + response);
         return response;
 
-    }
-
-    public JSONObject syncGetJoinMeetingDefaultStatus(String meetingId){
-        String url = AppConfig.URL_MEETING_BASE + "member/join_default_status?meetingId=" + meetingId;
-        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetJoinMeetingDefaultStatus","url:" + url + ",response:" + response);
-        return response;
     }
 
 

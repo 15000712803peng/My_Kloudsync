@@ -7,17 +7,8 @@ package com.kloudsync.techexcel.bean;
 public class EventJoinMeeting {
     private String meetingId;
     private int lessionId;
-    private int role = 1;
+    private int role;
     private int hostId;
-    private String orginalMeetingId;
-
-    public String getOrginalMeetingId() {
-        return orginalMeetingId;
-    }
-
-    public void setOrginalMeetingId(String orginalMeetingId) {
-        this.orginalMeetingId = orginalMeetingId;
-    }
 
     public int getHostId() {
         return hostId;
@@ -49,16 +40,5 @@ public class EventJoinMeeting {
 
     public void setLessionId(int lessionId) {
         this.lessionId = lessionId;
-    }
-
-    @Override
-    public String toString() {
-        return "EventJoinMeeting{" +
-                "meetingId='" + meetingId + '\'' +
-                ", lessionId=" + lessionId +
-                ", role=" + role +
-                ", hostId=" + hostId +
-                ", orginalMeetingId='" + orginalMeetingId + '\'' +
-                '}';
     }
 }

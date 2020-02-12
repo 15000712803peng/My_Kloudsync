@@ -3,8 +3,6 @@ package com.ub.techexcel.bean;
 import android.support.annotation.NonNull;
 import android.view.SurfaceView;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -21,30 +19,6 @@ public class AgoraMember implements Comparable<AgoraMember>,Serializable {
     private boolean isUserHide;
     private int userId;
     private String iconUrl;
-    private boolean fromSmall;
-    private int isMember = 0;
-
-    public int getIsMember() {
-        return isMember;
-    }
-
-    public void setIsMember(int isMember) {
-        if(this.isMember != isMember){
-            this.isMember = isMember;
-            EventRoleChanged roleChanged = new EventRoleChanged();
-            roleChanged.setAgoraMember(this);
-            EventBus.getDefault().post(roleChanged);
-        }
-
-    }
-
-    public boolean isFromSmall() {
-        return fromSmall;
-    }
-
-    public void setFromSmall(boolean fromSmall) {
-        this.fromSmall = fromSmall;
-    }
 
     public String getIconUrl() {
         return iconUrl;

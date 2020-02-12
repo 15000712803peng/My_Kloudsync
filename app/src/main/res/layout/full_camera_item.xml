@@ -46,12 +46,6 @@
             android:layout_width="32dp"
             android:layout_height="36dp" />
 
-        <ImageView
-            android:id="@+id/image_vedio_full"
-            android:src="@drawable/icon_fullscreen"
-            android:layout_width="32dp"
-            android:layout_height="36dp" />
-
     </LinearLayout>
 
     <com.kloudsync.techexcel.view.CircleImageView

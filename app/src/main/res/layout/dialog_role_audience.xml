@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/RelativeLayout1"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:background="@color/white"
     android:layout_height="wrap_content">
 
@@ -17,7 +17,7 @@
             android:id="@+id/tv_title"
             android:padding="20dp"
             android:gravity="center"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:text="@string/title_join_as_audience"
             android:textColor="@android:color/black"
             android:layout_width="match_parent"
@@ -48,10 +48,20 @@
             android:layout_weight="1"
             android:background="@drawable/dialog_bg_item"
             android:gravity="center"
-            android:text="@string/Yes"
+            android:text="@string/OK"
             android:textColor="#2D80FF"
             android:textSize="19sp" />
 
+        <!-- <TextView
+            android:id="@+id/tv_no"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/dialog_bg_item"
+            android:gravity="center"
+            android:text="@string/No"
+            android:textColor="@color/yellow"
+            android:textSize="19sp" /> -->
 
     </LinearLayout>
 
