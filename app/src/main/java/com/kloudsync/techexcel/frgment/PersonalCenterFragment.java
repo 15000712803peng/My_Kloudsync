@@ -132,7 +132,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                     if (retcode == -1) {
                         Toast.makeText(getActivity(), getResources().getString(R.string.classroomid_occupied), Toast.LENGTH_LONG).show();
                     } else {
-                        GetClassRoomID(updateClassroomId);
+                        getRoomID();
                     }
                     break;
                 case 0x1007:
@@ -303,6 +303,8 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         tv_pc_about = view.findViewById(R.id.tv_pc_about);
         if (!TextUtils.isEmpty(AppConfig.ClassRoomID)) {
             tv_roomid.setText(AppConfig.ClassRoomID.replaceAll("-", "").toUpperCase());
+        }else {
+            getRoomID();
         }
         sharedPreferences = getActivity().getSharedPreferences(
                 AppConfig.LOGININFO, Context.MODE_PRIVATE);
@@ -312,7 +314,6 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 
         tv_pc_account_name.setText(account_name);
         // tv_pc_account_number.setText(account_number);
-
         ll_pc_publish_article.setOnClickListener(this);
         ll_pc_collection.setOnClickListener(this);
         ll_pc_note.setOnClickListener(this);
@@ -523,7 +524,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 
     }
 
-    private void GetClassRoomID(final String classRoomId) {
+    private void getRoomID() {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
@@ -867,6 +868,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                 //创建新账号
             case R.id.rl_cn_account:
                 intent = new Intent(getActivity(), CreateOrganizationActivityV2.class);
+                intent.putExtra("from_app_setting",false);
 //                intent = new Intent(getActivity(), CreateOrganizationActivity.class);
                 startActivity(intent);
                 break;

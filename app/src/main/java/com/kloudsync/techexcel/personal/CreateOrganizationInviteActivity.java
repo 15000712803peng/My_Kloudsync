@@ -141,7 +141,7 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
         inviteText = (TextView) findViewById(R.id.txt_invite);
         inviteText.setOnClickListener(this);
         titleText = (TextView) findViewById(R.id.tv_title);
-        titleText.setText("Invite members");
+        titleText.setText(R.string.invite_members);
         phoneItemsParentLayout = findViewById(R.id.layout_phone_item_parent);
         backLayout.setOnClickListener(this);
         inviteMoreLayout = findViewById(R.id.layout_invite_more);
@@ -195,7 +195,6 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
                 break;
         }
     }
-
 
     private void goToMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);

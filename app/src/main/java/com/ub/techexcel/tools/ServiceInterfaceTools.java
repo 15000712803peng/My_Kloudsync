@@ -3091,6 +3091,23 @@ public class ServiceInterfaceTools {
         return response;
     }
 
+    public JSONObject syncRequestDefaultTeamForOrganiztion(int companyId){
+        String url =  AppConfig.URL_PUBLIC + "TeamSpace/List?companyID="+ AppConfig.SchoolID + "&type=1&parentID=0";
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncRequestDefaultTeamForOrganiztion","url:" + url + ",response:" + response);
+        return response;
+    }
+
+    public JSONObject syncAddOrUpdateUserPreference(JSONObject params){
+        String url = AppConfig.URL_PUBLIC
+                + "User/AddOrUpdateUserPreference";
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncAddOrUpdateUserPreference","url:" + url +",params:" + params + ",response:" + response);
+        return response;
+
+    }
+
+
 
 
 

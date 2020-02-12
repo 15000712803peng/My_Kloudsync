@@ -151,7 +151,7 @@
                 android:layout_marginTop="38dp"
                 android:gravity="center"
                 android:background="@drawable/bottom_blue_bg"
-                android:text="Send invite and next"
+                android:text="@string/invite_now"
                 android:textSize="15sp"
                 android:textColor="@color/white" />
 

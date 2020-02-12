@@ -746,6 +746,7 @@
     <string name="input_organization_name">输入组织名字</string>
     <string name="name_upper">名字</string>
     <string name="create_success">创建成功</string>
+    <string name="create_Fail">创建失败</string>
     <string name="Send">发送</string>
     <string name="meeting_id">Meeting ID</string>
     <string name="input_new_meeing_id">输入新的会议ID </string>
@@ -790,6 +791,10 @@
     <string name="title_select_digital_pen">选择电子笔</string>
     <string name="msg_join_as_audience">已经达到了最大数量的会议成员,\n您将作为一个旁听者加入。</string>
     <string name="title_join_as_audience">旁听者加入</string>
+
+    <string name="tips_orginzaiton_name_not_empty">组织名不能是空</string>
+    <string name="invite_members">邀请成员</string>
+    <string name="invite_now">立即邀请</string>
 
 
 

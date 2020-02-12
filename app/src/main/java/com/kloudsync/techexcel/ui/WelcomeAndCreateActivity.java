@@ -68,11 +68,11 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
 
     private void goToCreate(){
         Intent intent = new Intent(this, CreateOrganizationActivityV2.class);
+        intent.putExtra("from_app_setting",false);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
-
-
+    
     JoinMeetingPopup joinMeetingPopup;
     private void showJoinDialog(){
         if (joinMeetingPopup == null) {

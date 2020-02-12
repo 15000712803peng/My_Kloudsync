@@ -762,6 +762,7 @@ Please input the cell phone number to add the contact
     <string name="input_organization_name">Input organization name</string>
     <string name="name_upper">Name</string>
     <string name="create_success">Create success</string>
+    <string name="create_Fail">Create fail</string>
     <string name="Send">Send</string>
     <string name="meeting_id">Meeting ID</string>
     <string name="input_new_meeing_id">input new meeting id</string>
@@ -796,6 +797,10 @@ Please input the cell phone number to add the contact
     <string name="playing">playing</string>
     <string name="paused">paused</string>
     <string name="title_select_digital_pen">Select Digital Pen</string>
+    <string name="tips_orginzaiton_name_not_empty">Organization name can`t be empty</string>
+    <string name="invite_members">Invite members</string>
+    <string name="invite_now">Invite now</string>
+
 
 
 

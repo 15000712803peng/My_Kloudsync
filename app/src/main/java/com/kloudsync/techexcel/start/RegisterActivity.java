@@ -50,17 +50,14 @@ public class RegisterActivity extends Activity implements OnClickListener {
     private boolean isVisible;
     public static RegisterActivity instance = null;
     private LinearLayout loginLayout;
-
     public static final int CHANGE_COUNTRY_CODE = 0;
-
-
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
 
             switch (msg.what) {
                 case AppConfig.GETCHECKCODE:
                 /*String code = (String) msg.obj;
-				et_checkcode.setText(code);*/
+                                et_checkcode.setText(code);*/
                     new ApiTask(new CheckCodeEnable()).start(ThreadManager.getManager());
                     break;
                 case AppConfig.CHECKCODE:
@@ -71,13 +68,14 @@ public class RegisterActivity extends Activity implements OnClickListener {
                     AccessCode = (String) msg.obj;
                     registerRequest(AccessCode);
 //				ChangePassword();
-				/*if(!flag_gp){
-					GoToPI();
+                                /*if(!flag_gp){
+                                        GoToPI();
 				}*/
 //                    GoToPI();
                     break;
                 case AppConfig.HasExisted:
                     tv_sendcheckcode.setEnabled(true);
+                    phoneEdit.setEnabled(true);
                     Toast.makeText(
                             RegisterActivity.this,
                             getResources().getString(R.string.HasExisted),
@@ -101,6 +99,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
                     Toast.makeText(getApplicationContext(), result,
                             Toast.LENGTH_LONG).show();
                     tv_sendcheckcode.setEnabled(true);
+                    phoneEdit.setEnabled(true);
                     break;
                 case AppConfig.SUCCESSCHANGE:
                     Toast.makeText(getApplicationContext(), "密码已重置",
@@ -110,9 +109,11 @@ public class RegisterActivity extends Activity implements OnClickListener {
                     break;
 
                 case AppConfig.REGISTER_SUCC:
+                    phoneEdit.setEnabled(true);
                     registerSucc((JSONObject) msg.obj);
                     break;
                 case AppConfig.REGISTER_FAIL:
+                    phoneEdit.setEnabled(true);
                     Toast.makeText(getApplicationContext(), "注册失败", Toast.LENGTH_SHORT).show();
                     break;
 
@@ -323,6 +324,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
     public void getAccessCode() {
         final String checkcode = LoginGet.getBase64Password(codeEdit
                 .getText().toString());
+        phoneEdit.setEnabled(false);
         new ApiTask(new Runnable() {
             @Override
             public void run() {
@@ -348,6 +350,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
                         msg.what = AppConfig.ACCESSCODE;
                         msg.obj = AccessCode;
                     } else {
+
                         msg.what = AppConfig.FAILED;
                         String ErrorMessage = responsedata.getString("ErrorMessage");
                         msg.obj = ErrorMessage;
@@ -527,6 +530,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
                             .submitDataByJsonNoToken(AppConfig.URL_PUBLIC
                                     + "User/Register4Web", jsonobject);
                     String retcode = responsedata.getString("RetCode");
+                    Log.e("User/Register4Web","parmas：" + jsonobject + ",responsedata:" + responsedata);
 //                    JSONObject retdata = responsedata
 //                            .getJSONObject("RetData");
 //                    String UserID = retdata.getString("UserID");
@@ -535,10 +539,15 @@ public class RegisterActivity extends Activity implements OnClickListener {
                         msg.what = AppConfig.REGISTER_SUCC;
                         msg.obj = jsonobject;
                     } else {
-                        msg.what = AppConfig.REGISTER_FAIL;
-                        String ErrorMessage = responsedata
-                                .getString("ErrorMessage");
-                        msg.obj = ErrorMessage;
+                        if (retcode.equals(AppConfig.UserHasExisted)) {
+                            msg.what = AppConfig.HasExisted;
+                        } else {
+                            msg.what = AppConfig.REGISTER_FAIL;
+                            String ErrorMessage = responsedata
+                                    .getString("ErrorMessage");
+                            msg.obj = ErrorMessage;
+                        }
+
                     }
                     handler.sendMessage(msg);
                 } catch (JSONException e) {
@@ -556,15 +565,20 @@ public class RegisterActivity extends Activity implements OnClickListener {
         editor = sharedPreferences.edit();
         try {
             int countrycode = Integer.parseInt(tv_cphone.getText().toString().replaceAll("\\+", ""));
+            AppConfig.COUNTRY_CODE = countrycode;
             String phone = jsonobject.getString("Mobile");
             String pwd = jsonobject.getString("Password");
             editor.putInt("countrycode", countrycode);
-            editor.putString("telephone", phone);
+            editor.putString("telephone", phoneEdit.getText().toString().trim());
             editor.putString("password", pwd);
             editor.commit();
-            LoginGet.LoginRequest(this, "+"
-                            + countrycode + phone, pwd, 0, sharedPreferences,
-                    editor, ((App) getApplication()).getThreadMgr());
+//            LoginGet.LoginRequest(this, "+"
+//                            + countrycode + phone, pwd, 0, sharedPreferences,
+//                    editor, ((App) getApplication()).getThreadMgr());
+            Intent resultData = new Intent();
+            resultData.putExtra("password", pwdEdit.getText().toString().trim());
+            setResult(RESULT_OK, resultData);
+            finish();
         } catch (JSONException e) {
             e.printStackTrace();
         }

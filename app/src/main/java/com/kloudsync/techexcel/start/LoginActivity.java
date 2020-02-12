@@ -65,6 +65,7 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
 import static com.kloudsync.techexcel.config.AppConfig.ClassRoomID;
+import static com.kloudsync.techexcel.config.AppConfig.conversationId;
 
 public class LoginActivity extends Activity implements OnClickListener {
 
@@ -85,6 +86,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     LoadingDialog loadingDialog;
     Gson gson;
     Intent service;
+    private static final int REQUEST_RETISTER = 1;
 
     private void startWBService() {
         service = new Intent(getApplicationContext(), SocketService.class);
@@ -203,7 +205,6 @@ public class LoginActivity extends Activity implements OnClickListener {
         et_telephone.setText(telephone);
         et_password.setText(password);
         tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
-
     }
 
     private void setEditChangeInput() {
@@ -286,7 +287,6 @@ public class LoginActivity extends Activity implements OnClickListener {
             Toast.makeText(getApplicationContext(), "please input phone number", Toast.LENGTH_SHORT).show();
             return;
         }
-
         password = et_password.getText().toString().trim();
         if (TextUtils.isEmpty(password)) {
             Toast.makeText(getApplicationContext(), "please input password", Toast.LENGTH_SHORT).show();
@@ -522,21 +522,36 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     private void GoToSign() {
         Intent intent = new Intent(LoginActivity.this, com.kloudsync.techexcel.start.RegisterActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent,REQUEST_RETISTER);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case com.kloudsync.techexcel.start.RegisterActivity.CHANGE_COUNTRY_CODE:
-                tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
-                editor.putInt("countrycode",AppConfig.COUNTRY_CODE).commit();
-                break;
-            default:
-                break;
+        if(resultCode == RESULT_OK){
+            switch (requestCode) {
+                case com.kloudsync.techexcel.start.RegisterActivity.CHANGE_COUNTRY_CODE:
+                    tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
+                    editor.putInt("countrycode",AppConfig.COUNTRY_CODE).commit();
+                    break;
+                case REQUEST_RETISTER:
+                    int contryCode = sharedPreferences.getInt("countrycode",86);
+                    AppConfig.COUNTRY_CODE = contryCode;
+                    String phoneNumber = sharedPreferences.getString("telephone","");
+                    String password = data.getStringExtra("password");
+                    Log.e("check_register_succ","country_code:" + contryCode + ",phone_number:" + phoneNumber + ",pwd:" + password);
+                    tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
+                    et_telephone.setText(phoneNumber);
+                    et_password.setText(password);
+                    login();
+//                     processLogin();
+                    break;
+                default:
+                    break;
+            }
         }
+
     }
 
     public void onResume() {

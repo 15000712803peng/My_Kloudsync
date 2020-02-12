@@ -30,6 +30,7 @@ import com.kloudsync.techexcel.dialog.UploadFileDialog;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.tool.UploadFileTool;
+import com.kloudsync.techexcel.ui.MainActivity;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
@@ -38,15 +39,24 @@ import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.techexcel.service.ConnectService;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class CreateOrganizationActivityV2 extends AppCompatActivity implements View.OnClickListener, SelectCompanyLogoDialog.LogoOptionsListener {
 
@@ -57,6 +67,8 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
     private SharedPreferences.Editor editor;
     private TextView titleText;
     private ImageView selectLogoImage;
+    private TextView enterText;
+    private boolean fromAppSetting;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -106,7 +118,6 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
                                 tv_submit.setEnabled(true);
                                 getToInvite();
                                 finish();
-
                             }
 
                             @Override
@@ -232,6 +243,7 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_organization);
+        fromAppSetting = getIntent().getBooleanExtra("from_app_setting",false);
         initView();
 
     }
@@ -241,11 +253,21 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
         et_name = (EditText) findViewById(R.id.et_name);
         tv_submit = (TextView) findViewById(R.id.tv_submit);
         titleText = (TextView) findViewById(R.id.tv_title);
+        enterText = findViewById(R.id.txt_enter);
+        enterText.setOnClickListener(this);
         titleText.setText(R.string.create_organization);
         backLayout.setOnClickListener(this);
         tv_submit.setOnClickListener(this);
+
         selectLogoImage = (ImageView) findViewById(R.id.image_select_logo);
         selectLogoImage.setOnClickListener(this);
+        if(fromAppSetting){
+            tv_submit.setText(R.string.create_and_switch);
+            enterText.setVisibility(View.GONE);
+        }else {
+            tv_submit.setText(R.string.Submit);
+            enterText.setVisibility(View.VISIBLE);
+        }
     }
 
     SelectCompanyLogoDialog logoDialog;
@@ -257,14 +279,16 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
                 finish();
                 break;
             case R.id.tv_submit:
-                requestCreateNewCompany();
+                requestCreateNewCompanyAndEnterOrInvite(true);
                 break;
             case R.id.image_select_logo:
                 logoDialog = new SelectCompanyLogoDialog(this);
                 logoDialog.setLogoOptionsListener(this);
                 logoDialog.show();
                 break;
-
+            case R.id.txt_enter:
+                requestCreateNewCompanyAndEnterOrInvite(false);
+                break;
             default:
                 break;
         }
@@ -278,44 +302,6 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
         }
     };
 
-    private void requestCreateNewCompany() {
-        String name = et_name.getText().toString().trim();
-        if (TextUtils.isEmpty(name)) {
-            Toast.makeText(getApplicationContext(), "Organization name can`t be empty", Toast.LENGTH_SHORT).show();
-            tv_submit.setEnabled(true);
-            return;
-        }
-        tv_submit.setEnabled(false);
-        handler.removeCallbacks(enableTextTask);
-        handler.postDelayed(enableTextTask, 3000);
-        final JSONObject jsonObject = format();
-        new ApiTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    JSONObject responsedata = ConnectService.submitDataByJson(
-                            AppConfig.URL_PUBLIC
-                                    + "School/CreateSchool", jsonObject);
-                    Log.e("返回的jsonObject", jsonObject.toString() + "");
-                    Log.e("返回的responsedata", responsedata.toString() + "");
-                    String retcode = responsedata.getString("RetCode");
-                    Message msg = new Message();
-                    if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
-                        msg.what = AppConfig.CreateOrganization;
-                        msg.obj = responsedata.toString();
-                    } else {
-                        msg.what = AppConfig.FAILED;
-                        String ErrorMessage = responsedata.getString("ErrorMessage");
-                        msg.obj = ErrorMessage;
-                    }
-                    handler.sendMessage(msg);
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }).start(ThreadManager.getManager());
-    }
 
     private JSONObject format() {
         JSONObject jsonObject = new JSONObject();
@@ -444,6 +430,178 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
             }
         }
     }
+
+    private void requestCreateNewCompanyAndEnterOrInvite(final boolean isInvite) {
+        String name = et_name.getText().toString().trim();
+        if (TextUtils.isEmpty(name)) {
+            Toast.makeText(getApplicationContext(), R.string.tips_orginzaiton_name_not_empty, Toast.LENGTH_SHORT).show();
+            tv_submit.setEnabled(true);
+            return;
+        }
+        tv_submit.setEnabled(false);
+        handler.removeCallbacks(enableTextTask);
+        handler.postDelayed(enableTextTask, 3000);
+        final JSONObject jsonObject = format();
+        Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
+            @Override
+            public JSONObject apply(String s) throws Exception {
+                JSONObject response = ConnectService.submitDataByJson(
+                        AppConfig.URL_PUBLIC
+                                + "School/CreateSchool", jsonObject);
+                return response;
+            }
+        }).map(new Function<JSONObject, JSONObject>() {
+            @Override
+            public JSONObject apply(JSONObject jsonObject) throws Exception {
+                JSONObject result = new JSONObject();
+                if(jsonObject.has("RetCode")){
+                    if(jsonObject.getString("RetCode").equals("0")){
+                        // 创建公司成功
+                        int shoolId = jsonObject.getJSONObject("RetData").getInt("SchoolID");
+                        int teamId = jsonObject.getJSONObject("RetData").getInt("FirstTeamID");
+                        firstSpaceId = jsonObject.getJSONObject("RetData").getInt("FirstSpaceID");
+                        sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
+                                MODE_PRIVATE);
+                        editor = sharedPreferences.edit();
+                        AppConfig.SchoolID = shoolId;
+                        editor.putInt("SchoolID", shoolId);
+                        editor.putInt("teamid", teamId);
+                        editor.putString("SchoolName", et_name.getText().toString());
+                        editor.commit();
+                        result = ServiceInterfaceTools.getinstance().syncRequestDefaultTeamForOrganiztion(AppConfig.SchoolID);
+                    }
+                }
+                return result;
+            }
+        }).map(new Function<JSONObject, JSONObject>() {
+            @Override
+            public JSONObject apply(JSONObject jsonObject) throws Exception {
+                JSONObject result = new JSONObject();
+                if(jsonObject.has("RetCode")){
+                    if(jsonObject.getInt("RetCode") == 0){
+                        JSONArray jsonArray = jsonObject.getJSONArray("RetData");
+                        if(jsonArray != null && jsonArray.length() > 0){
+                            JSONObject item = jsonArray.getJSONObject(0);
+                            TeamSpaceBean teamSpaceBean = new TeamSpaceBean();
+                            teamSpaceBean.setItemID(item.getInt("ItemID"));
+                            teamSpaceBean.setName(item.getString("Name"));
+                            teamSpaceBean.setCompanyID(item.getInt("CompanyID"));
+                            teamSpaceBean.setType(item.getInt("Type"));
+                            teamSpaceBean.setParentID(item.getInt("ParentID"));
+                            teamSpaceBean.setCreatedDate(item.getString("CreatedDate"));
+                            teamSpaceBean.setCreatedByName(item.getString("CreatedByName"));
+                            teamSpaceBean.setAttachmentCount(item.getInt("AttachmentCount"));
+                            teamSpaceBean.setMemberCount(item.getInt("MemberCount"));
+                            teamSpaceBean.setSyncRoomCount(item.getInt("SyncRoomCount"));
+//                            result.put("default_team",jsonArray.getJSONObject(0));
+                            defaultTeam = teamSpaceBean;
+                            result = ServiceInterfaceTools.getinstance().syncAddOrUpdateUserPreference(getUpdateUserParms());
+                        }
+                    }
+                }
+                return result;
+            }
+        }).map(new Function<JSONObject, JSONObject>() {
+            @Override
+            public JSONObject apply(JSONObject jsonObject) throws Exception {
+                JSONObject result = new JSONObject();
+                if(jsonObject.has("RetCode")){
+                    if(jsonObject.getString("RetCode").equals(AppConfig.RIGHT_RETCODE)){
+                        result.put("create_succ",true);
+                        editor = sharedPreferences.edit();
+                        editor.putInt("SchoolID", AppConfig.SchoolID);
+                        editor.putString("SchoolName", et_name.getText().toString());
+                        editor.putString("teamname", defaultTeam.getName());
+                        editor.putInt("teamid", defaultTeam.getItemID());
+                        editor.commit();
+                        EventBus.getDefault().post(new TeamSpaceBean());
+                        if (pictureUri != null && logoFile != null) {
+                            UploadFileTool.uploadCompanyLogo(AppConfig.SchoolID + "", logoFile, new RequestCallBack<String>() {
+                                @Override
+                                public void onSuccess(ResponseInfo<String> responseInfo) {
+                                    if (uploadFileDialog != null) {
+                                        uploadFileDialog.cancel();
+                                    }
+                                    tv_submit.setEnabled(true);
+                                    if(isInvite){
+                                        getToInvite();
+                                    }else {
+                                        goToMainActivity();
+                                    }
+                                    finish();
+                                }
+
+                                @Override
+                                public void onFailure(HttpException e, String s) {
+                                    if (uploadFileDialog != null) {
+                                        uploadFileDialog.cancel();
+                                    }
+                                    tv_submit.setEnabled(true);
+                                    if(isInvite){
+                                        getToInvite();
+                                    }else {
+                                        goToMainActivity();
+                                    }
+                                    finish();
+
+                                }
+
+                                @Override
+                                public void onStart() {
+                                    super.onStart();
+                                    uploadFileDialog = new UploadFileDialog(CreateOrganizationActivityV2.this);
+                                    uploadFileDialog.setTile("uploding logo");
+                                    uploadFileDialog.show();
+                                }
+
+                                @Override
+                                public void onLoading(long total, long current, boolean isUploading) {
+                                    super.onLoading(total, current, isUploading);
+//                                Log.e("onloading","current:" + current + ",total:" + total);
+                                    if (current == 0 || total == -1 || current / total <= 0) {
+
+                                    } else {
+                                        uploadFileDialog.setProgress(total, current);
+                                    }
+
+                                }
+                            });
+                        } else {
+                            if(isInvite){
+                                getToInvite();
+                            }else {
+                                goToMainActivity();
+                            }
+                        }
+                    }
+                }
+                return result;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                if(!jsonObject.has("create_succ")){
+                    Toast.makeText(getApplicationContext(),R.string.create_Fail,Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).subscribe();
+
+    }
+
+    private void goToMainActivity() {
+        Observable.just("go_to_main").observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Toast.makeText(getApplicationContext(),R.string.create_success,Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(CreateOrganizationActivityV2.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            }
+        }).subscribe();
+
+    }
+
 
 
 }
