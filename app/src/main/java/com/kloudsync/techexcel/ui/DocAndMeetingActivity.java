@@ -2937,11 +2937,45 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             Log.e("EventPresnterChanged", "presenter is me");
             web.load("javascript:ShowToolbar(" + true + ")", null);
             noteWeb.load("javascript:ShowToolbar(" + true + ")", null);
+            // show left right arrow
+
+            String key = "ChangeMovePageButton";
+            JSONObject _data = new JSONObject();
+            JSONObject _left = new JSONObject();
+            JSONObject _right = new JSONObject();
+            try {
+                _left.put("Show",true);
+                _right.put("Show", true);
+                _data.put("Left",_left);
+                _data.put("Right",_right);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+            web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
 
         } else {
             web.load("javascript:ShowToolbar(" + false + ")", null);
             noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
             Log.e("EventPresnterChanged", "presenter is not me");
+
+            // hide left right arrow
+            String key = "ChangeMovePageButton";
+            JSONObject _data = new JSONObject();
+            JSONObject _left = new JSONObject();
+            JSONObject _right = new JSONObject();
+            try {
+                _left.put("Show",false);
+                _right.put("Show", false);
+                _data.put("Left",_left);
+                _data.put("Right",_right);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+            web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
         }
     }
 

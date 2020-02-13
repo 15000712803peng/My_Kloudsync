@@ -58,7 +58,6 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
-
                 default:
                     break;
             }
