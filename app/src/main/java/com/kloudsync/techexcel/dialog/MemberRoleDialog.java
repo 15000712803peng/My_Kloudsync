@@ -26,7 +26,6 @@ public class MemberRoleDialog implements View.OnClickListener {
     private ImageView adminRoleImage;
 
     public interface MemberRoleSelectedListener {
-
         void inviteAsMember(TextView roleText, RoleInTeam role);
 
         void inviteAsAdmin(TextView roleText, RoleInTeam role);
@@ -123,7 +122,7 @@ public class MemberRoleDialog implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.txt_invite_as_member:
                 if (roleText != null) {
-                    roleText.setText(mContext.getString(R.string.member));
+                    roleText.setText("member");
                 }
                 if (roleSelectedListener != null) {
                     roleSelectedListener.inviteAsMember(roleText, role);
@@ -132,7 +131,7 @@ public class MemberRoleDialog implements View.OnClickListener {
                 break;
             case R.id.txt_invite_as_admin:
                 if (roleText != null) {
-                    roleText.setText(mContext.getString(R.string.admin));
+                    roleText.setText("admin");
                 }
                 if (roleSelectedListener != null) {
                     roleSelectedListener.inviteAsAdmin(roleText, role);

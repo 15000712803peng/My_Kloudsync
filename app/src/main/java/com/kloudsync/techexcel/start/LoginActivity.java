@@ -23,7 +23,6 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
@@ -164,9 +163,7 @@ public class LoginActivity extends Activity implements OnClickListener {
                     message = getResources().getString(R.string.operate_failure);
                 }
                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-
 //                new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage("登录失败").create().show();
-
             }
         }
     }

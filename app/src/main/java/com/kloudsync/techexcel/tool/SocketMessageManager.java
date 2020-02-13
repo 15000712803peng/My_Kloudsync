@@ -117,6 +117,7 @@ public class SocketMessageManager {
             message.put("meetingPassword", "");
             message.put("clientVersion", "v20140605.0");
             message.put("role", config.getRole());
+//            message.put("role", 1);
             message.put("mode", 0);
             message.put("type", config.getType());
             message.put("lessonId", config.getLessionId());
@@ -384,6 +385,21 @@ public class SocketMessageManager {
             message.put("vid", vedioData.getId());
             message.put("url", vedioData.getUrl());
             message.put("type", 1);
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void sendMessage_ViewModeStatus(int viewMode, String currentSessionID) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("videoMode", viewMode);
+            message.put("actionType", 9);
+            if (viewMode == 2) {
+                message.put("currentSessionID", currentSessionID);
+            }
             doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
         } catch (JSONException e) {
             e.printStackTrace();

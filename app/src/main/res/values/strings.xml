@@ -800,14 +800,6 @@ Please input the cell phone number to add the contact
     <string name="tips_orginzaiton_name_not_empty">Organization name can`t be empty</string>
     <string name="invite_members">Invite members</string>
     <string name="invite_now">Invite now</string>
-    <string name="invite_as_member">Invite as member</string>
-    <string name="invite_as_admin">Invite as admin</string>
-    <string name="add_more">+ Add More</string>
-    <string name="skip">Skip</string>
-    <string name="input_phone_number">input phone number</string>
-    <string name="member">member</string>
-    <string name="admin">admin</string>
-
 
 
 

@@ -49,7 +49,6 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.AccountSettingBean;
 import com.kloudsync.techexcel.bean.ConditionBean;
-import com.kloudsync.techexcel.bean.params.EventChangeAccout;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
@@ -74,7 +73,6 @@ import com.ub.techexcel.tools.CalListviewHeight;
 import com.ub.techexcel.tools.FileUtils;
 import com.umeng.analytics.MobclickAgent;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -232,8 +230,6 @@ public class PersonalInfoActivity extends AppCompatActivity {
 					SharedPreferences.Editor editor = sharedPreferences.edit();
 					editor.putString("Name", name);
 					editor.commit();
-
-					EventBus.getDefault().post(new EventChangeAccout());
 					finish();
 					break;
 				case AppConfig.FAILED:

@@ -19,4 +19,12 @@ public class DialogRoleAudience extends DialogCommonV2 {
         bottomText.setOnClickListener(new HandleClick());
     }
 
+    public boolean isShowing(){
+        return isShowing();
+    }
+
+    public void cancel(){
+        cancel();
+    }
+
 }

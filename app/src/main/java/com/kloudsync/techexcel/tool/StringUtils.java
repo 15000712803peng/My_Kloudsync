@@ -387,4 +387,5 @@ public class StringUtils {
         Matcher m=Pattern.compile(regex).matcher(str);
         return m.matches();
     }
+
 }

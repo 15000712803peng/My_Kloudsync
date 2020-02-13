@@ -63,6 +63,7 @@ public class ChangeCountryCode extends Activity {
 		getData();
 		getSide();
 		editGroup();
+
 		backLayout.setOnClickListener(new myOnClick());
 	}
 	

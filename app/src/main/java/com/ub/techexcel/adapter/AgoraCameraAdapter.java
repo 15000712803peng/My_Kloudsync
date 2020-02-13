@@ -15,11 +15,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventShowFullAgora;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.view.CircleImageView;
 import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.AgoraUser;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,7 +73,6 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     public void onBindViewHolder(ViewHolder holder, int position) {
         ViewHolder myHolder = holder;
         final AgoraMember user = users.get(position);
-
         holder.vedioFrame.removeAllViews();
         if (holder.vedioFrame.getChildCount() == 0) {
             View d = inflater.inflate(R.layout.framelayout_head, null);
@@ -97,6 +99,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                     if (onCameraOptionsListener != null) {
                         onCameraOptionsListener.onCameraFrameClick(user);
                     }
+
                 }
             });
 
@@ -226,6 +229,20 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             this.users.get(index).setMuteAudio(isMute);
             notifyItemChanged(index);
         }
+    }
+
+    public void refreshAgoraMember(AgoraMember agoraMember){
+        int index = this.users.indexOf(agoraMember);
+        if(index >= 0){
+            Log.e("AgoraCameraAdapter","refresh_agora_member");
+            notifyItemChanged(index);
+        }
+    }
+
+    public void showFull(int position){
+        EventShowFullAgora showFullAgora = new EventShowFullAgora();
+        showFullAgora.setAgoraMember(users.get(position));
+        EventBus.getDefault().post(showFullAgora);
     }
 
 }
