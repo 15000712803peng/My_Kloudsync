@@ -192,7 +192,6 @@ public class TeamPropertyActivity extends Activity implements View.OnClickListen
                 addSpaceMemberDialog.setOptionsLinstener(new AddSpaceMemberDialog.InviteOptionsLinstener() {
                     @Override
                     public void fromCompany() {
-
                         Intent intent = new Intent(TeamPropertyActivity.this, InviteFromCompanyActivity.class);
                         intent.putExtra("team_id", itemID);
                         startActivityForResult(intent, REQUEST_ADD_ADMIN);

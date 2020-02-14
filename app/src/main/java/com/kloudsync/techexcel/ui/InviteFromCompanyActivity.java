@@ -1,6 +1,8 @@
 package com.kloudsync.techexcel.ui;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -19,11 +21,17 @@ import com.kloudsync.techexcel.adapter.InviteFromCompanyAdapter;
 import com.kloudsync.techexcel.app.BaseActivity;
 import com.kloudsync.techexcel.bean.CompanyContact;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.help.AudiencePromptDialog;
+import com.kloudsync.techexcel.help.InviteNewContactDialog;
 import com.kloudsync.techexcel.response.CompanyContactsResponse;
+import com.kloudsync.techexcel.response.InviteResponse;
 import com.kloudsync.techexcel.response.NResponse;
 import com.kloudsync.techexcel.response.NetworkResponse;
+import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -44,6 +52,7 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
     private TextView titleText;
     private RelativeLayout backLayout;
     private RecyclerView contactList;
+    TextView invatenewcontact;
     InviteFromCompanyAdapter adapter;
     int teamId;
     int spaceId;
@@ -61,8 +70,10 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
         teamId = getIntent().getIntExtra("team_id", 0);
         spaceId = getIntent().getIntExtra("space_id", 0);
         titleText = findViewById(R.id.tv_title);
-        titleText.setText("Add from company contact");
+        titleText.setText(getString(R.string.invite_form_company));
         contactList = findViewById(R.id.list_contact);
+        invatenewcontact = findViewById(R.id.invatenewcontact);
+        invatenewcontact.setOnClickListener(this);
         noDataLayout = findViewById(R.id.no_data_lay);
         messageText = findViewById(R.id.txt_msg);
         titleRightLayout = findViewById(R.id.layout_title_right);
@@ -73,6 +84,7 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
         View headerView = getLayoutInflater().inflate(R.layout.company_contact_search_header, contactList, false);
         loadingBar = headerView.findViewById(R.id.loading_progress);
         searchEdit = headerView.findViewById(R.id.edit_input);
+        searchEdit.setHint(getString(R.string.inputphoneorusername));
         searchEdit.addTextChangedListener(this);
         adapter.setHeaderView(headerView);
         backLayout = findViewById(R.id.layout_back);
@@ -82,6 +94,7 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
         getCompanyContacts("");
     }
 
+    private InviteNewContactDialog inviteNewContactDialog;
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -97,10 +110,58 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
                     }
                     requestAddAdmin(contacts);
                 }
-
+                break;
+            case R.id.invatenewcontact:
+                if (inviteNewContactDialog != null) {
+                    if (inviteNewContactDialog.isShowing()) {
+                        inviteNewContactDialog.cancel();
+                        inviteNewContactDialog = null;
+                    }
+                }
+                inviteNewContactDialog = new InviteNewContactDialog(this);
+                inviteNewContactDialog.setOptionsLinstener(new InviteNewContactDialog.InviteOptionsLinstener() {
+                    @Override
+                    public void inviteFromPhone(String phone) {
+//                        Toast.makeText(InviteFromCompanyActivity.this,phone,Toast.LENGTH_LONG).show();
+                        inviteNewContact(phone);
+                    }
+                });
+                inviteNewContactDialog.show();
                 break;
         }
     }
+
+
+
+
+    private void inviteNewContact(String mobile){
+
+        ServiceInterfaceTools.getinstance().inviteNewToCompany(mobile, 3, teamId,  0).enqueue(new Callback<InviteResponse>() {
+            @Override
+            public void onResponse(Call<InviteResponse> call, Response<InviteResponse> response) {
+                if (response != null && response.isSuccessful()) {
+                    Log.e("duang123", response.body().toString() + "   :");
+                    if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
+                        Toast.makeText(getApplicationContext(), "邀请成功", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        String msg = getString(R.string.operate_failure);
+                        if (!TextUtils.isEmpty(response.body().getErrorMessage())) {
+                            msg = response.body().getErrorMessage();
+                        }
+                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InviteResponse> call, Throwable t) {
+            }
+        });
+    }
+
+
+
 
     private void requestAddAdmin(List<CompanyContact> contacts) {
         ServiceInterfaceTools.getinstance().inviteCompanyMemberAsTeamAdmin(teamId + "", contacts).enqueue(new Callback<NetworkResponse>() {
@@ -126,24 +187,24 @@ public class InviteFromCompanyActivity extends BaseActivity implements View.OnCl
 
     private void getCompanyContacts(String keyword) {
 
-        ServiceInterfaceTools.getinstance().searchCompanyContactInTeam(teamId + "", keyword).enqueue(new Callback<CompanyContactsResponse>() {
-            @Override
-            public void onResponse(Call<CompanyContactsResponse> call, Response<CompanyContactsResponse> response) {
-                if (response != null && response.isSuccessful()) {
-                    Log.e("success", "response:" + response.body());
-                    List<CompanyContact> contacts = response.body().getRetData();
-                    if (contacts == null) {
-                        contacts = new ArrayList<>();
-                    }
-                    adapter.setDatas(contacts);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CompanyContactsResponse> call, Throwable t) {
-                Log.e("fail", "response:" + call);
-            }
-        });
+//        ServiceInterfaceTools.getinstance().searchCompanyContactInTeam(teamId + "", keyword).enqueue(new Callback<CompanyContactsResponse>() {
+//            @Override
+//            public void onResponse(Call<CompanyContactsResponse> call, Response<CompanyContactsResponse> response) {
+//                if (response != null && response.isSuccessful()) {
+//                    Log.e("success", "response:" + response.body());
+//                    List<CompanyContact> contacts = response.body().getRetData();
+//                    if (contacts == null) {
+//                        contacts = new ArrayList<>();
+//                    }
+//                    adapter.setDatas(contacts);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<CompanyContactsResponse> call, Throwable t) {
+//                Log.e("fail", "response:" + call);
+//            }
+//        });
 
         String url = AppConfig.URL_PUBLIC + "TeamSpace/SearchContact?companyID=" + AppConfig.SchoolID + "&spaceID=" + teamId + "&keyword=&pageIndex=0&pageSize=10";
         ServiceInterfaceTools.getinstance().getSearchContact(url, ServiceInterfaceTools.GETSEARCHCONTACT, new ServiceInterfaceListener() {

@@ -685,6 +685,7 @@ Please input the cell phone number to add the contact
     <string name="edit">edit</string>
     <string name="editdescription">editdescription</string>
     <string name="cancel">cancel</string>
+    <string name="invite">Invite</string>
     <string name="nofile">nofile</string>
     <string name="upload">upload</string>
     <string name="uploadsuccess">uploadsuccess</string>
@@ -736,6 +737,7 @@ Please input the cell phone number to add the contact
     <string name="space_memers">Space Members</string>
     <string name="syncrooms_in_spaces">syncrooms in current space</string>
     <string name="invite_form_company">Add from contact</string>
+    <string name="inputphoneorusername">input phone or user name to search</string>
     <string name="invite_form_admin">Invite new admin</string>
     <string name="invite_form_new">Invite new</string>
     <string name="addteamadmin">Add team admin</string>

@@ -93,7 +93,7 @@ public class InviteFromPhoneActivity extends Activity implements View.OnClickLis
         sw_rc = findViewById(R.id.sw_rc);
         tv_cphone = findViewById(R.id.tv_cphone);
         tv_title = findViewById(R.id.tv_title);
-        tv_title.setText("Invite new");
+        tv_title.setText(getString(R.string.invite_form_admin));
         inviteBtn.setOnClickListener(this);
         backLayout.setOnClickListener(this);
         tv_cphone.setOnClickListener(this);

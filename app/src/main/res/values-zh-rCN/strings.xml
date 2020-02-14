@@ -681,6 +681,7 @@
     <string name="edit">编辑</string>
     <string name="editdescription">您可以帮助用户编辑他/她的个人资料，以便更好管理用户资料</string>
     <string name="cancel">取消编辑</string>
+    <string name="invite">邀请</string>
     <string name="nofile">文件不存在</string>
     <string name="upload">上传</string>
     <string name="uploadsuccess">上传成功</string>
@@ -725,6 +726,7 @@
     <string name="space_memers">空间成员</string>
 
     <string name="invite_form_company">从公司中添加</string>
+    <string name="inputphoneorusername">输入电话号码或用户名...</string>
     <string name="invite_form_admin">邀请新管理员</string>
     <string name="invite_form_new">邀请新联系人</string>
     <string name="addmemberfromcomcomtact">从公司联系人和个人联系人中添加成员</string>

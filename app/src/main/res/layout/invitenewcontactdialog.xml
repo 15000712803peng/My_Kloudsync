@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+
+    android:background="@drawable/invitenewcontact"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:padding="20dp"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="@string/invite_form_new"
+            android:textColor="@android:color/black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <LinearLayout
+            android:padding="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="电话号码:"
+                android:textSize="16sp"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/edittext"
+                android:layout_width="200dp"
+                android:background="@color/white"
+                android:layout_height="wrap_content"
+             />
+    </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.5px"
+            android:background="#c6c6c6" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+        <TextView
+            android:padding="20dp"
+            android:id="@+id/tv_yes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/dialog_bg_item"
+            android:gravity="center"
+            android:text="@string/invite"
+            android:textColor="#2D80FF"
+            android:textSize="16sp" />
+        <TextView
+            android:padding="20dp"
+            android:id="@+id/tv_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/dialog_bg_item"
+            android:gravity="center"
+            android:text="@string/No"
+            android:textColor="#2D80FF"
+            android:textSize="16sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>
