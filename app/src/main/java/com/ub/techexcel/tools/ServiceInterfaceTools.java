@@ -3081,7 +3081,6 @@ public class ServiceInterfaceTools {
         JSONObject response = ConnectService.submitDataByJson(url, params);
         Log.e("syncRequstCreateSoundtrack","url:" + url +",params:" + params + ",response:" + response);
         return response;
-
     }
 
     public JSONObject syncGetJoinMeetingDefaultStatus(String meetingId){
@@ -3106,9 +3105,6 @@ public class ServiceInterfaceTools {
         return response;
 
     }
-
-
-
 
 
 }

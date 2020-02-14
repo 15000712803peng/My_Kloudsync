@@ -61,6 +61,7 @@ import com.kloudsync.techexcel.bean.EventRefreshDocs;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.EventSelectNote;
 import com.kloudsync.techexcel.bean.EventSetPresenter;
+import com.kloudsync.techexcel.bean.EventShareDocInMeeting;
 import com.kloudsync.techexcel.bean.EventShareScreen;
 import com.kloudsync.techexcel.bean.EventShowFullAgora;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
@@ -85,6 +86,7 @@ import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
+import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
@@ -608,6 +610,20 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
+    private boolean isAudience() {
+        if (meetingConfig.getType() != MeetingType.MEETING) {
+            return false;
+        }
+        return meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE;
+    }
+
+    private boolean isPresenter() {
+        if (meetingConfig.getType() != MeetingType.MEETING) {
+            return false;
+        }
+        return meetingConfig.getPresenterId().equals(AppConfig.UserID);
+    }
+
     private long currentNoteId;
 
     class TempNoteData {
@@ -636,6 +652,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showNotePage(final EventShowNotePage page) {
         Log.e("showNotePage", "page:" + page);
+        totalHideCameraAdapter();
         if (!TextUtils.isEmpty(page.getNotePage().getLocalFileId())) {
             if (page.getNotePage().getLocalFileId().contains(".")) {
                 currentNoteId = page.getNoteId();
@@ -648,11 +665,19 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 return;
             }
         }
+
         noteWeb.setVisibility(View.VISIBLE);
         noteWeb.load("javascript:ShowPDF('" + page.getNotePage().getShowingPath() + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
         noteWeb.load("javascript:Record()", null);
 
+    }
 
+
+
+    private void totalHideCameraAdapter(){
+        if(cameraList.getVisibility() == View.VISIBLE){
+            toggleMembersCamera(true);
+        }
     }
 
     private void handleBluetoothNote(final String url) {
@@ -977,6 +1002,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
 
         if (meetingConfig.getType() == MeetingType.MEETING) {
+
+            meetingMenu.setVisibility(View.VISIBLE);
             //---处理笔记
             if (!TextUtils.isEmpty(helloMessage.getPrevDocInfo()) && helloMessage.getNoteId() > 0) {
                 // 心跳显示处于查看笔记
@@ -996,13 +1023,17 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 meetingConfig.justSetPresenterId(helloMessage.getCurrentPresenter());
                 if (helloMessage.getCurrentPresenter().equals(AppConfig.UserID)) {
                     web.load("javascript:ShowToolbar(" + true + ")", null);
+                    web.load("javascript:Record()", null);
                     noteWeb.load("javascript:ShowToolbar(" + true + ")", null);
+                    noteWeb.load("javascript:Record()", null);
                     Log.e("check_presenter", "ShowToolbar_in_hello");
 
                     //自己是presenter
                 } else {
                     web.load("javascript:ShowToolbar(" + false + ")", null);
+                    web.load("javascript:StopRecord()", null);
                     noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
+                    noteWeb.load("javascript:StopRecord()", null);
                     Log.e("check_presenter", "HideToolbar_in_hello");
                 }
             }
@@ -1480,6 +1511,69 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             MeetingKit.getInstance().menuMicroClicked(false);
             meetingMenuMemberImage.setVisibility(View.VISIBLE);
         }
+        handleWebUISetting();
+    }
+
+    private void handleWebUISetting() {
+        if (meetingConfig.getType() != MeetingType.MEETING) {
+            return;
+        }
+        if (isPresenter()) {
+            // show left right arrow
+            web.load("javascript:ShowToolbar(" + true + ")", null);
+            web.load("javascript:Record()", null);
+            noteWeb.load("javascript:ShowToolbar(" + true + ")", null);
+            noteWeb.load("javascript:Record()", null);
+            String key = "ChangeMovePageButton";
+            JSONObject _data = new JSONObject();
+            JSONObject _left = new JSONObject();
+            JSONObject _right = new JSONObject();
+            try {
+                _left.put("Show", true);
+                _right.put("Show", true);
+                _data.put("Left", _left);
+                _data.put("Right", _right);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            web.load("javascript:ShowToolbar(" + true + ")", null);
+            web.load("javascript:Record()", null);
+            web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+            noteWeb.load("javascript:ShowToolbar(" + true + ")", null);
+            noteWeb.load("javascript:Record()", null);
+            noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+
+        } else {
+
+            // show left right arrow
+            web.load("javascript:ShowToolbar(" + false + ")", null);
+            web.load("javascript:StopRecord()", null);
+            noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
+            noteWeb.load("javascript:StopRecord()", null);
+            String key = "ChangeMovePageButton";
+            JSONObject _data = new JSONObject();
+            JSONObject _left = new JSONObject();
+            JSONObject _right = new JSONObject();
+            try {
+                _left.put("Show", false);
+                _right.put("Show", false);
+                _data.put("Left", _left);
+                _data.put("Right", _right);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            web.load("javascript:ShowToolbar(" + false + ")", null);
+            web.load("javascript:StopRecord()", null);
+            web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+
+            noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
+            noteWeb.load("javascript:StopRecord()", null);
+            noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+        }
+
     }
 
     private void checkAgoraMemberNameAndAgoraStatus() {
@@ -1492,7 +1586,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if ((member.getUserId() + "").equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
-                    if(!(member.getUserId() + "").equals(AppConfig.UserID)){
+                    if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
                         agoraMember.setMuteVideo(member.getCameraStatus() != 2);
                         agoraMember.setMuteAudio(member.getMicrophoneStatus() != 2);
                     }
@@ -2003,33 +2097,17 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void notifyMyWebActions(String actions) {
-        if (meetingConfig.getType() != MeetingType.MEETING) {
-            if (messageManager == null) {
-                messageManager = SocketMessageManager.getManager(this);
-                messageManager.registerMessageReceiver();
-            }
-            if (isSyncing) {
-                if (!TextUtils.isEmpty(actions)) {
-                    Log.e("syncing---", SoundtrackRecordManager.getManager(this).getCurrentTime()+"");
-                    try {
-                        JSONObject jsonObject = new JSONObject(actions);
-                        jsonObject.put("time", SoundtrackRecordManager.getManager(this).getCurrentTime());
-                        actions = jsonObject.toString();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
+        if (messageManager == null) {
+            messageManager = SocketMessageManager.getManager(this);
+            messageManager.registerMessageReceiver();
+        }
 
+        if (meetingConfig.getType() != MeetingType.MEETING) {
+            messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
         } else {
             Log.e("notifyMyWebActions", "role:" + meetingConfig.getRole());
             if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())) {
                 return;
-            }
-            if (messageManager == null) {
-                messageManager = SocketMessageManager.getManager(this);
-                messageManager.registerMessageReceiver();
             }
             messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
         }
@@ -2496,6 +2574,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 break;
             case R.id.layout_share:
             case R.id._layout_share:
+                showShareDocInMeetingDialog();
                 break;
             case R.id.layout_create_blank_page:
                 reqeustNewBlankPage();
@@ -2510,6 +2589,19 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
+
+    ShareDocInMeetingDialog shareDocInMeetingDialog;
+
+    private void showShareDocInMeetingDialog() {
+        if (shareDocInMeetingDialog != null) {
+            if (shareDocInMeetingDialog.isShowing()) {
+                shareDocInMeetingDialog.cancel();
+            }
+        }
+
+        shareDocInMeetingDialog = new ShareDocInMeetingDialog(this);
+        shareDocInMeetingDialog.show();
+    }
 
     private void toggleMembersCamera(boolean isToggle) {
         fullCameraList.setVisibility(View.GONE);
@@ -2692,7 +2784,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void uploadFileWhenAddDoc(File file) {
-
         AddDocumentTool.addDocumentInDoc(this, file, meetingConfig.getLessionId() + "", new DocumentUploadTool.DocUploadDetailLinstener() {
             @Override
             public void uploadStart() {
@@ -2811,38 +2902,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private DevicesListDialog devicesListDialog;
 
     private void handleScanTv() {
-//        Observable.just(meetingConfig).observeOn(Schedulers.io()).map(new Function<MeetingConfig, List<TvDevice>>() {
-//            @Override
-//            public List<TvDevice> apply(MeetingConfig meetingConfig) throws Exception {
-//                Response<DevicesResponse> response = ServiceInterfaceTools.getinstance().getBindTvs().execute();
-//                List<TvDevice> _devices = new ArrayList<>();
-//                if (response.isSuccessful() && response.body().getData() != null) {
-//                    List<TvDevice> devices = response.body().getData().getDeviceList();
-//                    for (TvDevice device : devices) {
-//                        if (device.getDeviceType() == 3) {
-//                            _devices.add(device);
-//                        }
-//                    }
-//                }
-//                return _devices;
-//            }
-//        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<List<TvDevice>>() {
-//            @Override
-//            public void accept(List<TvDevice> tvDevices) throws Exception {
-//                if (tvDevices.size() > 0) {
-//
-//                } else {
-//                    if (meetingConfig.getType() != MeetingType.MEETING) {
-//                        gotoScanTv();
-//                    } else {
-//                        MeetingKit.getInstance().checkCameraForScan();
-//                        gotoScanTv();
-//                    }
-//                }
-//            }
-//        }).subscribe();
-
-
         ServiceInterfaceTools.getinstance().getBindTvs().enqueue(new Callback<DevicesResponse>() {
             @Override
             public void onResponse(Call<DevicesResponse> call, Response<DevicesResponse> response) {
@@ -2996,20 +3055,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void presenterChanged(EventPresnterChanged presnterChanged) {
-        if (meetingConfig.getType() != MeetingType.MEETING) {
-            return;
-        }
-
-        if (presnterChanged.getPresenterId().equals(AppConfig.UserID)) {
-            Log.e("EventPresnterChanged", "presenter is me");
-            web.load("javascript:ShowToolbar(" + true + ")", null);
-            noteWeb.load("javascript:ShowToolbar(" + true + ")", null);
-
-        } else {
-            web.load("javascript:ShowToolbar(" + false + ")", null);
-            noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
-            Log.e("EventPresnterChanged", "presenter is not me");
-        }
+        handleWebUISetting();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -3019,8 +3065,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void showFullAgoraImte(EventShowFullAgora fullAgora) {
-        notifyAgoraVedioScreenStatus(2,fullAgora.getAgoraMember().getUserId()+"");
+    public void showFullAgoraItem(EventShowFullAgora fullAgora) {
+        notifyAgoraVedioScreenStatus(2, fullAgora.getAgoraMember().getUserId() + "");
         showAgoraFull(fullAgora.getAgoraMember());
     }
 
@@ -3031,6 +3077,47 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         }
         handleAgoraMemberRoleChanged(roleChanged.getAgoraMember());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void handleShareDocInMeeting(EventShareDocInMeeting shareDocInMeeting){
+        if(meetingConfig.getType() != MeetingType.MEETING){
+            return;
+        }
+        requestShareDocInMeeting(shareDocInMeeting.getDocument());
+
+    }
+
+    private void requestShareDocInMeeting(final MeetingDocument document){
+        Observable.just("Requst").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
+
+            @Override
+            public JSONObject apply(String s) throws Exception {
+                JSONObject params = new JSONObject();
+                params.put("lessonID", meetingConfig.getLessionId());
+                params.put("itemIDs", document.getItemID());
+                JSONObject result = ConnectService.submitDataByJson
+                        (AppConfig.URL_PUBLIC + "EventAttachment/UploadFromFavorite?lessonID=" + meetingConfig.getLessionId() + "&itemIDs=" + document.getItemID(), params);
+                Log.e("check_request_share_doc","result:" + result);
+                return result;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                if(jsonObject.has("RetCode")){
+                    if(jsonObject.getInt("RetCode") == 0){
+                        new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(true).setMessage(getString(R.string.operate_success)).create().show();
+                    }else {
+                        new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
+
+                    }
+                }else {
+                    new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
+
+                }
+            }
+        }).subscribe();
+
     }
 
     private void handleAgoraMemberRoleChanged(AgoraMember agoraMember) {

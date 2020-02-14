@@ -18,22 +18,13 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventShowFullAgora;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.view.CircleImageView;
-import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
-import com.ub.techexcel.bean.AgoraUser;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import io.agora.openlive.ui.VideoViewEventListener;
-
-/**
- * Created by wang on 2018/8/8.
- */
-
 public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.ViewHolder> {
 
     private LayoutInflater inflater;
@@ -43,8 +34,6 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     public List<AgoraMember> getUsers() {
         return users;
     }
-
-
 
     public AgoraCameraAdapter(Context context) {
         this.mContext = context;
@@ -99,6 +88,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                     if (onCameraOptionsListener != null) {
                         onCameraOptionsListener.onCameraFrameClick(user);
                     }
+//                    showFull(user);
 
                 }
             });
@@ -242,6 +232,12 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     public void showFull(int position){
         EventShowFullAgora showFullAgora = new EventShowFullAgora();
         showFullAgora.setAgoraMember(users.get(position));
+        EventBus.getDefault().post(showFullAgora);
+    }
+
+    public void showFull(AgoraMember member){
+        EventShowFullAgora showFullAgora = new EventShowFullAgora();
+        showFullAgora.setAgoraMember(member);
         EventBus.getDefault().post(showFullAgora);
     }
 

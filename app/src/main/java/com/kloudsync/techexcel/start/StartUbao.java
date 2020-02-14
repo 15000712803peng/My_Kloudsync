@@ -88,7 +88,6 @@ public class StartUbao extends Activity {
         AppConfig.DEVICE_ID = getDeviceInfo(StartUbao.this);
         Log.e("deviceID", AppConfig.DEVICE_ID + ":");
         showSystemParameter();
-
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -283,6 +282,7 @@ public class StartUbao extends Activity {
                                 finish();
                             }
                         });
+
                     } else {
                         if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
                             saveLoginData(response.body().getRetData());

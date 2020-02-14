@@ -94,6 +94,7 @@ public class KloudWebClient extends WebSocketClient {
     @Override
     public void onClose(int code, String reason, boolean remote) {
         Log.e("KloudWebClient", "onClose:" + reason);
+        AppConfig.webSocketClient = null;
         if (onClientEventListener != null) {
             onClientEventListener.onReconnect();
         }
@@ -101,6 +102,7 @@ public class KloudWebClient extends WebSocketClient {
 
     @Override
     public void onError(Exception ex) {
+        AppConfig.webSocketClient = null;
         Log.e("KloudWebClient", "onError:" + ex.getMessage());
     }
 

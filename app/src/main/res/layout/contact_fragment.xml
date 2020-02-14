@@ -96,6 +96,7 @@
 
 
     <RelativeLayout
+        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -132,15 +133,38 @@
                 android:src="@drawable/icon_filter" />
         </RelativeLayout>
 
-        <ListView
+        <RelativeLayout
             android:layout_below="@id/layout_filter"
-            android:id="@+id/lv_contact"
+            android:id="@+id/layout_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@color/grey"
-            android:dividerHeight="1.5px"
-            android:listSelector="@drawable/list_selector"
-            android:visibility="visible"></ListView>
+            android:layout_height="wrap_content">
+
+
+            <ListView
+                android:id="@+id/lv_contact"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@color/grey"
+                android:dividerHeight="1.5px"
+                android:listSelector="@drawable/list_selector"
+                android:visibility="visible">
+
+            </ListView>
+
+            <TextView
+                android:visibility="gone"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/black"
+                android:text="还没有添加联系人"
+                android:padding="12dp"
+                android:layout_centerHorizontal="true"
+                android:textSize="16dp"
+                android:id="@+id/txt_no_contacts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
         <!--<android.support.v4.view.ViewPager
             android:id="@+id/vp_contact"
             android:layout_width="match_parent"
@@ -148,7 +172,7 @@
         </android.support.v4.view.ViewPager>-->
 
         <FrameLayout
-            android:layout_below="@id/lv_contact"
+            android:layout_below="@id/layout_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 

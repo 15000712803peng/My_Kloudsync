@@ -101,6 +101,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
     private FriendContactAdapter adapter;
     private ImageView filterImage;
     private TextView contactTitle;
+    private TextView noContactText;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -141,6 +142,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
         tv_ns = (TextView) view.findViewById(R.id.tv_ns);
         tv_red = (TextView) view.findViewById(R.id.tv_red);
         tv_title = (TextView) view.findViewById(R.id.tv_title);
+        noContactText = view.findViewById(R.id.txt_no_contacts);
         lin_none = (LinearLayout) view.findViewById(R.id.lin_none);
         sidebar = (SideBar) view.findViewById(R.id.sidebar);
         list = (ListView) view.findViewById(R.id.lv_contact);
@@ -462,7 +464,6 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
 
         letterFriendsList.clear();
         final Gson gson = new Gson();
-
         Observable.just(type).observeOn(Schedulers.io()).map(new Function<Integer, List<SameLetterFriends>>() {
             @Override
             public List<SameLetterFriends> apply(Integer integer) throws Exception {
@@ -489,6 +490,9 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
             public void accept(List<SameLetterFriends> sameLetterFriends) throws Exception {
                 if (sameLetterFriends == null || sameLetterFriends.size() <= 0) {
                     sameLetterFriends = new ArrayList<>();
+                    noContactText.setVisibility(View.VISIBLE);
+                }else {
+                    noContactText.setVisibility(View.GONE);
                 }
                 if(type == 0){
                     filterImage.setImageResource(R.drawable.icon_filter);

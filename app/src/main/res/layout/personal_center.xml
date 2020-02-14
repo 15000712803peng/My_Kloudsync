@@ -172,14 +172,14 @@
                         android:src="@drawable/meeting_id" />
 
                     <TextView
-                        android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="20dp"
                         android:layout_toRightOf="@+id/img_pc_meeting_id"
                         android:text="@string/Klassroom_ID"
-                        android:textColor="@color/pc_black_text" />
+                        android:textColor="@color/pc_black_text"
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/tv_roomid"
@@ -223,14 +223,14 @@
                         android:src="@drawable/icon_personal_create_company" />
 
                     <TextView
-                        android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="20dp"
                         android:layout_toRightOf="@+id/img_pc_account"
                         android:text="@string/CN_account"
-                        android:textColor="@color/pc_black_text" />
+                        android:textColor="@color/pc_black_text"
+                        android:textSize="16sp" />
 
 
                     <ImageView
@@ -260,14 +260,14 @@
                         android:src="@drawable/icon_personal_account_setting" />
 
                     <TextView
-                        android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="20dp"
                         android:layout_toRightOf="@+id/img_pc_account_setting"
                         android:text="@string/as_setting"
-                        android:textColor="@color/pc_black_text" />
+                        android:textColor="@color/pc_black_text"
+                        android:textSize="16sp" />
 
 
                     <ImageView
@@ -531,7 +531,6 @@
                     android:src="@drawable/tv" />
 
                 <TextView
-                    android:textSize="16sp"
                     android:id="@+id/tv_pc_synctv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -539,7 +538,8 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_synctv"
                     android:text="@string/sync_tv"
-                    android:textColor="@color/pc_black_text" />
+                    android:textColor="@color/pc_black_text"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:layout_width="16dp"
@@ -568,7 +568,6 @@
                     android:src="@drawable/icon_myfiles" />
 
                 <TextView
-                    android:textSize="16sp"
                     android:id="@+id/tv_pc_collection"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -576,7 +575,8 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_collection"
                     android:text="@string/saved"
-                    android:textColor="@color/pc_black_text" />
+                    android:textColor="@color/pc_black_text"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/pc_collection"
@@ -618,7 +618,6 @@
                     android:src="@drawable/icon_mynote" />
 
                 <TextView
-                    android:textSize="16sp"
                     android:id="@+id/tv_pc_note"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -626,7 +625,8 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_note"
                     android:text="@string/mynote"
-                    android:textColor="@color/pc_black_text" />
+                    android:textColor="@color/pc_black_text"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/pc_note"
@@ -668,7 +668,6 @@
                     android:src="@drawable/icon_digital_pen" />
 
                 <TextView
-                    android:textSize="16sp"
                     android:id="@+id/tv_digital_note"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -676,8 +675,8 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_digital_note"
                     android:text="@string/my_digital_note"
-                    android:textColor="@color/pc_black_text" />
-
+                    android:textColor="@color/pc_black_text"
+                    android:textSize="16sp" />
 
 
                 <ImageView
@@ -689,7 +688,6 @@
                     android:padding="2dp"
                     android:src="@drawable/arrow2" />
             </RelativeLayout>
-
 
 
             <!-- 我的资格认证 -->
@@ -811,7 +809,6 @@
                     android:src="@drawable/icon_reset_psw" />
 
                 <TextView
-                    android:textSize="16sp"
                     android:id="@+id/tv_pc_password"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -819,7 +816,8 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_password"
                     android:text="@string/change_password"
-                    android:textColor="@color/pc_black_text" />
+                    android:textColor="@color/pc_black_text"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:layout_width="16dp"
@@ -849,7 +847,6 @@
                     android:src="@drawable/icon_help" />
 
                 <TextView
-                    android:textSize="16sp"
                     android:id="@+id/tv_pc_hc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -857,7 +854,8 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_hc"
                     android:text="@string/HelpCenter"
-                    android:textColor="@color/pc_black_text" />
+                    android:textColor="@color/pc_black_text"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:layout_width="16dp"
@@ -887,7 +885,6 @@
                     android:src="@drawable/icon_zan" />
 
                 <TextView
-                    android:textSize="16sp"
                     android:id="@+id/tv_pc_sk"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -895,7 +892,8 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_sk"
                     android:text="@string/ShareKS"
-                    android:textColor="@color/pc_black_text" />
+                    android:textColor="@color/pc_black_text"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:layout_width="16dp"
@@ -924,7 +922,6 @@
                     android:src="@drawable/icon_lang" />
 
                 <TextView
-                    android:textSize="16sp"
                     android:id="@+id/tv_pc_language"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -932,7 +929,8 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_language"
                     android:text="@string/language2"
-                    android:textColor="@color/pc_black_text" />
+                    android:textColor="@color/pc_black_text"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/pc_tv_language"
@@ -975,7 +973,6 @@
                     android:src="@drawable/icon_about" />
 
                 <TextView
-                    android:textSize="16sp"
                     android:id="@+id/tv_pc_about"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -983,7 +980,8 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_pc_about"
                     android:text="@string/About"
-                    android:textColor="@color/pc_black_text" />
+                    android:textColor="@color/pc_black_text"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:layout_width="16dp"
@@ -1046,24 +1044,24 @@
                 android:padding="12dp">
 
                 <ImageView
-                    android:visibility="invisible"
                     android:id="@+id/img_logout"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
-                    android:src="@drawable/icon_logout" />
+                    android:src="@drawable/icon_logout"
+                    android:visibility="invisible" />
 
                 <TextView
-                    android:textSize="16sp"
-                    android:layout_centerInParent="true"
                     android:id="@+id/tv_pc_loginout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="16dp"
                     android:text="@string/login_out"
-                    android:textColor="@color/red2" />
+                    android:textColor="@color/red2"
+                    android:textSize="16sp" />
             </RelativeLayout>
 
             <View
