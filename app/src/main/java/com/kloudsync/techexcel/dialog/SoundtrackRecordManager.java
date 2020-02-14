@@ -22,12 +22,14 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventCreateSync;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.kloudsync.activity.Document;
 import com.ub.service.audiorecord.AudioRecorder;
 import com.ub.service.audiorecord.RecordEndListener;
 import com.ub.techexcel.bean.SoundtrackBean;
+import com.ub.techexcel.tools.UploadAudioTool;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -63,7 +65,7 @@ public class SoundtrackRecordManager implements View.OnClickListener {
     private void handlePlayMessage(Message message) {
         switch (message.what) {
             case MESSAGE_PLAY_TIME_REFRESHED:
-              String time= (String) message.obj;
+                String time= (String) message.obj;
                 audiotime.setText(time);
 //              timeShow.setText(time);
                 break;
@@ -89,6 +91,7 @@ public class SoundtrackRecordManager implements View.OnClickListener {
     private int soundtrackID;
     private int fieldId;
     private String fieldNewPath;
+    private MeetingConfig meetingConfig;
 
     /**
      *
@@ -96,9 +99,10 @@ public class SoundtrackRecordManager implements View.OnClickListener {
      * @param soundtrackBean
      * @param audiosyncll
      */
-    public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll) {
+    public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, MeetingConfig meetingConfig) {
         this.audiosyncll=audiosyncll;
         this.isrecordvoice=isrecordvoice;
+        this.meetingConfig=meetingConfig;
         soundtrackID = soundtrackBean.getSoundtrackID();
         fieldId = soundtrackBean.getFileId();
         fieldNewPath = soundtrackBean.getPath();
@@ -114,7 +118,7 @@ public class SoundtrackRecordManager implements View.OnClickListener {
         } else if (soundtrackBean.getSelectedAudioAttachmentID() != 0) {
             url1= soundtrackBean.getSelectedAudioInfo().getFileDownloadURL();
         }
-       initPlayMusic(isrecordvoice,url,url1);
+        initPlayMusic(isrecordvoice,url,url1);
 
     }
 
@@ -123,12 +127,12 @@ public class SoundtrackRecordManager implements View.OnClickListener {
 
     private void  initPlayMusic(final boolean isrecordvoice, String url,String url2){
         Log.e("syncing---", isrecordvoice+"  "+url+"  "+url2);
-         if(isrecordvoice){
-             startSync();  //开始录音
-         }
-         //显示进度条
-         displayLayout();
-         if(!TextUtils.isEmpty(url)) {
+        if(isrecordvoice){
+            startSync();  //开始录音
+        }
+        //显示进度条
+        displayLayout();
+        if(!TextUtils.isEmpty(url)) {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
                 mediaPlayer.reset();
@@ -150,7 +154,7 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                     mp.start();
                 }
             });
-         }
+        }
 
         if (!TextUtils.isEmpty(url2)) {
             if (mediaPlayer2 != null) {
@@ -282,6 +286,7 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                     if (file != null) {
                         Log.e("syncing---", file.getAbsolutePath() + "   " + file.getName());
 //                        uploadAudioFile(file, soundtrackID, false, false);
+                        UploadAudioTool.getManager(mContext).uploadAudio(file,soundtrackID,fieldId,fieldNewPath,audiosyncll,meetingConfig);
                     }
                 }
             });
@@ -324,8 +329,12 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                     stopAudioRecord(soundtrackID);
                 }
                 break;
-
         }
+
+    }
+
+
+    public void release(){
 
     }
 

@@ -34,6 +34,7 @@ import android.widget.Toast;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.params.EventChangeAccout;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.ModifyMeetingIdDialog;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -70,6 +71,9 @@ import com.ub.kloudsync.activity.Document;
 import com.ub.service.activity.FinishedCourseActivity;
 import com.ub.techexcel.service.ConnectService;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -163,13 +167,28 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         if(view == null){
             view = inflater.inflate(R.layout.personal_center, container, false);
             initView();
-
+            EventBus.getDefault().register(this);
         }
         ShowLanguage();
         GetSchoolInfo();
         getPersonInfo2();
 
         return view;
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiverEventChangeAccout(EventChangeAccout eventChangeAccout){
+        Log.e("receiverEventChangeAccout","receiverEventChangeAccout");
+        getPersonInfo2();
     }
 
 
