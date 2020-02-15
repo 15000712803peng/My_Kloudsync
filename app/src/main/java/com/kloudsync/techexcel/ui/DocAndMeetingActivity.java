@@ -2104,6 +2104,18 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
 
         if (meetingConfig.getType() != MeetingType.MEETING) {
+            if (isSyncing) {
+                if (!TextUtils.isEmpty(actions)) {
+                    Log.e("syncing---", SoundtrackRecordManager.getManager(this).getCurrentTime()+"");
+                    try {
+                        JSONObject jsonObject = new JSONObject(actions);
+                        jsonObject.put("time", SoundtrackRecordManager.getManager(this).getCurrentTime());
+                        actions = jsonObject.toString();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
             messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
         } else {
             Log.e("notifyMyWebActions", "role:" + meetingConfig.getRole());
