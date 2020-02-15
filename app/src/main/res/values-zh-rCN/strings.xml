@@ -294,7 +294,7 @@
     <string name="Select_school">切换公司</string>
     <string name="My_School">My School</string>
 
-    <string name="Create_Organization">创建组织</string>
+    <string name="Create_Organization">创建公司/机构</string>
 
     <string name="Switch_School">选择学校</string>
     <string name="SS1">你正在把目前的学校改为</string>
@@ -310,7 +310,7 @@
     <string name="School_name">校名</string>
     <string name="Teacher_Profile">老师权益</string>
     <string name="My_account">我的账户</string>
-    <string name="CN_account">创建新帐号</string>
+    <string name="CN_account">创建新公司/机构</string>
 
     <string name="My_Friends">我的好友</string>
     <string name="NA_friend">新的朋友</string>
@@ -645,7 +645,7 @@
     <string name="pc_sorganization">选择组织</string>
 
     <!--account setting 界面-->
-    <string name="as_setting">账户设置</string>
+    <string name="as_setting">公司/机构设置</string>
     <string name="as_logo">图标</string>
     <string name="as_name">名字</string>
     <string name="as_address">网址</string>
@@ -657,6 +657,15 @@
     <string name="as_add_admin">新增管理员</string>
     <string name="as_save">提交</string>
 
+    <string name="acceptcompanytitle">以下公司邀请您加入</string>
+    <string name="acceptcompanypropet">现在点击加入</string>
+    <string name="acceptcompanyskip">跳过</string>
+    <string name="acceptnextstep">下一步</string>
+    <string name="acceptcompanyinst">不加入其他公司，选择创建自己的组织或参加会议，请单击“下一步。</string>
+    <string name="linkedsetting">TechExcel公司/机构关联设置</string>
+    <string name="supporttype">支持 png ,jpg,maximize 2MB</string>
+    <string name="opencompanycode">启动公司邀请码</string>
+    <string name="companycode">公司邀请码</string>
     <!-- 俊瑞  张 -->
     <string name="personInfo">个人资料</string>
     <string name="right">右加号</string>
@@ -744,8 +753,8 @@
     <string name="Send_code">发送验证码</string>
     <string name="reset_pwd">重置密码</string>
     <string name="create_and_switch">创建和切换</string>
-    <string name="create_organization">创建组织</string>
-    <string name="input_organization_name">输入组织名字</string>
+    <string name="create_organization">创建新公司/机构</string>
+    <string name="input_organization_name">输入公司/机构名字</string>
     <string name="name_upper">名字</string>
     <string name="create_success">创建成功</string>
     <string name="create_Fail">创建失败</string>

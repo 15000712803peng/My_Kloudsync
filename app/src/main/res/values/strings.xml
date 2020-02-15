@@ -314,7 +314,7 @@
     <string name="School_name">School profile</string>
     <string name="Teacher_Profile">Teacher Profile</string>
     <string name="My_account">Account setting</string>
-    <string name="CN_account">Create new account</string>
+    <string name="CN_account">Create new company</string>
 
     <string name="My_Friends">My Contact</string>
     <string name="NA_friend">Newly Added My Contact</string>
@@ -651,7 +651,7 @@ Please input the cell phone number to add the contact
 
 
     <!--account setting 界面-->
-    <string name="as_setting">Account setting</string>
+    <string name="as_setting">Company setting</string>
     <string name="as_logo">Logo</string>
     <string name="as_name">Name</string>
     <string name="as_address">Web address</string>
@@ -662,6 +662,16 @@ Please input the cell phone number to add the contact
     <string name="as_contact_list">Contact list</string>
     <string name="as_add_admin">Add admin user</string>
     <string name="as_save">Save</string>
+    <string name="acceptcompanytitle">The following company had invited you</string>
+    <string name="acceptcompanypropet">click to join now</string>
+    <string name="acceptcompanyskip">Skip</string>
+    <string name="acceptnextstep">next</string>
+    <string name="acceptcompanyinst">To create your own organization or join a meeting click "Next"</string>
+    <string name="linkedsetting">TechExcel company relational settings</string>
+    <string name="supporttype">Support png ,jpg,maximize 2MB</string>
+    <string name="opencompanycode">Start company invitation code</string>
+    <string name="companycode">Company invitation code</string>
+
 
     <!-- 俊瑞  张 -->
     <string name="personInfo">My profile</string>
@@ -760,8 +770,8 @@ Please input the cell phone number to add the contact
     <string name="Login">Login</string>
     <string name="reset_pwd">Reset password</string>
     <string name="create_and_switch">Create and Switch</string>
-    <string name="create_organization">Create Organization</string>
-    <string name="input_organization_name">Input organization name</string>
+    <string name="create_organization">Create New Company</string>
+    <string name="input_organization_name">Input company name</string>
     <string name="name_upper">Name</string>
     <string name="create_success">Create success</string>
     <string name="create_Fail">Create fail</string>

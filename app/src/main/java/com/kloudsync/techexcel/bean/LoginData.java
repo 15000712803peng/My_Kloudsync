@@ -163,4 +163,29 @@ public class LoginData {
     public void setEncryptUserID(String encryptUserID) {
         EncryptUserID = encryptUserID;
     }
+
+
+    @Override
+    public String toString() {
+        return "LoginData{" +
+                "ExpirationDate='" + ExpirationDate + '\'' +
+                ", ClassRoomID='" + ClassRoomID + '\'' +
+                ", UserToken='" + UserToken + '\'' +
+                ", UserID=" + UserID +
+                ", Name='" + Name + '\'' +
+                ", Mobile='" + Mobile + '\'' +
+                ", Role=" + Role +
+                ", CustomerID=" + CustomerID +
+                ", SchoolID=" + SchoolID +
+                ", SchoolRole=" + SchoolRole +
+                ", SchoolCategory1=" + SchoolCategory1 +
+                ", SchoolCategory2=" + SchoolCategory2 +
+                ", ContactPrivilege=" + ContactPrivilege +
+                ", CoursePrivilege=" + CoursePrivilege +
+                ", WithSchool=" + WithSchool +
+                ", KloudCallUserID=" + KloudCallUserID +
+                ", IsAdmin=" + IsAdmin +
+                ", EncryptUserID='" + EncryptUserID + '\'' +
+                '}';
+    }
 }
