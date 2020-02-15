@@ -30,7 +30,10 @@ import org.java_websocket.client.WebSocketClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by tonyan on 2019/11/19.
@@ -74,6 +77,7 @@ public class SocketMessageManager {
             socketMessage.setAction(MESSAGE_LEAVE_MEETING);
             return socketMessage;
         }
+
 
         String _message = Tools.getFromBase64(message);
         try {
@@ -420,12 +424,25 @@ public class SocketMessageManager {
                 Log.e("doSendMessage", "send_exception:" + exception.getMessage());
             }
         } else {
+            sendMessageAgain(message);
             Log.e("doSendMessage", "send_exception,client_is_null");
         }
     }
 
-    private void sendMessageAgain(String message) {
-//        Observable.just("send_again").
+    private void sendMessageAgain(final String message) {
+        Observable.just("send_again").delay(1000, TimeUnit.MILLISECONDS).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                if(getClient() != null){
+                    try {
+                        getClient().send(message);
+                    } catch (Exception exception) {
+
+                    }
+                }
+            }
+        }).subscribe();
+
     }
 
     private String wrapperSendMessage(String sessionId, int type, String data) {

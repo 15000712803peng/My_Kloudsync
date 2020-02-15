@@ -76,7 +76,6 @@ public class CreateSyncDialog implements View.OnClickListener {
         }
     }
 
-
     private void setCreateSyncText() {
         if (!checkBox.isChecked()) {
             if (TextUtils.isEmpty(favorite.getItemID()) && TextUtil.isEmpty(recordfavorite.getItemID())) {
@@ -86,7 +85,6 @@ public class CreateSyncDialog implements View.OnClickListener {
                 recordsync.setEnabled(true);
             }
         }
-
         if (checkBox.isChecked()) {
             recordsync.setText(R.string.mtRecordSync);
             recordsync.setEnabled(true);

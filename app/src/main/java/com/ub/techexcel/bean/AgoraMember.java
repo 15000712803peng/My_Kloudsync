@@ -23,6 +23,15 @@ public class AgoraMember implements Comparable<AgoraMember>,Serializable {
     private String iconUrl;
     private boolean fromSmall;
     private int isMember = 0;
+    private boolean tempHide;
+
+    public boolean isTempHide() {
+        return tempHide;
+    }
+
+    public void setTempHide(boolean tempHide) {
+        this.tempHide = tempHide;
+    }
 
     public int getIsMember() {
         return isMember;

@@ -43,7 +43,6 @@ public class MeetingConfig{
     private JSONObject currentLinkProperty;
     private int spaceId;
 
-
     public int getSpaceId() {
         return spaceId;
     }

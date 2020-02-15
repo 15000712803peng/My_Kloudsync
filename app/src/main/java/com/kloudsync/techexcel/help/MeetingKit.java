@@ -524,6 +524,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         showInviteDialog();
     }
 
+    @Override
+    public void menuMoreClicked() {
+
+    }
+
     private InviteUserPopup inviteUserPopup;
 
     private void showInviteDialog() {

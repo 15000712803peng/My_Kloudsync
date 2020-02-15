@@ -33,7 +33,6 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
     private PopupWindow window;
     //--
     private ImageView menuIcon;
-
     private RelativeLayout menuEnd;
     private RelativeLayout menuInvite;
     private RelativeLayout menuMore;
@@ -41,14 +40,6 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
     private ImageView microImage, voiceImage, cameraImage, switchCameraImage;
 
     //----
-
-    //----
-    public static final int AUDIO_ROUTE_HEADSET = 0;
-    public static final int AUDIO_ROUTE_EARPIECE = 1;
-    public static final int AUDIO_ROUTE_SPEAKERPHONE = 3;
-    public static final int AUDIO_ROUTE_HEADSETBLUETOOTH = 5;
-    private int voiceClickedCount = 0;
-
     private MeetingSettingCache settingCache;
 
     @Override
@@ -128,12 +119,16 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 }
                 hide();
                 break;
-
-
+            case R.id.meeting_menu_more:
+                if (operationsListener != null) {
+                    operationsListener.menuMoreClicked();
+                }
+                break;
         }
     }
 
     public interface MeetingMenuOperationsListener {
+
         void menuEndClicked();
 
         void menuLeaveClicked();
@@ -147,6 +142,8 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         void menuChangeVoiceStatus(int status);
 
         void menuInviteClicked();
+
+        void menuMoreClicked();
 
     }
 
@@ -181,6 +178,8 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         voiceImage.setOnClickListener(this);
         menuInvite = view.findViewById(R.id.meeting_menu_invite);
         menuInvite.setOnClickListener(this);
+        menuMore = view.findViewById(R.id.meeting_menu_more);
+        menuMore.setOnClickListener(this);
         cameraImage = view.findViewById(R.id.meeting_camera);
         switchCameraImage = view.findViewById(R.id.meeting_camera_switch);
         switchCameraImage.setOnClickListener(this);
@@ -270,13 +269,18 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 R.drawable.icon_command_webcam_disable);
         microImage.setImageResource(getSettingCache(host).getMeetingSetting().isMicroOn() ? R.drawable.icon_command_mic_enabel : R.drawable.icon_command_mic_disable);
         if (meetingConfig != null) {
-
             if (TextUtils.isEmpty(meetingConfig.getMeetingHostId()) || !meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {
                 menuEnd.setVisibility(View.GONE);
             } else {
                 menuEnd.setVisibility(View.VISIBLE);
 
             }
+        }
+
+        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID) || meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+            menuMore.setVisibility(View.VISIBLE);
+        }else{
+            menuMore.setVisibility(View.GONE);
         }
 
         int voiceStatus = getSettingCache(host).getMeetingSetting().getVoiceStatus();
