@@ -325,7 +325,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 //        editor.putString("password", com.kloudsync.techexcel.start.LoginGet.getBase64Password(password));
 //        editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
 //        editor.commit();
-        telephone = tv_cphone.getText().toString() + telephone;
+//        telephone = tv_cphone.getText().toString() + telephone;
+        telephone = "+86" + telephone;
 //        com.kloudsync.techexcel.start.LoginGet.LoginRequest(LoginActivity.this, telephone, password, 1,
 //                sharedPreferences, editor, threadManager);
         processLogin(telephone, password, et_telephone.getText().toString().trim());

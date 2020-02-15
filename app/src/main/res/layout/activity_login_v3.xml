@@ -85,8 +85,6 @@
                 android:layout_height="48dp"
                 android:background="@android:color/transparent"
                 android:hint="@string/Mobile_phone"
-                android:inputType="phone"
-                android:maxLength="11"
                 android:maxLines="1"
                 android:paddingLeft="19dp"
                 android:textColor="@color/black"

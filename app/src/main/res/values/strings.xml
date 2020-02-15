@@ -749,7 +749,8 @@ Please input the cell phone number to add the contact
 
 
     <string name="KloudSync">Kloud</string>
-    <string name="Mobile_phone">Mobile phone</string>
+
+    <string name="Mobile_phone">Mobile phone /User name</string>
     <string name="Password_hint">Password (6-20 Characters)</string>
     <string name="Name_info">Name</string>
     <string name="area_code">+86</string>

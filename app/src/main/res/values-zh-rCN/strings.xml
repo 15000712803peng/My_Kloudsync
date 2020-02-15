@@ -735,7 +735,7 @@
     <string name="addspaceadmin">增加空间管理员</string>
     <string name="addnewmember">邀请新成员</string>
 
-    <string name="Mobile_phone">手机号</string>
+    <string name="Mobile_phone">手机号/用户名</string>
     <string name="Password_hint">密码(6-20)</string>
     <string name="Sign_up">注册</string>
     <string name="area_code">+86</string>
