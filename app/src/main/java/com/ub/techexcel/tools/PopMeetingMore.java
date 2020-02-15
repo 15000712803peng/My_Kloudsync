@@ -6,25 +6,18 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import com.kloudsync.techexcel.R;
 
 public class PopMeetingMore implements View.OnClickListener {
-
-    public Context mContext;
-    public int width;
-    public PopupWindow mPopupWindow;
+    private Context mContext;
+    private PopupWindow mPopupWindow;
     private View view;
-    private RelativeLayout debug, muteall, unmuteall, docrecord, startrecord;
+    private RelativeLayout debugLayout,muteAllLayout,unMuteAllLayout;
 
-
-
-    public void getPopwindow(Context context) {
+    public PopMeetingMore(Context context) {
         this.mContext = context;
-        width = mContext.getResources().getDisplayMetrics().widthPixels;
         getPopupWindowInstance();
     }
 
@@ -37,20 +30,15 @@ public class PopMeetingMore implements View.OnClickListener {
         }
     }
 
-
     public void initPopuptWindow() {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-        view = layoutInflater.inflate(R.layout.moreaction_popup, null);
-        debug = (RelativeLayout) view.findViewById(R.id.debug);
-        muteall = (RelativeLayout) view.findViewById(R.id.muteall);
-        docrecord = (RelativeLayout) view.findViewById(R.id.docrecord);
-        startrecord = (RelativeLayout) view.findViewById(R.id.startrecord);
-        unmuteall = (RelativeLayout) view.findViewById(R.id.unmuteall);
-        debug.setOnClickListener(this);
-        muteall.setOnClickListener(this);
-        unmuteall.setOnClickListener(this);
-        docrecord.setOnClickListener(this);
-        startrecord.setOnClickListener(this);
+        view = layoutInflater.inflate(R.layout.pop_meeting_action_more, null);
+        debugLayout = (RelativeLayout) view.findViewById(R.id.layout_debug);
+        muteAllLayout = (RelativeLayout) view.findViewById(R.id.layout_mute_all);
+        unMuteAllLayout = (RelativeLayout) view.findViewById(R.id.layout_unmute_all);
+        debugLayout.setOnClickListener(this);
+        muteAllLayout.setOnClickListener(this);
+        unMuteAllLayout.setOnClickListener(this);
         mPopupWindow = new PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, false);
         mPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
@@ -58,31 +46,18 @@ public class PopMeetingMore implements View.OnClickListener {
             public void onDismiss() {
                 dismiss();
             }
+
         });
         mPopupWindow.setFocusable(true);
         mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
         mPopupWindow.setOutsideTouchable(true);
-
     }
 
 
     @SuppressLint("NewApi")
-    public void show(View v) {
-//        this.ishavepresenter = ishavepresenter;
-//        if (mPopupWindow != null) {
-//            if (ishavepresenter) {
-//                  // (145/2+35/2)
-//            } else {
-//                unmuteall.setVisibility(View.GONE);
-//                muteall.setVisibility(View.GONE);
-//                docrecord.setVisibility(View.GONE);
-//                mPopupWindow.showAsDropDown(v, -dp2px(mContext, 220), -dp2px(mContext, 40));  // (45/2+35/2)
-//            }
-//        }
-        unmuteall.setVisibility(View.VISIBLE);
-        muteall.setVisibility(View.VISIBLE);
-        docrecord.setVisibility(View.VISIBLE);
-        mPopupWindow.showAsDropDown(v, -dp2px(mContext, 220), -dp2px(mContext, 92.5f));
+    public void show(View v,OnMoreActionsListener moreActionsListener) {
+        this.onMoreActionsListener = moreActionsListener;
+        mPopupWindow.showAsDropDown(v, -dp2px(mContext, 220), -dp2px(mContext, 56f));
     }
 
     public int dp2px(Context context, float dpValue) {
@@ -90,8 +65,10 @@ public class PopMeetingMore implements View.OnClickListener {
         return (int) (dpValue * scale + 0.5f);
     }
 
-
     public boolean isShowing() {
+        if(mPopupWindow == null){
+            return false;
+        }
         return mPopupWindow.isShowing();
     }
 
@@ -99,44 +76,38 @@ public class PopMeetingMore implements View.OnClickListener {
         if (mPopupWindow != null) {
             mPopupWindow.dismiss();
         }
+        mPopupWindow = null;
     }
 
-
-    public interface InvitePopupListener {
+    public interface OnMoreActionsListener {
         
-        void mute();
+        void userMuteAll();
 
-        void unmute();
-
-        void debug();
-
-        void docrecord();
+        void userUnmuteAll();
 
     }
 
-    public void setInvitePopupListener(InvitePopupListener invitePopupListener) {
-        this.invitePopupListener = invitePopupListener;
-    }
+    private OnMoreActionsListener onMoreActionsListener;
 
-    private InvitePopupListener invitePopupListener;
+    public void setOnMoreActionsListener(OnMoreActionsListener onMoreActionsListener) {
+        this.onMoreActionsListener = onMoreActionsListener;
+    }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.debug:
-                invitePopupListener.debug();
+            case R.id.layout_debug:
+                break;
+            case R.id.layout_mute_all:
+                if(this.onMoreActionsListener != null){
+                    this.onMoreActionsListener.userMuteAll();
+                }
                 dismiss();
                 break;
-            case R.id.muteall:
-                invitePopupListener.mute();
-                dismiss();
-                break;
-            case R.id.unmuteall:
-                invitePopupListener.unmute();
-                dismiss();
-                break;
-            case R.id.docrecord:
-                invitePopupListener.docrecord();
+            case R.id.layout_unmute_all:
+                if(this.onMoreActionsListener != null){
+                    this.onMoreActionsListener.userUnmuteAll();
+                }
                 dismiss();
                 break;
             default:

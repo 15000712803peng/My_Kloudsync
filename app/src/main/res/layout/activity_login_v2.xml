@@ -5,6 +5,7 @@
     android:background="@color/white">
 
     <include
+        android:visibility="invisible"
         layout="@layout/common_title"
         android:id="@+id/layout_title" />
 
@@ -14,7 +15,7 @@
         android:layout_height="56dp"
         android:layout_below="@+id/layout_title"
         android:layout_centerInParent="true"
-        android:layout_marginTop="31dp"
+        android:layout_marginTop="1dp"
         android:src="@drawable/app_icon" />
 
     <TextView

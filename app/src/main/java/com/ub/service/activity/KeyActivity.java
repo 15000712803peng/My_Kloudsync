@@ -269,8 +269,6 @@ public class KeyActivity extends BaseActivity implements View.OnClickListener, A
             return MenberRole.DEFULT;
 
         }
-
-
     }
 
     /**
@@ -3803,6 +3801,7 @@ public class KeyActivity extends BaseActivity implements View.OnClickListener, A
 
 
     private void sendIsHidden(int stat) {
+
         JSONObject json = new JSONObject();
         try {
             json.put("stat", stat);
@@ -3813,7 +3812,6 @@ public class KeyActivity extends BaseActivity implements View.OnClickListener, A
         }
         send_message("SEND_MESSAGE", AppConfig.UserToken, 0, "", Tools.getBase64(json.toString()).replaceAll("[\\s*\t\n\r]", ""));
     }
-
 
     /**
      * 会话 popupwindow

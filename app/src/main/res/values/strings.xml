@@ -803,6 +803,8 @@ Please input the cell phone number to add the contact
     <string name="invite_members">Invite members</string>
     <string name="invite_now">Invite now</string>
 
+    <string name="no_register_prompt">Don’t have an account?</string>
+
 
 
 

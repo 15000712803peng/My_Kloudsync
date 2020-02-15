@@ -20,12 +20,17 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
+import com.ub.techexcel.bean.EventMuteAll;
+import com.ub.techexcel.bean.EventUnmuteAll;
+import com.ub.techexcel.tools.PopMeetingMore;
+
+import org.greenrobot.eventbus.EventBus;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 
-public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickListener {
+public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickListener,PopMeetingMore.OnMoreActionsListener {
 
     int width;
     private Activity host;
@@ -107,7 +112,6 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                     voiceImage.setImageResource(R.drawable.icon_voice_active_1);
 
                 }
-
                 if (operationsListener != null) {
                     operationsListener.menuChangeVoiceStatus(voiceStatus);
                 }
@@ -123,8 +127,21 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 if (operationsListener != null) {
                     operationsListener.menuMoreClicked();
                 }
+                showMorePop();
                 break;
         }
+    }
+
+    @Override
+    public void userMuteAll() {
+        EventMuteAll eventMuteAll = new EventMuteAll();
+        EventBus.getDefault().post(eventMuteAll);
+    }
+
+    @Override
+    public void userUnmuteAll() {
+        EventUnmuteAll eventUnmuteAll = new EventUnmuteAll();
+        EventBus.getDefault().post(eventUnmuteAll);
     }
 
     public interface MeetingMenuOperationsListener {
@@ -168,7 +185,6 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
     public void init() {
         LayoutInflater layoutInflater = LayoutInflater.from(host);
         View view = layoutInflater.inflate(R.layout.pop_meeting_menu, null);
-
         width = (int) (host.getResources().getDisplayMetrics().widthPixels);
         window = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, false);
@@ -301,6 +317,19 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
             settingCache = MeetingSettingCache.getInstance(host);
         }
         return settingCache;
+    }
+
+    PopMeetingMore popMeetingMore;
+    private void showMorePop(){
+        if (popMeetingMore != null) {
+            if (popMeetingMore.isShowing()) {
+                popMeetingMore.dismiss();
+                popMeetingMore = null;
+            }
+        }
+
+        popMeetingMore = new PopMeetingMore(host);
+        popMeetingMore.show(menuMore,this);
     }
 
 

@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -20,9 +21,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
@@ -71,12 +74,13 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     private TextView tv_cphone, tv_login, tv_atjoin, tv_fpass;
     private EditText et_telephone, et_password;
-    private FrameLayout fl_login;
+
     private TextView titleText;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private String telephone;
     private String password;
+    private ImageView pwdEyeImage;
     public static LoginActivity instance = null;
     private boolean flag;
     ThreadManager threadManager;
@@ -87,12 +91,15 @@ public class LoginActivity extends Activity implements OnClickListener {
     Gson gson;
     Intent service;
     private static final int REQUEST_RETISTER = 1;
+    private static final int PASSWORD_HIDE = 1;
+    private static final int PASSWORD_NOT_HIDE = 2;
+
 
     private void startWBService() {
         service = new Intent(getApplicationContext(), SocketService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(service);
-        }else {
+        } else {
             startService(service);
         }
     }
@@ -101,7 +108,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_v2);
+        setContentView(R.layout.activity_login_v3);
         instance = this;
         gson = new Gson();
         threadManager = ((App) getApplication()).getThreadMgr();
@@ -119,8 +126,9 @@ public class LoginActivity extends Activity implements OnClickListener {
         tv_fpass = (TextView) findViewById(R.id.txt_forget_pwd);
         et_telephone = (EditText) findViewById(R.id.et_telephone);
         et_password = (EditText) findViewById(R.id.et_password);
-        fl_login = (FrameLayout) findViewById(R.id.fl_login);
-        tv_login.setEnabled(false);
+        et_password.setTag(PASSWORD_HIDE);
+        pwdEyeImage = findViewById(R.id.image_pwd_eye);
+        pwdEyeImage.setOnClickListener(this);
         setEditChangeInput();
         getSP();
         tv_login.setOnClickListener(this);
@@ -130,6 +138,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         titleText = findViewById(R.id.tv_title);
         titleText.setText(R.string.Login);
         backLayout = findViewById(R.id.layout_back);
+        backLayout.setVisibility(View.GONE);
         backLayout.setOnClickListener(this);
         rightTitleText = findViewById(R.id.txt_right_title);
         rightTitleText.setVisibility(View.GONE);
@@ -147,7 +156,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         loadingDialog.cancel();
         if (result != null) {
             if (result.isSuccessful()) {
-                Log.e("LoginActivity","show login succ toast");
+                Log.e("LoginActivity", "show login succ toast");
 //                new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage("登录成功").create().show();
                 goToMainActivity();
                 new Handler().postDelayed(new Runnable() {
@@ -155,7 +164,7 @@ public class LoginActivity extends Activity implements OnClickListener {
                     public void run() {
 
                     }
-                },1000);
+                }, 1000);
 
             } else {
                 String message = result.getErrorMessage();
@@ -233,10 +242,31 @@ public class LoginActivity extends Activity implements OnClickListener {
             case R.id.layout_back:
                 finish();
                 break;
+            case R.id.image_pwd_eye:
+                toggleHidePwd();
+                break;
             default:
                 break;
         }
+    }
 
+    private void toggleHidePwd(){
+        if(et_password.getTag() != null){
+            Integer type = (Integer) et_password.getTag();
+            togglePwdByType(type);
+        }
+    }
+
+    private void togglePwdByType(int type){
+        if(type == PASSWORD_HIDE){
+            et_password.setInputType(InputType.TYPE_CLASS_TEXT);
+            pwdEyeImage.setImageResource(R.drawable.pwd_eye_close);
+            et_password.setTag(PASSWORD_NOT_HIDE);
+        }else if(type == PASSWORD_NOT_HIDE){
+            et_password.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            pwdEyeImage.setImageResource(R.drawable.pwd_eye_open);
+            et_password.setTag(PASSWORD_HIDE);
+        }
     }
 
     protected class myTextWatch implements TextWatcher {
@@ -267,9 +297,7 @@ public class LoginActivity extends Activity implements OnClickListener {
             // TODO Auto-generated method stub
 
         }
-
     }
-
 
     public void GotoChangeCode() {
         Intent intent = new Intent(getApplicationContext(), com.kloudsync.techexcel.start.ChangeCountryCode.class);
@@ -287,6 +315,7 @@ public class LoginActivity extends Activity implements OnClickListener {
             Toast.makeText(getApplicationContext(), "please input phone number", Toast.LENGTH_SHORT).show();
             return;
         }
+
         password = et_password.getText().toString().trim();
         if (TextUtils.isEmpty(password)) {
             Toast.makeText(getApplicationContext(), "please input password", Toast.LENGTH_SHORT).show();
@@ -335,14 +364,14 @@ public class LoginActivity extends Activity implements OnClickListener {
                         if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
                             saveLoginData(response.body().getRetData());
                             rongCloudUrl = AppConfig.URL_PUBLIC + "RongCloudUserToken";
-                            editor.putString("name",name);
+                            editor.putString("name", name);
                             editor.putString("telephone", phoneNumber);
                             editor.putString("password", LoginGet.getBase64Password(password));
                             editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
                             editor.commit();
                         } else {
                             sendEventLoginFail(response.body().getErrorMessage());
-                            if(loginDisposable != null && !loginDisposable.isDisposed()){
+                            if (loginDisposable != null && !loginDisposable.isDisposed()) {
                                 loginDisposable.dispose();
                             }
                         }
@@ -383,23 +412,23 @@ public class LoginActivity extends Activity implements OnClickListener {
             @Override
             public void accept(String s) throws Exception {
                 if (loginDisposable == null || loginDisposable.isDisposed()) {
-                    return ;
+                    return;
                 }
                 JSONObject response = ServiceInterfaceTools.getinstance().syncGetUserPreference();
 
-                if(response.has("RetCode")){
-                    if(response.getInt("RetCode") == 0){
-                        UserPreferenceData userPreferenceData= gson.fromJson(response.toString(),UserPreferenceData.class);
-                        if(userPreferenceData.getRetData() == null){
+                if (response.has("RetCode")) {
+                    if (response.getInt("RetCode") == 0) {
+                        UserPreferenceData userPreferenceData = gson.fromJson(response.toString(), UserPreferenceData.class);
+                        if (userPreferenceData.getRetData() == null) {
                             handleNoCompany();
-                        }else {
+                        } else {
                             JSONObject retData = response.getJSONObject("RetData");
                             LoginResult loginResult = new LoginResult();
                             loginResult.setSuccessful(true);
                             EventBus.getDefault().post(loginResult);
                         }
 
-                    }else {
+                    } else {
                         sendEventLoginFail("网络异常");
                     }
                 }
@@ -409,7 +438,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     }
 
 
-    class SimpleCompanyResponse{
+    class SimpleCompanyResponse {
 
         private int RetCode;
         private String ErrorMessage;
@@ -449,12 +478,12 @@ public class LoginActivity extends Activity implements OnClickListener {
         }
     }
 
-    private void handleNoCompany(){
+    private void handleNoCompany() {
         companies.clear();
         Observable.just("no_company").observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                if(loadingDialog != null){
+                if (loadingDialog != null) {
                     loadingDialog.cancel();
                 }
             }
@@ -463,10 +492,10 @@ public class LoginActivity extends Activity implements OnClickListener {
             public List<SimpleCompanyData> apply(String rongToken) throws Exception {
                 try {
                     JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetCompanies(AppConfig.UserID);
-                    if(jsonObject.has("RetCode")){
-                        if(jsonObject.getInt("RetCode") == 0){
-                            SimpleCompanyResponse response = gson.fromJson(jsonObject.toString(),SimpleCompanyResponse.class);
-                            if(response.getRetData() != null && response.getRetData().size() > 0){
+                    if (jsonObject.has("RetCode")) {
+                        if (jsonObject.getInt("RetCode") == 0) {
+                            SimpleCompanyResponse response = gson.fromJson(jsonObject.toString(), SimpleCompanyResponse.class);
+                            if (response.getRetData() != null && response.getRetData().size() > 0) {
                                 companies.addAll(response.getRetData());
                             }
                         }
@@ -475,8 +504,8 @@ public class LoginActivity extends Activity implements OnClickListener {
                 } catch (Exception exception) {
 
                 }
-
                 return companies;
+
             }
         }).doOnNext(new Consumer<List<SimpleCompanyData>>() {
             @Override
@@ -514,6 +543,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         startActivity(intent);
     }
 
+
     public void GoToMain() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
@@ -522,25 +552,25 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     private void GoToSign() {
         Intent intent = new Intent(LoginActivity.this, com.kloudsync.techexcel.start.RegisterActivity.class);
-        startActivityForResult(intent,REQUEST_RETISTER);
+        startActivityForResult(intent, REQUEST_RETISTER);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
+        if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case com.kloudsync.techexcel.start.RegisterActivity.CHANGE_COUNTRY_CODE:
                     tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
-                    editor.putInt("countrycode",AppConfig.COUNTRY_CODE).commit();
+                    editor.putInt("countrycode", AppConfig.COUNTRY_CODE).commit();
                     break;
                 case REQUEST_RETISTER:
-                    int contryCode = sharedPreferences.getInt("countrycode",86);
+                    int contryCode = sharedPreferences.getInt("countrycode", 86);
                     AppConfig.COUNTRY_CODE = contryCode;
-                    String phoneNumber = sharedPreferences.getString("telephone","");
+                    String phoneNumber = sharedPreferences.getString("telephone", "");
                     String password = data.getStringExtra("password");
-                    Log.e("check_register_succ","country_code:" + contryCode + ",phone_number:" + phoneNumber + ",pwd:" + password);
+                    Log.e("check_register_succ", "country_code:" + contryCode + ",phone_number:" + phoneNumber + ",pwd:" + password);
                     tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
                     et_telephone.setText(phoneNumber);
                     et_password.setText(password);
@@ -582,7 +612,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         finish();
     }
 
-    private void goToWelcomeCreateCompany(){
+    private void goToWelcomeCreateCompany() {
         Intent intent = new Intent(this, WelcomeAndCreateActivity.class);
         intent.putExtra("companies", new Gson().toJson(companies));
         intent.putExtra("from", 1);

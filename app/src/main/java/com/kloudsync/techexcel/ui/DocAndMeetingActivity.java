@@ -223,8 +223,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Bind(R.id.layout_create_blank_page)
     LinearLayout createBlankPageLayout;
 
-
-
     @Bind(R.id.audiosyncll)
     LinearLayout audiosyncll;
 
@@ -805,10 +803,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             noteUsersLayout.setVisibility(View.VISIBLE);
         }
         Log.e("followShowNote", "noteid:" + noteId);
-
         hideEnterLoading();
         NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menuIcon);
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -1210,6 +1206,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         drawNote(noteId.getLinkID(), meetingConfig.getCurrentLinkProperty(), 0);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventMuteAllMembersAudio(){
+
+    }
+
     private void drawNote(int linkId, JSONObject linkProperty, int isOther) {
         JSONObject noteData = new JSONObject();
         try {
@@ -1502,7 +1503,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void meIsMember(boolean isMember) {
-
         if (isMember) {
             menuIcon.setVisibility(View.VISIBLE);
             meetingMenuMemberImage.setVisibility(View.GONE);
@@ -1511,6 +1511,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             MeetingKit.getInstance().menuMicroClicked(false);
             meetingMenuMemberImage.setVisibility(View.VISIBLE);
         }
+
         handleWebUISetting();
     }
 

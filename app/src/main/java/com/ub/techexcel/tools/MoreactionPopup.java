@@ -112,7 +112,6 @@ public class MoreactionPopup implements View.OnClickListener {
         }
     }
 
-
     public interface InvitePopupListener {
 
         void mute();

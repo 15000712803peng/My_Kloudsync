@@ -4467,6 +4467,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                         }
                     }
                 }
+
                 chatAdapter.notifyDataSetChanged();
             }
 
@@ -4624,6 +4625,7 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                         wv_show.load("javascript:VideoTagAfterSelect(" + jsonObject + ")", null);
                     }
                 }
+
                 if (isYinxiang) {
                     if (yinxiangCreatePopup != null && currentPosition >= 0) {
                         if (isrecord == 0) {

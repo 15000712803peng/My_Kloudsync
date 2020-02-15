@@ -66,7 +66,6 @@ public class SelectFavoriteDocAdapter extends BaseAdapter{
         } else {
             viewHolder = (ViewHolder) view.getTag();
         }
-
         viewHolder.docNameText.setText(document.getTitle());
         String createData = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Long.parseLong(document.getCreatedDate()));
         viewHolder.timeText.setText(createData);
