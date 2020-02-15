@@ -1586,7 +1586,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if ((member.getUserId() + "").equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
-                    if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
+                    if(!(member.getUserId() + "").equals(AppConfig.UserID)){
                         agoraMember.setMuteVideo(member.getCameraStatus() != 2);
                         agoraMember.setMuteAudio(member.getMicrophoneStatus() != 2);
                     }
@@ -2784,6 +2784,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void uploadFileWhenAddDoc(File file) {
+
         AddDocumentTool.addDocumentInDoc(this, file, meetingConfig.getLessionId() + "", new DocumentUploadTool.DocUploadDetailLinstener() {
             @Override
             public void uploadStart() {
@@ -3189,8 +3190,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID()+"");
     }
 
-
-    private  boolean isSyncing=false;
+    private boolean isSyncing=false;
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveEventSoundSync(EventSoundSync eventSoundSync) {
@@ -3281,7 +3281,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
         });
     }
-
 
 
     private void openNote(String noteId) {
