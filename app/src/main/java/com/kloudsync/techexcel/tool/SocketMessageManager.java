@@ -410,6 +410,19 @@ public class SocketMessageManager {
         }
     }
 
+    public void sendMessage_MuteStatus(int stat){
+        JSONObject message = new JSONObject();
+        try {
+            message.put("stat", stat);
+            message.put("actionType", 14);
+            message.put("userId", "");
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private WebSocketClient getClient() {
         socketClient = AppConfig.webSocketClient;
         return socketClient;

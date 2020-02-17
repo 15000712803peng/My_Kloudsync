@@ -1,13 +1,17 @@
 package com.kloudsync.techexcel.frgment;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -65,6 +69,7 @@ import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
 import com.ub.techexcel.adapter.SpaceAdapter;
+import com.ub.techexcel.bean.EventViewDocPermissionGranted;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.service.ConnectService;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
@@ -108,6 +113,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     private View view;
     private ImageView switchCompanyImage;
     private TextView searchPromptText;
+    public static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE = 2;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -119,6 +125,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         if(view == null){
             view = inflater.inflate(R.layout.documentfragment, container, false);
             EventBus.getDefault().register(this);
@@ -156,6 +163,14 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void eventDocList(MessageDocList docList) {
         KloudCache.getInstance(getActivity()).asyncCacheDocList(docList.getDocList());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventViewDocAfterPermissionGranted(EventViewDocPermissionGranted permissionGranted){
+        if(tempClickedDocument != null){
+            requestDocumentDetail(tempClickedDocument);
+            tempClickedDocument = null;
+        }
     }
 
     @Override
@@ -271,7 +286,9 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                             public void onRealItem(Document document, View view) {
 //                                GoToVIew(lesson);
                                 if (!Tools.isFastClick()) {
-                                    requestDocumentDetail(document);
+//                                    requestDocumentDetail(document);
+                                    tempClickedDocument = document;
+                                    viewDocIfPermissionGranted(document);
                                 }
                             }
 
@@ -910,5 +927,39 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         Intent intent = new Intent(getActivity(), SwitchOrganizationActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+
+    private Document tempClickedDocument;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE){
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_granted");
+                if(tempClickedDocument != null){
+                    requestDocumentDetail(tempClickedDocument);
+                    tempClickedDocument = null;
+                }
+
+            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
+                Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_denied");
+                Toast.makeText(getActivity(),"查看文档需要访问sdcard的权限，请允许",Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
+
+    private boolean isPermissionExternalStorageGranted() {
+        return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private void viewDocIfPermissionGranted(Document document){
+        if(isPermissionExternalStorageGranted()){
+            requestDocumentDetail(document);
+        }else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE);
+        }
     }
 }

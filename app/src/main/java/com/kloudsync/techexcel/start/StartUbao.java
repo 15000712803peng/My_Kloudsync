@@ -11,11 +11,14 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.LocaleList;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
@@ -62,9 +65,11 @@ public class StartUbao extends Activity {
     private String password;
     private int countrycode;
     private ImageView welcomeImage;
+    private TextView requestPermissionText;
 
     public static StartUbao instance;
     String wechatFilePath;
+    private static final int REQUEST_PERMISSION_PHONE_STATE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,17 +79,20 @@ public class StartUbao extends Activity {
         instance = this;
         LoginGet.wechatFilePaht = "";
         welcomeImage = (ImageView) findViewById(R.id.image_welcome);
+        requestPermissionText = (TextView) findViewById(R.id.txt_request_permission);
+        requestPermissionText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ActivityCompat.requestPermissions(StartUbao.this, new String[]{
+                        Manifest.permission.READ_PHONE_STATE}, REQUEST_PERMISSION_PHONE_STATE);
+            }
+        });
         wechatFilePath = getIntent().getStringExtra("wechat_data_path");
-        startWBService();
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (!instance.isFinishing()) {
-//                    PgyUpdateManager.register(StartUbao.this);
-//                }
-//            }
-//        }, 2000);
+        doWithPermissionChecked();
+    }
 
+    private void initIfPermissionGranted() {
+        startWBService();
         AppConfig.DEVICE_ID = getDeviceInfo(StartUbao.this);
         Log.e("deviceID", AppConfig.DEVICE_ID + ":");
         showSystemParameter();
@@ -96,10 +104,9 @@ public class StartUbao extends Activity {
         telephone = sharedPreferences.getString("telephone", null);
         password = LoginGet.DecodeBase64Password(sharedPreferences.getString("password", ""));
         countrycode = sharedPreferences.getInt("countrycode", 86);
-        if(countrycode == 0){
+        if (countrycode == 0) {
             countrycode = 86;
         }
-
         sharedPreferences.edit().putInt("countrycode", countrycode).commit();
         AppConfig.COUNTRY_CODE = countrycode = sharedPreferences.getInt("countrycode", 86);
         AppConfig.LANGUAGEID = getLocaleLanguage();
@@ -111,11 +118,6 @@ public class StartUbao extends Activity {
         }
         AppConfig.deviceType = DeviceManager.getDeviceType(this);
         Log.e("deviceType", "type:" + AppConfig.deviceType);
-
-		/*Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        startActivity(intent);
-		finish();*/
-
         if (isFirst) {
             Log.e("StartUbao", "step three");
             editor.putBoolean("isFirst", false);
@@ -127,7 +129,6 @@ public class StartUbao extends Activity {
                     LoginActivity.class);*/
             startActivity(intent);
             finish();
-
         } else {
             if (isLogIn) {
                 String name = sharedPreferences.getString("name", null);
@@ -229,7 +230,7 @@ public class StartUbao extends Activity {
         } else if (mlanguage.equals("zh")) {
             return 2;
         }/*else if(mlanguage.equals("ja")){
-			return 4;
+                        return 4;
 		}else if(mlanguage.equals("fr")){
 			return 12;
 		}*/
@@ -358,17 +359,44 @@ public class StartUbao extends Activity {
     }
 
     private void startWBService() {
-
         Intent service = new Intent(this, SocketService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(service);
-        }else {
+        } else {
             startService(service);
         }
 
     }
 
+    private boolean isPermissionPhoneStateGranted() {
+        return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+    }
 
+    private void doWithPermissionChecked(){
+        if(isPermissionPhoneStateGranted()){
+            initIfPermissionGranted();
+            requestPermissionText.setVisibility(View.GONE);
+        }else {
+            requestPermissionText.setVisibility(View.VISIBLE);
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.READ_PHONE_STATE}, REQUEST_PERMISSION_PHONE_STATE);
+        }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == REQUEST_PERMISSION_PHONE_STATE){
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("check_permission","phone_state_granted");
+                 initIfPermissionGranted();
+                requestPermissionText.setVisibility(View.GONE);
+            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
+                Log.e("check_permission","phone_state_denied");
+                requestPermissionText.setVisibility(View.VISIBLE);
+            }
 
+        }
+    }
 }

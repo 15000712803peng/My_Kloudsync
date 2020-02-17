@@ -134,12 +134,14 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
 
     @Override
     public void userMuteAll() {
+        microImage.setImageResource(R.drawable.icon_command_mic_disable);
         EventMuteAll eventMuteAll = new EventMuteAll();
         EventBus.getDefault().post(eventMuteAll);
     }
 
     @Override
     public void userUnmuteAll() {
+        microImage.setImageResource(R.drawable.icon_command_mic_enabel);
         EventUnmuteAll eventUnmuteAll = new EventUnmuteAll();
         EventBus.getDefault().post(eventUnmuteAll);
     }

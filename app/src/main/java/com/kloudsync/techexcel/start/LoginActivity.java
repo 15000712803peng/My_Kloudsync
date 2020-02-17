@@ -42,6 +42,7 @@ import com.kloudsync.techexcel.dialog.LoadingDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.response.InvitationsResponse;
 import com.kloudsync.techexcel.response.NetworkResponse;
+import com.kloudsync.techexcel.tool.StringUtils;
 import com.kloudsync.techexcel.ui.InvitationsActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
 
@@ -112,7 +113,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         instance = this;
         gson = new Gson();
         threadManager = ((App) getApplication()).getThreadMgr();
-        checkPermission();
+//        checkPermission();
         initView();
         startWBService();
         EventBus.getDefault().register(this);
@@ -250,20 +251,20 @@ public class LoginActivity extends Activity implements OnClickListener {
         }
     }
 
-    private void toggleHidePwd(){
-        if(et_password.getTag() != null){
+    private void toggleHidePwd() {
+        if (et_password.getTag() != null) {
             Integer type = (Integer) et_password.getTag();
             togglePwdByType(type);
         }
     }
 
-    private void togglePwdByType(int type){
-        if(type == PASSWORD_HIDE){
+    private void togglePwdByType(int type) {
+        if (type == PASSWORD_HIDE) {
             et_password.setInputType(InputType.TYPE_CLASS_TEXT);
             pwdEyeImage.setImageResource(R.drawable.pwd_eye_close);
             et_password.setTag(PASSWORD_NOT_HIDE);
-        }else if(type == PASSWORD_NOT_HIDE){
-            et_password.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        } else if (type == PASSWORD_NOT_HIDE) {
+            et_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             pwdEyeImage.setImageResource(R.drawable.pwd_eye_open);
             et_password.setTag(PASSWORD_HIDE);
         }
@@ -326,7 +327,9 @@ public class LoginActivity extends Activity implements OnClickListener {
 //        editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
 //        editor.commit();
 //        telephone = tv_cphone.getText().toString() + telephone;
-        telephone = "+86" + telephone;
+        if (StringUtils.isPhoneNumber(telephone)) {
+            telephone = "+86" + telephone;
+        }
 //        com.kloudsync.techexcel.start.LoginGet.LoginRequest(LoginActivity.this, telephone, password, 1,
 //                sharedPreferences, editor, threadManager);
         processLogin(telephone, password, et_telephone.getText().toString().trim());

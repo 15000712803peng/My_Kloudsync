@@ -3106,5 +3106,15 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncLoginRequst(String name,String password,int role,String deviceID,int deviceType,String DeviceName){
+        String url = AppConfig.URL_PUBLIC + "?login=" + name + "&password=" + password + "&role=" + role +
+                "&deviceID=" + deviceID + "&deviceType= " + deviceType +"&DeviceName=" + DeviceName;
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncLoginRequst","url:" + url + ",response:" + response);
+        return response;
+
+
+    }
+
 
 }

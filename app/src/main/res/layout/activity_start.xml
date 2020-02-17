@@ -1,13 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/image_welcome"
-        android:scaleType="fitEnd"
+        android:scaleType="fitXY"
         android:src="@drawable/welcome"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/txt_request_permission"
+        android:textColor="@color/red"
+        android:text="需要访问设备网络状态才能使用\n点击我请求允许"
+        android:textSize="14sp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:layout_marginBottom="56dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+
+</RelativeLayout>

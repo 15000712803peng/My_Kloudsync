@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -99,6 +100,7 @@ import com.ub.service.activity.SyncBookActivity;
 import com.ub.service.activity.SyncRoomActivity;
 import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.service.activity.WatchCourseActivity3;
+import com.ub.techexcel.bean.EventViewDocPermissionGranted;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -132,6 +134,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.kloudsync.techexcel.frgment.TeamDocumentsFragment.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
 
 
 public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener, OnClickListener {
@@ -245,8 +248,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         GetSchoolInfo();
         initUpdate();
         startWBService();
-        GetMaZhang();
-        GetMyPermission();
+        initWxApi();
+//        GetMyPermission();
         String wechatFilePath = getIntent().getStringExtra("wechat_data_path");
         if (!TextUtils.isEmpty(wechatFilePath)) {
             if (addWxDocDialog != null) {
@@ -336,7 +339,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     private IWXAPI api;
 
-    private void GetMaZhang() {
+    private void initWxApi() {
         WeiXinApi.getInstance().init(this);
 
         api = WXAPIFactory.createWXAPI(MainActivity.this,
@@ -1652,6 +1655,25 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             }
         }
         return isRunning;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE){
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_granted");
+                EventViewDocPermissionGranted viewDocPermissionGranted = new EventViewDocPermissionGranted();
+                EventBus.getDefault().post(viewDocPermissionGranted);
+
+            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
+                Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_denied");
+                Toast.makeText(this,"查看文档需要访问sdcard的权限，请允许",Toast.LENGTH_SHORT).show();
+            }
+
+        }
     }
 
 

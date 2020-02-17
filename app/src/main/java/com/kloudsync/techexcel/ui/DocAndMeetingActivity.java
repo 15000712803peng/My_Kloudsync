@@ -126,7 +126,9 @@ import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
 import com.ub.techexcel.adapter.MeetingMembersAdapter;
 import com.ub.techexcel.bean.AgoraMember;
+import com.ub.techexcel.bean.EventMuteAll;
 import com.ub.techexcel.bean.EventRoleChanged;
+import com.ub.techexcel.bean.EventUnmuteAll;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.CreateSyncDialog;
@@ -272,6 +274,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             finish();
             return;
         }
+
 //        Log.e("check_crash",null);
         writeNoteBlankPageImage();
         initViews();
@@ -1207,8 +1210,15 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void eventMuteAllMembersAudio(){
+    public void eventMuteAllMembersAudio(EventMuteAll muteAll){
+        MeetingKit.getInstance().menuMicroClicked(false);
+        SocketMessageManager.getManager(this).sendMessage_MuteStatus(0);
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventUnmuteAllMembersAudio(EventUnmuteAll unmuteAll){
+        MeetingKit.getInstance().menuMicroClicked(true);
+        SocketMessageManager.getManager(this).sendMessage_MuteStatus(1);
     }
 
     private void drawNote(int linkId, JSONObject linkProperty, int isOther) {
@@ -1226,6 +1236,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             e.printStackTrace();
         }
     }
+
 
     private void drawTempNote() {
         drawNote(-1, meetingConfig.getCurrentLinkProperty(), 0);
@@ -3472,6 +3483,18 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     meetingConfig.setShareScreenUid(0);
                 }
                 break;
+            case 14:
+                //Log.e("check_mute_audio", "data:" + data);
+                if (data.has("stat")) {
+                    int stat = data.getInt("stat");
+                    if(stat == 0){
+                        MeetingKit.getInstance().menuMicroClicked(false);
+                    }else if(stat == 1){
+                        MeetingKit.getInstance().menuMicroClicked(true);
+                    }
+                }
+
+                break;
             case 19:
                 Log.e("check_vedio_play", "data:" + data);
                 DocVedioManager vedioManager = DocVedioManager.getInstance(this);
@@ -3562,7 +3585,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         if (data.has("retCode")) {
             try {
-
                 if (data.getInt("retCode") == 0) {
                     // 成功收到JOIN_MEETING的返回
                     JSONObject dataJson = data.getJSONObject("retData");
