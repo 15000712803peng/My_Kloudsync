@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.ui;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.ContentValues;
@@ -15,6 +16,8 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -2410,20 +2413,23 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     //-----
     @Override
     public void addFromTeam() {
+
         openTeamDocument();
 
     }
 
     @Override
     public void addFromCamera() {
-        openCameraForAddDoc();
+        String[] permissions = new String[]{
+                Manifest.permission.CAMERA};
+        startRequestPermission(permissions,322);
     }
 
     @Override
     public void addFromPictures() {
-        Intent intent = new Intent(Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, REQUEST_PICTURE_ADD_DOC);
+        String[] permissions = new String[]{
+                Manifest.permission.CAMERA};
+        startRequestPermission(permissions,323);
     }
 
     @Override
@@ -3086,7 +3092,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void createSync(EventCreateSync createSync) {
         openSaveVideoPopup();
-        showCreateSyncDialog();
+        String[] permissions = new String[]{
+                Manifest.permission.RECORD_AUDIO,Manifest.permission.MODIFY_AUDIO_SETTINGS};
+        startRequestPermission(permissions,321);
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -3209,10 +3218,57 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
                 soundtrackRecordManager=SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
                 soundtrackRecordManager.setInitParams(checked,soundtrackBean2,audiosyncll,meetingConfig);
-
             }
         });
         yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID()+"");
+    }
+
+
+
+
+    private void startRequestPermission(String[] permissions,int requestcode){
+        ActivityCompat.requestPermissions(this, permissions, requestcode);
+    }
+
+    // 用户权限 申请 的回调方法
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 321) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    // 判断用户是否 点击了不再提醒。(检测该权限是否还可以申请)
+                    boolean i = shouldShowRequestPermissionRationale(permissions[0]);
+                    boolean j = shouldShowRequestPermissionRationale(permissions[1]);
+                    if (!i||!j) {
+                        // 提示用户去应用设置界面手动开启权限
+//                       showDialogTipUserGoToAppSettting();
+                    } else {
+                        Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    showCreateSyncDialog();
+                }
+            }
+        }else if(requestCode == 322){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
+                } else {
+                    openCameraForAddDoc();
+                }
+            }
+        }else if(requestCode == 323){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_PICK,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(intent, REQUEST_PICTURE_ADD_DOC);
+                }
+            }
+        }
     }
 
     private boolean isSyncing=false;
@@ -3344,7 +3400,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         soundtrackPlayDialog = new SoundtrackPlayDialog(this, soundtrackDetail, meetingConfig);
         soundtrackPlayDialog.show();
-
     }
 
     @Override

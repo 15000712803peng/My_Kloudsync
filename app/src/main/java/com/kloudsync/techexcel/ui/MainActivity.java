@@ -45,6 +45,7 @@ import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.FollowInfo;
 import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.UserPath;
+import com.kloudsync.techexcel.bean.params.EventCamera;
 import com.kloudsync.techexcel.bean.params.EventProjectFragment;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -1673,6 +1674,26 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 Toast.makeText(this,"查看文档需要访问sdcard的权限，请允许",Toast.LENGTH_SHORT).show();
             }
 
+        }else
+        if(requestCode ==spaceDocumentsFragment.REQUEST_PERMISSION_CAMERA){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    // 判断用户是否 点击了不再提醒。(检测该权限是否还可以申请)
+                    boolean i = shouldShowRequestPermissionRationale(permissions[0]);
+                    boolean j = shouldShowRequestPermissionRationale(permissions[1]);
+                    boolean k = shouldShowRequestPermissionRationale(permissions[2]);
+                    if (!i||!j||!k) {
+                        // 用户还是想用我的 APP 的
+                        // 提示用户去应用设置界面手动开启权限
+//                        showDialogTipUserGoToAppSettting();
+                    } else {
+                        Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                } else {
+                    EventBus.getDefault().post(new EventCamera());
+                }
+            }
         }
     }
 

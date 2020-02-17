@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.frgment;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 
@@ -18,6 +19,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,6 +59,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventRefreshSpaceFragment;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
 import com.kloudsync.techexcel.bean.Team;
+import com.kloudsync.techexcel.bean.params.EventCamera;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.UploadFileDialog;
@@ -1272,8 +1275,21 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
     private void AddDocument() {
         dialog = new DocChooseDialog(getActivity());
         dialog.setSelectedOptionListener(this);
-        dialog.show();
+        startRequestPermission();
     }
+    public static final int REQUEST_PERMISSION_CAMERA = 3;
+    private String[] permissions = new String[]{  Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA};
+    private void startRequestPermission(){
+        ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_PERMISSION_CAMERA);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiver(EventCamera eventCamera){
+        if(dialog!=null){
+            dialog.show();
+        }
+    }
+
 
     private void AddFavorite(final Document fa) {
         final JSONObject jsonObject = null;
