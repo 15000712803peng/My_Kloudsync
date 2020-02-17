@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.docment;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -10,7 +11,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -62,6 +65,9 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
     int spaceId;
     TextView titleText;
 
+    // 要申请的权限
+    private String[] permissions = new String[]{  Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA};
+
     @Override
     protected int setLayout() {
         return R.layout.activity_add_document;
@@ -69,6 +75,7 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     protected void initView() {
+
 
         teamName = getIntent().getStringExtra("team_name");
         teamId = getIntent().getIntExtra("team_id", -1);
@@ -89,8 +96,9 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
         spaceAdapter.setOnItemClickListener(this);
         teamLayout.setOnClickListener(this);
         getSpaceList(teamId);
-
     }
+
+
 
     @Override
     public void onClick(View view) {
@@ -125,7 +133,7 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
         spaceId = teamSpaceBean.getItemID();
         dialog = new DocChooseDialog(this);
         dialog.setSelectedOptionListener(this);
-        dialog.show();
+        startRequestPermission();
     }
 
     @Override
@@ -160,6 +168,39 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
             Toast.makeText(getApplicationContext(), "文件系统异常，打开失败", Toast.LENGTH_SHORT).show();
         }else{
             openCameraForAddDoc();
+        }
+    }
+
+
+    private void startRequestPermission(){
+        ActivityCompat.requestPermissions(this, permissions, 321);
+    }
+
+
+
+    // 用户权限 申请 的回调方法
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 321) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    // 判断用户是否 点击了不再提醒。(检测该权限是否还可以申请)
+                    boolean i = shouldShowRequestPermissionRationale(permissions[0]);
+                    boolean j = shouldShowRequestPermissionRationale(permissions[1]);
+                    boolean k = shouldShowRequestPermissionRationale(permissions[2]);
+                    if (!i||!j||!k) {
+                        // 用户还是想用我的 APP 的
+                        // 提示用户去应用设置界面手动开启权限
+//                        showDialogTipUserGoToAppSettting();
+                    } else {
+                        Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                } else {
+                    dialog.show();
+                }
+            }
         }
     }
 
