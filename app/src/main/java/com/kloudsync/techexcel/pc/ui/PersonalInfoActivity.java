@@ -799,8 +799,8 @@ public class PersonalInfoActivity extends AppCompatActivity {
 			jsonObject.put("UserID", UserID);
 			jsonObject.put("Nickname", Nickname);
 			jsonObject.put("FirstName", customerYu.getFirstName());
-			jsonObject.put("MiddleName", customerYu.getMiddleName());
-			jsonObject.put("LastName", customerYu.getLastName());
+			jsonObject.put("MiddleName", "");//jsonObject.put("MiddleName", customerYu.getMiddleName());
+			jsonObject.put("LastName", "");//jsonObject.put("LastName", customerYu.getLastName());
 			jsonObject.put("Description", Description);
 			jsonObject.put("PrimaryPhone", PrimaryPhone);
 			jsonObject.put("SecondaryPhone", SecondaryPhone);
@@ -811,7 +811,6 @@ public class PersonalInfoActivity extends AppCompatActivity {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
 		return jsonObject;
 	}
 

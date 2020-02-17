@@ -54,6 +54,7 @@
     <string name="Customer">Customer</string>
     <string name="Health_Consultant">好友</string>
     <string name="Phone">Phone</string>
+    <string name="Main_Phone">Phone</string>
     <string name="Address">Address</string>
     <string name="See_Info">See Info</string>
     <string name="Fouce_point">Fouce_point：</string>
@@ -498,11 +499,13 @@
     <string name="pi_fname">First name</string>
     <string name="pi_mname">Middle Name</string>
     <string name="pi_lname">Last name</string>
+    <string name="pi_name">Name</string>
 
     <string name="pi_pfname">Please input First Name</string>
     <string name="pi_pmname">Please input Middle Name</string>
     <string name="pi_plname">Please input Last Name</string>
     <string name="change_name">Change name</string>
+    <string name="change_cancel">Cancel</string>
     <string name="change_phone">Change Primary phone</string>
     <string name="change_sphone">Change Secondary phone</string>
 
@@ -654,6 +657,7 @@ Please input the cell phone number to add the contact
     <string name="as_setting">Company setting</string>
     <string name="as_logo">Logo</string>
     <string name="as_name">Name</string>
+    <string name="as_info_name">Name</string>
     <string name="as_address">Web address</string>
     <string name="as_email">Email</string>
     <string name="as_admin">Admin user list</string>
@@ -662,6 +666,7 @@ Please input the cell phone number to add the contact
     <string name="as_contact_list">Contact list</string>
     <string name="as_add_admin">Add admin user</string>
     <string name="as_save">Save</string>
+    <string name="as_info_save">Save</string>
     <string name="acceptcompanytitle">The following company had invited you</string>
     <string name="acceptcompanypropet">click to join now</string>
     <string name="acceptcompanyskip">Skip</string>

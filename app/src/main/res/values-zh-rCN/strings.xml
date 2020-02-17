@@ -56,6 +56,7 @@
     <string name="Customer">用户</string>
     <string name="Health_Consultant">好友</string>
     <string name="Phone">电话</string>
+    <string name="Main_Phone">主号码</string>
     <string name="Address">地址</string>
     <string name="See_Info">查看资料</string>
     <string name="Fouce_point">关注点：</string>
@@ -537,10 +538,12 @@
     <string name="pi_fname">第一姓名</string>
     <string name="pi_mname">中间名字</string>
     <string name="pi_lname">最后名字</string>
+    <string name="pi_name">姓名</string>
     <string name="pi_pfname">请输入第一姓名</string>
     <string name="pi_pmname">请输入中间名字</string>
     <string name="pi_plname">请输入最后名字</string>
-    <string name="change_name">修改名字</string>
+    <string name="change_name">设置姓名</string>
+    <string name="change_cancel">取消</string>
     <string name="change_phone">修改主要号码</string>
     <string name="change_sphone">修改副号码</string>
 
@@ -648,6 +651,7 @@
     <string name="as_setting">公司/机构设置</string>
     <string name="as_logo">图标</string>
     <string name="as_name">名字</string>
+    <string name="as_info_name">姓名</string>
     <string name="as_address">网址</string>
     <string name="as_email">邮箱</string>
     <string name="as_sync">开启音想房间</string>
@@ -656,6 +660,7 @@
     <string name="as_contact_list">联系人列表</string>
     <string name="as_add_admin">新增管理员</string>
     <string name="as_save">提交</string>
+    <string name="as_info_save">保存</string>
 
     <string name="acceptcompanytitle">以下公司邀请您加入</string>
     <string name="acceptcompanypropet">现在点击加入</string>
@@ -667,7 +672,7 @@
     <string name="opencompanycode">启动公司邀请码</string>
     <string name="companycode">公司邀请码</string>
     <!-- 俊瑞  张 -->
-    <string name="personInfo">个人资料</string>
+    <string name="personInfo">资料设置</string>
     <string name="right">右加号</string>
     <string name="save">保存</string>
     <string name="head">头像</string>
