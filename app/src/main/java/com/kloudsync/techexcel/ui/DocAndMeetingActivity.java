@@ -3343,7 +3343,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         soundtrackPlayDialog = new SoundtrackPlayDialog(this, soundtrackDetail, meetingConfig);
         soundtrackPlayDialog.show();
-
     }
 
     @Override

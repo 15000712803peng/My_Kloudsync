@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.HeaderRecyclerAdapter;
@@ -235,7 +236,15 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         EventBus.getDefault().register(this);
         downloadActions(soundtrackDetail.getDuration(),soundtrackDetail.getSoundtrackID());
         soundtrackAudioManager = SoundtrackAudioManager.getInstance(host);
+
+        if(soundtrackDetail.getNewAudioInfo()==null){
+            Toast.makeText(host,"没找到录音文件",Toast.LENGTH_LONG).show();
+            dismiss();
+            return;
+
+        }
         soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
+
         Observable.just("preload").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
