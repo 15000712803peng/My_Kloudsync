@@ -3209,6 +3209,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
                 soundtrackRecordManager=SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
                 soundtrackRecordManager.setInitParams(checked,soundtrackBean2,audiosyncll,meetingConfig);
+
             }
         });
         yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID()+"");
