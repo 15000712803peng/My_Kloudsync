@@ -232,6 +232,7 @@ public class SoundtrackRecordManager implements View.OnClickListener {
         }
         audioplaytimer = new Timer();
         audioplaytimer.schedule(new TimerTask() {
+
             @Override
             public void run() {
                 Log.e("refreshTime", isPause + "");
