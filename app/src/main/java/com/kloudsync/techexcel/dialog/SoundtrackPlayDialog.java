@@ -261,6 +261,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     }
 
 
+
+
     class PlayTimeTask extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -403,6 +405,12 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 //        seekTo(seekBar.getProgress() * 10);
         pause();
         final int time = seekBar.getProgress() * 10;
+        seekTo2(time);
+
+    }
+
+
+    private void seekTo2(final int time){
         isStarted = false;
         clearActionsBySeek();
         SoundtrackAudioManager.getInstance(host).seekTo(time);
@@ -435,7 +443,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
             }
         }).subscribe();
-
     }
 
     private void clearActionsBySeek(){
@@ -524,6 +531,27 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         SoundtrackAudioManager.getInstance(host).pause();
         statusText.setText(R.string.paused);
         startPauseImage.setImageResource(R.drawable.video_play);
+    }
+
+    public void notifyPause(){
+        if(soundtrackAudioManager.isPlaying()){
+            pause();
+        }
+    }
+
+
+    public void notifyRestart(){
+        if(!soundtrackAudioManager.isPlaying()){
+            restart();
+        }
+    }
+
+    public void  notifyClose(){
+        close();
+    }
+
+    public void notifySeekTo(int audioTime) {
+        seekTo2(audioTime);
     }
 
     private void restart(){
