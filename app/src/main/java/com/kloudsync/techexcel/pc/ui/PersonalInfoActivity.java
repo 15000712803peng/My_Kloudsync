@@ -811,7 +811,6 @@ public class PersonalInfoActivity extends AppCompatActivity {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
 		return jsonObject;
 	}
 
