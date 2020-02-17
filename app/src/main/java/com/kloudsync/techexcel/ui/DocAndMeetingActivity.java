@@ -78,7 +78,9 @@ import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.NoteId;
+import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.bean.SoundtrackDetail;
+import com.kloudsync.techexcel.bean.SoundtrackDetailData;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.bean.VedioData;
@@ -3569,8 +3571,75 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
                 }
                 break;
+
+            case 23:
+                final int stat = data.getInt("stat");
+                final String soundtrackID = data.getString("soundtrackId");
+                int    audioTime=0;
+                if (stat == 4) {
+                      audioTime = data.getInt("time");
+                }
+                Log.e("mediaplayer-----", stat + ":   " + soundtrackID);
+                if (stat == 1) {  //开始播放
+                    int vid2 = 0;
+                    if (!TextUtils.isEmpty(soundtrackID)) {
+                        vid2 = Integer.parseInt(soundtrackID);
+                    }
+                    SoundTrack soundTrack=new SoundTrack();
+                    soundTrack.setSoundtrackID(vid2);
+                    requestDetailAndPlay(soundTrack);
+                } else if (stat == 0) { //停止播放
+                  if(soundtrackPlayDialog!=null){
+                      soundtrackPlayDialog.notifyClose();
+                  }
+                } else if (stat == 2) {  //暂停播放
+                    if(soundtrackPlayDialog!=null){
+                        soundtrackPlayDialog.notifyPause();
+                    }
+                } else if (stat == 3) { // 继续播放
+                    if(soundtrackPlayDialog!=null){
+                        soundtrackPlayDialog.notifyRestart();
+                    }
+                } else if (stat == 4) {  // 追上进度
+//
+                } else if (stat == 5) {  // 拖动进度条
+//                    seekToTime(audioTime);
+                    if(soundtrackPlayDialog!=null){
+                        soundtrackPlayDialog.notifySeekTo(audioTime);
+                    }
+                }
+
+                break;
         }
     }
+
+    private void requestDetailAndPlay(final SoundTrack soundTrack) {
+        Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
+            @Override
+            public SoundtrackDetailData apply(SoundTrack soundtrack) throws Exception {
+                SoundtrackDetailData soundtrackDetailData = new SoundtrackDetailData();
+                JSONObject response = ServiceInterfaceTools.getinstance().syncGetSoundtrackDetail(soundTrack);
+                if(response.has("RetCode")){
+                    if(response.getInt("RetCode") == 0){
+                        SoundtrackDetail soundtrackDetail = new Gson().fromJson(response.getJSONObject("RetData").toString(),SoundtrackDetail.class);
+                        soundtrackDetailData.setSoundtrackDetail(soundtrackDetail);
+
+                    }
+                }
+                return soundtrackDetailData;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                if(soundtrackDetailData.getSoundtrackDetail() != null){
+                    EventPlaySoundtrack soundtrack = new EventPlaySoundtrack();
+                    soundtrack.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
+                    playSoundtrack(soundtrack);
+                }
+            }
+        }).subscribe();
+    }
+
 
     private void followShowFullScreenSingleAgoraMember(String memberId) {
         if (cameraList.getVisibility() == View.VISIBLE) {
