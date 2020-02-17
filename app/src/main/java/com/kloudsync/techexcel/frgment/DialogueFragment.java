@@ -109,7 +109,7 @@ public class DialogueFragment extends Fragment {
     private boolean isToTop = true;
     private InputMethodManager inputManager;
 
-    List<Conversation> list;
+    List<Conversation> list = new ArrayList<>();
 
     public PopupWindow mPopupWindow;
 
@@ -1284,6 +1284,10 @@ public class DialogueFragment extends Fragment {
     public void goToSearch(EventSearchChat eventSearchChat) {
         Intent intent = new Intent(getActivity(), ChatSearchActivity.class);
         Bundle bundle = new Bundle();
+        if(list == null){
+            list = new ArrayList<>();
+        }
+
         if (clist != null && clist.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 Conversation cc = list.get(i);

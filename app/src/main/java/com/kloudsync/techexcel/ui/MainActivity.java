@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -35,8 +34,8 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
-import com.kloudsync.techexcel.bean.EventCameraPermissionForJoinMeetingGranted;
-import com.kloudsync.techexcel.bean.EventCameraPermissionForStartMeetingGranted;
+import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
+import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventDoc;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.bean.EventSpaceData;
@@ -45,7 +44,6 @@ import com.kloudsync.techexcel.bean.EventSyncBook;
 import com.kloudsync.techexcel.bean.EventSyncRoom;
 import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.FollowInfo;
-import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.UserPath;
 import com.kloudsync.techexcel.bean.params.EventProjectFragment;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
@@ -96,11 +94,9 @@ import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.service.KloudWebClientManager;
-import com.ub.service.activity.NotifyActivity;
 import com.ub.service.activity.SocketService;
 import com.ub.service.activity.SyncBookActivity;
 import com.ub.service.activity.SyncRoomActivity;
-import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.EventViewDocPermissionGranted;
 import com.ub.techexcel.tools.FileUtils;
@@ -112,13 +108,10 @@ import com.umeng.analytics.MobclickAgent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,8 +130,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_FOR_JOIN_MEETING;
-import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_FOR_START_MEETING;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
+
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
 
 
@@ -1678,22 +1672,22 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 Toast.makeText(this,"查看文档需要访问sdcard的权限，请允许",Toast.LENGTH_SHORT).show();
             }
 
-        }else if(requestCode == REQUEST_PERMISSION_CAMERA_FOR_JOIN_MEETING){
+        }else if(requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING){
             if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Log.e("check_permission","phone_camera_granted");
-                EventCameraPermissionForJoinMeetingGranted joinMeetingGranted = new EventCameraPermissionForJoinMeetingGranted();
+                EventCameraAndStoragePermissionForJoinMeetingGranted joinMeetingGranted = new EventCameraAndStoragePermissionForJoinMeetingGranted();
                 EventBus.getDefault().post(joinMeetingGranted);
 
             } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
                 Log.e("check_permission","phone_Rcamera_denied");
                 Toast.makeText(this,"加入会议需要访问相机，请允许",Toast.LENGTH_SHORT).show();
             }
-        }else if(requestCode == REQUEST_PERMISSION_CAMERA_FOR_START_MEETING){
+        }else if(requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING){
             if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Log.e("check_permission","phone_camera_granted");
-                EventCameraPermissionForStartMeetingGranted startMeetingGranted = new EventCameraPermissionForStartMeetingGranted();
+                EventCameraAndStoragePermissionForStartMeetingGranted startMeetingGranted = new EventCameraAndStoragePermissionForStartMeetingGranted();
                 EventBus.getDefault().post(startMeetingGranted);
 
             } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){

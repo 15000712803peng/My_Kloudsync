@@ -32,8 +32,8 @@ import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.bean.EventCameraPermissionForJoinMeetingGranted;
-import com.kloudsync.techexcel.bean.EventCameraPermissionForStartMeetingGranted;
+import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
+import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -77,8 +77,9 @@ import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_FOR_JOIN_MEETING;
-import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_FOR_START_MEETING;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
+
 
 public class ServiceFragment extends MyFragment implements View.OnClickListener {
     private boolean isPrepared = false;
@@ -802,20 +803,20 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     }
 
     private void joinMeetingBeforeCheckPession() {
-        if (KloudPerssionManger.isPermissionCameraGranted(getActivity())) {
+        if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
             showJoinMeetingDialog();
         }else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{
-                    Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA_FOR_JOIN_MEETING);
+                    Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING);
         }
     }
 
     private void startMeetingBeforeCheckPession() {
-        if (KloudPerssionManger.isPermissionCameraGranted(getActivity())) {
+        if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
             showStartMeetingDialog();
         }else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{
-                    Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA_FOR_START_MEETING);
+                    Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING);
         }
     }
 
@@ -869,12 +870,12 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
 
     @Subscribe
-    public void eventJoinMeetingAfterPerssionGranted(EventCameraPermissionForJoinMeetingGranted joinMeetingGranted){
+    public void eventJoinMeetingAfterPerssionGranted(EventCameraAndStoragePermissionForJoinMeetingGranted joinMeetingGranted){
         showJoinMeetingDialog();
     }
 
     @Subscribe
-    public void eventStartMeetingAfterPerssionGranted(EventCameraPermissionForStartMeetingGranted startMeetingGranted){
+    public void eventStartMeetingAfterPerssionGranted(EventCameraAndStoragePermissionForStartMeetingGranted startMeetingGranted){
         showStartMeetingDialog();
     }
 

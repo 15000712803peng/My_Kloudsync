@@ -13,8 +13,8 @@ public class KloudPerssionManger {
 
     public static final int REQUEST_PERMISSION_PHONE_STATE = 1;
     public static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE = 2;
-    public static final int REQUEST_PERMISSION_CAMERA_FOR_JOIN_MEETING = 3;
-    public static final int REQUEST_PERMISSION_CAMERA_FOR_START_MEETING = 4;
+    public static final int REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING = 3;
+    public static final int REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING = 4;
 
     public static boolean isPermissionPhoneStateGranted(Context context) {
         return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE);
