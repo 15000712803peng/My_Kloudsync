@@ -150,13 +150,10 @@ public abstract class BaseDocAndMeetingActivity extends FragmentActivity {
             singleMemberIcon.setVisibility(View.VISIBLE);
             singleVedioStatusImage.setImageResource(R.drawable.icon_command_webcam_disable);
 
-
         } else {
             singleMemberIcon.setVisibility(View.GONE);
             singleVedioStatusImage.setImageResource(R.drawable.icon_command_webcam_enable);
         }
-
-
     }
 
     protected final void stripSurfaceView(SurfaceView view) {

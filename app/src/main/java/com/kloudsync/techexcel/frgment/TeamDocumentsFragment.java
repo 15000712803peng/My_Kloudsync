@@ -39,6 +39,7 @@ import com.kloudsync.techexcel.docment.RenameActivity;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DialogDeleteDocument;
 import com.kloudsync.techexcel.help.FilterSpaceDialog;
+import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.help.PopDeleteDocument;
 import com.kloudsync.techexcel.help.PopDocument;
 import com.kloudsync.techexcel.help.PopEditDocument;
@@ -92,6 +93,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
+
 public class TeamDocumentsFragment extends MyFragment implements View.OnClickListener, SpaceAdapter.OnItemLectureListener, KloudCache.OnUserInfoChangedListener, FilterSpaceDialog.SpaceOptionsLinstener {
 
     private RecyclerView mCurrentTeamRecyclerView;
@@ -113,7 +116,6 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     private View view;
     private ImageView switchCompanyImage;
     private TextView searchPromptText;
-    public static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE = 2;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -946,16 +948,11 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                 Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_denied");
                 Toast.makeText(getActivity(),"查看文档需要访问sdcard的权限，请允许",Toast.LENGTH_SHORT).show();
             }
-
         }
     }
 
-    private boolean isPermissionExternalStorageGranted() {
-        return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
-
     private void viewDocIfPermissionGranted(Document document){
-        if(isPermissionExternalStorageGranted()){
+        if(KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())){
             requestDocumentDetail(document);
         }else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{

@@ -105,6 +105,7 @@ public class DocumentModel {
             keyJson.put("Key", newPath);
             jsonObject.put("Key", keyJson);
             JSONObject returnjson = ConnectService.submitDataByJsonLive(url, jsonObject);
+            Log.e("syncQueryDocumentInDoc","url:" + url + ",returnjson:" + returnjson);
             return returnjson;
         } catch (Exception e) {
             e.printStackTrace();

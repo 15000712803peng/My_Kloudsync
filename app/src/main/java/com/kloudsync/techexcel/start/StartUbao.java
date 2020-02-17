@@ -29,6 +29,7 @@ import com.kloudsync.techexcel.bean.RongCloudData;
 import com.kloudsync.techexcel.bean.UserPreferenceData;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DeviceManager;
+import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.tool.SystemUtil;
 import com.kloudsync.techexcel.ui.MainActivity;
@@ -53,6 +54,7 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
 import static com.kloudsync.techexcel.config.AppConfig.ClassRoomID;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_PHONE_STATE;
 
 public class StartUbao extends Activity {
 
@@ -69,7 +71,7 @@ public class StartUbao extends Activity {
 
     public static StartUbao instance;
     String wechatFilePath;
-    private static final int REQUEST_PERMISSION_PHONE_STATE = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -368,12 +370,10 @@ public class StartUbao extends Activity {
 
     }
 
-    private boolean isPermissionPhoneStateGranted() {
-        return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
-    }
+
 
     private void doWithPermissionChecked(){
-        if(isPermissionPhoneStateGranted()){
+        if(KloudPerssionManger.isPermissionPhoneStateGranted(this)){
             initIfPermissionGranted();
             requestPermissionText.setVisibility(View.GONE);
         }else {

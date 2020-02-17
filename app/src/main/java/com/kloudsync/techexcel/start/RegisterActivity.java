@@ -273,36 +273,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
         }
     }
 
-	/*protected void ChangePassword() {
-		
-		
-		final JSONObject jsonObject = format();
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					JSONObject responsedata = ConnectService.submitDataByJsonNoToken(
-							AppConfig.URL_PUBLIC
-									+ "User/ResetPwd", jsonObject);
-					Log.e("返回的jsonObject", jsonObject.toString() + "");
-					Log.e("返回的responsedata", responsedata.toString() + "");
-					String retcode = responsedata.getString("RetCode");
-					Message msg = new Message();
-					if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
-						msg.what = AppConfig.SUCCESSCHANGE;						
-					}else{
-						msg.what = AppConfig.FAILED;
-						String ErrorMessage = responsedata.getString("ErrorMessage");
-						msg.obj = ErrorMessage;
-					}
-					handler.sendMessage(msg);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}).start();
-	}*/
 
     private JSONObject format() {
         JSONObject jsonObject = new JSONObject();
@@ -412,7 +382,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
                 }
             }
         }).start(ThreadManager.getManager());
-		
+
 		/*LoginGet loginget = new LoginGet();
 		loginget.setLoginGetListener(new LoginGetListener() {
 			
@@ -530,7 +500,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
                             .submitDataByJsonNoToken(AppConfig.URL_PUBLIC
                                     + "User/Register4Web", jsonobject);
                     String retcode = responsedata.getString("RetCode");
-                    Log.e("User/Register4Web","parmas：" + jsonobject + ",responsedata:" + responsedata);
+                    Log.e("User/Register4Web", "parmas：" + jsonobject + ",responsedata:" + responsedata);
 //                    JSONObject retdata = responsedata
 //                            .getJSONObject("RetData");
 //                    String UserID = retdata.getString("UserID");

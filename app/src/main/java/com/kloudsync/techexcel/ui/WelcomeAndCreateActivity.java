@@ -74,6 +74,7 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
     }
     
     JoinMeetingPopup joinMeetingPopup;
+
     private void showJoinDialog(){
         if (joinMeetingPopup == null) {
             joinMeetingPopup = new JoinMeetingPopup();
@@ -90,7 +91,7 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
                 }
             });
         }
-        joinMeetingPopup.StartPop(createText);
+        joinMeetingPopup.show();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -118,4 +119,6 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
             startService(service);
         }
     }
+
+
 }

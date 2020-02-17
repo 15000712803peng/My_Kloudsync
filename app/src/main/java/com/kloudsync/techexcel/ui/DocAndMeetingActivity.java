@@ -1719,7 +1719,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private void queryAndDownLoadPageToShow(final DocumentPage documentPage, final boolean needRedownload) {
         String pageUrl = documentPage.getPageUrl();
         DocumentPage page = pageCache.getPageCache(pageUrl);
-        Log.e("-", "get cach page:" + page + "--> url:" + documentPage.getPageUrl());
+        Log.e("check_download_page", "get_cach_page:" + page + "--> url:" + documentPage.getPageUrl());
         if (page != null && !TextUtils.isEmpty(page.getPageUrl())
                 && !TextUtils.isEmpty(page.getSavedLocalPath()) && !TextUtils.isEmpty(page.getShowingPath())) {
             if (new File(page.getSavedLocalPath()).exists()) {
@@ -1764,11 +1764,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 pageIndex = meetingConfig.getPageNumber();
             }
 
-            Log.e("-", "showUrl:" + showUrl);
+
 
             documentPage.setSavedLocalPath(pathLocalPath);
 
-            Log.e("-", "page:" + documentPage);
+            Log.e("check_download_page", "download_page:" + documentPage);
             //保存在本地的地址
 
             DownloadUtil.get().download(pageUrl, pathLocalPath, new DownloadUtil.OnDownloadListener() {
@@ -1934,7 +1934,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private synchronized void safeDownloadFile(final String pathLocalPath, final DocumentPage page, final String notifyUrl, final int index, final boolean needRedownload) {
 
         Log.e("safeDownloadFile", "start down load:" + page);
-
         page.setSavedLocalPath(pathLocalPath);
         final ThreadLocal<DocumentPage> localPage = new ThreadLocal<>();
         localPage.set(page);

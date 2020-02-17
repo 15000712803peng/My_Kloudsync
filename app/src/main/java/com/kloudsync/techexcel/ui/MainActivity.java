@@ -35,6 +35,8 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.EventCameraPermissionForJoinMeetingGranted;
+import com.kloudsync.techexcel.bean.EventCameraPermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventDoc;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.bean.EventSpaceData;
@@ -45,7 +47,6 @@ import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.FollowInfo;
 import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.UserPath;
-import com.kloudsync.techexcel.bean.params.EventCamera;
 import com.kloudsync.techexcel.bean.params.EventProjectFragment;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -135,7 +136,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.kloudsync.techexcel.frgment.TeamDocumentsFragment.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
+
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_FOR_JOIN_MEETING;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_FOR_START_MEETING;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
 
 
 public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener, OnClickListener {
@@ -1674,25 +1678,27 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 Toast.makeText(this,"查看文档需要访问sdcard的权限，请允许",Toast.LENGTH_SHORT).show();
             }
 
-        }else
-        if(requestCode ==spaceDocumentsFragment.REQUEST_PERMISSION_CAMERA){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    // 判断用户是否 点击了不再提醒。(检测该权限是否还可以申请)
-                    boolean i = shouldShowRequestPermissionRationale(permissions[0]);
-                    boolean j = shouldShowRequestPermissionRationale(permissions[1]);
-                    boolean k = shouldShowRequestPermissionRationale(permissions[2]);
-                    if (!i||!j||!k) {
-                        // 用户还是想用我的 APP 的
-                        // 提示用户去应用设置界面手动开启权限
-//                        showDialogTipUserGoToAppSettting();
-                    } else {
-                        Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                } else {
-                    EventBus.getDefault().post(new EventCamera());
-                }
+        }else if(requestCode == REQUEST_PERMISSION_CAMERA_FOR_JOIN_MEETING){
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("check_permission","phone_camera_granted");
+                EventCameraPermissionForJoinMeetingGranted joinMeetingGranted = new EventCameraPermissionForJoinMeetingGranted();
+                EventBus.getDefault().post(joinMeetingGranted);
+
+            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
+                Log.e("check_permission","phone_Rcamera_denied");
+                Toast.makeText(this,"加入会议需要访问相机，请允许",Toast.LENGTH_SHORT).show();
+            }
+        }else if(requestCode == REQUEST_PERMISSION_CAMERA_FOR_START_MEETING){
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("check_permission","phone_camera_granted");
+                EventCameraPermissionForStartMeetingGranted startMeetingGranted = new EventCameraPermissionForStartMeetingGranted();
+                EventBus.getDefault().post(startMeetingGranted);
+
+            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
+                Log.e("check_permission","phone_Rcamera_denied");
+                Toast.makeText(this,"开始会议需要访问相机，请允许",Toast.LENGTH_SHORT).show();
             }
         }
     }

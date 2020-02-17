@@ -1,34 +1,30 @@
 package com.kloudsync.techexcel.frgment;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,12 +32,14 @@ import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventCameraPermissionForJoinMeetingGranted;
+import com.kloudsync.techexcel.bean.EventCameraPermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
-import com.kloudsync.techexcel.help.ShowMyMeetingIdDialog;
-import com.kloudsync.techexcel.help.SpaceMemberOperationDialog;
+import com.kloudsync.techexcel.help.KloudPerssionManger;
+import com.kloudsync.techexcel.help.StartMeetingDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.school.SelectSchoolActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
@@ -63,9 +61,6 @@ import com.ub.techexcel.tools.EventSchoolPopup;
 import com.ub.techexcel.tools.JoinMeetingPopup;
 import com.ub.techexcel.tools.MeetingMoreOperationPopup;
 import com.ub.techexcel.tools.MenuEventPopup;
-import com.ub.techexcel.tools.ServiceInterfaceListener;
-import com.ub.techexcel.tools.ServiceInterfaceTools;
-import com.ub.techexcel.tools.ServiceTool;
 import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -76,16 +71,14 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_FOR_JOIN_MEETING;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_FOR_START_MEETING;
 
 public class ServiceFragment extends MyFragment implements View.OnClickListener {
     private boolean isPrepared = false;
@@ -479,7 +472,6 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         finished = (TextView) view.findViewById(R.id.finished);
         finished.setOnClickListener(this);
 
-
         changeschool = (ImageView) view.findViewById(R.id.changeschool);
         changeschool.setOnClickListener(this);
         tv_title = (TextView) view.findViewById(R.id.tv_title);
@@ -595,8 +587,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
     }
 
-    private ShowMyMeetingIdDialog showMyMeetingIdDialog;
-    private JoinMeetingPopup joinMeetingPopup;
+    private StartMeetingDialog startMeetingDialog;
+    private JoinMeetingPopup joinMeetingDialog;
 
     @Override
     public void onClick(View view) {
@@ -648,41 +640,12 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 startActivity(searchIntnt);
                 break;
             case R.id.lin_myroom:
-                if (showMyMeetingIdDialog == null) {
-                    showMyMeetingIdDialog = new ShowMyMeetingIdDialog(getActivity(), AppConfig.ClassRoomID.replaceAll("-", ""));
-                    showMyMeetingIdDialog.setOptionsLinstener(new ShowMyMeetingIdDialog.InviteOptionsLinstener() {
-                        @Override
-                        public void enter() {
-                            if (!Tools.isFastClick()) {
-                                if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
-                                    Toast.makeText(getActivity(), "你加入的课堂不存在!", Toast.LENGTH_LONG).show();
-                                } else {
-//                                    getClassRoomLessonID(AppConfig.ClassRoomID);
-                                    doStartMeeting(AppConfig.ClassRoomID);
-                                }
-                            }
-                        }
-                    });
-                }
-                showMyMeetingIdDialog.show();
+                startMeetingBeforeCheckPession();
                 break;
-            case R.id.lin_join: // join meeting
-                if (joinMeetingPopup == null) {
-                    joinMeetingPopup = new JoinMeetingPopup();
-                    joinMeetingPopup.getPopwindow(getActivity());
-                    joinMeetingPopup.setFavoritePoPListener(new JoinMeetingPopup.FavoritePoPListener() {
-                        @Override
-                        public void dismiss() {
+            case R.id.lin_join:
+                // join meeting
+                joinMeetingBeforeCheckPession();
 
-                        }
-
-                        @Override
-                        public void open() {
-
-                        }
-                    });
-                }
-                joinMeetingPopup.StartPop(lin_schedule);
                 break;
             case R.id.lin_schedule:
                 Intent schintent = new Intent(getActivity(), NewMeetingActivity.class);
@@ -820,7 +783,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void joinMeeting(EventJoinMeeting eventJoinMeeting) {
-        Log.e("check_event_join_meeting","eventJoinMeeting:" + eventJoinMeeting);
+        Log.e("check_event_join_meeting", "eventJoinMeeting:" + eventJoinMeeting);
         if (eventJoinMeeting.getLessionId() <= 0) {
             Toast.makeText(getActivity(), "加入的meeting不存在或没有开始", Toast.LENGTH_SHORT).show();
             return;
@@ -837,4 +800,82 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         intent.putExtra("from_meeting", true);
         startActivity(intent);
     }
+
+    private void joinMeetingBeforeCheckPession() {
+        if (KloudPerssionManger.isPermissionCameraGranted(getActivity())) {
+            showJoinMeetingDialog();
+        }else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA_FOR_JOIN_MEETING);
+        }
+    }
+
+    private void startMeetingBeforeCheckPession() {
+        if (KloudPerssionManger.isPermissionCameraGranted(getActivity())) {
+            showStartMeetingDialog();
+        }else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA_FOR_START_MEETING);
+        }
+    }
+
+    private void showJoinMeetingDialog() {
+        if (joinMeetingDialog != null) {
+            if (joinMeetingDialog.isShowing()) {
+                joinMeetingDialog.dismiss();
+            }
+            joinMeetingDialog = null;
+        }
+
+        joinMeetingDialog = new JoinMeetingPopup();
+        joinMeetingDialog.getPopwindow(getActivity());
+        joinMeetingDialog.setFavoritePoPListener(new JoinMeetingPopup.FavoritePoPListener() {
+            @Override
+            public void dismiss() {
+
+            }
+
+            @Override
+            public void open() {
+
+            }
+        });
+        joinMeetingDialog.show();
+    }
+
+    private void showStartMeetingDialog(){
+        if (startMeetingDialog != null) {
+            if(startMeetingDialog.isShowing()){
+                startMeetingDialog.dismiss();
+                startMeetingDialog = null;
+            }
+        }
+        startMeetingDialog = new StartMeetingDialog(getActivity(), AppConfig.ClassRoomID.replaceAll("-", ""));
+        startMeetingDialog.setOptionsLinstener(new StartMeetingDialog.InviteOptionsLinstener() {
+            @Override
+            public void enter() {
+                if (!Tools.isFastClick()) {
+                    if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
+                        Toast.makeText(getActivity(), "你加入的课堂不存在!", Toast.LENGTH_LONG).show();
+                    } else {
+//                                    getClassRoomLessonID(AppConfig.ClassRoomID);
+                        doStartMeeting(AppConfig.ClassRoomID);
+                    }
+                }
+            }
+        });
+        startMeetingDialog.show();
+    }
+
+
+    @Subscribe
+    public void eventJoinMeetingAfterPerssionGranted(EventCameraPermissionForJoinMeetingGranted joinMeetingGranted){
+        showJoinMeetingDialog();
+    }
+
+    @Subscribe
+    public void eventStartMeetingAfterPerssionGranted(EventCameraPermissionForStartMeetingGranted startMeetingGranted){
+        showStartMeetingDialog();
+    }
+
 }

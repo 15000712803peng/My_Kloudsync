@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.TeamMember;
 
-public class ShowMyMeetingIdDialog implements OnClickListener {
+public class StartMeetingDialog implements OnClickListener {
     public Context mContext;
     public Dialog dialog;
     private LinearLayout lin_enter;
@@ -31,7 +31,7 @@ public class ShowMyMeetingIdDialog implements OnClickListener {
         this.optionsLinstener = optionsLinstener;
     }
 
-    public ShowMyMeetingIdDialog(Context context, String rooid) {
+    public StartMeetingDialog(Context context, String rooid) {
         mContext = context;
         this.rooid = rooid;
         initDialog();
@@ -54,7 +54,16 @@ public class ShowMyMeetingIdDialog implements OnClickListener {
     }
 
     public void show() {
-        dialog.show();
+        if(dialog != null){
+            dialog.show();
+        }
+    }
+
+    public boolean isShowing(){
+        if(dialog != null){
+            return dialog.isShowing();
+        }
+        return false;
     }
 
     @Override
