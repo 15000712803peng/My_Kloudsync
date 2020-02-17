@@ -202,10 +202,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 menuStartMeeting.setVisibility(View.GONE);
                 menuShare.setVisibility(View.GONE);
                 menuClose.setVisibility(View.GONE);
+                menuSetting.setVisibility(View.GONE);
                 //------
                 menuMember.setVisibility(View.VISIBLE);
                 menuChat.setVisibility(View.VISIBLE);
-                menuSetting.setVisibility(View.VISIBLE);
+
                 break;
             case MeetingType.SYNCBOOK:
                 break;
