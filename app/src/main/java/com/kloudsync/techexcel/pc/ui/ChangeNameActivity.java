@@ -37,7 +37,6 @@ public class ChangeNameActivity extends Activity {
 	private TextView tv_name,tv_cancel;
 	private TextView tv_pc_done;
 	private EditText pc_fist_name;
-    private LinearLayout pi_ll_mname;
 
 	private SharedPreferences sharedPreferences;
 	private  int language;
@@ -66,7 +65,6 @@ public class ChangeNameActivity extends Activity {
 		tv_cancel = (TextView) findViewById(R.id.tv_cancel);
 
 		pc_fist_name = (EditText) findViewById(R.id.pc_fist_name);
-        pi_ll_mname = (LinearLayout) findViewById(R.id.pi_ll_mname);
 
 		pc_fist_name.setText(customerYu.getFullName());
 
@@ -124,7 +122,7 @@ public class ChangeNameActivity extends Activity {
 
 		}else {
 			// 中文
-            pi_ll_mname.setVisibility(View.GONE);
+            //pi_ll_mname.setVisibility(View.GONE);
 		}
 
 		// startActivity(new Intent(Intent.ACTION_VIEW,uri));

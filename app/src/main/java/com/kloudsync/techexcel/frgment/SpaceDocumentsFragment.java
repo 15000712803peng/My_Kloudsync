@@ -72,6 +72,7 @@ import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DialogDeleteDocument;
 import com.kloudsync.techexcel.help.DocChooseDialog;
+import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.help.PopDocument;
 import com.kloudsync.techexcel.help.PopEditDocument;
 import com.kloudsync.techexcel.help.PopShareKloudSync;
@@ -122,6 +123,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE;
 
 public class SpaceDocumentsFragment extends Fragment implements View.OnClickListener, DocChooseDialog.SelectedOptionListener, DocumentUploadTool.DocUploadDetailLinstener {
 
@@ -1277,10 +1280,14 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         dialog.setSelectedOptionListener(this);
         startRequestPermission();
     }
-    public static final int REQUEST_PERMISSION_CAMERA = 3;
     private String[] permissions = new String[]{  Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA};
     private void startRequestPermission(){
-        ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_PERMISSION_CAMERA);
+        if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) &&KloudPerssionManger.isPermissionReadExternalStorageGranted(getActivity())
+                && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
+            dialog.show();
+        }else {
+            ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

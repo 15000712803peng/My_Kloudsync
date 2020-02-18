@@ -45,6 +45,7 @@ import com.kloudsync.techexcel.bean.EventSyncRoom;
 import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.FollowInfo;
 import com.kloudsync.techexcel.bean.UserPath;
+import com.kloudsync.techexcel.bean.params.EventCamera;
 import com.kloudsync.techexcel.bean.params.EventProjectFragment;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -133,6 +134,7 @@ import retrofit2.Response;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
 
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
 
 
@@ -1688,6 +1690,18 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Log.e("check_permission","phone_camera_granted");
                 EventCameraAndStoragePermissionForStartMeetingGranted startMeetingGranted = new EventCameraAndStoragePermissionForStartMeetingGranted();
+                EventBus.getDefault().post(startMeetingGranted);
+
+            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
+                Log.e("check_permission","phone_Rcamera_denied");
+                Toast.makeText(this,"开始会议需要访问相机，请允许",Toast.LENGTH_SHORT).show();
+            }
+        }else if(requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE){
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED&& grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("check_permission","phone_camera_granted");
+                EventCamera startMeetingGranted = new EventCamera();
                 EventBus.getDefault().post(startMeetingGranted);
 
             } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
