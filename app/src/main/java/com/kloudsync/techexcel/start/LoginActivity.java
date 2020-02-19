@@ -43,7 +43,6 @@ import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.response.InvitationsResponse;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.tool.StringUtils;
-import com.kloudsync.techexcel.tool.ToastUtils;
 import com.kloudsync.techexcel.ui.InvitationsActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
 
@@ -173,8 +172,7 @@ public class LoginActivity extends Activity implements OnClickListener {
                 if (TextUtils.isEmpty(message)) {
                     message = getResources().getString(R.string.operate_failure);
                 }
-                String msgTitle = getString(R.string.login_failed);
-                ToastUtils.showInCenter(LoginActivity.this, msgTitle, message);
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 //                new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage("登录失败").create().show();
             }
         }
@@ -315,13 +313,13 @@ public class LoginActivity extends Activity implements OnClickListener {
     private void login() {
         telephone = et_telephone.getText().toString().trim();
         if (TextUtils.isEmpty(telephone)) {
-            Toast.makeText(getApplicationContext(), getString(R.string.please_input_phone_number), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "please input phone number", Toast.LENGTH_SHORT).show();
             return;
         }
 
         password = et_password.getText().toString().trim();
         if (TextUtils.isEmpty(password)) {
-            Toast.makeText(getApplicationContext(), getString(R.string.please_input_password), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "please input password", Toast.LENGTH_SHORT).show();
             return;
         }
 //        editor.putString("telephone", telephone);

@@ -113,12 +113,11 @@
     <string name="Apply_To_Join">Apply To Join</string>
     <string name="Forget_Password">Forget Password</string>
     <string name="Login_Bottom">User License Agreement | Privacy Policy</string>
-    <string name="user_license_agreement">User License Agreement</string>
 
     <string name="Reset_Password">Reset Password</string>
     <string name="Send_CheckCode">Send code</string>
     <string name="Resend_CheckCode">Resend CheckCode</string>
-    <string name="confirm_reset">Confirm reset</string>
+    <string name="Ensure_Reset">Ensure Reset</string>
 
     <string name="Sign_Up_Close">暂未开发注册请登录我们的网站www.youbao99.com,进入“健康顾问入口”提交资料，我们将第一时间进行资料审核</string>
 
@@ -771,24 +770,15 @@ Please input the cell phone number to add the contact
     <string name="KloudSync">Kloud</string>
 
     <string name="Mobile_phone">Mobile phone /User name</string>
-    <string name="Mobile_phone2">Mobile phone</string>
-    <string name="Password_hint">Password</string>
+    <string name="Password_hint">Password (6-20 Characters)</string>
     <string name="Name_info">Name</string>
     <string name="area_code">+86</string>
 
-    <string name="register_means_you_agree_to">Register means you agree to\t\t</string>
-    <string name="kloud_sync_terms">KloudSync’s terms</string>
-    <string name="password_rules">8-14 digit password, must contain two kinds of letters, numbers and symbols</string>
     <string name="Sign_up">Sign Up</string>
-    <string name="registration_failed">Registration failed</string>
     <string name="Send_code">Send code</string>
     <string name="Vertification_Code">Verify Code</string>
-    <string name="please_input_phone_number">Please input phone number</string>
-    <string name="please_input_password">Please input password</string>
     <string name="Login">Login</string>
-    <string name="login_failed">Login failed</string>
     <string name="reset_pwd">Reset password</string>
-    <string name="please_input_verify_code">Please input verify code</string>
     <string name="create_and_switch">Create and Switch</string>
     <string name="create_organization">Create New Company</string>
     <string name="input_organization_name">Input company name</string>
@@ -803,6 +793,7 @@ Please input the cell phone number to add the contact
     <string name="about">about</string>
     <string name="privacy_statement">Privacy Statement</string>
     <string name="create_new_sync">Create New Sync</string>
+    <string name="select_more_sync">+ Select Mode Sound</string>
     <string name="sync">Sync</string>
     <string name="invite_new">invite new</string>
     <string name="request_to_be_my_contact">Request to be my contact</string>
@@ -835,8 +826,6 @@ Please input the cell phone number to add the contact
     <string name="invite_now">Invite now</string>
 
     <string name="no_register_prompt">Don’t have an account?</string>
-
-    <string name="welcome_to_kloud">Welcome to kloud</string>
 
 
 

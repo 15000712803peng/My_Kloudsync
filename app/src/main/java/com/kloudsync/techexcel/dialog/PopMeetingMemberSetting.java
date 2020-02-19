@@ -24,13 +24,12 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
     private Context context;
 
     private MeetingMember meetingMember;
-    private TextView setPresenter,setAuditor,setSpeakMember;
+    private TextView setPresenter,setAuditor;
     private MeetingConfig meetingConfig;
 
     public interface OnMemberSettingChanged{
         void setPresenter(MeetingMember meetingMember);
         void setAuditor(MeetingMember meetingMember);
-        void setSpeakMember(MeetingMember meetingMember);
     }
 
     private OnMemberSettingChanged onMemberSettingChanged;
@@ -50,8 +49,6 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
         View view = inflater.inflate(R.layout.pop_meeting_member_options, null);
         setPresenter = view.findViewById(R.id.txt_setting_presenter);
         setAuditor = view.findViewById(R.id.txt_setting_auditor);
-        setSpeakMember = view.findViewById(R.id.txt_setting_speak_member);
-        setSpeakMember.setOnClickListener(this);
         setPresenter.setOnClickListener(this);
         setAuditor.setOnClickListener(this);
         setContentView(view);
@@ -94,12 +91,6 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
             case R.id.txt_setting_auditor:
                 if(meetingMember != null && onMemberSettingChanged != null){
                     onMemberSettingChanged.setAuditor(meetingMember);
-                }
-                dismiss();
-                break;
-            case R.id.txt_setting_speak_member:
-                if(meetingMember != null && onMemberSettingChanged != null){
-                    onMemberSettingChanged.setSpeakMember(meetingMember);
                 }
                 dismiss();
                 break;

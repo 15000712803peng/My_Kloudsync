@@ -369,10 +369,11 @@ public class SocketMessageManager {
         try {
             message.put("actionType", 23);
             message.put("soundtrackId", eventSoundSync.getSoundtrackID());
-            message.put("stat", eventSoundSync.getTime());
+            message.put("stat", eventSoundSync.getStatus());
             if ( eventSoundSync.getStatus() == 4||eventSoundSync.getStatus() == 5) {
                 message.put("time", eventSoundSync.getTime());
             }
+            Log.e("sendMessage_notify_play_audio_sync",message.toString());
             doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
         } catch (JSONException e) {
             e.printStackTrace();

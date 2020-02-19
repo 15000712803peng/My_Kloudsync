@@ -92,6 +92,7 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         membersPager.setAdapter(membersAdapter);
         getDialog().getWindow().setGravity(Gravity.RIGHT);
         getDialog().getWindow().setWindowAnimations(R.style.anination3);
+
         init();
 
     }
