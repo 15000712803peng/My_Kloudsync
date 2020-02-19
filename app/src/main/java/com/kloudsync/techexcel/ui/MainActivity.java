@@ -1675,25 +1675,26 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
         }else if(requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING){
             if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
                 Log.e("check_permission","phone_camera_granted");
                 EventCameraAndStoragePermissionForJoinMeetingGranted joinMeetingGranted = new EventCameraAndStoragePermissionForJoinMeetingGranted();
                 EventBus.getDefault().post(joinMeetingGranted);
 
-            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
+            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED|| grantResults[1] == PackageManager.PERMISSION_DENIED || grantResults[2] == PackageManager.PERMISSION_DENIED){
                 Log.e("check_permission","phone_Rcamera_denied");
-                Toast.makeText(this,"加入会议需要访问相机，请允许",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"加入会议前请先同意必要的权限",Toast.LENGTH_SHORT).show();
             }
+
         }else if(requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING){
             if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED&& grantResults[2] == PackageManager.PERMISSION_GRANTED) {
                 Log.e("check_permission","phone_camera_granted");
                 EventCameraAndStoragePermissionForStartMeetingGranted startMeetingGranted = new EventCameraAndStoragePermissionForStartMeetingGranted();
                 EventBus.getDefault().post(startMeetingGranted);
 
-            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
+            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED || grantResults[2] == PackageManager.PERMISSION_DENIED){
                 Log.e("check_permission","phone_Rcamera_denied");
-                Toast.makeText(this,"开始会议需要访问相机，请允许",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"开始会议前请先同意必要的权限",Toast.LENGTH_SHORT).show();
             }
         }else if(requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE){
             if (grantResults.length > 0

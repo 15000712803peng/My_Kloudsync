@@ -357,7 +357,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         private List<MeetingMember> meetingMembers = new ArrayList<>();
         public ImageLoader imageLoader;
 
-
         public MeetingMembersAdapter(Context context, List<MeetingMember> members) {
             inflater = LayoutInflater.from(context);
             meetingMembers.clear();
@@ -391,6 +390,9 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
             final MeetingMember member = meetingMembers.get(position);
+            if(member == null){
+                return;
+            }
             holder.name.setText(member.getUserName());
             String url = member.getAvatarUrl();
             if (null == url || url.length() < 1) {
@@ -404,6 +406,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             } else {
                 holder.me.setVisibility(View.GONE);
             }
+
             fillDeviceType(member.getDeviceType(), holder.type);
 
             if (type == 1) {
@@ -528,7 +531,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
                 fillDeviceType(member.getDeviceType(), mainSpeakerViewHolder.type);
 
-
                 if (meetingConfig.getMeetingHostId().equals(member.getUserId() + "")) {
                     mainSpeakerViewHolder.host.setVisibility(View.VISIBLE);
                 } else {
@@ -583,10 +585,10 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
 
                 fillDeviceType(member.getDeviceType(), handsUpViewHolder.type);
+
             }
         }
     }
-
 
     private void handleMemeber() {
 
@@ -811,7 +813,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
         if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
             // 当前的member不是自己
-            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {
                 // 如果自己是presenter
                 holder.settingImage.setVisibility(View.VISIBLE);
             } else {

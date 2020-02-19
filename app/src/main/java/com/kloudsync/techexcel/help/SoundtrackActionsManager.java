@@ -674,6 +674,9 @@ public class SoundtrackActionsManager {
         Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
             @Override
             public void accept(DocumentPage page) throws Exception {
+                if(web == null){
+                    return;
+                }
                 web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
                 web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
                 web.load("javascript:Record()", null);

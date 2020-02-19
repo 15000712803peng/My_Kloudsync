@@ -31,4 +31,8 @@ public class KloudPerssionManger {
     public static boolean isPermissionCameraGranted(Context context) {
         return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA);
     }
+
+    public static boolean isPermissionRecordAudioGranted(Context context) {
+        return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO);
+    }
 }
