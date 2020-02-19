@@ -218,7 +218,7 @@
     <string name="Create_Group">创建新群</string>
     <string name="Add_Friend">添加好友</string>
 
-    <string name="Is_exit">是否退出当前账号</string>
+    <string name="Is_exit">确定退出登录吗？</string>
     <string name="confirm_exit">确认退出</string>
 
     <string name="notify1">Join With Room ID</string>
