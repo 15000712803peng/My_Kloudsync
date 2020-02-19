@@ -8,21 +8,25 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
+import com.kloudsync.techexcel.personal.AboutWebActivity;
+import com.kloudsync.techexcel.tool.ToastUtils;
 import com.ub.techexcel.service.ConnectService;
 import com.umeng.analytics.MobclickAgent;
 
@@ -51,9 +55,19 @@ public class RegisterActivity extends Activity implements OnClickListener {
     public static RegisterActivity instance = null;
     private LinearLayout loginLayout;
     public static final int CHANGE_COUNTRY_CODE = 0;
+    private static final int PASSWORD_HIDE = 1;
+    private static final int PASSWORD_NOT_HIDE = 2;
+    private ImageView mPwdEyeImage;
+    private ImageView mBack;
+    private TextView mTitleBarTitle;
+    private TextView mTvPhoneTips;
+    private TextView mTvNameTips;
+    private TextView mTvPwdTips;
+    private RelativeLayout mRlyRegisterPwd;
+    private RelativeLayout mRlyRegisterPhone;
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-
+            String result;
             switch (msg.what) {
                 case AppConfig.GETCHECKCODE:
                 /*String code = (String) msg.obj;
@@ -76,10 +90,12 @@ public class RegisterActivity extends Activity implements OnClickListener {
                 case AppConfig.HasExisted:
                     tv_sendcheckcode.setEnabled(true);
                     phoneEdit.setEnabled(true);
-                    Toast.makeText(
-                            RegisterActivity.this,
-                            getResources().getString(R.string.HasExisted),
-                            Toast.LENGTH_SHORT).show();
+                    mRlyRegisterPhone.setSelected(true);
+                    mTvPhoneTips.setText(getResources().getString(R.string.HasExisted));
+                    mTvPhoneTips.setVisibility(View.VISIBLE);
+                    mTvPhoneTips.setSelected(true);
+                    registerText.setEnabled(false);
+
                     break;
                 case AppConfig.NO_NETWORK:
                     Toast.makeText(
@@ -95,9 +111,15 @@ public class RegisterActivity extends Activity implements OnClickListener {
 
                     break;
                 case AppConfig.FAILED:
-                    String result = (String) msg.obj;
-                    Toast.makeText(getApplicationContext(), result,
-                            Toast.LENGTH_LONG).show();
+                    result = (String) msg.obj;
+                    if (result.contains("验证码")) {
+                        String msgTitle =getString(R.string.registration_failed);
+                        ToastUtils.showInCenter(RegisterActivity.this, msgTitle, result);
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), result,
+                                Toast.LENGTH_LONG).show();
+                    }
                     tv_sendcheckcode.setEnabled(true);
                     phoneEdit.setEnabled(true);
                     break;
@@ -113,8 +135,17 @@ public class RegisterActivity extends Activity implements OnClickListener {
                     registerSucc((JSONObject) msg.obj);
                     break;
                 case AppConfig.REGISTER_FAIL:
+                    result = (String) msg.obj;
                     phoneEdit.setEnabled(true);
-                    Toast.makeText(getApplicationContext(), "注册失败", Toast.LENGTH_SHORT).show();
+                    if (result.contains("用户名")) {
+                        nameEdit.setSelected(true);
+                        mTvNameTips.setText(result);
+                        mTvNameTips.setVisibility(View.VISIBLE);
+                        mTvNameTips.setSelected(true);
+                        registerText.setEnabled(false);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "注册失败," + result, Toast.LENGTH_SHORT).show();
+                    }
                     break;
 
                 default:
@@ -123,6 +154,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
         }
 
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,20 +167,34 @@ public class RegisterActivity extends Activity implements OnClickListener {
     }
 
     private void initView() {
+        mBack = findViewById(R.id.iv_register_back);
+        mTitleBarTitle = findViewById(R.id.tv_register_title);
         tv_cphone = (TextView) findViewById(R.id.tv_cphone);
         tv_sendcheckcode = (TextView) findViewById(R.id.tv_sendcheckcode);
+        mRlyRegisterPhone = findViewById(R.id.rly_register_phone);
+        mRlyRegisterPwd = findViewById(R.id.rly_register_pwd);
         phoneEdit = (EditText) findViewById(R.id.et_telephone);
+        mTvPhoneTips = findViewById(R.id.tv_register_phone_tips);
+        mTvNameTips = findViewById(R.id.tv_register_name_tips);
+        mTvPwdTips = findViewById(R.id.tv_register_pwd_tips);
         nameEdit = findViewById(R.id.et_name);
         pwdEdit = findViewById(R.id.et_password);
+        pwdEdit.setTag(PASSWORD_HIDE);
+        mPwdEyeImage = findViewById(R.id.iv_show_pwd);
         registerText = findViewById(R.id.tv_sign_up);
+        registerText.setEnabled(false);
 //		et_password = (EditText) findViewById(R.id.et_password);
         codeEdit = (EditText) findViewById(R.id.et_checkcode);
         AppConfig.COUNTRY_CODE = 86;
         tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
+        mTitleBarTitle.setText(getResources().getString(R.string.Sign_up));
+        mTitleBarTitle.setTextColor(getResources().getColor(R.color.colorFont34));
         setEditChangeInput();
+        mBack.setOnClickListener(this);
+        mPwdEyeImage.setOnClickListener(this);
         tv_sendcheckcode.setOnClickListener(this);
         tv_cphone.setOnClickListener(this);
-        loginLayout = findViewById(R.id.layout_login);
+        loginLayout = findViewById(R.id.ly_register_terms);
         loginLayout.setOnClickListener(this);
         registerText.setOnClickListener(this);
 
@@ -168,19 +214,27 @@ public class RegisterActivity extends Activity implements OnClickListener {
 
     private void setEditChangeInput() {
         phoneEdit.addTextChangedListener(new myTextWatch());
-//		et_password.addTextChangedListener(new myTextWatch());
         codeEdit.addTextChangedListener(new myTextWatch());
+        nameEdit.addTextChangedListener(new myTextWatch());
+        pwdEdit.addTextChangedListener(new PwdTextWatch());
 
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.layout_login:
-                Intent intent = new Intent(this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+            case R.id.iv_register_back:
                 finish();
+                break;
+            case R.id.ly_register_terms:
+                String enUrl = "http://kloud.cn/term.html";
+                String zhUrl = "http://kloud.cn/term-cn.html";
+                String tag = getString(R.string.user_license_agreement);
+                Intent intent = new Intent(getApplicationContext(), AboutWebActivity.class);
+                intent.putExtra(AboutWebActivity.TAG,tag);
+                intent.putExtra(AboutWebActivity.ENURL,enUrl);
+                intent.putExtra(AboutWebActivity.ZHURL,zhUrl);
+                startActivity(intent);
                 break;
             case R.id.tv_reset:
 
@@ -201,6 +255,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
             case R.id.tv_cphone:
                 GotoChangeCode();
                 break;
+            case R.id.iv_show_pwd:
+                toggleHidePwd();
+                break;
             case R.id.tv_sign_up:
                 register();
                 break;
@@ -209,10 +266,69 @@ public class RegisterActivity extends Activity implements OnClickListener {
         }
     }
 
+    /**
+     * 密码是否可见
+     */
+    private void toggleHidePwd() {
+        if (pwdEdit.getTag() != null) {
+            Integer type = (Integer) pwdEdit.getTag();
+            togglePwdByType(type);
+        }
+    }
+
+    private void togglePwdByType(int type) {
+        if (type == PASSWORD_HIDE) {
+            pwdEdit.setInputType(InputType.TYPE_CLASS_TEXT);
+            mPwdEyeImage.setSelected(true);
+            pwdEdit.setTag(PASSWORD_NOT_HIDE);
+        } else if (type == PASSWORD_NOT_HIDE) {
+            pwdEdit.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            mPwdEyeImage.setSelected(false);
+            pwdEdit.setTag(PASSWORD_HIDE);
+        }
+    }
+
     private void register() {
         getAccessCode();
     }
 
+    protected class PwdTextWatch implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            int pwdLength = pwdEdit.getText().length();
+            String pwd = pwdEdit.getText().toString().trim();
+            //含有数字
+            final String NUMBER = ".*[0-9].*";
+            //含有大小写字母
+            final String CASE = ".*[a-zA-Z].*";
+            //特殊符号
+            final String REGSYMBOL = ".*[~!@#$%^&*()_+|<>,.?/:;'\\[\\]{}\"].*";
+            int hasNumber = pwd.matches(NUMBER) ? 1 : 0;
+            int hasCase = pwd.matches(CASE) ? 1 : 0;
+            int hasSymbol = pwd.matches(REGSYMBOL) ? 1 : 0;
+            if (pwdLength > 7 && pwdLength < 15 && hasNumber + hasCase + hasSymbol >= 2) {
+                mRlyRegisterPwd.setSelected(false);
+                mTvPwdTips.setSelected(false);
+                registerText.setAlpha(1.0f);
+                registerText.setEnabled(true);
+            } else {
+                mRlyRegisterPwd.setSelected(true);
+                mTvPwdTips.setSelected(true);
+                registerText.setAlpha(0.6f);
+                registerText.setEnabled(false);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    }
 
     protected class myTextWatch implements TextWatcher {
 
@@ -227,12 +343,20 @@ public class RegisterActivity extends Activity implements OnClickListener {
         @Override
         public void onTextChanged(CharSequence s, int start, int before,
                                   int count) {
-            if (phoneEdit.getText().length() > 0
-//					&& et_password.getText().length() > 0
-                    && codeEdit.getText().length() > 0) {
+            mRlyRegisterPhone.setSelected(false);
+            mTvPhoneTips.setVisibility(View.INVISIBLE);
+            nameEdit.setSelected(false);
+            mTvNameTips.setVisibility(View.INVISIBLE);
+            int phoneLength = phoneEdit.getText().length();
+            int codeLength = codeEdit.getText().length();
+            int nameLength = nameEdit.getText().length();
 
+            if (phoneLength > 0 && codeLength > 0 && nameLength > 0) {
+                registerText.setAlpha(1.0f);
+                registerText.setEnabled(true);
             } else {
-
+                registerText.setAlpha(0.6f);
+                registerText.setEnabled(false);
             }
 
         }
@@ -273,6 +397,36 @@ public class RegisterActivity extends Activity implements OnClickListener {
         }
     }
 
+	/*protected void ChangePassword() {
+
+
+		final JSONObject jsonObject = format();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					JSONObject responsedata = ConnectService.submitDataByJsonNoToken(
+							AppConfig.URL_PUBLIC
+									+ "User/ResetPwd", jsonObject);
+					Log.e("返回的jsonObject", jsonObject.toString() + "");
+					Log.e("返回的responsedata", responsedata.toString() + "");
+					String retcode = responsedata.getString("RetCode");
+					Message msg = new Message();
+					if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
+						msg.what = AppConfig.SUCCESSCHANGE;
+					}else{
+						msg.what = AppConfig.FAILED;
+						String ErrorMessage = responsedata.getString("ErrorMessage");
+						msg.obj = ErrorMessage;
+					}
+					handler.sendMessage(msg);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}*/
 
     private JSONObject format() {
         JSONObject jsonObject = new JSONObject();
@@ -292,6 +446,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
     }
 
     public void getAccessCode() {
+
         final String checkcode = LoginGet.getBase64Password(codeEdit
                 .getText().toString());
         phoneEdit.setEnabled(false);
@@ -385,18 +540,18 @@ public class RegisterActivity extends Activity implements OnClickListener {
 
 		/*LoginGet loginget = new LoginGet();
 		loginget.setLoginGetListener(new LoginGetListener() {
-			
+
 			@Override
 			public void getCheckCode(String code) {
 				et_checkcode.setText(code);
 				new Thread(new CheckCodeEnable()).start();
-				
+
 			}
 
 			@Override
 			public void getCheckFalse() {
 				tv_sendcheckcode.setEnabled(true);
-				
+
 			}
 		});
 		LoginGet.CheckCodeRequest(RegisterActivity.this, telephone);*/
@@ -466,9 +621,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
             Toast.makeText(this, "请输入名字", Toast.LENGTH_SHORT).show();
             return null;
         }
-        String pwd = pwdEdit.getText().toString();
-        if (TextUtils.isEmpty(pwd) || pwd.length() < 6 || pwd.length() > 20) {
-            Toast.makeText(this, "请输入6-20的密码", Toast.LENGTH_SHORT).show();
+        String pwd = pwdEdit.getText().toString().trim();
+        if (TextUtils.isEmpty(pwd) || pwd.length() < 8 || pwd.length() > 14) {
+            Toast.makeText(this, "请输入8-14位的密码", Toast.LENGTH_SHORT).show();
             return null;
         }
 

@@ -106,14 +106,17 @@
     <string name="Edit_Send">编辑并发送</string>
     <string name="Send_Link">发送链接</string>
 
-
+    <string name="please_input_phone_number">请输入手机号</string>
+    <string name="please_input_password">请输入密码</string>
     <string name="Login">登录</string>
+    <string name="login_failed">登录失败</string>
     <string name="Input_Telephone">请输入您的手机号码</string>
     <string name="Input_Password">密码，6--16个字符，字母区分大小写</string>
 
     <string name="Apply_To_Join">申请加入</string>
     <string name="Forget_Password">忘记密码</string>
     <string name="Login_Bottom">用户许可协议|隐私条款</string>
+    <string name="user_license_agreement">用户许可协议</string>
 
     <string name="Reset_Password">重置密码</string>
     <string name="Send_CheckCode">发送验证码</string>
@@ -749,9 +752,14 @@
     <string name="addspaceadmin">增加空间管理员</string>
     <string name="addnewmember">邀请新成员</string>
 
-    <string name="Mobile_phone">手机号/用户名</string>
-    <string name="Password_hint">密码(6-20)</string>
+    <string name="Mobile_phone">手机号/用户名</string>、
+    <string name="Mobile_phone2">手机号</string>
+    <string name="Password_hint">密码</string>
+    <string name="register_means_you_agree_to">注册表示您同意\t\t</string>
+    <string name="kloud_sync_terms"> KloudSync的条款</string>
+    <string name="password_rules"> 8-14位密码,必须包含字母,数字,符号中两种</string>
     <string name="Sign_up">注册</string>
+    <string name="registration_failed">注册失败</string>
     <string name="area_code">+86</string>
     <string name="Name_info">姓名</string>
     <string name="Vertification_Code">验证码</string>

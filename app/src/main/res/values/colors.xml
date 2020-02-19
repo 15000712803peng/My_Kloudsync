@@ -148,5 +148,11 @@
 
     <color name="tab_blue">#3C77FB</color>
 
+    <!--   QWX     -->
+    <color name="colorFont34">#343434</color>
+    <color name="colorBG16">#161616</color>
+    <color name="colorRegisterYellowTips">#FEA33D</color>
+    <color name="colorRegisterRedTips">#FF616A</color>
+    <color name="colorRegisterEditRedFrame">#FB6363</color>
 
 </resources>

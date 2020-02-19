@@ -93,6 +93,11 @@ android {
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']
+            res.srcDirs =[
+                    'src/main/res/layout/platfrom',
+                    'src/main/res/layout',
+                    'src/main/res'
+            ]
         }
     }
 
