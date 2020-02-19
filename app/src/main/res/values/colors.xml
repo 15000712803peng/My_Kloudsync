@@ -75,6 +75,8 @@
 
     <color name="detail_top">#f0eef5</color>
 
+    <color name="person_center_back">#F9F9F9</color>
+
     <!--二维码-->
     <color name="result_view">#b0000000</color>
     <color name="viewfinder_mask">#60000000</color>

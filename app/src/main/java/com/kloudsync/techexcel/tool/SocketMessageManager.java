@@ -16,6 +16,7 @@ import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.VedioData;
+import com.kloudsync.techexcel.bean.params.EventPlaySoundSync;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.ub.techexcel.bean.AgoraMember;
@@ -362,7 +363,20 @@ public class SocketMessageManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+    }
+    public void  sendMessage_notify_play_audio_sync(MeetingConfig config, EventPlaySoundSync eventSoundSync){
+        JSONObject message = new JSONObject();
+        try {
+            message.put("actionType", 23);
+            message.put("soundtrackId", eventSoundSync.getSoundtrackID());
+            message.put("stat", eventSoundSync.getTime());
+            if ( eventSoundSync.getStatus() == 4||eventSoundSync.getStatus() == 5) {
+                message.put("time", eventSoundSync.getTime());
+            }
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 

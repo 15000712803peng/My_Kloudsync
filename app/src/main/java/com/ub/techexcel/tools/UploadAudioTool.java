@@ -63,7 +63,7 @@ public class UploadAudioTool {
     private int soundtrackID;
     private int fieldId;
     private String fieldNewPath;
-private MeetingConfig meetingConfig;
+    private MeetingConfig meetingConfig;
 
     public void uploadAudio(File file, int soundtrackID, int fieldId, String fieldNewPath, final LinearLayout audiosyncll, MeetingConfig meetingConfig){
         this.soundtrackID=soundtrackID;
