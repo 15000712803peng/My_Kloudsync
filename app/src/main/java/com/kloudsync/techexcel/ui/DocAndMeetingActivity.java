@@ -84,6 +84,7 @@ import com.kloudsync.techexcel.bean.SoundtrackDetailData;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.bean.VedioData;
+import com.kloudsync.techexcel.bean.params.EventPlaySoundSync;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
@@ -3295,6 +3296,23 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveEventPlaySoundSync(EventPlaySoundSync eventSoundSync) {
+        Log.e("syncing---", eventSoundSync.getSoundtrackID()+"  "+eventSoundSync.getStatus()+"  "+eventSoundSync.getTime());
+        if (!TextUtils.isEmpty(meetingConfig.getPresenterSessionId())) {
+            if (AppConfig.UserID.equals(meetingConfig.getPresenterId())) {
+                if (meetingConfig.isInRealMeeting()) {
+                    if (messageManager != null) {
+                        messageManager.sendMessage_notify_play_audio_sync(meetingConfig, eventSoundSync);
+                    }
+
+                }
+            }
+        }
+
+    }
+
     private void getJspPagenumber() {
         web.evaluateJavascript("javascript:GetCurrentPageNumber()", new ValueCallback<String>() {
             @Override
@@ -3608,7 +3626,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         soundtrackPlayDialog.notifySeekTo(audioTime);
                     }
                 }
-
                 break;
         }
     }

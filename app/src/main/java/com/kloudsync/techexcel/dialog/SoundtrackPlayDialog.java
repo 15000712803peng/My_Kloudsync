@@ -26,12 +26,14 @@ import com.kloudsync.techexcel.adapter.HeaderRecyclerAdapter;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventCloseSoundtrack;
 import com.kloudsync.techexcel.bean.EventCloseWebView;
+import com.kloudsync.techexcel.bean.EventPlaySoundtrack;
 import com.kloudsync.techexcel.bean.EventPlayWebVedio;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SoundtrackMediaInfo;
 import com.kloudsync.techexcel.bean.SupportDevice;
+import com.kloudsync.techexcel.bean.params.EventPlaySoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.SoundtrackActionsManager;
@@ -227,7 +229,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         }
     }
 
-    public void show() {
+    public void  show() {
         Log.e("SoundtrackPlayDialog", "show,dialog:" + dialog);
         if (dialog != null && !dialog.isShowing()) {
             dialog.show();
@@ -270,6 +272,11 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             playTime = 0;
             isFinished = false;
             isStarted = true;
+
+            EventPlaySoundSync eventPlaySoundSync=new EventPlaySoundSync();
+            eventPlaySoundSync.setSoundtrackID(soundtrackDetail.getSoundtrackID());
+
+
             super.onPreExecute();
         }
 
@@ -306,7 +313,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                     playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
                 }
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(100);
 //                        playTime += 200;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
