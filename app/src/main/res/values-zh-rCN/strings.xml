@@ -113,6 +113,8 @@
     <string name="Input_Telephone">请输入您的手机号码</string>
     <string name="Input_Password">密码，6--16个字符，字母区分大小写</string>
 
+    <string name="Input_new_Password">请输入新密码</string>
+
     <string name="Apply_To_Join">申请加入</string>
     <string name="Forget_Password">忘记密码</string>
     <string name="Login_Bottom">用户许可协议|隐私条款</string>
@@ -121,7 +123,7 @@
     <string name="Reset_Password">重置密码</string>
     <string name="Send_CheckCode">发送验证码</string>
     <string name="Resend_CheckCode">重新发送</string>
-    <string name="Ensure_Reset">确认重置</string>
+    <string name="confirm_reset">确认重置</string>
 
     <string name="Sign_Up_Close">暂未开发注册请登录我们的网站www.youbao99.com,进入“健康顾问入口”提交资料，我们将第一时间进行资料审核</string>
 
@@ -765,6 +767,7 @@
     <string name="Vertification_Code">验证码</string>
     <string name="Send_code">发送验证码</string>
     <string name="reset_pwd">重置密码</string>
+    <string name="please_input_verify_code">请输入验证码</string>
     <string name="create_and_switch">创建和切换</string>
     <string name="create_organization">创建新公司/机构</string>
     <string name="input_organization_name">输入公司/机构名字</string>

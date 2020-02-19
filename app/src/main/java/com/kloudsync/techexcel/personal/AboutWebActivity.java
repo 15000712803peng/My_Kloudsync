@@ -45,7 +45,7 @@ public class AboutWebActivity extends AppCompatActivity {
         //获取当前语言
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
-        language = sharedPreferences.getInt("language",1);
+        language = sharedPreferences.getInt("language",2);
 
 
         img_notice.setOnClickListener(new MyOnClick());
