@@ -33,10 +33,10 @@
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/blue_circle_bg"
+        android:background="@drawable/bg_login_btn"
         android:gravity="center"
-        android:text="@string/OK"
-        android:textColor="@color/text_wb"
+        android:text="@string/Yes"
+        android:textColor="@color/white"
         android:textSize="18sp"
         android:visibility="invisible" />
 

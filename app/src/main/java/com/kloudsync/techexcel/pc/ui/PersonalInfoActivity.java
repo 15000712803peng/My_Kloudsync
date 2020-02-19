@@ -96,7 +96,7 @@ import static io.rong.imkit.utilities.RongUtils.density;
 public class PersonalInfoActivity extends AppCompatActivity {
 	private ImageView im_imgback;
 	private TextView tv_topname, tv_area, tv_sex, tv_birthday, tv_save,
-			tv_phone,pi_tv_secondaryphone,pi_tv_save;
+			tv_phone,pi_tv_secondaryphone,pi_tv_save,tv_username;
 
 	private EditText pi_et_description;
 	private ContainsEmojiEditText pi_tv_email;
@@ -219,6 +219,8 @@ public class PersonalInfoActivity extends AppCompatActivity {
 					if (SecondaryPhone != null) {
 						pi_tv_secondaryphone.setText(SecondaryPhone);
 					}
+					if(LoginName!=null)
+						tv_username.setText(LoginName);
 					//downloadAttachment();
 					break;
 				case AppConfig.SUCCESS:
@@ -477,6 +479,7 @@ public class PersonalInfoActivity extends AppCompatActivity {
 		tv_phone = (TextView) findViewById(R.id.tv_phone_in);
 		tv_birthday = (TextView) findViewById(R.id.tv_birthday_in);
 		tv_pi_name = (TextView) findViewById(R.id.tv_pi_name);
+		tv_username = (TextView) findViewById(R.id.tv_username);
 
 
 		ViewCompat.setTransitionName(tv_head, 亲);
@@ -798,9 +801,9 @@ public class PersonalInfoActivity extends AppCompatActivity {
 			}*/
 			jsonObject.put("UserID", UserID);
 			jsonObject.put("Nickname", Nickname);
-			jsonObject.put("FirstName", customerYu.getFirstName());
-			jsonObject.put("MiddleName", "");//jsonObject.put("MiddleName", customerYu.getMiddleName());
-			jsonObject.put("LastName", "");//jsonObject.put("LastName", customerYu.getLastName());
+			jsonObject.put("FirstName", "");
+			jsonObject.put("MiddleName", "");
+			jsonObject.put("LastName", customerYu.getLastName());
 			jsonObject.put("Description", Description);
 			jsonObject.put("PrimaryPhone", PrimaryPhone);
 			jsonObject.put("SecondaryPhone", SecondaryPhone);

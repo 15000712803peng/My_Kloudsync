@@ -66,19 +66,19 @@
             android:text="@string/pi_name"
             style="@style/PersonInfoTextLabelStyle" />
 
-        <EditText
+        <com.kloudsync.techexcel.view.ClearEditText
             android:id="@+id/pc_fist_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:layout_marginLeft="12dp"
+            android:layout_marginRight="18dp"
             android:layout_weight="1"
             android:background="@color/nocolor"
             android:gravity="center_vertical|left"
             android:textColor="@color/pi_changename"
             android:textSize="13dp" />
     </LinearLayout>
-
-
 
     <TextView
         android:id="@+id/tv_pc_done"

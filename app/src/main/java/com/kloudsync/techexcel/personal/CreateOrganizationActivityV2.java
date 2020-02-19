@@ -60,13 +60,13 @@ import io.reactivex.schedulers.Schedulers;
 
 public class CreateOrganizationActivityV2 extends AppCompatActivity implements View.OnClickListener, SelectCompanyLogoDialog.LogoOptionsListener {
 
-    private RelativeLayout backLayout;
+    private RelativeLayout backLayout,rl_organization_upload;
     private EditText et_name;
     private TextView tv_submit;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private TextView titleText;
-    private ImageView selectLogoImage;
+    private ImageView selectLogoImage,iv_organization_upload;
     private TextView enterText;
     private boolean fromAppSetting;
 
@@ -249,6 +249,7 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
     }
 
     private void initView() {
+        rl_organization_upload= (RelativeLayout) findViewById(R.id.rl_organization_upload);
         backLayout = (RelativeLayout) findViewById(R.id.layout_back);
         et_name = (EditText) findViewById(R.id.et_name);
         tv_submit = (TextView) findViewById(R.id.tv_submit);
@@ -258,16 +259,18 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
         titleText.setText(R.string.create_organization);
         backLayout.setOnClickListener(this);
         tv_submit.setOnClickListener(this);
+        rl_organization_upload.setOnClickListener(this);
 
+        iv_organization_upload = (ImageView) findViewById(R.id.iv_organization_upload);
         selectLogoImage = (ImageView) findViewById(R.id.image_select_logo);
         selectLogoImage.setOnClickListener(this);
-        if(fromAppSetting){
-            tv_submit.setText(R.string.create_and_switch);
-            enterText.setVisibility(View.GONE);
-        }else {
-            tv_submit.setText(R.string.Submit);
-            enterText.setVisibility(View.VISIBLE);
-        }
+//        if(fromAppSetting){
+//            tv_submit.setText(R.string.create_and_switch);
+//            enterText.setVisibility(View.GONE);
+//        }else {
+//            tv_submit.setText(R.string.Submit);
+//            enterText.setVisibility(View.VISIBLE);
+//        }
     }
 
     SelectCompanyLogoDialog logoDialog;
@@ -281,7 +284,8 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
             case R.id.tv_submit:
                 requestCreateNewCompanyAndEnterOrInvite(true);
                 break;
-            case R.id.image_select_logo:
+            //case R.id.image_select_logo:
+            case R.id.rl_organization_upload:
                 logoDialog = new SelectCompanyLogoDialog(this);
                 logoDialog.setLogoOptionsListener(this);
                 logoDialog.show();
@@ -418,14 +422,16 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
                 }
 
                 if (pictureUri != null) {
-                    selectLogoImage.setImageURI(pictureUri);
+                    //selectLogoImage.setImageURI(pictureUri);
+                    iv_organization_upload.setImageURI(pictureUri);
                 }
             } else if (requestCode == REQUEST_SELECTED_IMAGE) {
                 String path = FileUtils.getPath(this, data.getData());
                 logoFile = new File(path);
                 if (logoFile.exists()) {
                     pictureUri = Uri.fromFile(logoFile);
-                    selectLogoImage.setImageURI(pictureUri);
+                    //selectLogoImage.setImageURI(pictureUri);
+                    iv_organization_upload.setImageURI(pictureUri);
                 }
             }
         }

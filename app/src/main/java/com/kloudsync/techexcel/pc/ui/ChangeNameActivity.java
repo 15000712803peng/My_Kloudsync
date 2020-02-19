@@ -1,42 +1,27 @@
 package com.kloudsync.techexcel.pc.ui;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
-import com.kloudsync.techexcel.help.ApiTask;
-import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.CustomerYu;
-import com.ub.techexcel.service.ConnectService;
-import com.umeng.analytics.MobclickAgent;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import com.kloudsync.techexcel.view.ClearEditText;
 public class ChangeNameActivity extends Activity {
 
 	private ImageView tv_back;
 	private TextView tv_name,tv_cancel;
 	private TextView tv_pc_done;
-	private EditText pc_fist_name;
+	private ClearEditText pc_fist_name;
 
 	private SharedPreferences sharedPreferences;
 	private  int language;
@@ -64,7 +49,7 @@ public class ChangeNameActivity extends Activity {
 		tv_name = (TextView) findViewById(R.id.tv_name);
 		tv_cancel = (TextView) findViewById(R.id.tv_cancel);
 
-		pc_fist_name = (EditText) findViewById(R.id.pc_fist_name);
+		pc_fist_name = (ClearEditText) findViewById(R.id.pc_fist_name);
 
 		pc_fist_name.setText(customerYu.getFullName());
 
@@ -76,8 +61,6 @@ public class ChangeNameActivity extends Activity {
 		sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
 				MODE_PRIVATE);
 		language = sharedPreferences.getInt("language",1);
-
-		ChangeNameLanguage();
 
 		tv_back.setOnClickListener(new myOnClick());
 		tv_pc_done.setOnClickListener(new myOnClick());
@@ -115,19 +98,6 @@ public class ChangeNameActivity extends Activity {
 
 		}
 	}
-
-	private void ChangeNameLanguage() {
-		if(language == 1){
-			//英文
-
-		}else {
-			// 中文
-            //pi_ll_mname.setVisibility(View.GONE);
-		}
-
-		// startActivity(new Intent(Intent.ACTION_VIEW,uri));
-	}
-
 	private class myOnClick implements OnClickListener {
 		Intent intent = new Intent();
 

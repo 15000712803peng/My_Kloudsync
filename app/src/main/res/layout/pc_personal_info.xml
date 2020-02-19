@@ -107,6 +107,37 @@
         <TextView
             style="@style/PersonInfoLineStyle" />
         <RelativeLayout
+            android:id="@+id/rl_pi_username"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/pc_white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/UserName"
+                style="@style/PersonInfoTextLabelStyle" />
+            <TextView
+                android:id="@+id/tv_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/imageView5"
+                style="@style/PersonInfoTextContentStyle"/>
+            <ImageView
+                android:id="@+id/imageView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/arrow2" />
+        </RelativeLayout>
+        <TextView
+            style="@style/PersonInfoLineStyle" />
+        <RelativeLayout
             android:id="@+id/rl_pi_phone"
             android:layout_width="match_parent"
             android:layout_height="50dp"

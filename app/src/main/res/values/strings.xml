@@ -55,6 +55,7 @@
     <string name="Health_Consultant">好友</string>
     <string name="Phone">Phone</string>
     <string name="Main_Phone">Phone</string>
+    <string name="UserName">UserName</string>
     <string name="Address">Address</string>
     <string name="See_Info">See Info</string>
     <string name="Fouce_point">Fouce_point：</string>
@@ -336,6 +337,7 @@
     <string name="ShareKS">Share KloudSync</string>
 
     <string name="Submit">Submit</string>
+    <string name="Create">Create</string>
 
 
     <string name="Team">Current Team</string>
@@ -652,10 +654,12 @@ Please input the cell phone number to add the contact
     <string name="pc_pomprt">此功能尚未开发完成，敬请期待！</string>
 
     <string name="pc_sorganization">Select Organization</string>
+    <string name="pc_sorganization_change">Select Organization</string>
 
 
     <!--account setting 界面-->
     <string name="as_setting">Company setting</string>
+    <string name="as_info_setting">Company setting</string>
     <string name="as_logo">Logo</string>
     <string name="as_name">Name</string>
     <string name="as_info_name">Name</string>
@@ -793,6 +797,7 @@ Please input the cell phone number to add the contact
     <string name="create_Fail">Create fail</string>
     <string name="Send">Send</string>
     <string name="meeting_id">Meeting ID</string>
+    <string name="meeting_id_change">Meeting ID</string>
     <string name="input_new_meeing_id">input new meeting id</string>
     <string name="modify_meeting_id">modify your meeting ID</string>
     <string name="about">about</string>
