@@ -172,8 +172,14 @@ public class JoinMeetingPopup implements View.OnClickListener {
                 if(joinMeeting.getLessionId() <= 0){
                     JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomTeacherID?classroomID=" + meetingRoom);
                     Log.e("GetClassRoomTeacherID","meetingRoom:" + meetingRoom + ",result:" + result);
-                    int hostId = result.getInt("RetData");
-                    eventJoinMeeting.setHostId(hostId);
+                    if(result.has("RetCode")){
+                        if(result.getInt("RetCode") == 0){
+                            if(result.has("RetData")){
+                                int hostId = result.getInt("RetData");
+                                eventJoinMeeting.setHostId(hostId);
+                            }
+                        }
+                    }
                 }
             }
         }).doOnNext(new Consumer<EventJoinMeeting>() {
@@ -183,18 +189,20 @@ public class JoinMeetingPopup implements View.OnClickListener {
 //                    EventBus.getDefault().post(eventJoinMeeting);
                     JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/UpcomingLessonList?teacherID=" + eventJoinMeeting.getHostId());
                     Log.e("UpcomingLessonList","hostID:" + eventJoinMeeting.getHostId() + ",result:" + result);
-
-                    int retCode = result.getInt("RetCode");
-                    if(retCode == 0){
-                        JSONArray jsonArray = result.getJSONArray("RetData");
-                        if(jsonArray != null && jsonArray.length() > 0){
-                            JSONObject data = jsonArray.getJSONObject(0);
-                            if(data.has("LessonID")){
-                                eventJoinMeeting.setLessionId(data.getInt("LessonID"));
-                                eventJoinMeeting.setMeetingId(data.getInt("LessonID")+"");
+                    if(result.has("RetCode")){
+                        int retCode = result.getInt("RetCode");
+                        if(retCode == 0){
+                            JSONArray jsonArray = result.getJSONArray("RetData");
+                            if(jsonArray != null && jsonArray.length() > 0){
+                                JSONObject data = jsonArray.getJSONObject(0);
+                                if(data.has("LessonID")){
+                                    eventJoinMeeting.setLessionId(data.getInt("LessonID"));
+                                    eventJoinMeeting.setMeetingId(data.getInt("LessonID")+"");
+                                }
                             }
                         }
                     }
+
                 }
             }
         }).doOnNext(new Consumer<EventJoinMeeting>() {
@@ -208,7 +216,6 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         eventJoinMeeting.setRole(data.getInt("role"));
                     }
                 }
-
                 EventBus.getDefault().post(eventJoinMeeting);
             }
         }).subscribe();

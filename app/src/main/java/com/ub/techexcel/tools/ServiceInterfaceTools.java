@@ -2896,17 +2896,17 @@ public class ServiceInterfaceTools {
     }
 
     public JSONObject syncGetSoundtrackList(MeetingConfig meetingConfig) {
-        if(meetingConfig == null || meetingConfig == null){
+        if (meetingConfig == null || meetingConfig == null) {
             return new JSONObject();
         }
         String url = AppConfig.URL_PUBLIC;
         int attachmentId = -1;
         if (meetingConfig.getType() == MeetingType.MEETING) {
-            if(meetingConfig.getDocument() != null){
+            if (meetingConfig.getDocument() != null) {
                 attachmentId = meetingConfig.getDocument().getAttachmentID();
             }
             url += "LessonSoundtrack/List?lessonID=" + meetingConfig.getLessionId() +
-                    "&attachmentID=" +meetingConfig.getDocument();
+                    "&attachmentID=" + meetingConfig.getDocument();
         } else {
             url += "Soundtrack/List?attachmentID=" + attachmentId + "&isPublic=0";
         }
@@ -3034,85 +3034,114 @@ public class ServiceInterfaceTools {
 
     public RecordDetail syncGetRecordingItemDetail(final String url) {
 
-            JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
-            Log.e("Recording item", url + "  " + returnjson.toString());
-            RecordDetail recordDetail = null;
-            try {
-                if (returnjson.getInt("code") == 0) {
-                    JSONObject data = returnjson.getJSONObject("data");
-                    recordDetail = new Gson().fromJson(data.toString(),RecordDetail.class);
-                } else {
+        JSONObject returnjson = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("Recording item", url + "  " + returnjson.toString());
+        RecordDetail recordDetail = null;
+        try {
+            if (returnjson.getInt("code") == 0) {
+                JSONObject data = returnjson.getJSONObject("data");
+                recordDetail = new Gson().fromJson(data.toString(), RecordDetail.class);
+            } else {
 
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
 
         return recordDetail;
 
     }
 
-    public ContactSearchData syncSearchContact(int companyId, int filterType,String searchText) {
-        JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_MEETING_BASE + "friend/search_contact?companyId=" + companyId + "&filterType=" + filterType +"&searchText=" + searchText);
+    public ContactSearchData syncSearchContact(int companyId, int filterType, String searchText) {
+        JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_MEETING_BASE + "friend/search_contact?companyId=" + companyId + "&filterType=" + filterType + "&searchText=" + searchText);
         ContactSearchData contactSearchData = null;
-        if(response != null && response.has("code")){
+        if (response != null && response.has("code")) {
             try {
-                if(response.getInt("code") == 0){
-                    contactSearchData = new Gson().fromJson(response.getJSONObject("data").toString(),ContactSearchData.class);
+                if (response.getInt("code") == 0) {
+                    contactSearchData = new Gson().fromJson(response.getJSONObject("data").toString(), ContactSearchData.class);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        Log.e("syncSearchContact", "url:" + AppConfig.URL_MEETING_BASE + "friend/search_contact?companyId=" + companyId + "&filterType=" + filterType +"&searchText=" + searchText + " + response:" + response);
+        Log.e("syncSearchContact", "url:" + AppConfig.URL_MEETING_BASE + "friend/search_contact?companyId=" + companyId + "&filterType=" + filterType + "&searchText=" + searchText + " + response:" + response);
         return contactSearchData;
     }
 
-    public JSONObject syncGetFavoriteAttachments(int type){
-        String url  = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + type;
+    public JSONObject syncGetFavoriteAttachments(int type) {
+        String url = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + type;
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetFavoriteAttachments","url:" + url + ",response:" + response);
+        Log.e("syncGetFavoriteAttachments", "url:" + url + ",response:" + response);
         return response;
     }
 
-    public JSONObject syncRequstCreateSoundtrack(JSONObject params){
+    public JSONObject syncRequstCreateSoundtrack(JSONObject params) {
         String url = AppConfig.URL_PUBLIC + "Soundtrack/CreateSoundtrack";
         JSONObject response = ConnectService.submitDataByJson(url, params);
-        Log.e("syncRequstCreateSoundtrack","url:" + url +",params:" + params + ",response:" + response);
+        Log.e("syncRequstCreateSoundtrack", "url:" + url + ",params:" + params + ",response:" + response);
         return response;
     }
 
-    public JSONObject syncGetJoinMeetingDefaultStatus(String meetingId){
+    public JSONObject syncGetJoinMeetingDefaultStatus(String meetingId) {
         String url = AppConfig.URL_MEETING_BASE + "member/join_default_status?meetingId=" + meetingId;
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncGetJoinMeetingDefaultStatus","url:" + url + ",response:" + response);
+        Log.e("syncGetJoinMeetingDefaultStatus", "url:" + url + ",response:" + response);
         return response;
     }
 
-    public JSONObject syncRequestDefaultTeamForOrganiztion(int companyId){
-        String url =  AppConfig.URL_PUBLIC + "TeamSpace/List?companyID="+ AppConfig.SchoolID + "&type=1&parentID=0";
+    public JSONObject syncRequestDefaultTeamForOrganiztion(int companyId) {
+        String url = AppConfig.URL_PUBLIC + "TeamSpace/List?companyID=" + AppConfig.SchoolID + "&type=1&parentID=0";
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncRequestDefaultTeamForOrganiztion","url:" + url + ",response:" + response);
+        Log.e("syncRequestDefaultTeamForOrganiztion", "url:" + url + ",response:" + response);
         return response;
     }
 
-    public JSONObject syncAddOrUpdateUserPreference(JSONObject params){
+    public JSONObject syncAddOrUpdateUserPreference(JSONObject params) {
         String url = AppConfig.URL_PUBLIC
                 + "User/AddOrUpdateUserPreference";
         JSONObject response = ConnectService.submitDataByJson(url, params);
-        Log.e("syncAddOrUpdateUserPreference","url:" + url +",params:" + params + ",response:" + response);
+        Log.e("syncAddOrUpdateUserPreference", "url:" + url + ",params:" + params + ",response:" + response);
         return response;
 
     }
 
-    public JSONObject syncLoginRequst(String name,String password,int role,String deviceID,int deviceType,String DeviceName){
+    public JSONObject syncLoginRequst(String name, String password, int role, String deviceID, int deviceType, String DeviceName) {
         String url = AppConfig.URL_PUBLIC + "?login=" + name + "&password=" + password + "&role=" + role +
-                "&deviceID=" + deviceID + "&deviceType= " + deviceType +"&DeviceName=" + DeviceName;
+                "&deviceID=" + deviceID + "&deviceType= " + deviceType + "&DeviceName=" + DeviceName;
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
-        Log.e("syncLoginRequst","url:" + url + ",response:" + response);
+        Log.e("syncLoginRequst", "url:" + url + ",response:" + response);
         return response;
 
+
+    }
+
+    public JSONObject syncJoinCompanyWithInviteCode(String code) {
+        String url = AppConfig.URL_MEETING_BASE + "company_member/join_company_with_invite_code?inviteCode=" + code;
+        JSONObject params = new JSONObject();
+        try {
+            params.put("inviteCode", code);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncJoinCompanyWithInviteCode", "url:" + url + ",response:" + response);
+        return response;
+
+    }
+
+    public JSONObject syncChangeTemStatus(String userId, int status) {
+        String url = AppConfig.URL_MEETING_BASE + "member/change_temp_status?userId=" + userId + "&status=" + status;
+        JSONObject params = new JSONObject();
+        try {
+            params.put("userId", userId);
+            params.put("status", status);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncChangeTemStatus", "url:" + url + ",response:" + response);
+        return response;
 
     }
 

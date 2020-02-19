@@ -23,6 +23,39 @@ public class MeetingMember implements Comparable<MeetingMember>,Serializable {
     private int cameraStatus;
     private int deviceType = -1;
     private int handStatus;
+    private int tempOnStage;
+    private int viewType;
+    private String title;
+
+    public int getViewType() {
+        return viewType;
+    }
+
+    public void setViewType(int viewType) {
+        this.viewType = viewType;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public static final int TYPE_SPARKER_TITLE = 1;
+    public static final int TYPE_HANDSUP_TITLE = 2;
+    public static final int TYPE_ITEM_MAIN_SPEAKER = 3;
+    public static final int TYPE_ITEM_SPEAKING_SPEAKER = 4;
+    public static final int TYPE_ITEM_HANDSUP_MEMBER = 5;
+
+    public int getTempOnStage() {
+        return tempOnStage;
+    }
+
+    public void setTempOnStage(int tempOnStage) {
+        this.tempOnStage = tempOnStage;
+    }
 
     public int getUserId() {
         return userId;
