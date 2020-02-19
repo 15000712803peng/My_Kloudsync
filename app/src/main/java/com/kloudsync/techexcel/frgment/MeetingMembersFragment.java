@@ -24,6 +24,7 @@ import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.PopMeetingMemberSetting;
+import com.kloudsync.techexcel.dialog.PopMeetingSpeakMemberSetting;
 import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
@@ -48,7 +49,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by tonyan on 2019/11/9.
  */
 
-public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged {
+public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged,PopMeetingSpeakMemberSetting.OnSpeakMemberSettingChanged{
 
     private RecyclerView membersList;
     int type;
@@ -81,6 +82,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshMeetingMembers(EventRefreshMembers refreshMembers) {
         this.meetingConfig = refreshMembers.getMeetingConfig();
+        if(popMeetingMemberSetting != null && popMeetingMemberSetting.isShowing()){
+            popMeetingMemberSetting.dismiss();
+        }
+        if(popMeetingSpeakMemberSetting != null && popMeetingSpeakMemberSetting.isShowing()){
+            popMeetingMemberSetting.dismiss();
+        }
         loadMembers();
     }
 
@@ -102,24 +109,131 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         if (meetingConfig.getMeetingMembers() == null || meetingConfig.getMeetingMembers().size() <= 0) {
             return;
         }
+
+        membersList.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
         if (type == 1) {
             meetingMembers.addAll(meetingConfig.getMeetingMembers());
             Collections.sort(meetingMembers);
+            fetchCategoryDataForSpeakerTab(meetingConfig);
+            if (mainSpeakersAdapter == null) {
+                mainSpeakersAdapter = new MeetingMainSpeakersAdapter(getActivity(), tabSpeakersMembers);
+                membersList.setAdapter(mainSpeakersAdapter);
+            } else {
+                mainSpeakersAdapter.updateMembers(tabSpeakersMembers);
+            }
+
         } else if (type == 2) {
             meetingMembers.addAll(meetingConfig.getMeetingAuditor());
+            if (membersAdapter == null) {
+                membersAdapter = new MeetingMembersAdapter(getActivity(), meetingMembers);
+                membersList.setAdapter(membersAdapter);
+            } else {
+                membersAdapter.updateMembers(meetingMembers);
+            }
         } else if (type == 3) {
             meetingMembers.addAll(meetingConfig.getMeetingInvitors());
+            if (membersAdapter == null) {
+                membersAdapter = new MeetingMembersAdapter(getActivity(), meetingMembers);
+                membersList.setAdapter(membersAdapter);
+            } else {
+                membersAdapter.updateMembers(meetingMembers);
+            }
+        }
+    }
+
+    List<MeetingMember> tabSpeakersMembers = new ArrayList<>();
+
+    private void fetchCategoryDataForSpeakerTab(MeetingConfig meetingConfig) {
+        tabSpeakersMembers.clear();
+        if (meetingConfig.getMeetingMembers() != null && meetingConfig.getMeetingMembers().size() > 0) {
+            List<MeetingMember> notTempStageMembers = new ArrayList<>();
+            List<MeetingMember> tempStageMembers = new ArrayList<>();
+            for (MeetingMember member : meetingConfig.getMeetingMembers()) {
+
+                if (member.getTempOnStage() == 0) {
+                    member.setViewType(MeetingMember.TYPE_ITEM_MAIN_SPEAKER);
+                    notTempStageMembers.add(member);
+                } else {
+                    tempStageMembers.add(member);
+                    member.setViewType(MeetingMember.TYPE_ITEM_SPEAKING_SPEAKER);
+                }
+            }
+
+            tabSpeakersMembers.addAll(notTempStageMembers);
+            if (tempStageMembers.size() > 0) {
+                MeetingMember title = new MeetingMember();
+                title.setViewType(MeetingMember.TYPE_SPARKER_TITLE);
+                title.setTitle("可讲话参会者");
+                tabSpeakersMembers.add(title);
+                tabSpeakersMembers.addAll(tempStageMembers);
+
+            }
         }
 
-        membersList.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
+        if (meetingConfig.getMeetingAuditor() != null && meetingConfig.getMeetingAuditor().size() > 0) {
+            List<MeetingMember> handsUpMembers = new ArrayList<>();
+            for (MeetingMember auditor : meetingConfig.getMeetingAuditor()) {
+                if (auditor.getHandStatus() == 1) {
+                    auditor.setViewType(MeetingMember.TYPE_ITEM_HANDSUP_MEMBER);
+                    handsUpMembers.add(auditor);
+                }
+            }
 
-        if (membersAdapter == null) {
-            membersAdapter = new MeetingMembersAdapter(getActivity(), meetingMembers);
-            membersList.setAdapter(membersAdapter);
-        } else {
-            membersAdapter.updateMembers(meetingMembers);
+            if (handsUpMembers.size() > 0) {
+                MeetingMember title = new MeetingMember();
+                title.setViewType(MeetingMember.TYPE_HANDSUP_TITLE);
+                title.setTitle("已举手参会者");
+                tabSpeakersMembers.add(title);
+                tabSpeakersMembers.addAll(handsUpMembers);
+            }
         }
 
+    }
+
+    @Override
+    public void setSpeakToAuditor(MeetingMember meetingMember) {
+        Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
+            @Override
+            public void accept(MeetingMember meetingMember) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().
+                        syncMakeUserUpAndDown(meetingMember.getUserId() + "", 0);
+                if (response.has("code")) {
+                    if (response.getInt("code") == 0) {
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                    } else if (response.getInt("code") == 22) {
+                        Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                Toast.makeText(getActivity(), "没有权限进行此操作", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            }
+        }).subscribe();
+    }
+
+    @Override
+    public void setSpeakToMember(MeetingMember meetingMember) {
+        Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
+            @Override
+            public void accept(MeetingMember meetingMember) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().
+                        syncChangeTemStatus(meetingMember.getUserId() + "", 0);
+                if (response.has("code")) {
+                    if (response.getInt("code") == 0) {
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                    } else if (response.getInt("code") == 22) {
+                        Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                Toast.makeText(getActivity(), "没有权限进行此操作", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            }
+        }).subscribe();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -147,6 +261,96 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         public TextView handsUpText;
 
     }
+
+    public class MainSpeakerViewHolder extends RecyclerView.ViewHolder {
+        public MainSpeakerViewHolder(View view) {
+            super(view);
+            icon = (CircleImageView) view.findViewById(R.id.member_icon);
+            name = (TextView) view.findViewById(R.id.name);
+            presenter = view.findViewById(R.id.txt_presenter);
+            me = view.findViewById(R.id.txt_is_me);
+            type = view.findViewById(R.id.txt_type);
+            settingImage = view.findViewById(R.id.image_setting);
+            host = view.findViewById(R.id.txt_host);
+            changeToMember = view.findViewById(R.id.txt_change_to_member);
+            handsUpText = view.findViewById(R.id.txt_hands_up);
+        }
+
+        public CircleImageView icon;
+        public TextView name;
+        public TextView presenter;
+        public TextView me;
+        public TextView type;
+        public ImageView settingImage;
+        public TextView host;
+        public TextView changeToMember;
+        public TextView handsUpText;
+
+    }
+
+    public class SpeakerViewHolder extends RecyclerView.ViewHolder {
+        public SpeakerViewHolder(View view) {
+            super(view);
+            icon = (CircleImageView) view.findViewById(R.id.member_icon);
+            name = (TextView) view.findViewById(R.id.name);
+            presenter = view.findViewById(R.id.txt_presenter);
+            me = view.findViewById(R.id.txt_is_me);
+            type = view.findViewById(R.id.txt_type);
+            settingImage = view.findViewById(R.id.image_setting);
+            host = view.findViewById(R.id.txt_host);
+        }
+
+        public CircleImageView icon;
+        public TextView name;
+        public TextView presenter;
+        public TextView me;
+        public TextView type;
+        public ImageView settingImage;
+        public TextView host;
+
+    }
+
+    public class HandsUpViewHolder extends RecyclerView.ViewHolder {
+        public HandsUpViewHolder(View view) {
+            super(view);
+            icon = (CircleImageView) view.findViewById(R.id.member_icon);
+            name = (TextView) view.findViewById(R.id.name);
+            presenter = view.findViewById(R.id.txt_presenter);
+            me = view.findViewById(R.id.txt_is_me);
+            type = view.findViewById(R.id.txt_type);
+            settingImage = view.findViewById(R.id.image_setting);
+            host = view.findViewById(R.id.txt_host);
+        }
+
+        public CircleImageView icon;
+        public TextView name;
+        public TextView presenter;
+        public TextView me;
+        public TextView type;
+        public ImageView settingImage;
+        public TextView host;
+
+    }
+
+
+    public class SpeakerTitleViewHolder extends RecyclerView.ViewHolder {
+        public SpeakerTitleViewHolder(View view) {
+            super(view);
+            title = (TextView) view.findViewById(R.id.title);
+        }
+
+        public TextView title;
+    }
+
+    public class HandsupTitleViewHolder extends RecyclerView.ViewHolder {
+        public HandsupTitleViewHolder(View view) {
+            super(view);
+            title = (TextView) view.findViewById(R.id.title);
+        }
+
+        public TextView title;
+    }
+
 
     public class MeetingMembersAdapter extends RecyclerView.Adapter<ViewHolder> {
         private LayoutInflater inflater;
@@ -239,6 +443,151 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }
     }
 
+
+    MeetingMainSpeakersAdapter mainSpeakersAdapter;
+
+    public class MeetingMainSpeakersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private LayoutInflater inflater;
+        private List<MeetingMember> meetingMembers = new ArrayList<>();
+        public ImageLoader imageLoader;
+
+        @Override
+        public int getItemViewType(int position) {
+            return meetingMembers.get(position).getViewType();
+        }
+
+
+        public MeetingMainSpeakersAdapter(Context context, List<MeetingMember> members) {
+            inflater = LayoutInflater.from(context);
+            meetingMembers.clear();
+            meetingMembers.addAll(members);
+            imageLoader = new ImageLoader(context);
+        }
+
+
+        public List<MeetingMember> getmDatas() {
+            return meetingMembers;
+        }
+
+        public void updateMembers(List<MeetingMember> members) {
+            Log.e("MeetingMembersAdapter", "updateMembers:" + members);
+            meetingMembers.clear();
+            meetingMembers.addAll(members);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getItemCount() {
+            return meetingMembers.size();
+        }
+
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = null;
+            switch (viewType) {
+                case MeetingMember.TYPE_ITEM_MAIN_SPEAKER:
+                    view = inflater.inflate(R.layout.meeting_member, parent, false);
+                    return new MainSpeakerViewHolder(view);
+                case MeetingMember.TYPE_SPARKER_TITLE:
+                    view = inflater.inflate(R.layout.meeting_speaking_member_title, parent, false);
+                    return new SpeakerTitleViewHolder(view);
+                case MeetingMember.TYPE_ITEM_SPEAKING_SPEAKER:
+                    view = inflater.inflate(R.layout.meeting_speaking_member, parent, false);
+                    return new SpeakerViewHolder(view);
+                case MeetingMember.TYPE_HANDSUP_TITLE:
+                    view = inflater.inflate(R.layout.meeting_handsup_member_title, parent, false);
+                    return new HandsupTitleViewHolder(view);
+                case MeetingMember.TYPE_ITEM_HANDSUP_MEMBER:
+                    view = inflater.inflate(R.layout.meeting_hands_up_member, parent, false);
+                    return new HandsUpViewHolder(view);
+            }
+
+            ViewHolder viewHolder = new ViewHolder(view);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+            if (holder instanceof MainSpeakerViewHolder) {
+                MainSpeakerViewHolder mainSpeakerViewHolder = (MainSpeakerViewHolder) holder;
+                final MeetingMember member = meetingMembers.get(position);
+                mainSpeakerViewHolder.name.setText(member.getUserName());
+                String url = member.getAvatarUrl();
+                if (null == url || url.length() < 1) {
+                    mainSpeakerViewHolder.icon.setImageResource(R.drawable.hello);
+                } else {
+                    imageLoader.DisplayImage(url, mainSpeakerViewHolder.icon);
+                }
+
+                if ((member.getUserId() + "").equals(AppConfig.UserID)) {
+                    mainSpeakerViewHolder.me.setVisibility(View.VISIBLE);
+                } else {
+                    mainSpeakerViewHolder.me.setVisibility(View.GONE);
+                }
+
+                fillDeviceType(member.getDeviceType(), mainSpeakerViewHolder.type);
+
+
+                if (meetingConfig.getMeetingHostId().equals(member.getUserId() + "")) {
+                    mainSpeakerViewHolder.host.setVisibility(View.VISIBLE);
+                } else {
+                    mainSpeakerViewHolder.host.setVisibility(View.GONE);
+                }
+                if (member.getPresenter() == 1) {
+                    mainSpeakerViewHolder.settingImage.setVisibility(View.GONE);
+                    mainSpeakerViewHolder.presenter.setVisibility(View.VISIBLE);
+                } else {
+                    mainSpeakerViewHolder.settingImage.setVisibility(View.VISIBLE);
+                    mainSpeakerViewHolder.presenter.setVisibility(View.GONE);
+                }
+                fillViewByRoleForMainSpeakingMembers(member, mainSpeakerViewHolder);
+                //------
+
+            } else if (holder instanceof SpeakerViewHolder) {
+                SpeakerViewHolder speakerViewHolder = (SpeakerViewHolder) holder;
+                final MeetingMember member = meetingMembers.get(position);
+                speakerViewHolder.name.setText(member.getUserName());
+                String url = member.getAvatarUrl();
+                if (null == url || url.length() < 1) {
+                    speakerViewHolder.icon.setImageResource(R.drawable.hello);
+                } else {
+                    imageLoader.DisplayImage(url, speakerViewHolder.icon);
+                }
+
+                if ((member.getUserId() + "").equals(AppConfig.UserID)) {
+                    speakerViewHolder.me.setVisibility(View.VISIBLE);
+                } else {
+                    speakerViewHolder.me.setVisibility(View.GONE);
+                }
+
+                fillDeviceType(member.getDeviceType(), speakerViewHolder.type);
+                fillViewByRoleForSpeakingMembers(member,speakerViewHolder);
+            } else if (holder instanceof HandsupTitleViewHolder) {
+
+            } else if (holder instanceof HandsUpViewHolder) {
+                HandsUpViewHolder handsUpViewHolder = (HandsUpViewHolder) holder;
+                final MeetingMember member = meetingMembers.get(position);
+                handsUpViewHolder.name.setText(member.getUserName());
+                String url = member.getAvatarUrl();
+                if (null == url || url.length() < 1) {
+                    handsUpViewHolder.icon.setImageResource(R.drawable.hello);
+                } else {
+                    imageLoader.DisplayImage(url, handsUpViewHolder.icon);
+                }
+
+                if ((member.getUserId() + "").equals(AppConfig.UserID)) {
+                    handsUpViewHolder.me.setVisibility(View.VISIBLE);
+                } else {
+                    handsUpViewHolder.me.setVisibility(View.GONE);
+                }
+
+                fillDeviceType(member.getDeviceType(), handsUpViewHolder.type);
+            }
+        }
+    }
+
+
     private void handleMemeber() {
 
     }
@@ -300,6 +649,66 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         popMeetingMemberSetting.showAtBottom(member, view, meetingConfig);
     }
 
+    PopMeetingSpeakMemberSetting popMeetingSpeakMemberSetting;
+
+    private void showSpeakMemberSetting(MeetingMember member, View view) {
+        if (popMeetingSpeakMemberSetting != null) {
+            if (popMeetingSpeakMemberSetting.isShowing()) {
+                popMeetingSpeakMemberSetting.dismiss();
+            }
+            popMeetingSpeakMemberSetting = null;
+        }
+
+        popMeetingSpeakMemberSetting = new PopMeetingSpeakMemberSetting(getActivity());
+        popMeetingSpeakMemberSetting.setOnMemberSettingChanged(this);
+        popMeetingSpeakMemberSetting.showAtBottom(member, view, meetingConfig);
+    }
+
+    private void fillViewByRoleForMainSpeakingMembers(final MeetingMember meetingMember, final MainSpeakerViewHolder holder) {
+
+        int role = meetingMember.getRole();
+        holder.settingImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMemberSetting(meetingMember, holder.settingImage);
+            }
+        });
+
+//        meetingConfig.getMeetingHostId().equals(member.getUserId() + "")  是否是host
+        //
+
+        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
+            // 当前的member不是自己
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                // 如果自己是presenter
+                holder.settingImage.setVisibility(View.VISIBLE);
+            } else {
+                holder.settingImage.setVisibility(View.GONE);
+            }
+
+        } else {
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                holder.settingImage.setVisibility(View.GONE);
+            } else {
+                holder.settingImage.setVisibility(View.VISIBLE);
+            }
+        }
+
+//        if (role == MeetingConfig.MeetingRole.MEMBER || ) {
+//            holder.changeToMember.setVisibility(View.GONE);
+//
+//        } else if (role == MeetingConfig.MeetingRole.AUDIENCE) {
+//            holder.settingImage.setVisibility(View.GONE);
+//            holder.changeToMember.setVisibility(View.VISIBLE);
+
+//
+//        } else if (role == MeetingConfig.MeetingRole.BE_INVITED) {
+//            holder.settingImage.setVisibility(View.GONE);
+//            holder.changeToMember.setVisibility(View.GONE);
+//        }
+    }
+
+
     private void fillViewByRoleForMembers(final MeetingMember meetingMember, final ViewHolder holder) {
 
         int role = meetingMember.getRole();
@@ -348,9 +757,9 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
         if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
             // 当前的member不是自己
-            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || (meetingConfig.getMeetingHostId() + "").equals(AppConfig.UserID)) {
                 // 如果自己是presenter
-                holder.handsUpText.setVisibility(View.VISIBLE);
+                holder.handsUpText.setVisibility(View.GONE);
                 holder.changeToMember.setVisibility(View.VISIBLE);
                 holder.changeToMember.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -387,6 +796,39 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }
     }
 
+    private void fillViewByRoleForSpeakingMembers(final MeetingMember meetingMember, final SpeakerViewHolder holder) {
+
+        int role = meetingMember.getRole();
+        holder.settingImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSpeakMemberSetting(meetingMember, holder.settingImage);
+            }
+        });
+
+//        meetingConfig.getMeetingHostId().equals(member.getUserId() + "")  是否是host
+        //
+
+        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
+            // 当前的member不是自己
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                // 如果自己是presenter
+                holder.settingImage.setVisibility(View.VISIBLE);
+            } else {
+                holder.settingImage.setVisibility(View.GONE);
+            }
+
+        } else {
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                holder.settingImage.setVisibility(View.GONE);
+            } else {
+                holder.settingImage.setVisibility(View.VISIBLE);
+            }
+        }
+
+    }
+
+
     @Override
     public void setPresenter(MeetingMember meetingMember) {
         Observable.just(meetingMember).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<MeetingMember>() {
@@ -413,6 +855,29 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             public void accept(MeetingMember meetingMember) throws Exception {
                 JSONObject response = ServiceInterfaceTools.getinstance().
                         syncMakeUserUpAndDown(meetingMember.getUserId() + "", 0);
+                if (response.has("code")) {
+                    if (response.getInt("code") == 0) {
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                    } else if (response.getInt("code") == 22) {
+                        Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                Toast.makeText(getActivity(), "没有权限进行此操作", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            }
+        }).subscribe();
+    }
+
+    @Override
+    public void setSpeakMember(MeetingMember meetingMember) {
+        Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
+            @Override
+            public void accept(MeetingMember meetingMember) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().
+                        syncChangeTemStatus(meetingMember.getUserId() + "", 1);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
                         MeetingKit.getInstance().requestMeetingMembers(meetingConfig);

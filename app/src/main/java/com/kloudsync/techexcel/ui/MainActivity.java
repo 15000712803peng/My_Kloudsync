@@ -1664,7 +1664,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         if(requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE){
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
                 Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_granted");
                 EventViewDocPermissionGranted viewDocPermissionGranted = new EventViewDocPermissionGranted();
                 EventBus.getDefault().post(viewDocPermissionGranted);
