@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
+
             <com.kloudsync.techexcel.view.CircleImageView
                 android:id="@+id/member_icon"
                 android:padding="2dp"
@@ -118,7 +119,7 @@
                 android:id="@+id/txt_change_to_member"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="成为主讲人"
+                android:text="成为参会者"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:paddingTop="3dp"
@@ -126,6 +127,7 @@
                 android:textColor="#ff999999"
                 android:textSize="13sp"
                 />
+
             <TextView
                 android:visibility="gone"
                 android:background="@drawable/change_auditor_bg"

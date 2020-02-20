@@ -641,6 +641,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 startActivity(searchIntnt);
                 break;
             case R.id.lin_myroom:
+
                 startMeetingBeforeCheckPession();
                 break;
             case R.id.lin_join:
@@ -807,7 +808,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
             showJoinMeetingDialog();
         }else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{
-                    Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING);
+                    Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING);
         }
     }
 
@@ -816,7 +817,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
             showStartMeetingDialog();
         }else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{
-                    Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING);
+                    Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING);
         }
     }
 

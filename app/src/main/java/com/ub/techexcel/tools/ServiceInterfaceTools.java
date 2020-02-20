@@ -2929,8 +2929,11 @@ public class ServiceInterfaceTools {
                 attachmentId = meetingConfig.getDocument().getAttachmentID();
             }
             url += "LessonSoundtrack/List?lessonID=" + meetingConfig.getLessionId() +
-                    "&attachmentID=" + meetingConfig.getDocument();
+                    "&attachmentID=" + attachmentId;
         } else {
+            if (meetingConfig.getDocument() != null) {
+                attachmentId = meetingConfig.getDocument().getAttachmentID();
+            }
             url += "Soundtrack/List?attachmentID=" + attachmentId + "&isPublic=0";
         }
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
@@ -3136,7 +3139,6 @@ public class ServiceInterfaceTools {
         Log.e("syncLoginRequst", "url:" + url + ",response:" + response);
         return response;
 
-
     }
 
     public JSONObject syncJoinCompanyWithInviteCode(String code) {
@@ -3168,5 +3170,26 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncSearchContactForAdd(int companyId,String phone) {
+        String url = AppConfig.URL_MEETING_BASE + "friend/search_user_for_add_friend?companyId=" + companyId + "&searchText=" + phone;
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncSearchContactForAdd", "url:" + url + ",response:" + response);
+        return response;
+
+    }
+
+    public JSONObject syncApplyFriend(long friendId,long companyId){
+        String url = AppConfig.URL_MEETING_BASE + "friend/apply_friend?friendId=" + friendId + "&companyId=" + companyId;
+        JSONObject params = new JSONObject();
+        try {
+            params.put("friendId", friendId);
+            params.put("companyId", companyId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncChangeTemStatus", "url:" + url + ",response:" + response);
+        return response;
+    }
 
 }

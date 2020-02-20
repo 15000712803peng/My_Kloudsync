@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,6 +31,7 @@ import com.kloudsync.techexcel.bean.EventSpaceFragment;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
 import com.kloudsync.techexcel.bean.MessageDocList;
 import com.kloudsync.techexcel.bean.MessageSpaceList;
+import com.kloudsync.techexcel.bean.RoleInTeam;
 import com.kloudsync.techexcel.bean.UserInCompany;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.docment.AddDocumentActivity;
@@ -240,7 +242,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                         mCurrentTeamRecyclerView.setAdapter(documentAdapter);
                         documentAdapter.setOnItemLectureListener(new HomeDocumentAdapter.OnItemLectureListener() {
                             @Override
-                            public void onItem(final Document document, View view) {
+                            public void onItem(final Document document, View view) { //more
                                 PopDocument pd = new PopDocument();
                                 pd.getPopwindow(getActivity(), document);
                                 pd.setPoPMoreListener(new PopDocument.PopDocumentListener() {
@@ -254,7 +256,14 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
 
                                     @Override
                                     public void PopDelete() {
-                                        delDocumentDialog(document);
+                                        int role = KloudCache.getInstance(getActivity()).getUserRole();
+                                        int teamRole = KloudCache.getInstance(getActivity()).getTeamRole().getTeamRole();
+                                        if (role == 7 || role == 8 || teamRole == RoleInTeam.ROLE_OWENER || teamRole == RoleInTeam.ROLE_ADMIN) {
+                                            delDocumentDialog(document);
+                                        }else{
+                                            Toast.makeText(getActivity(),"你没有权限进行删除操作",Toast.LENGTH_LONG).show();
+                                        }
+
                                     }
 
                                     @Override
@@ -805,6 +814,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     };
 
     private void GoToVIew(Document lesson) {
+        updateSocket();
         Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
 //        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -829,6 +839,16 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         intent.putExtra("space_id", itemID);
         intent.putExtra("lession_id", Integer.parseInt(lesson.getLessonId()));
         startActivity(intent);
+    }
+
+    private void updateSocket(){
+        Intent service = new Intent(getActivity().getApplicationContext(), SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                context.startForegroundService(service);
+            getActivity().startService(service);
+        } else {
+            getActivity().startService(service);
+        }
     }
 
 

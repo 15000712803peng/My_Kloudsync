@@ -22,7 +22,7 @@ public class AgoraMember implements Comparable<AgoraMember>,Serializable {
     private int userId;
     private String iconUrl;
     private boolean fromSmall;
-    private int isMember = 0;
+    private int isMember = 1;
     private boolean tempHide;
 
     public boolean isTempHide() {

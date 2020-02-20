@@ -93,7 +93,7 @@ public class ContactSearchActivity extends BaseActivity implements VContactSearc
 
     @Override
     protected int setLayout() {
-        return R.layout.activity_search;
+        return R.layout.fragment_contact_search;
     }
 
     @Override

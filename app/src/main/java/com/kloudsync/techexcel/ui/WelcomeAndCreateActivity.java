@@ -1,8 +1,11 @@
 package com.kloudsync.techexcel.ui;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +21,7 @@ import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.UserPreferenceData;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.personal.CreateOrganizationActivityV2;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.start.LoginGet;
@@ -36,11 +40,14 @@ import java.net.UnknownHostException;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
+
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_FOR_JOIN_MEETING;
 
 /**
  * Created by tonyan on 2020/1/19.
@@ -89,7 +96,7 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
                 goToCreate();
                 break;
             case R.id.txt_join_meeting:
-                showJoinDialog();
+                joinMeetingBeforeCheckPession();
                 break;
             case R.id.txt_back:
                 finish();
@@ -376,5 +383,31 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
+    }
+
+    private void joinMeetingBeforeCheckPession() {
+        if (KloudPerssionManger.isPermissionCameraGranted(this) && KloudPerssionManger.isPermissionExternalStorageGranted(this)) {
+            showJoinDialog();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_FOR_JOIN_MEETING);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_PERMISSION_FOR_JOIN_MEETING) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("check_permission", "phone_camera_granted");
+                showJoinDialog();
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED || grantResults[2] == PackageManager.PERMISSION_DENIED) {
+                Log.e("check_permission", "phone_Rcamera_denied");
+                Toast.makeText(this, "加入会议前请先同意必要的权限", Toast.LENGTH_SHORT).show();
+            }
+
+        }
     }
 }

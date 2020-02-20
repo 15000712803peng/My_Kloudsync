@@ -22,6 +22,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventSearchChat;
 import com.kloudsync.techexcel.bean.EventSearchContact;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.help.InviteContactDialog;
 import com.kloudsync.techexcel.help.InviteNewDialog;
 import com.kloudsync.techexcel.help.PopContactHAHA;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
@@ -35,7 +36,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChangeListener, InviteNewDialog.InviteOptionsLinstener, View.OnClickListener {
+public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChangeListener, InviteContactDialog.InviteOptionsLinstener, View.OnClickListener {
 
     private View view;
 
@@ -43,7 +44,7 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
     private RelativeLayout addLayout;
     private TextView tv_ns;
     private ViewGroup chatSelected, contactSelected;
-    private TextView  chatUnselected,contactUnseleted;
+    private TextView chatUnselected, contactUnseleted;
     private TextView tv_sc;
     private CustomViewPager vp_contact;
     BroadcastReceiver broadcastReceiver;
@@ -165,7 +166,7 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
             } else {
                 EventBus.getDefault().post(new EventSearchContact());
             }
-        }else if(v.getId() == R.id.image_switch_company){
+        } else if (v.getId() == R.id.image_switch_company) {
             goToSwitchCompany();
         }
     }
@@ -177,7 +178,7 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
             switch (v.getId()) {
                 case R.id.layout_add:
 //                    ShowPop();
-                    ChatOrInvite();
+                    chatOrInvite();
                     break;
                 case R.id.img_notice:
                     GoToNotice();
@@ -194,18 +195,21 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
         }
     }
 
-    InviteNewDialog inviteDialog;
-    private void ChatOrInvite() {
+    InviteContactDialog inviteContactDialog;
+
+    private void chatOrInvite() {
         if (isContact) {
-            if (inviteDialog == null) {
-                inviteDialog = new InviteNewDialog(getActivity());
-                inviteDialog.setOptionsLinstener(this);
-                inviteDialog.setInviteFromContactLayoutGone();
-                inviteDialog.show();
-            } else {
-                inviteDialog.show();
-                inviteDialog.setOptionsLinstener(this);
+            if (inviteContactDialog != null) {
+                if (inviteContactDialog.isShowing()) {
+                    inviteContactDialog.dismiss();
+                }
+                inviteContactDialog = null;
             }
+            inviteContactDialog = new InviteContactDialog(getActivity());
+            inviteContactDialog.setOptionsLinstener(this);
+            inviteContactDialog.setInviteFromContactLayoutGone();
+            inviteContactDialog.show();
+
         } else {
             Intent i = new Intent(getActivity(), SelectUserActivity.class);
             i.putExtra("isDialogue", true);
@@ -229,12 +233,12 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
     @SuppressLint("NewApi")
     public void ChangeList(int i) {
         isContact = (1 == i);
-        if(i == 0){
+        if (i == 0) {
             contactSelected.setVisibility(View.INVISIBLE);
             contactUnseleted.setVisibility(View.VISIBLE);
             chatSelected.setVisibility(View.VISIBLE);
             chatUnselected.setVisibility(View.INVISIBLE);
-        }else if(i == 1){
+        } else if (i == 1) {
             contactSelected.setVisibility(View.VISIBLE);
             contactUnseleted.setVisibility(View.INVISIBLE);
             chatSelected.setVisibility(View.INVISIBLE);
@@ -244,7 +248,7 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
 //        view_lin2.setVisibility(0 == i ? View.INVISIBLE: View.VISIBLE);
 //        tv_myc.setBackground(getActivity().getDrawable(0 == i ? R.drawable.blue_left_bg : R.drawable.white_left_bg));
 //        tv_sc.setBackground(getActivity().getDrawable(0 == i ? R.drawable.white_right_bg : R.drawable.blue_right_bg));
-        vp_contact.setCurrentItem(i,false);
+        vp_contact.setCurrentItem(i, false);
     }
 
     private void GoToNotice() {

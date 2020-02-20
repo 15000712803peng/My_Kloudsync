@@ -245,4 +245,9 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
         }
     }
 
+    public void openAndShowAdd(View view,BottomFileOperationsListener bottomFileOperationsListener){
+        show(view,bottomFileOperationsListener);
+        uploadLayout.setVisibility(View.VISIBLE);
+    }
+
 }

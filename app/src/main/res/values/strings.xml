@@ -55,6 +55,7 @@
     <string name="Health_Consultant">好友</string>
     <string name="Phone">Phone</string>
     <string name="Main_Phone">Phone</string>
+    <string name="UserName">UserName</string>
     <string name="Address">Address</string>
     <string name="See_Info">See Info</string>
     <string name="Fouce_point">Fouce_point：</string>
@@ -336,6 +337,7 @@
     <string name="ShareKS">Share KloudSync</string>
 
     <string name="Submit">Submit</string>
+    <string name="Create">Create</string>
 
 
     <string name="Team">Current Team</string>
@@ -652,10 +654,12 @@ Please input the cell phone number to add the contact
     <string name="pc_pomprt">此功能尚未开发完成，敬请期待！</string>
 
     <string name="pc_sorganization">Select Organization</string>
+    <string name="pc_sorganization_change">Select Organization</string>
 
 
     <!--account setting 界面-->
     <string name="as_setting">Company setting</string>
+    <string name="as_info_setting">Company setting</string>
     <string name="as_logo">Logo</string>
     <string name="as_name">Name</string>
     <string name="as_info_name">Name</string>
@@ -762,8 +766,6 @@ Please input the cell phone number to add the contact
     <string name="addmemberfromcomcomtact">add member from company contact</string>
 
 
-
-
     <string name="KloudSync">Kloud</string>
 
     <string name="Mobile_phone">Mobile phone /User name</string>
@@ -793,11 +795,13 @@ Please input the cell phone number to add the contact
     <string name="create_Fail">Create fail</string>
     <string name="Send">Send</string>
     <string name="meeting_id">Meeting ID</string>
+    <string name="meeting_id_change">Meeting ID</string>
     <string name="input_new_meeing_id">input new meeting id</string>
     <string name="modify_meeting_id">modify your meeting ID</string>
     <string name="about">about</string>
     <string name="privacy_statement">Privacy Statement</string>
     <string name="create_new_sync">Create New Sync</string>
+    <string name="select_more_sync">+ Select Mode Sound</string>
     <string name="sync">Sync</string>
     <string name="invite_new">invite new</string>
     <string name="request_to_be_my_contact">Request to be my contact</string>
@@ -847,6 +851,9 @@ Please input the cell phone number to add the contact
 
 
 
+    <string name="prompt_is_my_personal_contact">该用户已存在我的"个人联系人中"\n点击对话与对方聊天</string>
+    <string name="prompt_is_in_same_company">该用户为当前公司联系人\n点击"申请聊天"等待对方接受</string>
+    <string name="prompt_is_in_other_company">该用户为其它公司联系人\n点击确定成为我的联系人</string>
 
 
 </resources>

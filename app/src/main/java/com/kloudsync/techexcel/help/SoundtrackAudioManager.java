@@ -123,11 +123,16 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
         if(audioPlayer != null){
             return audioPlayer.isPlaying();
         }
+
         return false;
     }
 
     public long getPlayTime(){
         return audioPlayer.getCurrentPosition();
+    }
+
+    public long getTotalTime(){
+        return audioPlayer.getDuration();
     }
 
 

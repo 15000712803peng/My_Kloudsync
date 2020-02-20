@@ -122,8 +122,8 @@
         android:id="@+id/btn_invite"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:background="@drawable/bluewhite_back"
+        android:layout_margin="18dp"
+        android:background="@drawable/bg_login_btn"
         android:text="@string/satOk"
         android:textColor="@color/text_wb"
         android:textSize="14sp" />

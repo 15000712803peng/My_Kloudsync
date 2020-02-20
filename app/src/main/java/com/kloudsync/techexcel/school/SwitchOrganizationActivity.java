@@ -240,6 +240,7 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         View headerView = getLayoutInflater().inflate(R.layout.organization_header, organiztionList, false);
         searchLayout = headerView.findViewById(R.id.search_layout);
         searchLayout.setOnClickListener(this);
+        searchLayout.setVisibility(View.GONE);//
         organiztionList.addHeaderView(headerView);
         organiztionList.setAdapter(sAdapter);
         organiztionList.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
@@ -306,7 +307,7 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         invitationsLayout = (LinearLayout) headerView.findViewById(R.id.layout_invitations);
         invitationsText = (TextView) headerView.findViewById(R.id.txt_invitations);
         invitationsLayout.setOnClickListener(this);
-        titleText.setText(getResources().getString(R.string.pc_sorganization));
+        titleText.setText(getResources().getString(R.string.pc_sorganization_change));
         rightTitleText.setVisibility(View.GONE);
     }
 

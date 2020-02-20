@@ -42,6 +42,15 @@ public class MeetingConfig{
     private int shareScreenUid;
     private JSONObject currentLinkProperty;
     private int spaceId;
+    private DocumentPage currentDocumentPage;
+
+    public DocumentPage getCurrentDocumentPage() {
+        return currentDocumentPage;
+    }
+
+    public void setCurrentDocumentPage(DocumentPage currentDocumentPage) {
+        this.currentDocumentPage = currentDocumentPage;
+    }
 
     public int getSpaceId() {
         return spaceId;

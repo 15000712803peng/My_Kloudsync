@@ -16,6 +16,7 @@ import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.VedioData;
+import com.kloudsync.techexcel.bean.params.EventPlaySoundSync;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.ub.techexcel.bean.AgoraMember;
@@ -362,7 +363,21 @@ public class SocketMessageManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+    }
+    public void  sendMessage_notify_play_audio_sync(MeetingConfig config, EventPlaySoundSync eventSoundSync){
+        JSONObject message = new JSONObject();
+        try {
+            message.put("actionType", 23);
+            message.put("soundtrackId", eventSoundSync.getSoundtrackID());
+            message.put("stat", eventSoundSync.getStatus()); //1 开始播放  0 停止播放  2暂停播放 3继续播放
+            if ( eventSoundSync.getStatus() == 4||eventSoundSync.getStatus() == 5) {  //   4每隔1秒发播放进度     5 进度条拖动停止通知播放进度
+                message.put("time", eventSoundSync.getTime());
+            }
+            Log.e("sendMessage_notify_play_audio_sync",message.toString());
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 

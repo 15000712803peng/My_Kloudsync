@@ -16,6 +16,7 @@ public class KloudPerssionManger {
     public static final int REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING = 3;
     public static final int REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING = 4;
     public static final int REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE = 5;
+    public static final int REQUEST_PERMISSION_FOR_JOIN_MEETING = 6;
 
     public static boolean isPermissionPhoneStateGranted(Context context) {
         return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE);
@@ -30,5 +31,9 @@ public class KloudPerssionManger {
 
     public static boolean isPermissionCameraGranted(Context context) {
         return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA);
+    }
+
+    public static boolean isPermissionRecordAudioGranted(Context context) {
+        return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO);
     }
 }

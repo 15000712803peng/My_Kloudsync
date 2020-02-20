@@ -860,11 +860,13 @@ public class ConversationActivity extends FragmentActivity {
                 SendRobotMessage(myTextMessage.getContent());
                 return message;
             }
-            if (flag_friend && (ConversationType.PRIVATE == mConversationType)) {
-                Toast.makeText(getApplicationContext(), "对方不是你的好友",
-                        Toast.LENGTH_LONG).show();
-                return null;
-            }
+//            if (flag_friend && (ConversationType.PRIVATE == mConversationType)) {
+//                Log.e("check_friend_messaeg","is_friend:" + mConversationType);
+//                Toast.makeText(getApplicationContext(), "对方不是你的好友",
+//                        Toast.LENGTH_LONG).show();
+//                return null;
+//            }
+
             if (ConversationType.SYSTEM == mConversationType) {
                 Toast.makeText(getApplicationContext(), "暂不支持与小博士聊天",
                         Toast.LENGTH_LONG).show();

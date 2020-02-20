@@ -42,6 +42,7 @@ import com.kloudsync.techexcel.tool.SyncWebActionsCache;
 import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.WebAction;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -142,9 +143,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         startPauseImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(soundtrackAudioManager.isPlaying()){
+                if (soundtrackAudioManager.isPlaying()) {
                     pause();
-                }else {
+                } else {
                     restart();
                 }
             }
@@ -232,35 +233,42 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         if (dialog != null && !dialog.isShowing()) {
             dialog.show();
         }
+        Observable.just("delay_load_parentpage").delay(1000,TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                DocumentPage documentPage = meetingConfig.getCurrentDocumentPage();
+                if(documentPage != null){
+                    web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                    web.load("javascript:Record()", null);
+                }
+
+            }
+        });
         EventBus.getDefault().register(this);
-        downloadActions(soundtrackDetail.getDuration(),soundtrackDetail.getSoundtrackID());
+        downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
         soundtrackAudioManager = SoundtrackAudioManager.getInstance(host);
         soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
         Observable.just("preload").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
                 syncDownloadFirst(soundtrackDetail.getSoundtrackID());
-                Log.e("check_play_step","step_one:preload");
+                Log.e("check_play_step", "step_one:preload");
             }
         }).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                Log.e("check_play_step","step_two:task_execute");
+                Log.e("check_play_step", "step_two:task_execute");
                 new PlayTimeTask().execute();
             }
         }).subscribe();
 
     }
 
-
-
     @Override
     public void onDismiss(DialogInterface dialog) {
         EventBus.getDefault().unregister(this);
         dismiss();
     }
-
-
 
 
     class PlayTimeTask extends AsyncTask<Void, Void, Void> {
@@ -279,7 +287,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             // 播放完成或者手动关闭dialog isFinished = true;
             while (!isFinished) {
                 boolean isPlaying = SoundtrackAudioManager.getInstance(host).isPlaying();
-                if(!isStarted || !isPlaying){
+                Log.e("check_play", "mediaInfo,isPlaying:" + isPlaying);
+                if (!isStarted || !isPlaying) {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -288,7 +297,11 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                     continue;
                 }
 
-                if(playTime >= totalTime){
+                if (totalTime <= 0) {
+                    totalTime = SoundtrackAudioManager.getInstance(host).getDuration();
+                }
+
+                if (playTime >= totalTime) {
                     playTime = totalTime;
                     playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
                     break;
@@ -355,9 +368,11 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 if (centerLoaing.getVisibility() == View.VISIBLE) {
                     centerLoaing.setVisibility(View.GONE);
                 }
-                if(controllerLayout.getVisibility() != View.VISIBLE){
+
+                if (controllerLayout.getVisibility() != View.VISIBLE) {
                     controllerLayout.setVisibility(View.VISIBLE);
                 }
+
                 break;
             case MESSAGE_HIDE_CENTER_LOADING:
                 centerLoaing.setVisibility(View.GONE);
@@ -393,7 +408,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-        Log.e("seek_bar","start_tracking");
+        Log.e("seek_bar", "start_tracking");
 //        pause();
 
     }
@@ -401,7 +416,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         isSeek = true;
-        Log.e("seek_bar","stop_tracking");
+        Log.e("seek_bar", "stop_tracking");
 //        seekTo(seekBar.getProgress() * 10);
         pause();
         final int time = seekBar.getProgress() * 10;
@@ -410,7 +425,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     }
 
 
-    private void seekTo2(final int time){
+    private void seekTo2(final int time) {
         isStarted = false;
         clearActionsBySeek();
         SoundtrackAudioManager.getInstance(host).seekTo(time);
@@ -418,9 +433,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {
             @Override
             public void accept(List<WebAction> webActions) throws Exception {
-                for(WebAction action : webActions){
-                    if(action.getTime() >= time){
-                        Log.e("check_page_time","seek_time:" + time + ",action_time:" + action.getTime());
+                for (WebAction action : webActions) {
+                    if (action.getTime() >= time) {
+                        Log.e("check_page_time", "seek_time:" + time + ",action_time:" + action.getTime());
                         playTime = time;
 
                         SoundtrackActionsManager.getInstance(host).doChangePageAction(action);
@@ -445,11 +460,10 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         }).subscribe();
     }
 
-    private void clearActionsBySeek(){
+    private void clearActionsBySeek() {
         web.load("javascript:ClearPageAndAction()", null);
         web.load("javascript:Record()", null);
     }
-
 
     private void initWeb() {
         web.setZOrderOnTop(false);
@@ -477,9 +491,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
     @org.xwalk.core.JavascriptInterface
     public void afterLoadFileFunction() {
-
         SoundtrackActionsManager.getInstance(host).setLoadingPage(false);
-        if(isSeek){
+        if (isSeek) {
             SoundtrackActionsManager.getInstance(host).setCurrentPartWebActions(null);
             isSeek = false;
         }
@@ -488,8 +501,11 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             public void run() {
                 web.load("javascript:ShowToolbar(" + false + ")", null);
                 web.load("javascript:Record()", null);
+                DocumentPage documentPage = meetingConfig.getCurrentDocumentPage();
+
             }
         });
+
 
     }
 
@@ -522,72 +538,71 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void closeSoundtrackDialog(EventCloseSoundtrack closeSoundtrack){
+    public void closeSoundtrackDialog(EventCloseSoundtrack closeSoundtrack) {
         dismiss();
     }
 
-    private void pause(){
+    private void pause() {
         isStarted = false;
         SoundtrackAudioManager.getInstance(host).pause();
         statusText.setText(R.string.paused);
         startPauseImage.setImageResource(R.drawable.video_play);
     }
 
-    public void notifyPause(){
-        if(soundtrackAudioManager.isPlaying()){
+    public void followPause() {
+        if (soundtrackAudioManager.isPlaying()) {
             pause();
         }
     }
 
-
-    public void notifyRestart(){
-        if(!soundtrackAudioManager.isPlaying()){
+    public void followRestart() {
+        if (!soundtrackAudioManager.isPlaying()) {
             restart();
         }
     }
 
-    public void  notifyClose(){
+    public void followClose() {
         close();
     }
 
-    public void notifySeekTo(int audioTime) {
+    public void followSeekTo(int audioTime) {
         seekTo2(audioTime);
     }
 
-    private void restart(){
+    private void restart() {
         SoundtrackAudioManager.getInstance(host).restart();
         isStarted = true;
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);
     }
 
-    private void close(){
+    private void close() {
         release();
         dismiss();
     }
 
-    private void seekTo(int time){
+    private void seekTo(int time) {
         actionsManager.seekTo(time);
     }
 
-    private void syncDownloadFirst(int recordId){
+    private void syncDownloadFirst(int recordId) {
         final String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + 0 + "&endTime=" + 20000;
-        final String cacheUrl = url + "__time__separator__" + 0 + "__" + 20000+"__" + recordId;
+        final String cacheUrl = url + "__time__separator__" + 0 + "__" + 20000 + "__" + recordId;
         boolean isContain = webActionsCache.containPartWebActions(cacheUrl);
-        if(!isContain){
+        if (!isContain) {
             List<WebAction> actions = ServiceInterfaceTools.getinstance().syncGetRecordActions(url);
-            Log.e("check_download","download_response:" + actions);
+            Log.e("check_download", "download_response:" + actions);
             if (actions != null) {
                 PartWebActions partWebActions = new PartWebActions();
                 partWebActions.setStartTime(0);
                 partWebActions.setEndTime(20000);
                 partWebActions.setUrl(cacheUrl);
-                if(actions.size() > 0){
+                if (actions.size() > 0) {
                     partWebActions.setWebActions(actions);
-                }else {
+                } else {
                     partWebActions.setWebActions(new ArrayList<WebAction>());
                 }
-                Log.e("check_download","cache:" + cacheUrl);
+                Log.e("check_download", "cache:" + cacheUrl);
                 webActionsCache.cacheActions(partWebActions);
                 Log.e("SoundtrackActionsManager", "step_four:request_success_and_cache:web_actions_size:" + partWebActions.getWebActions().size());
 //
@@ -597,11 +612,11 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
     }
 
-    private void downloadActions(long totalTime,final int recordId){
-        int secends=  (int)(totalTime / 1000) + 1;
+    private void downloadActions(long totalTime, final int recordId) {
+        int secends = (int) (totalTime / 1000) + 1;
         int partSize = secends / 20 + 1;
         Integer[] parts = new Integer[partSize];
-        for(int i = 0 ; i < parts.length; ++i){
+        for (int i = 0; i < parts.length; ++i) {
             parts[i] = i;
         }
         Observable.fromArray(parts).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
@@ -610,29 +625,29 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 long startTime = index * 20000;
                 long endTime = (index + 1) * 20000;
                 final String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + startTime + "&endTime=" + endTime;
-                final String cacheUrl = url + "__time__separator__" + startTime + "__" + endTime+"__" + recordId;
+                final String cacheUrl = url + "__time__separator__" + startTime + "__" + endTime + "__" + recordId;
                 boolean isContain = webActionsCache.containPartWebActions(cacheUrl);
-                if(!isContain){
+                if (!isContain) {
                     List<WebAction> actions = ServiceInterfaceTools.getinstance().syncGetRecordActions(url);
-                    Log.e("check_download","download_response:" + actions);
+                    Log.e("check_download", "download_response:" + actions);
                     if (actions != null) {
                         PartWebActions partWebActions = new PartWebActions();
                         partWebActions.setStartTime(startTime);
                         partWebActions.setEndTime(endTime);
                         partWebActions.setUrl(cacheUrl);
-                        if(actions.size() > 0){
+                        if (actions.size() > 0) {
                             partWebActions.setWebActions(actions);
-                        }else {
+                        } else {
                             partWebActions.setWebActions(new ArrayList<WebAction>());
                         }
-                        Log.e("check_download","cache:" + cacheUrl);
+                        Log.e("check_download", "cache:" + cacheUrl);
                         webActionsCache.cacheActions(partWebActions);
                         Log.e("SoundtrackActionsManager", "step_four:request_success_and_cache:web_actions_size:" + partWebActions.getWebActions().size());
 //
                     }
                 }
                 fetchPageActions(webActionsCache.getPartWebActions(cacheUrl));
-                Log.e("check_part","url:" + url);
+                Log.e("check_part", "url:" + url);
             }
         }).subscribe();
 //        Log.e("check_part","part_size:" + partSize +", total_time:" + totalTime);
@@ -641,25 +656,25 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
     private List<WebAction> pageActions = new ArrayList<>();
 
-    private void fetchPageActions(PartWebActions webActions){
+    private void fetchPageActions(PartWebActions webActions) {
         List<WebAction> actions = webActions.getWebActions();
-        if(actions != null && actions.size() > 0){
-            for(WebAction action : actions){
-                if(!TextUtils.isEmpty(action.getData()))
-                try {
-                    JSONObject data = new JSONObject(action.getData());
-                    if (data.getInt("type") == 2) {
-                        if(!pageActions.contains(action)){
-                            pageActions.add(action);
+        if (actions != null && actions.size() > 0) {
+            for (WebAction action : actions) {
+                if (!TextUtils.isEmpty(action.getData()))
+                    try {
+                        JSONObject data = new JSONObject(action.getData());
+                        if (data.getInt("type") == 2) {
+                            if (!pageActions.contains(action)) {
+                                pageActions.add(action);
+                            }
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
             }
         }
 
-        Log.e("check_page_actions","page_actions_size:" + pageActions.size());
+        Log.e("check_page_actions", "page_actions_size:" + pageActions.size());
     }
 
 

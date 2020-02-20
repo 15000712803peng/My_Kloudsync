@@ -77,6 +77,7 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             //数字是随便写的“40”，
