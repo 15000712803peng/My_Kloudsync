@@ -2906,8 +2906,11 @@ public class ServiceInterfaceTools {
                 attachmentId = meetingConfig.getDocument().getAttachmentID();
             }
             url += "LessonSoundtrack/List?lessonID=" + meetingConfig.getLessionId() +
-                    "&attachmentID=" + meetingConfig.getDocument();
+                    "&attachmentID=" + attachmentId;
         } else {
+            if (meetingConfig.getDocument() != null) {
+                attachmentId = meetingConfig.getDocument().getAttachmentID();
+            }
             url += "Soundtrack/List?attachmentID=" + attachmentId + "&isPublic=0";
         }
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
