@@ -10,10 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.view.ClearEditText;
+
 public class ModifyMeetingIdDialog implements OnClickListener {
     public Context mContext;
     String currentMeetingId;
@@ -85,7 +87,7 @@ public class ModifyMeetingIdDialog implements OnClickListener {
     }
 
     private TextView cancel, ok;
-    private ClearEditText editText;
+    private EditText editText;
     private View popupWindow;
 
     @SuppressWarnings("deprecation")
@@ -94,7 +96,7 @@ public class ModifyMeetingIdDialog implements OnClickListener {
         popupWindow = layoutInflater.inflate(R.layout.dialog_modify_meeting_id, null);
         cancel = (TextView) popupWindow.findViewById(R.id.cancel);
         ok = (TextView) popupWindow.findViewById(R.id.ok);
-        editText = (ClearEditText) popupWindow.findViewById(R.id.et_title);
+        editText = (EditText) popupWindow.findViewById(R.id.et_title);
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
         mPopupWindow.setContentView(popupWindow);
         WindowManager.LayoutParams lp = mPopupWindow.getWindow().getAttributes();

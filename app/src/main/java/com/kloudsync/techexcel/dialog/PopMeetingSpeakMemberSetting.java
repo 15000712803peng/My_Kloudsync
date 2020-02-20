@@ -1,10 +1,7 @@
 package com.kloudsync.techexcel.dialog;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,32 +11,32 @@ import android.widget.TextView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
+import com.kloudsync.techexcel.config.AppConfig;
 
 /**
  * Created by tonyan on 2019/12/20.
  */
 
-public class PopMeetingMemberSetting extends PopupWindow implements View.OnClickListener {
+public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.OnClickListener {
 
     private Context context;
 
     private MeetingMember meetingMember;
-    private TextView setPresenter,setAuditor,setSpeakMember;
+    private TextView setAuditor,setMainMember;
     private MeetingConfig meetingConfig;
 
-    public interface OnMemberSettingChanged{
-        void setPresenter(MeetingMember meetingMember);
-        void setAuditor(MeetingMember meetingMember);
-        void setSpeakMember(MeetingMember meetingMember);
+    public interface OnSpeakMemberSettingChanged{
+        void setSpeakToAuditor(MeetingMember meetingMember);
+        void setSpeakToMember(MeetingMember meetingMember);
     }
 
-    private OnMemberSettingChanged onMemberSettingChanged;
+    private OnSpeakMemberSettingChanged onMemberSettingChanged;
 
-    public void setOnMemberSettingChanged(OnMemberSettingChanged onMemberSettingChanged) {
+    public void setOnMemberSettingChanged(OnSpeakMemberSettingChanged onMemberSettingChanged) {
         this.onMemberSettingChanged = onMemberSettingChanged;
     }
 
-    public PopMeetingMemberSetting(Context context) {
+    public PopMeetingSpeakMemberSetting(Context context) {
         super(context);
         this.context = context;
         initalize();
@@ -48,11 +45,9 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
     private void initalize() {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.pop_meeting_member_options, null);
-        setPresenter = view.findViewById(R.id.txt_setting_presenter);
         setAuditor = view.findViewById(R.id.txt_setting_auditor);
-        setSpeakMember = view.findViewById(R.id.txt_setting_speak_member);
-        setSpeakMember.setOnClickListener(this);
-        setPresenter.setOnClickListener(this);
+        setMainMember = view.findViewById(R.id.txt_setting_main_members);
+        setMainMember.setOnClickListener(this);
         setAuditor.setOnClickListener(this);
         setContentView(view);
         initWindow();
@@ -71,12 +66,10 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
     public void showAtBottom(MeetingMember meetingMember,View view,MeetingConfig meetingConfig) {
         this.meetingMember = meetingMember;
         this.meetingConfig = meetingConfig;
-        if(meetingMember.getPresenter() == 1){
-            setPresenter.setVisibility(View.GONE);
+        if((meetingMember.getUserId() +"").equals(AppConfig.UserID)){
+            setMainMember.setVisibility(View.GONE);
         }
-        if(meetingMember.getPresenter() == 1 || meetingMember.getRole() == 2){
-            setAuditor.setVisibility(View.GONE);
-        }
+
         showAsDropDown(view, -context.getResources().getDimensionPixelOffset(R.dimen.meeting_members_setting_width) + context.getResources().getDimensionPixelOffset(R.dimen.pop_setting_left_margin), 10);
     }
 
@@ -85,21 +78,15 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.txt_setting_presenter:
+            case R.id.txt_setting_main_members:
                 if(meetingMember != null && onMemberSettingChanged != null){
-                    onMemberSettingChanged.setPresenter(meetingMember);
+                    onMemberSettingChanged.setSpeakToMember(meetingMember);
                 }
                 dismiss();
                 break;
             case R.id.txt_setting_auditor:
                 if(meetingMember != null && onMemberSettingChanged != null){
-                    onMemberSettingChanged.setAuditor(meetingMember);
-                }
-                dismiss();
-                break;
-            case R.id.txt_setting_speak_member:
-                if(meetingMember != null && onMemberSettingChanged != null){
-                    onMemberSettingChanged.setSpeakMember(meetingMember);
+                    onMemberSettingChanged.setSpeakToAuditor(meetingMember);
                 }
                 dismiss();
                 break;

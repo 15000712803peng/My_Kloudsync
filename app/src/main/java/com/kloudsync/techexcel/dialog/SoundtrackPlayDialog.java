@@ -26,14 +26,12 @@ import com.kloudsync.techexcel.adapter.HeaderRecyclerAdapter;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventCloseSoundtrack;
 import com.kloudsync.techexcel.bean.EventCloseWebView;
-import com.kloudsync.techexcel.bean.EventPlaySoundtrack;
 import com.kloudsync.techexcel.bean.EventPlayWebVedio;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SoundtrackMediaInfo;
 import com.kloudsync.techexcel.bean.SupportDevice;
-import com.kloudsync.techexcel.bean.params.EventPlaySoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.SoundtrackActionsManager;
@@ -229,7 +227,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         }
     }
 
-    public void  show() {
+    public void show() {
         Log.e("SoundtrackPlayDialog", "show,dialog:" + dialog);
         if (dialog != null && !dialog.isShowing()) {
             dialog.show();
@@ -263,14 +261,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     }
 
 
-    private void  send_message(int status,int time){
-        EventPlaySoundSync eventPlaySoundSync=new EventPlaySoundSync();
-        eventPlaySoundSync.setSoundtrackID(soundtrackDetail.getSoundtrackID());
-        eventPlaySoundSync.setStatus(status);
-        eventPlaySoundSync.setTime(time);
-        EventBus.getDefault().post(eventPlaySoundSync);
-    }
-
 
 
     class PlayTimeTask extends AsyncTask<Void, Void, Void> {
@@ -280,7 +270,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             playTime = 0;
             isFinished = false;
             isStarted = true;
-            send_message(1,0);
             super.onPreExecute();
         }
 
@@ -317,7 +306,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                     playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
                 }
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(500);
 //                        playTime += 200;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -422,9 +411,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
 
     private void seekTo2(final int time){
-
-        send_message(5,time);
-
         isStarted = false;
         clearActionsBySeek();
         SoundtrackAudioManager.getInstance(host).seekTo(time);
@@ -545,7 +531,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         SoundtrackAudioManager.getInstance(host).pause();
         statusText.setText(R.string.paused);
         startPauseImage.setImageResource(R.drawable.video_play);
-        send_message(2,0);
     }
 
     public void notifyPause(){
@@ -567,7 +552,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
     public void notifySeekTo(int audioTime) {
         seekTo2(audioTime);
-
     }
 
     private void restart(){
@@ -575,11 +559,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         isStarted = true;
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);
-        send_message(3,0);
     }
 
     private void close(){
-        send_message(0,0);
         release();
         dismiss();
     }
