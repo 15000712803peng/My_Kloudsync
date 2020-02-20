@@ -641,6 +641,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 startActivity(searchIntnt);
                 break;
             case R.id.lin_myroom:
+
                 startMeetingBeforeCheckPession();
                 break;
             case R.id.lin_join:

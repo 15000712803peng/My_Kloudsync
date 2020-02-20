@@ -84,7 +84,6 @@ import com.kloudsync.techexcel.bean.SoundtrackDetailData;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.bean.VedioData;
-import com.kloudsync.techexcel.bean.params.EventPlaySoundSync;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
@@ -600,6 +599,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         Log.e("showDocumentPage", "current_document:" + document);
         if (document != null) {
             meetingConfig.setDocument(document);
+            meetingConfig.setCurrentDocumentPage(page);
             meetingConfig.setPageNumber(meetingConfig.getDocument().getDocumentPages().indexOf(page) + 1);
         }
 
@@ -680,9 +680,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
 
-
-    private void totalHideCameraAdapter(){
-        if(cameraList.getVisibility() == View.VISIBLE){
+    private void totalHideCameraAdapter() {
+        if (cameraList.getVisibility() == View.VISIBLE) {
             toggleMembersCamera(true);
         }
     }
@@ -825,6 +824,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public void showMenuIcon(EventShowMenuIcon showMenuIcon) {
         if (menuIcon != null) {
             Log.e("showMenuIcon", "show");
+            menuIcon.setVisibility(View.VISIBLE);
             menuIcon.setImageResource(R.drawable.icon_menu);
             menuIcon.setEnabled(true);
             Log.e("showMenuIcon", "menu visible:  " + (menuIcon.getVisibility() == View.VISIBLE));
@@ -1216,13 +1216,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void eventMuteAllMembersAudio(EventMuteAll muteAll){
+    public void eventMuteAllMembersAudio(EventMuteAll muteAll) {
         MeetingKit.getInstance().menuMicroClicked(false);
         SocketMessageManager.getManager(this).sendMessage_MuteStatus(0);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void eventUnmuteAllMembersAudio(EventUnmuteAll unmuteAll){
+    public void eventUnmuteAllMembersAudio(EventUnmuteAll unmuteAll) {
         MeetingKit.getInstance().menuMicroClicked(true);
         SocketMessageManager.getManager(this).sendMessage_MuteStatus(1);
     }
@@ -1479,6 +1479,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         checkAgoraMemberNameAndAgoraStatus();
 
+        if(cameraAdapter != null && cameraList.getVisibility() == View.VISIBLE){
+            cameraAdapter.notifyDataSetChanged();
+        }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -1604,7 +1608,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if ((member.getUserId() + "").equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
-                    if(!(member.getUserId() + "").equals(AppConfig.UserID)){
+                    if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
                         agoraMember.setMuteVideo(member.getCameraStatus() != 2);
                         agoraMember.setMuteAudio(member.getMicrophoneStatus() != 2);
                     }
@@ -1766,7 +1770,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             } else if (meetingConfig.getPageNumber() > 0) {
                 pageIndex = meetingConfig.getPageNumber();
             }
-
 
 
             documentPage.setSavedLocalPath(pathLocalPath);
@@ -2082,6 +2085,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
         meetingConfig.setPageNumber(pageNum);
         PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
+        if(meetingConfig.getCurrentDocumentPage() != null){
+            meetingConfig.getCurrentDocumentPage().setPageNumber(pageNum);
+        }
     }
 
     @org.xwalk.core.JavascriptInterface
@@ -2122,7 +2128,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getType() != MeetingType.MEETING) {
             if (isSyncing) {
                 if (!TextUtils.isEmpty(actions)) {
-                    Log.e("syncing---", SoundtrackRecordManager.getManager(this).getCurrentTime()+"");
+                    Log.e("syncing---", SoundtrackRecordManager.getManager(this).getCurrentTime() + "");
                     try {
                         JSONObject jsonObject = new JSONObject(actions);
                         jsonObject.put("time", SoundtrackRecordManager.getManager(this).getCurrentTime());
@@ -2424,14 +2430,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public void addFromCamera() {
         String[] permissions = new String[]{
                 Manifest.permission.CAMERA};
-        startRequestPermission(permissions,322);
+        startRequestPermission(permissions, 322);
     }
 
     @Override
     public void addFromPictures() {
         String[] permissions = new String[]{
                 Manifest.permission.CAMERA};
-        startRequestPermission(permissions,323);
+        startRequestPermission(permissions, 323);
     }
 
     @Override
@@ -2606,7 +2612,20 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 break;
             case R.id.layout_share:
             case R.id._layout_share:
-                showShareDocInMeetingDialog();
+                if (meetingConfig.getType() != MeetingType.MEETING) {
+                    return;
+                }
+                if (isPresenter()) {
+                    if (bottomFilePop != null) {
+                        menuIcon.setEnabled(false);
+                        menuIcon.setImageResource(R.drawable.shape_transparent);
+                        bottomFilePop.openAndShowAdd(web, this);
+                    }
+
+                } else {
+                    showShareDocInMeetingDialog();
+                }
+
                 break;
             case R.id.layout_create_blank_page:
                 reqeustNewBlankPage();
@@ -2630,7 +2649,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 shareDocInMeetingDialog.cancel();
             }
         }
-
         shareDocInMeetingDialog = new ShareDocInMeetingDialog(this);
         shareDocInMeetingDialog.show();
     }
@@ -3095,8 +3113,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public void createSync(EventCreateSync createSync) {
         openSaveVideoPopup();
         String[] permissions = new String[]{
-                Manifest.permission.RECORD_AUDIO,Manifest.permission.MODIFY_AUDIO_SETTINGS};
-        startRequestPermission(permissions,321);
+                Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS};
+        startRequestPermission(permissions, 321);
 
     }
 
@@ -3116,15 +3134,15 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void handleShareDocInMeeting(EventShareDocInMeeting shareDocInMeeting){
-        if(meetingConfig.getType() != MeetingType.MEETING){
+    public void handleShareDocInMeeting(EventShareDocInMeeting shareDocInMeeting) {
+        if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
         requestShareDocInMeeting(shareDocInMeeting.getDocument());
 
     }
 
-    private void requestShareDocInMeeting(final MeetingDocument document){
+    private void requestShareDocInMeeting(final MeetingDocument document) {
         Observable.just("Requst").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
 
             @Override
@@ -3134,20 +3152,20 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 params.put("itemIDs", document.getItemID());
                 JSONObject result = ConnectService.submitDataByJson
                         (AppConfig.URL_PUBLIC + "EventAttachment/UploadFromFavorite?lessonID=" + meetingConfig.getLessionId() + "&itemIDs=" + document.getItemID(), params);
-                Log.e("check_request_share_doc","result:" + result);
+                Log.e("check_request_share_doc", "result:" + result);
                 return result;
             }
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
             @Override
             public void accept(JSONObject jsonObject) throws Exception {
-                if(jsonObject.has("RetCode")){
-                    if(jsonObject.getInt("RetCode") == 0){
+                if (jsonObject.has("RetCode")) {
+                    if (jsonObject.getInt("RetCode") == 0) {
                         new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(true).setMessage(getString(R.string.operate_success)).create().show();
-                    }else {
+                    } else {
                         new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
 
                     }
-                }else {
+                } else {
                     new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
 
                 }
@@ -3194,6 +3212,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private YinxiangCreatePopup yinxiangCreatePopup;
     private int isrecord = 0; //判斷是背景音頻還是新的聲音
     private SoundtrackRecordManager soundtrackRecordManager;
+
     private void showCreateSyncDialog() {
         yinxiangCreatePopup = new YinxiangCreatePopup();
         yinxiangCreatePopup.getPopwindow(DocAndMeetingActivity.this);
@@ -3218,17 +3237,15 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
             @Override
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
-                soundtrackRecordManager=SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
-                soundtrackRecordManager.setInitParams(checked,soundtrackBean2,audiosyncll,meetingConfig);
+                soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
+                soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll, meetingConfig);
             }
         });
-        yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID()+"");
+        yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
     }
 
 
-
-
-    private void startRequestPermission(String[] permissions,int requestcode){
+    private void startRequestPermission(String[] permissions, int requestcode) {
         ActivityCompat.requestPermissions(this, permissions, requestcode);
     }
 
@@ -3242,7 +3259,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     // 判断用户是否 点击了不再提醒。(检测该权限是否还可以申请)
                     boolean i = shouldShowRequestPermissionRationale(permissions[0]);
                     boolean j = shouldShowRequestPermissionRationale(permissions[1]);
-                    if (!i||!j) {
+                    if (!i || !j) {
                         // 提示用户去应用设置界面手动开启权限
 //                       showDialogTipUserGoToAppSettting();
                     } else {
@@ -3252,7 +3269,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     showCreateSyncDialog();
                 }
             }
-        }else if(requestCode == 322){
+        } else if (requestCode == 322) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
@@ -3260,7 +3277,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     openCameraForAddDoc();
                 }
             }
-        }else if(requestCode == 323){
+        } else if (requestCode == 323) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
@@ -3273,20 +3290,20 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    private boolean isSyncing=false;
+    private boolean isSyncing = false;
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveEventSoundSync(EventSoundSync eventSoundSync) {
-        Log.e("syncing---", eventSoundSync.getSoundtrackID()+"  "+eventSoundSync.getStatus()+"  "+eventSoundSync.getTime());
-        int soundtrackID=eventSoundSync.getSoundtrackID();
-        if(eventSoundSync.getStatus()==1){ //開始錄音
-            isSyncing=true;
+        Log.e("syncing---", eventSoundSync.getSoundtrackID() + "  " + eventSoundSync.getStatus() + "  " + eventSoundSync.getTime());
+        int soundtrackID = eventSoundSync.getSoundtrackID();
+        if (eventSoundSync.getStatus() == 1) { //開始錄音
+            isSyncing = true;
             getJspPagenumber();
             messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
             recordstatus.setVisibility(View.VISIBLE);
-        }else if(eventSoundSync.getStatus()==0){   //录音结束
+        } else if (eventSoundSync.getStatus() == 0) {   //录音结束
             recordstatus.setVisibility(View.GONE);
-            isSyncing=false;
+            isSyncing = false;
             String url2 = AppConfig.URL_PUBLIC + "Soundtrack/EndSync?soundtrackID=" + soundtrackID + "&syncDuration=" + eventSoundSync.getTime();
             ServiceInterfaceTools.getinstance().endSync(url2, ServiceInterfaceTools.ENDSYNC, new ServiceInterfaceListener() {
                 @Override
@@ -3296,30 +3313,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receiveEventPlaySoundSync(EventPlaySoundSync eventSoundSync) {
-        Log.e("syncing---", eventSoundSync.getSoundtrackID()+"  "+eventSoundSync.getStatus()+"  "+eventSoundSync.getTime());
-        if (!TextUtils.isEmpty(meetingConfig.getPresenterSessionId())) {
-            if (AppConfig.UserID.equals(meetingConfig.getPresenterId())) {
-                if (meetingConfig.isInRealMeeting()) {
-                    if (messageManager != null) {
-                        messageManager.sendMessage_notify_play_audio_sync(meetingConfig, eventSoundSync);
-                    }
-
-                }
-            }
-        }
-
-    }
-
     private void getJspPagenumber() {
         web.evaluateJavascript("javascript:GetCurrentPageNumber()", new ValueCallback<String>() {
             @Override
             public void onReceiveValue(String s) {
                 int id = 1;
                 if (!TextUtils.isEmpty(s)) {
-                    Log.e("syncing---", s+"");
+                    Log.e("syncing---", s + "");
                     id = Integer.parseInt(s);
                 }
                 JSONObject js = new JSONObject();
@@ -3330,7 +3330,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                messageManager.sendMessage_MyActionFrame(js.toString(),meetingConfig);
+                messageManager.sendMessage_MyActionFrame(js.toString(), meetingConfig);
             }
         });
     }
@@ -3407,7 +3407,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         startActivityForResult(intent, REQUEST_CODE_ADD_NOTE);
     }
 
-
     private SoundtrackPlayDialog soundtrackPlayDialog;
 
     private void showSoundtrackPlayDialog(SoundtrackDetail soundtrackDetail) {
@@ -3452,7 +3451,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void showFullCameraScreen() {
-        notifyAgoraVedioScreenStatus(1,"");
+        notifyAgoraVedioScreenStatus(1, "");
         fullCamereLayout.setVisibility(View.VISIBLE);
         fullCameraList.setVisibility(View.VISIBLE);
         cameraList.setVisibility(View.GONE);
@@ -3464,7 +3463,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         fullCameraList.setVisibility(View.GONE);
         cameraList.setVisibility(View.VISIBLE);
         reloadAgoraMember();
-        notifyAgoraVedioScreenStatus(0,"");
+        notifyAgoraVedioScreenStatus(0, "");
     }
 
     private void fitFullCameraList(List<AgoraMember> members) {
@@ -3562,13 +3561,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 //Log.e("check_mute_audio", "data:" + data);
                 if (data.has("stat")) {
                     int stat = data.getInt("stat");
-                    if(stat == 0){
+                    if (stat == 0) {
                         MeetingKit.getInstance().menuMicroClicked(false);
-                    }else if(stat == 1){
+                    } else if (stat == 1) {
                         MeetingKit.getInstance().menuMicroClicked(true);
                     }
                 }
-
                 break;
             case 19:
                 Log.e("check_vedio_play", "data:" + data);
@@ -3591,64 +3589,69 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 break;
 
             case 23:
-                final int stat = data.getInt("stat");
-                final String soundtrackID = data.getString("soundtrackId");
-                int    audioTime=0;
-                if (stat == 4) {
-                      audioTime = data.getInt("time");
-                }
-                Log.e("mediaplayer-----", stat + ":   " + soundtrackID);
-                if (stat == 1) {  //开始播放
-                    int vid2 = 0;
-                    if (!TextUtils.isEmpty(soundtrackID)) {
-                        vid2 = Integer.parseInt(soundtrackID);
+                //播放音想
+                if (data.has("stat")) {
+                    final int stat = data.getInt("stat");
+                    final String soundtrackID = data.getString("soundtrackId");
+                    int audioTime = 0;
+                    if (stat == 4) {
+                        audioTime = data.getInt("time");
                     }
-                    SoundTrack soundTrack=new SoundTrack();
-                    soundTrack.setSoundtrackID(vid2);
-                    requestDetailAndPlay(soundTrack);
-                } else if (stat == 0) { //停止播放
-                  if(soundtrackPlayDialog!=null){
-                      soundtrackPlayDialog.notifyClose();
-                  }
-                } else if (stat == 2) {  //暂停播放
-                    if(soundtrackPlayDialog!=null){
-                        soundtrackPlayDialog.notifyPause();
-                    }
-                } else if (stat == 3) { // 继续播放
-                    if(soundtrackPlayDialog!=null){
-                        soundtrackPlayDialog.notifyRestart();
-                    }
-                } else if (stat == 4) {  // 追上进度
+                    Log.e("mediaplayer-----", stat + ":   " + soundtrackID);
+                    if (stat == 1) {  //开始播放
+                        int vid2 = 0;
+                        if (!TextUtils.isEmpty(soundtrackID)) {
+                            vid2 = Integer.parseInt(soundtrackID);
+                        }
+                        SoundTrack soundTrack = new SoundTrack();
+                        soundTrack.setSoundtrackID(vid2);
+                        requestSyncDetailAndPlay(soundTrack);
+                    } else if (stat == 0) { //停止播放
+                        if (soundtrackPlayDialog != null) {
+                            soundtrackPlayDialog.followClose();
+                        }
+                    } else if (stat == 2) {  //暂停播放
+                        if (soundtrackPlayDialog != null) {
+                            soundtrackPlayDialog.followPause();
+                        }
+                    } else if (stat == 3) { // 继续播放
+                        if (soundtrackPlayDialog != null) {
+                            soundtrackPlayDialog.followRestart();
+                        }
+                    } else if (stat == 4) {  // 追上进度
 //
-                } else if (stat == 5) {  // 拖动进度条
+                    } else if (stat == 5) {  // 拖动进度条
 //                    seekToTime(audioTime);
-                    if(soundtrackPlayDialog!=null){
-                        soundtrackPlayDialog.notifySeekTo(audioTime);
+                        if (soundtrackPlayDialog != null) {
+                            soundtrackPlayDialog.followSeekTo(audioTime);
+                        }
                     }
                 }
+
+
                 break;
         }
     }
 
-    private void requestDetailAndPlay(final SoundTrack soundTrack) {
+    private void requestSyncDetailAndPlay(final SoundTrack soundTrack) {
         Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
             @Override
             public SoundtrackDetailData apply(SoundTrack soundtrack) throws Exception {
                 SoundtrackDetailData soundtrackDetailData = new SoundtrackDetailData();
                 JSONObject response = ServiceInterfaceTools.getinstance().syncGetSoundtrackDetail(soundTrack);
-                if(response.has("RetCode")){
-                    if(response.getInt("RetCode") == 0){
-                        SoundtrackDetail soundtrackDetail = new Gson().fromJson(response.getJSONObject("RetData").toString(),SoundtrackDetail.class);
+                if (response.has("RetCode")) {
+                    if (response.getInt("RetCode") == 0) {
+                        SoundtrackDetail soundtrackDetail = new Gson().fromJson(response.getJSONObject("RetData").toString(), SoundtrackDetail.class);
                         soundtrackDetailData.setSoundtrackDetail(soundtrackDetail);
-
                     }
                 }
                 return soundtrackDetailData;
             }
+
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<SoundtrackDetailData>() {
             @Override
             public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
-                if(soundtrackDetailData.getSoundtrackDetail() != null){
+                if (soundtrackDetailData.getSoundtrackDetail() != null) {
                     EventPlaySoundtrack soundtrack = new EventPlaySoundtrack();
                     soundtrack.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
                     playSoundtrack(soundtrack);
@@ -3887,14 +3890,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         hideFullCameraScreen();
     }
 
-    private void notifyAgoraVedioScreenStatus(int viewMode,String userId){
-        if(meetingConfig.getType() != MeetingType.MEETING){
+    private void notifyAgoraVedioScreenStatus(int viewMode, String userId) {
+        if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
         if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())) {
             return;
         }
-        SocketMessageManager.getManager(this).sendMessage_ViewModeStatus(viewMode,userId);
+        SocketMessageManager.getManager(this).sendMessage_ViewModeStatus(viewMode, userId);
 //        SocketMessageManager.getManager(this).sendMessage_MyNoteActionFrame(actions, meetingConfig, note);
     }
 

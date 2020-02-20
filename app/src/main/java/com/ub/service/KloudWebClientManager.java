@@ -118,13 +118,6 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                 heartBeatMessage.put("sessionId", AppConfig.UserToken);
                 heartBeatMessage.put("changeNumber", 0);
 
-//                if (AppConfig.IsInMeeting) {
-//                    heartBeatMessage.put("status", AppConfig.status);
-//                    heartBeatMessage.put("currentLine", AppConfig.currentLine);
-//                    heartBeatMessage.put("currentMode", AppConfig.currentMode);
-//                    heartBeatMessage.put("currentPageNumber", AppConfig.currentPageNumber);
-//                    heartBeatMessage.put("currentItemId", AppConfig.currentDocId);
-//                }
                 MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
                 if (meetingConfig != null && meetingConfig.isInRealMeeting()) {
                     heartBeatMessage.put("status", "0");
@@ -145,9 +138,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                 e.printStackTrace();
             } catch (Exception e) {
 
-
             }
-
         }
     }
 

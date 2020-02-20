@@ -48,7 +48,6 @@ configurations.all {
     }
 }
 
-
 android {
     compileSdkVersion 27
     buildToolsVersion "28.0.2"
@@ -59,8 +58,8 @@ android {
         applicationId "com.kloudsync.techexcel"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 73
-        versionName "7.0.3"
+        versionCode 74
+        versionName "7.0.4"
         flavorDimensions "versionCode"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -805,6 +806,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     };
 
     private void GoToVIew(Document lesson) {
+        updateSocket();
         Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
 //        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -829,6 +831,16 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         intent.putExtra("space_id", itemID);
         intent.putExtra("lession_id", Integer.parseInt(lesson.getLessonId()));
         startActivity(intent);
+    }
+
+    private void updateSocket(){
+        Intent service = new Intent(getActivity().getApplicationContext(), SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                context.startForegroundService(service);
+            getActivity().startService(service);
+        } else {
+            getActivity().startService(service);
+        }
     }
 
 
