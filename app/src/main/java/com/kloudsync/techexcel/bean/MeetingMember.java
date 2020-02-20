@@ -47,7 +47,7 @@ public class MeetingMember implements Comparable<MeetingMember>,Serializable {
     public static final int TYPE_HANDSUP_TITLE = 2;
     public static final int TYPE_ITEM_MAIN_SPEAKER = 3;
     public static final int TYPE_ITEM_SPEAKING_SPEAKER = 4;
-    public static final int TYPE_ITEM_HANDSUP_MEMBER = 4;
+    public static final int TYPE_ITEM_HANDSUP_MEMBER = 5;
 
     public int getTempOnStage() {
         return tempOnStage;
