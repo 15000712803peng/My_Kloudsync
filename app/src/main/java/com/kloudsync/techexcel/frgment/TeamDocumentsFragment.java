@@ -31,6 +31,7 @@ import com.kloudsync.techexcel.bean.EventSpaceFragment;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
 import com.kloudsync.techexcel.bean.MessageDocList;
 import com.kloudsync.techexcel.bean.MessageSpaceList;
+import com.kloudsync.techexcel.bean.RoleInTeam;
 import com.kloudsync.techexcel.bean.UserInCompany;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.docment.AddDocumentActivity;
@@ -241,7 +242,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                         mCurrentTeamRecyclerView.setAdapter(documentAdapter);
                         documentAdapter.setOnItemLectureListener(new HomeDocumentAdapter.OnItemLectureListener() {
                             @Override
-                            public void onItem(final Document document, View view) {
+                            public void onItem(final Document document, View view) { //more
                                 PopDocument pd = new PopDocument();
                                 pd.getPopwindow(getActivity(), document);
                                 pd.setPoPMoreListener(new PopDocument.PopDocumentListener() {
@@ -255,7 +256,14 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
 
                                     @Override
                                     public void PopDelete() {
-                                        delDocumentDialog(document);
+                                        int role = KloudCache.getInstance(getActivity()).getUserRole();
+                                        int teamRole = KloudCache.getInstance(getActivity()).getTeamRole().getTeamRole();
+                                        if (role == 7 || role == 8 || teamRole == RoleInTeam.ROLE_OWENER || teamRole == RoleInTeam.ROLE_ADMIN) {
+                                            delDocumentDialog(document);
+                                        }else{
+                                            Toast.makeText(getActivity(),"你没有权限进行删除操作",Toast.LENGTH_LONG).show();
+                                        }
+
                                     }
 
                                     @Override

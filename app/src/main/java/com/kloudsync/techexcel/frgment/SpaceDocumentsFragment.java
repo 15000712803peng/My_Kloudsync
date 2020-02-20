@@ -58,6 +58,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventRefreshSpaceFragment;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
+import com.kloudsync.techexcel.bean.RoleInTeam;
 import com.kloudsync.techexcel.bean.Team;
 import com.kloudsync.techexcel.bean.params.EventCamera;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
@@ -87,6 +88,7 @@ import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
 import com.kloudsync.techexcel.tool.FileGetTool;
+import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.Md5Tool;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
 import com.ub.kloudsync.activity.Document;
@@ -369,7 +371,13 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
 
                                     @Override
                                     public void PopDelete() {
-                                        DialogDelete(lesson);
+                                        int role = KloudCache.getInstance(getActivity()).getUserRole();
+                                        int teamRole = KloudCache.getInstance(getActivity()).getTeamRole().getTeamRole();
+                                        if (role == 7 || role == 8 || teamRole == RoleInTeam.ROLE_OWENER || teamRole == RoleInTeam.ROLE_ADMIN) {
+                                                DialogDelete(lesson);
+                                        } else{
+                                                Toast.makeText(getActivity(),"你没有权限进行删除操作",Toast.LENGTH_LONG).show();
+                                            }
                                     }
 
                                     @Override
