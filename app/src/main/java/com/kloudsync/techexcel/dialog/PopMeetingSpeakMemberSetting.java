@@ -24,6 +24,7 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
     private MeetingMember meetingMember;
     private TextView setAuditor,setMainMember;
     private MeetingConfig meetingConfig;
+    private View mView;
 
     public interface OnSpeakMemberSettingChanged{
         void setSpeakToAuditor(MeetingMember meetingMember);
@@ -44,12 +45,12 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
 
     private void initalize() {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.pop_meeting_speak_member_options, null);
-        setAuditor = view.findViewById(R.id.txt_setting_auditor);
-        setMainMember = view.findViewById(R.id.txt_setting_main_members);
+        mView = inflater.inflate(R.layout.pop_meeting_speak_member_options, null);
+        setAuditor = mView.findViewById(R.id.txt_setting_auditor);
+        setMainMember = mView.findViewById(R.id.txt_setting_main_members);
         setMainMember.setOnClickListener(this);
         setAuditor.setOnClickListener(this);
-        setContentView(view);
+        setContentView(mView);
         initWindow();
     }
 
@@ -70,7 +71,10 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
             setMainMember.setVisibility(View.GONE);
         }
 
-        showAsDropDown(view, -context.getResources().getDimensionPixelOffset(R.dimen.meeting_members_setting_width) + context.getResources().getDimensionPixelOffset(R.dimen.pop_setting_left_margin), 10);
+        mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int popupHeight = mView.getMeasuredHeight();
+        int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_160);
+        showAsDropDown(view,xoff,-popupHeight);
     }
 
 
@@ -78,13 +82,13 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.txt_setting_main_members:
+            case R.id.txt_setting_main_members://成为主讲人
                 if(meetingMember != null && onMemberSettingChanged != null){
                     onMemberSettingChanged.setSpeakToMember(meetingMember);
                 }
                 dismiss();
                 break;
-            case R.id.txt_setting_auditor:
+            case R.id.txt_setting_auditor://关闭发言
                 if(meetingMember != null && onMemberSettingChanged != null){
                     onMemberSettingChanged.setSpeakToAuditor(meetingMember);
                 }

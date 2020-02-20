@@ -833,6 +833,18 @@ Please input the cell phone number to add the contact
 
     <string name="welcome_to_kloud">Welcome to kloud</string>
 
+    <!--  QWX  -->
+    <string name="enable_auto_sync_of_display_for_all_my_devices">Enable Auto Sync of Display \nfor All My Devices</string>
+    <string name="list_of_devices">List of Devices</string>
+    <string name="last_active">Last Active</string>
+    <string name="allow_to_speak">Allow to speak</string>
+    <string name="close_speech">Close speech</string>
+    <string name="put_your_hand_down">Put your hand down</string>
+    <string name="become_a_presenter">Become a presenter</string>
+    <string name="set_as_host">Set as host</string>
+    <string name="set_as_participant">Set as participant</string>
+    <string name="set_as_talkable_participant">Set as talkable participant</string>
+
 
 
 

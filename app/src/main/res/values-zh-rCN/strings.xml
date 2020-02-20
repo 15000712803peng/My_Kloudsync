@@ -826,7 +826,17 @@
 
     <string name="welcome_to_kloud">欢迎开到可达</string>
 
-
+    <!--QWX-->
+    <string name="enable_auto_sync_of_display_for_all_my_devices">启用自动同步显示\n我的所有设备</string>
+    <string name="list_of_devices">设备列表</string>
+    <string name="last_active">最后登录</string>
+    <string name="allow_to_speak">允许发言</string>
+    <string name="close_speech">关闭发言</string>
+    <string name="put_your_hand_down">把手放下</string>
+    <string name="become_a_presenter">成为主讲人</string>
+    <string name="set_as_host">设置为主持人</string>
+    <string name="set_as_participant">设置为参会者</string>
+    <string name="set_as_talkable_participant">设置为可讲话参会者</string>
 
 
 </resources>
