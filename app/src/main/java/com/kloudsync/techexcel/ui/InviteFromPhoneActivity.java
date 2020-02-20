@@ -50,7 +50,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class InviteFromPhoneActivity extends Activity implements View.OnClickListener,TextWatcher {
+public class InviteFromPhoneActivity extends Activity implements View.OnClickListener, TextWatcher {
 
     private EditText phoneNumEdit;
     private Button inviteBtn;
@@ -64,7 +64,7 @@ public class InviteFromPhoneActivity extends Activity implements View.OnClickLis
     int inviteType = -1;
     int inviteTo = -1;
     @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
 
             switch (msg.what) {
@@ -107,9 +107,9 @@ public class InviteFromPhoneActivity extends Activity implements View.OnClickLis
         String phone = phoneNumEdit.getText().toString().trim();
 
         inviteBtn = findViewById(R.id.btn_invite);
-        if(TextUtils.isEmpty(phone)){
+        if (TextUtils.isEmpty(phone)) {
             inviteBtn.setEnabled(false);
-        }else {
+        } else {
             inviteBtn.setEnabled(true);
         }
         backLayout = findViewById(R.id.layout_back);
@@ -160,9 +160,14 @@ public class InviteFromPhoneActivity extends Activity implements View.OnClickLis
         }
     }
 
-    private void requestPhoneResult(final String phone){
+    private void requestPhoneResult(final String phone) {
         if (TextUtils.isEmpty(phone)) {
             Toast.makeText(getApplicationContext(), "请输入或者从通讯录中选择手机号", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (phone.length() < 7 || phone.length() > 11) {
+            Toast.makeText(getApplicationContext(), "手机号需要8到11位", Toast.LENGTH_SHORT).show();
             return;
         }
         Observable.just("Request").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
@@ -170,12 +175,12 @@ public class InviteFromPhoneActivity extends Activity implements View.OnClickLis
             public JSONObject apply(String s) throws Exception {
                 String phoneWithRegionCode = tv_cphone.getText().toString().trim() + phone;
                 String encodeStr = URLEncoder.encode(phoneWithRegionCode.trim(), "UTF-8");
-                Log.e("check_search","encodeStr_1:" + encodeStr);
-                if(!TextUtils.isEmpty(encodeStr) && encodeStr.endsWith("%0A")){
-                    encodeStr = encodeStr.substring(0,encodeStr.lastIndexOf("%0A"));
+                Log.e("check_search", "encodeStr_1:" + encodeStr);
+                if (!TextUtils.isEmpty(encodeStr) && encodeStr.endsWith("%0A")) {
+                    encodeStr = encodeStr.substring(0, encodeStr.lastIndexOf("%0A"));
                 }
-                JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncSearchContactForAdd(AppConfig.SchoolID,encodeStr);
-                jsonObject.put("phone",phoneWithRegionCode);
+                JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncSearchContactForAdd(AppConfig.SchoolID, encodeStr);
+                jsonObject.put("phone", phoneWithRegionCode);
 
                 return jsonObject;
 
@@ -183,41 +188,45 @@ public class InviteFromPhoneActivity extends Activity implements View.OnClickLis
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
             @Override
             public void accept(JSONObject jsonObject) throws Exception {
-               if(jsonObject.has("code")){
-                   RequestContactResponse response = new Gson().fromJson(jsonObject.toString(),RequestContactResponse.class);
-                   if(response.getCode() == 0){
-                       handleRequestData(response.getData(),jsonObject.getString("phone"));
-                   }
-               }
+                if (jsonObject.has("code")) {
+                    RequestContactResponse response = new Gson().fromJson(jsonObject.toString(), RequestContactResponse.class);
+                    if (response.getCode() == 0) {
+                        handleRequestData(response.getData(), jsonObject.getString("phone"));
+                    }
+                }
             }
         }).subscribe();
     }
 
-    private void handleRequestData(RequestContactData contactData,String phone){
-        if(contactData == null){
+    private void handleRequestData(RequestContactData contactData, String phone) {
+        if (contactData == null) {
             //该联系人不在系统内
-        }else {
-            showContactInfo(contactData,phone);
+        } else {
+            showContactInfo(contactData, phone);
         }
     }
 
     private RequestContactInfoDialog contactInfoDialog;
 
-    private void showContactInfo(RequestContactData contactData,String phone){
-        if(contactInfoDialog != null){
-            if(contactInfoDialog.isShowing()){
+    private void showContactInfo(RequestContactData contactData, String phone) {
+        if (contactInfoDialog != null) {
+            if (contactInfoDialog.isShowing()) {
                 contactInfoDialog.dismiss();
             }
             contactInfoDialog = null;
         }
 
         contactInfoDialog = new RequestContactInfoDialog(this);
-        contactInfoDialog.show(contactData,phone);
+        contactInfoDialog.show(contactData, phone);
     }
 
     private void invite(String mobile) {
         if (TextUtils.isEmpty(mobile)) {
             Toast.makeText(getApplicationContext(), "请输入或者从通讯录中选择手机号", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (mobile.length() < 8 || mobile.length() > 11) {
+            Toast.makeText(getApplicationContext(), "手机号需要9到11位", Toast.LENGTH_SHORT).show();
             return;
         }
         if (inviteType == 0) {
@@ -323,9 +332,9 @@ public class InviteFromPhoneActivity extends Activity implements View.OnClickLis
 
     @Override
     public void afterTextChanged(Editable s) {
-        if(TextUtils.isEmpty(s.toString().trim())){
+        if (TextUtils.isEmpty(s.toString().trim())) {
             inviteBtn.setEnabled(false);
-        }else {
+        } else {
             inviteBtn.setEnabled(true);
         }
     }

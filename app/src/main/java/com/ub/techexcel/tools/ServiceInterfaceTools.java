@@ -3152,5 +3152,18 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncApplyFriend(long friendId,long companyId){
+        String url = AppConfig.URL_MEETING_BASE + "friend/apply_friend?friendId=" + friendId + "&companyId=" + companyId;
+        JSONObject params = new JSONObject();
+        try {
+            params.put("friendId", friendId);
+            params.put("companyId", companyId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncChangeTemStatus", "url:" + url + ",response:" + response);
+        return response;
+    }
 
 }

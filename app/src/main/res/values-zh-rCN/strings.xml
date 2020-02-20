@@ -819,6 +819,11 @@
     <string name="invite_now">立即邀请</string>
     <string name="no_register_prompt">还没有创建账号?</string>
 
+    <string name="prompt_is_my_personal_contact">该用户已存在我的"个人联系人中"\n点击对话与对方聊天</string>
+    <string name="prompt_is_in_same_company">该用户为当前公司联系人\n点击"申请聊天"等待对方接受</string>
+    <string name="prompt_is_in_other_company">该用户为其它公司联系人\n点击确定邀请对方成为我的联系人</string>
+
+
 
 
 

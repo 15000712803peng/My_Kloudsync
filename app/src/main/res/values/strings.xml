@@ -765,8 +765,6 @@ Please input the cell phone number to add the contact
     <string name="addmemberfromcomcomtact">add member from company contact</string>
 
 
-
-
     <string name="KloudSync">Kloud</string>
 
     <string name="Mobile_phone">Mobile phone /User name</string>
@@ -827,8 +825,9 @@ Please input the cell phone number to add the contact
 
     <string name="no_register_prompt">Don’t have an account?</string>
 
-
-
+    <string name="prompt_is_my_personal_contact">该用户已存在我的"个人联系人中"\n点击对话与对方聊天</string>
+    <string name="prompt_is_in_same_company">该用户为当前公司联系人\n点击"申请聊天"等待对方接受</string>
+    <string name="prompt_is_in_other_company">该用户为其它公司联系人\n点击确定成为我的联系人</string>
 
 
 </resources>
