@@ -3152,7 +3152,6 @@ public class ServiceInterfaceTools {
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
         Log.e("syncSearchContactForAdd", "url:" + url + ",response:" + response);
         return response;
-
     }
 
     public JSONObject syncApplyFriend(long friendId,long companyId){

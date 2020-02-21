@@ -27,6 +27,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import io.rong.imkit.RongIM;
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
@@ -53,7 +54,7 @@ public class RequestContactInfoDialog implements OnClickListener {
             case R.id.ok:
                 String operation = (String) ok.getTag();
                 if(operation.equals(OK_OPTIONS_CHAT)){
-
+                    RongIM.getInstance().startConversation(mContext, Conversation.ConversationType.PRIVATE, contactData.getRongCloudId()+"", contactData.getUserName());
 
                 }else if(operation.equals(OK_OPTIONS_OTHER_COMPANY)){
                     Observable.just("Request").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
@@ -68,6 +69,8 @@ public class RequestContactInfoDialog implements OnClickListener {
                                 int code = jsonObject.getInt("code");
                                 if(code == 0){
                                     sendHelloFriendMessage();
+                                    RongIM.getInstance().startConversation(mContext, Conversation.ConversationType.PRIVATE, contactData.getRongCloudId()+"", contactData.getUserName());
+
                                 }
                             }
                         }

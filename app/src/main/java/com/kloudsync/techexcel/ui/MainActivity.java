@@ -21,6 +21,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -73,6 +74,7 @@ import com.kloudsync.techexcel.frgment.TwoToOneFragment;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ContactHelpInterface;
 import com.kloudsync.techexcel.help.EverPenManger;
+import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.info.School;
 import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.NetworkResponse;
@@ -81,12 +83,14 @@ import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.tool.DensityUtil;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
+import com.kloudsync.techexcel.tool.UriTool;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
+import com.pgyersdk.PgyerActivityManager;
 import com.pgyersdk.update.DownloadFileListener;
 import com.pgyersdk.update.PgyUpdateManager;
 import com.pgyersdk.update.UpdateManagerListener;
@@ -118,6 +122,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -135,6 +140,7 @@ import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSIO
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
 
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_FOR_INSTALL_APK;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
 
 
@@ -319,7 +325,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     AppConfig.SchoolID = school.getSchoolID();
                     editor.putInt("SchoolID", school.getSchoolID());
                     editor.putString("SchoolName", school.getSchoolName());
-                    if(teamSpaceBean != null){
+                    if (teamSpaceBean != null) {
                         editor.putString("teamname", teamSpaceBean.getName());
                         editor.putInt("teamid", teamSpaceBean.getItemID());
                     }
@@ -373,12 +379,13 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         service = new Intent(this, SocketService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(service);
-        }else {
+        } else {
             startService(service);
         }
     }
 
     ProgressDialog progressDialog;
+    Uri installUri;
 
     private void initUpdate() {
         // TODO Auto-generated method stub
@@ -446,13 +453,22 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
                     @Override
                     public void downloadSuccessful(Uri uri) {
-                        Log.e("pgyer", "download apk failed");
+                        Log.e("pgyer", "download apk success");
                         if (progressDialog != null) {
                             progressDialog.cancel();
                             progressDialog = null;
                         }
-                        PgyUpdateManager.installApk(uri);  // 使用蒲公英提供的安装方法提示用户 安装apk
 
+                        installUri = uri;
+                        Observable.just("install").observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                installApkBeforeCheckPermission(installUri);
+                            }
+                        }).subscribe();
+
+
+//                        PgyUpdateManager.installApk(uri);  // 使用蒲公英提供的安装方法提示用户 安装apk
                     }
 
                     @Override
@@ -472,6 +488,27 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                         }
                     }
                 }).register();
+    }
+
+    private void installApkBeforeCheckPermission(Uri uri) {
+//        if(KloudPerssionManger.isPermissionInstallApkGranted(this)){
+//            Toast.makeText(this,"permisson_granted",Toast.LENGTH_SHORT).show();
+//
+//        }else {
+//            Toast.makeText(this,"request_permission",Toast.LENGTH_SHORT).show();
+//            ActivityCompat.requestPermissions(this, new String[]{
+//                    Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.REQUEST_INSTALL_PACKAGES}, REQUEST_PERMISSION_FOR_INSTALL_APK);
+//        }
+
+//        PgyUpdateManager.installApk(uri);
+        String filePath = UriTool.getFilePathByUri(this,uri);
+        if(!TextUtils.isEmpty(filePath)){
+            File file = new File(filePath);
+            if(file.exists()){
+                installAPK(file);
+            }
+        }
+
     }
 
     private void initView() {
@@ -632,6 +669,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     ServiceFragment serviceFragment;
     PersonalCenterFragment personalCenterFragment;
     ProjectOneFragment projectOneFragment;
+
     private void initDatas() {
         documentsFragment = new TeamDocumentsFragment();
         spaceDocumentsFragment = new SpaceDocumentsFragment();
@@ -909,8 +947,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         KillFile();
     }
 
-    private void stopService(){
-        if(isServiceRunning(this, "com.ub.service.activity.SocketService")){
+    private void stopService() {
+        if (isServiceRunning(this, "com.ub.service.activity.SocketService")) {
             Intent service = new Intent(this, SocketService.class);
         }
     }
@@ -1661,57 +1699,69 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE){
+        if (requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_granted");
                 EventViewDocPermissionGranted viewDocPermissionGranted = new EventViewDocPermissionGranted();
                 EventBus.getDefault().post(viewDocPermissionGranted);
 
-            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
-                Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_denied");
-                Toast.makeText(this,"查看文档需要访问sdcard的权限，请允许",Toast.LENGTH_SHORT).show();
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "查看文档需要访问sdcard的权限，请允许", Toast.LENGTH_SHORT).show();
             }
 
-        }else if(requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING){
+        } else if (requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
-                Log.e("check_permission","phone_camera_granted");
                 EventCameraAndStoragePermissionForJoinMeetingGranted joinMeetingGranted = new EventCameraAndStoragePermissionForJoinMeetingGranted();
                 EventBus.getDefault().post(joinMeetingGranted);
 
-            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED|| grantResults[1] == PackageManager.PERMISSION_DENIED || grantResults[2] == PackageManager.PERMISSION_DENIED){
-                Log.e("check_permission","phone_Rcamera_denied");
-                Toast.makeText(this,"加入会议前请先同意必要的权限",Toast.LENGTH_SHORT).show();
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED || grantResults[2] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "加入会议前请先同意必要的权限", Toast.LENGTH_SHORT).show();
             }
 
-        }else if(requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING){
+        } else if (requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING) {
             if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED&& grantResults[2] == PackageManager.PERMISSION_GRANTED) {
-                Log.e("check_permission","phone_camera_granted");
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
                 EventCameraAndStoragePermissionForStartMeetingGranted startMeetingGranted = new EventCameraAndStoragePermissionForStartMeetingGranted();
                 EventBus.getDefault().post(startMeetingGranted);
 
-            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED || grantResults[2] == PackageManager.PERMISSION_DENIED){
-                Log.e("check_permission","phone_Rcamera_denied");
-                Toast.makeText(this,"开始会议前请先同意必要的权限",Toast.LENGTH_SHORT).show();
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED || grantResults[2] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "开始会议前请先同意必要的权限", Toast.LENGTH_SHORT).show();
             }
-        }else if(requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE){
+        } else if (requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                    grantResults[1] == PackageManager.PERMISSION_GRANTED&& grantResults[2] == PackageManager.PERMISSION_GRANTED) {
-                Log.e("check_permission","phone_camera_granted");
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
                 EventCamera startMeetingGranted = new EventCamera();
                 EventBus.getDefault().post(startMeetingGranted);
 
-            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
-                Log.e("check_permission","phone_Rcamera_denied");
-                Toast.makeText(this,"开始会议需要访问相机，请允许",Toast.LENGTH_SHORT).show();
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "开始会议需要访问相机，请允许", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_PERMISSION_FOR_INSTALL_APK) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                if (installUri != null) {
+                    installApkBeforeCheckPermission(installUri);
+                }
             }
         }
     }
 
+    public void installAPK(File apkFile){
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            //第二个参数需要与<provider>标签中的android:authorities属性相同
+            uri = FileProvider.getUriForFile(this,"com.kloudsync.techexcel.FileProvider",apkFile);
+        }else{
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            uri = Uri.fromFile(apkFile);
+        }
+        intent.setDataAndType(uri ,"application/vnd.android.package-archive");
+        startActivity(intent);
+    }
 
 
 }

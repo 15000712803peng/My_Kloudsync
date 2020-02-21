@@ -320,7 +320,6 @@ public class StartUbao extends Activity {
                                 AppConfig.RongUserToken = data.getUserToken();
                                 AppConfig.RongUserID = data.getRongCloudUserID();
                                 goToMainActivity();
-
                             }
                         }
                     } catch (UnknownHostException e) {

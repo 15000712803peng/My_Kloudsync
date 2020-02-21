@@ -69,7 +69,6 @@ public class ContactSearchActivity extends BaseActivity implements VContactSearc
     private ProgressBar loadingBar;
     private TextView messageText;
     SharedPreferences userPreferences;
-//    private SearchContactAdapter adapter;
     SearchResultAdapter adapter;
 
     Handler handler = new Handler() {
