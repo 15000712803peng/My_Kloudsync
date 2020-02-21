@@ -57,13 +57,7 @@ public class AboutActivity2 extends Activity implements View.OnClickListener {
 
                 break;
             case R.id.rl_ps:
-                String enUrl = "https://kloudsync.peertime.cn/privacy.html";
-                String zhUrl = "https://kloudsync.peertime.cn/privacy-cn.html";
-                String tag = getString(R.string.privacy_statement);
                 intent = new Intent(getApplicationContext(), AboutWebActivity.class);
-                intent.putExtra(AboutWebActivity.TAG,tag);
-                intent.putExtra(AboutWebActivity.ENURL,enUrl);
-                intent.putExtra(AboutWebActivity.ZHURL,zhUrl);
                 startActivity(intent);
                 // OpenWeb();
                 break;

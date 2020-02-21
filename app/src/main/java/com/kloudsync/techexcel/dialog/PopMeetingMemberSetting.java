@@ -85,19 +85,19 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.txt_setting_presenter://设置为主持人
+            case R.id.txt_setting_presenter:
                 if(meetingMember != null && onMemberSettingChanged != null){
                     onMemberSettingChanged.setPresenter(meetingMember);
                 }
                 dismiss();
                 break;
-            case R.id.txt_setting_auditor://设置为参会者
+            case R.id.txt_setting_auditor:
                 if(meetingMember != null && onMemberSettingChanged != null){
                     onMemberSettingChanged.setAuditor(meetingMember);
                 }
                 dismiss();
                 break;
-            case R.id.txt_setting_speak_member://设置为可讲话参会者
+            case R.id.txt_setting_speak_member:
                 if(meetingMember != null && onMemberSettingChanged != null){
                     onMemberSettingChanged.setSpeakMember(meetingMember);
                 }
