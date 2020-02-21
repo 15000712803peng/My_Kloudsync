@@ -399,9 +399,9 @@ public class ContactSearchActivity extends BaseActivity implements VContactSearc
                     int filterType = userPreferences.getInt("contact_type",1);
                     Log.e("check_filter_type","filter_type:" + filterType);
                     if(filterType == 0){
-                        oneHolder.title.setText("联系人(公司)");
+                        oneHolder.title.setText(getString(R.string.contract_company));
                     }else if(type == 1){
-                        oneHolder.title.setText("联系人(所有)");
+                        oneHolder.title.setText(getString(R.string.contract_all));
                     }
                     oneHolder.filterImage.setOnClickListener(new View.OnClickListener() {
                         @Override

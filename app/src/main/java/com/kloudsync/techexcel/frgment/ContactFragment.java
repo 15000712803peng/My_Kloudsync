@@ -496,10 +496,10 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
                 }
                 if(type == 0){
                     filterImage.setImageResource(R.drawable.icon_filter);
-                    contactTitle.setText("联系人(公司)");
+                    contactTitle.setText(getString(R.string.contract_company));
                 }else if(type == 1){
                     filterImage.setImageResource(R.drawable.filter_red);
-                    contactTitle.setText("联系人(所有)");
+                    contactTitle.setText(getString(R.string.contract_all));
                 }
 
                 adapter = new FriendContactAdapter(getActivity(), sameLetterFriends);

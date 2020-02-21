@@ -857,5 +857,18 @@ Please input the cell phone number to add the contact
     <string name="prompt_is_in_same_company">该用户为当前公司联系人\n点击"申请聊天"等待对方接受</string>
     <string name="prompt_is_in_other_company">该用户为其它公司联系人\n点击确定成为我的联系人</string>
 
+    <string name="contract_company">Contact (Company)</string>
+    <string name="contract_all">Contact (All)</string>
+    <string name="no_contract">No contacts have been added yet</string>
+    <string name="show_current_contract">Show current company contacts</string>
+    <string name="show_all_contract">Show all contracts</string>
+    <string name="no_meetings_available">No meetings available</string>
+    <string name="support_pairing">The following pen source pairing is supported</string>
+    <string name="impression_electronic_pen">Impression electronic pen</string>
+    <string name="cloud_electronic_pen">Youdao cloud electronic pen</string>
+    <string name="add_company_contacts">Add from company contacts</string>
+    <string name="add_new_contacts">Add new contact</string>
+    <string name="create_new_company_label_info">The enterprise, first team and first space are successfully created.Invite your team members to join.If the invitation is set to admin, the invited team can be set to the enterprises admin user.The admin user can manage all the enterprises teams and spaces</string>
+
 
 </resources>

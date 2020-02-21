@@ -840,4 +840,17 @@
     <string name="set_as_talkable_participant">设置为可讲话参会者</string>
     <string name="password_reset">密码已重置</string>
 
+    <string name="contract_company">联系人 (公司)</string>
+    <string name="contract_all">联系人(所有)</string>
+    <string name="no_contract">还没有添加联系人</string>
+    <string name="show_current_contract">显示当前公司联系人</string>
+    <string name="show_all_contract">显示所有联系人</string>
+    <string name="no_meetings_available">没有可选会议</string>
+    <string name="support_pairing">支持以下笔源配对</string>
+    <string name="impression_electronic_pen">印象电子笔</string>
+    <string name="cloud_electronic_pen">有道云电子笔</string>
+    <string name="add_company_contacts">从公司联系人中添加</string>
+    <string name="add_new_contacts">添加新的联系人</string>
+    <string name="create_new_company_label_info">企业,first team,first space 创建成功，邀请您的团队成员加入吧，邀请寻找如果是设为admin,可以将被邀请的团队对应设置为企业的admin用户，admin用户可以管理企业所有的team和space</string>
+
 </resources>

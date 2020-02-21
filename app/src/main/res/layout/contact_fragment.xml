@@ -155,7 +155,7 @@
                 android:visibility="gone"
                 android:layout_marginTop="12dp"
                 android:textColor="@color/black"
-                android:text="还没有添加联系人"
+                android:text="@string/no_contract"
                 android:padding="12dp"
                 android:layout_centerHorizontal="true"
                 android:textSize="16dp"
