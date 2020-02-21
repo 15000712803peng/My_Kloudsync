@@ -39,10 +39,19 @@ public class MeetingConfig{
     private List<AgoraMember> agoraMembers = new ArrayList<>();
     private boolean fromMeeting;
     private int mode;
+    private String  currentMaxVideoUserId;
     private int shareScreenUid;
     private JSONObject currentLinkProperty;
     private int spaceId;
     private DocumentPage currentDocumentPage;
+
+    public String getCurrentMaxVideoUserId() {
+        return currentMaxVideoUserId;
+    }
+
+    public void setCurrentMaxVideoUserId(String currentMaxVideoUserId) {
+        this.currentMaxVideoUserId = currentMaxVideoUserId;
+    }
 
     public DocumentPage getCurrentDocumentPage() {
         return currentDocumentPage;

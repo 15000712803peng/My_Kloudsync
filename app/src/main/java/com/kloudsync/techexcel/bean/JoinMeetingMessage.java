@@ -16,6 +16,7 @@ public class JoinMeetingMessage {
     private int status;
     private String CurrentDocumentPage;
     private int currentMode;
+    private String currentMaxVideoUserId;
     private int currentLine;
     private int prepareMode;
     private String playAudioData;
@@ -35,6 +36,14 @@ public class JoinMeetingMessage {
     private String noteUserId;
     private int recordingStatus;
     private int shareNoteStatus;
+
+    public String getCurrentMaxVideoUserId() {
+        return currentMaxVideoUserId;
+    }
+
+    public void setCurrentMaxVideoUserId(String currentMaxVideoUserId) {
+        this.currentMaxVideoUserId = currentMaxVideoUserId;
+    }
 
     public String getInvitedUserIds() {
         return invitedUserIds;

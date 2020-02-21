@@ -904,6 +904,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         meetingConfig.setPresenterSessionId(socketMessage.getData().getString("presenterSessionId"));
                     }
 
+
+
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -1481,6 +1484,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         if(cameraAdapter != null && cameraList.getVisibility() == View.VISIBLE){
             cameraAdapter.notifyDataSetChanged();
+        }
+
+        if(meetingConfig.isInRealMeeting()){
+            MeetingKit.getInstance().setEncoderConfigurationBaseMode();
         }
 
     }
@@ -3543,7 +3550,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         hideAgoraFull();
                     } else if (_mode == 2) {
 //                        showFullCameraScreen();
-                        followShowFullScreenSingleAgoraMember(data.getString("currentSessionID"));
+                        String  userID=data.getString("currentSessionID");
+                        meetingConfig.setCurrentMaxVideoUserId(userID);
+                        followShowFullScreenSingleAgoraMember(userID);
                         hideFullCameraScreen();
                     } else if (_mode == 1) {
                         showFullCameraScreen();
@@ -3552,6 +3561,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         hideFullCameraScreen();
                         hideAgoraFull();
                     }
+                    MeetingKit.getInstance().setEncoderConfigurationBaseMode();
                 } else {
                     hideFullCameraScreen();
                     meetingConfig.setShareScreenUid(0);
@@ -3746,6 +3756,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     if (dataJson.has("currentMode")) {
                         meetingConfig.setMode(joinMeetingMessage.getCurrentMode());
                     }
+                    if (dataJson.has("currentMaxVideoUserId")) {
+                        meetingConfig.setCurrentMaxVideoUserId(joinMeetingMessage.getCurrentMaxVideoUserId());
+                    }
                     if (documents == null || documents.size() <= 0) {
                         requestDocumentsAndShowPage();
                     } else {
@@ -3898,6 +3911,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
         SocketMessageManager.getManager(this).sendMessage_ViewModeStatus(viewMode, userId);
+
+        meetingConfig.setMode(viewMode);
+        if(viewMode==2){
+            meetingConfig.setCurrentMaxVideoUserId(userId);
+        }
+        MeetingKit.getInstance().setEncoderConfigurationBaseMode();
 //        SocketMessageManager.getManager(this).sendMessage_MyNoteActionFrame(actions, meetingConfig, note);
     }
 
