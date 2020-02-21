@@ -248,6 +248,7 @@
     <string name="Female">Female</string>
     <string name="Purchased_Courses">Purchased Courses</string>
     <string name="Gender">Gender</string>
+    <string name="Detail_birth">Date of birth</string>
 
     <string name="Head">Head</string>
     <string name="Password">Password</string>
@@ -848,6 +849,7 @@ Please input the cell phone number to add the contact
     <string name="set_as_host">Set as host</string>
     <string name="set_as_participant">Set as participant</string>
     <string name="set_as_talkable_participant">Set as talkable participant</string>
+    <string name="password_reset">Password reset</string>
 
 
 

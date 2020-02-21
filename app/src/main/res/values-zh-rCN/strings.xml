@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
     <string name="app_name">Kloud</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
@@ -57,7 +58,6 @@
     <string name="Health_Consultant">好友</string>
     <string name="Phone">电话</string>
     <string name="Main_Phone">主号码</string>
-    <string name="UserName">用户名</string>
     <string name="Address">地址</string>
     <string name="See_Info">查看资料</string>
     <string name="Fouce_point">关注点：</string>
@@ -107,19 +107,24 @@
     <string name="Edit_Send">编辑并发送</string>
     <string name="Send_Link">发送链接</string>
 
-
+    <string name="please_input_phone_number">请输入手机号</string>
+    <string name="please_input_password">请输入密码</string>
     <string name="Login">登录</string>
+    <string name="login_failed">登录失败</string>
     <string name="Input_Telephone">请输入您的手机号码</string>
     <string name="Input_Password">密码，6--16个字符，字母区分大小写</string>
+
+    <string name="Input_new_Password">请输入新密码</string>
 
     <string name="Apply_To_Join">申请加入</string>
     <string name="Forget_Password">忘记密码</string>
     <string name="Login_Bottom">用户许可协议|隐私条款</string>
+    <string name="user_license_agreement">用户许可协议</string>
 
     <string name="Reset_Password">重置密码</string>
     <string name="Send_CheckCode">发送验证码</string>
     <string name="Resend_CheckCode">重新发送</string>
-    <string name="Ensure_Reset">确认重置</string>
+    <string name="confirm_reset">确认重置</string>
 
     <string name="Sign_Up_Close">暂未开发注册请登录我们的网站www.youbao99.com,进入“健康顾问入口”提交资料，我们将第一时间进行资料审核</string>
 
@@ -213,7 +218,7 @@
     <string name="Create_Group">创建新群</string>
     <string name="Add_Friend">添加好友</string>
 
-    <string name="Is_exit">确定退出登录吗？</string>
+    <string name="Is_exit">是否退出当前账号</string>
     <string name="confirm_exit">确认退出</string>
 
     <string name="notify1">Join With Room ID</string>
@@ -246,7 +251,7 @@
     <string name="Female">女</string>
     <string name="Purchased_Courses">已购买课程</string>
     <string name="Gender">性别</string>
-    <string name="Detail_birth">Date of birth</string>
+    <string name="Detail_birth">出生日期</string>
 
 
     <string name="Head">头像</string>
@@ -332,7 +337,6 @@
     <string name="ShareKS">分享 KloudSync</string>
 
     <string name="Submit">提交</string>
-    <string name="Create">创建</string>
 
 
     <string name="Team">当前团队</string>
@@ -648,11 +652,9 @@
     <string name="deviceprompt">同一账号不能同时进入同一房间，您有其他的设备进入这个房间，本设备将暂时退出房间。</string>
 
     <string name="pc_sorganization">选择组织</string>
-    <string name="pc_sorganization_change">切换组织</string>
 
     <!--account setting 界面-->
     <string name="as_setting">公司/机构设置</string>
-    <string name="as_info_setting">账号设置</string>
     <string name="as_logo">图标</string>
     <string name="as_name">名字</string>
     <string name="as_info_name">姓名</string>
@@ -753,29 +755,33 @@
     <string name="addspaceadmin">增加空间管理员</string>
     <string name="addnewmember">邀请新成员</string>
 
-    <string name="Mobile_phone">手机号/用户名</string>
-    <string name="Password_hint">密码(6-20)</string>
+    <string name="Mobile_phone">手机号/用户名</string>、
+    <string name="Mobile_phone2">手机号</string>
+    <string name="Password_hint">密码</string>
+    <string name="register_means_you_agree_to">注册表示您同意\t\t</string>
+    <string name="kloud_sync_terms"> KloudSync的条款</string>
+    <string name="password_rules"> 8-14位密码,必须包含字母,数字,符号中两种</string>
     <string name="Sign_up">注册</string>
+    <string name="registration_failed">注册失败</string>
     <string name="area_code">+86</string>
     <string name="Name_info">姓名</string>
     <string name="Vertification_Code">验证码</string>
     <string name="Send_code">发送验证码</string>
     <string name="reset_pwd">重置密码</string>
+    <string name="please_input_verify_code">请输入验证码</string>
     <string name="create_and_switch">创建和切换</string>
-    <string name="create_organization">创建组织</string>
+    <string name="create_organization">创建新公司/机构</string>
     <string name="input_organization_name">输入公司/机构名字</string>
     <string name="name_upper">名字</string>
     <string name="create_success">创建成功</string>
     <string name="create_Fail">创建失败</string>
     <string name="Send">发送</string>
     <string name="meeting_id">Meeting ID</string>
-    <string name="meeting_id_change">修改会议ID</string>
     <string name="input_new_meeing_id">输入新的会议ID </string>
     <string name="modify_meeting_id">修改你的会议ID</string>
     <string name="about">关于</string>
     <string name="privacy_statement">隐私声明</string>
     <string name="create_new_sync">创建音想</string>
-    <string name="select_more_sync">+ 选择音想</string>
     <string name="sync">同步</string>
     <string name="invite_new">邀请</string>
     <string name="request_to_be_my_contact">请求成为我的联系人</string>
@@ -819,10 +825,7 @@
     <string name="invite_now">立即邀请</string>
     <string name="no_register_prompt">还没有创建账号?</string>
 
-    <string name="prompt_is_my_personal_contact">该用户已存在我的"个人联系人中"\n点击对话与对方聊天</string>
-    <string name="prompt_is_in_same_company">该用户为当前公司联系人\n点击"申请聊天"等待对方接受</string>
-    <string name="prompt_is_in_other_company">该用户为其它公司联系人\n点击确定邀请对方成为我的联系人</string>
-
+    <string name="welcome_to_kloud">欢迎开到可达</string>
 
     <!--QWX-->
     <string name="enable_auto_sync_of_display_for_all_my_devices">启用自动同步显示\n我的所有设备</string>
@@ -835,6 +838,6 @@
     <string name="set_as_host">设置为主持人</string>
     <string name="set_as_participant">设置为参会者</string>
     <string name="set_as_talkable_participant">设置为可讲话参会者</string>
-
+    <string name="password_reset">密码已重置</string>
 
 </resources>
