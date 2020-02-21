@@ -2873,16 +2873,39 @@ public class ServiceInterfaceTools {
         return response;
     }
 
-    public JSONObject syncRaiseHandOnStage(int status) {
-        String url = AppConfig.URL_MEETING_BASE + "member/raise_hand_on_stage?status=" + status;
+    public JSONObject syncMakeUserUpAndDownHands(String userId, int status,int isTempOnStage) {
+        String url = AppConfig.URL_MEETING_BASE + "member/make_user_up_or_down_stage?userId=" + userId + "&status=" + status+"&isTempOnStage="+ isTempOnStage;
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("userId", userId);
             jsonObject.put("status", status);
+            jsonObject.put("isTempOnStage", isTempOnStage);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         JSONObject response = ConnectService.submitDataByJson(url, jsonObject);
-        Log.e("syncRaiseHandOnStage", "url:" + url + ",result:" + response);
+        Log.e("syncMakeUserUpAndDown", "url:" + url + ",result:" + response);
+        return response;
+    }
+
+    public JSONObject syncHandUpOrDown(int status,String userId) {
+        String url = null;
+        JSONObject jsonObject = new JSONObject();
+        try {
+        if (userId==null) {
+            url = AppConfig.URL_MEETING_BASE + "member/raise_hand_on_stage?status=" + status;
+            jsonObject.put("status", status);
+        }else {
+            url = AppConfig.URL_MEETING_BASE + "member/make_user_hand_down?userId="+userId+"&allHandDown="+status;
+            jsonObject.put("userId", userId);
+            jsonObject.put("allHandDown", status);
+        }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, jsonObject);
+        Log.e("syncHandUpOrDown", "url:" + url + ",result:" + response);
         return response;
     }
 
@@ -3154,5 +3177,18 @@ public class ServiceInterfaceTools {
         return response;
     }
 
+    public JSONObject syncApplyFriend(long friendId,long companyId){
+        String url = AppConfig.URL_MEETING_BASE + "friend/apply_friend?friendId=" + friendId + "&companyId=" + companyId;
+        JSONObject params = new JSONObject();
+        try {
+            params.put("friendId", friendId);
+            params.put("companyId", companyId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncChangeTemStatus", "url:" + url + ",response:" + response);
+        return response;
+    }
 
 }

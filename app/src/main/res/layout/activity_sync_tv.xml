@@ -24,7 +24,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
             android:lineSpacingExtra="2dp"
-            android:text="Enable Auto Sync of Display \nfor All My Devices"
+            android:text="@string/enable_auto_sync_of_display_for_all_my_devices"
             android:textColor="@color/brunette"
             android:textSize="15sp" />
 
@@ -48,7 +48,7 @@
         android:paddingBottom="18dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="List of Devices"
+        android:text="@string/list_of_devices"
         android:textColor="@color/brunette"
         android:textSize="15sp" />
 
