@@ -264,6 +264,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
     }
 
+
     @Override
     public void onDismiss(DialogInterface dialog) {
         EventBus.getDefault().unregister(this);
@@ -368,11 +369,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 if (centerLoaing.getVisibility() == View.VISIBLE) {
                     centerLoaing.setVisibility(View.GONE);
                 }
-
                 if (controllerLayout.getVisibility() != View.VISIBLE) {
                     controllerLayout.setVisibility(View.VISIBLE);
                 }
-
                 break;
             case MESSAGE_HIDE_CENTER_LOADING:
                 centerLoaing.setVisibility(View.GONE);
@@ -465,6 +464,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         web.load("javascript:Record()", null);
     }
 
+
     private void initWeb() {
         web.setZOrderOnTop(false);
         web.getSettings().setJavaScriptEnabled(true);
@@ -554,6 +554,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             pause();
         }
     }
+
 
     public void followRestart() {
         if (!soundtrackAudioManager.isPlaying()) {

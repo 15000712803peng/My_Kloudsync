@@ -39,5 +39,4 @@ public class MessageTool {
         RongIM.getInstance()
                 .sendMessage(myMessage, null, null, callback);
     }
-
 }

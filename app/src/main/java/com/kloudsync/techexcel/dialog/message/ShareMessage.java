@@ -203,11 +203,8 @@ public class ShareMessage extends MessageContent {
     @Override
     public byte[] encode() {
         JSONObject jsonObj = new JSONObject();
-        try {
-            if(getJSONUserInfo() != null){
-                jsonObj.put("user", getJSONUserInfo());
 
-            }
+        try {
             jsonObj.put("shareDocTitle", shareDocTitle);
             jsonObj.put("shareDocUrl", shareDocUrl);
             jsonObj.put("shareDocThumbnailUrl", shareDocThumbnailUrl);

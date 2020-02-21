@@ -3,12 +3,14 @@ package com.kloudsync.techexcel.app;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.multidex.MultiDex;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferService;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.message.ChangeItemMessage;
@@ -17,7 +19,6 @@ import com.kloudsync.techexcel.dialog.message.CustomizeMessage;
 import com.kloudsync.techexcel.dialog.message.DemoContext;
 import com.kloudsync.techexcel.dialog.message.FriendMessage;
 import com.kloudsync.techexcel.dialog.message.GroupMessage;
-import com.kloudsync.techexcel.dialog.message.HelloFriendMessage;
 import com.kloudsync.techexcel.dialog.message.KnowledgeMessage;
 import com.kloudsync.techexcel.dialog.message.SendFileMessage;
 import com.kloudsync.techexcel.dialog.message.ShareMessage;
@@ -30,6 +31,7 @@ import com.kloudsync.techexcel.ui.MainActivity;
 import com.pgyersdk.Pgyer;
 import com.pgyersdk.PgyerActivityManager;
 import com.pgyersdk.crash.PgyCrashManager;
+import com.ub.service.activity.SocketService;
 
 import org.xutils.x;
 
@@ -192,7 +194,6 @@ public class App extends Application {
                 RongIM.registerMessageType(SpectatorMessage.class);
                 RongIM.registerMessageType(SendFileMessage.class);
                 RongIM.registerMessageType(ShareMessage.class);
-                RongIM.registerMessageType(HelloFriendMessage.class);
                 //RongIMClient.init(this);
                 DemoContext.getInstance().init(App.this);
                 //initWorkerThread();
