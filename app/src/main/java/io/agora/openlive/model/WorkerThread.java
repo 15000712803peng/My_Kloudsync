@@ -22,6 +22,7 @@ import io.agora.commom.Constant;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
+import io.agora.rtc.video.VideoEncoderConfiguration;
 import io.agora.videoprp.AgoraYuvEnhancer;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -215,7 +216,7 @@ public class WorkerThread extends Thread {
         mEngineConfig.mClientRole = cRole;
         mEngineConfig.mVideoProfile = vProfile;
 
-        mRtcEngine.setVideoProfile(mEngineConfig.mVideoProfile, false);
+//        mRtcEngine.setVideoProfile(mEngineConfig.mVideoProfile, false);
 
         mRtcEngine.setClientRole(cRole);
 

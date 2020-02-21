@@ -52,6 +52,7 @@ import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.internal.RtcEngineImpl;
 import io.agora.rtc.video.VideoCanvas;
+import io.agora.rtc.video.VideoEncoderConfiguration;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -179,9 +180,47 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         rtcManager.doConfigEngine(CLIENT_ROLE_BROADCASTER);
         Log.e("MeetingKit", "joinChannel:" + meetingConfig.getMeetingId());
         getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
+        setVideoEncoderConfiguration(MODE_120P);
         rtcManager.joinRtcChannle(meetingConfig.getMeetingId());
 
     }
+
+    public static final  int  MODE_120P=0;
+    public static final  int  MODE_240P=1;
+    public static final  int  MODE_360P=2;
+    public static final  int  MODE_480P=3;
+
+
+    public void setVideoEncoderConfiguration(int mode){
+
+        VideoEncoderConfiguration.VideoDimensions dimension=VideoEncoderConfiguration.VD_160x120;
+        switch (mode){
+            case MODE_120P:
+                dimension=VideoEncoderConfiguration.VD_160x120;  // 120p:  160*120
+                break;
+            case MODE_240P:
+                dimension=VideoEncoderConfiguration.VD_320x240;  // 240p: 320*240
+                break;
+            case MODE_360P:
+                dimension=VideoEncoderConfiguration.VD_480x360;  // 360p:480*360
+                break;
+            case MODE_480P:
+                dimension=VideoEncoderConfiguration.VD_640x480;  // 480p: 640*480
+                break;
+        }
+//        VideoEncoderConfiguration.VideoDimensions dimension_120p=VideoEncoderConfiguration.VD_160x120;  // 120p:  160*120
+//        VideoEncoderConfiguration.VideoDimensions dimension_240p=VideoEncoderConfiguration.VD_320x240;  // 240p: 320*240
+//        VideoEncoderConfiguration.VideoDimensions dimension_3600p=VideoEncoderConfiguration.VD_480x360;  // 360p:480*360
+//        VideoEncoderConfiguration.VideoDimensions dimension_4800p=VideoEncoderConfiguration.VD_640x480;  // 480p: 640*480
+
+        VideoEncoderConfiguration videoEncoderConfiguration=new VideoEncoderConfiguration(dimension,
+                VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15,0,VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_ADAPTIVE);
+
+        getRtcManager().rtcEngine().setVideoEncoderConfiguration(videoEncoderConfiguration);
+
+    }
+
+
 
     @Override
     public void onUserStart() {
