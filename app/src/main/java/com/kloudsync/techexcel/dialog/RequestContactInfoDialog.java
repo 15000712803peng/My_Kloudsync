@@ -43,8 +43,6 @@ public class RequestContactInfoDialog implements OnClickListener {
     private static final String OK_OPTIONS_CHAT = "CHAT";
     private static final String OK_OPTIONS_OTHER_COMPANY = "OTHER_COMPANY";
     private static final String OK_OPTIONS_SAME_COMPANY = "SAME_COMPANY";
-
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

@@ -904,9 +904,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         meetingConfig.setPresenterSessionId(socketMessage.getData().getString("presenterSessionId"));
                     }
 
-
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -3550,9 +3547,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         hideAgoraFull();
                     } else if (_mode == 2) {
 //                        showFullCameraScreen();
-                        String  userID=data.getString("currentSessionID");
-                        meetingConfig.setCurrentMaxVideoUserId(userID);
-                        followShowFullScreenSingleAgoraMember(userID);
+                        followShowFullScreenSingleAgoraMember(data.getString("currentSessionID"));
                         hideFullCameraScreen();
                     } else if (_mode == 1) {
                         showFullCameraScreen();

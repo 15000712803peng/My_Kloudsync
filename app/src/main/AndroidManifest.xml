@@ -952,6 +952,13 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name="com.kloudsync.techexcel.search.ui.ContactSearchAndAddActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
+
+
+        <activity
             android:name=".search.ui.SpaceSearchActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />

@@ -120,6 +120,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
             if (null != parent) {
                 parent.removeView(view);
             }
+
         } else {
             view = inflater.inflate(R.layout.contact_fragment, container, false);
             initView();

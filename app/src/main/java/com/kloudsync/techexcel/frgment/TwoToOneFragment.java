@@ -26,6 +26,7 @@ import com.kloudsync.techexcel.help.InviteContactDialog;
 import com.kloudsync.techexcel.help.InviteNewDialog;
 import com.kloudsync.techexcel.help.PopContactHAHA;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
+import com.kloudsync.techexcel.search.ui.ContactSearchAndAddActivity;
 import com.kloudsync.techexcel.ui.InviteFromPhoneActivity;
 import com.kloudsync.techexcel.view.CustomViewPager;
 import com.ub.service.activity.NotifyActivity;
@@ -150,7 +151,9 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
 
     @Override
     public void inviteFromContactOption() {
-
+        Intent searchAddIntent = new Intent(getActivity(), ContactSearchAndAddActivity.class);
+        searchAddIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(searchAddIntent);
     }
 
     @Override

@@ -445,6 +445,7 @@ public class MeetingServiceTools {
 
 
     public EventNotePageActions syncGetPageActions(MeetingConfig config, Note note) {
+
         String url = "";
         switch (config.getType()) {
             case MeetingType.DOC:
@@ -452,6 +453,9 @@ public class MeetingServiceTools {
                         "&attachmentID=" + config.getDocument().getAttachmentID() + "&soundtrackID=0&displayDrawingLine=0";
                 break;
             case MeetingType.MEETING:
+                if(note == null){
+                    return new EventNotePageActions();
+                }
                 url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=" + config.getLessionId() + "&itemID=" +
                         note.getNoteID() + "&pageNumber=" + 1;
                 break;

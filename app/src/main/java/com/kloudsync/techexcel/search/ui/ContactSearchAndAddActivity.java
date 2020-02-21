@@ -24,28 +24,43 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.adapter.FriendContactAdapter;
 import com.kloudsync.techexcel.adapter.SearchContactAdapter;
+import com.kloudsync.techexcel.adapter.ViewHolder;
 import com.kloudsync.techexcel.app.BaseActivity;
 import com.kloudsync.techexcel.bean.ContactSearchData;
 import com.kloudsync.techexcel.bean.EventFilterContact;
 import com.kloudsync.techexcel.bean.FriendContact;
+import com.kloudsync.techexcel.bean.SameLetterFriends;
+import com.kloudsync.techexcel.bean.SearchContactInfo;
 import com.kloudsync.techexcel.bean.Team;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.PopFilterContact;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.search.view.VContactSearch;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.tool.PingYinUtil;
 import com.ub.techexcel.adapter.TeamAdapterV2;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
+import net.sourceforge.pinyin4j.PinyinHelper;
+
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import demo.Pinyin4jAppletDemo;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -56,7 +71,7 @@ import io.rong.imkit.RongIM;
 public class ContactSearchAndAddActivity extends BaseActivity implements VContactSearch, View.OnClickListener, TextWatcher, TeamAdapterV2.OnItemClickListener, SearchContactAdapter.OnItemClickListener {
 
     private ListView list;
-    private TextView cancelText;
+    private ImageView backImage;
     String searchStr;
     EditText searchEdit;
     private ImageView clearEditImage;
@@ -76,6 +91,7 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
         }
     };
     List<Customer> customers;
+    private List<SearchContactInfo> contactInfos;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,7 +103,7 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
 
     @Override
     protected int setLayout() {
-        return R.layout.fragment_contact_search;
+        return R.layout.activity_contact_search_and_add;
     }
 
     @Override
@@ -98,8 +114,8 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
         }
         list = findViewById(R.id.list);
 //        list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        cancelText = findViewById(R.id.tv_cancel);
-        cancelText.setOnClickListener(this);
+        backImage = findViewById(R.id.image_back);
+        backImage.setOnClickListener(this);
         searchEdit = findViewById(R.id.et_search);
         searchEdit.addTextChangedListener(this);
         clearEditImage = findViewById(R.id.img_clear_edit);
@@ -141,7 +157,7 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.tv_cancel:
+            case R.id.image_back:
                 hideInput();
                 finish();
                 break;
@@ -165,7 +181,7 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
     @Override
     public void afterTextChanged(Editable s) {
         handler.removeCallbacks(editRunnable);
-        handler.postDelayed(editRunnable, 600);
+        handler.postDelayed(editRunnable, 1000);
     }
 
 
@@ -208,82 +224,91 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
 
     private void search(final String searchStr) {
         showLoading();
-        Observable.just(searchStr).observeOn(Schedulers.io()).map(new Function<String, ContactSearchData>() {
+        Observable.just(searchStr).observeOn(Schedulers.io()).map(new Function<String, Map<String, List<SearchContactInfo>>>() {
             @Override
-            public ContactSearchData apply(String searchStr) throws Exception {
-                String encodeStr = URLEncoder.encode(LoginGet.getBase64Password(searchStr.trim()), "UTF-8");
-                Log.e("check_search","encodeStr_1:" + encodeStr);
-                if(!TextUtils.isEmpty(encodeStr) && encodeStr.endsWith("%0A")){
-                    encodeStr = encodeStr.substring(0,encodeStr.lastIndexOf("%0A"));
+            public Map<String, List<SearchContactInfo>> apply(String searchStr) throws Exception {
+                String encodeStr = URLEncoder.encode(LoginGet.getBase64Password(searchStr), "UTF-8");
+                Log.e("check_search", "encodeStr_1:" + encodeStr);
+                if (!TextUtils.isEmpty(encodeStr) && encodeStr.endsWith("%0A")) {
+                    encodeStr = encodeStr.substring(0, encodeStr.lastIndexOf("%0A"));
                 }
-                Log.e("check_search","encodeStr_2:" + encodeStr);
-                ContactSearchData contactSearchData = ServiceInterfaceTools.getinstance().syncSearchContact(userPreferences.getInt("SchoolID", -1),
-                        userPreferences.getInt("contact_type", 1),encodeStr);
-                if (contactSearchData == null) {
-                    contactSearchData = new ContactSearchData();
+                Log.e("check_search", "encodeStr_2:" + encodeStr);
+                JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncSearchUserContact(encodeStr);
+                allDatas.clear();
+                contactsMap.clear();
+                if (jsonObject.has("RetCode")) {
+                    if (jsonObject.getInt("RetCode") == 0) {
+                        JSONArray jsonArray = jsonObject.getJSONArray("RetData");
+                        if (jsonArray != null && jsonArray.length() > 0) {
+                            for (int i = 0; i < jsonArray.length(); ++i) {
+                                JSONObject contactData = jsonArray.getJSONObject(i);
+                                SearchContactInfo contactInfo = new Gson().fromJson(contactData.toString(), SearchContactInfo.class);
+                                if (!TextUtils.isEmpty(contactInfo.getUserName())) {
+                                    String pinyin = PingYinUtil.getPingYin(contactInfo.getUserName());
+                                    if (!TextUtils.isEmpty(pinyin)) {
+                                        String fisrtChar = (pinyin.charAt(0) + "").toUpperCase();
+                                        fillLetterContactToListDatas(fisrtChar, contactInfo);
+                                    } else {
+                                        fillLetterContactToListDatas("#", contactInfo);
+                                    }
+                                } else {
+                                    fillLetterContactToListDatas("#", contactInfo);
+                                }
+                            }
+                        }
+                    }
                 }
-                return contactSearchData;
+
+                return contactsMap;
             }
-        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<ContactSearchData>() {
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Map<String, List<SearchContactInfo>>>() {
             @Override
-            public void accept(ContactSearchData contactSearchData) throws Exception {
+            public void accept(Map<String, List<SearchContactInfo>> contactSearchData) throws Exception {
                 searchEdit.setEnabled(true);
                 loadingBar.setVisibility(View.GONE);
-                handleResponse(contactSearchData);
+                handleResponse();
             }
         }).subscribe();
+    }
 
-
-//        Observable.just(searchStr).observeOn(Schedulers.io()).map(new Function<String, List<Customer>>() {
-//            @Override
-//            public List<Customer> apply(String searchStr) throws Exception {
-//                List<Customer> results = new ArrayList<>();
-//                for (Customer customer : ContactSearchActivity.this.customers) {
-//                    if (customer.getName().contains(searchStr)) {
-//                        results.add(customer);
-//                    }
-//                }
-//                return results;
-//            }
-//        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<List<Customer>>() {
-//            @Override
-//            public void accept(List<Customer> results) throws Exception {
-//                handleResponse(results, searchStr);
-//            }
-//        }).subscribe();
-
+    private void fillLetterContactToListDatas(String firstLetter, SearchContactInfo contact) {
+        List<SearchContactInfo> contactInfos = null;
+        if (contactsMap.containsKey(firstLetter)) {
+            contactInfos = contactsMap.get(firstLetter);
+            if (contactInfos == null) {
+                contactInfos = new ArrayList<>();
+            }
+            contactInfos.add(contact);
+        } else {
+            contactInfos = new ArrayList<>();
+            contactInfos.add(contact);
+        }
+        contactsMap.put(firstLetter, contactInfos);
 
     }
 
-    List<FriendContact> allDatas = new ArrayList<>();
-    private void handleResponse(ContactSearchData searchData){
-        allDatas.clear();
-        if(searchData == null){
-            return;
-        }
-        List<FriendContact> myContactList = searchData.getMyContactList();
-        if(myContactList != null && myContactList.size() > 0){
-            FriendContact friendListtitle = new FriendContact();
-            friendListtitle.setType(0);
-            allDatas.add(friendListtitle);
-            for(FriendContact contact : myContactList){
-                contact.setType(1);
-                allDatas.add(contact);
-            }
-        }
+    private Map<String, List<SearchContactInfo>> contactsMap = new HashMap<>();
 
-        List<FriendContact> companyContactList = searchData.getCompanyContactVOList();
-        if(companyContactList != null && companyContactList.size() > 0){
-            FriendContact friendListtitle = new FriendContact();
-            friendListtitle.setType(2);
-            allDatas.add(friendListtitle);
-            for(FriendContact contact : companyContactList){
-                contact.setType(1);
-                allDatas.add(contact);
+    List<LetterContactInfos> allDatas = new ArrayList<>();
+
+    private void handleResponse() {
+        allDatas.clear();
+        if (contactsMap.size() > 0) {
+            noDataLayout.setVisibility(View.GONE);
+            Set<Map.Entry<String, List<SearchContactInfo>>> set = contactsMap.entrySet();
+            Iterator<Map.Entry<String, List<SearchContactInfo>>> iterator = set.iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, List<SearchContactInfo>> entry = iterator.next();
+                LetterContactInfos contactInfos = new LetterContactInfos();
+                contactInfos.setLetter(entry.getKey());
+                contactInfos.setContactInfos(entry.getValue());
+                allDatas.add(contactInfos);
             }
+            list.setVisibility(View.VISIBLE);
+            list.setAdapter(new SearchResultAdapter());
+        } else {
+            noDataLayout.setVisibility(View.VISIBLE);
         }
-        list.setVisibility(View.VISIBLE);
-        list.setAdapter(new SearchResultAdapter());
 
 
     }
@@ -304,29 +329,79 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
 
     @Override
     public void onItemClick(int position, Customer customer) {
-        if (customer.isEnableChat()) {
-            AppConfig.Name = customer.getName();
-            AppConfig.isUpdateDialogue = true;
-            RongIM.getInstance().startPrivateChat(this,
-                    customer.getUBAOUserID(), customer.getName());
-        }
+//        if (customer.isEnableChat()) {
+//            AppConfig.Name = customer.getName();
+//            AppConfig.isUpdateDialogue = true;
+//            RongIM.getInstance().startPrivateChat(this,
+//                    customer.getUBAOUserID(), customer.getName());
+//        }
     }
 
-    class SearchResultAdapter extends BaseAdapter{
-
-        LayoutInflater inflater;
-        public SearchResultAdapter(){
-            inflater = getLayoutInflater();
-        }
+    class SearchResultAdapter extends BaseAdapter {
+        private static final int TYPE_CATEGORY_ITEM = 0;
+        private static final int TYPE_ITEM = 1;
 
         @Override
         public int getCount() {
-            return allDatas.size();
+            int count = 0;
+            if (null != allDatas) {
+                //  所有分类中item的总和是ListVIew  Item的总个数
+                for (LetterContactInfos letterFriends : allDatas) {
+                    count += letterFriends.getItemCount();
+                }
+            }
+
+            return count;
         }
 
         @Override
         public Object getItem(int position) {
-            return allDatas.get(position);
+
+            // 异常情况处理
+            if (null == allDatas || position < 0 || position > getCount()) {
+                return null;
+            }
+
+            // 同一分类内，第一个元素的索引值
+            int categroyFirstIndex = 0;
+
+            for (LetterContactInfos letterFriends : allDatas) {
+                int size = letterFriends.getItemCount();
+                // 在当前分类中的索引值
+                int categoryIndex = position - categroyFirstIndex;
+                // item在当前分类内
+                if (categoryIndex < size) {
+                    return letterFriends.getItem(categoryIndex);
+                }
+                // 索引移动到当前分类结尾，即下一个分类第一个元素索引
+                categroyFirstIndex += size;
+            }
+            return null;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            // 异常情况处理
+            if (null == allDatas || position < 0 || position > getCount()) {
+                return TYPE_ITEM;
+            }
+
+            int firstIndex = 0;
+            for (LetterContactInfos letterFriends : allDatas) {
+                int size = letterFriends.getItemCount();
+                // 在当前分类中的索引值
+                int categoryIndex = position - firstIndex;
+                if (categoryIndex == 0) {
+                    return TYPE_CATEGORY_ITEM;
+                }
+                firstIndex += size;
+            }
+            return TYPE_ITEM;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 2;
         }
 
         @Override
@@ -335,135 +410,161 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
         }
 
         @Override
-        public int getViewTypeCount() {
-            return 3;
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            FriendContact friendContact = (FriendContact) getItem(position);
-            return friendContact.getType();
-        }
-
-        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            FriendContact friendContact = (FriendContact) getItem(position);
-            int type = getItemViewType(position);
-            BaseHolder baseHolder = null;
-            if (null == convertView) {
-                switch (type){
-                    case 0:
-                        convertView = inflater.inflate(R.layout.contact_title_one,null);
-                        baseHolder = new TitleOneHolder();
-                        ((TitleOneHolder)baseHolder).title = convertView.findViewById(R.id.txt_title);
-                        ((TitleOneHolder)baseHolder).filterImage = convertView.findViewById(R.id.image_filter_contact);
-                        break;
-                    case 1:
-                        convertView = inflater.inflate(R.layout.friend_contact_item,null);
-                        baseHolder = new CommonItemHolder();
 
-                        ((CommonItemHolder)baseHolder).img = convertView.findViewById(R.id.img_head);
-                        ((CommonItemHolder)baseHolder).name = convertView.findViewById(R.id.name);
-                        ((CommonItemHolder)baseHolder).chatImage = convertView.findViewById(R.id.img_chat);
-                        break;
-                    case 2:
-                        convertView = inflater.inflate(R.layout.contact_title_two,null);
-                        baseHolder = new TitleTwoHolder();
-                        break;
-                }
-                convertView.setTag(baseHolder);
-            }else {
-                baseHolder = (BaseHolder) convertView.getTag();
-                switch (type){
-                    case 0:
-                        TitleOneHolder oneHolder = (TitleOneHolder) baseHolder;
-                        break;
-                    case 1:
-                        CommonItemHolder itemHolder = (CommonItemHolder) baseHolder;
-                        break;
-                    case 2:
-                        TitleTwoHolder twoHolder = (TitleTwoHolder) baseHolder;
-                        break;
-                }
-            }
-
-            switch (type){
-                case 0:
-                    final TitleOneHolder oneHolder = (TitleOneHolder) baseHolder;
-                    int filterType = userPreferences.getInt("contact_type",1);
-                    Log.e("check_filter_type","filter_type:" + filterType);
-                    if(filterType == 0){
-                        oneHolder.title.setText(getString(R.string.contract_company));
-                    }else if(type == 1){
-                        oneHolder.title.setText(getString(R.string.contract_all));
+            int itemViewType = getItemViewType(position);
+            switch (itemViewType) {
+                case TYPE_CATEGORY_ITEM:
+                    TitleHolder titleHolder = null;
+                    if (null == convertView) {
+                        convertView = inflater.inflate(R.layout.letter_item, null);
+                        titleHolder = new TitleHolder();
+                        titleHolder.titleText = convertView.findViewById(R.id.tv_sort);
+                        convertView.setTag(titleHolder);
+                    } else {
+                        titleHolder = (TitleHolder) convertView.getTag();
                     }
-                    oneHolder.filterImage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            showFilterPop(oneHolder.filterImage);
+                    if (getItem(position) instanceof String) {
+                        String title = (String) getItem(position);
+                        titleHolder.titleText.setText(title);
+                    }
+                    break;
+
+                case TYPE_ITEM:
+                    ItemHolder itemHolder;
+                    if (null == convertView) {
+                        itemHolder = new ItemHolder();
+                        convertView = inflater.inflate(R.layout.search_friend_contact_item, null);
+                        itemHolder.img = convertView.findViewById(R.id.img_head);
+                        itemHolder.name = convertView.findViewById(R.id.name);
+                        itemHolder.phone = convertView.findViewById(R.id.txt_phone);
+                        itemHolder.selectImage = convertView.findViewById(R.id.image_select);
+                        convertView.setTag(itemHolder);
+                    } else {
+                        itemHolder = (ItemHolder) convertView.getTag();
+                    }
+
+                    if (getItem(position) instanceof SearchContactInfo) {
+                        SearchContactInfo contactInfo = (SearchContactInfo) getItem(position);
+                        String url = contactInfo.getAvatarUrl();
+                        Uri imageUri = null;
+                        if (!TextUtils.isEmpty(url)) {
+                            imageUri = Uri.parse(url);
                         }
-                    });
-                    break;
-                case 1:
-                    CommonItemHolder itemHolder = (CommonItemHolder) baseHolder;
-                    String url = friendContact.getAvatarUrl();
-                    Uri imageUri = null;
-                    if (!TextUtils.isEmpty(url)) {
-                        imageUri = Uri.parse(url);
+                        itemHolder.img.setImageURI(imageUri);
+                        itemHolder.name.setText(contactInfo.getUserName());
+                        itemHolder.phone.setText(contactInfo.getPhone());
                     }
-                    itemHolder.img.setImageURI(imageUri);
-                    itemHolder.name.setText(friendContact.getUserName());
-                    if(friendContact.getStatus() == 1){
-                        itemHolder.chatImage.setVisibility(View.VISIBLE);
-                    }else {
-                        itemHolder.chatImage.setVisibility(View.GONE);
-                    }
-                    break;
-                case 2:
+
                     break;
             }
 
             return convertView;
         }
-    }
 
-    class BaseHolder{
 
-    }
-
-    class TitleOneHolder extends BaseHolder{
-        public TextView title;
-        public ImageView filterImage;
-    }
-
-    class TitleTwoHolder extends BaseHolder{
-        public TextView title;
-
-    }
-
-    class CommonItemHolder extends BaseHolder{
-        public SimpleDraweeView img;
-        public TextView name;
-        public ImageView chatImage;
-    }
-
-    PopFilterContact filterContactPop;
-    private void showFilterPop(View view) {
-        if (filterContactPop != null) {
-            if (filterContactPop.isShowing()) {
-                filterContactPop.dismiss();
-            }
-            filterContactPop = null;
+        @Override
+        public boolean areAllItemsEnabled() {
+            return false;
         }
 
-        filterContactPop = new PopFilterContact(this);
-        filterContactPop.showAtBottom(view,userPreferences.getInt("contact_type",1));
+        @Override
+        public boolean isEnabled(int position) {
+            return getItemViewType(position) != TYPE_CATEGORY_ITEM;
+        }
+
+
+        LayoutInflater inflater;
+
+        public SearchResultAdapter() {
+            inflater = getLayoutInflater();
+        }
+
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void filterContact(EventFilterContact filterContact){
-        Log.e("EventBus","filterContact");
+    class BaseHolder {
 
+    }
+
+
+    class ItemHolder extends BaseHolder {
+        public SimpleDraweeView img;
+        public TextView name;
+        public ImageView selectImage;
+        public TextView phone;
+    }
+
+    class SearchInfoResonse {
+        private int RetCode;
+        private List<SearchContactInfo> RetData;
+
+        public int getRetCode() {
+            return RetCode;
+        }
+
+        public void setRetCode(int retCode) {
+            RetCode = retCode;
+        }
+
+        public List<SearchContactInfo> getRetData() {
+            return RetData;
+        }
+
+        public void setRetData(List<SearchContactInfo> retData) {
+            RetData = retData;
+        }
+    }
+
+
+    class LetterContactInfos {
+        String letter;
+        List<SearchContactInfo> contactInfos;
+
+        public Object getItem(int position) {
+            // Category排在第一位
+            if (position == 0) {
+                return letter;
+            } else {
+                return contactInfos.get(position - 1);
+            }
+        }
+
+        /**
+         * 当前类别Item总数。Category也需要占用一个Item
+         *
+         * @return
+         */
+        public int getItemCount() {
+            if (contactInfos == null || contactInfos.size() <= 0) {
+                return 1;
+            }
+            return contactInfos.size() + 1;
+        }
+
+        public String getLetter() {
+            return letter;
+        }
+
+        public void setLetter(String letter) {
+            this.letter = letter;
+        }
+
+        public List<SearchContactInfo> getContactInfos() {
+            return contactInfos;
+        }
+
+        public void setContactInfos(List<SearchContactInfo> contactInfos) {
+            this.contactInfos = contactInfos;
+        }
+    }
+
+    class TitleHolder {
+        public TextView titleText;
+    }
+
+    class ContactHolder {
+        public SimpleDraweeView img;
+        public TextView name;
     }
 
 

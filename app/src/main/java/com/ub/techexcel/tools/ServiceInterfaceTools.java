@@ -3190,5 +3190,14 @@ public class ServiceInterfaceTools {
         Log.e("syncChangeTemStatus", "url:" + url + ",response:" + response);
         return response;
     }
+    public JSONObject syncSearchUserContact(String searchText){
+        String url = AppConfig.URL_PUBLIC + "User/SearchContact?searchText="
+                + searchText;
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncSearchUserContact", "url:" + url + ",response:" + response);
+        return response;
+    }
+
+
 
 }

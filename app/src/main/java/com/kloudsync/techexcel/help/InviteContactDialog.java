@@ -20,6 +20,7 @@ public class InviteContactDialog implements OnClickListener {
     LinearLayout inviteFromPhoneLayout;
     LinearLayout inviteFromContactLayout;
     TextView titleText;
+    TextView cancelText;
 
     public interface InviteOptionsLinstener {
         void inviteFromContactOption();
@@ -51,6 +52,8 @@ public class InviteContactDialog implements OnClickListener {
         inviteFromContactLayout = view.findViewById(R.id.layout_invite_from_contact);
         titleText = view.findViewById(R.id.txt_dialog_title);
         dialog.setContentView(view);
+        cancelText = view.findViewById(R.id.cancel);
+        cancelText.setOnClickListener(this);
         dialog.getWindow().setWindowAnimations(R.style.PopupAnimation5);
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         inviteFromContactText = view.findViewById(R.id.txt_invite_from_contact);
@@ -80,6 +83,11 @@ public class InviteContactDialog implements OnClickListener {
                     optionsLinstener.inviteNewOption();
                 }
                 dismiss();
+                break;
+            case R.id.cancel:
+                if(dialog != null){
+                    dialog.cancel();
+                }
                 break;
             default:
                 break;
