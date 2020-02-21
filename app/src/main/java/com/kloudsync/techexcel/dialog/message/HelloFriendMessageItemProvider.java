@@ -19,7 +19,7 @@ import io.rong.imkit.model.UIMessage;
 import io.rong.imkit.widget.provider.IContainerItemProvider;
 
 @ProviderTag(messageContent = HelloFriendMessage.class)
-public class FriendMsgItemProvider extends IContainerItemProvider.MessageProvider<HelloFriendMessage> {
+public class HelloFriendMessageItemProvider extends IContainerItemProvider.MessageProvider<HelloFriendMessage> {
 
     public static Context mContext;
 

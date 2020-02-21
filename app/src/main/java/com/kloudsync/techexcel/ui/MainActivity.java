@@ -57,6 +57,7 @@ import com.kloudsync.techexcel.dialog.UploadFileDialog;
 import com.kloudsync.techexcel.dialog.message.CustomizeMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.FriendMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.GroupMessageItemProvider;
+import com.kloudsync.techexcel.dialog.message.HelloFriendMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.KnowledgeMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.SendFileMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.ShareMessageItemProvider;
@@ -577,6 +578,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 RongIM.registerMessageTemplate(new SendFileMessageItemProvider());
 //				RongIM.registerMessageTemplate(new CourseMessageItemProvider());
                 RongIM.registerMessageTemplate(new ShareMessageItemProvider());
+                RongIM.registerMessageTemplate(new HelloFriendMessageItemProvider());
 
 //                initDatas();
                 if (RongIM.getInstance() != null
