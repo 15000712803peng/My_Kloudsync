@@ -1,10 +1,8 @@
 package com.kloudsync.techexcel.dialog;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.DisplayMetrics;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,32 +12,34 @@ import android.widget.TextView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
+import com.ub.techexcel.tools.Tools;
 
 /**
  * Created by tonyan on 2019/12/20.
  */
 
-public class PopMeetingMemberSetting extends PopupWindow implements View.OnClickListener {
+public class PopMeetingHandsMemberSetting extends PopupWindow implements View.OnClickListener {
 
     private Context context;
 
     private MeetingMember meetingMember;
-    private TextView setPresenter,setAuditor,setSpeakMember;
+    private TextView mAllowSpeak, mHandDown, mSetMainMembers;
     private MeetingConfig meetingConfig;
+    private View mView;
 
-    public interface OnMemberSettingChanged{
-        void setPresenter(MeetingMember meetingMember);
-        void setAuditor(MeetingMember meetingMember);
-        void setSpeakMember(MeetingMember meetingMember);
+    public interface OnHandsMemberSettingChanged{
+        void setHandsAllowSpeak(MeetingMember meetingMember);
+        void setHandsDown(MeetingMember meetingMember);
+        void setHandsMember(MeetingMember meetingMember);
     }
 
-    private OnMemberSettingChanged onMemberSettingChanged;
+    private OnHandsMemberSettingChanged onMemberSettingChanged;
 
-    public void setOnMemberSettingChanged(OnMemberSettingChanged onMemberSettingChanged) {
+    public void setOnMemberSettingChanged(OnHandsMemberSettingChanged onMemberSettingChanged) {
         this.onMemberSettingChanged = onMemberSettingChanged;
     }
 
-    public PopMeetingMemberSetting(Context context) {
+    public PopMeetingHandsMemberSetting(Context context) {
         super(context);
         this.context = context;
         initalize();
@@ -47,14 +47,14 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
 
     private void initalize() {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.pop_meeting_member_options, null);
-        setPresenter = view.findViewById(R.id.txt_setting_presenter);
-        setAuditor = view.findViewById(R.id.txt_setting_auditor);
-        setSpeakMember = view.findViewById(R.id.txt_setting_speak_member);
-        setSpeakMember.setOnClickListener(this);
-        setPresenter.setOnClickListener(this);
-        setAuditor.setOnClickListener(this);
-        setContentView(view);
+        mView = inflater.inflate(R.layout.pop_meeting_hands_member_options, null);
+        mAllowSpeak = mView.findViewById(R.id.ppw_tv_speak);
+        mHandDown = mView.findViewById(R.id.ppw_tv_hand_down);
+        mSetMainMembers = mView.findViewById(R.id.ppw_tv_main_members);
+        mSetMainMembers.setOnClickListener(this);
+        mAllowSpeak.setOnClickListener(this);
+        mHandDown.setOnClickListener(this);
+        setContentView(mView);
         initWindow();
     }
 
@@ -72,12 +72,16 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
         this.meetingMember = meetingMember;
         this.meetingConfig = meetingConfig;
         if(meetingMember.getPresenter() == 1){
-            setPresenter.setVisibility(View.GONE);
+            mAllowSpeak.setVisibility(View.GONE);
         }
         if(meetingMember.getPresenter() == 1 || meetingMember.getRole() == 2){
-            setAuditor.setVisibility(View.GONE);
+            mHandDown.setVisibility(View.GONE);
         }
-        showAsDropDown(view, -context.getResources().getDimensionPixelOffset(R.dimen.meeting_members_setting_width) + context.getResources().getDimensionPixelOffset(R.dimen.pop_setting_left_margin), 10);
+      mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int popupHeight = mView.getMeasuredHeight();
+        int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_160);
+        showAsDropDown(view,xoff,-popupHeight);
+
     }
 
 
@@ -85,21 +89,23 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.txt_setting_presenter://设置为主持人
+            case R.id.ppw_tv_speak://允许发言
                 if(meetingMember != null && onMemberSettingChanged != null){
-                    onMemberSettingChanged.setPresenter(meetingMember);
+                    onMemberSettingChanged.setHandsAllowSpeak(meetingMember);
+
                 }
                 dismiss();
                 break;
-            case R.id.txt_setting_auditor://设置为参会者
+            case R.id.ppw_tv_hand_down://把手放下
                 if(meetingMember != null && onMemberSettingChanged != null){
-                    onMemberSettingChanged.setAuditor(meetingMember);
+                    onMemberSettingChanged.setHandsDown(meetingMember);
                 }
                 dismiss();
                 break;
-            case R.id.txt_setting_speak_member://设置为可讲话参会者
+            case R.id.ppw_tv_main_members://成为主讲人
                 if(meetingMember != null && onMemberSettingChanged != null){
-                    onMemberSettingChanged.setSpeakMember(meetingMember);
+                    onMemberSettingChanged.setHandsMember(meetingMember);
+
                 }
                 dismiss();
                 break;

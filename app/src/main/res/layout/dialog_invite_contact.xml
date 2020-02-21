@@ -18,7 +18,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:text="添加联系人"
+                android:text="@string/addcontact"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="18dp"
                 android:paddingTop="18dp"
@@ -52,7 +52,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="8dp"
                     android:gravity="center"
-                    android:text="从公司联系人中添加"
+                    android:text="@string/add_company_contacts"
                     android:textColor="@color/darkgrey"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -76,7 +76,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="8dp"
                     android:gravity="center"
-                    android:text="添加新的联系人"
+                    android:text="@string/add_new_contacts"
                     android:textSize="16sp"
                     android:textColor="@color/darkgrey" />
             </LinearLayout>

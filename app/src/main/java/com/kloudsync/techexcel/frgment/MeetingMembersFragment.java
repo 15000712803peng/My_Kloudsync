@@ -21,8 +21,8 @@ import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.EventSetPresenter;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
-import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.PopMeetingHandsMemberSetting;
 import com.kloudsync.techexcel.dialog.PopMeetingMemberSetting;
 import com.kloudsync.techexcel.dialog.PopMeetingSpeakMemberSetting;
 import com.kloudsync.techexcel.help.MeetingKit;
@@ -49,7 +49,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by tonyan on 2019/11/9.
  */
 
-public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged,PopMeetingSpeakMemberSetting.OnSpeakMemberSettingChanged{
+public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged,PopMeetingSpeakMemberSetting.OnSpeakMemberSettingChanged, PopMeetingHandsMemberSetting.OnHandsMemberSettingChanged {
 
     private RecyclerView membersList;
     int type;
@@ -220,6 +220,68 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             public void accept(MeetingMember meetingMember) throws Exception {
                 JSONObject response = ServiceInterfaceTools.getinstance().
                         syncChangeTemStatus(meetingMember.getUserId() + "", 0);
+                if (response.has("code")) {
+                    if (response.getInt("code") == 0) {
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                    } else if (response.getInt("code") == 22) {
+                        Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                Toast.makeText(getActivity(), "没有权限进行此操作", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            }
+        }).subscribe();
+    }
+
+    @Override
+    public void setHandsAllowSpeak(MeetingMember meetingMember) {
+        Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
+            @Override
+            public void accept(MeetingMember meetingMember) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().
+                        syncMakeUserUpAndDownHands(meetingMember.getUserId() + "", 1,1);
+                if (response.has("code")) {
+                    if (response.getInt("code") == 0) {
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                    } else if (response.getInt("code") == 22) {
+                        Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                Toast.makeText(getActivity(), "没有权限进行此操作", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            }
+        }).subscribe();
+    }
+
+    @Override
+    public void setHandsDown(final MeetingMember meetingMember) {
+        Observable.just("hands_up").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String str) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().
+                        syncHandUpOrDown(0,meetingMember.getUserId()+"");
+                if (response.has("code")) {
+                    if (response.getInt("code") == 0) {
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                    }
+                }
+            }
+        }).subscribe();
+    }
+
+    @Override
+    public void setHandsMember(MeetingMember meetingMember) {
+        Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
+            @Override
+            public void accept(MeetingMember meetingMember) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().
+                        syncMakeUserUpAndDownHands(meetingMember.getUserId() + "", 1,0);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
                         MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
@@ -585,7 +647,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
 
                 fillDeviceType(member.getDeviceType(), handsUpViewHolder.type);
-
+                fillViewByRoleForHandsMembers(member,handsUpViewHolder);
             }
         }
     }
@@ -665,6 +727,22 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         popMeetingSpeakMemberSetting.setOnMemberSettingChanged(this);
         popMeetingSpeakMemberSetting.showAtBottom(member, view, meetingConfig);
     }
+
+    PopMeetingHandsMemberSetting mPopMeetingHandsMemberSetting;
+    private void showHandsMemberSetting(MeetingMember member, View view) {
+        if (mPopMeetingHandsMemberSetting != null) {
+            if (mPopMeetingHandsMemberSetting.isShowing()) {
+                mPopMeetingHandsMemberSetting.dismiss();
+            }
+            mPopMeetingHandsMemberSetting = null;
+        }
+
+        mPopMeetingHandsMemberSetting = new PopMeetingHandsMemberSetting(getActivity());
+        mPopMeetingHandsMemberSetting.setOnMemberSettingChanged(this);
+        mPopMeetingHandsMemberSetting.showAtBottom(member, view, meetingConfig);
+    }
+
+
 
     private void fillViewByRoleForMainSpeakingMembers(final MeetingMember meetingMember, final MainSpeakerViewHolder holder) {
 
@@ -830,6 +908,38 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
     }
 
+    private void fillViewByRoleForHandsMembers(final MeetingMember meetingMember, final HandsUpViewHolder holder) {
+
+        int role = meetingMember.getRole();
+        holder.settingImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showHandsMemberSetting(meetingMember, holder.settingImage);
+            }
+        });
+
+//        meetingConfig.getMeetingHostId().equals(member.getUserId() + "")  是否是host
+        //
+
+        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
+            // 当前的member不是自己
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                // 如果自己是presenter
+                holder.settingImage.setVisibility(View.VISIBLE);
+            } else {
+                holder.settingImage.setVisibility(View.GONE);
+            }
+
+        } else {
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                holder.settingImage.setVisibility(View.GONE);
+            } else {
+                holder.settingImage.setVisibility(View.VISIBLE);
+            }
+        }
+
+    }
+
 
     @Override
     public void setPresenter(MeetingMember meetingMember) {
@@ -916,7 +1026,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             @Override
             public void accept(String str) throws Exception {
                 JSONObject response = ServiceInterfaceTools.getinstance().
-                        syncRaiseHandOnStage(1);
+                        syncHandUpOrDown(1,null);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
                         MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
