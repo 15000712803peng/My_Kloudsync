@@ -38,6 +38,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.network.connectionclass.ConnectionClassManager;
+import com.facebook.network.connectionclass.ConnectionQuality;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
@@ -308,6 +310,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 //                                MeetingKit.getInstance().startMeeting();
                             } else {
                                 MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+
                             }
                         }
                     }
@@ -423,9 +426,27 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         super.onRestoreInstanceState(savedInstanceState);
     }
 
+    private ConnectionChangedListener connectionChangedListener = new  ConnectionChangedListener();
+
+    private class ConnectionChangedListener implements ConnectionClassManager.ConnectionClassStateChangeListener {
+        @Override
+        public void onBandwidthStateChange(ConnectionQuality connectionQuality) {
+            if (connectionQuality == ConnectionQuality.POOR || connectionQuality == ConnectionQuality.UNKNOWN) {
+                MeetingKit.getInstance().retSetConfigurationBaseonNetwork(true);
+            } else {
+                MeetingKit.getInstance().retSetConfigurationBaseonNetwork(false);
+            }
+        }
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ConnectionClassManager.getInstance().remove(connectionChangedListener);
+    }
 
     @Override
     protected void onResume() {
+        ConnectionClassManager.getInstance().register(connectionChangedListener);
         if (menuManager != null) {
             menuManager.setMenuIcon(menuIcon);
         }
@@ -903,6 +924,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         meetingConfig.setPresenterSessionId(socketMessage.getData().getString("presenterSessionId"));
                     }
 
+
+
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -1014,7 +1038,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (noteLayout.getVisibility() != View.VISIBLE) {
                     followShowNote((int) helloMessage.getNoteId());
                 }
-
             } else {
                 if (noteLayout.getVisibility() == View.VISIBLE) {
                     noteWeb.load("javascript:ClearPath()", null);
@@ -1032,6 +1055,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     noteWeb.load("javascript:ShowToolbar(" + true + ")", null);
                     noteWeb.load("javascript:Record()", null);
                     Log.e("check_presenter", "ShowToolbar_in_hello");
+
                     //自己是presenter
                 } else {
                     web.load("javascript:ShowToolbar(" + false + ")", null);
@@ -1041,7 +1065,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     Log.e("check_presenter", "HideToolbar_in_hello");
                 }
             }
-
         }
 
 
@@ -1479,11 +1502,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         checkAgoraMemberNameAndAgoraStatus();
 
-        if (cameraAdapter != null && cameraList.getVisibility() == View.VISIBLE) {
+        if(cameraAdapter != null && cameraList.getVisibility() == View.VISIBLE){
             cameraAdapter.notifyDataSetChanged();
         }
 
-        if (meetingConfig.isInRealMeeting()) {
+        if(meetingConfig.isInRealMeeting()){
             MeetingKit.getInstance().setEncoderConfigurationBaseMode();
         }
 
@@ -2089,7 +2112,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
         meetingConfig.setPageNumber(pageNum);
         PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
-        if (meetingConfig.getCurrentDocumentPage() != null) {
+        if(meetingConfig.getCurrentDocumentPage() != null){
             meetingConfig.getCurrentDocumentPage().setPageNumber(pageNum);
         }
     }
@@ -3314,6 +3337,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 public void getServiceReturnData(Object object) {
                 }
             });
+            //清除最后一页上的数据
+            web.load("javascript:ClearPageAndAction()", null);
+            PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
         }
     }
 
@@ -3547,7 +3573,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         hideAgoraFull();
                     } else if (_mode == 2) {
 //                        showFullCameraScreen();
-                        followShowFullScreenSingleAgoraMember(data.getString("currentSessionID"));
+                        String  userID=data.getString("currentSessionID");
+                        meetingConfig.setCurrentMaxVideoUserId(userID);
+                        followShowFullScreenSingleAgoraMember(userID);
 //                        hideFullCameraScreen();
                     } else if (_mode == 1) {
                         showFullCameraScreen();
@@ -3906,11 +3934,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
         SocketMessageManager.getManager(this).sendMessage_ViewModeStatus(viewMode, userId);
+
         meetingConfig.setMode(viewMode);
-        if (viewMode == 2) {
+        if(viewMode==2){
             meetingConfig.setCurrentMaxVideoUserId(userId);
         }
         MeetingKit.getInstance().setEncoderConfigurationBaseMode();
+//        SocketMessageManager.getManager(this).sendMessage_MyNoteActionFrame(actions, meetingConfig, note);
     }
 
 }
