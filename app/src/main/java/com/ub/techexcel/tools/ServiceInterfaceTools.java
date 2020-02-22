@@ -36,6 +36,7 @@ import com.kloudsync.techexcel.bean.params.InviteTeamAdminParams;
 import com.kloudsync.techexcel.bean.params.InviteToCompanyParams;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
+import com.kloudsync.techexcel.help.OkHttpRequest;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.ConvertingResult;
 import com.kloudsync.techexcel.info.Customer;
@@ -75,6 +76,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -2873,8 +2875,8 @@ public class ServiceInterfaceTools {
         return response;
     }
 
-    public JSONObject syncMakeUserUpAndDownHands(String userId, int status,int isTempOnStage) {
-        String url = AppConfig.URL_MEETING_BASE + "member/make_user_up_or_down_stage?userId=" + userId + "&status=" + status+"&isTempOnStage="+ isTempOnStage;
+    public JSONObject syncMakeUserUpAndDownHands(String userId, int status, int isTempOnStage) {
+        String url = AppConfig.URL_MEETING_BASE + "member/make_user_up_or_down_stage?userId=" + userId + "&status=" + status + "&isTempOnStage=" + isTempOnStage;
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("userId", userId);
@@ -2888,18 +2890,18 @@ public class ServiceInterfaceTools {
         return response;
     }
 
-    public JSONObject syncHandUpOrDown(int status,String userId) {
+    public JSONObject syncHandUpOrDown(int status, String userId) {
         String url = null;
         JSONObject jsonObject = new JSONObject();
         try {
-        if (userId==null) {
-            url = AppConfig.URL_MEETING_BASE + "member/raise_hand_on_stage?status=" + status;
-            jsonObject.put("status", status);
-        }else {
-            url = AppConfig.URL_MEETING_BASE + "member/make_user_hand_down?userId="+userId+"&allHandDown="+status;
-            jsonObject.put("userId", userId);
-            jsonObject.put("allHandDown", status);
-        }
+            if (userId == null) {
+                url = AppConfig.URL_MEETING_BASE + "member/raise_hand_on_stage?status=" + status;
+                jsonObject.put("status", status);
+            } else {
+                url = AppConfig.URL_MEETING_BASE + "member/make_user_hand_down?userId=" + userId + "&allHandDown=" + status;
+                jsonObject.put("userId", userId);
+                jsonObject.put("allHandDown", status);
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -3170,14 +3172,14 @@ public class ServiceInterfaceTools {
 
     }
 
-    public JSONObject syncSearchContactForAdd(int companyId,String phone) {
+    public JSONObject syncSearchContactForAdd(int companyId, String phone) {
         String url = AppConfig.URL_MEETING_BASE + "friend/search_user_for_add_friend?companyId=" + companyId + "&searchText=" + phone;
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
         Log.e("syncSearchContactForAdd", "url:" + url + ",response:" + response);
         return response;
     }
 
-    public JSONObject syncApplyFriend(long friendId,long companyId){
+    public JSONObject syncApplyFriend(long friendId, long companyId) {
         String url = AppConfig.URL_MEETING_BASE + "friend/apply_friend?friendId=" + friendId + "&companyId=" + companyId;
         JSONObject params = new JSONObject();
         try {
@@ -3191,7 +3193,7 @@ public class ServiceInterfaceTools {
         return response;
     }
 
-    public JSONObject syncSearchUserContact(String searchText){
+    public JSONObject syncSearchUserContact(String searchText) {
         String url = AppConfig.URL_PUBLIC + "User/SearchContact?searchText="
                 + searchText;
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
@@ -3199,12 +3201,12 @@ public class ServiceInterfaceTools {
         return response;
     }
 
-    public JSONObject syncAddContactList(String companyId,String inviteIds){
-        String url = AppConfig.URL_PUBLIC +  "SchoolContact/AddContactList?schoolID=" + companyId + "&roleID=6&userIDs="+ inviteIds;
+    public JSONObject syncAddContactList(String companyId, String inviteIds) {
+        String url = AppConfig.URL_PUBLIC + "SchoolContact/AddContactList?schoolID=" + companyId + "&roleID=6&userIDs=" + inviteIds;
         JSONObject params = new JSONObject();
         try {
             params.put("schoolID", companyId);
-            params.put("roleID", 6);
+            params.put("roleID", "6");
             params.put("userIDs", inviteIds);
         } catch (JSONException e) {
             Log.e("syncAddContactList", "JSONException:" + e.getMessage());
@@ -3212,11 +3214,12 @@ public class ServiceInterfaceTools {
         }
         Log.e("syncAddContactList", "params:" + params.toString());
         JSONObject response = ConnectService.submitDataByJson(url, params);
+//        JSONObject response = OkHttpRequest.post(url, params.toString());
         Log.e("syncAddContactList", "url:" + url + ",response:" + response);
         return response;
     }
 
-    public JSONObject syncGetContactDetail(String companyId,String userId){
+    public JSONObject syncGetContactDetail(String companyId, String userId) {
         String url = AppConfig.URL_MEETING_BASE + "friend/contact_detail?companyId=" + companyId + "&userId=" + userId;
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
         Log.e("syncGetContactDetail", "url:" + url + ",response:" + response);

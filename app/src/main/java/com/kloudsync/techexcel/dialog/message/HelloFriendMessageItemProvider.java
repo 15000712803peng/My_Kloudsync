@@ -13,10 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.ui.MainActivity;
+import com.ub.service.activity.KeyActivity;
+import com.ub.techexcel.tools.Tools;
+
 import io.rong.imkit.model.ProviderTag;
 import io.rong.imkit.model.UIMessage;
 import io.rong.imkit.widget.provider.IContainerItemProvider;
+import io.rong.message.TextMessage;
 
 @ProviderTag(messageContent = HelloFriendMessage.class)
 public class HelloFriendMessageItemProvider extends IContainerItemProvider.MessageProvider<HelloFriendMessage> {
@@ -32,8 +37,8 @@ public class HelloFriendMessageItemProvider extends IContainerItemProvider.Messa
         View view = LayoutInflater.from(context).inflate(R.layout.message_friend, null);
         mContext = context.getApplicationContext();
         ViewHolder holder = new ViewHolder();
-
         view.setTag(holder);
+
         return view;
     }
 
@@ -45,13 +50,20 @@ public class HelloFriendMessageItemProvider extends IContainerItemProvider.Messa
 
     @Override
     public Spannable getContentSummary(HelloFriendMessage content) {
-        return new SpannableString(MainActivity.instance.getResources().getString(R.string.Share_invite));
+        return new SpannableString(MainActivity.instance.getResources().getString(R.string.hello_friend_summary));
     }
 
     @Override
     public void onItemClick(final View arg0, int arg1, HelloFriendMessage cc,
                             UIMessage arg3) {
         mContext = arg0.getContext();
+        sendHelloMessage(cc);
+    }
+
+    private void sendHelloMessage(HelloFriendMessage friendMessage){
+        TextMessage myTextMessage = TextMessage.obtain("hello");
+        myTextMessage.setExtra(AppConfig.UserID);
+        Tools.sendMessageToMember(mContext, myTextMessage, friendMessage.getRongCloudId(),AppConfig.UserID);
     }
 
 }

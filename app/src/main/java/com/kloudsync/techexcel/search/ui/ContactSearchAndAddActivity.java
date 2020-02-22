@@ -34,6 +34,7 @@ import com.kloudsync.techexcel.adapter.ViewHolder;
 import com.kloudsync.techexcel.app.BaseActivity;
 import com.kloudsync.techexcel.bean.ContactSearchData;
 import com.kloudsync.techexcel.bean.EventFilterContact;
+import com.kloudsync.techexcel.bean.EventRefreshContact;
 import com.kloudsync.techexcel.bean.FriendContact;
 import com.kloudsync.techexcel.bean.SameLetterFriends;
 import com.kloudsync.techexcel.bean.SearchContactInfo;
@@ -50,6 +51,7 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
@@ -174,16 +176,16 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
                 break;
             case R.id.btn_invite:
                 if(adapter != null && adapter.getSelectContactsInfo().size() > 0){
-                    Observable.just("Request").observeOn(AndroidSchedulers.mainThread()).map(new Function<String, JSONObject>() {
+                    Observable.just("Request").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
                         @Override
                         public JSONObject apply(String s) throws Exception {
+
                             String inviteIds = "";
                             for(SearchContactInfo contactInfo : adapter.getSelectContactsInfo()){
                                 inviteIds += contactInfo.getUserID() +",";
                             }
 //                            Log.e("check_inviteids","inviteids:" + inviteIds);
-//                            inviteIds = inviteIds.substring(0,inviteIds.length() - 1);
-//                            Log.e("check_inviteids","after_sub_inviteids:" + inviteIds);
+                            inviteIds = inviteIds.substring(0,inviteIds.length() - 1);
                             return ServiceInterfaceTools.getinstance().syncAddContactList(AppConfig.SchoolID+"",inviteIds);
                         }
                     }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
@@ -191,6 +193,7 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
                         public void accept(JSONObject jsonObject) throws Exception {
                             if(jsonObject.has("RetCode")){
                                 if(jsonObject.getInt("RetCode") == 0){
+                                    EventBus.getDefault().post(new EventRefreshContact());
                                     new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage(getString(R.string.operate_success)).create().show();
                                     finish();
                                 }

@@ -75,7 +75,29 @@ public class RequestContactInfoDialog implements OnClickListener {
                     }).subscribe();
 
                 }else if(operation.equals(OK_OPTIONS_SAME_COMPANY)){
-
+                    Observable.just("Request").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
+                        @Override
+                        public JSONObject apply(String s) throws Exception {
+                            return ServiceInterfaceTools.getinstance().syncApplyFriend(contactData.getUserId(), AppConfig.SchoolID);
+                        }
+                    }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
+                        @Override
+                        public void accept(JSONObject jsonObject) throws Exception {
+                            if(jsonObject.has("code")){
+                                int code = jsonObject.getInt("code");
+                                if(code == 0){
+                                    sendHelloFriendMessage();
+                                    RongIM.getInstance().startConversation(mContext, Conversation.ConversationType.PRIVATE, contactData.getRongCloudId()+"", contactData.getUserName());
+                                }else if(code == 37){
+                                    String msg = jsonObject.getString("msg");
+                                    if(TextUtils.isEmpty(msg)){
+                                        msg = mContext.getString(R.string.operate_failure);
+                                    }
+                                    new CenterToast.Builder(mContext).setSuccess(false).setMessage(msg).create();
+                                }
+                            }
+                        }
+                    }).subscribe();
                 }
                 dialog.dismiss();
                 break;

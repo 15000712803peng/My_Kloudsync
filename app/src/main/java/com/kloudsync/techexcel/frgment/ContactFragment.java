@@ -31,7 +31,9 @@ import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.ContactAdapter;
 import com.kloudsync.techexcel.adapter.FriendContactAdapter;
+import com.kloudsync.techexcel.bean.ContactDetailData;
 import com.kloudsync.techexcel.bean.EventFilterContact;
+import com.kloudsync.techexcel.bean.EventRefreshContact;
 import com.kloudsync.techexcel.bean.EventSearchContact;
 import com.kloudsync.techexcel.bean.FriendContact;
 import com.kloudsync.techexcel.bean.MeetingMember;
@@ -268,6 +270,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
             if(adapter == null){
                 return;
             }
+
             if(adapter.getItem(position) instanceof FriendContact){
                 final FriendContact friendContact = (FriendContact) adapter.getItem(position);
 //                AppConfig.Name = friendContact.getUserName();
@@ -283,6 +286,8 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
                     public void accept(JSONObject jsonObject) throws Exception {
                         if(jsonObject.has("code")){
                             Intent intent = new Intent(getActivity(), ContactDetailActivity.class);
+                            intent.putExtra("contact_detail",jsonObject.getJSONObject("data").toString());
+                            intent.putExtra("friend_contact",new Gson().toJson(friendContact));
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                         }
@@ -532,6 +537,12 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
 
         filterContactPop = new PopFilterContact(getActivity());
         filterContactPop.showAtBottom(view,sharedPreferences.getInt("contact_type",1));
+    }
+
+    @Subscribe
+    public void eventRefreshContact(EventRefreshContact eventRefreshContact){
+        showContactByType(sharedPreferences.getInt("contact_type",1));
+
     }
 
 }

@@ -309,6 +309,31 @@ public class Tools {
                 });
     }
 
+    public static void sendMessageToMember(final Context context, final MessageContent msg, String mGroupId, String userid) {
+        io.rong.imlib.model.Message myMessage = io.rong.imlib.model.Message.obtain(mGroupId, Conversation.ConversationType.PRIVATE, msg);
+        myMessage.setExtra(userid);
+        RongIM.getInstance()
+                .sendMessage(myMessage, null, null, new IRongCallback.ISendMessageCallback() {
+                    @Override
+                    public void onAttached(io.rong.imlib.model.Message message) {
+                        Log.e("send message", "onAttached");
+                    }
+
+                    @Override
+                    public void onSuccess(io.rong.imlib.model.Message message) {
+                        Log.e("send message", "onSuccess");
+                        EventBus.getDefault().post(message);
+                    }
+
+                    @Override
+                    public void onError(io.rong.imlib.model.Message message, RongIMClient.ErrorCode errorCode) {
+
+                        Log.e("send message", "onError:" + errorCode + ",message:" + message);
+
+                    }
+                });
+    }
+
 
     /**
      * @param groupId

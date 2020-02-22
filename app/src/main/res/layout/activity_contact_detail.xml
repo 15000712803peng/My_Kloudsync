@@ -15,6 +15,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/image_back"
             android:layout_centerVertical="true"
             android:src="@drawable/arrow_back_new"
             android:layout_width="25dp"
@@ -72,9 +73,11 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="35dp"
-                    android:layout_height="24dp"
-                    android:text="董丽"
+                    android:id="@+id/txt_contact_name"
+                    android:singleLine="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
                     android:textColor="#ff333333"
                     android:textSize="17sp"
                     />
@@ -98,6 +101,17 @@
                 android:textColor="#ff333333"
                 android:textSize="16sp"
                 />
+            <TextView
+                android:id="@+id/txt_phone"
+                android:layout_marginRight="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="#ff999999"
+                android:textSize="14sp"
+                />
         </RelativeLayout>
         <TextView
             style="@style/PersonInfoLineStyle" />
@@ -113,6 +127,18 @@
                 android:text="电子邮件"
                 android:textColor="#ff333333"
                 android:textSize="16sp"
+                />
+
+            <TextView
+                android:id="@+id/txt_mail"
+                android:layout_marginRight="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="#ff999999"
+                android:textSize="14sp"
                 />
         </RelativeLayout>
         <TextView
@@ -130,13 +156,27 @@
                 android:textColor="#ff333333"
                 android:textSize="16sp"
                 />
+
+            <TextView
+                android:id="@+id/txt_describe"
+                android:layout_marginRight="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="#ff999999"
+                android:textSize="14sp"
+                />
         </RelativeLayout>
         <TextView
             style="@style/PersonInfoLineStyle" />
 
 
     </LinearLayout>
+
     <RelativeLayout
+        android:id="@+id/layout_chat"
         android:gravity="center"
         android:padding="16dp"
         android:background="@color/white"
