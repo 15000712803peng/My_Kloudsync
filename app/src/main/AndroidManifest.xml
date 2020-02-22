@@ -675,9 +675,6 @@
         <!-- 雄风 汪 -->
 
         <activity
-            android:name="com.ub.service.activity.AddServiceFinish"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.ub.service.activity.ServiceDetailActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:screenOrientation="portrait" />

@@ -97,6 +97,7 @@ public class ContactSearchActivity extends BaseActivity implements VContactSearc
 
     @Override
     protected void initView() {
+       //int a= R.layout.activity_add_syncroom;
 //        customers = (List<Customer>) getIntent().getExtras().getSerializable("customer_list");
         if (customers == null) {
             customers = new ArrayList<>();
