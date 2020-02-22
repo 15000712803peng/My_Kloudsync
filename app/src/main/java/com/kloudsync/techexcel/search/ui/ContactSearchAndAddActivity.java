@@ -15,7 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -37,6 +39,7 @@ import com.kloudsync.techexcel.bean.SameLetterFriends;
 import com.kloudsync.techexcel.bean.SearchContactInfo;
 import com.kloudsync.techexcel.bean.Team;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.PopFilterContact;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.search.view.VContactSearch;
@@ -68,7 +71,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.rong.imkit.RongIM;
 
-public class ContactSearchAndAddActivity extends BaseActivity implements VContactSearch, View.OnClickListener, TextWatcher, TeamAdapterV2.OnItemClickListener, SearchContactAdapter.OnItemClickListener {
+public class ContactSearchAndAddActivity extends BaseActivity implements VContactSearch, View.OnClickListener, TextWatcher, AdapterView.OnItemClickListener{
 
     private ListView list;
     private ImageView backImage;
@@ -80,6 +83,7 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
     private TextView messageText;
     SharedPreferences userPreferences;
     SearchResultAdapter adapter;
+    Button inviteBtn;
 
     Handler handler = new Handler() {
         @Override
@@ -113,6 +117,8 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
             customers = new ArrayList<>();
         }
         list = findViewById(R.id.list);
+        list.setOnItemClickListener(this);
+
 //        list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         backImage = findViewById(R.id.image_back);
         backImage.setOnClickListener(this);
@@ -123,6 +129,8 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
         noDataLayout = findViewById(R.id.no_data_lay);
         loadingBar = findViewById(R.id.loading_progress);
         messageText = findViewById(R.id.txt_msg);
+        inviteBtn = findViewById(R.id.btn_invite);
+        inviteBtn.setOnClickListener(this);
 
     }
 
@@ -163,6 +171,34 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
                 break;
             case R.id.img_clear_edit:
                 searchEdit.setText("");
+                break;
+            case R.id.btn_invite:
+                if(adapter != null && adapter.getSelectContactsInfo().size() > 0){
+                    Observable.just("Request").observeOn(AndroidSchedulers.mainThread()).map(new Function<String, JSONObject>() {
+                        @Override
+                        public JSONObject apply(String s) throws Exception {
+                            String inviteIds = "";
+                            for(SearchContactInfo contactInfo : adapter.getSelectContactsInfo()){
+                                inviteIds += contactInfo.getUserID() +",";
+                            }
+//                            Log.e("check_inviteids","inviteids:" + inviteIds);
+//                            inviteIds = inviteIds.substring(0,inviteIds.length() - 1);
+//                            Log.e("check_inviteids","after_sub_inviteids:" + inviteIds);
+                            return ServiceInterfaceTools.getinstance().syncAddContactList(AppConfig.SchoolID+"",inviteIds);
+                        }
+                    }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
+                        @Override
+                        public void accept(JSONObject jsonObject) throws Exception {
+                            if(jsonObject.has("RetCode")){
+                                if(jsonObject.getInt("RetCode") == 0){
+                                    new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage(getString(R.string.operate_success)).create().show();
+                                    finish();
+                                }
+                            }
+                        }
+                    }).subscribe();
+                }
+                break;
             default:
                 break;
         }
@@ -294,6 +330,7 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
     private void handleResponse() {
         allDatas.clear();
         if (contactsMap.size() > 0) {
+            inviteBtn.setVisibility(View.VISIBLE);
             noDataLayout.setVisibility(View.GONE);
             Set<Map.Entry<String, List<SearchContactInfo>>> set = contactsMap.entrySet();
             Iterator<Map.Entry<String, List<SearchContactInfo>>> iterator = set.iterator();
@@ -305,37 +342,41 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
                 allDatas.add(contactInfos);
             }
             list.setVisibility(View.VISIBLE);
-            list.setAdapter(new SearchResultAdapter());
+            adapter = new SearchResultAdapter();
+            list.setAdapter(adapter);
         } else {
+            inviteBtn.setVisibility(View.INVISIBLE);
             noDataLayout.setVisibility(View.VISIBLE);
         }
 
 
     }
 
-    private void handleResponse(List<Customer> customers, String keyword) {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.e("check_click","onItemClick");
+        if(adapter != null && adapter.getItem(position) != null){
 
-        if (customers != null && customers.size() > 0) {
-            showContacts(customers, keyword);
-        } else {
-            showEmpty(getString(R.string.no_data));
+            if(adapter.getItem(position) instanceof SearchContactInfo){
+                SearchContactInfo contactInfo = (SearchContactInfo) adapter.getItem(position);
+                Log.e("check_click","contactInfo:" + contactInfo);
+                contactInfo.setSelected(!contactInfo.isSelected());
+                adapter.notifyDataSetChanged();
+                if(contactInfo.isSelected()){
+                    adapter.addSelectedContact(contactInfo);
+                }else {
+                    adapter.delSelectedContact(contactInfo);
+                }
+
+                if(adapter.getSelectContactsInfo().size() > 0){
+                    inviteBtn.setEnabled(true);
+                }else {
+                    inviteBtn.setEnabled(false);
+                }
+            }
         }
     }
 
-    @Override
-    public void onItemClick(Team teamData) {
-
-    }
-
-    @Override
-    public void onItemClick(int position, Customer customer) {
-//        if (customer.isEnableChat()) {
-//            AppConfig.Name = customer.getName();
-//            AppConfig.isUpdateDialogue = true;
-//            RongIM.getInstance().startPrivateChat(this,
-//                    customer.getUBAOUserID(), customer.getName());
-//        }
-    }
 
     class SearchResultAdapter extends BaseAdapter {
         private static final int TYPE_CATEGORY_ITEM = 0;
@@ -440,16 +481,22 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
                         itemHolder.phone = convertView.findViewById(R.id.txt_phone);
                         itemHolder.selectImage = convertView.findViewById(R.id.image_select);
                         convertView.setTag(itemHolder);
+
                     } else {
                         itemHolder = (ItemHolder) convertView.getTag();
                     }
-
                     if (getItem(position) instanceof SearchContactInfo) {
                         SearchContactInfo contactInfo = (SearchContactInfo) getItem(position);
                         String url = contactInfo.getAvatarUrl();
                         Uri imageUri = null;
                         if (!TextUtils.isEmpty(url)) {
                             imageUri = Uri.parse(url);
+                        }
+                        if(contactInfo.isSelected()){
+                            itemHolder.selectImage.setVisibility(View.VISIBLE);
+
+                        }else {
+                            itemHolder.selectImage.setVisibility(View.GONE);
                         }
                         itemHolder.img.setImageURI(imageUri);
                         itemHolder.name.setText(contactInfo.getUserName());
@@ -473,12 +520,30 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
             return getItemViewType(position) != TYPE_CATEGORY_ITEM;
         }
 
+        List<SearchContactInfo> selectContactsInfo = new ArrayList<>();
+
+        public void addSelectedContact(SearchContactInfo contact){
+            if(!selectContactsInfo.contains(contact)){
+                selectContactsInfo.add(contact);
+            }
+
+        }
+
+        public void delSelectedContact(SearchContactInfo contact){
+            selectContactsInfo.remove(contact);
+        }
+
+        public List<SearchContactInfo> getSelectContactsInfo() {
+            return selectContactsInfo;
+        }
+
 
         LayoutInflater inflater;
 
         public SearchResultAdapter() {
             inflater = getLayoutInflater();
         }
+
 
     }
 
@@ -566,6 +631,8 @@ public class ContactSearchAndAddActivity extends BaseActivity implements VContac
         public SimpleDraweeView img;
         public TextView name;
     }
+
+
 
 
 }

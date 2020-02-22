@@ -54,8 +54,6 @@
                         android:textColor="@color/darkgrey"
                         android:textSize="15sp" />
 
-
-
                         <TextView
                             android:layout_marginTop="3dp"
                             android:id="@+id/txt_phone"
@@ -66,19 +64,17 @@
                             android:textColor="@color/grey"
                             android:textSize="14sp" />
 
-
-
                 </LinearLayout>
 
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/image_select"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="2dp"
+                android:layout_marginRight="22dp"
                 android:src="@drawable/check"
                 android:visibility="gone" />
         </RelativeLayout>

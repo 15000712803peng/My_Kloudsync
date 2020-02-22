@@ -3190,6 +3190,7 @@ public class ServiceInterfaceTools {
         Log.e("syncChangeTemStatus", "url:" + url + ",response:" + response);
         return response;
     }
+
     public JSONObject syncSearchUserContact(String searchText){
         String url = AppConfig.URL_PUBLIC + "User/SearchContact?searchText="
                 + searchText;
@@ -3198,6 +3199,29 @@ public class ServiceInterfaceTools {
         return response;
     }
 
+    public JSONObject syncAddContactList(String companyId,String inviteIds){
+        String url = AppConfig.URL_PUBLIC +  "SchoolContact/AddContactList?schoolID=" + companyId + "&roleID=6&userIDs="+ inviteIds;
+        JSONObject params = new JSONObject();
+        try {
+            params.put("schoolID", companyId);
+            params.put("roleID", 6);
+            params.put("userIDs", inviteIds);
+        } catch (JSONException e) {
+            Log.e("syncAddContactList", "JSONException:" + e.getMessage());
+            e.printStackTrace();
+        }
+        Log.e("syncAddContactList", "params:" + params.toString());
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncAddContactList", "url:" + url + ",response:" + response);
+        return response;
+    }
 
+    public JSONObject syncGetContactDetail(String companyId,String userId){
+        String url = AppConfig.URL_MEETING_BASE + "friend/contact_detail?companyId=" + companyId + "&userId=" + userId;
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetContactDetail", "url:" + url + ",response:" + response);
+        return response;
+
+    }
 
 }

@@ -271,7 +271,7 @@ public class ConnectService {
             os.write(content.getBytes());
             os.close();
             int code = connection.getResponseCode();
-            Log.e("code", code + "");
+            Log.e("submitDataByJson", "code," + code);
             if (code == 200) {
                 InputStream is = connection.getInputStream();
                 String str = StringUtils.inputStreamTString(is);
@@ -280,6 +280,7 @@ public class ConnectService {
                 connection.disconnect();
             }
         } catch (Exception e) {
+            Log.e("submitDataByJson", "Exception," + e.getMessage());
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

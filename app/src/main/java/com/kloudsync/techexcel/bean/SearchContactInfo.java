@@ -15,6 +15,30 @@ public class SearchContactInfo {
     private String DeviceName;
     private String ClassroomID;
     private String AppID;
+    private boolean isSelected;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SearchContactInfo that = (SearchContactInfo) o;
+
+        return UserID == that.UserID;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (UserID ^ (UserID >>> 32));
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
 
     public long getUserID() {
         return UserID;

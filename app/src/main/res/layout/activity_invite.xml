@@ -118,7 +118,6 @@
         android:layout_height="0dp"/>
 
     <Button
-
         android:id="@+id/btn_invite"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

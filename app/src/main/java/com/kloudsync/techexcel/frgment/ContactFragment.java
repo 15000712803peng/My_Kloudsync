@@ -48,6 +48,7 @@ import com.kloudsync.techexcel.help.SideBar;
 import com.kloudsync.techexcel.help.SideBar.OnTouchingLetterChangedListener;
 import com.kloudsync.techexcel.help.SideBarSortHelp;
 import com.kloudsync.techexcel.info.Customer;
+import com.kloudsync.techexcel.pc.ui.ContactDetailActivity;
 import com.kloudsync.techexcel.search.ui.ContactSearchActivity;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.view.ClearEditText;
@@ -264,31 +265,31 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
-
             if(adapter == null){
                 return;
             }
             if(adapter.getItem(position) instanceof FriendContact){
-                FriendContact friendContact = (FriendContact) adapter.getItem(position);
-                AppConfig.Name = friendContact.getUserName();
-                RongIM.getInstance().startPrivateChat(getActivity(),
-                        friendContact.getRongCloudId()+"", friendContact.getUserName());
+                final FriendContact friendContact = (FriendContact) adapter.getItem(position);
+//                AppConfig.Name = friendContact.getUserName();
+//                RongIM.getInstance().startPrivateChat(getActivity(),
+//                        friendContact.getRongCloudId()+"", friendContact.getUserName());
+                Observable.just("Request_Detail").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
+                    @Override
+                    public JSONObject apply(String s) throws Exception {
+                        return ServiceInterfaceTools.getinstance().syncGetContactDetail(AppConfig.SchoolID+"",friendContact.getUserId()+"");
+                    }
+                }).doOnNext(new Consumer<JSONObject>() {
+                    @Override
+                    public void accept(JSONObject jsonObject) throws Exception {
+                        if(jsonObject.has("code")){
+                            Intent intent = new Intent(getActivity(), ContactDetailActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    }
+                }).subscribe();
             }
-
-//            Customer cus = isCustomer ? cuslist.get(position - 1) : sclist
-//                    .get(position - 1);
-//            if (cus.isTeam()) {
-//            } else {
-//                if (cus.isEnableChat()) {
-//                    AppConfig.Name = cus.getName();
-//                    AppConfig.isUpdateDialogue = true;
-//                    RongIM.getInstance().startPrivateChat(getActivity(),
-//                            cus.getUBAOUserID(), cus.getName());
-//                }
-//            }
-
         }
-
     }
 
     protected class myOnClick implements OnClickListener {

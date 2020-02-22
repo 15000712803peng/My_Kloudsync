@@ -427,6 +427,8 @@
             android:launchMode="singleTop"
             android:name=".pc.ui.AboutActivity"
             android:screenOrientation="portrait" />
+
+
         <activity
             android:launchMode="singleTop"
             android:name=".personal.AboutActivity2"
@@ -1051,6 +1053,11 @@
         <service android:name="com.kloudsync.techexcel.service.BluetoothLEService"
             android:enabled="true"
             />
+
+        <activity
+            android:launchMode="singleTop"
+            android:name=".pc.ui.ContactDetailActivity"
+            android:screenOrientation="portrait" />
 
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for

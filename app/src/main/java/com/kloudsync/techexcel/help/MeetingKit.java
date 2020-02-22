@@ -111,7 +111,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
 
-
     private RtcManager getRtcManager() {
         if (rtcManager == null) {
             return RtcManager.getDefault(host);
@@ -120,7 +119,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
     public void prepareStart(Activity host, MeetingConfig meetingConfig, String newMeetingId) {
-        Log.e("prepareStart","role:" + meetingConfig.getRole());
+        Log.e("prepareStart", "role:" + meetingConfig.getRole());
         this.host = host;
         this.newMeetingId = newMeetingId;
         this.meetingConfig = meetingConfig;
@@ -139,10 +138,10 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         if (settingDialog.isShowing()) {
             return;
         }
-        settingDialog.show(host,meetingConfig);
+        settingDialog.show(host, meetingConfig);
     }
 
-    public void init(Activity host,MeetingConfig meetingConfig){
+    public void init(Activity host, MeetingConfig meetingConfig) {
         this.host = host;
         this.meetingConfig = meetingConfig;
         ((App) host.getApplication()).initWorkerThread();
@@ -168,13 +167,13 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         if (settingDialog.isShowing()) {
             return;
         }
-        settingDialog.show(host,meetingConfig);
+        settingDialog.show(host, meetingConfig);
     }
 
     public void startMeeting() {
         Log.e("MeetingKit", "start_meeting");
 //        meetingConfig.setRole(MeetingConfig.MeetingRole.HOST);
-        if(!TextUtils.isEmpty(newMeetingId)){
+        if (!TextUtils.isEmpty(newMeetingId)) {
             meetingConfig.setMeetingId(newMeetingId);
         }
         rtcManager = RtcManager.getDefault(host);
@@ -186,70 +185,70 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     }
 
-    public void setEncoderConfigurationBaseMode(){
-        Log.e("setVideoEncoderConfiguration","当前模式   "+meetingConfig.getMode());
-        if(meetingConfig.getMode()==3){   //屏幕共享
-            if(judgeRole()){
+    public void setEncoderConfigurationBaseMode() {
+        Log.e("setVideoEncoderConfiguration", "当前模式   " + meetingConfig.getMode());
+        if (meetingConfig.getMode() == 3) {   //屏幕共享
+            if (isPresenter()) {
                 setVideoEncoderConfiguration(MODE_240P);
-            }else{
+            } else {
                 setVideoEncoderConfiguration(MODE_120P);
             }
-        } else if (meetingConfig.getMode()==2) { //一个放大那个模式
-            if(AppConfig.UserID.equals(meetingConfig.getCurrentMaxVideoUserId())){
+        } else if (meetingConfig.getMode() == 2) { //一个放大那个模式
+            if (AppConfig.UserID.equals(meetingConfig.getCurrentMaxVideoUserId())) {
                 setVideoEncoderConfiguration(MODE_480P);
-            }else{
+            } else {
                 setVideoEncoderConfiguration(MODE_120P);
             }
-        }else if (meetingConfig.getMode()==1) {  //摄像头模式所有人一样大小那个模式
-            if( meetingConfig.getAgoraMembers().size()<=9){
+        } else if (meetingConfig.getMode() == 1) {  //摄像头模式所有人一样大小那个模式
+            if (meetingConfig.getAgoraMembers().size() <= 9) {
                 setVideoEncoderConfiguration(MODE_240P);
-            }else{
+            } else {
                 setVideoEncoderConfiguration(MODE_120P);
             }
-        }else { //看文档模式
-            if(judgeRole()){
+        } else { //看文档模式
+            if (isPresenter()) {
                 setVideoEncoderConfiguration(MODE_360P);
-            }else{
+            } else {
                 setVideoEncoderConfiguration(MODE_120P);
             }
         }
     }
 
 
-    public boolean judgeRole(){
+    public boolean isPresenter() {
         if (!TextUtils.isEmpty(meetingConfig.getPresenterSessionId())) {
             if (AppConfig.UserID.equals(meetingConfig.getPresenterId())) {
-                Log.e("setVideoEncoderConfiguration","是presenter");
-                  return true;
+                Log.e("setVideoEncoderConfiguration", "是presenter");
+                return true;
             }
         }
-        Log.e("setVideoEncoderConfiguration","不是presenter");
+        Log.e("setVideoEncoderConfiguration", "不是presenter");
         return false;
     }
 
-    public static final  int  MODE_120P=0;
-    public static final  int  MODE_240P=1;
-    public static final  int  MODE_360P=2;
-    public static final  int  MODE_480P=3;
+    public static final int MODE_120P = 0;
+    public static final int MODE_240P = 1;
+    public static final int MODE_360P = 2;
+    public static final int MODE_480P = 3;
 
-    public void setVideoEncoderConfiguration(int mode){
-        VideoEncoderConfiguration.VideoDimensions dimension=VideoEncoderConfiguration.VD_160x120;
-        switch (mode){
+    public void setVideoEncoderConfiguration(int mode) {
+        VideoEncoderConfiguration.VideoDimensions dimension = VideoEncoderConfiguration.VD_160x120;
+        switch (mode) {
             case MODE_120P:
-                Log.e("setVideoEncoderConfiguration","120p");
-                dimension=VideoEncoderConfiguration.VD_160x120;  // 120p:  160*120
+                Log.e("setVideoEncoderConfiguration", "120p");
+                dimension = VideoEncoderConfiguration.VD_160x120;  // 120p:  160*120
                 break;
             case MODE_240P:
-                Log.e("setVideoEncoderConfiguration","240p");
-                dimension=VideoEncoderConfiguration.VD_320x240;  // 240p: 320*240
+                Log.e("setVideoEncoderConfiguration", "240p");
+                dimension = VideoEncoderConfiguration.VD_320x240;  // 240p: 320*240
                 break;
             case MODE_360P:
-                Log.e("setVideoEncoderConfiguration","360p");
-                dimension=VideoEncoderConfiguration.VD_480x360;  // 360p:480*360
+                Log.e("setVideoEncoderConfiguration", "360p");
+                dimension = VideoEncoderConfiguration.VD_480x360;  // 360p:480*360
                 break;
             case MODE_480P:
-                Log.e("setVideoEncoderConfiguration","480p");
-                dimension=VideoEncoderConfiguration.VD_640x480;  // 480p: 640*480
+                Log.e("setVideoEncoderConfiguration", "480p");
+                dimension = VideoEncoderConfiguration.VD_640x480;  // 480p: 640*480
                 break;
         }
 //        VideoEncoderConfiguration.VideoDimensions dimension_120p=VideoEncoderConfiguration.VD_160x120;  // 120p:  160*120
@@ -257,14 +256,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 //        VideoEncoderConfiguration.VideoDimensions dimension_3600p=VideoEncoderConfiguration.VD_480x360;  // 360p:480*360
 //        VideoEncoderConfiguration.VideoDimensions dimension_4800p=VideoEncoderConfiguration.VD_640x480;  // 480p: 640*480
 
-        VideoEncoderConfiguration videoEncoderConfiguration=new VideoEncoderConfiguration(dimension,
-                VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15,0,VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_ADAPTIVE);
+        VideoEncoderConfiguration videoEncoderConfiguration = new VideoEncoderConfiguration(dimension,
+                VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15, 0, VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_ADAPTIVE);
 
         getRtcManager().rtcEngine().setVideoEncoderConfiguration(videoEncoderConfiguration);
-
     }
-
-
 
     @Override
     public void onUserStart() {
@@ -288,7 +284,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {
-        Log.e("check_agora_status","onFirstRemoteVideoDecoded:" + "uid:" + uid + ",elapsed:" + elapsed);
+        Log.e("check_agora_status", "onFirstRemoteVideoDecoded:" + "uid:" + uid + ",elapsed:" + elapsed);
     }
 
     @Override
@@ -306,9 +302,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         } catch (Exception e) {
             Log.e("MeetingKit", "mUid = uid:" + e);
         }
-        refreshMembersAndPost(meetingConfig,uid,true);
-
-
+        refreshMembersAndPost(meetingConfig, uid, true);
 
 
 //        Log.e("MeetingKit", "onJoinChannelSuccess,uid:" + uid + ",elapsed:" + elapsed);
@@ -320,14 +314,13 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         if (uid > 1000000000 && uid < 1500000000) {
             meetingConfig.setShareScreenUid(0);
             EventBus.getDefault().post(new EventCloseShare());
-
-            if(judgeRole()){
+            if (isPresenter()) {
                 setVideoEncoderConfiguration(MODE_360P);
-            }else{
+            } else {
                 setVideoEncoderConfiguration(MODE_120P);
             }
 
-        }else {
+        } else {
             AgoraMember member = new AgoraMember();
             member.setUserId(uid);
             member.setMuteAudio(true);
@@ -373,17 +366,17 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onRemoteVideoStats(IRtcEngineEventHandler.RemoteVideoStats stats) {
-        Log.e("check_agora_status","onRemoteVideoStats:" + "RemoteVideoStats:" + stats.uid + "," + stats.rxStreamType);
+        Log.e("check_agora_status", "onRemoteVideoStats:" + "RemoteVideoStats:" + stats.uid + "," + stats.rxStreamType);
     }
 
-    public void postShareScreenDelay(final int uid){
+    public void postShareScreenDelay(final int uid) {
 //        if(meetingConfig.getMode() != 3){
 //            return;
 //        }
         Observable.just("main_thread").delay(10000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                if(uid <= 1000000000 || uid > 1500000000){
+                if (uid <= 1000000000 || uid > 1500000000) {
                     return;
                 }
 
@@ -402,14 +395,14 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     }
 
-    public void postShareScreen(final int uid){
-        if(meetingConfig.getMode() != 3){
+    public void postShareScreen(final int uid) {
+        if (meetingConfig.getMode() != 3) {
             return;
         }
         Observable.just("main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                if(uid <= 1000000000 || uid > 1500000000){
+                if (uid <= 1000000000 || uid > 1500000000) {
                     return;
                 }
 
@@ -442,13 +435,13 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 public void accept(MeetingConfig meetingConfig) throws Exception {
                     // 屏幕共享
                     if (uid > 1000000000 && uid < 1500000000) {
-                        Log.e("check_share_screen_onUserJoined","uid:" + uid);
+                        Log.e("check_share_screen_onUserJoined", "uid:" + uid);
                         meetingConfig.setShareScreenUid(uid);
                         postShareScreen(meetingConfig.getShareScreenUid());
 
-                    }else {
-                     //  成员的camera
-                        refreshMembersAndPost(meetingConfig,uid,false);
+                    } else {
+                        //  成员的camera
+                        refreshMembersAndPost(meetingConfig, uid, false);
                     }
                 }
             }).subscribe();
@@ -456,7 +449,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
     }
 
-    public void setShareScreenStream(EventShareScreen eventShareScreen){
+    public void setShareScreenStream(EventShareScreen eventShareScreen) {
 
         getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(eventShareScreen.getShareView(), VideoCanvas.RENDER_MODE_HIDDEN, eventShareScreen.getUid()));
 
@@ -480,29 +473,19 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
     private AgoraMember createSelfCamera(int userId) {
-        Log.e("check_agora","begin_create_camera");
         AgoraMember member = new AgoraMember();
         member.setUserId(userId);
         boolean isMuteVedio = !MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn();
-        Log.e("check_agora","one:"+ isMuteVedio);
         boolean isMuteAudio = !MeetingSettingCache.getInstance(host).getMeetingSetting().isMicroOn();
-        Log.e("check_agora","two:" + isMuteAudio);
         member.setMuteVideo(isMuteVedio);
         member.setMuteAudio(isMuteAudio);
         member.setAdd(true);
-        Log.e("check_agora","three");
         SurfaceView surfaceV = RtcEngine.CreateRendererView(host.getApplicationContext());
-        Log.e("check_agora","four");
         surfaceV.setZOrderOnTop(true);
-        Log.e("check_agora","five");
         surfaceV.setZOrderMediaOverlay(true);
-        Log.e("check_agora","six");
         getRtcManager().rtcEngine().setupLocalVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, userId));
-        Log.e("check_agora","seven");
         getRtcManager().worker().getRtcEngine().muteLocalVideoStream(isMuteVedio);
-        Log.e("check_agora","eight");
         member.setSurfaceView(surfaceV);
-        Log.e("check_agora","end_create_camera");
         return member;
     }
 
@@ -574,7 +557,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         if (fullCameraAdapter != null) {
             fullCameraAdapter.muteOrOpenCamera(getRtcManager().worker().getEngineConfig().mUid, !isCameraOn);
         }
-        onUserMuteVideo(Integer.parseInt(AppConfig.UserID),!MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn());
+        onUserMuteVideo(Integer.parseInt(AppConfig.UserID), !MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn());
 
     }
 
@@ -588,7 +571,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         Log.e("menuMicroClicked", "mute_locacl_voice:" + !isMicroOn);
         getRtcManager().worker().getRtcEngine().muteLocalAudioStream(!isMicroOn);
         MeetingSettingCache.getInstance(host).setMicroOn(isMicroOn);
-        onUserMuteAudio(Integer.parseInt(AppConfig.UserID),!MeetingSettingCache.getInstance(host).getMeetingSetting().isMicroOn());
+        onUserMuteAudio(Integer.parseInt(AppConfig.UserID), !MeetingSettingCache.getInstance(host).getMeetingSetting().isMicroOn());
     }
 
     @Override
@@ -623,8 +606,8 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     private InviteUserPopup inviteUserPopup;
 
     private void showInviteDialog() {
-        if(inviteUserPopup != null){
-            if(inviteUserPopup.isShowing()){
+        if (inviteUserPopup != null) {
+            if (inviteUserPopup.isShowing()) {
                 inviteUserPopup.dismiss();
             }
             inviteUserPopup = null;
@@ -738,11 +721,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                     if (result.getInt("code") == 0) {
                         List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
-                        if(members != null){
-                            for(MeetingMember member : members){
+                        if (members != null) {
+                            for (MeetingMember member : members) {
 
-                                if(member.getRole() == 2){
-                                    meetingConfig.setMeetingHostId(member.getUserId()+"");
+                                if (member.getRole() == 2) {
+                                    meetingConfig.setMeetingHostId(member.getUserId() + "");
                                 }
 
                                 if (member.getPresenter() == 1) {
@@ -761,16 +744,16 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             @Override
             public MeetingConfig apply(MeetingConfig meetingConfig) throws Exception {
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.AUDIENCE);
-                Log.e("check_auditor","result:" + result);
+                Log.e("check_auditor", "result:" + result);
 
                 if (result.has("code")) {
                     if (result.getInt("code") == 0) {
-                        Log.e("check_auditor","json_array" + result.getJSONArray("data").toString());
+                        Log.e("check_auditor", "json_array" + result.getJSONArray("data").toString());
                         List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
-                        Log.e("check_auditor","auditor" + members);
-                        if(members != null){
-                            for(MeetingMember member : members){
+                        Log.e("check_auditor", "auditor" + members);
+                        if (members != null) {
+                            for (MeetingMember member : members) {
                                 member.setRole(MeetingConfig.MeetingRole.AUDIENCE);
                             }
                             meetingConfig.setMeetingAuditor(members);
@@ -788,8 +771,8 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                     if (result.getInt("code") == 0) {
                         List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
-                        if(members != null){
-                            for(MeetingMember member : members){
+                        if (members != null) {
+                            for (MeetingMember member : members) {
                                 member.setRole(MeetingConfig.MeetingRole.BE_INVITED);
                             }
                             meetingConfig.setMeetingInvitors(members);
@@ -798,7 +781,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 }
                 EventRefreshMembers refreshMembers = new EventRefreshMembers();
                 refreshMembers.setMeetingConfig(meetingConfig);
-                Log.e("check_member","member:" + meetingConfig.getMeetingMembers().size() + "," + "auditor:" + meetingConfig.getMeetingAuditor().size());
+                Log.e("check_member", "member:" + meetingConfig.getMeetingMembers().size() + "," + "auditor:" + meetingConfig.getMeetingAuditor().size());
                 EventBus.getDefault().post(refreshMembers);
                 return meetingConfig;
             }
@@ -806,23 +789,23 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }).subscribe();
     }
 
-    public void templeDisableLocalVideo(){
+    public void templeDisableLocalVideo() {
         try {
             getRtcManager().worker().getRtcEngine().disableVideo();
-            Log.e("templeDisableLocalVideo","disableVideo");
-        }catch (Exception e){
-            Log.e("templeDisableLocalVideo","exception:" + e);
+            Log.e("templeDisableLocalVideo", "disableVideo");
+        } catch (Exception e) {
+            Log.e("templeDisableLocalVideo", "exception:" + e);
 
         }
     }
 
-    public void restoreLocalVedeo(){
+    public void restoreLocalVedeo() {
         boolean isCameraOn = MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn();
         try {
             getRtcManager().worker().getRtcEngine().enableVideo();
-            Log.e("restoreLocalVedeo","enableVideo:" + isCameraOn);
-        }catch (Exception e){
-            Log.e("restoreLocalVedeo","exception:" + e);
+            Log.e("restoreLocalVedeo", "enableVideo:" + isCameraOn);
+        } catch (Exception e) {
+            Log.e("restoreLocalVedeo", "exception:" + e);
 
         }
     }
@@ -837,11 +820,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                     if (result.getInt("code") == 0) {
                         List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
                         }.getType());
-                        if(members != null){
-                            for(MeetingMember member : members){
+                        if (members != null) {
+                            for (MeetingMember member : members) {
 
-                                if(member.getRole() == 2){
-                                    meetingConfig.setMeetingHostId(member.getUserId()+"");
+                                if (member.getRole() == 2) {
+                                    meetingConfig.setMeetingHostId(member.getUserId() + "");
                                 }
 
                                 if (member.getPresenter() == 1) {
@@ -858,9 +841,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<MeetingConfig>() {
             @Override
             public void accept(MeetingConfig meetingConfig) throws Exception {
-                if(isSelf){
+                if (isSelf) {
                     EventBus.getDefault().post(createSelfCamera(uid));
-                }else {
+                } else {
                     EventBus.getDefault().post(createMemberCamera(uid));
                 }
 

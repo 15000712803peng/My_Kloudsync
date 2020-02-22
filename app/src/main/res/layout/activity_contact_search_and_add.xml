@@ -88,6 +88,7 @@
         </LinearLayout>
 
         <ListView
+            android:layout_marginBottom="88dp"
             android:id="@+id/list"
             android:divider="@android:color/transparent"
             android:dividerHeight="0px"
@@ -115,6 +116,19 @@
             android:textSize="17dp" />
 
     </RelativeLayout>
+
+    <Button
+        android:visibility="invisible"
+        android:enabled="false"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/btn_invite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="18dp"
+        android:background="@drawable/bg_login_btn"
+        android:text="@string/satOk"
+        android:textColor="@color/text_wb"
+        android:textSize="14sp" />
 
 
 </RelativeLayout>
