@@ -214,6 +214,22 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
     }
 
+    /**
+     *
+     */
+    public void retSetConfigurationBaseonNetwork(boolean isPoor){
+        Log.e("setVideoEncoderConfiguration","当前网络状态   "+isPoor);
+        if(isPoor){ //网络差
+            if(!isPresenter()){
+                setVideoEncoderConfiguration(MODE_480P);
+            }
+        }else{
+            if(isPresenter()){
+                setVideoEncoderConfiguration(MODE_120P);
+            }
+        }
+    }
+
 
     public boolean isPresenter() {
         if (!TextUtils.isEmpty(meetingConfig.getPresenterSessionId())) {
