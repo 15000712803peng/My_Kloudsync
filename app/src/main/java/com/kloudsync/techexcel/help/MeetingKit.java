@@ -220,11 +220,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     public void retSetConfigurationBaseonNetwork(boolean isPoor){
         Log.e("setVideoEncoderConfiguration","当前网络状态   "+isPoor);
         if(isPoor){ //网络差
-            if(!judgeRole()){
-                setVideoEncoderConfiguration(MODE_360P);
+            if(!isPresenter()){
+                setVideoEncoderConfiguration(MODE_480P);
             }
         }else{
-            if(judgeRole()){
+            if(isPresenter()){
                 setVideoEncoderConfiguration(MODE_120P);
             }
         }
