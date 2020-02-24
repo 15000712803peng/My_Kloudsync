@@ -352,7 +352,7 @@ public class SocketMessageManager {
 
     }
 
-    public void  sendMessage_audio_sync(MeetingConfig config, EventSoundSync eventSoundSync){
+    public void sendMessage_audio_sync(MeetingConfig config, EventSoundSync eventSoundSync) {
         try {
             JSONObject message = new JSONObject();
             message.put("action", "AUDIO_SYNC");
@@ -364,23 +364,24 @@ public class SocketMessageManager {
             e.printStackTrace();
         }
     }
-    public void  sendMessage_notify_play_audio_sync(MeetingConfig config, EventPlaySoundSync eventSoundSync){
+
+    public void sendMessage_Soundtrack_Playing_Status(String soundtrackId, int status, long time) {
         JSONObject message = new JSONObject();
         try {
             message.put("actionType", 23);
-            message.put("soundtrackId", eventSoundSync.getSoundtrackID());
-            message.put("stat", eventSoundSync.getStatus()); //1 开始播放  0 停止播放  2暂停播放 3继续播放
-            if ( eventSoundSync.getStatus() == 4||eventSoundSync.getStatus() == 5) {  //   4每隔1秒发播放进度     5 进度条拖动停止通知播放进度
-                message.put("time", eventSoundSync.getTime());
+            message.put("soundtrackId", soundtrackId);
+            message.put("stat", status); //1 开始播放  0 停止播放  2暂停播放 3继续播放
+            if (status == 4 || status == 5) {
+                //   4每隔1秒发播放进度
+                //   5 进度条拖动停止通知播放进度
+                message.put("time", time);
             }
-            Log.e("sendMessage_notify_play_audio_sync",message.toString());
+            Log.e("sendMessage_Soundtrack_Playing_Status", message.toString());
             doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-
-
 
     public void sendMessage_InviteToMeeting(MeetingConfig config, String users) {
         try {
@@ -425,7 +426,7 @@ public class SocketMessageManager {
         }
     }
 
-    public void sendMessage_MuteStatus(int stat){
+    public void sendMessage_MuteStatus(int stat) {
         JSONObject message = new JSONObject();
         try {
             message.put("stat", stat);
@@ -461,7 +462,7 @@ public class SocketMessageManager {
         Observable.just("send_again").delay(1000, TimeUnit.MILLISECONDS).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                if(getClient() != null){
+                if (getClient() != null) {
                     try {
                         getClient().send(message);
                     } catch (Exception exception) {

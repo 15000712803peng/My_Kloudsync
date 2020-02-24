@@ -3321,7 +3321,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public void receiveEventSoundSync(EventSoundSync eventSoundSync) {
         Log.e("syncing---", eventSoundSync.getSoundtrackID() + "  " + eventSoundSync.getStatus() + "  " + eventSoundSync.getTime());
         int soundtrackID = eventSoundSync.getSoundtrackID();
-        if (eventSoundSync.getStatus() == 1) { //開始錄音
+        if (eventSoundSync.getStatus() == 1) { //开始录制
             isSyncing = true;
             getJspPagenumber();
             messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
@@ -3342,6 +3342,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void getJspPagenumber() {
+
         web.evaluateJavascript("javascript:GetCurrentPageNumber()", new ValueCallback<String>() {
             @Override
             public void onReceiveValue(String s) {
