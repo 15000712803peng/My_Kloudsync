@@ -148,12 +148,6 @@
         <item name="android:colorForeground">@color/grey</item>
     </style>
 
-    <!-- 雄风 汪 -->
-    <style name="anination">
-        <item name="android:windowEnterAnimation">@anim/enter</item>
-        <item name="android:windowExitAnimation">@anim/out</item>
-    </style>
-
     <style name="anination2">
         <item name="android:windowEnterAnimation">@anim/enter2</item>
         <item name="android:windowExitAnimation">@anim/out2</item>
@@ -162,11 +156,6 @@
     <style name="anination3">
         <item name="android:windowEnterAnimation">@anim/yinrightin</item>
         <item name="android:windowExitAnimation">@anim/yinrightout</item>
-    </style>
-
-    <style name="anination4">
-        <item name="android:windowEnterAnimation">@anim/yinleftin</item>
-        <item name="android:windowExitAnimation">@anim/yinleftout</item>
     </style>
 
     <style name="FullscreenTheme" parent="AppTheme">
