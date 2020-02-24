@@ -2,9 +2,7 @@ package com.kloudsync.techexcel.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -16,52 +14,36 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.HeaderRecyclerAdapter;
 import com.kloudsync.techexcel.bean.EventCloseWebView;
 import com.kloudsync.techexcel.bean.EventPlayWebVedio;
 import com.kloudsync.techexcel.bean.SupportDevice;
-import com.kloudsync.techexcel.bean.Team;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DeviceManager;
-import com.kloudsync.techexcel.help.PlayRecordKit;
 import com.kloudsync.techexcel.help.RecordActionsManager;
 import com.kloudsync.techexcel.help.RecordAudioManager;
 import com.kloudsync.techexcel.help.RecordShareVedioManager;
 
-import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.UserVedioManager;
 import com.kloudsync.techexcel.help.WebVedioManager;
-import com.kloudsync.techexcel.info.Uploadao;
-import com.kloudsync.techexcel.response.TeamsResponse;
 import com.kloudsync.techexcel.tool.SyncWebActionsCache;
-import com.ub.kloudsync.activity.Document;
-import com.ub.kloudsync.activity.TeamSpaceBean;
-import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
-import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.ChannelVO;
 import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.Record;
 import com.ub.techexcel.bean.RecordDetail;
 import com.ub.techexcel.bean.WebAction;
-import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.feezu.liuli.timeselector.Utils.DateUtil;
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
@@ -74,16 +56,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAdapter.OnItemClickListener, Dialog.OnDismissListener, SeekBar.OnSeekBarChangeListener {
@@ -258,7 +235,6 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
             case R.id.close:
                 release();
                 dismiss();
-
                 //结束播放
                 break;
 
@@ -268,7 +244,6 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
             case R.id.cancel:
                 dismiss();
                 break;
-
 //            case R.id.image_center_start:
 //                if (playHandler != null) {
 //                    playHandler.obtainMessage(MESSAGE_PLAY_START).sendToTarget();
@@ -279,7 +254,6 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
         }
     }
-
 
     private String showPdfUrl;
     private String page;
@@ -310,7 +284,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                     if(result == 1){
                         Log.e("check_play_step", "step_three:start_execute");
                         downloadActions(recordDetail.getDuration(),recordDetail.getRecordingId());
-                        syncDownloadFirst(recordDetail.getRecordingId());
+                        syncDownloadFirstActions(recordDetail.getRecordingId());
                         playTask.execute();
                     }
                 }
@@ -384,7 +358,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     }
 
 
-    private void syncDownloadFirst(int recordId){
+    private void syncDownloadFirstActions(int recordId){
         final String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + 0 + "&endTime=" + 20000;
         final String cacheUrl = url + "__time__separator__" + 0 + "__" + 20000+"__" + recordId;
         boolean isContain = webActionsCache.containPartWebActions(cacheUrl);
@@ -492,7 +466,6 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 recordShareVedioManager.setPlayTime(playTime);
                 userVedioManager.setPlayTime(playTime);
                 try {
-
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -675,7 +648,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     @org.xwalk.core.JavascriptInterface
     public void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
         if (actionsManager != null) {
-            actionsManager.preloadFile(url, currentpageNum);
+//            actionsManager.preloadFile(url, currentpageNum);
         }
         Log.e("JavascriptInterface", "preLoadFileFunctiona," + url + "     currentpageNum   " + currentpageNum + "   showLoading    " + showLoading);
 

@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     >
-
+    
     <LinearLayout
         android:background="@drawable/bottom_dialog_border"
         android:orientation="vertical"
@@ -28,7 +28,7 @@
                 android:textSize="14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/join3"
+                android:text="@string/join_compnay"
                 android:textColor="@color/black" />
 
             <TextView
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:textColor="#999999"
-                android:text="@string/otherklassid"
+                android:text="@string/input_invite_code"
                 android:textSize="12sp" />
 
 
@@ -61,13 +61,13 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:background="@drawable/enter_meeting_bg"
-                    android:hint="@string/joinroom"
+                    android:hint="@string/hint_input_invite_code"
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/joinroom2"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
+                    android:id="@+id/join"
+                    android:paddingLeft="22dp"
+                    android:paddingRight="22dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="18dp"
                     android:paddingTop="12dp"
@@ -75,7 +75,7 @@
                     android:background="@drawable/join_bg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/join2"
+                    android:text="@string/_join"
                     android:textColor="#ffffffff"
                     android:textSize="15sp"
                     />

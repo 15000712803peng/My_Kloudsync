@@ -506,7 +506,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             }
         });
 
-
     }
 
     @org.xwalk.core.JavascriptInterface
@@ -608,7 +607,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 //
             }
         }
-
 
     }
 

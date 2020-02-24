@@ -26,6 +26,7 @@ import com.kloudsync.techexcel.personal.CreateOrganizationActivityV2;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.service.activity.SocketService;
+import com.ub.techexcel.tools.JoinCompanyPopup;
 import com.ub.techexcel.tools.JoinMeetingPopup;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -57,9 +58,8 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
     private TextView createText;
     private TextView joinMeetingText;
     private TextView backText;
-    private EditText inviteCodeEdit;
-    private ImageView goToInviteImage;
     private SharedPreferences sharedPreferences;
+    private TextView joinCompanyText;
 
     @Override
     protected int setLayout() {
@@ -75,12 +75,11 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
         createText = findViewById(R.id.txt_create);
         createText.setOnClickListener(this);
         joinMeetingText = findViewById(R.id.txt_join_meeting);
+        joinCompanyText = findViewById(R.id.txt_join_company);
+        joinCompanyText.setOnClickListener(this);
         joinMeetingText.setOnClickListener(this);
         backText = findViewById(R.id.txt_back);
         backText.setOnClickListener(this);
-        inviteCodeEdit = findViewById(R.id.edit_join_by_invite_code);
-        goToInviteImage = findViewById(R.id.image_go_to_invite);
-        goToInviteImage.setOnClickListener(this);
     }
 
     @Override
@@ -101,13 +100,8 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
             case R.id.txt_back:
                 finish();
                 break;
-            case R.id.image_go_to_invite:
-                String code = inviteCodeEdit.getText().toString().trim();
-                if (TextUtils.isEmpty(code)) {
-                    Toast.makeText(this, "请输入邀请码", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                requestJoinCompanyAndEnter(code);
+            case R.id.txt_join_company:
+                showJoinCompanyDialog();
                 break;
             default:
                 break;
@@ -171,11 +165,11 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
                                         String name = sharedPreferences.getString("name", null);
                                         String pwd = LoginGet.DecodeBase64Password(sharedPreferences.getString("password", null));
                                         String telephone = sharedPreferences.getString("telephone", null);
-                                        Log.e("autoLogin","name:" + name + ",pwd:" + pwd + ",telephone:" + telephone);
-                                        processLogin(name,pwd,telephone);
+                                        Log.e("autoLogin", "name:" + name + ",pwd:" + pwd + ",telephone:" + telephone);
+                                        processLogin(name, pwd, telephone);
 
                                     }
-                                }else {
+                                } else {
 
                                 }
 
@@ -225,6 +219,22 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
             });
         }
         joinMeetingPopup.show();
+    }
+
+    JoinCompanyPopup joinCompanyPopup;
+
+    private void showJoinCompanyDialog() {
+        if (joinCompanyPopup == null) {
+            joinCompanyPopup = new JoinCompanyPopup();
+            joinCompanyPopup.getPopwindow(this);
+            joinCompanyPopup.setJoinCompanyClickedListener(new JoinCompanyPopup.OnJoinCompanyClickedListener() {
+                @Override
+                public void joinCompanyClick(String code) {
+                    requestJoinCompanyAndEnter(code);
+                }
+            });
+        }
+        joinCompanyPopup.show();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -375,7 +385,6 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
                 }
             }
         }).subscribe();
-
     }
 
     private void goToMainActivity() {

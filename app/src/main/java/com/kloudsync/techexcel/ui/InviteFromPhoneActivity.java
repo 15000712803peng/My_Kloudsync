@@ -26,6 +26,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.RequestContactData;
 import com.kloudsync.techexcel.bean.RequestContactResponse;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.ContactOutsideKloudDialog;
 import com.kloudsync.techexcel.dialog.RequestContactInfoDialog;
 import com.kloudsync.techexcel.response.InviteResponse;
 import com.kloudsync.techexcel.start.ChangeCountryCode;
@@ -199,8 +200,10 @@ public class InviteFromPhoneActivity extends Activity implements View.OnClickLis
     }
 
     private void handleRequestData(RequestContactData contactData, String phone) {
+
         if (contactData == null) {
             //该联系人不在系统内
+            showContactOutSideKloud(phone);
         } else {
             showContactInfo(contactData, phone);
         }
@@ -218,6 +221,20 @@ public class InviteFromPhoneActivity extends Activity implements View.OnClickLis
 
         contactInfoDialog = new RequestContactInfoDialog(this);
         contactInfoDialog.show(contactData, phone);
+    }
+
+    private ContactOutsideKloudDialog contactOutsideKloudDialog;
+
+    private void showContactOutSideKloud(String phone) {
+        if (contactOutsideKloudDialog != null) {
+            if (contactOutsideKloudDialog.isShowing()) {
+                contactOutsideKloudDialog.dismiss();
+            }
+            contactOutsideKloudDialog = null;
+        }
+
+        contactOutsideKloudDialog = new ContactOutsideKloudDialog(this);
+        contactOutsideKloudDialog.show(phone);
     }
 
     private void invite(String mobile) {

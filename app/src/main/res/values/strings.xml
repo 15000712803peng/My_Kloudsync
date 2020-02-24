@@ -870,6 +870,11 @@ Please input the cell phone number to add the contact
     <string name="add_new_contacts">Add new contact</string>
     <string name="create_new_company_label_info">The enterprise, first team and first space are successfully created.Invite your team members to join.If the invitation is set to admin, the invited team can be set to the enterprises admin user.The admin user can manage all the enterprises teams and spaces</string>
     <string name="hello_friend_summary">say hello</string>
+    <string name="join_compnay">join a company/organization</string>
+    <string name="input_invite_code">input company/organization invite code</string>
+    <string name="_join">Join</string>
+    <string name="hint_input_invite_code">Input invite vode</string>
+
 
 
 </resources>

@@ -158,7 +158,6 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
         list.setOnItemClickListener(new MyOnitem());
         filterImage.setOnClickListener(this);
         showContactByType(sharedPreferences.getInt("contact_type",1));
-
     }
 
     private View initHeader() {
@@ -195,6 +194,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
                 sum++;
             }
         }
+
         tv_ns.setText(sum + "");
         tv_ns.setVisibility(sum == 0 ? View.GONE : View.VISIBLE);
     }
@@ -490,6 +490,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
                         }
                     }
                 }
+
                 return letterFriendsList;
             }
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<List<SameLetterFriends>>() {

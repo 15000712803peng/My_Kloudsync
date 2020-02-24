@@ -58,6 +58,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventRefreshSpaceFragment;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
+import com.kloudsync.techexcel.bean.EventViewDocInSpacePermissionGranted;
 import com.kloudsync.techexcel.bean.RoleInTeam;
 import com.kloudsync.techexcel.bean.Team;
 import com.kloudsync.techexcel.bean.params.EventCamera;
@@ -91,6 +92,7 @@ import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.Md5Tool;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.SpaceDeletePopup;
 import com.ub.kloudsync.activity.SpacePropertyActivity;
@@ -99,8 +101,10 @@ import com.ub.kloudsync.activity.TeamMorePopup;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
+import com.ub.service.activity.SocketService;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
+import com.ub.techexcel.bean.EventViewDocPermissionGranted;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.tools.FileUtils;
@@ -127,6 +131,8 @@ import java.util.TimerTask;
 import static android.content.Context.MODE_PRIVATE;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE;
 
 public class SpaceDocumentsFragment extends Fragment implements View.OnClickListener, DocChooseDialog.SelectedOptionListener, DocumentUploadTool.DocUploadDetailLinstener {
 
@@ -205,13 +211,19 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         intent.putExtra("isInstantMeeting", 1);
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
-
-
+// -----------------
+        intent.putExtra("meeting_id", bean.getId() + "," + AppConfig.UserID);
+//        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
+        intent.putExtra("document_id", "");
+        intent.putExtra("meeting_type", 2);
+        intent.putExtra("space_id", spaceId);
+        intent.putExtra("lession_id", 0);
         startActivity(intent);
     }
 
     private void GoToVIew(Document lesson) {
-        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
+        updateSocket();
+        Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", lesson.getLessonId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);
@@ -221,6 +233,14 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         intent.putExtra("isInstantMeeting", 1);
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
+
+        //----------
+        intent.putExtra("meeting_id", Integer.parseInt(lesson.getLessonId()) + "," + AppConfig.UserID);
+//        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
+        intent.putExtra("document_id", lesson.getTempItemId());
+        intent.putExtra("meeting_type", 2);
+        intent.putExtra("space_id", spaceId);
+        intent.putExtra("lession_id", Integer.parseInt(lesson.getLessonId()));
         startActivity(intent);
     }
 
@@ -347,6 +367,8 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         });
     }
 
+    private Document tempClickedDocument;
+
     private void getSpaceList() {
         TeamSpaceInterfaceTools.getinstance().getSpaceDocumentList(AppConfig.URL_PUBLIC + "SpaceAttachment/List?spaceID=" + spaceId + "&type=1&pageIndex=0&pageSize=20&searchText=",
                 TeamSpaceInterfaceTools.GETSPACEDOCUMENTLIST, new TeamSpaceInterfaceListener() {
@@ -409,7 +431,9 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
 
                             @Override
                             public void onRealItem(Document lesson, View view) {
-                                getTempLesson(lesson);
+                                tempClickedDocument = lesson;
+                                viewDocIfPermissionGranted(lesson);
+//                                getTempLesson(lesson);
 
                             }
 
@@ -1546,5 +1570,56 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         });
     }
 
+    private void updateSocket(){
+        Intent service = new Intent(getActivity().getApplicationContext(), SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                context.startForegroundService(service);
+            getActivity().startService(service);
+        } else {
+            getActivity().startService(service);
+        }
+    }
+
+    private void viewDocIfPermissionGranted(Document document){
+        if(KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())){
+            requestDocumentDetail(document);
+        }else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE);
+        }
+    }
+
+    private void requestDocumentDetail(final Document document) {
+        try {
+            String url = AppConfig.URL_PUBLIC
+                    + "Lesson/AddTempLessonWithOriginalDocument?attachmentID=" + document.getAttachmentID()
+                    + "&Title=" + URLEncoder.encode(LoginGet.getBase64Password(document.getTitle()), "UTF-8");
+            ServiceInterfaceTools.getinstance().addTempLessonWithOriginalDocument(url, ServiceInterfaceTools.ADDTEMPLESSONWITHORIGINALDOCUMENT,
+                    new ServiceInterfaceListener() {
+                        @Override
+                        public void getServiceReturnData(Object object) {
+                            String data = (String) object;
+                            String[] datas = data.split("-");
+                            document.setLessonId(datas[0]);
+                            document.setTempItemId(Integer.parseInt(datas[1]));
+                            Message msg = Message.obtain();
+                            msg.what = AppConfig.AddTempLesson;
+                            msg.obj = document;
+                            handler.sendMessage(msg);
+                        }
+                    });
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventViewDocAfterPermissionGranted(EventViewDocInSpacePermissionGranted permissionGranted){
+        if(tempClickedDocument != null){
+            requestDocumentDetail(tempClickedDocument);
+            tempClickedDocument = null;
+        }
+    }
 
 }

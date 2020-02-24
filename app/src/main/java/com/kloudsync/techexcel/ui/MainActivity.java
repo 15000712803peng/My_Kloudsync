@@ -43,6 +43,7 @@ import com.kloudsync.techexcel.bean.EventSpaceData;
 import com.kloudsync.techexcel.bean.EventSpaceFragment;
 import com.kloudsync.techexcel.bean.EventSyncBook;
 import com.kloudsync.techexcel.bean.EventSyncRoom;
+import com.kloudsync.techexcel.bean.EventViewDocInSpacePermissionGranted;
 import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.FollowInfo;
 import com.kloudsync.techexcel.bean.UserPath;
@@ -143,6 +144,7 @@ import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSIO
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_FOR_INSTALL_APK;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE;
 
 
 public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener, OnClickListener {
@@ -1746,6 +1748,15 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 if (installUri != null) {
                     installApkBeforeCheckPermission(installUri);
                 }
+            }
+        }else if(requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE){
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                EventViewDocInSpacePermissionGranted viewDocPermissionGranted = new EventViewDocInSpacePermissionGranted();
+                EventBus.getDefault().post(viewDocPermissionGranted);
+
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "查看文档需要访问sdcard的权限，请允许", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -96,10 +96,10 @@
             </LinearLayout>
 
             <ImageView
-                android:layout_marginRight="16dp"
+                android:layout_marginRight="18dp"
                 android:id="@+id/img_chat"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:layout_alignParentRight="true"
                 android:padding="5dp"
                 android:src="@drawable/contact_chat" />

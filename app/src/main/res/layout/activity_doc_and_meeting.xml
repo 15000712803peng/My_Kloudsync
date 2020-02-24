@@ -38,20 +38,6 @@
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/layout_remote_share"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
-
-        <FrameLayout
-            android:background="@color/white"
-            android:id="@+id/frame_remote_share"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"></FrameLayout>
-
-    </RelativeLayout>
-
-    <RelativeLayout
         android:background="@color/lightgrey"
         android:id="@+id/layout_meeting_default_document"
         android:layout_width="match_parent"
@@ -253,6 +239,21 @@
 
         </LinearLayout>
     </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_remote_share"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:background="@color/white"
+            android:id="@+id/frame_remote_share"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></FrameLayout>
+
+    </RelativeLayout>
+
 
     <RelativeLayout
         android:id="@+id/layout_real_meeting"

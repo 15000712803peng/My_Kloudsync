@@ -144,7 +144,7 @@ public class FriendContactAdapter extends BaseAdapter {
                     contactHolder.img.setImageURI(imageUri);
                     contactHolder.name.setText(friendContact.getUserName());
 
-
+//                    if(friendContact.is)
 
                 }
 
@@ -157,7 +157,6 @@ public class FriendContactAdapter extends BaseAdapter {
 //                holder.setViewVisible(R.id.tv_sort, View.GONE);
 //            }
 //
-//            holder.setViewVisible(R.id.img_chat, customer.isEnableChat() ? View.VISIBLE : View.GONE);
                 // 绑定数据
                 break;
         }

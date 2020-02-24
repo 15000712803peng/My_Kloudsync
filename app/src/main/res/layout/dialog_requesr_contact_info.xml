@@ -37,9 +37,9 @@
                 android:layout_gravity="center"
                 android:scaleType="center"
                 app:fadeDuration="500"
-                app:failureImage="@drawable/hello"
+                app:failureImage="@drawable/chat_avatar_default"
                 app:failureImageScaleType="centerInside"
-                app:placeholderImage="@drawable/hello"
+                app:placeholderImage="@drawable/chat_avatar_default"
                 app:placeholderImageScaleType="fitCenter"
                 app:roundAsCircle="true" />
 

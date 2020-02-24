@@ -507,7 +507,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingConfig.setRole(data.getIntExtra("meeting_role", MeetingConfig.MeetingRole.HOST));
         meetingConfig.setUserToken(UserData.getUserToken(this));
         meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting", false));
-        meetingConfig.setSpaceId(getIntent().getIntExtra("spaceId", 0));
+        meetingConfig.setSpaceId(getIntent().getIntExtra("space_id", 0));
         return meetingConfig;
     }
 
@@ -1033,19 +1033,20 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
             meetingMenu.setVisibility(View.VISIBLE);
             //---处理笔记
-            if (!TextUtils.isEmpty(helloMessage.getPrevDocInfo()) && helloMessage.getNoteId() > 0) {
-                // 心跳显示处于查看笔记
-                if (noteLayout.getVisibility() != View.VISIBLE) {
-                    followShowNote((int) helloMessage.getNoteId());
-                }
-            } else {
-                if (noteLayout.getVisibility() == View.VISIBLE) {
-                    noteWeb.load("javascript:ClearPath()", null);
-                    noteWeb.setVisibility(View.GONE);
-                    noteLayout.setVisibility(View.GONE);
+            if(meetingConfig.getMode() == 0){
+                if (!TextUtils.isEmpty(helloMessage.getPrevDocInfo()) && helloMessage.getNoteId() > 0) {
+                    // 心跳显示处于查看笔记
+                    if (noteLayout.getVisibility() != View.VISIBLE) {
+                        followShowNote((int) helloMessage.getNoteId());
+                    }
+                } else {
+                    if (noteLayout.getVisibility() == View.VISIBLE) {
+                        noteWeb.load("javascript:ClearPath()", null);
+                        noteWeb.setVisibility(View.GONE);
+                        noteLayout.setVisibility(View.GONE);
+                    }
                 }
             }
-
             // ---处理presenter
             if (!TextUtils.isEmpty(helloMessage.getCurrentPresenter()) && !TextUtils.isEmpty(AppConfig.UserID)) {
                 meetingConfig.justSetPresenterId(helloMessage.getCurrentPresenter());
@@ -1265,7 +1266,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             e.printStackTrace();
         }
     }
-
 
     private void drawTempNote() {
         drawNote(-1, meetingConfig.getCurrentLinkProperty(), 0);
@@ -2569,6 +2569,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (messageManager != null && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
             messageManager.sendMessage_MeetingStatus(meetingConfig);
         }
+
         String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
         ChatManager.getManager(this, meetingIndetifier).joinChatRoom(getResources().getString(R.string.Classroom) + meetingConfig.getLessionId());
         //处理刚进来就是屏幕共享的情况
@@ -2667,7 +2668,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-
     ShareDocInMeetingDialog shareDocInMeetingDialog;
 
     private void showShareDocInMeetingDialog() {
@@ -2739,7 +2739,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
 
     PopBottomChat chatBottomPop;
-
     private void showChatPop() {
         String chatRoomId = getResources().getString(R.string.Classroom) + meetingConfig.getLessionId();
         if (chatBottomPop != null) {
@@ -2771,7 +2770,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
             return;
         }
-
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         String mFilePath = FileUtils.getBaseDir();
         // 文件名
@@ -3567,17 +3565,20 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     meetingConfig.setMode(Integer.parseInt(mode));
                     int _mode = meetingConfig.getMode();
                     if (_mode == 3) {
+                        // web分享屏幕模式
                         Log.e("check_share_screen", "data:" + data + "，uid:" + meetingConfig.getShareScreenUid() + ",mode:" + meetingConfig.getMode() + ",post_share_screen");
                         MeetingKit.getInstance().postShareScreen(meetingConfig.getShareScreenUid());
                         hideFullCameraScreen();
                         hideAgoraFull();
                     } else if (_mode == 2) {
+                        // 一个人视频全屏模式
 //                        showFullCameraScreen();
                         String  userID=data.getString("currentSessionID");
                         meetingConfig.setCurrentMaxVideoUserId(userID);
                         followShowFullScreenSingleAgoraMember(userID);
 //                        hideFullCameraScreen();
                     } else if (_mode == 1) {
+                        // 全屏显示所有人视频模式
                         showFullCameraScreen();
                         hideAgoraFull();
                     } else if (meetingConfig.getMode() == 0) {
@@ -3936,6 +3937,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         SocketMessageManager.getManager(this).sendMessage_ViewModeStatus(viewMode, userId);
 
         meetingConfig.setMode(viewMode);
+
         if(viewMode==2){
             meetingConfig.setCurrentMaxVideoUserId(userId);
         }

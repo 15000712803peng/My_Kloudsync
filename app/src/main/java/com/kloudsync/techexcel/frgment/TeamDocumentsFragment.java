@@ -952,24 +952,6 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
     }
 
     private Document tempClickedDocument;
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE){
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_granted");
-                if(tempClickedDocument != null){
-                    requestDocumentDetail(tempClickedDocument);
-                    tempClickedDocument = null;
-                }
-
-            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
-                Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_denied");
-                Toast.makeText(getActivity(),"查看文档需要访问sdcard的权限，请允许",Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 
     private void viewDocIfPermissionGranted(Document document){
         if(KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())){

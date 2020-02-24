@@ -3227,4 +3227,24 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncInviteNewToCompany(String phone){
+        String url = AppConfig.URL_PUBLIC + "Invite/InviteNewToCompany";
+        JSONObject params = new JSONObject();
+        try {
+            params.put("CompanyID",AppConfig.SchoolID);
+            params.put("InviteTo",AppConfig.SchoolID);
+            params.put("Mobile",phone);
+            params.put("InviteToType",0);
+            params.put("RequestAddFriend",1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncInviteNewToCompany", "url:" + url + ",params:" + params + ",response:" + response);
+        return response;
+
+    }
+
+
+
 }

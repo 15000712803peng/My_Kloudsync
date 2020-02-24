@@ -364,7 +364,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         eventMute.setMuteVedio(muted);
         eventMute.setAgoraMember(member);
         EventBus.getDefault().post(eventMute);
-
     }
 
     @Override
@@ -421,7 +420,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 if (uid <= 1000000000 || uid > 1500000000) {
                     return;
                 }
-
                 getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
                 SurfaceView surfaceView = RtcEngine.CreateRendererView(host.getBaseContext());
                 surfaceView.setZOrderOnTop(true);
@@ -434,9 +432,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 EventBus.getDefault().post(shareScreen);
             }
         });
-
     }
-
 
     @Override
     public void onUserJoined(final int uid, int elapsed) {
@@ -466,9 +462,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
     public void setShareScreenStream(EventShareScreen eventShareScreen) {
-
         getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(eventShareScreen.getShareView(), VideoCanvas.RENDER_MODE_HIDDEN, eventShareScreen.getUid()));
-
     }
 
     @Override
@@ -574,7 +568,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             fullCameraAdapter.muteOrOpenCamera(getRtcManager().worker().getEngineConfig().mUid, !isCameraOn);
         }
         onUserMuteVideo(Integer.parseInt(AppConfig.UserID), !MeetingSettingCache.getInstance(host).getMeetingSetting().isCameraOn());
-
     }
 
     @Override

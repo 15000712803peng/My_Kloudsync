@@ -120,7 +120,6 @@ public class SoundtrackActionsManager {
         return instance;
     }
 
-
     public void setPlayTime(final long playTime) {
         this.playTime = playTime;
         Observable.just("do_now").observeOn(Schedulers.io()).subscribe(new Consumer<String>() {
