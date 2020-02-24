@@ -25,6 +25,7 @@ import com.amazonaws.event.ProgressListener;
 import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
 import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.kloudsync.techexcel.adapter.FavoriteAdapter;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -280,7 +281,7 @@ public class DocumentUploadUtil {
                 PutObjectRequest request = new PutObjectRequest(ud.getBucketName(), MD5Hash, mfile);
 
                 TransferManager tm = new TransferManager(s3);
-
+                request.setCannedAcl(CannedAccessControlList.PublicRead);
                 request.setGeneralProgressListener(new ProgressListener() {
                     @Override
                     public void progressChanged(final ProgressEvent progressEvent) {
