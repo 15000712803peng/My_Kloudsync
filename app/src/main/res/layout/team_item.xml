@@ -8,11 +8,14 @@
     android:layout_height="wrap_content">
 
     <RelativeLayout
-        android:padding="12dp"
+        android:layout_marginTop="@dimen/dp_19"
+        android:layout_marginBottom="@dimen/dp_15"
+        android:layout_marginRight="@dimen/dp_18"
+        android:layout_marginLeft="@dimen/dp_18"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
+        <!--<TextView
             android:id="@+id/icon"
             android:textSize="18sp"
             android:layout_width="40dp"
@@ -20,14 +23,12 @@
             android:gravity="center"
             android:layout_centerVertical="true"
             android:textColor="@color/white"
-            android:background="@drawable/icon_team" />
+            android:background="@drawable/icon_team" />-->
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/icon"
             android:orientation="vertical">
 
             <TextView
@@ -36,8 +37,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+                android:textColor="@color/colorFont33"
+                android:textSize="@dimen/sp_16" />
 
             <TextView
                 android:visibility="gone"
@@ -56,17 +57,17 @@
             android:layout_height="16dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="12dp"
-            android:src="@drawable/check"
-            android:visibility="gone" />
+            android:layout_marginRight="@dimen/dp_10"
+            android:src="@drawable/selector_switch_project_icon"
+             />
 
 
     </RelativeLayout>
 
     <TextView
-
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginLeft="70dp"
-        android:background="#fff7f7f7" />
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginLeft="@dimen/dp_18"
+        android:layout_marginRight="@dimen/dp_18"
+        android:background="@color/colorBGf7" />
 </LinearLayout>

@@ -58,8 +58,8 @@ android {
         applicationId "com.kloudsync.techexcel"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 74
-        versionName "7.0.4"
+        versionCode 75
+        versionName "7.0.5"
         flavorDimensions "versionCode"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -90,11 +90,6 @@ android {
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']
-            res.srcDirs =[
-                    'src/main/res/layout/platfrom',
-                    'src/main/res/layout',
-                    'src/main/res'
-            ]
         }
     }
 

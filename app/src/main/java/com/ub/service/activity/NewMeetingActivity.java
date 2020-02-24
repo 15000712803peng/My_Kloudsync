@@ -10,9 +10,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,11 +48,11 @@ import java.util.List;
 public class NewMeetingActivity extends Activity implements View.OnClickListener {
 
     private ImageView cancel;
-    private TextView submit;
+    private Button submit;
     private EditText meetingname;
-    private TextView meetingstartdate, tv_p_start;
-    private TextView meetingenddate, tv_p_end;
-    private TextView meetingduration, tv_p_schedule, tv_p_schedule_size;
+    private TextView meetingstartdate;
+    private TextView meetingenddate;
+    private TextView meetingduration, tv_p_schedule_size;
 
     private RelativeLayout as_rl_contact, startdaterl, enddaterl;
     private TextView invitecontact;
@@ -90,7 +93,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             /*newMeetingContactAdapter = new NewMeetingContactAdapter(this, customerList);
             mRecyclerView.setAdapter(newMeetingContactAdapter);*/
             if (customerList.size() >= 3) {
-                tv_p_schedule.setVisibility(View.GONE);
                 as_img_contact_one.setVisibility(View.VISIBLE);
                 as_img_contact_two.setVisibility(View.VISIBLE);
                 as_img_contact_three.setVisibility(View.VISIBLE);
@@ -100,7 +102,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 as_img_contact_two.setImageURI(Uri.parse(customerList.get(1).getUrl()));
                 as_img_contact_three.setImageURI(Uri.parse(customerList.get(2).getUrl()));
             } else if (customerList.size() >= 2) {
-                tv_p_schedule.setVisibility(View.GONE);
                 as_img_contact_one.setVisibility(View.VISIBLE);
                 as_img_contact_two.setVisibility(View.VISIBLE);
                 tv_p_schedule_size.setVisibility(View.VISIBLE);
@@ -109,7 +110,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 as_img_contact_two.setImageURI(Uri.parse(customerList.get(1).getUrl()));
                 as_img_contact_three.setVisibility(View.GONE);
             } else if (customerList.size() >= 1) {
-                tv_p_schedule.setVisibility(View.GONE);
                 as_img_contact_one.setVisibility(View.VISIBLE);
                 tv_p_schedule_size.setVisibility(View.VISIBLE);
                 tv_p_schedule_size.setText(customerList.size() + "total");
@@ -117,11 +117,18 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 as_img_contact_two.setVisibility(View.GONE);
                 as_img_contact_three.setVisibility(View.GONE);
             } else {
-                tv_p_schedule.setVisibility(View.VISIBLE);
                 as_img_contact_one.setVisibility(View.GONE);
                 as_img_contact_two.setVisibility(View.GONE);
                 as_img_contact_three.setVisibility(View.GONE);
                 tv_p_schedule_size.setVisibility(View.GONE);
+            }
+            int nameLength = meetingname.getText().toString().trim().length();
+            int startDateLength = meetingstartdate.getText().toString().trim().length();
+            int endDateLength = meetingenddate.toString().trim().length();
+            if (nameLength>0&&startDateLength>0&&endDateLength>0){
+                submit.setEnabled(true);
+            }else {
+                submit.setEnabled(false);
             }
 
         }
@@ -136,10 +143,10 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
     }
 
     private void initView() {
-        tv_p_schedule = (TextView) findViewById(R.id.tv_p_schedule);
         cancel = (ImageView) findViewById(R.id.cancel);
         cancel.setOnClickListener(this);
-        submit = (TextView) findViewById(R.id.submit);
+        submit = findViewById(R.id.submit);
+        submit.setEnabled(false);
         submit.setOnClickListener(this);
         meetingname = (EditText) findViewById(R.id.meetingname);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm:ss");
@@ -152,12 +159,10 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
         as_rl_contact = (RelativeLayout) findViewById(R.id.as_rl_contact);
         as_rl_contact.setOnClickListener(this);
         meetingstartdate = (TextView) findViewById(R.id.meetingstartdate);
-        tv_p_start = (TextView) findViewById(R.id.tv_p_start);
         startdaterl = (RelativeLayout) findViewById(R.id.startdaterl);
 
         enddaterl = (RelativeLayout) findViewById(R.id.enddaterl);
         meetingenddate = (TextView) findViewById(R.id.meetingenddate);
-        tv_p_end = (TextView) findViewById(R.id.tv_p_end);
 
         startdaterl.setOnClickListener(this);
         enddaterl.setOnClickListener(this);
@@ -174,7 +179,29 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 MODE_PRIVATE);
         schoolId = sharedPreferences.getInt("SchoolID", -1);
 
+        meetingname.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                int nameLength = meetingname.getText().toString().trim().length();
+                int startDateLength = meetingstartdate.getText().toString().trim().length();
+                int endDateLength = meetingenddate.toString().trim().length();
+                if (nameLength>0&&startDateLength>0&&endDateLength>0){
+                    submit.setEnabled(true);
+                }else {
+                    submit.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
 
@@ -226,7 +253,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 try {
                     endsecond = formatter.parse(time).getTime();
                     if (endsecond != 0) {
-                        tv_p_end.setVisibility(View.GONE);
                         meetingenddate.setVisibility(View.VISIBLE);
                         if (endsecond > startsecond) {
                             meetingenddate.setText(time);
@@ -239,16 +265,21 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                             Log.e("laoyu", "天" + days + "小时" + hour + "分" + min);
                             meetingduration.setText(days + "天" + hour + "时" + min + "分");
                         } else {
-                            tv_p_end.setVisibility(View.VISIBLE);
                             meetingenddate.setVisibility(View.GONE);
                             Toast.makeText(NewMeetingActivity.this, "结束时间不能大于开始时间!", Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        tv_p_end.setVisibility(View.VISIBLE);
                         meetingenddate.setVisibility(View.GONE);
                     }
 
-
+                    int nameLength = meetingname.getText().toString().trim().length();
+                    int startDateLength = meetingstartdate.getText().toString().trim().length();
+                    int endDateLength = meetingenddate.toString().trim().length();
+                    if (nameLength>0&&startDateLength>0&&endDateLength>0){
+                        submit.setEnabled(true);
+                    }else {
+                        submit.setEnabled(false);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -285,7 +316,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 try {
                     startsecond = formatter.parse(time).getTime();
                     if (startsecond != 0) {
-                        tv_p_start.setVisibility(View.GONE);
                         meetingstartdate.setVisibility(View.VISIBLE);
                         if (endsecond != 0) {
                             if (endsecond > startsecond) {
@@ -296,7 +326,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                             long seconds = duration % 86400000 % 3600000 % 60000 / 1000;   //以秒为单位取整
                             meetingduration.setText(hour+"小时");*/
                             } else {
-                                tv_p_start.setVisibility(View.VISIBLE);
                                 meetingstartdate.setVisibility(View.GONE);
                                 Toast.makeText(NewMeetingActivity.this, "结束时间不能大于开始时间!", Toast.LENGTH_LONG).show();
                             }
@@ -304,10 +333,16 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                             meetingstartdate.setText(time);
                         }
                     } else {
-                        tv_p_start.setVisibility(View.VISIBLE);
                         meetingstartdate.setVisibility(View.GONE);
                     }
-
+                    int nameLength = meetingname.getText().toString().trim().length();
+                    int startDateLength = meetingstartdate.getText().toString().trim().length();
+                    int endDateLength = meetingenddate.toString().trim().length();
+                    if (nameLength>0&&startDateLength>0&&endDateLength>0){
+                        submit.setEnabled(true);
+                    }else {
+                        submit.setEnabled(false);
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();

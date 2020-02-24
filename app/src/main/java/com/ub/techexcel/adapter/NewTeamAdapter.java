@@ -25,9 +25,9 @@ public class NewTeamAdapter extends HeaderRecyclerAdapter<Team> {
         ItemHolder holder = (ItemHolder) viewHolder;
         holder.documetname.setText(item.getName());
         if (item.isSelected()) {
-            holder.select.setVisibility(View.VISIBLE);
+            holder.select.setSelected(true);
         } else {
-            holder.select.setVisibility(View.GONE);
+            holder.select.setSelected(false);
         }
 
     }
@@ -36,14 +36,12 @@ public class NewTeamAdapter extends HeaderRecyclerAdapter<Team> {
         TextView documetname;
         LinearLayout itemLayout;
         ImageView select;
-        TextView icon;
 
         public ItemHolder(View itemView) {
             super(itemView);
             documetname = itemView.findViewById(R.id.documetname);
             itemLayout = itemView.findViewById(R.id.lin_favour);
             select = itemView.findViewById(R.id.selectimage);
-            icon = itemView.findViewById(R.id.icon);
         }
     }
 

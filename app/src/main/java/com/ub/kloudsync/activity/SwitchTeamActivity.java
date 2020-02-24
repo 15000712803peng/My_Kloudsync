@@ -81,6 +81,7 @@ public class SwitchTeamActivity extends Activity implements View.OnClickListener
         }
 
     };
+    private TextView mTvCreateProject;
 
     private void SaveSchoolInfo() {
         editor = sharedPreferences.edit();
@@ -108,7 +109,7 @@ public class SwitchTeamActivity extends Activity implements View.OnClickListener
     }
 
     private void setHeaderByRole(int role) {
-        if (role == 7 || role == 8) {
+        /*if (role == 7 || role == 8) {
             View addHeader = getLayoutInflater().inflate(R.layout.add_team_header, mTeamRecyclerView, false);
             lin_add = (LinearLayout) addHeader.findViewById(R.id.lin_add);
             lin_add.setOnClickListener(this);
@@ -116,7 +117,7 @@ public class SwitchTeamActivity extends Activity implements View.OnClickListener
             switchLayout.setVisibility(View.VISIBLE);
         } else {
             switchLayout.setVisibility(View.VISIBLE);
-        }
+        }*/
     }
 
     private void initView() {
@@ -129,6 +130,8 @@ public class SwitchTeamActivity extends Activity implements View.OnClickListener
         mTeamAdapter = new NewTeamAdapter();
         allSwitch = findViewById(R.id.switch_all_teams);
         switchLayout = findViewById(R.id.layout_switch);
+        mTvCreateProject = findViewById(R.id.tv_create_project);
+        mTvCreateProject.setOnClickListener(this);
         allSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -136,7 +139,7 @@ public class SwitchTeamActivity extends Activity implements View.OnClickListener
             }
         });
         switchLayout.setOnClickListener(this);
-        setHeaderByRole(role);
+//        setHeaderByRole(role);
         mTeamAdapter.setOnItemClickListener(new HeaderRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position, Object data) {
@@ -200,7 +203,11 @@ public class SwitchTeamActivity extends Activity implements View.OnClickListener
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.lin_add:
+            /*case R.id.lin_add:
+                Intent intent = new Intent(this, CreateNewTeamActivityV2.class);
+                startActivityForResult(intent, REQUEST_CREATE_NEW_TEAM);
+                break;*/
+            case R.id.tv_create_project:
                 Intent intent = new Intent(this, CreateNewTeamActivityV2.class);
                 startActivityForResult(intent, REQUEST_CREATE_NEW_TEAM);
                 break;

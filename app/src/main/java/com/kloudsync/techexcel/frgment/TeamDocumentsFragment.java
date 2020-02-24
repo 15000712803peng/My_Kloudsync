@@ -20,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +33,7 @@ import com.kloudsync.techexcel.bean.MessageSpaceList;
 import com.kloudsync.techexcel.bean.RoleInTeam;
 import com.kloudsync.techexcel.bean.UserInCompany;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.CreateFolderDialog;
 import com.kloudsync.techexcel.docment.AddDocumentActivity;
 import com.kloudsync.techexcel.docment.EditTeamActivity;
 import com.kloudsync.techexcel.docment.MoveDocumentActivity;
@@ -57,10 +57,8 @@ import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
-import com.ub.kloudsync.activity.CreateNewSpaceActivityV2;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.SpaceDeletePopup;
-import com.ub.kloudsync.activity.SpaceDocumentsActivity;
 import com.ub.kloudsync.activity.SwitchTeamActivity;
 import com.ub.kloudsync.activity.TeamMorePopup;
 import com.ub.kloudsync.activity.TeamPropertyActivity;
@@ -68,8 +66,6 @@ import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.SocketService;
-import com.ub.service.activity.WatchCourseActivity2;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
 import com.ub.techexcel.adapter.SpaceAdapter;
 import com.ub.techexcel.bean.EventViewDocPermissionGranted;
@@ -82,7 +78,6 @@ import com.ub.techexcel.tools.Tools;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -97,12 +92,11 @@ import retrofit2.Response;
 
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
 
-public class TeamDocumentsFragment extends MyFragment implements View.OnClickListener, SpaceAdapter.OnItemLectureListener, KloudCache.OnUserInfoChangedListener, FilterSpaceDialog.SpaceOptionsLinstener {
+public class TeamDocumentsFragment extends MyFragment implements View.OnClickListener, SpaceAdapter.OnItemLectureListener, KloudCache.OnUserInfoChangedListener, FilterSpaceDialog.SpaceOptionsLinstener, CreateFolderDialog.CreateFolderCallback {
 
     private RecyclerView mCurrentTeamRecyclerView;
     private RelativeLayout teamRl;
     private RelativeLayout createNewSpace;
-    private ImageView switchTeam;
     private ImageView addService;
     private ImageView moreOpation;
     private TextView teamSpacename;
@@ -500,12 +494,10 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
 
         teamRl = (RelativeLayout) view.findViewById(R.id.teamrl);
         createNewSpace = (RelativeLayout) view.findViewById(R.id.createnewspace);
-        switchTeam = (ImageView) view.findViewById(R.id.switchteam);
         addService = (ImageView) view.findViewById(R.id.addService);
         teamSpacename = (TextView) view.findViewById(R.id.teamspacename);
         moreOpation = (ImageView) view.findViewById(R.id.moreOpation);
         teamRl.setOnClickListener(this);
-        switchTeam.setOnClickListener(this);
         addService.setOnClickListener(this);
         createNewSpace.setOnClickListener(this);
         moreOpation.setOnClickListener(this);
@@ -538,9 +530,6 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
 //                GoToTeamp();
                 GoToSwitch();
                 break;
-            case R.id.switchteam:
-                GoToSwitch();
-                break;
             case R.id.teamspacename:
                 GoToSwitch();
                 break;
@@ -554,10 +543,12 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                 startActivity(addDocIntent);
                 break;
             case R.id.createnewspace:
-                Intent intent3 = new Intent(getActivity(), CreateNewSpaceActivityV2.class);
+//                Intent intent3 = new Intent(getActivity(), CreateNewSpaceActivityV2.class);
                 if (teamSpaceBean.getItemID() > 0) {
-                    intent3.putExtra("ItemID", teamSpaceBean.getItemID());
-                    startActivity(intent3);
+//                    intent3.putExtra("ItemID", teamSpaceBean.getItemID());
+//                    startActivity(intent3);
+                    CreateFolderDialog.instance(getActivity()).showDialog();
+                    CreateFolderDialog.instance(getActivity()).setCreateFolderCallback(this);
                 } else {
                     Toast.makeText(getActivity(), "请先选择Team", Toast.LENGTH_LONG).show();
                 }
@@ -603,6 +594,18 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         } else {
             Toast.makeText(getActivity(), "请先选择Team", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void createFolder(String folderName) {
+        TeamSpaceInterfaceTools.getinstance().createTeamSpace(AppConfig.URL_PUBLIC + "TeamSpace/CreateTeamSpace", TeamSpaceInterfaceTools.CREATETEAMSPACE,
+                AppConfig.SchoolID, 2, folderName, teamSpaceBean.getItemID(), 0, new TeamSpaceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        EventBus.getDefault().post(new TeamSpaceBean());
+                    }
+                }
+        );
     }
 
 
@@ -950,6 +953,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
+
 
     private Document tempClickedDocument;
     @Override

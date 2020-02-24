@@ -92,7 +92,7 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
                     holder.documetname.setText(TextTool.setSearchColor(Color.parseColor("#72AEFF"), item.getName(), keyword));
                 }
             } else {
-                holder.tv_sort.setText(item.getName().substring(0, 1).toUpperCase());
+//                holder.tv_sort.setText(item.getName().substring(0, 1).toUpperCase());
             }
         } else {
             holder.tv_sort.setText("");
