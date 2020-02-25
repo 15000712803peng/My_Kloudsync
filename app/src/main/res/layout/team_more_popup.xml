@@ -59,7 +59,7 @@
                     android:gravity="center_vertical"
                     android:text="@string/Edit"
                     android:textColor="@color/darkgrey"
-                    android:textSize="16sp" />
+                    android:textSize="@dimen/sp_17" />
             </LinearLayout>
 
             <View
@@ -79,7 +79,7 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="18dp"
-                    android:src="@drawable/rename" />
+                    android:src="@drawable/doc_ppw_team_memers_icon" />
 
                 <TextView
                     android:id="@+id/rename"
@@ -89,7 +89,7 @@
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
                     android:text="@string/rename"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/sp_17"
                     android:textColor="@color/darkgrey" />
             </LinearLayout>
             <View
@@ -121,7 +121,7 @@
                     android:gravity="center_vertical"
                     android:text="@string/quit_team"
                     android:textColor="@color/darkgrey"
-                    android:textSize="16sp" />
+                    android:textSize="@dimen/sp_17" />
             </LinearLayout>
             <View
                 android:layout_width="match_parent"
@@ -150,9 +150,9 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="8dp"
                     android:gravity="center_vertical"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/sp_17"
                     android:text="@string/Delete"
-                    android:textColor="@color/red2"/>
+                    android:textColor="@color/colorFont33"/>
             </LinearLayout>
         </LinearLayout>
 

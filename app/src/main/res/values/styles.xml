@@ -21,6 +21,7 @@
         <item name="android:statusBarColor" tools:ignore="NewApi">@color/white</item>
         <item name="android:windowAnimationStyle">@style/AnimationActivity</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <!--<item name="android:windowIsTranslucent">true</item>-->
@@ -326,6 +327,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
+
     <style name="CommonButtonStyle">
         <item name="android:layout_marginLeft">15dp</item>
         <item name="android:layout_marginRight">15dp</item>
@@ -335,6 +337,47 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">17sp</item>
     </style>
+
+    <!--开始会议设置数据父布局样式-->
+    <style name="ScheduleMeetingSettingLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/dp_55</item>
+        <item name="android:layout_marginTop">@dimen/dp_10</item>
+        <item name="android:paddingLeft">@dimen/dp_18</item>
+        <item name="android:paddingRight">@dimen/dp_16</item>
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <!--开始会议设置数据名称样式-->
+    <style name="ScheduleMeetingSettingNameStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_marginRight">@dimen/dp_15</item>
+        <item name="android:textColor">@color/colorFont33</item>
+    </style>
+
+    <!--开始会议设置数据样式-->
+    <style name="ScheduleMeetingSettingDataStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_marginLeft">@dimen/dp_10</item>
+        <item name="android:layout_marginRight">@dimen/dp_10</item>
+        <item name="android:textColor">@color/color3d78fa</item>
+    </style>
+
+    <!--开始会议设置箭头图标样式-->
+    <style name="ScheduleMeetingArrowIconStyle">
+        <item name="android:layout_width">@dimen/dp_25</item>
+        <item name="android:layout_height">@dimen/dp_25</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:src">@drawable/right_arrow</item>
+    </style>
+
 
     <style name="CommonTitltTextStyle">
         <item name="android:textSize">16sp</item>

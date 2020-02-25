@@ -99,11 +99,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-
                 android:background="@drawable/bg_meeting_card1"
                 android:orientation="vertical">
 
 
+                <ImageView
+                    android:layout_width="@dimen/dp_88"
+                    android:src="@drawable/meeting_join_btn_bg"
+                    android:layout_height="@dimen/dp_69"/>
 
                 <ImageView
                     android:layout_centerHorizontal="true"
@@ -153,7 +156,12 @@
                 android:background="@drawable/bg_meeting_card2"
                 android:orientation="vertical">
 
-
+                <ImageView
+                    android:layout_width="@dimen/dp_87"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/meeting_start_btn_bg"
+                    android:layout_height="@dimen/dp_81"/>
 
                 <ImageView
                     android:layout_centerHorizontal="true"
@@ -201,6 +209,12 @@
                 android:background="@drawable/bg_meeting_card3"
                 android:orientation="vertical">
 
+
+                <ImageView
+                    android:layout_width="@dimen/dp_71"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/meeting_schedule_btn_bg"
+                    android:layout_height="@dimen/dp_93"/>
 
                 <ImageView
                     android:layout_centerHorizontal="true"
