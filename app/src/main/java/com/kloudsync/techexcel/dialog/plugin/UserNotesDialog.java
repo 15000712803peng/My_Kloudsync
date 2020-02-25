@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.dialog.plugin;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -47,6 +48,7 @@ import com.ub.techexcel.tools.NoteOperatorPopup;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.SyncRoomOtherNoteListPopup;
+import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -64,7 +66,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelectedListener {
+public class UserNotesDialog implements View.OnClickListener, OnSpinnerItemSelectedListener {
     public Context mContext;
     public int width;
     public int heigth;
@@ -74,6 +76,7 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
     private NoteAdapter noteAdapter;
     private NiceSpinner usersSpinner;
     private MeetingConfig meetingConfig;
+    private ImageView backImage;
 
 
     public UserNotesDialog(Context context) {
@@ -86,23 +89,41 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
         view = layoutInflater.inflate(R.layout.dialog_user_notes, null);
         dialog = new Dialog(mContext, R.style.my_dialog);
         noteList = view.findViewById(R.id.list_note);
+        backImage = view.findViewById(R.id.back);
+        backImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
         noteList.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
         usersSpinner = view.findViewById(R.id.spinner_users);
         usersSpinner.setOnSpinnerItemSelectedListener(this);
         heigth = (int) (mContext.getResources().getDisplayMetrics().heightPixels);
         dialog.setContentView(view);
-        dialog.getWindow().setGravity(Gravity.RIGHT);
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        dialog.getWindow().setWindowAnimations(R.style.anination3);
-        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-        lp.height = heigth;
-        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
-        dialog.getWindow().setAttributes(lp);
+        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        if (Tools.isOrientationPortrait((Activity) mContext)) {
+            //竖屏
+            Log.e("check_oritation", "oritation:portrait");
+            dialog.getWindow().setWindowAnimations(R.style.PopupAnimation5);
+            dialog.getWindow().setGravity(Gravity.BOTTOM);
+            params.width = mContext.getResources().getDisplayMetrics().widthPixels;
+            params.height = Tools.dip2px(mContext, 420);
+        } else {
+            Log.e("check_oritation", "oritation:landscape");
+            dialog.getWindow().setGravity(Gravity.RIGHT);
+            params.height = heigth;
+            params.width = Tools.dip2px(mContext, 300);
+            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            dialog.getWindow().setWindowAnimations(R.style.anination3);
+        }
+
+        dialog.getWindow().setAttributes(params);
     }
 
 
     public boolean isShowing() {
-        if(dialog != null){
+        if (dialog != null) {
             return dialog.isShowing();
         }
         return false;
@@ -123,25 +144,25 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
         }
     }
 
-    public void show(String userId,MeetingConfig meetingConfig) {
+    public void show(String userId, MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
         if (dialog != null && !dialog.isShowing()) {
             dialog.show();
-            process(userId,meetingConfig);
+            process(userId, meetingConfig);
         }
     }
 
     @Override
     public void onItemSelected(NiceSpinner parent, View view, int position, long id) {
-        if(users == null || users.size() <= 0){
+        if (users == null || users.size() <= 0) {
             return;
         }
-        if(this.user == null){
+        if (this.user == null) {
             return;
         }
         UserNotes user = users.get(position);
-        if(user.getUserId().equals(this.user.getUserId())){
-            Log.e("onItemSelected","the same");
+        if (user.getUserId().equals(this.user.getUserId())) {
+            Log.e("onItemSelected", "the same");
             return;
         }
         changeUser(user);
@@ -152,21 +173,21 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
     UserNotes user;
     List<UserNotes> users;
 
-    private void changeUser(UserNotes user){
+    private void changeUser(UserNotes user) {
 
-        if(user.getNotes() != null && user.getNotes().size() >=0){
+        if (user.getNotes() != null && user.getNotes().size() >= 0) {
             showUserNotes(user);
-        }else {
+        } else {
             Observable.just(user).observeOn(Schedulers.io()).doOnNext(new Consumer<UserNotes>() {
                 @Override
                 public void accept(UserNotes userNotes) throws Exception {
 
-                    if(users == null || users.size() <= 0 || !users.contains(userNotes)){
+                    if (users == null || users.size() <= 0 || !users.contains(userNotes)) {
                         return;
                     }
 
                     String url = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" +
-                            userNotes.getParamsId()+"&pageNumber=0&userID=" + userNotes.getUserId();
+                            userNotes.getParamsId() + "&pageNumber=0&userID=" + userNotes.getUserId();
                     userNotes.setNotes(ServiceInterfaceTools.getinstance().syncGetUserNotes(url));
                     refreshUserList(userNotes);
 
@@ -175,7 +196,7 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
                 @Override
                 public void accept(UserNotes userNotes) throws Exception {
 
-                    if(userNotes.getNotes() == null){
+                    if (userNotes.getNotes() == null) {
                         return;
                     }
                     showUserNotes(userNotes);
@@ -184,34 +205,34 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
         }
     }
 
-    private void process(final String userId, final MeetingConfig meetingConfig){
+    private void process(final String userId, final MeetingConfig meetingConfig) {
 
         user = new UserNotes();
         user.setUserId(userId);
-        if(meetingConfig.getDocument() == null){
+        if (meetingConfig.getDocument() == null) {
             return;
         }
         Observable.just(user).observeOn(Schedulers.io()).doOnNext(new Consumer<UserNotes>() {
             @Override
             public void accept(UserNotes userNotes) throws Exception {
                 String url = "";
-                String paramsId ="";
-                if(meetingConfig.getType() == MeetingType.DOC || meetingConfig.getType() == MeetingType.MEETING){
-                     url = AppConfig.URL_PUBLIC + "DocumentNote/DocViewUserList?attachmentID=" + meetingConfig.getDocument().getAttachmentID();
-                     paramsId = meetingConfig.getDocument().getAttachmentID() +"";
+                String paramsId = "";
+                if (meetingConfig.getType() == MeetingType.DOC || meetingConfig.getType() == MeetingType.MEETING) {
+                    url = AppConfig.URL_PUBLIC + "DocumentNote/DocViewUserList?attachmentID=" + meetingConfig.getDocument().getAttachmentID();
+                    paramsId = meetingConfig.getDocument().getAttachmentID() + "";
                 }
                 userNotes.setParamsId(paramsId);
-                List<Customer> members =  ServiceInterfaceTools.getinstance().syncGetDocUsers(url);
-                Log.e("process","one:" + members.size());
-                if(members != null && members.size() > 0){
+                List<Customer> members = ServiceInterfaceTools.getinstance().syncGetDocUsers(url);
+                Log.e("process", "one:" + members.size());
+                if (members != null && members.size() > 0) {
                     users = new ArrayList<>();
-                    for(int i = 0 ; i < members.size(); ++i){
+                    for (int i = 0; i < members.size(); ++i) {
                         Customer member = members.get(i);
-                        if(user.getUserId().equals(member.getUserID())){
+                        if (user.getUserId().equals(member.getUserID())) {
                             user.setNoteCount(member.getNoteCount());
                             user.setUserName(member.getName());
                             refreshUserList(user);
-                        }else {
+                        } else {
                             UserNotes _user = new UserNotes();
                             _user.setParamsId(paramsId);
                             _user.setNoteCount(member.getNoteCount());
@@ -227,21 +248,21 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
         }).doOnNext(new Consumer<UserNotes>() {
             @Override
             public void accept(UserNotes userNotes) throws Exception {
-                Log.e("process","two");
-                if(users == null || users.size() <= 0 || !users.contains(userNotes)){
+                Log.e("process", "two");
+                if (users == null || users.size() <= 0 || !users.contains(userNotes)) {
                     return;
                 }
 
                 String url = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" +
-                        userNotes.getParamsId()+"&pageNumber=0&userID=" + userNotes.getUserId();
+                        userNotes.getParamsId() + "&pageNumber=0&userID=" + userNotes.getUserId();
                 userNotes.setNotes(ServiceInterfaceTools.getinstance().syncGetUserNotes(url));
                 refreshUserList(userNotes);
             }
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<UserNotes>() {
             @Override
             public void accept(UserNotes userNotes) throws Exception {
-                Log.e("process","three:" + userNotes);
-                if(userNotes.getNotes() == null){
+                Log.e("process", "three:" + userNotes);
+                if (userNotes.getNotes() == null) {
                     return;
                 }
                 showUserNotes(userNotes);
@@ -249,25 +270,25 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
         }).subscribe();
     }
 
-    private void showUserNotes(UserNotes user){
+    private void showUserNotes(UserNotes user) {
         this.user = user;
         usersSpinner.setVisibility(View.VISIBLE);
-        noteAdapter = new NoteAdapter(mContext,user.getNotes());
+        noteAdapter = new NoteAdapter(mContext, user.getNotes());
         noteList.setAdapter(noteAdapter);
-        usersSpinner.attachDataSource(users,new UserNoteTextFormatter());
+        usersSpinner.attachDataSource(users, new UserNoteTextFormatter());
         usersSpinner.setTextInternal(user);
 
     }
 
-    private void refreshUserList(UserNotes user){
-        if(users != null){
-            if(!users.contains(user)){
+    private void refreshUserList(UserNotes user) {
+        if (users != null) {
+            if (!users.contains(user)) {
                 users.add(user);
-            }else {
-               UserNotes _user =  users.get(users.indexOf(user));
-               if(user.getNotes() != null){
-                   _user.setNotes(user.getNotes());
-               }
+            } else {
+                UserNotes _user = users.get(users.indexOf(user));
+                if (user.getNotes() != null) {
+                    _user.setNotes(user.getNotes());
+                }
             }
         }
     }
@@ -331,7 +352,7 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
 //                    note.setLinkId(noteDetail.getLinkID());
 //                    note.setNote(parseNote(noteDetail));
 //                    EventBus.getDefault().post(note);
-                    PageActionsAndNotesMgr.getNoteDetail(mContext,noteDetail);
+                    PageActionsAndNotesMgr.getNoteDetail(mContext, noteDetail);
                     dismiss();
 
                 }
@@ -363,8 +384,6 @@ public class UserNotesDialog implements View.OnClickListener,OnSpinnerItemSelect
             }
         }
     }
-
-
 
 
 }

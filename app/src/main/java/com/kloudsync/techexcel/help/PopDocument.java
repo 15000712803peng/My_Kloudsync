@@ -84,6 +84,7 @@ public class PopDocument {
                 }
             }
         });
+
         mPopupWindow.getWindow().setWindowAnimations(R.style.PopupAnimation5);
         mPopupWindow.getWindow().setGravity(Gravity.BOTTOM);
         WindowManager.LayoutParams lp = mPopupWindow.getWindow().getAttributes();

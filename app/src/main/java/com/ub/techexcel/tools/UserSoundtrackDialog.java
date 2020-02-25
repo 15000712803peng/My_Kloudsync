@@ -119,14 +119,26 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
         allrecycleview.setLayoutManager(new LinearLayoutManager(host, RecyclerView.VERTICAL, false));
         dialog = new Dialog(host, R.style.my_dialog);
         dialog.setContentView(view);
-        dialog.getWindow().setGravity(Gravity.RIGHT);
         dialog.setOnDismissListener(this);
         WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
         View root = host.getWindow().getDecorView();
-        params.height = root.getMeasuredHeight();
+        if (Tools.isOrientationPortrait(host)) {
+            //竖屏
+            Log.e("check_oritation", "oritation:portrait");
+            dialog.getWindow().setWindowAnimations(R.style.PopupAnimation5);
+            dialog.getWindow().setGravity(Gravity.BOTTOM);
+            params.width = host.getResources().getDisplayMetrics().widthPixels;
+            params.height = Tools.dip2px(host, 420);
+        } else {
+            Log.e("check_oritation", "oritation:landscape");
+            dialog.getWindow().setGravity(Gravity.RIGHT);
+            params.height = root.getMeasuredHeight();
+            params.width = Tools.dip2px(host, 300);
+            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            dialog.getWindow().setWindowAnimations(R.style.anination3);
+        }
         dialog.getWindow().setAttributes(params);
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        dialog.getWindow().setWindowAnimations(R.style.anination3);
+
     }
 
     @SuppressLint("NewApi")

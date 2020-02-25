@@ -763,7 +763,7 @@
             android:configChanges="orientation|keyboardHidden|keyboard"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensor"
              />
 
         <service android:name="com.ub.service.activity.SocketService" />

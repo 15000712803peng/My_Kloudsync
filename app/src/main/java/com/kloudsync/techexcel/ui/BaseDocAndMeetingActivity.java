@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.dialog.loading.KloudLoadingView;
@@ -78,6 +79,7 @@ public abstract class BaseDocAndMeetingActivity extends FragmentActivity {
         EventBus.getDefault().register(this);
         showEnterLoading();
         initData();
+//        Toast.makeText(this,"on_create",Toast.LENGTH_SHORT).show();
         singleFullScreenImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

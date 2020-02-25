@@ -128,6 +128,9 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public long getPlayTime(){
+        if(audioPlayer == null){
+            return  0;
+        }
         return audioPlayer.getCurrentPosition();
     }
 

@@ -1,10 +1,13 @@
 package com.ub.techexcel.tools;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AppOpsManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -274,7 +277,6 @@ public class Tools {
     }
 
 
-
     public static void getChatroomHistoryMessage(String roomId, RongIMClient.ResultCallback<List<Message>> callback) {
         RongIM.getInstance().getLatestMessages(Conversation.ConversationType.CHATROOM, roomId, 10, callback);
     }
@@ -426,6 +428,11 @@ public class Tools {
             }
         }
         return false;
+    }
+
+    public static boolean isOrientationPortrait(Activity activity) {
+
+        return activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
 
 
