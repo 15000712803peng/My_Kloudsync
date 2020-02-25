@@ -1,6 +1,7 @@
 package com.ub.techexcel.tools;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.Gravity;
@@ -95,10 +96,15 @@ public class PopSoundtrackOperations implements View.OnClickListener {
     public void show(View v, SoundTrack soundTrack) {
         this.soundTrack = soundTrack;
         if (mPopupWindow != null) {
-            int windowPos[] = PopupWindowUtil.calculatePopWindowPos(v, view , 50);
+            int topLength=50;
+            if(Tools.isOrientationPortrait((Activity) mContext)){
+                topLength=150;
+            }else{
+                topLength=50;
+            }
+            int windowPos[] = PopupWindowUtil.calculatePopWindowPos(v, view , topLength);  // 318
             int height = mContext.getResources().getDisplayMetrics().heightPixels;
-
-            Log.e("duang", height + ":" + windowPos[1]);
+            Log.e("duang", height + ":" + windowPos[1]+"  "+windowPos[0]);
             int xOff = 20; // 可以自己调整偏移
             windowPos[0] -= xOff;
             mPopupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
