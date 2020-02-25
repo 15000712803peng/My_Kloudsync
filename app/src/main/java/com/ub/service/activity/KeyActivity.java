@@ -89,6 +89,7 @@ import com.amazonaws.event.ProgressListener;
 import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
 import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.facebook.network.connectionclass.ConnectionClassManager;
 import com.facebook.network.connectionclass.ConnectionQuality;
 import com.kloudsync.techexcel.R;
@@ -6759,6 +6760,7 @@ public class KeyActivity extends BaseActivity implements View.OnClickListener, A
                 s3.setRegion(com.amazonaws.regions.Region.getRegion(ud.getRegionName()));
                 com.amazonaws.services.s3.model.PutObjectRequest request = new com.amazonaws.services.s3.model.PutObjectRequest(ud.getBucketName(), MD5Hash, mfile);
                 TransferManager tm = new TransferManager(s3);
+                request.setCannedAcl(CannedAccessControlList.PublicRead);
                 request.setGeneralProgressListener(new ProgressListener() {
                     @Override
                     public void progressChanged(final ProgressEvent progressEvent) {
@@ -8073,6 +8075,10 @@ public class KeyActivity extends BaseActivity implements View.OnClickListener, A
         });
     }
 
+    @Override
+    public void onNetworkQuality(int uid, int txQuality, int rxQuality) {
+
+    }
 
     private void switchToDefaultVideoView() {
         icon_back.setVisibility(View.GONE);

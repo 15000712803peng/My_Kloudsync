@@ -104,6 +104,15 @@ public class MyEngineEventHandler {
         }
 
         @Override
+        public void onNetworkQuality(int uid, int txQuality, int rxQuality) {
+            Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
+            while (it.hasNext()) {
+                AGEventHandler handler = it.next();
+                handler.onNetworkQuality(uid,txQuality,rxQuality);
+            }
+        }
+
+        @Override
         public void onError(int err) {
             super.onError(err);
             log.debug("onError " + err);
