@@ -1062,6 +1062,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
         }
+
         WindowManager wm = (WindowManager)
                 getSystemService(WINDOW_SERVICE);
         EventBus.getDefault().register(this);

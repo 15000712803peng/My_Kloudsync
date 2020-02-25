@@ -251,7 +251,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 }
             }
         });
-
         EventBus.getDefault().register(this);
         downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
         notifySoundtrackPlayStatus(soundtrackDetail,TYPE_SOUNDTRACK_PLAY,0);
@@ -583,6 +582,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     }
 
     private void close() {
+        notifySoundtrackPlayStatus(soundtrackDetail,TYPE_SOUNDTRACK_STOP,soundtrackAudioManager.getPlayTime());
         release();
         dismiss();
     }
@@ -661,6 +661,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     private List<WebAction> pageActions = new ArrayList<>();
 
     private void fetchPageActions(PartWebActions webActions) {
+        if(webActions == null){
+            return;
+        }
         List<WebAction> actions = webActions.getWebActions();
         if (actions != null && actions.size() > 0) {
             for (WebAction action : actions) {

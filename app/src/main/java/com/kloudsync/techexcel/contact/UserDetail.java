@@ -349,12 +349,7 @@ public class UserDetail extends FragmentActivity {
 
     }
 
-    private void GoToHealthManage() {
-        Intent intent = new Intent(UserDetail.this, HealthManagemActivity.class);
-        if (1 == AppConfig.UserType) {
-            startActivity(intent);
-        }
-    }
+
 
     public void GoToDialog() {
         AppConfig.Name = customer.getName();

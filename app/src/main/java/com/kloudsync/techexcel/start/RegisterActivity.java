@@ -245,13 +245,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.tv_fpass:
-                if (LoginActivity.instance != null) {
-                    LoginActivity.instance.finish();
-                }
-                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                finish();
-                break;
+
             case R.id.tv_cphone:
                 GotoChangeCode();
                 break;

@@ -855,9 +855,6 @@
             android:name=".pc.ui.QualificationsActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".pc.ui.SettingActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".pc.ui.EvaluationManagementActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -912,9 +909,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".pc.ui.ShowUserInfoActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".contact.HealthManagemActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.ub.service.activity.SelectLessonTypeActivity"
