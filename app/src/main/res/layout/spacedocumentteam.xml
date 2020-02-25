@@ -82,18 +82,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:paddingTop="5dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="12dp">
+        android:layout_marginTop="@dimen/dp_9"
+        >
 
         <TextView
-            android:layout_marginTop="12dp"
-            android:textSize="12sp"
+            android:textSize="@dimen/sp_12"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="18dp"
-            android:text="@string/Team"
+            android:text="@string/current_project"
             android:textColor="@color/brunette" />
 
 
@@ -104,21 +102,22 @@
         android:id="@+id/txt_project_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_15"
+        android:layout_marginBottom="@dimen/dp_28"
         android:text=""
-        android:textColor="#ff333333"
-        android:textSize="16sp"
+        android:textColor="@color/colorFont33"
+        android:textSize="@dimen/sp_16"
         />
 
 
 
     <TextView
-            android:paddingTop="22dp"
-            android:textSize="12sp"
+            android:textSize="@dimen/sp_12"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:paddingLeft="18dp"
-            android:text="@string/current_space"
+            android:text="@string/current_project_folder"
             android:textColor="@color/brunette" />
     
 
@@ -128,9 +127,8 @@
                 android:id="@+id/teamrl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:paddingBottom="12dp"
-                android:paddingTop="12dp">
+                android:paddingTop="@dimen/dp_16"
+                android:paddingBottom="@dimen/dp_29">
 
                 <TextView
                     android:textColor="@color/white"
@@ -141,54 +139,49 @@
                     android:layout_width="22dp"
                     android:layout_height="16dp"
                     android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
                     android:layout_marginLeft="18dp"
                     android:background="@drawable/icon_dir" />
 
-                <ImageView
+                <!--<ImageView
                     android:id="@+id/icon_white_switch"
                     android:src="@drawable/switch_gray"
                     android:layout_marginLeft="12dp"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@id/switch_dir"
                     android:layout_width="22dp"
-                    android:layout_height="22dp" />
+                    android:layout_height="22dp" />-->
 
 
                 <TextView
-                    android:layout_marginRight="36dp"
+                    android:layout_marginRight="@dimen/dp_17"
                     android:singleLine="true"
-                    android:textSize="17sp"
-                    android:paddingBottom="1dp"
-
-                    android:layout_marginLeft="8dp"
+                    android:textSize="@dimen/sp_16"
+                    android:layout_marginLeft="@dimen/dp_17"
                     android:id="@+id/teamspacename"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@id/icon_white_switch"
+                    android:layout_toRightOf="@id/switch_dir"
+                    android:layout_toLeftOf="@+id/image_more_options"
                     android:textColor="@color/brunette" />
 
                 <ImageView
-                    android:layout_marginRight="8dp"
+                    android:layout_marginRight="@dimen/dp_25"
                     android:id="@+id/image_more_options"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
                     android:src="@drawable/gray_option_more" />
 
             </RelativeLayout>
 
 
         <TextView
-            android:paddingTop="10dp"
-            android:textSize="12sp"
+            android:textSize="@dimen/sp_12"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:paddingLeft="18dp"
-            android:text="@string/docs_in_spaces"
+            android:paddingLeft="@dimen/dp_18"
+            android:text="@string/Current_doc"
             android:textColor="@color/brunette" />
 
 
@@ -199,7 +192,6 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycleview"
             android:background="@color/white"
-            android:layout_marginTop="12dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 

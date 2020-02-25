@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <color name="colorAccent">#3C77FB</color>
 
     <!-- 分类显示的背景颜色 -->
     <color name="typecontentcolor">#1d221c</color>
@@ -152,8 +153,17 @@
 
     <!--   QWX     -->
     <color name="colorFont34">#343434</color>
+    <color name="colorBGf7">#F7F7F7</color>
+    <color name="colorFont33">#333333</color>
+    <color name="colorDialogBg">#F0EFF4</color>
+    <color name="colorBGf9">#F9F9F9</color>
+    <color name="colorBGcf">#CFCFCF</color>
+    <color name="colorFont99">#999999</color>
+    <color name="colorBGdd">#DDDDDD</color>
+    <color name="color3d78fa">#3D78FA</color>
     <color name="colorBG16">#161616</color>
     <color name="colorRegisterYellowTips">#FEA33D</color>
     <color name="colorRegisterRedTips">#FF616A</color>
     <color name="colorRegisterEditRedFrame">#FB6363</color>
+    <color name="colorDivider">#DADADE</color>
 </resources>

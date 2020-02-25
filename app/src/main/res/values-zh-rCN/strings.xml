@@ -340,12 +340,17 @@
 
 
     <string name="Team">当前团队</string>
+    <string name="current_project">当前项目</string>
+    <string name="current_project_folder">当前项目中的文件夹</string>
+    <string name="Current_doc">当前项目的文档</string>
     <string name="Space">当前团队的空间</string>
     <string name="Create_Space">新建空间</string>
+    <string name="create_folder">新建文件夹</string>
     <string name="Current_file">当前团队的文件</string>
     <string name="Swtich_team">切换团队</string>
     <string name="Swtich_space">切换空间</string>
     <string name="Create_team">创建新的团队</string>
+    <string name="create_project">创建新的团队</string>
     <string name="autosync">自动同步允许将内容显示在您的电视设备上</string>
     <string name="tvappname">TV APP 名称</string>
     <string name="tvapplogintime">登录时间</string>
@@ -421,14 +426,17 @@
     <string name="ongoninglesson">正在进行中的课程</string>
 
     <!--安排会议-->
-    <string name="schStart">开始日期:</string>
-    <string name="schName">姓名:</string>
-    <string name="schEnd">结束日期:</string>
-    <string name="schDuration">时长:</string>
+    <string name="schStart">开始日期</string>
+    <string name="start_time">开始时间</string>
+    <string name="schName">姓名</string>
+    <string name="schEnd">结束日期</string>
+    <string name="end_time">结束时间</string>
+    <string name="schDuration">时长</string>
     <string name="schInvite">邀请参加者</string>
     <string name="schMeeting">安排会议</string>
     <string name="schnames">请输入会议名称</string>
     <string name="schdate">请输入时间</string>
+    <string name="invite_attendee">邀请参会者</string>
     <!--进入弹窗-->
     <string name="satOptions">选择音频工具选项</string>
     <string name="satSystem">系统</string>
@@ -839,6 +847,11 @@
     <string name="set_as_participant">设置为参会者</string>
     <string name="set_as_talkable_participant">设置为可讲话参会者</string>
     <string name="password_reset">密码已重置</string>
+    <string name="base_enter">确定</string>
+    <string name="base_cancel">取消</string>
+    <!--文档-->
+    <string name="please_input_new_folder_name">请输入新建文件夹名称</string>
+    <string name="name_cannot_be_empty">名称不能为空</string>
 
     <string name="contract_company">联系人 (公司)</string>
     <string name="contract_all">联系人(所有)</string>

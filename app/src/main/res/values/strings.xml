@@ -342,12 +342,17 @@
 
 
     <string name="Team">Current Team</string>
+    <string name="current_project">Current Project</string>
     <string name="Space">Spaces of Current Team</string>
+    <string name="current_project_folder">Folders in the current project</string>
     <string name="Create_Space">Create New Space</string>
+    <string name="create_folder">Create folder</string>
     <string name="Current_file">Documents of Current Team</string>
+    <string name="Current_doc">Documentation for the current project</string>
     <string name="Swtich_team">Switch Team</string>
     <string name="Swtich_space">Switch Space</string>
     <string name="Create_team">Create New Team</string>
+    <string name="create_project">Create New Project</string>
     <string name="autosync">AutoSync enables content be displayed on your TV devices</string>
     <string name="tvappname">TV APP Name</string>
     <string name="tvapplogintime">Login Time</string>
@@ -384,14 +389,17 @@
 
 
     <!--安排会议-->
-    <string name="schStart">Start date:</string>
-    <string name="schName">Name:</string>
-    <string name="schEnd">End date:</string>
-    <string name="schDuration">Duration:</string>
+    <string name="schStart">Start date</string>
+    <string name="start_time">Start time</string>
+    <string name="schName">Name</string>
+    <string name="schEnd">End date</string>
+    <string name="end_time">End time</string>
+    <string name="schDuration">Duration</string>
     <string name="schInvite">Invite attendees</string>
     <string name="schMeeting">Schedule Meeting</string>
     <string name="schnames">please select name</string>
     <string name="schdate">please select date</string>
+    <string name="invite_attendee">Invite attendee</string>
     <!--进入弹出窗口-->
     <string name="satOptions">Select Audio Tool Options</string>
     <string name="satSystem">System</string>
@@ -850,6 +858,15 @@ Please input the cell phone number to add the contact
     <string name="set_as_participant">Set as participant</string>
     <string name="set_as_talkable_participant">Set as talkable participant</string>
     <string name="password_reset">Password reset</string>
+    <string name="base_enter">OK</string>
+    <string name="base_cancel">Cancel</string>
+    <!--文档-->
+    <string name="please_input_new_folder_name">Please input new folder name</string>
+    <string name="name_cannot_be_empty">Name cannot be empty</string>
+    <!--聊天-->
+    <!--会议-->
+    <!--音想-->
+    <!--我-->
 
 
 

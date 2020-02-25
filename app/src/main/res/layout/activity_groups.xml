@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/colorBGf7"
     android:orientation="vertical" >
     
    <!-- <RelativeLayout
@@ -43,8 +43,9 @@
     </RelativeLayout>
 -->
     <RelativeLayout
+        android:id="@+id/rly_groups_title"
         android:layout_width="fill_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/dp_44"
         android:background="@color/white">
 
         <TextView
@@ -52,21 +53,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textSize="15sp"
+            android:textSize="@dimen/sp_15"
             android:text="@string/Add_Group"
             android:textColor="@color/black"/>
 
         <RelativeLayout
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true">
+           >
 
             <ImageView
                 android:id="@+id/tv_back"
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:padding="15dp"
-                android:src="@drawable/arrow_back2" />
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
+                android:layout_centerInParent="true"
+                android:src="@drawable/back_icon" />
         </RelativeLayout>
         <TextView
             android:id="@+id/tv_sure"
@@ -75,6 +76,7 @@
             android:layout_marginRight="5dp"
             android:layout_alignParentRight="true"
             android:gravity="center"
+            android:visibility="gone"
             android:textColor="@color/pc_black_text"
             android:text="@string/Yes"
             android:textSize="15sp" />
@@ -82,9 +84,18 @@
 
 
 
-    <LinearLayout 
+    <LinearLayout
+        android:layout_below="@id/rly_groups_title"
+        android:id="@+id/lly_groups_search"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/dp_36"
+        android:layout_marginLeft="@dimen/dp_12"
+        android:layout_marginRight="@dimen/dp_12"
+        android:layout_marginTop="@dimen/dp_10"
+        android:paddingLeft="@dimen/dp_12"
+        android:paddingRight="@dimen/dp_12"
+        android:layout_marginBottom="@dimen/dp_2"
+        android:background="@drawable/shape_white_all_radius_19"
         android:orientation="horizontal">
         
         <TextView
@@ -93,32 +104,33 @@
             android:layout_marginLeft="5dp"
             android:layout_gravity="center_vertical"
             android:textColor="@color/green"
-            android:textSize="12sp"
             android:visibility="gone"
+            android:textSize="@dimen/dp_12"
             android:text="@string/Participants"/>
         
         <ImageView 
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="@dimen/dp_12"
+            android:layout_height="@dimen/dp_12"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/search"/>
+            android:src="@drawable/searchicon"/>
         
-        <EditText 
+        <EditText
             android:id="@+id/et_search"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp_9"
             android:background="@null"
             android:hint="@string/Search_Contact"
+            android:textColorHint="@color/colorFont99"
             android:textColor="@color/darkgrey"
-            android:textSize="13sp"/>
+            android:textSize="@dimen/sp_12"/>
     </LinearLayout>
-    
-    <TextView 
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/grey"/>
+
     
     <RelativeLayout
+        android:layout_marginBottom="@dimen/dp_5"
+        android:layout_above="@+id/btn_groups_yes"
+        android:layout_below="@id/lly_groups_search"
         android:descendantFocusability="afterDescendants"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
@@ -127,11 +139,12 @@
             android:id="@+id/lv_group"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@color/grey"
-            android:dividerHeight="1dp"
-            android:listSelector="@drawable/list_selector"></ListView>
+            android:divider="@null"
+            android:scrollbars="none"
+         />
         <FrameLayout
-            android:layout_width="20dp"
+            android:id="@+id/frl_sidebar"
+            android:layout_width="@dimen/dp_20"
             android:layout_alignParentRight="true"
             android:layout_height="match_parent" >
 
@@ -144,6 +157,19 @@
                 android:layout_marginTop="10dp" />
         </FrameLayout>
     </RelativeLayout>
-    
 
-</LinearLayout>
+    <Button
+        android:id="@+id/btn_groups_yes"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_marginRight="@dimen/dp_15"
+        android:text="@string/Yes"
+        android:textSize="@dimen/sp_17"
+        android:textColor="@color/white"
+        android:layout_marginBottom="@dimen/dp_25"
+        android:background="@drawable/selector_blue_gray_all_radius_21"
+        android:layout_height="@dimen/dp_45"/>
+
+
+</RelativeLayout>
