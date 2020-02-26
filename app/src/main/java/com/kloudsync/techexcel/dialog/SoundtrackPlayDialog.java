@@ -354,15 +354,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             Log.e("check_dialog", "time_task_post_execute");
-            if (userVedioManager != null) {
-                userVedioManager.release();
-            }
-            if (soundtrackAudioManager != null) {
-                soundtrackAudioManager.release();
-            }
-            if (actionsManager != null) {
-                actionsManager.release();
-            }
+            dismiss();
+
         }
     }
 
