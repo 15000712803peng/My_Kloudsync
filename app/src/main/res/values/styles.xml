@@ -35,7 +35,6 @@
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
 
-
     <style name="ThemeActivity2" mce_bogus="1" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:statusBarColor" tools:ignore="NewApi">@color/nocolor</item>
         <item name="android:windowNoTitle">true</item>
@@ -183,6 +182,19 @@
         <item name="android:windowBackground">@color/white</item>
     </style>
 
+    <style name="ThemeAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@color/white</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
     <style name="dialogwindowAnim" mce_bogus="1" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/botton_in</item>
         <item name="android:windowExitAnimation">@anim/botton_out</item>
@@ -256,26 +268,26 @@
     </style>
 
     <declare-styleable name="ShadowViewGroup">
-        <attr name="containerShadowColor" format="color"/>
-        <attr name="containerShadowRadius" format="dimension"/>
-        <attr name="containerDeltaLength" format="dimension"/>
-        <attr name="containerCornerRadius" format="dimension"/>
-        <attr name="deltaX" format="dimension"/>
-        <attr name="deltaY" format="dimension"/>
-        <attr name="enable" format="boolean"/>
+        <attr name="containerShadowColor" format="color" />
+        <attr name="containerShadowRadius" format="dimension" />
+        <attr name="containerDeltaLength" format="dimension" />
+        <attr name="containerCornerRadius" format="dimension" />
+        <attr name="deltaX" format="dimension" />
+        <attr name="deltaY" format="dimension" />
+        <attr name="enable" format="boolean" />
     </declare-styleable>
     <declare-styleable name="ShadowTextView">
-        <attr name="shadowTextColor" format="color"/>
-        <attr name="shadowBgStartColor" format="color"/>
-        <attr name="shadowBgEndColor" format="color"/>
-        <attr name="shadowSelectEndColor" format="color"/>
-        <attr name="shadowStartColor" format="color"/>
-        <attr name="shadowSelectStartColor" format="color"/>
-        <attr name="shadowEndColor" format="color"/>
-        <attr name="shadowTextRadius" format="dimension"/>
-        <attr name="shadowTextCornerRadius" format="dimension"/>
-        <attr name="shadowTextSize" format="dimension"/>
-        <attr name="shadowText" format="string"/>
+        <attr name="shadowTextColor" format="color" />
+        <attr name="shadowBgStartColor" format="color" />
+        <attr name="shadowBgEndColor" format="color" />
+        <attr name="shadowSelectEndColor" format="color" />
+        <attr name="shadowStartColor" format="color" />
+        <attr name="shadowSelectStartColor" format="color" />
+        <attr name="shadowEndColor" format="color" />
+        <attr name="shadowTextRadius" format="dimension" />
+        <attr name="shadowTextCornerRadius" format="dimension" />
+        <attr name="shadowTextSize" format="dimension" />
+        <attr name="shadowText" format="string" />
     </declare-styleable>
 
     <style name="KloudLoadingView">
@@ -384,8 +396,6 @@
         <item name="android:textColor">@color/darkgrey</item>
         <item name="android:textStyle">bold</item>
     </style>
-
-
 
 
 </resources>

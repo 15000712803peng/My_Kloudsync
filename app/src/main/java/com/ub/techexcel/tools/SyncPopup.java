@@ -186,12 +186,12 @@ public class SyncPopup implements View.OnClickListener {
                 dismiss();
 
 //                InviteOthersPopup inviteOthersPopup = new InviteOthersPopup();
-//                inviteOthersPopup.getPopwindow(mContext);
+//                inviteOthersPopup.getPopwindow(mActivity);
 //                inviteOthersPopup.setFavoritePoPListener(new InviteOthersPopup.FavoritePoPListener() {
 //                    @Override
 //                    public void select(List<Customer> list) {
 //                        SharedInAppPopup sharedInAppPopup = new SharedInAppPopup();
-//                        sharedInAppPopup.getPopwindow(mContext);
+//                        sharedInAppPopup.getPopwindow(mActivity);
 //                        sharedInAppPopup.setFavoritePoPListener(new SharedInAppPopup.FavoritePoPListener() {
 //                            @Override
 //                            public void select(List<Customer> list) {
@@ -237,7 +237,7 @@ public class SyncPopup implements View.OnClickListener {
         mPopupWindow.getWindow().setGravity(Gravity.RIGHT);
         WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
 //        DisplayMetrics dm = new DisplayMetrics();
-//        (((Activity)mContext).getWindowManager()).getDefaultDisplay().getRealMetrics(dm);
+//        (((Activity)mActivity).getWindowManager()).getDefaultDisplay().getRealMetrics(dm);
         View root = ((Activity) mContext).getWindow().getDecorView();
         params.height = root.getMeasuredHeight();
         mPopupWindow.getWindow().setAttributes(params);

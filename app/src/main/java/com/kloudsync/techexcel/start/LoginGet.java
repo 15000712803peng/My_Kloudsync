@@ -407,8 +407,8 @@ public class LoginGet {
                         mJsonSA(result);
                     } else {
 //                        Toast.makeText(
-//                                mContext,
-//                                mContext.getResources().getString(R.string.No_Data),
+//                                mActivity,
+//                                mActivity.getResources().getString(R.string.No_Data),
 //                                Toast.LENGTH_SHORT).show();
                     }
                     break;
@@ -419,8 +419,8 @@ public class LoginGet {
                         mJsonPU(result);
                     } else {
 //                        Toast.makeText(
-//                                mContext,
-//                                mContext.getResources().getString(R.string.No_Data),
+//                                mActivity,
+//                                mActivity.getResources().getString(R.string.No_Data),
 //                                Toast.LENGTH_SHORT).show();
                     }
                     break;
@@ -464,8 +464,8 @@ public class LoginGet {
 //        ServiceInterfaceTools.getinstance().getInvitations().enqueue(new Callback<InvitationsResponse>() {
 //            @Override
 //            public void onResponse(Call<InvitationsResponse> call, Response<InvitationsResponse> response) {
-//                sharedPreferences = mContext.getSharedPreferences(AppConfig.LOGININFO,
-//                        mContext.MODE_PRIVATE);
+//                sharedPreferences = mActivity.getSharedPreferences(AppConfig.LOGININFO,
+//                        mActivity.MODE_PRIVATE);
 //                if (response != null && response.isSuccessful()) {
 //                    List<Company> companies = response.body().getRetData();
 //                    if (companies != null && companies.size() > 0 && !sharedPreferences.getBoolean("isLogIn", false)) {
@@ -1267,9 +1267,9 @@ public class LoginGet {
 //                }
                 editor.commit();
 				
-				/*Intent intent = new Intent(mContext, MainActivity.class);
-				mContext.startActivity(intent);
-				((Activity) mContext).finish();*/
+				/*Intent intent = new Intent(mActivity, MainActivity.class);
+				mActivity.startActivity(intent);
+				((Activity) mActivity).finish();*/
                 URL_RONGTOKEN = AppConfig.URL_PUBLIC + "RongCloudUserToken";
                 newThreadGetResultBytoken(URL_RONGTOKEN, AppConfig.RONGUSERTOKEN);
             } else {
@@ -1316,12 +1316,12 @@ public class LoginGet {
                 AppConfig.RongUserToken = UserToken;
                 AppConfig.RongUserID = RongUserID;
 
-                /*Intent intent = new Intent(mContext, MainActivity.class);
-                mContext.startActivity(intent);
-                if (!((Activity) mContext).equals(StartUbao.class)) {
-                    ((Activity) mContext).finish();
+                /*Intent intent = new Intent(mActivity, MainActivity.class);
+                mActivity.startActivity(intent);
+                if (!((Activity) mActivity).equals(StartUbao.class)) {
+                    ((Activity) mActivity).finish();
                 }
-                ((Activity) mContext).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);*/
+                ((Activity) mActivity).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);*/
 
                 String url = AppConfig.URL_PUBLIC + "RongCloud/OnlineStatus";
                 newThreadGetResultBytoken(url, AppConfig.OnlineStatus);
@@ -2087,7 +2087,7 @@ public class LoginGet {
             ((Activity) mContext).finish();
         }
 //        wechatFilePaht = "";
-//        ((Activity) mContext).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);
+//        ((Activity) mActivity).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);
     }
 
     private static void goToInvitationsActivity(List<Company> companies) {
@@ -2098,7 +2098,7 @@ public class LoginGet {
         if (!((Activity) mContext).equals(StartUbao.class)) {
             ((Activity) mContext).finish();
         }
-//        ((Activity) mContext).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);
+//        ((Activity) mActivity).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);
     }
 
 
@@ -2398,7 +2398,7 @@ public class LoginGet {
             } else {
                 /*String ErrorMessage = obj.getString("ErrorMessage");
                 String DetailMessage = obj.getString("DetailMessage");
-                Toast.makeText(mContext, ErrorMessage, Toast.LENGTH_SHORT).show();*/
+                Toast.makeText(mActivity, ErrorMessage, Toast.LENGTH_SHORT).show();*/
             }
 
         } catch (Exception e) {

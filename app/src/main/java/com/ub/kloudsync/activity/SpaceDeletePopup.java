@@ -340,7 +340,7 @@ public class SpaceDeletePopup implements View.OnClickListener {
 //            dts.SetType(type, spaceid);
         }else if(1 == type) {
             if(tid < 0){
-                Toast.makeText(mContext,"Please select team first",Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivity,"Please select team first",Toast.LENGTH_LONG).show();
                 return;
             }
 //            dts.SetType(type, tid);

@@ -863,6 +863,8 @@ Please input the cell phone number to add the contact
     <!--文档-->
     <string name="please_input_new_folder_name">Please input new folder name</string>
     <string name="name_cannot_be_empty">Name cannot be empty</string>
+    <string name="know_the">Know the</string>
+    <string name="sound_is_still_preparing_and_cannot_do_this">Sound is still preparing and do this!</string>
     <!--聊天-->
     <!--会议-->
     <!--音想-->

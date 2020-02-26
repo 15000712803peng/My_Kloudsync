@@ -34,7 +34,7 @@ public class HealthAdapter extends CommonAdapter<Customer>{
 		super(mContext, list);
 		this.mContext = mContext;
 		this.list = list;
-//        imageLoader=new ImageLoader(mContext.getApplicationContext());  
+//        imageLoader=new ImageLoader(mActivity.getApplicationContext());
 		SortCustomers();
 	}
 	
@@ -63,16 +63,16 @@ public class HealthAdapter extends CommonAdapter<Customer>{
 		ImageView imgtpye = holder.getView(R.id.img_type);
 		int type = customer.getType();
 		/*if (0 == type) {
-			imgtpye.setImageDrawable(mContext.getResources().getDrawable(
+			imgtpye.setImageDrawable(mActivity.getResources().getDrawable(
 					R.drawable.vip));
 		} else if (1 == type) {
-			imgtpye.setImageDrawable(mContext.getResources().getDrawable(
+			imgtpye.setImageDrawable(mActivity.getResources().getDrawable(
 					R.drawable.ubaoman));
 		} else {
-			imgtpye.setImageDrawable(mContext.getResources().getDrawable(
+			imgtpye.setImageDrawable(mActivity.getResources().getDrawable(
 					R.drawable.userfriend));
 		}*/
-		/*Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(),
+		/*Bitmap bmp = BitmapFactory.decodeResource(mActivity.getResources(),
 				R.drawable.health1);
 		RoundImageDrawable Rid = new RoundImageDrawable(bmp);
 		holder.setImageDrawable(R.id.img_head, Rid).setImageDrawable(
@@ -144,7 +144,7 @@ public class HealthAdapter extends CommonAdapter<Customer>{
 			tv_problem.setBackground(mContext.getResources().getDrawable(R.drawable.contact_tv_problem));
 			tv_problem.setPadding(10, 0, 10, 0);
 			tv_problem.setTextColor(mContext.getResources().getColor(R.color.white));
-//			tv_problem.setBackgroundColor(mContext.getResources().getColor(R.color.green));
+//			tv_problem.setBackgroundColor(mActivity.getResources().getColor(R.color.green));
 			tv_problem.setGravity(Gravity.CENTER);
 			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 					LinearLayout.LayoutParams.WRAP_CONTENT,

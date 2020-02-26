@@ -99,8 +99,8 @@ public class SelectLocalVideoPopup implements View.OnClickListener {
 //        mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
         params.width = mContext.getResources().getDisplayMetrics().widthPixels;
-//        View root = ((Activity) mContext).getWindow().getDecorView();
-//        params.height = mContext.getResources().getDisplayMetrics().heightPixels;
+//        View root = ((Activity) mActivity).getWindow().getDecorView();
+//        params.height = mActivity.getResources().getDisplayMetrics().heightPixels;
         mPopupWindow.getWindow().setAttributes(params);
 
 
