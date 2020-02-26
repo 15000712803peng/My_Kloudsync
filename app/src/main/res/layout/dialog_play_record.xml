@@ -45,10 +45,7 @@
         android:id="@+id/share_vedio_surface"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="32dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="140dp"
-        android:layout_marginTop="10dp"
+
         android:visibility="gone"></SurfaceView>
 
 

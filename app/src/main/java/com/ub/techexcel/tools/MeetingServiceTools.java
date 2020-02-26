@@ -1,6 +1,7 @@
 package com.ub.techexcel.tools;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -14,7 +15,9 @@ import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNotePageActions;
 import com.kloudsync.techexcel.bean.EventPageActions;
+import com.kloudsync.techexcel.bean.EventPageActionsForSoundtrack;
 import com.kloudsync.techexcel.bean.EventPageNotes;
+import com.kloudsync.techexcel.bean.EventPageNotesForSoundtrack;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
@@ -443,6 +446,61 @@ public class MeetingServiceTools {
 
     }
 
+    public EventPageActionsForSoundtrack syncGetPageActions(MeetingConfig config, String pageNumber, String attachmentId, String itemId,String soundtrackID) {
+        String url = "";
+        switch (config.getType()) {
+            case MeetingType.DOC:
+                url = "https://api.peertime.cn/peertime/V1/PageObject/GetPageObjects?lessonID=0&itemID=" + 0 + "&pageNumber=" + pageNumber +
+                        "&attachmentID=" + attachmentId + "&soundtrackID=" + soundtrackID+ "&displayDrawingLine=0";
+                break;
+            case MeetingType.MEETING:
+                url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=" + config.getLessionId() + "&itemID=" +
+                        itemId + "&pageNumber=" + pageNumber;
+                break;
+            case MeetingType.SYNCBOOK:
+                break;
+            case MeetingType.SYNCROOM:
+                break;
+            default:
+        }
+
+
+        JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetPageActions", url + "   " + returnJson.toString());
+        EventPageActionsForSoundtrack pageActions = new EventPageActionsForSoundtrack();
+        pageActions.setPageNumber(config.getPageNumber());
+        try {
+            if (returnJson.getInt("RetCode") == 0) {
+                JSONArray data = returnJson.getJSONArray("RetData");
+                String dataJson = "";
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonObject1 = data.getJSONObject(i);
+                    String _data = jsonObject1.getString("Data");
+                    if (!TextUtil.isEmpty(_data)) {
+                        String dd = "'" + Tools.getFromBase64(_data) + "'";
+                        if (i == 0) {
+                            dataJson += "[" + dd;
+                        } else {
+                            dataJson += "," + dd;
+                        }
+                        if (i == data.length() - 1) {
+                            dataJson += "]";
+                        }
+                    }
+                }
+
+                pageActions.setData(dataJson);
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return pageActions;
+
+    }
+
+
 
     public EventNotePageActions syncGetPageActions(MeetingConfig config, Note note) {
 
@@ -502,6 +560,30 @@ public class MeetingServiceTools {
 
     }
 
+
+    public EventPageNotesForSoundtrack syncGetPageNotesForSoundtrack(String attachmentId, String pageNumber) {
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + attachmentId +
+                "&pageNumber=" + pageNumber + "&userID=" + AppConfig.UserID;
+        JSONObject returnJson = com.kloudsync.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetPageNotes", url + "   " + returnJson.toString());
+        EventPageNotesForSoundtrack pageNotes = new EventPageNotesForSoundtrack();
+        pageNotes.setPageNumber(Integer.parseInt(pageNumber));
+        try {
+            if (returnJson.getInt("RetCode") == 0) {
+                JSONArray _notes = returnJson.getJSONArray("RetData");
+                List<NoteDetail> notes = new ArrayList<NoteDetail>();
+                for (int j = 0; j < _notes.length(); j++) {
+                    JSONObject note = _notes.getJSONObject(j);
+                    notes.add(new Gson().fromJson(note.toString(), NoteDetail.class));
+                }
+                pageNotes.setNotes(notes);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return pageNotes;
+    }
 
     public EventPageNotes syncGetPageNotes(MeetingConfig meetingConfig) {
         String url = AppConfig.URL_PUBLIC + "DocumentNote/List?syncRoomID=" + 0 + "&documentItemID=" + meetingConfig.getDocument().getAttachmentID() +

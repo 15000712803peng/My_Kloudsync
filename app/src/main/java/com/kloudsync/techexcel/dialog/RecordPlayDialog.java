@@ -55,6 +55,7 @@ import org.xwalk.core.XWalkView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -300,7 +301,8 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         for(int i = 0 ; i < parts.length; ++i){
             parts[i] = i;
         }
-        Observable.fromArray(parts).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
+
+        Observable.fromArray(parts).delay(5000, TimeUnit.MILLISECONDS).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer index) throws Exception {
                 long startTime = index * 20000;
@@ -484,11 +486,16 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
             if (audioManager != null) {
                 audioManager.release();
             }
+
             if (recordShareVedioManager != null) {
                 recordShareVedioManager.release();
             }
             if (userVedioManager != null) {
                 userVedioManager.release();
+            }
+
+            if(dialog != null && dialog.isShowing()){
+                dialog.cancel();
             }
         }
 
@@ -694,6 +701,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     private void pause(){
         isStarted = false;
         RecordAudioManager.getInstance(host).pause();
+        RecordShareVedioManager.getInstance(host).pause();
         statusText.setText(R.string.paused);
         startPauseImage.setImageResource(R.drawable.video_play);
     }
@@ -708,6 +716,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
     private void restart(){
         RecordAudioManager.getInstance(host).restart();
+        RecordShareVedioManager.getInstance(host).restart();
         isStarted = true;
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);

@@ -230,6 +230,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                     if (documents == null) {
                         documents = new ArrayList<>();
                     }
+
                     EventBus.getDefault().post(new MessageDocList(documents));
                     if (mCurrentTeamRecyclerView.getAdapter() == null) {
                         documentAdapter = new HomeDocumentAdapter(getActivity(), documents);

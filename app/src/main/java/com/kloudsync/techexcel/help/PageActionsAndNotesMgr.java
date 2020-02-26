@@ -11,7 +11,9 @@ import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNotePageActions;
 import com.kloudsync.techexcel.bean.EventOpenNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
+import com.kloudsync.techexcel.bean.EventPageActionsForSoundtrack;
 import com.kloudsync.techexcel.bean.EventPageNotes;
+import com.kloudsync.techexcel.bean.EventPageNotesForSoundtrack;
 import com.kloudsync.techexcel.bean.EventSelectNote;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.NoteDetail;
@@ -63,6 +65,33 @@ public class PageActionsAndNotesMgr {
         }).doOnNext(new Consumer<EventPageNotes>() {
             @Override
             public void accept(EventPageNotes eventPageNotes) throws Exception {
+                EventBus.getDefault().post(eventPageNotes);
+            }
+        }).subscribe();
+
+    }
+
+    public static void requestActionsAndNoteForSoundtrack(MeetingConfig config, final String pageNumber, final String attachmentId, final String itemId,final  String soundtrackID) {
+        Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageActionsForSoundtrack>() {
+            @Override
+            public EventPageActionsForSoundtrack apply(MeetingConfig config) throws Exception {
+                return MeetingServiceTools.getInstance().syncGetPageActions(config,pageNumber,attachmentId,itemId,soundtrackID);
+            }
+        }).doOnNext(new Consumer<EventPageActionsForSoundtrack>() {
+            @Override
+            public void accept(EventPageActionsForSoundtrack eventPageActions) throws Exception {
+                EventBus.getDefault().post(eventPageActions);
+            }
+        }).subscribe();
+
+        Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageNotesForSoundtrack>() {
+            @Override
+            public EventPageNotesForSoundtrack apply(MeetingConfig config) throws Exception {
+                return MeetingServiceTools.getInstance().syncGetPageNotesForSoundtrack(attachmentId,pageNumber);
+            }
+        }).doOnNext(new Consumer<EventPageNotesForSoundtrack>() {
+            @Override
+            public void accept(EventPageNotesForSoundtrack eventPageNotes) throws Exception {
                 EventBus.getDefault().post(eventPageNotes);
             }
         }).subscribe();

@@ -295,7 +295,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getType() != MeetingType.MEETING) {
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
-            if(Tools.isOrientationPortrait(this)){
+            if (Tools.isOrientationPortrait(this)) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
             //是meeting
@@ -431,7 +431,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         super.onRestoreInstanceState(savedInstanceState);
     }
 
-    private ConnectionChangedListener connectionChangedListener = new  ConnectionChangedListener();
+    private ConnectionChangedListener connectionChangedListener = new ConnectionChangedListener();
 
     private class ConnectionChangedListener implements ConnectionClassManager.ConnectionClassStateChangeListener {
         @Override
@@ -443,6 +443,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
         }
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -596,6 +597,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             if (index < 0) {
                 index = 0;
             }
+            meetingConfig.setAllDocuments(this.documents);
             meetingConfig.setDocument(this.documents.get(index));
             downLoadDocumentPageAndShow();
         } else {
@@ -930,8 +932,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
 
 
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -1038,7 +1038,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
             meetingMenu.setVisibility(View.VISIBLE);
             //---处理笔记
-            if(meetingConfig.getMode() == 0){
+            if (meetingConfig.getMode() == 0) {
                 if (!TextUtils.isEmpty(helloMessage.getPrevDocInfo()) && helloMessage.getNoteId() > 0) {
                     // 心跳显示处于查看笔记
                     if (noteLayout.getVisibility() != View.VISIBLE) {
@@ -1145,25 +1145,25 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         List<NoteDetail> notes = pageNotes.getNotes();
         if (notes != null && notes.size() > 0) {
             if (pageNotes.getPageNumber() == meetingConfig.getPageNumber()) {
-                if (messageManager != null) {
-                    for (NoteDetail note : notes) {
 
-                        try {
-                            JSONObject message = new JSONObject();
-                            message.put("type", 38);
-                            message.put("LinkID", note.getLinkID());
-                            message.put("IsOther", false);
-                            if (!TextUtils.isEmpty(note.getLinkProperty())) {
-                                message.put("LinkProperty", new JSONObject(note.getLinkProperty()));
-                            }
-                            Log.e("check_play_txt", "notes_PlayActionByTxt:" + message);
-                            web.load("javascript:PlayActionByTxt('" + message + "')", null);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                for (NoteDetail note : notes) {
+
+                    try {
+                        JSONObject message = new JSONObject();
+                        message.put("type", 38);
+                        message.put("LinkID", note.getLinkID());
+                        message.put("IsOther", false);
+                        if (!TextUtils.isEmpty(note.getLinkProperty())) {
+                            message.put("LinkProperty", new JSONObject(note.getLinkProperty()));
                         }
-
+                        Log.e("check_play_txt", "notes_PlayActionByTxt:" + message);
+                        web.load("javascript:PlayActionByTxt('" + message + "')", null);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
+
                 }
+
             }
         }
     }
@@ -1507,11 +1507,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         checkAgoraMemberNameAndAgoraStatus();
 
-        if(cameraAdapter != null && cameraList.getVisibility() == View.VISIBLE){
+        if (cameraAdapter != null && cameraList.getVisibility() == View.VISIBLE) {
             cameraAdapter.notifyDataSetChanged();
         }
 
-        if(meetingConfig.isInRealMeeting()){
+        if (meetingConfig.isInRealMeeting()) {
             MeetingKit.getInstance().setEncoderConfigurationBaseMode();
         }
 
@@ -2117,7 +2117,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
         meetingConfig.setPageNumber(pageNum);
         PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
-        if(meetingConfig.getCurrentDocumentPage() != null){
+        if (meetingConfig.getCurrentDocumentPage() != null) {
             meetingConfig.getCurrentDocumentPage().setPageNumber(pageNum);
         }
     }
@@ -2744,6 +2744,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
 
     PopBottomChat chatBottomPop;
+
     private void showChatPop() {
         String chatRoomId = getResources().getString(R.string.Classroom) + meetingConfig.getLessionId();
         if (chatBottomPop != null) {
@@ -3579,7 +3580,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     } else if (_mode == 2) {
                         // 一个人视频全屏模式
 //                        showFullCameraScreen();
-                        String  userID=data.getString("currentSessionID");
+                        String userID = data.getString("currentSessionID");
                         meetingConfig.setCurrentMaxVideoUserId(userID);
                         followShowFullScreenSingleAgoraMember(userID);
 //                        hideFullCameraScreen();
@@ -3944,7 +3945,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         meetingConfig.setMode(viewMode);
 
-        if(viewMode==2){
+        if (viewMode == 2) {
             meetingConfig.setCurrentMaxVideoUserId(userId);
         }
         MeetingKit.getInstance().setEncoderConfigurationBaseMode();

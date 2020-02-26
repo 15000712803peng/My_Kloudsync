@@ -26,15 +26,21 @@ import com.kloudsync.techexcel.adapter.HeaderRecyclerAdapter;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventCloseSoundtrack;
 import com.kloudsync.techexcel.bean.EventCloseWebView;
+import com.kloudsync.techexcel.bean.EventPageActions;
+import com.kloudsync.techexcel.bean.EventPageActionsForSoundtrack;
+import com.kloudsync.techexcel.bean.EventPageNotes;
+import com.kloudsync.techexcel.bean.EventPageNotesForSoundtrack;
 import com.kloudsync.techexcel.bean.EventPlayWebVedio;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingType;
+import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SoundtrackMediaInfo;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DeviceManager;
+import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
 import com.kloudsync.techexcel.help.SoundtrackActionsManager;
 import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.UserVedioManager;
@@ -107,7 +113,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     private static final int TYPE_SOUNDTRACK_PLAY = 1;
     private static final int TYPE_SOUNDTRACK_PAUSE = 2;
     private static final int TYPE_SOUNDTRACK_RESTART = 3;
-
     //
     String totalTimeStr = "00:00";
     String timeStr = "00:00/00:00";
@@ -192,6 +197,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 if (playHandler == null || dialog == null || !dialog.isShowing()) {
                     return;
                 }
+
                 handlePlayMessage(msg);
                 super.handleMessage(msg);
             }
@@ -303,7 +309,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
         @Override
         protected Void doInBackground(Void... voids) {
-
             // 播放完成或者手动关闭dialog isFinished = true;
             while (!isFinished) {
                 boolean isPlaying = SoundtrackAudioManager.getInstance(host).isPlaying();
@@ -362,6 +367,10 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             }
             if (actionsManager != null) {
                 actionsManager.release();
+            }
+
+            if (dialog != null && dialog.isShowing()) {
+                dialog.cancel();
             }
         }
     }
@@ -530,9 +539,22 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     }
 
     @org.xwalk.core.JavascriptInterface
-    public void afterChangePageFunction(final String pageNum, int type) {
+    public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum" + pageNum + ",type" + type);
 //        SoundtrackActionsManager.getInstance(host).setCurrentPage(Integer.parseInt(pageNum));
+        if (meetingConfig.getAllDocuments() != null) {
+            int size = meetingConfig.getAllDocuments().size();
+            if (pageNum < 0 || pageNum > size) {
+                return;
+            }
+        }
+        MeetingDocument document = meetingConfig.getAllDocuments().get(pageNum - 1);
+        if (document != null && soundtrackDetail != null) {
+            PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, pageNum + "",
+                    document.getAttachmentID() + "", document.getItemID() + "",
+                    soundtrackDetail.getSoundtrackID() + "");
+
+        }
 
     }
 
@@ -550,6 +572,48 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         webVedioLayout.setVisibility(View.GONE);
         restart();
 //        WebVedioManager.getInstance(host).closeVedio();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receivePageActions(EventPageActionsForSoundtrack pageActions) {
+        String data = pageActions.getData();
+        if (!TextUtils.isEmpty(data)) {
+            if (pageActions.getPageNumber() == meetingConfig.getPageNumber()) {
+//                Log.e("check_play_txt","PlayActionByArray:" + data);
+                if (web != null) {
+                    web.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
+
+                }
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receivePageNotes(EventPageNotesForSoundtrack pageNotes) {
+        Log.e("receivePageNotes", "page_notes:" + pageNotes);
+        List<NoteDetail> notes = pageNotes.getNotes();
+        if (notes != null && notes.size() > 0) {
+
+            for (NoteDetail note : notes) {
+
+                try {
+                    JSONObject message = new JSONObject();
+                    message.put("type", 38);
+                    message.put("LinkID", note.getLinkID());
+                    message.put("IsOther", false);
+                    if (!TextUtils.isEmpty(note.getLinkProperty())) {
+                        message.put("LinkProperty", new JSONObject(note.getLinkProperty()));
+                    }
+                    Log.e("check_play_txt", "notes_PlayActionByTxt:" + message);
+                    if (web != null) {
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -635,7 +699,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         for (int i = 0; i < parts.length; ++i) {
             parts[i] = i;
         }
-        Observable.fromArray(parts).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
+        Observable.fromArray(parts).delay(3000, TimeUnit.MILLISECONDS).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer index) throws Exception {
                 long startTime = index * 20000;
