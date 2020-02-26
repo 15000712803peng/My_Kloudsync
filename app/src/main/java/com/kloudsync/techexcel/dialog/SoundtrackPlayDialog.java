@@ -659,7 +659,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
     private void close() {
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_STOP, soundtrackAudioManager.getPlayTime());
-        release();
+//        release();
         dismiss();
     }
 
