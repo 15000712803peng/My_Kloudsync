@@ -14,7 +14,6 @@ import android.widget.PopupWindow;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.tool.PopupWindowUtil;
-import com.ub.techexcel.bean.SoundtrackBean;
 
 /**
  * Created by wang on 2017/9/18.
@@ -142,7 +141,6 @@ public class PopSoundtrackOperations implements View.OnClickListener {
                     soundtrackOperationListener.playSoundTrack(soundTrack);
                 }
                 break;
-
             case R.id.sharemore:
                 dismiss();
                 if(soundtrackOperationListener != null){

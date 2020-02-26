@@ -67,6 +67,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
             audioPlayer.setOnCompletionListener(this);
             audioPlayer.setOnErrorListener(this);
             Log.e("check_play","set_data_source:" + audioData.getAttachmentUrl());
+            audioPlayer.reset();
             audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
             audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
@@ -88,6 +89,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
         audioPlayer = null;
         audioPlayer = new MediaPlayer();
         try {
+            audioPlayer.reset();
             audioPlayer.setDataSource(context, Uri.parse(mediaInfo.getAttachmentUrl()));
             audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             audioPlayer.prepareAsync();
