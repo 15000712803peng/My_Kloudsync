@@ -371,7 +371,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                         currentNetworkQuality==NetWorkQuality.QUALITY_DETECTING.getQuality()){
                 }
             }
-        }, 0, 10000);
+        }, 0, 50000);
     }
 
     public enum NetWorkQuality{

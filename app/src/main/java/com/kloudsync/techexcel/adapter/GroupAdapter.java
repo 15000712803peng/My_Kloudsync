@@ -24,7 +24,7 @@ public class GroupAdapter extends CommonAdapter<Customer> {
 		super(mContext, list);
 		this.mContext = mContext;
 		this.list = list;
-//        imageLoader=new ImageLoader(mContext.getApplicationContext());
+//        imageLoader=new ImageLoader(mActivity.getApplicationContext());
 		SortCustomers();
 	}
 

@@ -43,8 +43,8 @@ public class UserGet {
 					mJsonCusDetail(result);
 				} else {
 //					Toast.makeText(
-//							mContext,
-//							mContext.getResources().getString(R.string.No_Data),
+//							mActivity,
+//							mActivity.getResources().getString(R.string.No_Data),
 //							Toast.LENGTH_SHORT).show();
 				}
 				break;
@@ -54,8 +54,8 @@ public class UserGet {
 					mJsonMemDetail(result);
 				} else {
 //					Toast.makeText(
-//							mContext,
-//							mContext.getResources().getString(R.string.No_Data),
+//							mActivity,
+//							mActivity.getResources().getString(R.string.No_Data),
 //							Toast.LENGTH_SHORT).show();
 				}
 				break;

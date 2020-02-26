@@ -393,7 +393,7 @@ public class DocumentUploadTool {
 
         TransferUtility transferUtility =
                 TransferUtility.builder()
-                        .context(mContext)
+                        .context(mActivity)
                         .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
                         .s3Client(s3)
                         .build();
@@ -761,7 +761,7 @@ public class DocumentUploadTool {
                             @Override
                             public void getServiceReturnData(Object object) {
                                 Log.e("hhh", "FavoriteAttachment/UploadNewFile");
-//                                Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
+//                                Toast.makeText(mActivity, "upload success", Toast.LENGTH_LONG).show();
 //                                updateGetListener.Update();
                                 if (uploadDetailLinstener != null) {
                                     uploadDetailLinstener.uploadFinished(object);
@@ -876,7 +876,7 @@ public class DocumentUploadTool {
                             @Override
                             public void getServiceReturnData(Object object) {
                                 Log.e("hhh", "FavoriteAttachment/UploadNewFile");
-//                                Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
+//                                Toast.makeText(mActivity, "upload success", Toast.LENGTH_LONG).show();
 //                                updateGetListener.Update();
                                 if (uploadDetailLinstener != null) {
                                     uploadDetailLinstener.uploadFinished(object);

@@ -252,7 +252,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         roomid = roomid.toUpperCase();
                         mContext.getSharedPreferences(AppConfig.LOGININFO,
                                 MODE_PRIVATE).edit().putString("join_meeting_room",roomid).commit();
-//                        mContext.startService()
+//                        mActivity.startService()
                         startWBService();
                         doJoin(roomid);
                     } else {

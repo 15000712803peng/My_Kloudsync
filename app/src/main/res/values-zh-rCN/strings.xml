@@ -852,6 +852,8 @@
     <!--文档-->
     <string name="please_input_new_folder_name">请输入新建文件夹名称</string>
     <string name="name_cannot_be_empty">名称不能为空</string>
+    <string name="know_the">知道了</string>
+    <string name="sound_is_still_preparing_and_cannot_do_this">音想还在准备中,不能这样做!</string>
 
     <string name="contract_company">联系人 (公司)</string>
     <string name="contract_all">联系人(所有)</string>
