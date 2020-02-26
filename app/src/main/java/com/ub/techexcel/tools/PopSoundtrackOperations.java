@@ -98,16 +98,22 @@ public class PopSoundtrackOperations implements View.OnClickListener {
         if (mPopupWindow != null) {
             int topLength=50;
             if(Tools.isOrientationPortrait((Activity) mContext)){
-                topLength=150;
+                topLength=1230;
+                int windowPos[] = PopupWindowUtil.calculatePopWindowPos2(v, view , topLength);
+                int height = mContext.getResources().getDisplayMetrics().heightPixels;
+                Log.e("duang", height + ":" + windowPos[1]+"  "+windowPos[0]);
+                int xOff = 20; // 可以自己调整偏移
+                windowPos[0] -= xOff;
+                mPopupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
             }else{
                 topLength=50;
+                int windowPos[] = PopupWindowUtil.calculatePopWindowPos(v, view , topLength);
+                int height = mContext.getResources().getDisplayMetrics().heightPixels;
+                Log.e("duang", height + ":" + windowPos[1]+"  "+windowPos[0]);
+                int xOff = 20; // 可以自己调整偏移
+                windowPos[0] -= xOff;
+                mPopupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
             }
-            int windowPos[] = PopupWindowUtil.calculatePopWindowPos(v, view , topLength);  // 318
-            int height = mContext.getResources().getDisplayMetrics().heightPixels;
-            Log.e("duang", height + ":" + windowPos[1]+"  "+windowPos[0]);
-            int xOff = 20; // 可以自己调整偏移
-            windowPos[0] -= xOff;
-            mPopupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
         }
     }
 
