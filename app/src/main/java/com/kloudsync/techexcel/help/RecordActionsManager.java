@@ -363,37 +363,36 @@ public class RecordActionsManager {
         action.setExecuted(true);
         try {
             JSONObject data = new JSONObject(action.getData());
-            Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
-            if (data.getInt("type") == 2) {
-                isLoadingPage = true;
-                downLoadDocumentPageAndShow(data.getInt("page"));
-            } else {
-                web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                web.load("javascript:Record()", null);
-            }
-//                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
+            Log.e("doExecuteAction", "data:" + data);
+            if (data.has("actionType")) {
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+                switch (data.getInt("actionType")) {
+                    case 8:
+                        MediaPlayPage page = new MediaPlayPage();
+                        page.setTime(action.getTime());
+                        int index = mediaPlayPages.indexOf(page);
+                        if (index >= 0) {
+                            MediaPlayPage mediaPlayPage = mediaPlayPages.get(index);
+                            mediaPlayPage = pageCache.getPageCache(mediaPlayPage.getPageUrl());
+                            if (mediaPlayPage != null) {
+                                if (!TextUtils.isEmpty(mediaPlayPage.getSavedLocalPath())) {
+                                    web.load("javascript:ShowPDF('" + mediaPlayPage.getShowUrl() + "', " + mediaPlayPage.getPageNumber() + ",0,'" + 0 + "'," + false + ")", null);
+                                    downloadUrlPre = mediaPlayPage.getPageUrl().substring(0, mediaPlayPage.getPageUrl().lastIndexOf("/"));
+                                    Log.e("ShowPDF", mediaPlayPage + "");
+                                    web.load("javascript:ShowToolbar(" + false + ")", null);
+                                    web.load("javascript:Record()", null);
+                                }
+                            }
+                        }
+                        //just show pdf
+                        break;
+                    case 19:
+                        webVedioManager.execute(action.getWebVedio(), playTime);
+                        break;
+                    case 202:
+                        break;
 
-    }
-
-
-    private int currentPage = -1;
-
-    public void doChangePageAction(WebAction action) {
-        try {
-            JSONObject data = new JSONObject(action.getData());
-            Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
-            if (data.getInt("type") == 2) {
-                int page = data.getInt("page");
-//                if(currentPage == page){
-//                    return;
-//                }
-                isLoadingPage = true;
-                downLoadDocumentPageAndShow(page);
-                currentPage = page;
+                }
             } else {
                 web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
                 web.load("javascript:Record()", null);
@@ -899,7 +898,6 @@ public class RecordActionsManager {
                                 }
                             }
                         }
-
                     }
 
                     Collections.sort(requests);

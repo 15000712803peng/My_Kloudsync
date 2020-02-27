@@ -8,8 +8,6 @@ import android.util.Log;
 
 import com.ub.techexcel.bean.SectionVO;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -247,5 +245,11 @@ public class RecordAudioManager implements MediaPlayer.OnPreparedListener, Media
         }
 
     }
+
+	public void seekTo(Integer progress) {
+		if (audioPlayer != null) {
+			audioPlayer.seekTo(progress);
+		}
+	}
 
 }

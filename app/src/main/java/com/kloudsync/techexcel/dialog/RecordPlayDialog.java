@@ -31,7 +31,6 @@ import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.RecordActionsManager;
 import com.kloudsync.techexcel.help.RecordAudioManager;
 import com.kloudsync.techexcel.help.RecordShareVedioManager;
-
 import com.kloudsync.techexcel.help.UserVedioManager;
 import com.kloudsync.techexcel.help.WebVedioManager;
 import com.kloudsync.techexcel.tool.SyncWebActionsCache;
@@ -55,6 +54,7 @@ import org.xwalk.core.XWalkView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -300,7 +300,8 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         for(int i = 0 ; i < parts.length; ++i){
             parts[i] = i;
         }
-        Observable.fromArray(parts).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
+
+        Observable.fromArray(parts).delay(5000, TimeUnit.MILLISECONDS).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer index) throws Exception {
                 long startTime = index * 20000;
@@ -435,40 +436,42 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         protected Void doInBackground(Void... voids) {
             // 播放完成或者手动关闭dialog isFinished = true;
             while (!isFinished) {
-                boolean isPlaying = RecordAudioManager.getInstance(host).isPlaying();
+                if (!isSeek) {
+                    boolean isPlaying = RecordAudioManager.getInstance(host).isPlaying();
 
-                Log.e("PlayTask","audio_is_playing:" + isPlaying + ",is_started:" + isStarted);
+                    Log.e("PlayTask", "audio_is_playing:" + isPlaying + ",is_started:" + isStarted);
 
-                if (!isStarted) {
+                    if (!isStarted) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        continue;
+                    }
+
+                    if (playTime >= totalTime) {
+                        playTime = totalTime;
+                        playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
+                        break;
+                    }
+                    playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
+
+                    if (isPlaying) {
+                        playTime = RecordAudioManager.getInstance(host).getPlayTime();
+                    } else {
+                        playTime += 500;
+                    }
+                    actionsManager.setTotalTime(totalTime);
+                    actionsManager.setPlayTime(playTime);
+                    RecordAudioManager.getInstance(host).setPlayTime(playTime);
+                    recordShareVedioManager.setPlayTime(playTime);
+                    userVedioManager.setPlayTime(playTime);
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    continue;
-                }
-
-                if (playTime >= totalTime) {
-                    playTime = totalTime;
-                    playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
-                    break;
-                }
-                playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
-
-                if(isPlaying){
-                    playTime = RecordAudioManager.getInstance(host).getPlayTime();
-                }else {
-                    playTime += 500;
-                }
-                actionsManager.setTotalTime(totalTime);
-                actionsManager.setPlayTime(playTime);
-                RecordAudioManager.getInstance(host).setPlayTime(playTime);
-                recordShareVedioManager.setPlayTime(playTime);
-                userVedioManager.setPlayTime(playTime);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
             return null;
@@ -484,11 +487,16 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
             if (audioManager != null) {
                 audioManager.release();
             }
+
             if (recordShareVedioManager != null) {
                 recordShareVedioManager.release();
             }
             if (userVedioManager != null) {
                 userVedioManager.release();
+            }
+
+            if (dialog != null && dialog.isShowing()) {
+                dialog.cancel();
             }
         }
 
@@ -551,7 +559,8 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//        playTime = seekBar.getProgress() * 100;
+        playTime = progress * 10;
+        setTimeText();
 //        refreshTimeText();
     }
 
@@ -562,6 +571,8 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
+        Integer progress = seekBar.getProgress() * 10;
+        audioManager.seekTo(progress);
         isSeek = false;
     }
 
@@ -648,7 +659,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     @org.xwalk.core.JavascriptInterface
     public void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
         if (actionsManager != null) {
-//            actionsManager.preloadFile(url, currentpageNum);
+            actionsManager.preloadFile(url, currentpageNum);
         }
         Log.e("JavascriptInterface", "preLoadFileFunctiona," + url + "     currentpageNum   " + currentpageNum + "   showLoading    " + showLoading);
 
@@ -675,8 +686,22 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     private String time;
     private String _time;
     private void setTimeText() {
+        int oneHour = 1000 * 60 * 60;
+        String currentHour;
+        String currentTime;
         time = simpleDateFormat.format(playTime);
-        playTimeText.setText(time + "/" + _time);
+        if (playTime > oneHour) {
+            int hour = (int) (playTime / oneHour);
+            if (hour < 10) {
+                currentHour = "0" + hour + ":";
+            } else {
+                currentHour = hour + ":";
+            }
+            currentTime = currentHour + time;
+        } else {
+            currentTime = time;
+        }
+        playTimeText.setText(currentTime + "/" + _time);
         seekBar.setMax((int) (totalTime / 10));
         seekBar.setProgress((int) (playTime / 10));
         statusText.setText(R.string.playing);
@@ -694,6 +719,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     private void pause(){
         isStarted = false;
         RecordAudioManager.getInstance(host).pause();
+        RecordShareVedioManager.getInstance(host).pause();
         statusText.setText(R.string.paused);
         startPauseImage.setImageResource(R.drawable.video_play);
     }
@@ -708,6 +734,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
     private void restart(){
         RecordAudioManager.getInstance(host).restart();
+        RecordShareVedioManager.getInstance(host).restart();
         isStarted = true;
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);

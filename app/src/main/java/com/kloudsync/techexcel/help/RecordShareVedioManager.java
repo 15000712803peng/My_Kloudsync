@@ -10,7 +10,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-import com.kloudsync.techexcel.bean.WebVedio;
 import com.ub.techexcel.bean.SectionVO;
 
 import java.io.IOException;
@@ -206,6 +205,27 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
                         }
                     });
                     Log.e("check_play", "start play ,id:" + audioData.getId());
+                }
+            }
+        }
+
+        if (audioData.getEndTime() > playTime || playTime < audioData.getStartTime()) {
+            if (surfaceView.getVisibility() == View.VISIBLE) {
+                ((Activity) context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (surfaceView != null) {
+                            surfaceView.setVisibility(View.GONE);
+                        }
+                    }
+                });
+                try {
+                    if (vedioPlayer != null) {
+                        vedioPlayer.stop();
+                        vedioPlayer.reset();
+                    }
+                } catch (Exception exception) {
+
                 }
 
             }
