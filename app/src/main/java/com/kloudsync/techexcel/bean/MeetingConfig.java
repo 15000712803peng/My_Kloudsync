@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.bean;
 
+import com.ub.kloudsync.activity.Document;
 import com.ub.techexcel.bean.AgoraMember;
 
 import org.greenrobot.eventbus.EventBus;
@@ -44,6 +45,15 @@ public class MeetingConfig{
     private JSONObject currentLinkProperty;
     private int spaceId;
     private DocumentPage currentDocumentPage;
+    private List<MeetingDocument> allDocuments;
+
+    public List<MeetingDocument> getAllDocuments() {
+        return allDocuments;
+    }
+
+    public void setAllDocuments(List<MeetingDocument> allDocuments) {
+        this.allDocuments = allDocuments;
+    }
 
     public String getCurrentMaxVideoUserId() {
         return currentMaxVideoUserId;
