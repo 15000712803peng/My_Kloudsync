@@ -76,7 +76,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 
     private LinearLayout centerLoaing;
     private LinearLayout playLayout;
-//    private ImageView centerStartImage;
+    //    private ImageView centerStartImage;
     private SeekBar seekBar;
     private SurfaceView webVedioSurface;
     private SurfaceView shareVedioSurface;
