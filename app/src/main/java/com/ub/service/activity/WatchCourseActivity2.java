@@ -9150,16 +9150,15 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     public void play(Record record) {
         FileUtils.createRecordingFilesDir(this);
         Log.e("WatchCourseActivity2", "play_record:" + record);
-        boolean play = true;
-        if (play) {
-            play = false;
-            if (recordPlayDialog != null) {
-                recordPlayDialog.dismiss();
-            }
-            recordPlayDialog = new RecordPlayDialog(this, record);
-            recordPlayDialog.show(showpdfurl,currentAttachmentPage,currentAttachmentId);
-        }
-
+//        boolean play = true;
+//        if (play) {
+//            play = false;
+//            if (recordPlayDialog != null) {
+//                recordPlayDialog.dismiss();
+//            }
+//            recordPlayDialog = new RecordPlayDialog(this, record,meetingC);
+//            recordPlayDialog.show(showpdfurl,currentAttachmentPage,currentAttachmentId);
+//        }
     }
 
     private void getRecordingItem(final Record record) {

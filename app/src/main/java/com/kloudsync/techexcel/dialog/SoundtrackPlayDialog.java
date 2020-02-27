@@ -449,7 +449,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                     if (action.getTime() >= time) {
                         Log.e("check_page_time", "seek_time:" + time + ",action_time:" + action.getTime());
                         playTime = time;
-
                         SoundtrackActionsManager.getInstance(host).doChangePageAction(action);
                         SoundtrackActionsManager.getInstance(host).setCurrentPartWebActions(null);
                         break;

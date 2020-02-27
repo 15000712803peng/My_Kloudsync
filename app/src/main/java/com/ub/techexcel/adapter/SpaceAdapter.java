@@ -27,6 +27,7 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
     private boolean isSwitch;
     boolean fromSearch;
     String keyword;
+
     public void clearSelect() {
         if (list != null) {
             for (TeamSpaceBean space : list) {
@@ -101,30 +102,25 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
 //        holder.tv_sort.setBackgroundResource(R.drawable.circle_expand);
 
         if (isSyncRoom) {
-
-
-
 //            holder.attachmentcount.setText(item.getSyncRoomCount() + " " + context.getString(R.string.syncroom));
-            holder.attachmentcount.setText(item.getSyncRoomCount() + " " + CustomSyncRoomTool.getInstance(context).getCustomyinxiang());
+//            holder.attachmentcount.setText(item.getSyncRoomCount() + " " + CustomSyncRoomTool.getInstance(context).getCustomyinxiang());
 
+            holder.attachmentcount.setText(item.getSyncRoomCount() == 0 ? "" : item.getSyncRoomCount() + " SyncRooms");
+            if (item.getSyncRoomCount() == 0) {
+                holder.attachmentcount.setVisibility(View.GONE);
+            } else {
+                holder.attachmentcount.setVisibility(View.VISIBLE);
+            }
 
-//            holder.attachmentcount.setText(item.getSyncRoomCount() == 0 ? "" : item.getSyncRoomCount() + " SyncRooms");
-//            if (item.getSyncRoomCount() == 0) {
-//                holder.attachmentcount.setVisibility(View.GONE);
-//            } else {
-//                holder.attachmentcount.setVisibility(View.VISIBLE);
-//            }
         } else {
-            holder.attachmentcount.setText(item.getAttachmentCount() + " " + context.getString(R.string.documents));
-//            holder.attachmentcount.setText(item.getAttachmentCount() == 0 ? "" : item.getAttachmentCount() + " documents");
-//
-//            if (item.getAttachmentCount() == 0) {
-//                holder.attachmentcount.setVisibility(View.GONE);
-//            } else {
-//                holder.attachmentcount.setVisibility(View.VISIBLE);
-//            }
+//            holder.attachmentcount.setText(item.getAttachmentCount() + " " + context.getString(R.string.documents));
+            holder.attachmentcount.setText(item.getAttachmentCount() == 0 ? "" : item.getAttachmentCount() + " documents");
+            if (item.getAttachmentCount() == 0) {
+                holder.attachmentcount.setVisibility(View.GONE);
+            } else {
+                holder.attachmentcount.setVisibility(View.VISIBLE);
+            }
         }
-
 
         holder.spacerelativelayout.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -6,25 +6,32 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.bean.DocumentPage;
+import com.kloudsync.techexcel.bean.EventNote;
+import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventPlayWebVedio;
+import com.kloudsync.techexcel.bean.EventShowNotePage;
 import com.kloudsync.techexcel.bean.MediaPlayPage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.WebVedio;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.SyncWebActionsCache;
+import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.WebAction;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -79,10 +86,6 @@ public class RecordActionsManager {
 
     public void setWeb(XWalkView web, MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
-        this.web = web;
-    }
-
-    public void setWeb(XWalkView web) {
         this.web = web;
     }
 
@@ -275,6 +278,7 @@ public class RecordActionsManager {
 
 
     private void executeActions(List<WebAction> actions, long playTime) {
+        Log.e("executeActions","size:" + actions.size());
         for (final WebAction action : actions) {
 //            Log.e("check_action", "action:" + action);
             Log.e("SoundtrackActionsManager", "executeActions" + actions + ",action_executed:" + action.isExecuted());
@@ -296,6 +300,7 @@ public class RecordActionsManager {
                                 if (!webVedios.contains(webVedio)) {
                                     webVedios.add(webVedio);
                                 }
+
                                 break;
                             case 202:
                                 action.setExecuted(true);
@@ -340,12 +345,10 @@ public class RecordActionsManager {
             });
         }
 
-
     }
 
     private int lastActionIndex = -1;
     private boolean isLoadingPage;
-
 
     public void setLoadingPage(boolean loadingPage) {
         isLoadingPage = loadingPage;
@@ -361,18 +364,34 @@ public class RecordActionsManager {
             return;
         }
         action.setExecuted(true);
+
         try {
             JSONObject data = new JSONObject(action.getData());
             Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
-            if (data.getInt("type") == 2) {
-                isLoadingPage = true;
-                downLoadDocumentPageAndShow(data.getInt("page"));
-            } else {
-                web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                web.load("javascript:Record()", null);
-            }
-//                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
 
+            if(data.has("actionType")){
+                int actionType = data.getInt("actionType");
+                switch (actionType){
+                    case 8:
+                        if(data.getInt("docType") == 1){
+                            // 加载笔记
+                            handleNote(data.getInt("itemId"));
+                        }
+                        break;
+                }
+
+            }else if(data.has("type")){
+                //加载某一个页的page
+                if (data.getInt("type") == 2) {
+                    isLoadingPage = true;
+                    downLoadDocumentPageAndShow(data.getInt("page"));
+                } else {
+                    web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
+                    web.load("javascript:Record()", null);
+                }
+            }
+
+//                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -672,6 +691,8 @@ public class RecordActionsManager {
     }
 
     private void showCurrentPage(final DocumentPage documentPage) {
+        isLoadingPage = false;
+        Log.e("showCurrentPage","documentPage:" + documentPage);
         Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
             @Override
             public void accept(DocumentPage page) throws Exception {
@@ -790,7 +811,6 @@ public class RecordActionsManager {
             JSONObject returnjson = new JSONObject(jsonstring);
             if (returnjson.getBoolean("Success")) {
                 JSONObject data = returnjson.getJSONObject("Data");
-
                 JSONObject bucket = data.getJSONObject("Bucket");
                 Uploadao uploadao = new Uploadao();
                 uploadao.setServiceProviderId(bucket.getInt("ServiceProviderId"));
@@ -871,7 +891,6 @@ public class RecordActionsManager {
                             }
 
                             webActions.add(action);
-
                             if (!TextUtils.isEmpty(action.getData())) {
                                 try {
                                     JSONObject data = new JSONObject(action.getData());
@@ -910,6 +929,124 @@ public class RecordActionsManager {
             }
         });
     }
+
+    public synchronized void handleNote(final int noteId) {
+
+            Observable.just(noteId).observeOn(Schedulers.io()).map(new Function<Integer, EventNote>() {
+                @Override
+                public EventNote apply(Integer integer) throws Exception {
+                    return MeetingServiceTools.getInstance().syncGetNoteByNoteId(noteId);
+                }
+            }).doOnNext(new Consumer<EventNote>() {
+                @Override
+                public void accept(EventNote note) throws Exception {
+                    if(note.getNote() != null){
+                        queryAndDownLoadNoteToShow(note.getNote().getDocumentPages().get(0),note.getNote(),true);
+                    }
+
+                }
+            }).subscribe();
+    }
+
+    private void queryAndDownLoadNoteToShow(final DocumentPage documentPage, final Note note, final boolean needRedownload) {
+        String pageUrl = documentPage.getPageUrl();
+        DocumentPage page = pageCache.getPageCache(pageUrl);
+        final EventShowNotePage notePage = new EventShowNotePage();
+        notePage.setAttachmendId(note.getAttachmentID());
+        notePage.setNoteId(note.getNoteID());
+        Log.e("queryAndDownLoadNoteToShow", "get cach page:" + page + "--> url:" + documentPage.getPageUrl());
+        if (page != null && !TextUtils.isEmpty(page.getPageUrl())
+                && !TextUtils.isEmpty(page.getSavedLocalPath()) && !TextUtils.isEmpty(page.getShowingPath())) {
+            if (new File(page.getSavedLocalPath()).exists()) {
+                page.setDocumentId(documentPage.getDocumentId());
+                page.setPageNumber(documentPage.getPageNumber());
+                page.setLocalFileId(documentPage.getLocalFileId());
+                pageCache.cacheFile(page);
+                showCurrentNote(page);
+                return;
+            } else {
+                pageCache.removeFile(pageUrl);
+            }
+        }
+
+
+        String meetingId = meetingConfig.getMeetingId();
+
+        JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+                note.getNewPath());
+        if (queryDocumentResult != null) {
+            Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+            String fileName = pageUrl.substring(pageUrl.lastIndexOf("/") + 1);
+            String part = "";
+            if (1 == uploadao.getServiceProviderId()) {
+                part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + note.getNewPath()
+                        + "/" + fileName;
+            } else if (2 == uploadao.getServiceProviderId()) {
+                part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + note.getNewPath() + "/" + fileName;
+            }
+
+            String pathLocalPath = FileUtils.getBaseDir() +
+                    meetingId + "_" + encoderByMd5(part).replaceAll("/", "_") +
+                    "_" + (documentPage.getPageNumber()) +
+                    pageUrl.substring(pageUrl.lastIndexOf("."));
+            final String showUrl = FileUtils.getBaseDir() +
+                    meetingId + "_" + encoderByMd5(part).replaceAll("/", "_") +
+                    "_<" + note.getPageCount() + ">" +
+                    pageUrl.substring(pageUrl.lastIndexOf("."));
+
+
+            Log.e("-", "showUrl:" + showUrl);
+
+            documentPage.setSavedLocalPath(pathLocalPath);
+
+            Log.e("-", "page:" + documentPage);
+            //保存在本地的地址
+
+            DownloadUtil.get().download(pageUrl, pathLocalPath, new DownloadUtil.OnDownloadListener() {
+                @SuppressLint("LongLogTag")
+                @Override
+                public void onDownloadSuccess(int arg0) {
+                    documentPage.setShowingPath(showUrl);
+                    Log.e("queryAndDownLoadCurrentPageToShow", "onDownloadSuccess:" + documentPage + ",thread:" + Thread.currentThread());
+                    pageCache.cacheFile(documentPage);
+                    showCurrentNote(documentPage);
+
+                }
+
+                @Override
+                public void onDownloading(final int progress) {
+
+                }
+
+                @Override
+                public void onDownloadFailed() {
+
+                    Log.e("-", "onDownloadFailed:" + documentPage);
+                    if (needRedownload) {
+                        queryAndDownLoadNoteToShow(documentPage, note,false);
+                    }
+                }
+            });
+        }
+    }
+
+    private void showCurrentNote(final DocumentPage documentPage) {
+        isLoadingPage = false;
+        Log.e("showCurrentPage","documentPage:" + documentPage);
+        Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
+            @Override
+            public void accept(DocumentPage page) throws Exception {
+                if(web == null){
+                    return;
+                }
+                web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+                web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                web.load("javascript:Record()", null);
+            }
+        }).subscribe();
+
+    }
+
 
 
 }

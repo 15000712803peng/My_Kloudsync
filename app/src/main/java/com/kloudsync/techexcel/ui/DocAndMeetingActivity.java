@@ -327,6 +327,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         pageCache = DocumentPageCache.getInstance(this);
         //--
         menuManager = BottomMenuManager.getInstance(this, meetingConfig);
+        menuManager.setShowMeetingRecordPlay(false);
         menuManager.setBottomMenuOperationsListener(this);
         menuManager.setMenuIcon(menuIcon);
         initWeb();
@@ -785,8 +786,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
                             }
                         }).subscribe();
-
-
                     }
                 }
             }
@@ -2432,6 +2431,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Override
     public void menuSyncClicked() {
         showSoundtrackDialog();
+    }
+
+    @Override
+    public void menuPlayMeetingRecordClicked() {
+
     }
 
     @Override
