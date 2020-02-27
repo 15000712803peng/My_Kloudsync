@@ -155,9 +155,23 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
         this.playTime = playTime;
 
         if ((audioData != null && audioData.isPlaying())) {
+            if (audioData.getEndTime() > playTime || playTime < audioData.getStartTime()) {
+                if (surfaceView.getVisibility() == View.VISIBLE) {
+                    surfaceView.setVisibility(View.GONE);
+                    try {
+                        if (vedioPlayer != null) {
+                            vedioPlayer.stop();
+                            vedioPlayer.reset();
+                            audioData = null;
+                        }
+                    } catch (Exception exception) {
+
+                    }
+
+                }
+            }
             return;
         }
-
 
         try {
             if (vedioPlayer != null && vedioPlayer.isPlaying()) {
