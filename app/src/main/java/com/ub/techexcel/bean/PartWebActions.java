@@ -1,5 +1,6 @@
 package com.ub.techexcel.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ public class PartWebActions {
     private long startTime;
     private long endTime;
     private String url;
-    private List<WebAction> webActions;
+	private List<WebAction> webActions = new ArrayList<>();
 
     public long getStartTime() {
         return startTime;

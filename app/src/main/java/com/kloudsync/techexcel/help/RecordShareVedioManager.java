@@ -59,7 +59,6 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
                 return o1.getStartTime() - o2.getStartTime();
             }
         });
-        Log.e("check_play","audioDatas:" + audioDatas);
         if (audioDatas.size() > 0) {
             audioData = audioDatas.get(0);
             prepareVedio(audioData);
@@ -71,18 +70,18 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
             if (audioData.isPreparing() || audioData.isPrepared()) {
                 return;
             }
-            if(vedioPlayer == null){
-                if(vedioPlayer == null){
+	        if (vedioPlayer == null) {
+		        if (vedioPlayer == null) {
                     vedioPlayer = new MediaPlayer();
                     initSurface(surfaceView);
                 }
             }
             try {
 
-                if(vedioPlayer.isPlaying()){
+	            if (vedioPlayer.isPlaying()) {
                     return;
                 }
-            }catch (IllegalStateException e){
+            } catch (IllegalStateException e) {
 
             }
 
@@ -92,7 +91,7 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
                 vedioPlayer.setDataSource(context, Uri.parse(audioData.getFileUrl()));
                 vedioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 vedioPlayer.prepareAsync();
-            }catch (IllegalStateException e){
+            } catch (IllegalStateException e) {
 
                 reinit(audioData);
             }
@@ -106,35 +105,34 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
 
     }
 
-    public  void setPlayTime(long playTime) {
-        if(audioDatas.size() <= 0){
+	public void setPlayTime(long playTime) {
+		if (audioDatas.size() <= 0) {
             return;
         }
         this.playTime = playTime;
         checkAndPlay();
-        if((audioData != null && audioData.isPlaying()) ){
+		if ((audioData != null && audioData.isPlaying())) {
             return;
         }
 
         try {
-            if(vedioPlayer.isPlaying()){
+	        if (vedioPlayer.isPlaying()) {
                 return;
             }
-        }catch (IllegalStateException exception){
+        } catch (IllegalStateException exception) {
 
         }
         //最近的audio
         SectionVO audio = getNearestAudioData(playTime);
-        if(audio == null){
+		if (audio == null) {
             return;
         }
-        Log.e("nearest","audio:" + audio);
+		Log.e("nearest", "audio:" + audio);
         if (audioData != null && audioData.equals(audio)) {
             return;
         }
         audioData = audio;
         Log.e("AudioData", "id:" + audioData.getId());
-
         prepareVedio(audioData);
 
     }
@@ -146,17 +144,15 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
             audioData.setPrepared(true);
             audioData.setPreparing(false);
         }
-
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-
         mp.reset();
         audioData.setPrepared(false);
         audioData.setPlaying(false);
         audioData.setPreparing(false);
-        if(surfaceView != null){
+	    if (surfaceView != null) {
             surfaceView.setVisibility(View.GONE);
         }
     }
@@ -172,7 +168,7 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
             for (int i = 0; i < audioDatas.size(); ++i) {
                 //4591,37302
                 long interval = audioDatas.get(i).getStartTime() - playTime;
-                if(interval > 0){
+	            if (interval > 0) {
                     index = i;
                     break;
                 }
@@ -184,56 +180,80 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
         return null;
     }
 
-    private void checkAndPlay() {
-        if(audioData == null){
-            return;
-        }
+	private void checkAndPlay() {
+		if (audioData == null) {
+			return;
+		}
 
-        if (playTime > audioData.getStartTime() && playTime < audioData.getEndTime()) {
-            if (audioData.isPrepared()) {
-                if (!audioData.isPlaying() && !vedioPlayer.isPlaying()) {
-                    audioData.setPrepared(true);
-                    audioData.setPreparing(false);
-                    audioData.setPlaying(true);
-                    vedioPlayer.start();
-                    ((Activity)context).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(surfaceView != null){
-                                surfaceView.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    });
-                    Log.e("check_play", "start play ,id:" + audioData.getId());
-                }
-            }
-        }
+		if (playTime > audioData.getStartTime() && playTime < audioData.getEndTime()) {
+			if (audioData.isPrepared()) {
+				if (!audioData.isPlaying() && !vedioPlayer.isPlaying()) {
+					audioData.setPrepared(true);
+					audioData.setPreparing(false);
+					audioData.setPlaying(true);
+					vedioPlayer.start();
+					((Activity) context).runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							if (surfaceView != null) {
+								surfaceView.setVisibility(View.VISIBLE);
+							}
+						}
+					});
+					Log.e("check_play", "start play ,id:" + audioData.getId());
+				}
+			}
+		}
 
-        if (audioData.getEndTime() > playTime || playTime < audioData.getStartTime()) {
-            if (surfaceView.getVisibility() == View.VISIBLE) {
-                ((Activity) context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (surfaceView != null) {
-                            surfaceView.setVisibility(View.GONE);
-                        }
-                    }
-                });
-                try {
-                    if (vedioPlayer != null) {
-                        vedioPlayer.stop();
-                        vedioPlayer.reset();
-                    }
-                } catch (Exception exception) {
+		if (audioData.getEndTime() > playTime || playTime < audioData.getStartTime()) {
+			if (surfaceView.getVisibility() == View.VISIBLE) {
+				((Activity) context).runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (surfaceView != null) {
+							surfaceView.setVisibility(View.GONE);
+						}
+					}
+				});
+				try {
+					if (vedioPlayer != null) {
+						vedioPlayer.stop();
+						vedioPlayer.reset();
+					}
+				} catch (Exception exception) {
 
-                }
+				}
 
-            }
-        }
+			}
+		}
 
-    }
+	}
 
-    public void release(){
+	public void pause() {
+		try {
+			if (vedioPlayer != null) {
+				if (vedioPlayer.isPlaying()) {
+					vedioPlayer.pause();
+				}
+			}
+		} catch (Exception e) {
+
+		}
+	}
+
+	public void restart() {
+		try {
+			if (vedioPlayer != null) {
+				if (!vedioPlayer.isPlaying()) {
+					vedioPlayer.start();
+				}
+			}
+		} catch (Exception e) {
+
+		}
+	}
+
+	public void release() {
         if (vedioPlayer != null) {
             vedioPlayer.stop();
             vedioPlayer.reset();
@@ -252,7 +272,7 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
             //调用MediaPlayer.setDisplay(holder)设置surfaceHolder，surfaceHolder可以通过surfaceview的getHolder()方法获得
 
             Log.e("WebVedioManager", "surfaceCreated");
-            if(vedioPlayer != null){
+	        if (vedioPlayer != null) {
                 vedioPlayer.setDisplay(holder);
             }
         }
@@ -276,7 +296,7 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
         }
     }
 
-    private void reinit(SectionVO vedioData){
+	private void reinit(SectionVO vedioData) {
         vedioPlayer = null;
         vedioPlayer = new MediaPlayer();
         refreshSurface();
@@ -289,17 +309,16 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
             vedioData.setPreparing(false);
         }
 
-
     }
 
-    public void initSurface(SurfaceView surfaceView){
+	public void initSurface(SurfaceView surfaceView) {
         //给surfaceHolder设置一个callback
         this.surfaceView = surfaceView;
         surfaceView.getHolder().addCallback(new RecordShareVedioManager.SurfaceCallBack());
     }
 
-    private void refreshSurface(){
-        if(this.surfaceView != null){
+	private void refreshSurface() {
+		if (this.surfaceView != null) {
             this.surfaceView.getHolder().addCallback(new RecordShareVedioManager.SurfaceCallBack());
         }
     }

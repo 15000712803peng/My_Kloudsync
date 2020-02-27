@@ -44,6 +44,15 @@ public class MeetingConfig{
     private JSONObject currentLinkProperty;
     private int spaceId;
     private DocumentPage currentDocumentPage;
+	private List<MeetingDocument> allDocuments;
+
+	public List<MeetingDocument> getAllDocuments() {
+		return allDocuments;
+	}
+
+	public void setAllDocuments(List<MeetingDocument> allDocuments) {
+		this.allDocuments = allDocuments;
+	}
 
     public String getCurrentMaxVideoUserId() {
         return currentMaxVideoUserId;

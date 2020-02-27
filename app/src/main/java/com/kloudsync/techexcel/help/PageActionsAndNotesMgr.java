@@ -4,14 +4,13 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.kloudsync.techexcel.app.App;
-import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNotePageActions;
 import com.kloudsync.techexcel.bean.EventOpenNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
+import com.kloudsync.techexcel.bean.EventPageActionsForSoundtrack;
 import com.kloudsync.techexcel.bean.EventPageNotes;
+import com.kloudsync.techexcel.bean.EventPageNotesForSoundtrack;
 import com.kloudsync.techexcel.bean.EventSelectNote;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.NoteDetail;
@@ -42,32 +41,59 @@ import io.reactivex.schedulers.Schedulers;
 
 public class PageActionsAndNotesMgr {
 
-    public static void requestActionsAndNote(MeetingConfig config) {
-        Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageActions>() {
-            @Override
-            public EventPageActions apply(MeetingConfig config) throws Exception {
-                return MeetingServiceTools.getInstance().syncGetPageActions(config);
-            }
-        }).doOnNext(new Consumer<EventPageActions>() {
-            @Override
-            public void accept(EventPageActions eventPageActions) throws Exception {
-                EventBus.getDefault().post(eventPageActions);
-            }
-        }).subscribe();
+	public static void requestActionsAndNote(MeetingConfig config) {
+		Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageActions>() {
+			@Override
+			public EventPageActions apply(MeetingConfig config) throws Exception {
+				return MeetingServiceTools.getInstance().syncGetPageActions(config);
+			}
+		}).doOnNext(new Consumer<EventPageActions>() {
+			@Override
+			public void accept(EventPageActions eventPageActions) throws Exception {
+				EventBus.getDefault().post(eventPageActions);
+			}
+		}).subscribe();
 
-        Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageNotes>() {
-            @Override
-            public EventPageNotes apply(MeetingConfig config) throws Exception {
-                return MeetingServiceTools.getInstance().syncGetPageNotes(config);
-            }
-        }).doOnNext(new Consumer<EventPageNotes>() {
-            @Override
-            public void accept(EventPageNotes eventPageNotes) throws Exception {
-                EventBus.getDefault().post(eventPageNotes);
-            }
-        }).subscribe();
+		Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageNotes>() {
+			@Override
+			public EventPageNotes apply(MeetingConfig config) throws Exception {
+				return MeetingServiceTools.getInstance().syncGetPageNotes(config);
+			}
+		}).doOnNext(new Consumer<EventPageNotes>() {
+			@Override
+			public void accept(EventPageNotes eventPageNotes) throws Exception {
+				EventBus.getDefault().post(eventPageNotes);
+			}
+		}).subscribe();
 
-    }
+	}
+
+	public static void requestActionsAndNoteForSoundtrack(MeetingConfig config, final String pageNumber, final String attachmentId, final String itemId, final String soundtrackID) {
+		Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageActionsForSoundtrack>() {
+			@Override
+			public EventPageActionsForSoundtrack apply(MeetingConfig config) throws Exception {
+				return MeetingServiceTools.getInstance().syncGetPageActions(config, pageNumber, attachmentId, itemId, soundtrackID);
+			}
+		}).doOnNext(new Consumer<EventPageActionsForSoundtrack>() {
+			@Override
+			public void accept(EventPageActionsForSoundtrack eventPageActions) throws Exception {
+				EventBus.getDefault().post(eventPageActions);
+			}
+		}).subscribe();
+
+		Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageNotesForSoundtrack>() {
+			@Override
+			public EventPageNotesForSoundtrack apply(MeetingConfig config) throws Exception {
+				return MeetingServiceTools.getInstance().syncGetPageNotesForSoundtrack(attachmentId, pageNumber);
+			}
+		}).doOnNext(new Consumer<EventPageNotesForSoundtrack>() {
+			@Override
+			public void accept(EventPageNotesForSoundtrack eventPageNotes) throws Exception {
+				EventBus.getDefault().post(eventPageNotes);
+			}
+		}).subscribe();
+
+	}
 
     public static void requestActionsForNotePage(MeetingConfig config, final Note note) {
         Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventNotePageActions>() {
