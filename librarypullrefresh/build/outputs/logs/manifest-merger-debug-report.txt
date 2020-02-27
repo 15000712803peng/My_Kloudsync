@@ -1,25 +1,25 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:2:1-9:12
-INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:2:1-9:12
-INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:2:1-9:12
-INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:2:1-9:12
-INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:2:1-9:12
-INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:2:1-9:12
-INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:2:1-9:12
+ADDED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:2:1-9:12
+INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:2:1-9:12
+INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:2:1-9:12
+INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:2:1-9:12
+INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:2:1-9:12
+INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:2:1-9:12
+INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:2:1-9:12
 	package
-		ADDED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:3:5-49
-		INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml
-		INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml
+		ADDED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:3:5-49
+		INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml
+		INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml
 	android:versionName
-		ADDED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:5:5-32
-		INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml
-		INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml
+		ADDED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:5:5-32
+		INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml
+		INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml
 	xmlns:android
-		ADDED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:2:11-69
+		ADDED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:2:11-69
 	android:versionCode
-		ADDED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:4:5-31
-		INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml
-		INJECTED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml
+		ADDED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:4:5-31
+		INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml
+		INJECTED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml
 application
-ADDED from D:\D_one\MyCode\nowCode\Kloud\Kloudsync\librarypullrefresh\AndroidManifest.xml:7:5-20
+ADDED from /Users/tonyan/work/Kloudsync/librarypullrefresh/AndroidManifest.xml:7:5-20
