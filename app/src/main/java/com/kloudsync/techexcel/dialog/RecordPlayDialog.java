@@ -203,7 +203,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 super.handleMessage(msg);
             }
         };
-        
+
         //----
         audioManager = RecordAudioManager.getInstance(host);
         userVedioManager = UserVedioManager.getInstance(host);
