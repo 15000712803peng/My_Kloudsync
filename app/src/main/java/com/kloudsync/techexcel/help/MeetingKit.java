@@ -365,11 +365,10 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                     retSetResolutionRatio(true);
                 }else  if(currentNetworkQuality==NetWorkQuality.QUALITY_POOR.getQuality()||
                         currentNetworkQuality==NetWorkQuality.QUALITY_BAD.getQuality()||
-                        currentNetworkQuality==NetWorkQuality.QUALITY_VBAD.getQuality()){
-                    retSetResolutionRatio(false);
-                }else if(currentNetworkQuality==NetWorkQuality.QUALITY_UNKNOWN.getQuality()||
+                        currentNetworkQuality==NetWorkQuality.QUALITY_VBAD.getQuality()||
                         currentNetworkQuality==NetWorkQuality.QUALITY_DOWN.getQuality()||
                         currentNetworkQuality==NetWorkQuality.QUALITY_DETECTING.getQuality()){
+                    retSetResolutionRatio(false);
                 }
             }
         }, 0, 50000);
