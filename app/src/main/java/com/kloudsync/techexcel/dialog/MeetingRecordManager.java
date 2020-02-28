@@ -96,6 +96,7 @@ public class MeetingRecordManager implements View.OnClickListener {
      */
     public void startRecording(boolean isRecordmeeting, ImageView  recordstatus, final MeetingConfig meetingConfig, final SocketMessageManager messageManager) {
         this.meetingConfig=meetingConfig;
+        
         Log.e("startRecording",""+meetingConfig.getMeetingHostId()+"  "+meetingConfig.getPresenterId()+"  ");
         if(isRecordmeeting&&isPresenter()){
             recordstatus.setVisibility(View.VISIBLE);
