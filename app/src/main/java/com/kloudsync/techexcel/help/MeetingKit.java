@@ -359,16 +359,16 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             @Override
             public void run() {
                 Log.e("checkNetWorkStatus","网络质量-------->  "+currentNetworkQuality);
-                if(currentNetworkQuality==NetWorkQuality.QUALITY_EXCELLENT.getQuality()||
+                if(currentNetworkQuality==NetWorkQuality.QUALITY_UNKNOWN.getQuality()||
+                        currentNetworkQuality==NetWorkQuality.QUALITY_EXCELLENT.getQuality()||
                         currentNetworkQuality==NetWorkQuality.QUALITY_GOOD.getQuality()){   //网络状态良好
                     retSetResolutionRatio(true);
                 }else  if(currentNetworkQuality==NetWorkQuality.QUALITY_POOR.getQuality()||
                         currentNetworkQuality==NetWorkQuality.QUALITY_BAD.getQuality()||
-                        currentNetworkQuality==NetWorkQuality.QUALITY_VBAD.getQuality()){
-                    retSetResolutionRatio(false);
-                }else if(currentNetworkQuality==NetWorkQuality.QUALITY_UNKNOWN.getQuality()||
+                        currentNetworkQuality==NetWorkQuality.QUALITY_VBAD.getQuality()||
                         currentNetworkQuality==NetWorkQuality.QUALITY_DOWN.getQuality()||
                         currentNetworkQuality==NetWorkQuality.QUALITY_DETECTING.getQuality()){
+                    retSetResolutionRatio(false);
                 }
             }
         }, 0, 50000);
