@@ -352,6 +352,22 @@ public class SocketMessageManager {
 
     }
 
+    public void sendMessage_recording_AgoraStatusChange(MeetingConfig config,boolean isMicroOn ,boolean isCameraOn ) {
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "AGORA_STATUS_CHANGE");
+            message.put("sessionId", config.getUserToken());
+            message.put("agoraStatus", 1);
+            message.put("microphoneStatus", isMicroOn? 2 : 3);
+            message.put("cameraStatus", isCameraOn ? 2 : 3);
+            message.put("screenStatus", 0);
+            Log.e("startRecording",""+message.toString());
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
     public void sendMessage_audio_sync(MeetingConfig config, EventSoundSync eventSoundSync) {
         try {
             JSONObject message = new JSONObject();
