@@ -407,6 +407,11 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     private ProgressBar fileprogress;
     private TextView progressbartv;
 
+    @Override
+    public void play(Record record) {
+
+    }
+
 
     private static class MyHandler extends Handler {
 
@@ -9144,23 +9149,23 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     }
 
     //---- play meeting record
-    RecordPlayDialog recordPlayDialog;
-
-    @Override
-    public void play(Record record) {
-        FileUtils.createRecordingFilesDir(this);
-        Log.e("WatchCourseActivity2", "play_record:" + record);
-        boolean play = true;
-        if (play) {
-            play = false;
-            if (recordPlayDialog != null) {
-                recordPlayDialog.dismiss();
-            }
-            recordPlayDialog = new RecordPlayDialog(this, record);
-            recordPlayDialog.show(showpdfurl,currentAttachmentPage,currentAttachmentId);
-        }
-
-    }
+//    RecordPlayDialog recordPlayDialog;
+//
+//    @Override
+//    public void play(Record record) {
+//        FileUtils.createRecordingFilesDir(this);
+//        Log.e("WatchCourseActivity2", "play_record:" + record);
+//        boolean play = true;
+//        if (play) {
+//            play = false;
+//            if (recordPlayDialog != null) {
+//                recordPlayDialog.dismiss();
+//            }
+//            recordPlayDialog = new RecordPlayDialog(this, record);
+//            recordPlayDialog.show(showpdfurl,currentAttachmentPage,currentAttachmentId);
+//        }
+//
+//    }
 
     private void getRecordingItem(final Record record) {
 

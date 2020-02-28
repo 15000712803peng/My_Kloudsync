@@ -37,7 +37,6 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
     private RecordShareVedioManager(Context context) {
         this.context = context;
         vedioPlayer = new MediaPlayer();
-
     }
 
     public static RecordShareVedioManager getInstance(Context context) {

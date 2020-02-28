@@ -37,6 +37,24 @@ public abstract class BaseMeetingViewActivity extends FragmentActivity {
     @Bind(R.id.web)
     protected XWalkView web;
 
+
+    @Bind(R.id.layout_note)
+    RelativeLayout noteLayout;
+
+    @Bind(R.id.layout_note_users)
+    LinearLayout noteUsersLayout;
+
+    @Bind(R.id.layout_vedio)
+    RelativeLayout vedioLayout;
+
+    @Bind(R.id.image_vedio_close)
+    ImageView closeVedioImage;
+
+
+
+    @Bind(R.id.web_note)
+    protected XWalkView noteWeb;
+
     @Bind(R.id.menu)
     protected ImageView menu;
 

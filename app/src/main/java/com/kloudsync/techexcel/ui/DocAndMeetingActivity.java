@@ -2436,6 +2436,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     @Override
+    public void menuPlayMeetingRecordClicked() {
+
+    }
+
+    @Override
     public void menuChatClicked() {
         showChatPop();
     }

@@ -24,6 +24,7 @@ import com.kloudsync.techexcel.help.PopShareKloudSync;
 import com.kloudsync.techexcel.help.PopShareMeeting;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.ub.kloudsync.activity.Document;
 import com.ub.service.activity.MeetingPropertyActivity;
 import com.ub.service.activity.MeetingShareActivity;
@@ -199,7 +200,7 @@ public class MeetingFragment extends MyFragment {
                         public void view() {
 //                            Toast.makeText(getActivity(),type+"",Toast.LENGTH_LONG).show();
                             if (type == 3 || type == 2) {
-                                Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+                                Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                                 intent.putExtra("userid", bean.getUserId());
                                 intent.putExtra("meetingId", bean.getId() + "");
                                 intent.putExtra("teacherid", bean.getTeacherId());
@@ -210,9 +211,19 @@ public class MeetingFragment extends MyFragment {
                                 intent.putExtra("filemeetingId", bean.getId() + "");
                                 intent.putExtra("isFinished", true);
                                 intent.putExtra("yinxiangmode", 1);
+                                // --------
+                                intent.putExtra("meeting_id", bean.getId() + "");
+                                intent.putExtra("meeting_type", 2);
+                                intent.putExtra("meeting_role", bean.getRoleinlesson());
+                                try {
+                                    intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
+
+                                }catch (Exception e){
+
+                                }
                                 startActivity(intent);
                             } else {
-                                Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+                                Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                                 intent.putExtra("userid", bean.getUserId());
                                 intent.putExtra("meetingId", bean.getId() + "");
                                 intent.putExtra("teacherid", bean.getTeacherId());
@@ -221,8 +232,22 @@ public class MeetingFragment extends MyFragment {
                                 intent.putExtra("isStartCourse", true);
                                 intent.putExtra("isPrepare", true);
                                 intent.putExtra("yinxiangmode", 1);
+
+                                // --------
+                                intent.putExtra("meeting_id", bean.getId() + "");
+                                intent.putExtra("meeting_type", 2);
+                                intent.putExtra("meeting_role", bean.getRoleinlesson());
+                                try {
+                                    intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
+
+                                }catch (Exception e){
+
+                                }
                                 startActivity(intent);
                             }
+
+
+
                         }
 
                         @Override
