@@ -116,8 +116,8 @@ public class PageActionsAndNotesMgr {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
-                JSONObject jsonObject = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC +
-                        "Lesson/SaveInstantLesson?lessonID=" + config.getLessionId(), null);
+                JSONObject jsonObject = ConnectService.submitDataByJson(AppConfig.URL_MEETING_BASE +
+                        "Lesson/save_instant_lesson?lessonID=" + config.getLessionId(), null);
                 Log.e("save_changed", "jsonObject:" + jsonObject);
 
             }

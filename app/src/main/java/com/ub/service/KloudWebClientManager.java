@@ -1,5 +1,6 @@
 package com.ub.service;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -7,6 +8,7 @@ import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 
 import com.kloudsync.techexcel.tool.Md5Tool;
+import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 
 import org.json.JSONException;
@@ -25,6 +27,8 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
     private URI uri;
     private boolean heartBeatStarted = false;
     private Context context;
+
+
 
     public interface OnMessageArrivedListener {
         void onMessage(String message);
@@ -107,6 +111,12 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
         reconnect();
     }
 
+    private boolean isStartMeetingRecord=true;
+
+    public void startMeetingRecord(boolean b) {
+        isStartMeetingRecord=b;
+    }
+
     class HeartBeatTask extends TimerTask {
         @Override
         public void run() {
@@ -128,7 +138,13 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                         heartBeatMessage.put("currentItemId", meetingConfig.getDocument().getItemID());
                     }
 
-                }
+                    if(isStartMeetingRecord){
+                        heartBeatMessage.put("agoraStatus", 1);
+                        heartBeatMessage.put("microphoneStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isMicroOn()? 2 : 3);
+                        heartBeatMessage.put("cameraStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isCameraOn()? 2 : 3);
+                        heartBeatMessage.put("screenStatus", 0);
+                    }
+             }
                 if (kloudWebClient != null) {
                     kloudWebClient.send(heartBeatMessage.toString());
                     Log.e("KloundWebClientManager", "send heart beat message:" + heartBeatMessage.toString());
