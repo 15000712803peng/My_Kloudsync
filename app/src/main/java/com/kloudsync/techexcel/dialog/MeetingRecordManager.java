@@ -115,9 +115,6 @@ public class MeetingRecordManager implements View.OnClickListener {
                     messageManager.sendMessage_recording_AgoraStatusChange(meetingConfig,isMicroOn,isCameraOn);
                     // 4 心跳增加 上面的4 个状态,所有人在meeting中就要发
 //                    KloudWebClientManager.getInstance().startMeetingRecord(true);
-
-//                    meeting中主持人开始录课，其他成员能收到主持人开始录课通知吗？
-//                    心跳里加这四个状态是在录课情况下吗，还是不录课也要发
                 }
             });
         }
