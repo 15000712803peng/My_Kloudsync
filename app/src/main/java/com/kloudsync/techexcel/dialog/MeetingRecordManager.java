@@ -27,6 +27,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.kloudsync.activity.Document;
+import com.ub.service.KloudWebClientManager;
 import com.ub.service.audiorecord.AudioRecorder;
 import com.ub.service.audiorecord.RecordEndListener;
 import com.ub.techexcel.bean.SoundtrackBean;
@@ -112,6 +113,11 @@ public class MeetingRecordManager implements View.OnClickListener {
                     boolean isCameraOn = getSettingCache((Activity) mContext).getMeetingSetting().isCameraOn();
                     Log.e("startRecording",isMicroOn+"    "+isCameraOn);
                     messageManager.sendMessage_recording_AgoraStatusChange(meetingConfig,isMicroOn,isCameraOn);
+                    // 4 心跳增加 上面的4 个状态,所有人在meeting中就要发
+//                    KloudWebClientManager.getInstance().startMeetingRecord(true);
+
+//                    meeting中主持人开始录课，其他成员能收到主持人开始录课通知吗？
+//                    心跳里加这四个状态是在录课情况下吗，还是不录课也要发
                 }
             });
         }
