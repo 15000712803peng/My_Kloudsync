@@ -157,6 +157,7 @@ public class SoundtrackRecordManager implements View.OnClickListener {
         }
 
         if (!TextUtils.isEmpty(url2)) {
+
             if (mediaPlayer2 != null) {
                 mediaPlayer2.stop();
                 mediaPlayer2.reset();
