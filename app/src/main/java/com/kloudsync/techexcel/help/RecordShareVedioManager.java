@@ -19,6 +19,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+
+
 /**
  * Created by tonyan on 2019/11/21.
  */
@@ -84,7 +89,6 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
             } catch (IllegalStateException e) {
 
             }
-
             audioData.setPreparing(true);
             try {
                 vedioPlayer.reset();
@@ -101,7 +105,6 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
             e.printStackTrace();
             audioData.setPreparing(false);
         }
-
     }
 
     public void prepareVedioAndPlay(SectionVO audioData) {
@@ -153,22 +156,29 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
         }
         this.playTime = playTime;
 
+        if (audioData != null && (playTime > audioData.getEndTime() || playTime < audioData.getStartTime())) {
+            if (surfaceView.getVisibility() == View.VISIBLE) {
+
+                Observable.just("hide_web_share").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        surfaceView.setVisibility(View.GONE);
+                        try {
+                            if (vedioPlayer != null) {
+                                vedioPlayer.stop();
+                                vedioPlayer.reset();
+                                audioData = null;
+                            }
+                        } catch (Exception exception) {
+
+                        }
+
+                    }
+                });
+            }
+        }
+
         if ((audioData != null && audioData.isPlaying())) {
-//            if (audioData.getEndTime() > playTime || playTime < audioData.getStartTime()) {
-//                if (surfaceView.getVisibility() == View.VISIBLE) {
-//                    surfaceView.setVisibility(View.GONE);
-//                    try {
-//                        if (vedioPlayer != null) {
-//                            vedioPlayer.stop();
-//                            vedioPlayer.reset();
-//                            audioData = null;
-//                        }
-//                    } catch (Exception exception) {
-//
-//                    }
-//
-//                }
-//            }
             return;
         }
 
@@ -245,7 +255,7 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
             return;
         }
 
-        if(audioData.isPreparing()){
+        if (audioData.isPreparing()) {
             return;
         }
 
@@ -273,20 +283,6 @@ public class RecordShareVedioManager implements MediaPlayer.OnPreparedListener, 
             }
         }
 
-        if (audioData.getEndTime() > playTime || playTime < audioData.getStartTime()) {
-            if (surfaceView.getVisibility() == View.VISIBLE) {
-                surfaceView.setVisibility(View.GONE);
-                try {
-                    if (vedioPlayer != null) {
-                        vedioPlayer.stop();
-                        vedioPlayer.reset();
-                    }
-                } catch (Exception exception) {
-
-                }
-
-            }
-        }
 
     }
 

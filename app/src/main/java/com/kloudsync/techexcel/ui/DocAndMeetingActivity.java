@@ -890,6 +890,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     return;
                 }
                 if (socketMessage.getData().has("data")) {
+
                     try {
                         String _frame = Tools.getFromBase64(socketMessage.getData().getString("data"));
                         if (noteLayout.getVisibility() == View.VISIBLE) {

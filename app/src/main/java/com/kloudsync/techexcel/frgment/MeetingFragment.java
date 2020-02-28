@@ -121,6 +121,7 @@ public class MeetingFragment extends MyFragment {
     }
 
     private List<ServiceBean> requestMeetings() {
+
         String url = "";
         if (keyWord == null || keyWord.equals("")) {
             url = AppConfig.URL_PUBLIC
@@ -283,6 +284,7 @@ public class MeetingFragment extends MyFragment {
 
                         @Override
                         public void open() {
+
                         }
 
                         @Override
@@ -291,7 +293,6 @@ public class MeetingFragment extends MyFragment {
                             intent.putExtra("servicebean", bean);
                             getActivity().startActivity(intent);
                         }
-
                     });
                     meetingMoreOperationPopup.StartPop(meetingList, bean, type);
                 }

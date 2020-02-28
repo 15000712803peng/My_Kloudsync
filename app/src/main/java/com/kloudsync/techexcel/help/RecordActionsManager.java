@@ -26,6 +26,7 @@ import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.SyncWebActionsCache;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.WebAction;
@@ -36,6 +37,7 @@ import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xwalk.core.XWalkView;
@@ -61,7 +63,6 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class RecordActionsManager {
-
     private static RecordActionsManager instance;
     private volatile long playTime;
     private Activity context;
@@ -375,7 +376,7 @@ public class RecordActionsManager {
                     case 8:
                         if(data.getInt("docType") == 1){
                             // 加载笔记
-                            handleNote(data.getInt("itemId"));
+                            handleNote(data.getInt("itemId"),data.getString("notePageId"));
                         }
                         break;
                 }
@@ -930,7 +931,7 @@ public class RecordActionsManager {
         });
     }
 
-    public synchronized void handleNote(final int noteId) {
+    public synchronized void handleNote(final int noteId,final String notePageId) {
 
             Observable.just(noteId).observeOn(Schedulers.io()).map(new Function<Integer, EventNote>() {
                 @Override
@@ -941,14 +942,14 @@ public class RecordActionsManager {
                 @Override
                 public void accept(EventNote note) throws Exception {
                     if(note.getNote() != null){
-                        queryAndDownLoadNoteToShow(note.getNote().getDocumentPages().get(0),note.getNote(),true);
+                        queryAndDownLoadNoteToShow(note.getNote().getDocumentPages().get(0),note.getNote(),notePageId,true);
                     }
 
                 }
             }).subscribe();
     }
 
-    private void queryAndDownLoadNoteToShow(final DocumentPage documentPage, final Note note, final boolean needRedownload) {
+    private void queryAndDownLoadNoteToShow(final DocumentPage documentPage, final Note note, final String notePageId, final boolean needRedownload) {
         String pageUrl = documentPage.getPageUrl();
         DocumentPage page = pageCache.getPageCache(pageUrl);
         final EventShowNotePage notePage = new EventShowNotePage();
@@ -962,7 +963,7 @@ public class RecordActionsManager {
                 page.setPageNumber(documentPage.getPageNumber());
                 page.setLocalFileId(documentPage.getLocalFileId());
                 pageCache.cacheFile(page);
-                showCurrentNote(page);
+                showCurrentNote(page,notePageId);
                 return;
             } else {
                 pageCache.removeFile(pageUrl);
@@ -1009,7 +1010,7 @@ public class RecordActionsManager {
                     documentPage.setShowingPath(showUrl);
                     Log.e("queryAndDownLoadCurrentPageToShow", "onDownloadSuccess:" + documentPage + ",thread:" + Thread.currentThread());
                     pageCache.cacheFile(documentPage);
-                    showCurrentNote(documentPage);
+                    showCurrentNote(documentPage,notePageId);
 
                 }
 
@@ -1023,16 +1024,34 @@ public class RecordActionsManager {
 
                     Log.e("-", "onDownloadFailed:" + documentPage);
                     if (needRedownload) {
-                        queryAndDownLoadNoteToShow(documentPage, note,false);
+                        queryAndDownLoadNoteToShow(documentPage, note,notePageId,false);
                     }
                 }
             });
         }
     }
 
-    private void showCurrentNote(final DocumentPage documentPage) {
+    private void showCurrentNote(final DocumentPage documentPage,String notePageId) {
         isLoadingPage = false;
         Log.e("showCurrentPage","documentPage:" + documentPage);
+        if (!TextUtils.isEmpty(notePageId)) {
+            if (notePageId.contains(".")) {
+
+                Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<DocumentPage>() {
+                    @Override
+                    public void accept(DocumentPage documentPage) throws Exception {
+                        String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
+                        Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")");
+                        web.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                        web.load("javascript:Record()", null);
+                        handleBluetoothNote(documentPage.getPageUrl());
+                    }
+                });
+
+
+                return;
+            }
+        }
         Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
             @Override
             public void accept(DocumentPage page) throws Exception {
@@ -1043,9 +1062,46 @@ public class RecordActionsManager {
                 web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
                 web.load("javascript:Record()", null);
             }
+
         }).subscribe();
 
     }
+
+    private void handleBluetoothNote(final String url) {
+        Observable.just(url).observeOn(Schedulers.io()).map(new Function<String, String>() {
+            @Override
+            public String apply(String s) throws Exception {
+                String newUrl = "";
+                int index = url.lastIndexOf("/");
+                if (index > 0 && index < url.length() - 2) {
+                    newUrl = url.substring(0, index + 1) + "book_page_data.json";
+                }
+                return newUrl;
+            }
+        }).map(new Function<String, JSONObject>() {
+            @Override
+            public JSONObject apply(String url) throws Exception {
+                JSONObject jsonObject = new JSONObject();
+                if (!TextUtils.isEmpty(url)) {
+                    Log.e("check_url", "url:" + url);
+                    jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
+                }
+                return jsonObject;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                String key = "ShowDotPanData";
+                JSONObject _data = new JSONObject();
+                _data.put("LinesData", jsonObject);
+                _data.put("ShowInCenter", false);
+                _data.put("TriggerEvent", false);
+                Log.e("ShowDotPanData", "ShowDotPanData");
+                web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+            }
+        }).subscribe();
+    }
+
 
 
 
