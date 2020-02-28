@@ -3,7 +3,7 @@
     android:layout_width="70dp"
     android:layout_height="70dp"
     android:padding="1dp"
-    android:background="@drawable/gray_border"
+    android:background="@color/darkblack2"
     >
 
     <SurfaceView

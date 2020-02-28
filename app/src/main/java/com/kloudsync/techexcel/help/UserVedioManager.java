@@ -1,9 +1,7 @@
 package com.kloudsync.techexcel.help;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -11,34 +9,24 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.adapter.FavouriteDocAdapter;
-import com.kloudsync.techexcel.adapter.ShowSpaceAdapter;
-import com.kloudsync.techexcel.bean.WebVedio;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
-import com.kloudsync.techexcel.info.Space;
 import com.ub.techexcel.bean.SectionVO;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by tonyan on 2019/11/21.
@@ -213,7 +201,17 @@ public class UserVedioManager {
 
                         }else {
                             if(sectionVO.isPlaying()){
+	                            sectionVO.setPlaying(false);
+	                            data.setShowCameraVedio(false);
+	                            Observable.just("load_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+		                            @Override
+		                            public void accept(String s) throws Exception {
+			                            if (adapter != null) {
+				                            adapter.notifyItemChanged(userVedioDatas.indexOf(data));
+			                            }
 
+		                            }
+	                            });
                             }
                         }
                     }
@@ -395,15 +393,19 @@ public class UserVedioManager {
 
             Log.e("onBindViewHolder","vedio_data:" + vedioData);
             if (vedioData.getVedios() != null) {
-                if (vedioData.isShowCameraVedio()) {
-                    if(vedioData.getCurrentVedio() != null){
-                        Log.e("check_user_camera","vedio_data_play");
-                        holder.nameText.setVisibility(View.INVISIBLE);
-                        holder.iconImage.setVisibility(View.INVISIBLE);
-                        toPlay(vedioData, vedioData.getCurrentVedio(), holder.surface);
-                    }
+	            if (vedioData.isShowCameraVedio()) {
+		            if(vedioData.getCurrentVedio() != null){
+			            Log.e("check_user_camera","vedio_data_play");
+			            holder.nameText.setVisibility(View.INVISIBLE);
+			            holder.iconImage.setVisibility(View.INVISIBLE);
+			            toPlay(vedioData, vedioData.getCurrentVedio(), holder.surface);
+		            }
 
-                }
+	            } else {
+		            holder.nameText.setVisibility(View.VISIBLE);
+		            holder.iconImage.setVisibility(View.VISIBLE);
+		            holder.surface.setVisibility(View.GONE);
+	            }
             }else {
                 holder.nameText.setVisibility(View.VISIBLE);
                 holder.iconImage.setVisibility(View.VISIBLE);
