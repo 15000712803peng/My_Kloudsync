@@ -893,6 +893,7 @@ Please input the cell phone number to add the contact
     <string name="input_invite_code">input company/organization invite code</string>
     <string name="_join">Join</string>
     <string name="hint_input_invite_code">Input invite vode</string>
+    <string name="scan_tv">Scanning TV devices</string>
 
 
 

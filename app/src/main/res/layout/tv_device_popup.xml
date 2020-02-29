@@ -184,7 +184,7 @@
         android:background="@drawable/bottom_blue_bg"
         android:gravity="center"
         android:padding="10dp"
-        android:text="扫描电视设备"
+        android:text="@string/scan_tv"
         android:textColor="@color/white"
         android:textSize="15sp" />
 

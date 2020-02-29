@@ -1,11 +1,12 @@
 package com.kloudsync.techexcel.personal;
-
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,29 +17,24 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.adapter.TvDeviceAdapter;
 import com.kloudsync.techexcel.adapter.TvDeviceAdapterV2;
 import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.CenterToast;
+import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.response.BindTvStatusResponse;
 import com.kloudsync.techexcel.response.DevicesResponse;
-import com.kloudsync.techexcel.response.NetworkResponse;
-import com.kloudsync.techexcel.start.LoginGet;
 import com.mining.app.zxing.BindTvCapture;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE;
 public class SyncTvActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 	private RelativeLayout backLayout;
 	private TextView tv_title;
@@ -208,6 +204,18 @@ public class SyncTvActivity extends Activity implements View.OnClickListener, Co
 
 	private static final int REQUEST_SCAN = 1;
 
+	private String[] permissions = new String[]{Manifest.permission.CAMERA};
+	private void startRequestPermission(){
+		if (KloudPerssionManger.isPermissionCameraGranted(this) &&KloudPerssionManger.isPermissionReadExternalStorageGranted(this)
+				&& KloudPerssionManger.isPermissionExternalStorageGranted(this)) {
+			Intent intent = new Intent(this, BindTvCapture.class);
+			intent.putExtra("isHorization", false);
+			startActivityForResult(intent, REQUEST_SCAN);
+		}else {
+			ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE);
+		}
+	}
+
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -215,9 +223,7 @@ public class SyncTvActivity extends Activity implements View.OnClickListener, Co
 				finish();
 				break;
 			case R.id.txt_scan:
-				Intent intent = new Intent(this, BindTvCapture.class);
-				intent.putExtra("isHorization", false);
-				startActivityForResult(intent, REQUEST_SCAN);
+				startRequestPermission();
 				break;
 			default:
 				break;

@@ -1,9 +1,10 @@
 package com.ub.techexcel.tools;
-
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,16 +17,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.adapter.TvDeviceAdapter;
 import com.kloudsync.techexcel.adapter.TvDeviceAdapterV3;
 import com.kloudsync.techexcel.bean.TvDevice;
+import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.view.UISwitchButton;
-
 import java.util.List;
-
-
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE;
 public class DevicesListDialog implements View.OnClickListener {
 
     public Context mContext;
@@ -166,6 +164,16 @@ public class DevicesListDialog implements View.OnClickListener {
 
     private WebCamPopupListener webCamPopupListener;
 
+    private String[] permissions = new String[]{Manifest.permission.CAMERA};
+    private void startRequestPermission(){
+        if (KloudPerssionManger.isPermissionCameraGranted(mContext) &&KloudPerssionManger.isPermissionReadExternalStorageGranted(mContext)
+                && KloudPerssionManger.isPermissionExternalStorageGranted(mContext)) {
+            webCamPopupListener.scanTv();
+        }else {
+            ActivityCompat.requestPermissions((Activity) mContext, permissions, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE);
+        }
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -174,7 +182,7 @@ public class DevicesListDialog implements View.OnClickListener {
                 mPopupWindow.dismiss();
                 break;
             case R.id.scantv:
-                webCamPopupListener.scanTv();
+                startRequestPermission();
                 break;
             default:
                 break;
