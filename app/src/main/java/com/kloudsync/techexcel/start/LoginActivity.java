@@ -107,7 +107,6 @@ public class LoginActivity extends Activity implements OnClickListener {
         instance = this;
         gson = new Gson();
         threadManager = ((App) getApplication()).getThreadMgr();
-//        checkPermission();
         initView();
         startWBService();
         EventBus.getDefault().register(this);
@@ -317,16 +316,9 @@ public class LoginActivity extends Activity implements OnClickListener {
             Toast.makeText(getApplicationContext(), getString(R.string.please_input_password), Toast.LENGTH_SHORT).show();
             return;
         }
-//        editor.putString("telephone", telephone);
-//        editor.putString("password", com.kloudsync.techexcel.start.LoginGet.getBase64Password(password));
-//        editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
-//        editor.commit();
-//        telephone = tv_cphone.getText().toString() + telephone;
         if (StringUtils.isPhoneNumber(telephone)) {
             telephone = "+86" + telephone;
         }
-//        com.kloudsync.techexcel.start.LoginGet.LoginRequest(LoginActivity.this, telephone, password, 1,
-//                sharedPreferences, editor, threadManager);
         processLogin(telephone, password, et_telephone.getText().toString().trim());
 
     }
@@ -585,14 +577,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     public void onResume() {
         super.onResume();
-//	    MobclickAgent.onPageStart("LoginActivity");
-//	    MobclickAgent.onResume(this);       //统计时长
     }
 
     public void onPause() {
         super.onPause();
-//        MobclickAgent.onPageEnd("LoginActivity");
-//	    MobclickAgent.onPause(this);
     }
 
     private void goToInvitationsActivity(List<SimpleCompanyData> companies) {
@@ -617,7 +605,6 @@ public class LoginActivity extends Activity implements OnClickListener {
         intent.putExtra("from", 1);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-//        finish();
     }
 
     private void checkPermission() {

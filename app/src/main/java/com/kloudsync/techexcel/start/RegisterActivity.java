@@ -42,7 +42,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
     private EditText phoneEdit, codeEdit;
     private EditText nameEdit, pwdEdit;
     private TextView registerText;
-    //	private EditText et_password;
     private LinearLayout lin_bottom;
 
     private SharedPreferences sharedPreferences;
@@ -183,7 +182,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
         mPwdEyeImage = findViewById(R.id.iv_show_pwd);
         registerText = findViewById(R.id.tv_sign_up);
         registerText.setEnabled(false);
-//		et_password = (EditText) findViewById(R.id.et_password);
         codeEdit = (EditText) findViewById(R.id.et_checkcode);
         AppConfig.COUNTRY_CODE = 86;
         tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
@@ -390,47 +388,13 @@ public class RegisterActivity extends Activity implements OnClickListener {
             tv_sendcheckcode.setTextColor(getResources().getColor(R.color.newgrey));
         }
     }
-
-	/*protected void ChangePassword() {
-
-
-		final JSONObject jsonObject = format();
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					JSONObject responsedata = ConnectService.submitDataByJsonNoToken(
-							AppConfig.URL_PUBLIC
-									+ "User/ResetPwd", jsonObject);
-					Log.e("返回的jsonObject", jsonObject.toString() + "");
-					Log.e("返回的responsedata", responsedata.toString() + "");
-					String retcode = responsedata.getString("RetCode");
-					Message msg = new Message();
-					if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
-						msg.what = AppConfig.SUCCESSCHANGE;
-					}else{
-						msg.what = AppConfig.FAILED;
-						String ErrorMessage = responsedata.getString("ErrorMessage");
-						msg.obj = ErrorMessage;
-					}
-					handler.sendMessage(msg);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}).start();
-	}*/
-
     private JSONObject format() {
         JSONObject jsonObject = new JSONObject();
         try {
-//			String Password = et_password.getText().toString();
             jsonObject.put("AccessCode", AccessCode);
             jsonObject.put("Role", "1");
             jsonObject.put("Mobile", tv_cphone.getText().toString()
                     + phoneEdit.getText().toString());
-//			jsonObject.put("Password", LoginGet.getBase64Password(Password));
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -531,25 +495,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
                 }
             }
         }).start(ThreadManager.getManager());
-
-		/*LoginGet loginget = new LoginGet();
-		loginget.setLoginGetListener(new LoginGetListener() {
-
-			@Override
-			public void getCheckCode(String code) {
-				et_checkcode.setText(code);
-				new Thread(new CheckCodeEnable()).start();
-
-			}
-
-			@Override
-			public void getCheckFalse() {
-				tv_sendcheckcode.setEnabled(true);
-
-			}
-		});
-		LoginGet.CheckCodeRequest(RegisterActivity.this, telephone);*/
-
     }
 
     public class CheckCodeEnable implements Runnable {
@@ -625,7 +570,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
         try {
             jsonObject.put("Mobile", "+" + tv_cphone.getText().toString().replaceAll("\\+", "") + phone);
             jsonObject.put("Password", LoginGet.getBase64Password(pwd).trim());
-//            jsonObject.put("Password", URLEncoder.encode(,"UTF-8"));
             jsonObject.put("VerificationCode", codeAssess);
             jsonObject.put("Name", name.trim());
             jsonObject.put("LoginName", name.trim());
@@ -650,9 +594,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
                                     + "User/Register4Web", jsonobject);
                     String retcode = responsedata.getString("RetCode");
                     Log.e("User/Register4Web", "parmas：" + jsonobject + ",responsedata:" + responsedata);
-//                    JSONObject retdata = responsedata
-//                            .getJSONObject("RetData");
-//                    String UserID = retdata.getString("UserID");
                     Message msg = new Message();
                     if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
                         msg.what = AppConfig.REGISTER_SUCC;
@@ -691,9 +632,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
             editor.putString("telephone", phoneEdit.getText().toString().trim());
             editor.putString("password", pwd);
             editor.commit();
-//            LoginGet.LoginRequest(this, "+"
-//                            + countrycode + phone, pwd, 0, sharedPreferences,
-//                    editor, ((App) getApplication()).getThreadMgr());
             Intent resultData = new Intent();
             resultData.putExtra("password", pwdEdit.getText().toString().trim());
             setResult(RESULT_OK, resultData);
