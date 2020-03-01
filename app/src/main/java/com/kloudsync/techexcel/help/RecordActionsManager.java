@@ -304,6 +304,8 @@ public class RecordActionsManager {
 
                                 break;
                             case 202:
+                                //
+                                Log.e("message_user_info","info:" + data);
                                 action.setExecuted(true);
                                 if (userVedioManager != null) {
                                     userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"));

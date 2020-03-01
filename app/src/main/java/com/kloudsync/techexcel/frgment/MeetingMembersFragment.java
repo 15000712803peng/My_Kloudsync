@@ -17,14 +17,18 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.DeviceType;
+import com.kloudsync.techexcel.bean.EventKickOffMember;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.EventSetPresenter;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
+import com.kloudsync.techexcel.bean.RequestContactData;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.PopMeetingHandsMemberSetting;
 import com.kloudsync.techexcel.dialog.PopMeetingMemberSetting;
 import com.kloudsync.techexcel.dialog.PopMeetingSpeakMemberSetting;
+import com.kloudsync.techexcel.dialog.RequestContactInfoDialog;
 import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
@@ -61,14 +65,17 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         super.onCreate(savedInstanceState);
         type = getArguments().getInt("type");
         meetingConfig = DocAndMeetingActivity.meetingConfig;
-        EventBus.getDefault().register(this);
+        if(!EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().register(this);
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
-
+        if(EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().unregister(this);
+        }
     }
 
 
@@ -90,6 +97,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }
         loadMembers();
     }
+
+
 
     @Nullable
     @Override
@@ -310,6 +319,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             host = view.findViewById(R.id.txt_host);
             changeToMember = view.findViewById(R.id.txt_change_to_member);
             handsUpText = view.findViewById(R.id.txt_hands_up);
+            kickOffMemberText = view.findViewById(R.id.txt_kick_off);
         }
 
         public CircleImageView icon;
@@ -321,6 +331,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         public TextView host;
         public TextView changeToMember;
         public TextView handsUpText;
+        public TextView kickOffMemberText;
 
     }
 
@@ -471,6 +482,16 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
             fillDeviceType(member.getDeviceType(), holder.type);
 
+            holder.kickOffMemberText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("check_post_kick_off","post_1");
+                    EventKickOffMember kickOffMember = new EventKickOffMember();
+                    kickOffMember.setMeetingMember(member);
+                    EventBus.getDefault().post(kickOffMember);
+                }
+            });
+
             if (type == 1) {
                 if (meetingConfig.getMeetingHostId().equals(member.getUserId() + "")) {
                     holder.host.setVisibility(View.VISIBLE);
@@ -484,13 +505,35 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     holder.settingImage.setVisibility(View.VISIBLE);
                     holder.presenter.setVisibility(View.GONE);
                 }
+                if(meetingConfig.getMeetingHostId().equals(member.getUserId()+"")){
+                    // 操作的成员是HOST
+                    holder.kickOffMemberText.setVisibility(View.GONE);
+                }else {
+                    // 不是HOST，如果自己是HOST
+                    if(AppConfig.UserID.equals(meetingConfig.getMeetingHostId())){
+                        holder.kickOffMemberText.setVisibility(View.VISIBLE);
+                    }else {
+                        holder.kickOffMemberText.setVisibility(View.GONE);
+                    }
+                }
                 fillViewByRoleForMembers(member, holder);
                 //------
             } else if (type == 2) {
+                if(meetingConfig.getMeetingHostId().equals(member.getUserId()+"")){
+                    // 操作的成员是HOST
+                    holder.kickOffMemberText.setVisibility(View.GONE);
+                }else {
+                    // 不是HOST，如果自己是HOST
+                    if(AppConfig.UserID.equals(meetingConfig.getMeetingHostId())){
+                        holder.kickOffMemberText.setVisibility(View.VISIBLE);
+                    }else {
+                        holder.kickOffMemberText.setVisibility(View.GONE);
+                    }
+                }
                 fillViewByRoleForAuditors(member, holder);
 
             } else if (type == 3) {
-
+                holder.kickOffMemberText.setVisibility(View.GONE);
             }
 
 
@@ -605,6 +648,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     mainSpeakerViewHolder.settingImage.setVisibility(View.VISIBLE);
                     mainSpeakerViewHolder.presenter.setVisibility(View.GONE);
                 }
+
                 fillViewByRoleForMainSpeakingMembers(member, mainSpeakerViewHolder);
                 //------
 
@@ -1006,6 +1050,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }).subscribe();
     }
 
+
     public void setMember(MeetingMember meetingMember) {
         Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
             @Override
@@ -1035,6 +1080,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             }
         }).subscribe();
     }
+
+
 
 
 }

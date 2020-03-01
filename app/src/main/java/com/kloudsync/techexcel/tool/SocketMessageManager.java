@@ -454,6 +454,19 @@ public class SocketMessageManager {
         }
     }
 
+    public void sendMessage_KickMember(MeetingConfig meetingConfig,MeetingMember member){
+        JSONObject message = new JSONObject();
+        try {
+
+            message.put("actionType", 30);
+            message.put("meetingId", meetingConfig.getMeetingId());
+            message.put("userId", member.getUserId());
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", ""),member.getUserId()+""));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private WebSocketClient getClient() {
         socketClient = AppConfig.webSocketClient;
@@ -497,6 +510,22 @@ public class SocketMessageManager {
             message.put("sessionId", sessionId);
             message.put("type", type);
             message.put("userList", "");
+            message.put("data", data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return message.toString();
+
+    }
+
+    private String wrapperSendMessage(String sessionId, int type, String data,String userList) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("action", "SEND_MESSAGE");
+            message.put("sessionId", sessionId);
+            message.put("type", type);
+            message.put("userList", userList);
             message.put("data", data);
         } catch (JSONException e) {
             e.printStackTrace();

@@ -55,6 +55,7 @@ import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.EventInviteUsers;
+import com.kloudsync.techexcel.bean.EventKickOffMember;
 import com.kloudsync.techexcel.bean.EventMeetingDocuments;
 import com.kloudsync.techexcel.bean.EventMute;
 import com.kloudsync.techexcel.bean.EventNote;
@@ -96,6 +97,7 @@ import com.kloudsync.techexcel.config.RealMeetingSetting;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
+import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
 import com.kloudsync.techexcel.dialog.MeetingRecordManager;
 import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
@@ -129,6 +131,7 @@ import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.QueryLocalNoteTool;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
+import com.kloudsync.techexcel.tool.ToastUtils;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
@@ -228,6 +231,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Bind(R.id.layout_meeting_default_document)
     RelativeLayout meetingDefaultDocument;
+
+    @Bind(R.id.txt_meeting_id)
+    TextView meetingIdText;
 
     @Bind(R.id.layout_remote_share)
     RelativeLayout remoteShareLayout;
@@ -608,6 +614,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             menuIcon.setVisibility(View.VISIBLE);
             if (meetingConfig.getType() == MeetingType.MEETING) {
                 meetingDefaultDocument.setVisibility(View.VISIBLE);
+                meetingIdText.setText(getString(R.string._meeting_id) + meetingConfig.getMeetingId());
                 handleMeetingDefaultDocument();
             }
         }
@@ -695,8 +702,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 currentNoteId = page.getNoteId();
                 noteWeb.setVisibility(View.VISIBLE);
                 String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
-                Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")");
-                noteWeb.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
+                Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + true + ")");
+                noteWeb.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + true + ")", null);
                 noteWeb.load("javascript:Record()", null);
                 handleBluetoothNote(page.getNotePage().getPageUrl());
                 return;
@@ -704,7 +711,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
 
         noteWeb.setVisibility(View.VISIBLE);
-        noteWeb.load("javascript:ShowPDF('" + page.getNotePage().getShowingPath() + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
+        noteWeb.load("javascript:ShowPDF('" + page.getNotePage().getShowingPath() + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + true + ")", null);
         noteWeb.load("javascript:Record()", null);
 
     }
@@ -2586,7 +2593,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
         ChatManager.getManager(this, meetingIndetifier).joinChatRoom(getResources().getString(R.string.Classroom) + meetingConfig.getLessionId());
-        MeetingRecordManager.getManager(this).startRecording(true,recordstatus,meetingConfig,messageManager);
+        MeetingRecordManager.getManager(this).startRecording(true, recordstatus, meetingConfig, messageManager);
         //处理刚进来就是屏幕共享的情况
 //        Observable.just("handle_web_share").delay(10000,TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
 //            @Override
@@ -3124,19 +3131,19 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     }
 
-	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void playSoundtrack(EventPlaySoundtrack soundtrack) {
-		Log.e("check_play", "playSoundtrack");
-		SoundtrackMediaInfo newAudioInfo = soundtrack.getSoundtrackDetail().getNewAudioInfo();
-		if (newAudioInfo == null) {
-			new AlertDialog.Builder(this, R.style.ThemeAlertDialog)
-					.setMessage(getResources().getString(R.string.sound_is_still_preparing_and_cannot_do_this))
-					.setNegativeButton(getResources().getText(R.string.know_the), null)
-					.show();
-		} else {
-			showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
-		}
-	}
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void playSoundtrack(EventPlaySoundtrack soundtrack) {
+        Log.e("check_play", "playSoundtrack");
+        SoundtrackMediaInfo newAudioInfo = soundtrack.getSoundtrackDetail().getNewAudioInfo();
+        if (newAudioInfo == null) {
+            new AlertDialog.Builder(this, R.style.ThemeAlertDialog)
+                    .setMessage(getResources().getString(R.string.sound_is_still_preparing_and_cannot_do_this))
+                    .setNegativeButton(getResources().getText(R.string.know_the), null)
+                    .show();
+        } else {
+            showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
+        }
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void closeViewNote(EventCloseNoteView closeNoteView) {
@@ -3543,7 +3550,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         GridLayoutManager s = (GridLayoutManager) fullCameraList.getLayoutManager();
         int currentSpanCount = s.getSpanCount();
-
         Log.e("fitFullCameraList", "span:" + currentSpanCount);
     }
 
@@ -3626,6 +3632,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         MeetingKit.getInstance().menuMicroClicked(true);
                     }
                 }
+
                 break;
             case 19:
                 Log.e("check_vedio_play", "data:" + data);
@@ -3686,8 +3693,21 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         }
                     }
                 }
+                break;
+            case 30:
+                // 被踢出会议
+                if (meetingConfig.getType() != MeetingType.MEETING) {
+                    return;
+                }
 
+                if (!meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {
+                    String title = getString(R.string.tips);
+                    ToastUtils.showInCenter(getApplicationContext(), title, "你被管理员踢出了会议",false);
+                    finish();
+                }
 
+                break;
+            default:
                 break;
         }
     }
@@ -3795,6 +3815,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 //                        Toast.makeText(this, "join meeting failed", Toast.LENGTH_SHORT).show();
 //                        return;
 //                    }
+
                     JoinMeetingMessage joinMeetingMessage = gson.fromJson(dataJson.toString(), JoinMeetingMessage.class);
                     Log.e("JOIN_MEETING", "join_meeting_message:" + joinMeetingMessage);
                     String[] datas = joinMeetingMessage.getCurrentDocumentPage().split("-");
@@ -3808,6 +3829,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     if (dataJson.has("currentMaxVideoUserId")) {
                         meetingConfig.setCurrentMaxVideoUserId(joinMeetingMessage.getCurrentMaxVideoUserId());
                     }
+
                     if (documents == null || documents.size() <= 0) {
                         requestDocumentsAndShowPage();
                     } else {
@@ -3968,6 +3990,29 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         MeetingKit.getInstance().setEncoderConfigurationBaseMode();
 //        SocketMessageManager.getManager(this).sendMessage_MyNoteActionFrame(actions, meetingConfig, note);
+    }
+
+    // -----
+
+    private KickOffMemberDialog kickOffMemberDialog;
+
+    private void showKickOffDialog(MeetingMember meetingMember) {
+        if (kickOffMemberDialog != null) {
+            if (kickOffMemberDialog.isShowing()) {
+                kickOffMemberDialog.dismiss();
+            }
+
+            kickOffMemberDialog = null;
+        }
+
+        kickOffMemberDialog = new KickOffMemberDialog(this);
+        kickOffMemberDialog.show(meetingConfig, meetingMember);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public synchronized void eventKickOffMember(EventKickOffMember kickOffMember) {
+        Log.e("eventKickOffMember", "show_dialog");
+        showKickOffDialog(kickOffMember.getMeetingMember());
     }
 
 }

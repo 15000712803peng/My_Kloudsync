@@ -867,6 +867,7 @@ Please input the cell phone number to add the contact
     <string name="sound_is_still_preparing_and_cannot_do_this">Sound is still preparing and do this!</string>
     <!--聊天-->
     <!--会议-->
+    <string name="kick_off_from_meeting">kick off from meeting</string>
     <!--音想-->
     <!--我-->
 
@@ -894,6 +895,8 @@ Please input the cell phone number to add the contact
     <string name="_join">Join</string>
     <string name="hint_input_invite_code">Input invite vode</string>
     <string name="scan_tv">Scanning TV devices</string>
+    <string name="_meeting_id">Meeting id:</string>
+    <string name="tips">tips</string>
 
 
 

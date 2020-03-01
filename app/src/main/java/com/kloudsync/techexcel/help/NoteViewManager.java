@@ -410,6 +410,13 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
 
     private void downLoadNotePageAndShow(Note note) {
         if(note == null || note.getDocumentPages() == null || note.getDocumentPages().size() <= 0){
+            if(!TextUtils.isEmpty(note.getLocalFileID()) && note.getLocalFileID().contains(".")){
+                EventShowNotePage eventShowNotePage = new EventShowNotePage();
+                eventShowNotePage.setNoteId(note.getNoteID());
+                eventShowNotePage.setAttachmendId(note.getAttachmentID());
+                eventShowNotePage.setNotePage(note.getDocumentPages().get(0));
+                EventBus.getDefault().post(eventShowNotePage);
+            }
             return;
         }
         Observable.just(note).observeOn(Schedulers.io()).doOnNext(new Consumer<Note>() {

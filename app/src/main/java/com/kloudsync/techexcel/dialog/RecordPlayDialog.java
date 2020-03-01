@@ -349,7 +349,6 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 //        Log.e("check_part","part_size:" + partSize +", total_time:" + totalTime);
     }
 
-
     private List<WebAction> pageActions = new ArrayList<>();
 
     private void fetchPageActions(PartWebActions webActions) {
@@ -626,7 +625,6 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 if (channel.getType() == 4) {
                     userVedioManager.saveUserVedios(channel.getUserId() + "", channel.getSectionVOList());
                 }
-
             }
         }
         actionsManager.setRecordId(recordDetail.getRecordingId());

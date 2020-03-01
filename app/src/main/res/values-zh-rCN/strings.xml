@@ -873,6 +873,9 @@
     <string name="input_invite_code">请输入公司/机构邀请码</string>
     <string name="_join">加入</string>
     <string name="hint_input_invite_code">输入邀请码</string>
+    <string name="_meeting_id">会议ID:</string>
+    <string name="kick_off_from_meeting">请他离开会议</string>
+    <string name="tips">提示</string>
     <string name="Create">创建</string>
     <string name="scan_tv">扫描电视设备</string>
 

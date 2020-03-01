@@ -78,35 +78,46 @@ public class UserVedioManager {
             userVedioData.setVedios(vediosData);
 //            adapter.notifyItemChanged(index);
         }else {
-            UserVedioData vedioData = new UserVedioData(userId);
-            vedioData.setVedios(vediosData);
-            userVedioDatas.add(vedioData);
+            _user.setVedios(vediosData);
+            userVedioDatas.add(_user);
         }
         Log.e("userVedioDatas", userVedioDatas + "");
 
     }
 
     public void refreshUserInfo(final String userId, final String userName, final String avatarUrl) {
-
         Observable.just("on_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
+                if(userVedioDatas == null){
+                    userVedioDatas = new ArrayList<>();
+                }
                 UserVedioData _user = new UserVedioData(userId);
-                int index = userVedioDatas.indexOf(_user);
-                if (index >= 0) {
-                    UserVedioData userVedioData = userVedioDatas.get(index);
-                    userVedioData.setAvatarUrl(avatarUrl);
-                    userVedioData.setUserName(userName);
-                    adapter.notifyItemChanged(index);
-                } else {
-                    UserVedioData vedioData = new UserVedioData(userId);
-                    vedioData.setAvatarUrl(avatarUrl);
-                    vedioData.setUserName(userName);
-                    userVedioDatas.add(vedioData);
-                    adapter.notifyItemInserted(userVedioDatas.indexOf(vedioData));
+                _user.setAvatarUrl(avatarUrl);
+                _user.setUserName(userName);
+                int checkIndex = userVedioDatas.indexOf(_user);
+                Log.e("refreshUserInfo","check_index,index:" + checkIndex);
+                if(checkIndex >= 0){
+                    Log.e("refreshUserInfo","check_index_setCurrentVedio,index:" + checkIndex);
+                    _user.setVedios(userVedioDatas.get(checkIndex).getVedios());
                 }
 
-                Log.e("userVedioDatas", userVedioDatas + "");
+                if(adapter != null){
+                    adapter.userEnter(_user);
+//                    int index = adapter.getUserVedioDatas().indexOf(_user);
+//                    if (index >= 0) {
+//                        UserVedioData userVedioData = adapter.getUserVedioDatas().get(index);
+//                        userVedioData.setAvatarUrl(avatarUrl);
+//                        userVedioData.setUserName(userName);
+//                        adapter.notifyItemChanged(index);
+//                    } else {
+//                        UserVedioData vedioData = new UserVedioData(userId);
+//                        vedioData.setAvatarUrl(avatarUrl);
+//                        vedioData.setUserName(userName);
+//                        adapter.getUserVedioDatas().add(vedioData);
+//                        adapter.notifyItemInserted(userVedioDatas.indexOf(vedioData));
+//                    }
+                }
             }
         });
 
@@ -119,9 +130,6 @@ public class UserVedioManager {
         this.playTime = playTime;
 
         Log.e("check_play", "step_one");
-        if (userVedioDatas.size() < 0) {
-            return;
-        }
 
         notifyShowVedioIfTimeComing();
 
@@ -163,11 +171,14 @@ public class UserVedioManager {
 
     private void notifyShowVedioIfTimeComing() {
 
-        for (final UserVedioData data : userVedioDatas) {
+        if(adapter == null){
+            return;
+        }
+        for (final UserVedioData data : adapter.getUserVedioDatas()) {
+            Log.e("notifyShowVedioIfTimeComing","vedios:" + data.getVedios());
             if (data.getVedios() == null) {
                 continue;
             }
-
 
             if (data.getVedios().size() > 0) {
 
@@ -175,13 +186,10 @@ public class UserVedioManager {
                     //4591,37302
                     final SectionVO sectionVO = data.getVedios().get(i);
 
-
-
                     long interval = playTime - sectionVO.getStartTime();
                     Log.e("notifyShowVedioIfTimeComing","interval:" + interval);
                     if (interval > 0) {
 //                        index = i;
-
                         if(playTime >= sectionVO.getStartTime() && playTime <= sectionVO.getEndTime()){
                             if(sectionVO.isPlaying() || sectionVO.isPreparing() || data.showCameraVedio){
                                 continue;
@@ -193,7 +201,7 @@ public class UserVedioManager {
                                 public void accept(String s) throws Exception {
                                     if(adapter != null){
                                         data.setCurrentVedio(sectionVO);
-                                        adapter.notifyItemChanged(userVedioDatas.indexOf(data));
+                                        adapter.notifyItemChanged(adapter.getUserVedioDatas().indexOf(data));
                                     }
 
                                 }
@@ -231,6 +239,12 @@ public class UserVedioManager {
             audioPlayer.release();
             audioPlayer = null;
         }
+        if(userVedioDatas != null){
+            userVedioDatas.clear();
+            userVedioDatas = null;
+        }
+
+        adapter = null;
         checkData = null;
         instance = null;
     }
@@ -347,13 +361,8 @@ public class UserVedioManager {
         @Override
         public String toString() {
             return "UserVedioData{" +
-                    "type=" + type +
-                    ", userId='" + userId + '\'' +
-                    ", userName='" + userName + '\'' +
-                    ", avatarUrl='" + avatarUrl + '\'' +
+                    "userId='" + userId + '\'' +
                     ", vedios=" + vedios +
-                    ", isPlaying=" + isPlaying +
-                    ", isPreparing=" + isPreparing +
                     '}';
         }
 
@@ -374,6 +383,30 @@ public class UserVedioManager {
     }
 
     class UserVedioAdapter extends RecyclerView.Adapter<VedioHolder> {
+
+        List<UserVedioData> _userVedioDatas = new ArrayList<>();
+
+        public List<UserVedioData> getUserVedioDatas() {
+            return _userVedioDatas;
+        }
+
+        public void userEnter(UserVedioData userVedioData){
+            if(_userVedioDatas.contains(userVedioData)){
+                return;
+            }
+            _userVedioDatas.add(userVedioData);
+            Log.e("UserVedioAdapter","userEnter:" + userVedioData);
+            notifyItemInserted(_userVedioDatas.size());
+        }
+
+        public void userOut(UserVedioData userVedioData){
+            if(_userVedioDatas.contains(userVedioData)){
+                return;
+            }
+            _userVedioDatas.add(userVedioData);
+            notifyItemInserted(_userVedioDatas.size());
+        }
+
         @NonNull
         @Override
         public VedioHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -383,7 +416,7 @@ public class UserVedioManager {
 
         @Override
         public void onBindViewHolder(@NonNull VedioHolder holder, int position) {
-            final UserVedioData vedioData = userVedioDatas.get(position);
+            final UserVedioData vedioData = _userVedioDatas.get(position);
             holder.nameText.setText(vedioData.getUserName());
             if (TextUtils.isEmpty(vedioData.getAvatarUrl())) {
                 holder.iconImage.setImageResource(R.drawable.hello);
@@ -415,7 +448,7 @@ public class UserVedioManager {
 
         @Override
         public int getItemCount() {
-            return userVedioDatas.size();
+            return _userVedioDatas.size();
         }
 
         public void loadUserCameraVedio() {
@@ -484,74 +517,73 @@ public class UserVedioManager {
         return null;
     }
 
-    SectionVO vedioData;
 
-    private void toPlay(final UserVedioData userVedioData, final SectionVO data, SurfaceView surfaceView) {
+
+    private void toPlay(final UserVedioData userVedioData, final SectionVO data, final SurfaceView surfaceView) {
 
         if (data == null) {
             return;
         }
 
-
-
-        if (userVedioData.isPlaying() || userVedioData.isPreparing()) {
+        if (data.isPreparing() || userVedioData.isPreparing()) {
             return;
         }
 
+        Log.e("toPlay","vedio_data:" + data);
+        Observable.just("play").observeOn(Schedulers.io()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                final MediaPlayer vedioPlayer = new MediaPlayer();
+                try {
+                    try {
+                        data.setPreparing(true);
+                        userVedioData.setPreparing(true);
+                        data.setPrepared(true);
+                        vedioPlayer.reset();
+                        initSurface(surfaceView, vedioPlayer);
+                        vedioPlayer.setDataSource(context, Uri.parse(data.getFileUrl()));
+                        vedioPlayer.prepare();
+                        vedioPlayer.start();
+                        data.setPreparing(false);
+                        userVedioData.setPreparing(false);
+                    } catch (IllegalStateException e) {
 
-        if (vedioData != null && vedioData.isPlaying()) {
-            return;
-        }
+                    }
 
-        this.vedioData = data;
+//                    vedioPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//
+//                        @Override
+//                        public void onPrepared(MediaPlayer mp) {
+//                            vedioPlayer.start();
+//
+//                            userVedioData.setPreparing(false);
+//                            data.setPrepared(false);
+//                            data.setPlaying(true);
+//
+//                        }
+//                    });
 
-        final MediaPlayer vedioPlayer = new MediaPlayer();
+                    vedioPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
 
-        try {
+                        }
+                    });
 
-            try {
-                userVedioData.setPreparing(true);
-                data.setPrepared(true);
-                vedioPlayer.reset();
-                initSurface(surfaceView, vedioPlayer);
-                vedioPlayer.setDataSource(context, Uri.parse(data.getFileUrl()));
-                vedioPlayer.prepareAsync();
-            } catch (IllegalStateException e) {
-            }
+                    vedioPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                        @Override
+                        public boolean onError(MediaPlayer mp, int what, int extra) {
+                            return false;
+                        }
+                    });
 
-            vedioPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    vedioPlayer.start();
-                    vedioData.setPlaying(true);
+                } catch (IOException e) {
+                    e.printStackTrace();
                     userVedioData.setPreparing(false);
-                    data.setPrepared(false);
-                    data.setPlaying(true);
-
                 }
-            });
 
-            vedioPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-
-                }
-            });
-
-            vedioPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    return false;
-                }
-            });
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            userVedioData.setPreparing(false);
-        }
-
-
+            }
+        });
     }
 
 
