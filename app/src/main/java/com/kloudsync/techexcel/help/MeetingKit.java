@@ -21,6 +21,7 @@ import com.kloudsync.techexcel.bean.EventShareScreen;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.MeetingRecordManager;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
@@ -334,6 +335,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
         refreshMembersAndPost(meetingConfig, uid, true);
         checkNetWorkStatus();
+        MeetingRecordManager.getManager(host).startRecording(true );
     }
 
 
@@ -366,7 +368,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                     retSetResolutionRatio(false);
                 }
             }
-        }, 0, 50000);
+        }, 10000, 50000);
     }
 
     public enum NetWorkQuality {

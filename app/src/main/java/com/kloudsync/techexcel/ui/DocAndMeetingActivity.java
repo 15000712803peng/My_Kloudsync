@@ -2584,6 +2584,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
         keepScreenWake();
+        MeetingRecordManager.getManager(this).initRecording( recordstatus,  messageManager,meetingConfig);
+
         MeetingKit.getInstance().startMeeting();
         meetingLayout.setVisibility(View.VISIBLE);
         meetingMenu.setVisibility(View.VISIBLE);
@@ -2593,7 +2595,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
         ChatManager.getManager(this, meetingIndetifier).joinChatRoom(getResources().getString(R.string.Classroom) + meetingConfig.getLessionId());
-        MeetingRecordManager.getManager(this).startRecording(true, recordstatus, meetingConfig, messageManager);
+
         //处理刚进来就是屏幕共享的情况
 //        Observable.just("handle_web_share").delay(10000,TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
 //            @Override
