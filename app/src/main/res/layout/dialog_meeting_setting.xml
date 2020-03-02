@@ -141,13 +141,14 @@
                 android:layout_marginLeft="30dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
+
                 <CheckBox
                     android:id="@+id/isOpenRecord"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:checked="true"
+                    android:checked="false"
                     android:text=""
                     android:textColor="@color/black" />
 

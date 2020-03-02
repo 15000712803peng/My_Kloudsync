@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
 import com.google.gson.Gson;
@@ -293,9 +294,10 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         getRtcManager().rtcEngine().setVideoEncoderConfiguration(videoEncoderConfiguration);
     }
 
-
+    private boolean isRecordMeeting=false;
     @Override
-    public void onUserStart() {
+    public void onUserStart(boolean isRecordMeeting) {
+        this.isRecordMeeting=isRecordMeeting;
         Observable.just(newMeetingId).observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
@@ -310,7 +312,8 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
     @Override
-    public void onUserJoin() {
+    public void onUserJoin(boolean isRecordMeeting) {
+        this.isRecordMeeting=isRecordMeeting;
         SocketMessageManager.getManager(host).sendMessage_JoinMeeting(meetingConfig);
     }
 
@@ -335,7 +338,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
         refreshMembersAndPost(meetingConfig, uid, true);
         checkNetWorkStatus();
-        MeetingRecordManager.getManager(host).startRecording(true );
+        MeetingRecordManager.getManager(host).startRecording(isRecordMeeting );
     }
 
 
