@@ -8,5 +8,12 @@
 /build
 /captures
 .externalNativeBuild
+/app/build
+/CallKit/build
+/CallLib/build
+/IMKit/build
+/IMLib/build
+/librarypullrefresh/build
+/TvWidgitLib/build
 
 
