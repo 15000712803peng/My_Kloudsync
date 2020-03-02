@@ -277,9 +277,8 @@ public class RecordActionsManager {
 //        return null;
 //    }
 
-
     private void executeActions(List<WebAction> actions, long playTime) {
-        Log.e("executeActions","size:" + actions.size());
+        Log.e("executeActions", "size:" + actions.size());
         for (final WebAction action : actions) {
 //            Log.e("check_action", "action:" + action);
             Log.e("SoundtrackActionsManager", "executeActions" + actions + ",action_executed:" + action.isExecuted());
@@ -305,11 +304,22 @@ public class RecordActionsManager {
                                 break;
                             case 202:
                                 //
-                                Log.e("message_user_info","info:" + data);
-                                action.setExecuted(true);
-                                if (userVedioManager != null) {
-                                    userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"));
+                                Log.e("message_user_info", "info:" + data);
+                                if (data.has("time")) {
+                                    long time = data.getLong("time");
+                                    if (playTime >= time || time <= 500) {
+                                        action.setExecuted(true);
+                                        if (userVedioManager != null) {
+                                            userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"));
+                                        }
+                                    }
+                                } else {
+                                    action.setExecuted(true);
+                                    if (userVedioManager != null) {
+                                        userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"));
+                                    }
                                 }
+
                                 break;
                         }
 
@@ -372,18 +382,18 @@ public class RecordActionsManager {
             JSONObject data = new JSONObject(action.getData());
             Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
 
-            if(data.has("actionType")){
+            if (data.has("actionType")) {
                 int actionType = data.getInt("actionType");
-                switch (actionType){
+                switch (actionType) {
                     case 8:
-                        if(data.getInt("docType") == 1){
+                        if (data.getInt("docType") == 1) {
                             // 加载笔记
-                            handleNote(data.getInt("itemId"),data.getString("notePageId"));
+                            handleNote(data.getInt("itemId"), data.getString("notePageId"));
                         }
                         break;
                 }
 
-            }else if(data.has("type")){
+            } else if (data.has("type")) {
                 //加载某一个页的page
                 if (data.getInt("type") == 2) {
                     isLoadingPage = true;
@@ -485,85 +495,6 @@ public class RecordActionsManager {
     public void preLoad(int recordId) {
         this.recordId = recordId;
         syncRequestActions();
-    }
-
-    private void requestActionsAndSave() {
-        Request r = getRequest();
-        if (r == null) {
-            return;
-        }
-        if (requests.contains(r)) {
-            r = requests.get(requests.indexOf(r));
-        } else {
-            requests.add(r);
-        }
-
-        if (r.hasRequest) {
-            return;
-        }
-
-        if (r.isRequesting) {
-            return;
-        }
-
-        r.isRequesting = true;
-        request = r;
-        String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + request.startTime + "&endTime=" + (request.startTime + 20000);
-        ServiceInterfaceTools.getinstance().getRecordActions(url, ServiceInterfaceTools.GETSOUNDTRACKACTIONS, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                List<WebAction> actions = (List<WebAction>) object;
-                if (actions != null && actions.size() > 0) {
-                    request.hasRequest = true;
-                    if (!requests.contains(request)) {
-                        requests.add(request);
-                    }
-
-                    if (actions != null && actions.size() > 0) {
-                        for (WebAction action : actions) {
-                            if (webActions.contains(action)) {
-                                continue;
-                            }
-
-                            webActions.add(action);
-
-                            if (!TextUtils.isEmpty(action.getData())) {
-                                try {
-                                    JSONObject data = new JSONObject(action.getData());
-                                    if (data.has("actionType")) {
-                                        int actionType = data.getInt("actionType");
-                                        switch (actionType) {
-                                            case 19:
-//                                                Log.e("check_action","action:setWebVedio:" + action.getData());
-//                                                action.setWebVedio(gson.fromJson(action.getData(), WebVedio.class));
-                                                WebVedio webVedio = gson.fromJson(action.getData(), WebVedio.class);
-                                                if (!webVedios.contains(webVedio)) {
-                                                    webVedios.add(webVedio);
-                                                }
-                                                break;
-                                            case 202:
-                                                if (userVedioManager != null) {
-                                                    userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"));
-                                                }
-                                                break;
-                                        }
-
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
-                    }
-
-                    Collections.sort(requests);
-                    Collections.sort(webActions);
-                    Log.e("webActions", "webActions:" + webActions);
-                }
-
-            }
-        });
     }
 
 
@@ -671,7 +602,7 @@ public class RecordActionsManager {
             web = null;
         }
         webActions.clear();
-        currentPartWebActions =  null;
+        currentPartWebActions = null;
         mediaPlayPages.clear();
         requests.clear();
         if (webVedioManager != null) {
@@ -695,11 +626,11 @@ public class RecordActionsManager {
 
     private void showCurrentPage(final DocumentPage documentPage) {
         isLoadingPage = false;
-        Log.e("showCurrentPage","documentPage:" + documentPage);
+        Log.e("showCurrentPage", "documentPage:" + documentPage);
         Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
             @Override
             public void accept(DocumentPage page) throws Exception {
-                if(web == null){
+                if (web == null) {
                     return;
                 }
                 web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -933,22 +864,22 @@ public class RecordActionsManager {
         });
     }
 
-    public synchronized void handleNote(final int noteId,final String notePageId) {
+    public synchronized void handleNote(final int noteId, final String notePageId) {
 
-            Observable.just(noteId).observeOn(Schedulers.io()).map(new Function<Integer, EventNote>() {
-                @Override
-                public EventNote apply(Integer integer) throws Exception {
-                    return MeetingServiceTools.getInstance().syncGetNoteByNoteId(noteId);
+        Observable.just(noteId).observeOn(Schedulers.io()).map(new Function<Integer, EventNote>() {
+            @Override
+            public EventNote apply(Integer integer) throws Exception {
+                return MeetingServiceTools.getInstance().syncGetNoteByNoteId(noteId);
+            }
+        }).doOnNext(new Consumer<EventNote>() {
+            @Override
+            public void accept(EventNote note) throws Exception {
+                if (note.getNote() != null) {
+                    queryAndDownLoadNoteToShow(note.getNote().getDocumentPages().get(0), note.getNote(), notePageId, true);
                 }
-            }).doOnNext(new Consumer<EventNote>() {
-                @Override
-                public void accept(EventNote note) throws Exception {
-                    if(note.getNote() != null){
-                        queryAndDownLoadNoteToShow(note.getNote().getDocumentPages().get(0),note.getNote(),notePageId,true);
-                    }
 
-                }
-            }).subscribe();
+            }
+        }).subscribe();
     }
 
     private void queryAndDownLoadNoteToShow(final DocumentPage documentPage, final Note note, final String notePageId, final boolean needRedownload) {
@@ -965,7 +896,7 @@ public class RecordActionsManager {
                 page.setPageNumber(documentPage.getPageNumber());
                 page.setLocalFileId(documentPage.getLocalFileId());
                 pageCache.cacheFile(page);
-                showCurrentNote(page,notePageId);
+                showCurrentNote(page, notePageId);
                 return;
             } else {
                 pageCache.removeFile(pageUrl);
@@ -1012,7 +943,7 @@ public class RecordActionsManager {
                     documentPage.setShowingPath(showUrl);
                     Log.e("queryAndDownLoadCurrentPageToShow", "onDownloadSuccess:" + documentPage + ",thread:" + Thread.currentThread());
                     pageCache.cacheFile(documentPage);
-                    showCurrentNote(documentPage,notePageId);
+                    showCurrentNote(documentPage, notePageId);
 
                 }
 
@@ -1026,16 +957,16 @@ public class RecordActionsManager {
 
                     Log.e("-", "onDownloadFailed:" + documentPage);
                     if (needRedownload) {
-                        queryAndDownLoadNoteToShow(documentPage, note,notePageId,false);
+                        queryAndDownLoadNoteToShow(documentPage, note, notePageId, false);
                     }
                 }
             });
         }
     }
 
-    private void showCurrentNote(final DocumentPage documentPage,String notePageId) {
+    private void showCurrentNote(final DocumentPage documentPage, String notePageId) {
         isLoadingPage = false;
-        Log.e("showCurrentPage","documentPage:" + documentPage);
+        Log.e("showCurrentPage", "documentPage:" + documentPage);
         if (!TextUtils.isEmpty(notePageId)) {
             if (notePageId.contains(".")) {
 
@@ -1057,7 +988,7 @@ public class RecordActionsManager {
         Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
             @Override
             public void accept(DocumentPage page) throws Exception {
-                if(web == null){
+                if (web == null) {
                     return;
                 }
                 web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -1103,8 +1034,6 @@ public class RecordActionsManager {
             }
         }).subscribe();
     }
-
-
 
 
 }

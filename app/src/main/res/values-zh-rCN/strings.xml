@@ -878,7 +878,7 @@
     <string name="_meeting_id">会议ID:</string>
     <string name="kick_off_from_meeting">请他离开会议</string>
     <string name="tips">提示</string>
-    <string name="Create">创建</string>
-    <string name="scan_tv">扫描电视设备</string>
+
+
 
 </resources>

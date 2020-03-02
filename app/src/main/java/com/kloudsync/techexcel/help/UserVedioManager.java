@@ -27,6 +27,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by tonyan on 2019/11/21.
@@ -77,7 +78,7 @@ public class UserVedioManager {
             UserVedioData userVedioData = userVedioDatas.get(index);
             userVedioData.setVedios(vediosData);
 //            adapter.notifyItemChanged(index);
-        }else {
+        } else {
             _user.setVedios(vediosData);
             userVedioDatas.add(_user);
         }
@@ -89,20 +90,20 @@ public class UserVedioManager {
         Observable.just("on_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                if(userVedioDatas == null){
+                if (userVedioDatas == null) {
                     userVedioDatas = new ArrayList<>();
                 }
                 UserVedioData _user = new UserVedioData(userId);
                 _user.setAvatarUrl(avatarUrl);
                 _user.setUserName(userName);
                 int checkIndex = userVedioDatas.indexOf(_user);
-                Log.e("refreshUserInfo","check_index,index:" + checkIndex);
-                if(checkIndex >= 0){
-                    Log.e("refreshUserInfo","check_index_setCurrentVedio,index:" + checkIndex);
+                Log.e("refreshUserInfo", "check_index,index:" + checkIndex);
+                if (checkIndex >= 0) {
+                    Log.e("refreshUserInfo", "check_index_setCurrentVedio,index:" + checkIndex);
                     _user.setVedios(userVedioDatas.get(checkIndex).getVedios());
                 }
 
-                if(adapter != null){
+                if (adapter != null) {
                     adapter.userEnter(_user);
 //                    int index = adapter.getUserVedioDatas().indexOf(_user);
 //                    if (index >= 0) {
@@ -124,6 +125,50 @@ public class UserVedioManager {
     }
 
     SectionVO checkData;
+
+    public void refreshUserInfo(final String userId, final String userName, final String avatarUrl, final int status) {
+        Observable.just("on_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                if (userVedioDatas == null) {
+                    userVedioDatas = new ArrayList<>();
+                }
+                UserVedioData _user = new UserVedioData(userId);
+                _user.setAvatarUrl(avatarUrl);
+                _user.setUserName(userName);
+                int checkIndex = userVedioDatas.indexOf(_user);
+                Log.e("refreshUserInfo", "check_index,index:" + checkIndex);
+                if (checkIndex >= 0) {
+                    Log.e("refreshUserInfo", "check_index_setCurrentVedio,index:" + checkIndex);
+                    _user.setVedios(userVedioDatas.get(checkIndex).getVedios());
+                }
+
+                if (adapter != null) {
+                    if(status == 1){
+                        adapter.userEnter(_user);
+                    }else if(status == 0){
+                        adapter.userOut(_user);
+                    }
+
+//                    int index = adapter.getUserVedioDatas().indexOf(_user);
+//                    if (index >= 0) {
+//                        UserVedioData userVedioData = adapter.getUserVedioDatas().get(index);
+//                        userVedioData.setAvatarUrl(avatarUrl);
+//                        userVedioData.setUserName(userName);
+//                        adapter.notifyItemChanged(index);
+//                    } else {
+//                        UserVedioData vedioData = new UserVedioData(userId);
+//                        vedioData.setAvatarUrl(avatarUrl);
+//                        vedioData.setUserName(userName);
+//                        adapter.getUserVedioDatas().add(vedioData);
+//                        adapter.notifyItemInserted(userVedioDatas.indexOf(vedioData));
+//                    }
+                }
+            }
+        });
+
+    }
+
 
     public void setPlayTime(long playTime) {
 
@@ -171,11 +216,11 @@ public class UserVedioManager {
 
     private void notifyShowVedioIfTimeComing() {
 
-        if(adapter == null){
+        if (adapter == null) {
             return;
         }
         for (final UserVedioData data : adapter.getUserVedioDatas()) {
-            Log.e("notifyShowVedioIfTimeComing","vedios:" + data.getVedios());
+            Log.e("notifyShowVedioIfTimeComing", "vedios:" + data.getVedios());
             if (data.getVedios() == null) {
                 continue;
             }
@@ -187,19 +232,19 @@ public class UserVedioManager {
                     final SectionVO sectionVO = data.getVedios().get(i);
 
                     long interval = playTime - sectionVO.getStartTime();
-                    Log.e("notifyShowVedioIfTimeComing","interval:" + interval);
+                    Log.e("notifyShowVedioIfTimeComing", "interval:" + interval);
                     if (interval > 0) {
 //                        index = i;
-                        if(playTime >= sectionVO.getStartTime() && playTime <= sectionVO.getEndTime()){
-                            if(sectionVO.isPlaying() || sectionVO.isPreparing() || data.showCameraVedio){
+                        if (playTime >= sectionVO.getStartTime() && playTime <= sectionVO.getEndTime()) {
+                            if (sectionVO.isPlaying() || sectionVO.isPreparing() || data.showCameraVedio) {
                                 continue;
                             }
                             data.setShowCameraVedio(true);
-                            Log.e("check_user_camera","notify_play");
+                            Log.e("check_user_camera", "notify_play");
                             Observable.just("load_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                                 @Override
                                 public void accept(String s) throws Exception {
-                                    if(adapter != null){
+                                    if (adapter != null) {
                                         data.setCurrentVedio(sectionVO);
                                         adapter.notifyItemChanged(adapter.getUserVedioDatas().indexOf(data));
                                     }
@@ -207,19 +252,19 @@ public class UserVedioManager {
                                 }
                             });
 
-                        }else {
-                            if(sectionVO.isPlaying()){
-	                            sectionVO.setPlaying(false);
-	                            data.setShowCameraVedio(false);
-	                            Observable.just("load_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-		                            @Override
-		                            public void accept(String s) throws Exception {
-			                            if (adapter != null) {
-				                            adapter.notifyItemChanged(userVedioDatas.indexOf(data));
-			                            }
+                        } else {
 
-		                            }
-	                            });
+                            if(data.isShowCameraVedio()){
+                                data.setShowCameraVedio(false);
+                                Observable.just("load_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                                    @Override
+                                    public void accept(String s) throws Exception {
+                                        if (adapter != null) {
+                                            adapter.notifyItemChanged(userVedioDatas.indexOf(data));
+                                        }
+
+                                    }
+                                });
                             }
                         }
                     }
@@ -239,7 +284,7 @@ public class UserVedioManager {
             audioPlayer.release();
             audioPlayer = null;
         }
-        if(userVedioDatas != null){
+        if (userVedioDatas != null) {
             userVedioDatas.clear();
             userVedioDatas = null;
         }
@@ -390,21 +435,22 @@ public class UserVedioManager {
             return _userVedioDatas;
         }
 
-        public void userEnter(UserVedioData userVedioData){
-            if(_userVedioDatas.contains(userVedioData)){
+        public void userEnter(UserVedioData userVedioData) {
+            if (_userVedioDatas.contains(userVedioData)) {
                 return;
             }
             _userVedioDatas.add(userVedioData);
-            Log.e("UserVedioAdapter","userEnter:" + userVedioData);
+            Log.e("UserVedioAdapter", "userEnter:" + userVedioData);
             notifyItemInserted(_userVedioDatas.size());
         }
 
-        public void userOut(UserVedioData userVedioData){
-            if(_userVedioDatas.contains(userVedioData)){
+        public void userOut(UserVedioData userVedioData) {
+            if (_userVedioDatas.contains(userVedioData)) {
                 return;
             }
-            _userVedioDatas.add(userVedioData);
-            notifyItemInserted(_userVedioDatas.size());
+            int position = _userVedioDatas.indexOf(userVedioData);
+            _userVedioDatas.remove(userVedioData);
+            notifyItemRemoved(position);
         }
 
         @NonNull
@@ -424,22 +470,23 @@ public class UserVedioManager {
                 imageLoader.DisplayImage(vedioData.getAvatarUrl(), holder.iconImage);
             }
 
-            Log.e("onBindViewHolder","vedio_data:" + vedioData);
+            Log.e("onBindViewHolder", "vedio_data:" + vedioData);
             if (vedioData.getVedios() != null) {
-	            if (vedioData.isShowCameraVedio()) {
-		            if(vedioData.getCurrentVedio() != null){
-			            Log.e("check_user_camera","vedio_data_play");
-			            holder.nameText.setVisibility(View.INVISIBLE);
-			            holder.iconImage.setVisibility(View.INVISIBLE);
-			            toPlay(vedioData, vedioData.getCurrentVedio(), holder.surface);
-		            }
+                if (vedioData.isShowCameraVedio()) {
+                    if (vedioData.getCurrentVedio() != null) {
+                        Log.e("check_user_camera", "vedio_data_play");
+                        holder.nameText.setVisibility(View.INVISIBLE);
+                        holder.iconImage.setVisibility(View.INVISIBLE);
+                        toPlay(vedioData, vedioData.getCurrentVedio(), holder.surface);
+                    }
 
-	            } else {
-		            holder.nameText.setVisibility(View.VISIBLE);
-		            holder.iconImage.setVisibility(View.VISIBLE);
-		            holder.surface.setVisibility(View.GONE);
-	            }
-            }else {
+                } else {
+                    holder.nameText.setVisibility(View.VISIBLE);
+                    holder.iconImage.setVisibility(View.VISIBLE);
+                    holder.surface.setBackgroundColor(Color.parseColor("#000000"));
+
+                }
+            } else {
                 holder.nameText.setVisibility(View.VISIBLE);
                 holder.iconImage.setVisibility(View.VISIBLE);
                 holder.surface.setBackgroundColor(Color.parseColor("#000000"));
@@ -518,7 +565,6 @@ public class UserVedioManager {
     }
 
 
-
     private void toPlay(final UserVedioData userVedioData, final SectionVO data, final SurfaceView surfaceView) {
 
         if (data == null) {
@@ -529,7 +575,7 @@ public class UserVedioManager {
             return;
         }
 
-        Log.e("toPlay","vedio_data:" + data);
+        Log.e("toPlay", "vedio_data:" + data);
         Observable.just("play").observeOn(Schedulers.io()).subscribe(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
