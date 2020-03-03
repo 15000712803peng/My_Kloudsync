@@ -19,7 +19,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_width="wrap_content"
                 android:text="@string/create_new_sync"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:layout_centerVertical="true"
                 android:textColor="@color/skyblue"
                 android:layout_height="wrap_content"/>
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/recordsync"
-                android:layout_width="110dp"
+                android:layout_width="100dp"
                 android:layout_height="40dp"
                 android:background="@drawable/bg_create_sync"
                 android:gravity="center"
@@ -39,9 +39,9 @@
                 android:textColor="@color/white" />
 
             <TextView
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:id="@+id/cancel"
-                android:layout_width="110dp"
+                android:layout_width="100dp"
                 android:layout_height="40dp"
                 android:background="@drawable/blue_cycle_bg"
                 android:gravity="center"
