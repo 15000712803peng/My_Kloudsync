@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/rc_white_bg_shape"
     android:orientation="vertical"
     android:padding="10dp">
@@ -10,18 +10,60 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_height="40dp">
+
+            <TextView
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:text="@string/create_new_sync"
+                android:textSize="18sp"
+                android:layout_centerVertical="true"
+                android:textColor="@color/skyblue"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/recordsync"
+                android:layout_width="110dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_create_sync"
+                android:gravity="center"
+                android:text="@string/mtRecordSync"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_marginLeft="20dp"
+                android:id="@+id/cancel"
+                android:layout_width="110dp"
+                android:layout_height="40dp"
+                android:background="@drawable/blue_cycle_bg"
+                android:gravity="center"
+                android:text="@string/Cancel"
+                android:textColor="@color/white" />
+            </LinearLayout>
+
+
+    </RelativeLayout>
+
 
         <LinearLayout
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
+            android:layout_height="30dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/edittext"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="30dp"
                 android:layout_centerVertical="true"
                 android:layout_weight="1"
                 android:background="@color/white"
@@ -34,6 +76,7 @@
 
             <ImageView
                 android:id="@+id/close"
+                android:visibility="gone"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
                 android:layout_alignParentRight="true"
@@ -78,7 +121,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
-                    android:text="IsPublic"
+                    android:text="@string/ispublic"
                     android:textColor="@color/skyblue"
                     android:textSize="14sp" />
 
@@ -281,38 +324,6 @@
 
     </LinearLayout>
 
-    <LinearLayout
 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="18dp"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/recordsync"
-            android:layout_width="0dp"
-            android:layout_height="38dp"
-            android:layout_marginLeft="26dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_create_sync"
-            android:gravity="center"
-            android:text="@string/mtRecordSync"
-            android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/cancel"
-            android:layout_width="0dp"
-            android:layout_height="38dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="26dp"
-            android:layout_weight="1"
-            android:background="@drawable/blue_cycle_bg"
-            android:gravity="center"
-            android:text="@string/mtCancel"
-            android:textColor="@color/white" />
-    </LinearLayout>
 
 </RelativeLayout>

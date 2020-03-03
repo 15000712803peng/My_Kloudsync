@@ -646,6 +646,7 @@ Please input the cell phone number to add the contact
     <string name="onetomany">One to Many</string>
     <string name="selectstudents">Select Student</string>
     <string name="selectcoursee">Select Course</string>
+    <string name="ispublic">IsPublic</string>
 
 
     <!-- 迪凯 余 -->

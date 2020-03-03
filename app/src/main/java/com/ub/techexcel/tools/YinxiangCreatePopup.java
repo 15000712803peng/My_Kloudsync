@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -138,7 +139,9 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         backgroundAudioLayout = (LinearLayout) view.findViewById(R.id.layout_background_audio);
         edittext = (EditText) view.findViewById(R.id.edittext);
         String time = new SimpleDateFormat("yyyyMMdd_hh:mm").format(new Date());
-        edittext.setText(AppConfig.UserName + "_" + time);
+        String name=AppConfig.UserName + "_" + time;
+        edittext.setText(name);
+        edittext.setSelection(name.length());
         voiceItemLayout = view.findViewById(R.id.layout_voice_item);
         checkBox = (CheckBox) view.findViewById(R.id.checkboxx);
         isPublic = (CheckBox) view.findViewById(R.id.isPublic);
@@ -190,9 +193,17 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         mPopupWindow.setContentView(view);
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
-        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
-        View root = ((Activity) mContext).getWindow().getDecorView();
-        params.height = root.getMeasuredHeight() * 4 / 5 + 30;
+
+        if (Tools.isOrientationPortrait((Activity) mContext)) {
+            View root = ((Activity) mContext).getWindow().getDecorView();
+            params.width = root.getMeasuredWidth()*9/10;
+           // params.height =mContext.getResources().getDisplayMetrics().heightPixels * 3 / 5;
+        }else{
+            params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
+            View root = ((Activity) mContext).getWindow().getDecorView();
+            params.height = root.getMeasuredHeight() * 4 / 5 + 30;
+        }
+
         mPopupWindow.getWindow().setAttributes(params);
 
     }
@@ -247,9 +258,19 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     }
 
     public void dismiss() {
+        hideSoftKeyboard(mContext,edittext);
         if (mPopupWindow != null) {
             mPopupWindow.dismiss();
         }
+    }
+
+    /**
+     * 隐藏软键盘(有输入框)
+     */
+    public static void hideSoftKeyboard( Context context, EditText mEditText) {
+        InputMethodManager inputmanger = (InputMethodManager) context
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputmanger.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
     }
 
     private SoundtrackBean soundtrackBean = new SoundtrackBean();
