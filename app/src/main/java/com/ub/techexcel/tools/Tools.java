@@ -436,4 +436,15 @@ public class Tools {
     }
 
 
+    public static void  setPortrait(Activity activity) {
+           activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//竖屏
+    }
+    public static  void setLandscape(Activity activity){
+          activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);//横屏
+    }
+    public static  void setSensor(Activity activity){
+          activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);//物理的感应器来决
+    }
+
+
 }

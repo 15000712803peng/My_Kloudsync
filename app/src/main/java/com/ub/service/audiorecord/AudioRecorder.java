@@ -218,6 +218,7 @@ public class AudioRecorder {
         //将录音状态设置成正在录音状态
         status = Status.STATUS_START;
         while (status == Status.STATUS_START) {
+            Log.e("ddddddd",(audioRecord==null)+"  "+audiodata.length+"  "+bufferSizeInBytes);
             readsize = audioRecord.read(audiodata, 0, bufferSizeInBytes);
             if (AudioRecord.ERROR_INVALID_OPERATION != readsize && fos != null) {
                 try {

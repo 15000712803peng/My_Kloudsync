@@ -537,7 +537,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (menuManager != null) {
             menuManager.release();
         }
-
+        if(soundtrackRecordManager!=null){
+            soundtrackRecordManager.release();
+        }
         if (wakeLock != null) {
             wakeLock.release();
         }
@@ -3362,12 +3364,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         } else if (eventSoundSync.getStatus() == 0) {   //录音结束
             recordstatus.setVisibility(View.GONE);
             isSyncing = false;
-            String url2 = AppConfig.URL_PUBLIC + "Soundtrack/EndSync?soundtrackID=" + soundtrackID + "&syncDuration=" + eventSoundSync.getTime();
-            ServiceInterfaceTools.getinstance().endSync(url2, ServiceInterfaceTools.ENDSYNC, new ServiceInterfaceListener() {
-                @Override
-                public void getServiceReturnData(Object object) {
-                }
-            });
             //清除最后一页上的数据
             web.load("javascript:ClearPageAndAction()", null);
             PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
@@ -3905,8 +3901,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             meetingConfig.getAgoraMembers().add(agoraMember);
                             refreshAgoraMember(agoraMember);
                         }
-
-
                     }
                 }
 

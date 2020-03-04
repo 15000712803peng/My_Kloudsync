@@ -24,11 +24,15 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
+import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.kloudsync.activity.Document;
 import com.ub.service.audiorecord.AudioRecorder;
 import com.ub.service.audiorecord.RecordEndListener;
 import com.ub.techexcel.bean.SoundtrackBean;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
+import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.UploadAudioTool;
 
 import org.greenrobot.eventbus.EventBus;
@@ -100,6 +104,11 @@ public class SoundtrackRecordManager implements View.OnClickListener {
      * @param audiosyncll
      */
     public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, MeetingConfig meetingConfig) {
+        if(Tools.isOrientationPortrait((Activity) mContext)){
+            Tools.setPortrait((Activity) mContext);
+        }else{
+            Tools.setLandscape((Activity) mContext);
+        }
         this.audiosyncll=audiosyncll;
         this.isrecordvoice=isrecordvoice;
         this.meetingConfig=meetingConfig;
@@ -157,7 +166,6 @@ public class SoundtrackRecordManager implements View.OnClickListener {
         }
 
         if (!TextUtils.isEmpty(url2)) {
-
             if (mediaPlayer2 != null) {
                 mediaPlayer2.stop();
                 mediaPlayer2.reset();
@@ -256,11 +264,6 @@ public class SoundtrackRecordManager implements View.OnClickListener {
     private AudioRecorder audioRecorder;
 
     private void startAudioRecord() {
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO)
-                == PackageManager.PERMISSION_GRANTED) {
-        } else {
-            ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
-        }
         if (audioRecorder != null) {
             audioRecorder.canel();  //取消录音
         }
@@ -292,7 +295,6 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                     }
                 }
             });
-            audioRecorder = null;
         }
     }
 
@@ -325,19 +327,19 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                 }
                 break;
             case R.id.close: //结束录音
-                closeAudioSync();
-                StopMedia();
-                if (isrecordvoice) {    // 完成录音
-                    stopAudioRecord(soundtrackID);
-                }
+                release();
                 break;
         }
-
     }
 
 
     public void release(){
-
+        if (isrecordvoice) {    // 完成录音
+            closeAudioSync();
+            StopMedia();
+            stopAudioRecord(soundtrackID);
+            isrecordvoice=false;
+        }
     }
 
     private void closeAudioSync() {
@@ -347,6 +349,12 @@ public class SoundtrackRecordManager implements View.OnClickListener {
         soundSync.setStatus(0);
         soundSync.setTime(tttime);
         EventBus.getDefault().post(soundSync);
+        String url2 = AppConfig.URL_PUBLIC + "Soundtrack/EndSync?soundtrackID=" + soundtrackID + "&syncDuration=" + soundSync.getTime();
+        ServiceInterfaceTools.getinstance().endSync(url2, ServiceInterfaceTools.ENDSYNC, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+            }
+        });
 
         if (audioplaytimer != null) {
             audioplaytimer.cancel();
