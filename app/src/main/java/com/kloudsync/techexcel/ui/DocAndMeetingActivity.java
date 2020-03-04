@@ -100,6 +100,7 @@ import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
 import com.kloudsync.techexcel.dialog.MeetingRecordManager;
+import com.kloudsync.techexcel.dialog.NoteRecordType;
 import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
@@ -146,6 +147,7 @@ import com.ub.techexcel.bean.EventRoleChanged;
 import com.ub.techexcel.bean.EventUnmuteAll;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.SoundtrackBean;
+import com.ub.techexcel.bean.TelePhoneCall;
 import com.ub.techexcel.tools.CreateSyncDialog;
 import com.ub.techexcel.tools.DevicesListDialog;
 import com.ub.techexcel.tools.DownloadUtil;
@@ -3367,6 +3369,29 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             //清除最后一页上的数据
             web.load("javascript:ClearPageAndAction()", null);
             PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
+//            JSONObject jsonObject=new JSONObject();
+//            try {
+//                jsonObject.put("id",12);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//            soundtrackRecordManager.recordNoteAction(NoteRecordType.CLOSE_POPUP_NOTE,jsonObject);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventTelephone(TelePhoneCall telePhoneCall) {
+        boolean isTelephoneComing = telePhoneCall.isCall();
+        if (isSyncing) { //录制音想模式
+            if (isTelephoneComing) { //电话进来了  停止录音
+                if(soundtrackRecordManager!=null){
+                    soundtrackRecordManager.pause();
+                }
+            } else {  //挂断电话  开始录音
+                if(soundtrackRecordManager!=null){
+                   soundtrackRecordManager.resume();
+                }
+            }
         }
     }
 

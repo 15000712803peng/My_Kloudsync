@@ -236,6 +236,7 @@ public class UploadAudioTool {
                     @Override
                     public void getServiceReturnData(Object object) {
                         Toast.makeText(mContext, mContext.getString(R.string.uploadaudiosuccess), Toast.LENGTH_LONG).show();
+                        Log.e("henshupng","sensor");
                         Tools.setSensor((Activity) mContext);
                         // 音想音频文件上传完了,如果没有调用这个方法,调用一下
                         ServiceInterfaceTools.getinstance().notifyUploaded(AppConfig.URL_LIVEDOC + "notifyUploaded", ServiceInterfaceTools.NOTIFYUPLOADED, ud, MD5Hash, new ServiceInterfaceListener() {

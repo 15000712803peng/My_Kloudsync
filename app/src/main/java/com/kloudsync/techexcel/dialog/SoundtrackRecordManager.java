@@ -36,6 +36,8 @@ import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.UploadAudioTool;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,8 +107,10 @@ public class SoundtrackRecordManager implements View.OnClickListener {
      */
     public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, MeetingConfig meetingConfig) {
         if(Tools.isOrientationPortrait((Activity) mContext)){
+            Log.e("henshupng","竖屏");
             Tools.setPortrait((Activity) mContext);
         }else{
+            Log.e("henshupng","横屏");
             Tools.setLandscape((Activity) mContext);
         }
         this.audiosyncll=audiosyncll;
@@ -130,6 +134,27 @@ public class SoundtrackRecordManager implements View.OnClickListener {
         initPlayMusic(isrecordvoice,url,url1);
 
     }
+
+    public void recordNoteAction(NoteRecordType noteRecordType, JSONObject data){
+        if(isrecordvoice){
+            int acitontype=noteRecordType.getActiontype();
+            try {
+                JSONObject jsonObject=new JSONObject();
+                //{actionType:302,time:1,page:1,data:{newId:123,oldId:345}}
+                jsonObject.put("actionType",acitontype);
+                jsonObject.put("time",tttime);
+                jsonObject.put("page",meetingConfig.getPageNumber());
+                jsonObject.put("data",data);
+                String actions=jsonObject.toString();
+                Log.e("recordNoteAction",actions);
+                SocketMessageManager.getManager(mContext).sendMessage_MyActionFrame(actions, meetingConfig);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
     private MediaPlayer mediaPlayer;
     private MediaPlayer mediaPlayer2;
@@ -241,7 +266,6 @@ public class SoundtrackRecordManager implements View.OnClickListener {
         }
         audioplaytimer = new Timer();
         audioplaytimer.schedule(new TimerTask() {
-
             @Override
             public void run() {
                 Log.e("refreshTime", isPause + "");
@@ -329,6 +353,28 @@ public class SoundtrackRecordManager implements View.OnClickListener {
             case R.id.close: //结束录音
                 release();
                 break;
+        }
+    }
+
+
+    public void resume(){
+        if (isPause) {
+            isPause=false;
+            resumeMedia();
+        }
+        if (isrecordvoice) {
+            pauseOrStartAudioRecord();
+        }
+    }
+
+
+    public void pause(){
+        if(!isPause){
+            isPause=true;
+            pauseMedia();
+        }
+        if (isrecordvoice) {
+            pauseOrStartAudioRecord();
         }
     }
 
