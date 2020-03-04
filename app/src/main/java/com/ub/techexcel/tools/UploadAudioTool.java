@@ -27,6 +27,7 @@ import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.AccessControlList;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -234,11 +235,14 @@ public class UploadAudioTool {
                 meetingConfig.getLessionId()+"", meetingConfig.getDocument().getAttachmentID()+"", fileName, fieldId, soundtrackID, ud, new ServiceInterfaceListener() {
                     @Override
                     public void getServiceReturnData(Object object) {
-                        Toast.makeText(mContext, "upload file success", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, mContext.getString(R.string.uploadaudiosuccess), Toast.LENGTH_LONG).show();
+                        Log.e("henshupng","sensor");
+                        Tools.setSensor((Activity) mContext);
                         // 音想音频文件上传完了,如果没有调用这个方法,调用一下
                         ServiceInterfaceTools.getinstance().notifyUploaded(AppConfig.URL_LIVEDOC + "notifyUploaded", ServiceInterfaceTools.NOTIFYUPLOADED, ud, MD5Hash, new ServiceInterfaceListener() {
                             @Override
                             public void getServiceReturnData(Object object) {
+
                                 EventBus.getDefault().post(new EventSyncSucc());
                             }
                         });

@@ -646,6 +646,8 @@ Please input the cell phone number to add the contact
     <string name="onetomany">One to Many</string>
     <string name="selectstudents">Select Student</string>
     <string name="selectcoursee">Select Course</string>
+    <string name="ispublic">IsPublic</string>
+    <string name="uploadaudiosuccess">upload file success</string>
 
 
     <!-- 迪凯 余 -->
@@ -804,7 +806,7 @@ Please input the cell phone number to add the contact
     <string name="create_Fail">Create fail</string>
     <string name="Send">Send</string>
     <string name="meeting_id">Meeting ID</string>
-    <string name="meeting_id_change">Meeting ID</string>
+    <string name="meeting_id_change">Modify meeting ID</string>
     <string name="input_new_meeing_id">input new meeting id</string>
     <string name="modify_meeting_id">modify your meeting ID</string>
     <string name="about">about</string>

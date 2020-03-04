@@ -36,6 +36,8 @@ import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.UploadAudioTool;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,12 +46,15 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+
 
 public class MeetingRecordManager implements View.OnClickListener {
 
     private Context mContext;
     private static Handler recordHandler;
-    private MeetingConfig meetingConfig;
     private MeetingRecordManager(Context context) {
         this.mContext = context;
         recordHandler=new Handler(Looper.getMainLooper()){
@@ -88,36 +93,55 @@ public class MeetingRecordManager implements View.OnClickListener {
         return instance;
     }
 
+    ImageView  recordstatus;
+    SocketMessageManager messageManager;
+    MeetingConfig meetingConfig;
+
+    public void initRecording(ImageView  recordstatus,final SocketMessageManager messageManager,MeetingConfig  meetingConfig){
+           this.recordstatus=recordstatus;
+           this.messageManager=messageManager;
+           this.meetingConfig= meetingConfig;
+    }
 
     /**
      *
      * @param isRecordmeeting
-     * @param recordstatus
-     * @param meetingConfig
      */
-    public void startRecording(boolean isRecordmeeting, ImageView  recordstatus, final MeetingConfig meetingConfig, final SocketMessageManager messageManager) {
-        this.meetingConfig=meetingConfig;
-        
-        Log.e("startRecording",""+meetingConfig.getMeetingHostId()+"  "+meetingConfig.getPresenterId()+"  ");
-        if(isRecordmeeting&&isPresenter()){
-            recordstatus.setVisibility(View.VISIBLE);
-            // 1 MEETING_STATUS 把status改成1    已发送
-            // 2
-            String url = AppConfig.URL_PUBLIC_AUDIENCE + "MeetingServer/recording/start_recording?meetingId=" + meetingConfig.getMeetingId();
-            MeetingServiceTools.getInstance().startRecording(url, MeetingServiceTools.STARTRECORDING, new ServiceInterfaceListener() {
-                @Override
-                public void getServiceReturnData(Object object) {
-                    int recordingId = (int) object;
-                    // 3 通过socket 消息 通知服务器端 麦克风 摄像头 状态
-                    boolean isMicroOn = getSettingCache((Activity) mContext).getMeetingSetting().isMicroOn();
-                    boolean isCameraOn = getSettingCache((Activity) mContext).getMeetingSetting().isCameraOn();
-                    Log.e("startRecording",isMicroOn+"    "+isCameraOn);
-                    messageManager.sendMessage_recording_AgoraStatusChange(meetingConfig,isMicroOn,isCameraOn);
-                    // 4 心跳增加 上面的4 个状态,所有人在meeting中就要发
-//                    KloudWebClientManager.getInstance().startMeetingRecord(true);
+    public void startRecording(final boolean isRecordmeeting) {
+        Observable.just("").observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+
+                Log.e("startRecording",""+meetingConfig.getMeetingHostId()+"  "+meetingConfig.getPresenterId()+"  "+isPresenter()+" "+isRecordmeeting);
+                if(isRecordmeeting&&isPresenter()){
+                    recordstatus.setVisibility(View.VISIBLE);
+                    // 1 MEETING_STATUS 把status改成1    已发送
+                    // 2
+                    String url = AppConfig.URL_PUBLIC_AUDIENCE + "MeetingServer/recording/start_recording?meetingId=" + meetingConfig.getMeetingId();
+                    MeetingServiceTools.getInstance().startRecording(url, MeetingServiceTools.STARTRECORDING, new ServiceInterfaceListener() {
+                        @Override
+                        public void getServiceReturnData(Object object) {
+                            int recordingId = (int) object;
+                            // 3 通过socket 消息 通知服务器端 麦克风 摄像头 状态
+                            boolean isMicroOn = getSettingCache((Activity) mContext).getMeetingSetting().isMicroOn();
+                            boolean isCameraOn = getSettingCache((Activity) mContext).getMeetingSetting().isCameraOn();
+                            Log.e("startRecording",isMicroOn+"    "+isCameraOn);
+                            messageManager.sendMessage_recording_AgoraStatusChange(meetingConfig,isMicroOn,isCameraOn);
+
+                            // 4 心跳增加 上面的4 个状态,所有人在meeting中就要发
+      //                    KloudWebClientManager.getInstance().startMeetingRecord(true);
+                        }
+                    });
                 }
-            });
-        }
+
+
+
+            }
+        }).subscribe();
+
+
+
+
 
     }
 

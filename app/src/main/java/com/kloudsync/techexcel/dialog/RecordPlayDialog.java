@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
@@ -167,6 +168,12 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
 //        centerStartImage.setOnClickListener(this);
         seekBar = view.findViewById(R.id.seek_bar);
         seekBar.setOnSeekBarChangeListener(this);
+        seekBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return true;
+            }
+        });
         userList = view.findViewById(R.id.list_user);
             hideControllerImage = view.findViewById(R.id.txt_hidden);
         hideControllerImage.setOnClickListener(this);

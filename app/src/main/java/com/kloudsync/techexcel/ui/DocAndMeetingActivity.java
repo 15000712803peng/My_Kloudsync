@@ -100,6 +100,7 @@ import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
 import com.kloudsync.techexcel.dialog.MeetingRecordManager;
+import com.kloudsync.techexcel.dialog.NoteRecordType;
 import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
@@ -146,6 +147,7 @@ import com.ub.techexcel.bean.EventRoleChanged;
 import com.ub.techexcel.bean.EventUnmuteAll;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.SoundtrackBean;
+import com.ub.techexcel.bean.TelePhoneCall;
 import com.ub.techexcel.tools.CreateSyncDialog;
 import com.ub.techexcel.tools.DevicesListDialog;
 import com.ub.techexcel.tools.DownloadUtil;
@@ -537,7 +539,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (menuManager != null) {
             menuManager.release();
         }
-
+        if(soundtrackRecordManager!=null){
+            soundtrackRecordManager.release();
+        }
         if (wakeLock != null) {
             wakeLock.release();
         }
@@ -2592,6 +2596,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
         keepScreenWake();
+        MeetingRecordManager.getManager(this).initRecording( recordstatus,  messageManager,meetingConfig);
+
         MeetingKit.getInstance().startMeeting();
         meetingLayout.setVisibility(View.VISIBLE);
         meetingMenu.setVisibility(View.VISIBLE);
@@ -2601,7 +2607,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
         ChatManager.getManager(this, meetingIndetifier).joinChatRoom(getResources().getString(R.string.Classroom) + meetingConfig.getLessionId());
-        MeetingRecordManager.getManager(this).startRecording(true, recordstatus, meetingConfig, messageManager);
+
         //处理刚进来就是屏幕共享的情况
 //        Observable.just("handle_web_share").delay(10000,TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
 //            @Override
@@ -3368,15 +3374,32 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         } else if (eventSoundSync.getStatus() == 0) {   //录音结束
             recordstatus.setVisibility(View.GONE);
             isSyncing = false;
-            String url2 = AppConfig.URL_PUBLIC + "Soundtrack/EndSync?soundtrackID=" + soundtrackID + "&syncDuration=" + eventSoundSync.getTime();
-            ServiceInterfaceTools.getinstance().endSync(url2, ServiceInterfaceTools.ENDSYNC, new ServiceInterfaceListener() {
-                @Override
-                public void getServiceReturnData(Object object) {
-                }
-            });
             //清除最后一页上的数据
             web.load("javascript:ClearPageAndAction()", null);
             PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
+//            JSONObject jsonObject=new JSONObject();
+//            try {
+//                jsonObject.put("id",12);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//            soundtrackRecordManager.recordNoteAction(NoteRecordType.CLOSE_POPUP_NOTE,jsonObject);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventTelephone(TelePhoneCall telePhoneCall) {
+        boolean isTelephoneComing = telePhoneCall.isCall();
+        if (isSyncing) { //录制音想模式
+            if (isTelephoneComing) { //电话进来了  停止录音
+                if(soundtrackRecordManager!=null){
+                    soundtrackRecordManager.pause();
+                }
+            } else {  //挂断电话  开始录音
+                if(soundtrackRecordManager!=null){
+                   soundtrackRecordManager.resume();
+                }
+            }
         }
     }
 
@@ -3911,8 +3934,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             meetingConfig.getAgoraMembers().add(agoraMember);
                             refreshAgoraMember(agoraMember);
                         }
-
-
                     }
                 }
 

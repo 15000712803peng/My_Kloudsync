@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ import com.kloudsync.techexcel.bean.EventShareScreen;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.MeetingRecordManager;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
@@ -293,9 +295,10 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         getRtcManager().rtcEngine().setVideoEncoderConfiguration(videoEncoderConfiguration);
     }
 
-
+    private boolean isRecordMeeting=false;
     @Override
-    public void onUserStart() {
+    public void onUserStart(boolean isRecordMeeting) {
+        this.isRecordMeeting=isRecordMeeting;
         Observable.just(newMeetingId).observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
@@ -310,7 +313,8 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
     @Override
-    public void onUserJoin() {
+    public void onUserJoin(boolean isRecordMeeting) {
+        this.isRecordMeeting=isRecordMeeting;
         SocketMessageManager.getManager(host).sendMessage_JoinMeeting(meetingConfig);
     }
 
@@ -335,6 +339,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
         refreshMembersAndPost(meetingConfig, uid, true);
         checkNetWorkStatus();
+        MeetingRecordManager.getManager(host).startRecording(isRecordMeeting );
     }
 
 
@@ -367,7 +372,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                     retSetResolutionRatio(false);
                 }
             }
-        }, 0, 50000);
+        }, 10000, 50000);
     }
 
     public enum NetWorkQuality {

@@ -940,7 +940,8 @@ public class MeetingServiceTools {
             @Override
             public void run() {
                 JSONObject returnJson = com.ub.techexcel.service.ConnectService.submitDataByJson(url, null);
-                Log.e("Recording_start", url + "   " + returnJson.toString());
+
+                Log.e("startRecording", url + "   " + returnJson.toString());
                 try {
                     int retCode = returnJson.getInt("code");
                     if (retCode == 0 && returnJson.getString("msg").equals("success")) {

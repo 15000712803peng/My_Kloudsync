@@ -1,6 +1,4 @@
 package com.kloudsync.techexcel.ui;
-
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -18,42 +16,25 @@ import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.facebook.network.connectionclass.ConnectionClassManager;
 import com.facebook.network.connectionclass.ConnectionQuality;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.BookNote;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventClose;
 import com.kloudsync.techexcel.bean.EventCloseNoteView;
-import com.kloudsync.techexcel.bean.EventCloseShare;
-import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
-import com.kloudsync.techexcel.bean.EventInviteUsers;
 import com.kloudsync.techexcel.bean.EventMeetingDocuments;
-import com.kloudsync.techexcel.bean.EventMute;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventNotePageActions;
@@ -66,9 +47,6 @@ import com.kloudsync.techexcel.bean.EventRefreshDocs;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.EventSelectNote;
 import com.kloudsync.techexcel.bean.EventSetPresenter;
-import com.kloudsync.techexcel.bean.EventShareDocInMeeting;
-import com.kloudsync.techexcel.bean.EventShareScreen;
-import com.kloudsync.techexcel.bean.EventShowFullAgora;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
 import com.kloudsync.techexcel.bean.EventShowNotePage;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
@@ -85,30 +63,23 @@ import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SoundtrackDetailData;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TvDevice;
-import com.kloudsync.techexcel.bean.VedioData;
-import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
-import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
 import com.kloudsync.techexcel.dialog.RecordPlayDialog;
-import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
-import com.kloudsync.techexcel.help.AudiencePromptDialog;
 import com.kloudsync.techexcel.help.BottomMenuManager;
-import com.kloudsync.techexcel.help.ChatManager;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.DocVedioManager;
 import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
-import com.kloudsync.techexcel.help.PopBottomChat;
 import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.SetPresenterDialog;
@@ -128,33 +99,21 @@ import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
-import com.ub.service.activity.AddMeetingMemberActivity;
-import com.ub.service.activity.WatchCourseActivity2;
-import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.BottomFileAdapter;
-import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
-import com.ub.techexcel.adapter.MeetingMembersAdapter;
-import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.EventMuteAll;
-import com.ub.techexcel.bean.EventRoleChanged;
 import com.ub.techexcel.bean.EventUnmuteAll;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.Record;
-import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.DevicesListDialog;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
 import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.MeetingRecordsDialog;
-import com.ub.techexcel.tools.MeetingServiceTools;
-import com.ub.techexcel.tools.MeetingWarningDialog;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.UserSoundtrackDialog;
-import com.ub.techexcel.tools.YinxiangCreatePopup;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -162,7 +121,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xwalk.core.XWalkPreferences;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -175,9 +133,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
-
 import Decoder.BASE64Encoder;
-import butterknife.Bind;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -186,11 +142,9 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 /**
  * Created by tonyan on 2019/11/19.
  */
-
 public class MeetingViewActivity extends BaseMeetingViewActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
         BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingRecordsDialog.OnPlayRecordListener {
 
@@ -313,9 +267,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     @Override
     protected void onStop() {
         super.onStop();
-//        if (bottomFilePop != null && bottomFilePop.isShowing()) {
-//            bottomFilePop.hide();
-//        }
     }
 
     @Override
@@ -1903,7 +1854,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
     @Override
     public void menuSyncClicked() {
-
+        showSoundtrackDialog();
     }
 
     @Override
@@ -1926,6 +1877,19 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         recordsDialog = new MeetingRecordsDialog(this);
         recordsDialog.setOnPlayRecordListener(this);
         recordsDialog.StartPop(meetingConfig.getMeetingId());
+    }
+
+    private UserSoundtrackDialog soundtrackDialog;
+
+    private void showSoundtrackDialog() {
+        if (soundtrackDialog != null) {
+            if (soundtrackDialog.isShowing()) {
+                soundtrackDialog.dismiss();
+                soundtrackDialog = null;
+            }
+        }
+        soundtrackDialog = new UserSoundtrackDialog(this);
+        soundtrackDialog.show(meetingConfig);
     }
 
 

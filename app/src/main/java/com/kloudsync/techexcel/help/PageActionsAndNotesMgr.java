@@ -117,9 +117,9 @@ public class PageActionsAndNotesMgr {
             @Override
             public void run() {
                 String url=AppConfig.URL_MEETING_BASE +
-                        "lesson/save_instant_lesson?lessonID=" + config.getLessionId();
+                        "lesson/save_instant_lesson?lessonId=" + config.getLessionId();
                 JSONObject jsonObject = ConnectService.submitDataByJson(url, null);
-                Log.e("save_changed", url+"  "+jsonObject.toString());
+                Log.e("startRecording", url+"  "+jsonObject.toString());
                //https://wss.peertime.cn/MeetingServer/lesson/save_instant_lesson?lessonId=1950010
             }
         }).start(ThreadManager.getManager());

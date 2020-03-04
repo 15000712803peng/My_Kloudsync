@@ -296,6 +296,7 @@ public class SocketMessageManager {
             message.put("meetingId", config.getMeetingId());
             message.put("lessonId", config.getLessionId());
             message.put("status", 1);
+            Log.e("startRecording",message.toString());
 //                    message.put("followToLeave", 1);
             doSendMessage(message.toString());
         } catch (JSONException e) {
@@ -361,6 +362,7 @@ public class SocketMessageManager {
             message.put("microphoneStatus", isMicroOn? 2 : 3);
             message.put("cameraStatus", isCameraOn ? 2 : 3);
             message.put("screenStatus", 0);
+
             Log.e("startRecording",""+message.toString());
             doSendMessage(message.toString());
         } catch (JSONException e) {
