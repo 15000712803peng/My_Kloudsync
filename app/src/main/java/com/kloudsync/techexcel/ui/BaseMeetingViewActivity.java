@@ -58,6 +58,12 @@ public abstract class BaseMeetingViewActivity extends FragmentActivity {
     @Bind(R.id.menu)
     protected ImageView menu;
 
+    @Bind(R.id.layout_play_meeting)
+    protected RelativeLayout playMeetingLayout;
+
+    @Bind(R.id.image_play_meeting)
+    protected ImageView playMeetingImage;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

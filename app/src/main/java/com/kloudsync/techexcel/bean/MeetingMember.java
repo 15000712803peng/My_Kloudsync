@@ -2,6 +2,8 @@ package com.kloudsync.techexcel.bean;
 
 import android.support.annotation.NonNull;
 
+import com.kloudsync.techexcel.config.AppConfig;
+
 import java.io.Serializable;
 
 /**
@@ -181,6 +183,17 @@ public class MeetingMember implements Comparable<MeetingMember>,Serializable {
 
     @Override
     public int compareTo(@NonNull MeetingMember o) {
-        return o.getPresenter() - this.getPresenter();
+        int sort = o.getRole() - this.getRole();
+
+        if(sort == 0){
+            sort = this.presenter;
+        }
+
+        if(sort == 0){
+            if((this.userId + "").equals(AppConfig.UserID)){
+                sort = 1;
+            }
+        }
+        return sort;
     }
 }

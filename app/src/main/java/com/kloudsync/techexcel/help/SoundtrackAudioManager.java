@@ -13,6 +13,7 @@ import com.ub.techexcel.bean.SectionVO;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -68,7 +69,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
             audioPlayer.setOnErrorListener(this);
             Log.e("check_play","set_data_source:" + audioData.getAttachmentUrl());
             audioPlayer.reset();
-            audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
+            audioPlayer.setDataSource(context, Uri.parse(URLDecoder.decode(audioData.getAttachmentUrl(),"UTF-8")));
             audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
                 audioPlayer.prepareAsync();

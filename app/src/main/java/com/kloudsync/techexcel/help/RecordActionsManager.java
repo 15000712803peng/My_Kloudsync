@@ -310,13 +310,13 @@ public class RecordActionsManager {
                                     if (playTime >= time || time <= 500) {
                                         action.setExecuted(true);
                                         if (userVedioManager != null) {
-                                            userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"));
+                                            userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"),data.getInt("stat"));
                                         }
                                     }
                                 } else {
                                     action.setExecuted(true);
                                     if (userVedioManager != null) {
-                                        userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"));
+                                        userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"),data.getInt("stat"));
                                     }
                                 }
 
@@ -373,6 +373,7 @@ public class RecordActionsManager {
             action.setExecuted(false);
             return;
         }
+
         if (TextUtils.isEmpty(action.getData())) {
             return;
         }
@@ -783,86 +784,6 @@ public class RecordActionsManager {
         }
     }
 
-    private void requestActionsBySeek(int time) {
-        Request r = getRequest(time);
-        if (r == null) {
-            return;
-        }
-        if (requests.contains(r)) {
-            r = requests.get(requests.indexOf(r));
-        } else {
-            requests.add(r);
-        }
-
-        if (r.hasRequest) {
-            return;
-        }
-
-        if (r.isRequesting) {
-            return;
-        }
-
-        r.isRequesting = true;
-
-        request = r;
-
-        String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + request.startTime + "&endTime=" + (request.startTime + 20000);
-        ServiceInterfaceTools.getinstance().getRecordActions(url, ServiceInterfaceTools.GETSOUNDTRACKACTIONS, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                List<WebAction> actions = (List<WebAction>) object;
-
-                if (actions != null && actions.size() > 0) {
-                    request.hasRequest = true;
-                    if (!requests.contains(request)) {
-                        requests.add(request);
-                    }
-
-                    if (actions != null && actions.size() > 0) {
-                        for (WebAction action : actions) {
-                            if (webActions.contains(action)) {
-                                continue;
-                            }
-
-                            webActions.add(action);
-                            if (!TextUtils.isEmpty(action.getData())) {
-                                try {
-                                    JSONObject data = new JSONObject(action.getData());
-                                    if (data.has("actionType")) {
-                                        int actionType = data.getInt("actionType");
-                                        switch (actionType) {
-                                            case 19:
-//                                                Log.e("check_action","action:setWebVedio:" + action.getData());
-//                                                action.setWebVedio(gson.fromJson(action.getData(), WebVedio.class));
-                                                WebVedio webVedio = gson.fromJson(action.getData(), WebVedio.class);
-                                                if (!webVedios.contains(webVedio)) {
-                                                    webVedios.add(webVedio);
-                                                }
-                                                break;
-                                            case 202:
-                                                if (userVedioManager != null) {
-                                                    userVedioManager.refreshUserInfo(data.getString("userId"), data.getString("userName"), data.getString("avatarUrl"));
-                                                }
-                                                break;
-                                        }
-
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
-                    }
-
-                    Collections.sort(requests);
-                    Collections.sort(webActions);
-                    Log.e("webActions", "webActions:" + webActions);
-                }
-
-            }
-        });
-    }
 
     public synchronized void handleNote(final int noteId, final String notePageId) {
 

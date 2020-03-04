@@ -180,5 +180,23 @@
         android:src="@drawable/icon_menu"
         android:visibility="visible" />
 
+    <RelativeLayout
+        android:id="@+id/layout_play_meeting"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.5"
+        android:background="@color/darkblack"
+        android:visibility="gone">
+
+
+        <ImageView
+            android:id="@+id/image_play_meeting"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/playagora" />
+
+    </RelativeLayout>
+
 
 </RelativeLayout>

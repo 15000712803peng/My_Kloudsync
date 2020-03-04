@@ -35,6 +35,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -824,6 +825,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                                 }
                             }
 
+                            Collections.sort(members);
                             meetingConfig.setMeetingMembers(members);
                         }
                     }
@@ -845,6 +847,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                             for (MeetingMember member : members) {
                                 member.setRole(MeetingConfig.MeetingRole.AUDIENCE);
                             }
+                            Collections.sort(members);
                             meetingConfig.setMeetingAuditor(members);
                         }
                     }
@@ -866,6 +869,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                             for (MeetingMember member : members) {
                                 member.setRole(MeetingConfig.MeetingRole.BE_INVITED);
                             }
+                            Collections.sort(members);
                             meetingConfig.setMeetingInvitors(members);
                         }
                     }

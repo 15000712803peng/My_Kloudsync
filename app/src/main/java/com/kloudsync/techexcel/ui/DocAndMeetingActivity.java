@@ -304,6 +304,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getType() != MeetingType.MEETING) {
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
+
             if (Tools.isOrientationPortrait(this)) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
@@ -353,7 +354,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 audiencePromptDialog.cancel();
                 audiencePromptDialog = null;
             }
-
         }
         audiencePromptDialog = new AudiencePromptDialog(this);
         audiencePromptDialog.show();
@@ -696,7 +696,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showNotePage(final EventShowNotePage page) {
         Log.e("showNotePage", "page:" + page);
-        totalHideCameraAdapter();
+//        totalHideCameraAdapter();
         if (!TextUtils.isEmpty(page.getNotePage().getLocalFileId())) {
             if (page.getNotePage().getLocalFileId().contains(".")) {
                 currentNoteId = page.getNoteId();
@@ -841,7 +841,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
 
     public synchronized void followShowNote(int noteId) {
-
         if (meetingConfig.getType() == MeetingType.MEETING) {
             noteUsersLayout.setVisibility(View.GONE);
         } else {
@@ -1082,8 +1081,17 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     Log.e("check_presenter", "HideToolbar_in_hello");
                 }
             }
-        }
 
+            if(meetingConfig.getMode() == 2 || meetingConfig.getMode() == 1){
+                if(toggleCameraLayout.getVisibility() == View.VISIBLE){
+                    toggleCameraLayout.setVisibility(View.GONE);
+                }
+            }else {
+                if(toggleCameraLayout.getVisibility() != View.VISIBLE){
+                    toggleCameraLayout.setVisibility(View.VISIBLE);
+                }
+            }
+        }
 
     }
 

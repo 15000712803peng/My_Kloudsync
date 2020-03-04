@@ -35,6 +35,7 @@ import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
+import com.kloudsync.techexcel.help.SmallNoteViewHelper;
 import com.kloudsync.techexcel.help.SoundtrackActionsManager;
 import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.UserVedioManager;
@@ -71,7 +72,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     public Dialog dialog;
     public int width;
     public int heigth;
-
     private SoundtrackDetail soundtrackDetail;
     //view
     private View view;
@@ -115,6 +115,12 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     UserVedioManager userVedioManager;
     XWalkView web;
     TextView statusText;
+    private TextView onlyShowTimeText;
+    private ImageView hideControllerImage;
+    //------
+    private RelativeLayout smallNoteLayout;
+    private XWalkView smallNoteWeb;
+    SmallNoteViewHelper smallNoteViewHelper;
 
     public void setSoundtrackDetail(SoundtrackDetail soundtrackDetail) {
         this.soundtrackDetail = soundtrackDetail;
@@ -128,6 +134,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         this.soundtrackDetail = soundtrackDetail;
         totalTime = soundtrackDetail.getDuration();
         initDialog();
+        smallNoteViewHelper = new SmallNoteViewHelper(smallNoteLayout,smallNoteWeb,meetingConfig);
+        smallNoteViewHelper.init(host);
+
     }
 
     public void initDialog() {
@@ -136,9 +145,15 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         view = layoutInflater.inflate(R.layout.dialog_play_soundtrack, null);
         dialog = new Dialog(host, R.style.my_dialog);
         centerLoaing = view.findViewById(R.id.layout_center_loading);
+        smallNoteLayout = view.findViewById(R.id.layout_small_note);
+        smallNoteWeb = view.findViewById(R.id.small_web_note);
         webVedioSurface = view.findViewById(R.id.web_vedio_surface);
         web = view.findViewById(R.id.web);
         statusText = view.findViewById(R.id.txt_status);
+        onlyShowTimeText = view.findViewById(R.id.txt_only_show_time);
+        onlyShowTimeText.setOnClickListener(this);
+        hideControllerImage = view.findViewById(R.id.txt_hidden);
+        hideControllerImage.setOnClickListener(this);
         webVedioLayout = view.findViewById(R.id.layout_web_vedio);
         playTimeText = view.findViewById(R.id.txt_play_time);
         seekBar = view.findViewById(R.id.seek_bar);
@@ -191,7 +206,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 if (playHandler == null || dialog == null || !dialog.isShowing()) {
                     return;
                 }
-
                 handlePlayMessage(msg);
                 super.handleMessage(msg);
             }
@@ -208,7 +222,10 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) controllerLayout.getLayoutParams();
         if (Tools.isOrientationPortrait(host)) {
             //竖屏
-            params.width = Tools.dip2px(host, 360);
+            params.width = Tools.dip2px(host, 330);
+            params.bottomMargin = Tools.dip2px(host, 20);
+
+            Log.e("check_set_oritation","width:" + Tools.dip2px(host, 360));
         } else {
             params.width = Tools.dip2px(host, 420);
         }
@@ -237,6 +254,16 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
             case R.id.cancel:
                 dismiss();
+                break;
+            case R.id.txt_only_show_time:
+                if(onlyShowTimeText.getVisibility() == View.VISIBLE){
+                    onlyShowTimeText.setVisibility(View.GONE);
+                    controllerLayout.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.txt_hidden:
+                onlyShowTimeText.setVisibility(View.VISIBLE);
+                controllerLayout.setVisibility(View.GONE);
                 break;
 
             default:
@@ -307,6 +334,10 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             while (!isFinished) {
                 boolean isPlaying = SoundtrackAudioManager.getInstance(host).isPlaying();
                 Log.e("check_play", "mediaInfo,isPlaying:" + isPlaying);
+                if(dialog == null || !dialog.isShowing()){
+                    isFinished = true;
+                }
+
                 if (!isStarted || !isPlaying) {
                     try {
                         Thread.sleep(1000);
@@ -337,6 +368,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 if (playHandler != null) {
                     playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
                 }
+
                 try {
                     Thread.sleep(500);
 //                        playTime += 200;
@@ -377,16 +409,10 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         switch (message.what) {
             case MESSAGE_PLAY_TIME_REFRESHED:
                 setTimeText();
-                if (centerLoaing.getVisibility() == View.VISIBLE) {
-                    centerLoaing.setVisibility(View.GONE);
-                }
-                if (controllerLayout.getVisibility() != View.VISIBLE) {
-                    controllerLayout.setVisibility(View.VISIBLE);
-                }
-
                 break;
             case MESSAGE_HIDE_CENTER_LOADING:
                 centerLoaing.setVisibility(View.GONE);
+
 
                 break;
             case MESSAGE_PLAY_START:
@@ -397,10 +423,17 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
                 break;
         }
-
     }
 
     private void setTimeText() {
+        if (centerLoaing.getVisibility() == View.VISIBLE) {
+            centerLoaing.setVisibility(View.GONE);
+        }
+        if(onlyShowTimeText.getVisibility() != View.VISIBLE){
+            if(controllerLayout.getVisibility() != View.VISIBLE){
+                controllerLayout.setVisibility(View.VISIBLE);
+            }
+        }
         final String time = new SimpleDateFormat("mm:ss").format(playTime);
         final String _time = new SimpleDateFormat("mm:ss").format(totalTime);
         playTimeText.setText(time + "/" + _time);
@@ -408,6 +441,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         seekBar.setProgress((int) (playTime / 10));
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);
+        onlyShowTimeText.setText(time);
     }
 
 

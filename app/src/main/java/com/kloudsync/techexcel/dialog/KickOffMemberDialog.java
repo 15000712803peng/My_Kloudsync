@@ -19,6 +19,7 @@ import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.RequestContactData;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.message.HelloFriendMessage;
+import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.tool.MessageTool;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.view.ClearEditText;
@@ -52,6 +53,7 @@ public class KickOffMemberDialog implements OnClickListener {
                 break;
             case R.id.ok:
                 SocketMessageManager.getManager(mContext).sendMessage_KickMember(meetingConfig,meetingMember);
+//                MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
                 dismiss();
                 break;
             default:

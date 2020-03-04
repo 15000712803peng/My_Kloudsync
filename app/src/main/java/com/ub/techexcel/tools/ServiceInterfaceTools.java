@@ -3245,6 +3245,37 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncApplyChat(long contactId,long companyId){
+        String url = AppConfig.URL_MEETING_BASE + "company_contact/apply_chat?contactId=" + contactId+"&companyId=" + companyId;
+        JSONObject params = new JSONObject();
+        try {
+            params.put("contactId",contactId);
+            params.put("companyId",companyId);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncApplyChat", "url:" + url + ",params:" + params + ",response:" + response);
+        return response;
+    }
+
+    public JSONObject syncAddContact(long contactId,long companyId){
+        String url = AppConfig.URL_MEETING_BASE + "company_contact/add_contact?contactId=" + contactId+"&companyId=" + companyId;
+        JSONObject params = new JSONObject();
+        try {
+            params.put("contactId",contactId);
+            params.put("companyId",companyId);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncAddContact", "url:" + url + ",params:" + params + ",response:" + response);
+        return response;
+    }
 
 
 }

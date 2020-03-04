@@ -192,7 +192,7 @@ import retrofit2.Response;
  */
 
 public class MeetingViewActivity extends BaseMeetingViewActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
-        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener,MeetingRecordsDialog.OnPlayRecordListener{
+        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingRecordsDialog.OnPlayRecordListener {
 
     public static MeetingConfig meetingConfig;
     private SocketMessageManager messageManager;
@@ -200,6 +200,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     private BottomMenuManager menuManager;
     private PopBottomFile bottomFilePop;
     Gson gson;
+
     @Override
     public void showErrorPage() {
 
@@ -224,6 +225,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         messageManager = SocketMessageManager.getManager(this);
         messageManager.registerMessageReceiver();
         messageManager.sendMessage_JoinMeeting(meetingConfig);
+        handleMainPagePlayIfHasMeetingRecord();
 
         pageCache = DocumentPageCache.getInstance(this);
         //--
@@ -234,6 +236,40 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         menuManager.setMenuIcon(menu);
         bottomFilePop = new PopBottomFile(this);
         gson = new Gson();
+    }
+
+    private void handleMainPagePlayIfHasMeetingRecord() {
+
+        String url = "https://wss.peertime.cn/MeetingServer/recording/recording_list?lessonId=" + meetingConfig.getMeetingId();
+        ServiceInterfaceTools.getinstance().getRecordingList(url, ServiceInterfaceTools.GETRECORDINGLIST, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+
+                final List<Record> records = new ArrayList<>();
+                if(object instanceof List){
+                    records.addAll((List<Record>) object);
+                }
+
+                if (records.size() > 0) {
+                    Observable.just("handle_result").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                        @Override
+                        public void accept(String s) throws Exception {
+                            playMeetingLayout.setVisibility(View.VISIBLE);
+                            playMeetingImage.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    playMeetingLayout.setVisibility(View.GONE);
+                                    play(records.get(0));
+                                }
+                            });
+                        }
+                    });
+                }else {
+                    playMeetingLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+
     }
 
 
@@ -295,6 +331,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     private ConnectionChangedListener connectionChangedListener = new ConnectionChangedListener();
 
     RecordPlayDialog recordPlayDialog;
+
     @Override
     public void play(Record record) {
         FileUtils.createRecordingFilesDir(this);
@@ -305,7 +342,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             if (recordPlayDialog != null) {
                 recordPlayDialog.dismiss();
             }
-            recordPlayDialog = new RecordPlayDialog(this, record,meetingConfig);
+            recordPlayDialog = new RecordPlayDialog(this, record, meetingConfig);
             recordPlayDialog.show();
         }
     }
@@ -1112,7 +1149,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     }
 
 
-
     private void handleWebUISetting() {
         if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
@@ -1882,7 +1918,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
     MeetingRecordsDialog recordsDialog;
 
-    private  void showRecordingMeetingPlayDialog(){
+    private void showRecordingMeetingPlayDialog() {
         if (recordsDialog != null) {
             recordsDialog.dismiss();
             recordsDialog = null;
@@ -1891,7 +1927,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         recordsDialog.setOnPlayRecordListener(this);
         recordsDialog.StartPop(meetingConfig.getMeetingId());
     }
-
 
 
     //-----
@@ -2017,7 +2052,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
         }
     }
-
 
 
     ShareDocumentDialog shareDocumentDialog;
@@ -2434,7 +2468,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 //    }
 
 
-
     private void startRequestPermission(String[] permissions, int requestcode) {
         ActivityCompat.requestPermissions(this, permissions, requestcode);
     }
@@ -2481,7 +2514,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     }
 
     private boolean isSyncing = false;
-
 
 
     private void getJspPagenumber() {
@@ -2671,7 +2703,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             }
         }).subscribe();
     }
-
 
 
     private void handleMessageLeaveMeeting(JSONObject data) {

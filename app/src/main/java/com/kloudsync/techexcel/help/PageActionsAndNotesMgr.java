@@ -112,6 +112,7 @@ public class PageActionsAndNotesMgr {
     }
 
     public static void requestActionsSaved(final MeetingConfig config) {
+
         new ApiTask(new Runnable() {
             @Override
             public void run() {

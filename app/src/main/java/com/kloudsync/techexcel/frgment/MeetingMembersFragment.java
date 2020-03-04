@@ -466,6 +466,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             if(member == null){
                 return;
             }
+
             holder.name.setText(member.getUserName());
             String url = member.getAvatarUrl();
             if (null == url || url.length() < 1) {

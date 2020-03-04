@@ -96,12 +96,14 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         if(this.user == null){
             return;
         }
+
         UserNotes user = users.get(position);
         Log.e("onItemSelected","position:" + position + ",user:" + user);
         if (user.getUserId().equals(this.user.getUserId())) {
             Log.e("onItemSelected", "the same");
             return;
         }
+
         changeUser(user);
     }
 
@@ -579,12 +581,14 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
 
     }
 
+
     private void requestNoteToShow(final int noteId){
         Observable.just(noteId).observeOn(Schedulers.io()).map(new Function<Integer, EventNote>() {
             @Override
             public EventNote apply(Integer integer) throws Exception {
                 return MeetingServiceTools.getInstance().syncGetNoteByNoteId(noteId);
             }
+
         }).doOnNext(new Consumer<EventNote>() {
             @Override
             public void accept(EventNote note) throws Exception {
@@ -615,13 +619,13 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
                 instance = null;
             }
         });
+
         pageCache = DocumentPageCache.getInstance(context);
         noteList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         usersSpinner = view.findViewById(R.id.spinner_users);
         usersSpinner.setOnSpinnerItemSelectedListener(this);
         initWeb();
         requestNoteToShow(noteId);
-
         if(meetingConfig.getType() == MeetingType.MEETING){
 
         }else {

@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.search.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -27,6 +29,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.FriendContactAdapter;
 import com.kloudsync.techexcel.adapter.SearchContactAdapter;
@@ -38,6 +41,7 @@ import com.kloudsync.techexcel.bean.Team;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.PopFilterContact;
 import com.kloudsync.techexcel.info.Customer;
+import com.kloudsync.techexcel.pc.ui.ContactDetailActivity;
 import com.kloudsync.techexcel.search.view.VContactSearch;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.techexcel.adapter.TeamAdapterV2;
@@ -58,7 +62,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.rong.imkit.RongIM;
 
-public class ContactSearchActivity extends BaseActivity implements VContactSearch, View.OnClickListener, TextWatcher, TeamAdapterV2.OnItemClickListener, SearchContactAdapter.OnItemClickListener {
+public class ContactSearchActivity extends BaseActivity implements VContactSearch, View.OnClickListener, TextWatcher {
 
     private ListView list;
     private TextView cancelText;
@@ -140,6 +144,7 @@ public class ContactSearchActivity extends BaseActivity implements VContactSearc
 //        adapter.setCustomers(conversations);
 //        adapter.setOnItemClickListener(this);
         list.setAdapter(adapter);
+
 
     }
 
@@ -239,26 +244,6 @@ public class ContactSearchActivity extends BaseActivity implements VContactSearc
             }
         }).subscribe();
 
-
-//        Observable.just(searchStr).observeOn(Schedulers.io()).map(new Function<String, List<Customer>>() {
-//            @Override
-//            public List<Customer> apply(String searchStr) throws Exception {
-//                List<Customer> results = new ArrayList<>();
-//                for (Customer customer : ContactSearchActivity.this.customers) {
-//                    if (customer.getName().contains(searchStr)) {
-//                        results.add(customer);
-//                    }
-//                }
-//                return results;
-//            }
-//        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<List<Customer>>() {
-//            @Override
-//            public void accept(List<Customer> results) throws Exception {
-//                handleResponse(results, searchStr);
-//            }
-//        }).subscribe();
-
-
     }
 
     List<FriendContact> allDatas = new ArrayList<>();
@@ -289,7 +274,41 @@ public class ContactSearchActivity extends BaseActivity implements VContactSearc
             }
         }
         list.setVisibility(View.VISIBLE);
-        list.setAdapter(new SearchResultAdapter());
+        adapter = new SearchResultAdapter();
+        list.setAdapter(adapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("check_click","clicked");
+                if(adapter == null){
+                    return;
+                }
+
+                if(adapter.getItem(position) instanceof FriendContact){
+                    final FriendContact friendContact = (FriendContact) adapter.getItem(position);
+//                AppConfig.Name = friendContact.getUserName();
+//                RongIM.getInstance().startPrivateChat(getActivity(),
+//                        friendContact.getRongCloudId()+"", friendContact.getUserName());
+                    Observable.just("Request_Detail").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
+                        @Override
+                        public JSONObject apply(String s) throws Exception {
+                            return ServiceInterfaceTools.getinstance().syncGetContactDetail(AppConfig.SchoolID+"",friendContact.getUserId()+"");
+                        }
+                    }).doOnNext(new Consumer<JSONObject>() {
+                        @Override
+                        public void accept(JSONObject jsonObject) throws Exception {
+                            if(jsonObject.has("code")){
+                                Intent intent = new Intent(ContactSearchActivity.this, ContactDetailActivity.class);
+                                intent.putExtra("contact_detail",jsonObject.getJSONObject("data").toString());
+                                intent.putExtra("friend_contact",new Gson().toJson(friendContact));
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                            }
+                        }
+                    }).subscribe();
+                }
+            }
+        });
 
 
     }
@@ -303,20 +322,7 @@ public class ContactSearchActivity extends BaseActivity implements VContactSearc
         }
     }
 
-    @Override
-    public void onItemClick(Team teamData) {
 
-    }
-
-    @Override
-    public void onItemClick(int position, Customer customer) {
-        if (customer.isEnableChat()) {
-            AppConfig.Name = customer.getName();
-            AppConfig.isUpdateDialogue = true;
-            RongIM.getInstance().startPrivateChat(this,
-                    customer.getUBAOUserID(), customer.getName());
-        }
-    }
 
     class SearchResultAdapter extends BaseAdapter{
 
