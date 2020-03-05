@@ -17,12 +17,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.DocumentPage;
+import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
+import com.kloudsync.techexcel.tool.MeetingUserVedioCache;
+import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.SectionVO;
+import com.ub.techexcel.bean.WebAction;
+import com.ub.techexcel.tools.DownloadUtil;
+import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -42,6 +54,7 @@ public class UserVedioManager {
     private Context context;
     private UserVedioAdapter adapter;
     private ImageLoader imageLoader;
+    private MeetingUserVedioCache userVedioCache;
     //
     private List<UserVedioData> userVedioDatas = new ArrayList<>();
 
@@ -144,9 +157,9 @@ public class UserVedioManager {
                 }
 
                 if (adapter != null) {
-                    if(status == 1){
+                    if (status == 1) {
                         adapter.userEnter(_user);
-                    }else if(status == 0){
+                    } else if (status == 0) {
                         adapter.userOut(_user);
                     }
 
@@ -254,7 +267,7 @@ public class UserVedioManager {
 
                         } else {
 
-                            if(data.isShowCameraVedio()){
+                            if (data.isShowCameraVedio()) {
                                 data.setShowCameraVedio(false);
                                 Observable.just("load_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                                     @Override
@@ -429,7 +442,7 @@ public class UserVedioManager {
 
     class UserVedioAdapter extends RecyclerView.Adapter<VedioHolder> {
 
-        List<UserVedioData> _userVedioDatas = new ArrayList<>();
+        CopyOnWriteArrayList<UserVedioData> _userVedioDatas = new CopyOnWriteArrayList();
 
         public List<UserVedioData> getUserVedioDatas() {
             return _userVedioDatas;
@@ -576,6 +589,7 @@ public class UserVedioManager {
         }
 
         Log.e("toPlay", "vedio_data:" + data);
+
         Observable.just("play").observeOn(Schedulers.io()).subscribe(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
@@ -587,9 +601,37 @@ public class UserVedioManager {
                         data.setPrepared(true);
                         vedioPlayer.reset();
                         initSurface(surfaceView, vedioPlayer);
-                        vedioPlayer.setDataSource(context, Uri.parse(data.getFileUrl()));
+                        Uri uri = null;
+                        if(userVedioCache.containFile(data.getFileUrl())){
+                            File file = new File(userVedioCache.getVedioPath(data.getFileUrl()));
+                            if(file.exists()){
+                                Log.e("toPlay","to_play:" + file.getAbsolutePath());
+                                vedioPlayer.setDataSource(file.getAbsolutePath());
+                            }else {
+                                vedioPlayer.setDataSource(context, Uri.parse(data.getFileUrl()));
+                            }
+                        }else {
+                            vedioPlayer.setDataSource(context, Uri.parse(data.getFileUrl()));
+                        }
+
                         vedioPlayer.prepare();
                         vedioPlayer.start();
+                        Log.e("check_user_vedio","start");
+                        vedioPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                Observable.just("play_complete").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                                    @Override
+                                    public void accept(String s) throws Exception {
+                                        if(adapter != null){
+                                            Log.e("check_user_vedio","onCompletion");
+                                            userVedioData.setCurrentVedio(null);
+                                            adapter.notifyItemChanged(adapter.getUserVedioDatas().indexOf(userVedioData));
+                                        }
+                                    }
+                                });
+                            }
+                        });
                         data.setPreparing(false);
                         userVedioData.setPreparing(false);
                     } catch (IllegalStateException e) {
@@ -609,12 +651,6 @@ public class UserVedioManager {
 //                        }
 //                    });
 
-                    vedioPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-
-                        }
-                    });
 
                     vedioPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                         @Override
@@ -680,5 +716,83 @@ public class UserVedioManager {
         }
     }
 
+    public void predownLoadUserVedio(Context context) {
+        userVedioCache = MeetingUserVedioCache.getInstance(context);
+        FileUtils.createUserVediosFilesDir(context);
+        List<String> urls = new ArrayList<>();
+        if (userVedioDatas != null && userVedioDatas.size() > 0) {
+            for (UserVedioData userVedioData : userVedioDatas) {
+                if (userVedioData.getVedios() != null && userVedioData.getVedios().size() > 0) {
+                    for (SectionVO sectionVO : userVedioData.getVedios()) {
+                        if (!TextUtils.isEmpty(sectionVO.getFileUrl())) {
+                            urls.add(sectionVO.getFileUrl());
+                        }
+                    }
+                }
+            }
+        }
 
+        if (urls.size() > 0) {
+            Observable.fromArray(urls.toArray()).observeOn(Schedulers.io()).doOnNext(new Consumer<Object>() {
+                @Override
+                public void accept(Object _url) throws Exception {
+                    if (_url instanceof String) {
+                        String url = (String) _url;
+                        if (!TextUtils.isEmpty(url)) {
+                            if (userVedioCache.containFile(url)) {
+                                String path = userVedioCache.getVedioPath(url);
+                                File localFile = new File(path);
+                                if (localFile.exists()) {
+                                    return;
+                                } else {
+                                    userVedioCache.removeFile(url);
+                                }
+
+                            }
+
+                            String _path = FileUtils.getBaseUserVediosDir();
+                            File dir = new File(_path);
+                            String name = url.substring(url.lastIndexOf("/"),url.length());
+                            File vedioFile = new File(dir,name);
+                            Log.e("predownLoadUserVedio","vedioFile:" + vedioFile.getAbsolutePath());
+                            safeDownloadFile(url,vedioFile.getAbsolutePath(),true);
+
+                        }
+                    }
+                }
+            }).subscribe();
+
+
+        }
+    }
+
+    private synchronized void safeDownloadFile(final String url,final String savePath,final boolean needRedownload) {
+
+        final ThreadLocal<String> localPage = new ThreadLocal<>();
+        localPage.set(url);
+        Log.e("safeDownloadFile","start_download");
+//      DownloadUtil.get().cancelAll();
+        DownloadUtil.get().syncDownload(localPage.get(),savePath, new DownloadUtil.OnDownloadListener() {
+            @Override
+            public void onDownloadSuccess(int code) {
+
+                Log.e("safeDownloadFile", "onDownloadSuccess:" + localPage.get());
+                userVedioCache.cacheVedio(localPage.get(),savePath);
+
+            }
+
+            @Override
+            public void onDownloading(int progress) {
+
+            }
+
+            @Override
+            public void onDownloadFailed() {
+                Log.e("safeDownloadFile", "onDownloadFailed:" + localPage.get());
+                if (needRedownload) {
+                    safeDownloadFile(url, savePath, false);
+                }
+            }
+        });
+    }
 }

@@ -64,7 +64,7 @@ public class MeetingUserVedioCache {
         if (TextUtil.isEmpty(json)) {
             return new HashMap<>();
         }
-        return gson.fromJson(json, new TypeToken<Map<String, DocumentPage>>() {
+        return gson.fromJson(json, new TypeToken<Map<String, String>>() {
         }.getType());
     }
 

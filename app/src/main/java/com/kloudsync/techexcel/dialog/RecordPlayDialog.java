@@ -651,7 +651,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 }
             }
         }
-
+        userVedioManager.predownLoadUserVedio(host);
         actionsManager.setRecordId(recordDetail.getRecordingId());
         actionsManager.setTotalTime(recordDetail.getDuration());
         return 1;
