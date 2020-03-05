@@ -165,16 +165,26 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                 ss.add(actions);
                 ss.add(actions);
                 ss.add(actions);
-                Observable.just(true).observeOn(Schedulers.io()).map(new Function<Boolean, Boolean>() {
+                String noteactionname=  new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+                Observable.just(noteactionname).observeOn(Schedulers.io()).map(new Function<String, File>() {
                     @Override
-                    public Boolean apply(Boolean b) throws Exception {
-                        String noteactionname=  new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-                        return  FileUtils.writeNoteActonToFile(noteactionname,ss);
+                    public File apply(String name) throws Exception {
+                        File note=FileUtils.createNoteFile(name);
+                        if(note!=null){
+                            boolean is=FileUtils.writeNoteActonToFile(ss,note);
+                            Log.e("notename",note.getAbsolutePath()+"  "+is);
+                           if(is){
+                               return  note;
+                           }
+                        }
+                        return null;
                     }
-                }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Boolean>() {
+                }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<File>() {
                     @Override
-                    public void accept(Boolean iswritesuccess) throws Exception {
-                            Toast.makeText(mContext,iswritesuccess+"",Toast.LENGTH_LONG).show();
+                    public void accept(File note) throws Exception {
+                        if(note!=null){
+                            Toast.makeText(mContext,note.getAbsolutePath()+"",Toast.LENGTH_LONG).show();
+                        }
                     }
                 }).subscribe();
             } catch (JSONException e) {

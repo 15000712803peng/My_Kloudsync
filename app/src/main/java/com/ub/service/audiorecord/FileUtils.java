@@ -128,7 +128,7 @@ public class FileUtils {
 
 
 
-    public static boolean writeNoteActonToFile(String notename,List<String> actiondata){
+    public static File createNoteFile(String notename){
         if (TextUtils.isEmpty(notename)) {
             throw new NullPointerException("fileName can't be null");
         }
@@ -145,20 +145,27 @@ public class FileUtils {
             }
             String  mAudioWavPath = fileBasePath + notename;
             File note=new File(mAudioWavPath);
-            Log.e("notename",note.getAbsolutePath());
-            try {
-                FileOutputStream fos = new FileOutputStream(note);
-                for (int i = 0; i < actiondata.size(); i++) {
-                    String data =actiondata.get(i);
-                    fos.write(data.getBytes());
-                }
-                fos.flush();
-                fos.close();
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            return note;
         }
+        return null;
+    }
+
+   public static boolean writeNoteActonToFile(List<String> actiondata,File note){
+       try {
+           if(note==null){
+               return false;
+           }
+           FileOutputStream fos = new FileOutputStream(note);
+           for (int i = 0; i < actiondata.size(); i++) {
+               String data =actiondata.get(i);
+               fos.write(data.getBytes());
+           }
+           fos.flush();
+           fos.close();
+           return true;
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
         return false;
     }
 
