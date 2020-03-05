@@ -20,14 +20,18 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.kloudsync.activity.Document;
 import com.ub.service.audiorecord.AudioRecorder;
+import com.ub.service.audiorecord.FileUtils;
 import com.ub.service.audiorecord.RecordEndListener;
 import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
@@ -42,10 +46,18 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class SoundtrackRecordManager implements View.OnClickListener {
@@ -147,7 +159,34 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                 jsonObject.put("data",data);
                 String actions=jsonObject.toString();
                 Log.e("recordNoteAction",actions);
-                SocketMessageManager.getManager(mContext).sendMessage_MyActionFrame(actions, meetingConfig);
+//                SocketMessageManager.getManager(mContext).sendMessage_MyActionFrame(actions, meetingConfig);
+                final List<String> ss=new ArrayList<>();
+                ss.add(actions);
+                ss.add(actions);
+                ss.add(actions);
+                ss.add(actions);
+                String noteactionname=  new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+                Observable.just(noteactionname).observeOn(Schedulers.io()).map(new Function<String, File>() {
+                    @Override
+                    public File apply(String name) throws Exception {
+                        File note=FileUtils.createNoteFile(name);
+                        if(note!=null){
+                            boolean is=FileUtils.writeNoteActonToFile(ss,note);
+                            Log.e("notename",note.getAbsolutePath()+"  "+is);
+                           if(is){
+                               return  note;
+                           }
+                        }
+                        return null;
+                    }
+                }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<File>() {
+                    @Override
+                    public void accept(File note) throws Exception {
+                        if(note!=null){
+                            Toast.makeText(mContext,note.getAbsolutePath()+"",Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }).subscribe();
             } catch (JSONException e) {
                 e.printStackTrace();
             }

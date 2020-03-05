@@ -2,8 +2,11 @@ package com.ub.service.audiorecord;
 
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +22,8 @@ public class FileUtils {
     private final static String AUDIO_PCM_BASEPATH = "/" + rootPath + "/pcm/";
     //可播放的高质量音频文件
     private final static String AUDIO_WAV_BASEPATH = "/" + rootPath + "/wav/";
+    // 录制的笔记动作路径
+    private final static String NOTE_ACTION_BASEPATH="/"+rootPath+ "/note/";
 
     private static void setRootPath(String rootPath) {
         FileUtils.rootPath = rootPath;
@@ -121,5 +126,47 @@ public class FileUtils {
         return file;
     }
 
+
+
+    public static File createNoteFile(String notename){
+        if (TextUtils.isEmpty(notename)) {
+            throw new NullPointerException("fileName can't be null");
+        }
+        if (!isSdcardExit()) {
+            throw new IllegalStateException("sd card no found");
+        }
+        if (isSdcardExit()) {
+            notename = notename + ".txt";
+            String fileBasePath = Environment.getExternalStorageDirectory().getAbsolutePath() + NOTE_ACTION_BASEPATH;
+            File file = new File(fileBasePath);
+            //创建目录
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            String  mAudioWavPath = fileBasePath + notename;
+            File note=new File(mAudioWavPath);
+            return note;
+        }
+        return null;
+    }
+
+   public static boolean writeNoteActonToFile(List<String> actiondata,File note){
+       try {
+           if(note==null){
+               return false;
+           }
+           FileOutputStream fos = new FileOutputStream(note);
+           for (int i = 0; i < actiondata.size(); i++) {
+               String data =actiondata.get(i);
+               fos.write(data.getBytes());
+           }
+           fos.flush();
+           fos.close();
+           return true;
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+        return false;
+    }
 
 }
