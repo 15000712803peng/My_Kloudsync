@@ -3522,7 +3522,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             handleExit(false);
         }
-        return true;
+        return super.onKeyDown(keyCode,event);
 
     }
 

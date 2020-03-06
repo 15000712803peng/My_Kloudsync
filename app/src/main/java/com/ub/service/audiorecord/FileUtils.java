@@ -145,12 +145,14 @@ public class FileUtils {
             }
             String  mAudioWavPath = fileBasePath + notename;
             File note=new File(mAudioWavPath);
+            Log.e("notename",note.getAbsolutePath());
             return note;
         }
         return null;
     }
 
-   public static boolean writeNoteActonToFile(List<String> actiondata,File note){
+
+   public static  boolean writeNoteActonToFile(List<String> actiondata,File note){
        try {
            if(note==null){
                return false;
