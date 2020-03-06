@@ -148,9 +148,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             url1= soundtrackBean.getSelectedAudioInfo().getFileDownloadURL();
         }
         initPlayMusic(isrecordvoice,url,url1);
-
     }
-
 
     private List<JSONObject> noteActionList=new ArrayList<>();
 
@@ -166,7 +164,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                 jsonObject.put("data",data);
                 String actions=jsonObject.toString();
                 Log.e("recordNoteAction",actions);
-//                SocketMessageManager.getManager(mContext).sendMessage_MyActionFrame(actions, meetingConfig);
                 noteActionList.add(jsonObject);
                 noteActionList.add(jsonObject);
             } catch (JSONException e) {

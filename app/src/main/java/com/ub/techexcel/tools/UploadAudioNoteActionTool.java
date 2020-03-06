@@ -120,7 +120,7 @@ public class UploadAudioNoteActionTool {
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(mContext,"笔记上传成功",Toast.LENGTH_LONG).show();
+                            Toast.makeText(mContext,"笔记控制文件上传成功",Toast.LENGTH_LONG).show();
                         }
                     });
                 } catch (InterruptedException e) {
@@ -198,9 +198,7 @@ public class UploadAudioNoteActionTool {
                       Toast.makeText(mContext,"笔记控制文件上传成功",Toast.LENGTH_LONG).show();
                     }
                 });
-
             }
-
             @Override
             public void onFailure(ResumableUploadRequest request, ClientException clientExcepion, ServiceException serviceException) {
 
