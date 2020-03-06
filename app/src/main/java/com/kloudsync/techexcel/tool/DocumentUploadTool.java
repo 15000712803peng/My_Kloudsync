@@ -327,7 +327,6 @@ public class DocumentUploadTool {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
-
                 BasicSessionCredentials sessionCredentials = new BasicSessionCredentials(
                         ud.getAccessKeyId(),
                         ud.getAccessKeySecret(),
@@ -508,7 +507,6 @@ public class DocumentUploadTool {
         if (!recordDir.exists()) {
             recordDir.mkdirs();
         }
-
         // 创建断点上传请求，参数中给出断点记录文件的保存位置，需是一个文件夹的绝对路径
         ResumableUploadRequest request = new ResumableUploadRequest(ud.getBucketName(),
                 MD5Hash, path, recordDirectory);
@@ -540,7 +538,6 @@ public class DocumentUploadTool {
                 ((Activity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
                         startConverting(ud, attachmentBean);
                     }
                 });

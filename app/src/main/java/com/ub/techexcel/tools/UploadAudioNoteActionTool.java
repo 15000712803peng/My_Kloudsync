@@ -17,6 +17,7 @@ import com.alibaba.sdk.android.oss.callback.OSSProgressCallback;
 import com.alibaba.sdk.android.oss.common.OSSLog;
 import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;
 import com.alibaba.sdk.android.oss.common.auth.OSSStsTokenCredentialProvider;
+import com.alibaba.sdk.android.oss.model.ObjectMetadata;
 import com.alibaba.sdk.android.oss.model.ResumableUploadRequest;
 import com.alibaba.sdk.android.oss.model.ResumableUploadResult;
 import com.amazonaws.auth.BasicSessionCredentials;
@@ -25,7 +26,6 @@ import com.amazonaws.event.ProgressListener;
 import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
 import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.AccessControlList;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
@@ -36,57 +36,46 @@ import com.kloudsync.techexcel.help.Popupdate;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.start.LoginGet;
-import com.ub.service.audiorecord.RecordEndListener;
 import com.ub.techexcel.bean.LineItem;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
-public class UploadAudioTool {
+public class UploadAudioNoteActionTool {
 
-    static volatile UploadAudioTool instance;
+    static volatile UploadAudioNoteActionTool instance;
     private Context mContext;
 
-    public UploadAudioTool(Context context){
+    public UploadAudioNoteActionTool(Context context){
         mContext=context;
     }
 
-    public static UploadAudioTool getManager(Context context) {
+    public static UploadAudioNoteActionTool getManager(Context context) {
         if (instance == null) {
-            synchronized (UploadAudioTool.class) {
+            synchronized (UploadAudioNoteActionTool.class) {
                 if (instance == null) {
-                    instance = new UploadAudioTool(context);
+                    instance = new UploadAudioNoteActionTool(context);
                 }
             }
         }
         return instance;
     }
 
-    Popupdate puo;
     private int soundtrackID;
-    private int fieldId;
-    private String fieldNewPath;
     private MeetingConfig meetingConfig;
-    private UploadAudioListener uploadAudioListener;
 
-    public void uploadAudio(File file, int soundtrackID, int fieldId, String fieldNewPath, final LinearLayout audiosyncll, MeetingConfig meetingConfig, UploadAudioListener uploadAudioListener){
-        this.soundtrackID=soundtrackID;
-        this.fieldId=fieldId;
-        this.fieldNewPath=fieldNewPath;
-        this.meetingConfig=meetingConfig;
-        this.uploadAudioListener=uploadAudioListener;
+
+    public void uploadNoteActon(File file, int soundtrackID, final LinearLayout audiosyncll, MeetingConfig meetingConfig){
+            this.soundtrackID=soundtrackID;
+            this.meetingConfig=meetingConfig;
             final LineItem attachmentBean = new LineItem();
             attachmentBean.setUrl(file.getAbsolutePath()); // 文件的路径
             attachmentBean.setFileName(file.getName()); // 文件名
-
             LoginGet lg = new LoginGet();
             lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
                 @Override
                 public void getUD(Uploadao ud) {
-                    puo = new Popupdate();
-                    puo.getPopwindow(mContext, attachmentBean.getFileName());
-                    puo.StartPop(audiosyncll);
                     if (1 == ud.getServiceProviderId()) {
                         uploadWithTransferUtility(attachmentBean, ud);
                     } else if (2 == ud.getServiceProviderId()) {
@@ -98,10 +87,12 @@ public class UploadAudioTool {
     }
 
 
+
+
     public void uploadWithTransferUtility(final LineItem attachmentBean, final Uploadao ud) {
         mfile = new File(attachmentBean.getUrl());
         fileName = mfile.getName();
-        MD5Hash = fieldNewPath + "/" + fileName;
+        objectkey = "NoteControlAction" + "/" +soundtrackID+ "/channel_1.json";
         new ApiTask(new Runnable() {
             @Override
             public void run() {
@@ -111,18 +102,16 @@ public class UploadAudioTool {
                         ud.getSecurityToken());
                 AmazonS3Client s3 = new AmazonS3Client(sessionCredentials);
                 s3.setRegion(com.amazonaws.regions.Region.getRegion(ud.getRegionName()));
-                com.amazonaws.services.s3.model.PutObjectRequest request = new com.amazonaws.services.s3.model.PutObjectRequest(ud.getBucketName(), MD5Hash, mfile);
+                com.amazonaws.services.s3.model.PutObjectRequest request = new com.amazonaws.services.s3.model.PutObjectRequest(ud.getBucketName(), objectkey, mfile);
                 TransferManager tm = new TransferManager(s3);
+                com.amazonaws.services.s3.model.ObjectMetadata objectMetadata=new com.amazonaws.services.s3.model.ObjectMetadata();
+                objectMetadata.setContentType("application/json");
+                request.setMetadata(objectMetadata);
                 request.setCannedAcl(CannedAccessControlList.PublicRead);
                 request.setGeneralProgressListener(new ProgressListener() {
                     @Override
                     public void progressChanged(final ProgressEvent progressEvent) {
-                        ((Activity)mContext).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                puo.setProgress(mfile.length(), progressEvent.getBytesTransferred());
-                            }
-                        });
+
                     }
                 });
                 Upload upload = tm.upload(request);
@@ -131,8 +120,7 @@ public class UploadAudioTool {
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            puo.DissmissPop();
-                            yinxiangUploadNewFile(ud);
+                            Toast.makeText(mContext,"笔记上传成功",Toast.LENGTH_LONG).show();
                         }
                     });
                 } catch (InterruptedException e) {
@@ -168,7 +156,7 @@ public class UploadAudioTool {
     }
 
     private File mfile;
-    private String MD5Hash;
+    private String objectkey;
     private String fileName;
 
     private void uploadFile3(final LineItem attachmentBean, final Uploadao ud) {
@@ -176,8 +164,9 @@ public class UploadAudioTool {
         String path = attachmentBean.getUrl();
         mfile = new File(path);
         fileName = mfile.getName();
-        MD5Hash = fieldNewPath + "/" + fileName;
-        Log.e("syncing---", fileName + "   " + MD5Hash);
+        objectkey = "NoteControlAction" + "/" +soundtrackID+ "/channel_1.json";
+//        NoteControlAction/4016/channel_1.json
+        Log.e("notename",objectkey+"  "+"  "+ud.getBucketName()+ " "+ud.getRegionName());
         String recordDirectory = Environment.getExternalStorageDirectory().getAbsolutePath() + "/oss_record/";
         File recordDir = new File(recordDirectory);
         // 要保证目录存在，如果不存在则主动创建
@@ -186,69 +175,41 @@ public class UploadAudioTool {
         }
         // 创建断点上传请求，参数中给出断点记录文件的保存位置，需是一个文件夹的绝对路径
         ResumableUploadRequest request = new ResumableUploadRequest(ud.getBucketName(),
-                MD5Hash, path, recordDirectory);
+                objectkey, path, recordDirectory);
         //设置false,取消时，不删除断点记录文件，如果不进行设置，默认true，是会删除断点记录文件，下次再进行上传时会重新上传。
         request.setDeleteUploadOnCancelling(false);
+        ObjectMetadata objectMetadata=new ObjectMetadata();
+        objectMetadata.setContentType("application/json");
+        request.setMetadata(objectMetadata);
+//        connection.setRequestProperty("Content-Type", "application/json");
         request.setPartSize(1 * 1024 * 1024);
         // 设置上传过程回调
         request.setProgressCallback(new OSSProgressCallback<ResumableUploadRequest>() {
             @Override
             public void onProgress(ResumableUploadRequest request, final long currentSize, final long totalSize) {
-                Log.e("syncing---", currentSize + "   " + totalSize);
-                ((Activity)mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        puo.setProgress(totalSize, currentSize);
-                    }
-                });
             }
         });
         oss.asyncResumableUpload(request, new OSSCompletedCallback<ResumableUploadRequest, ResumableUploadResult>() {
             @Override
             public void onSuccess(ResumableUploadRequest request, ResumableUploadResult result) {
-                Log.e("syncing---", "  successsss");
-                ((Activity)mContext). runOnUiThread(new Runnable() {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        puo.DissmissPop();
-                        yinxiangUploadNewFile(ud);
+                      Toast.makeText(mContext,"笔记控制文件上传成功",Toast.LENGTH_LONG).show();
                     }
                 });
+
             }
 
             @Override
             public void onFailure(ResumableUploadRequest request, ClientException clientExcepion, ServiceException serviceException) {
-                ((Activity)mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        puo.DissmissPop();
-                    }
-                });
+
             }
         });
 
     }
 
 
-    private void yinxiangUploadNewFile(final Uploadao ud) {
-        ServiceInterfaceTools.getinstance().yinxiangUploadNewFile(AppConfig.URL_PUBLIC + "Soundtrack/UploadNewFile", ServiceInterfaceTools.YINXIANGUPLOADNEWFILE,
-                meetingConfig.getLessionId()+"", meetingConfig.getDocument().getAttachmentID()+"", fileName, fieldId, soundtrackID, ud, new ServiceInterfaceListener() {
-                    @Override
-                    public void getServiceReturnData(Object object) {
-                        uploadAudioListener.uploadAudioSuccess();
-                        Log.e("henshupng","sensor");
-                        Tools.setSensor((Activity) mContext);
-                        // 音想音频文件上传完了,如果没有调用这个方法,调用一下
-                        ServiceInterfaceTools.getinstance().notifyUploaded(AppConfig.URL_LIVEDOC + "notifyUploaded", ServiceInterfaceTools.NOTIFYUPLOADED, ud, MD5Hash, new ServiceInterfaceListener() {
-                            @Override
-                            public void getServiceReturnData(Object object) {
-                                EventBus.getDefault().post(new EventSyncSucc());
-                            }
-                        });
-                    }
-                }
-        );
-    }
 
 
 }

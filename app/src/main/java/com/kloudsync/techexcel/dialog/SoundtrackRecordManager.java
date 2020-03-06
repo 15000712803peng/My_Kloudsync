@@ -20,6 +20,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
@@ -37,9 +38,12 @@ import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
+import com.ub.techexcel.tools.UploadAudioListener;
+import com.ub.techexcel.tools.UploadAudioNoteActionTool;
 import com.ub.techexcel.tools.UploadAudioTool;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,7 +64,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class SoundtrackRecordManager implements View.OnClickListener {
+public class SoundtrackRecordManager implements View.OnClickListener,UploadAudioListener{
 
     private Context mContext;
     private static Handler recordHandler;
@@ -147,6 +151,9 @@ public class SoundtrackRecordManager implements View.OnClickListener {
 
     }
 
+
+    private List<JSONObject> noteActionList=new ArrayList<>();
+
     public void recordNoteAction(NoteRecordType noteRecordType, JSONObject data){
         if(isrecordvoice){
             int acitontype=noteRecordType.getActiontype();
@@ -160,33 +167,8 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                 String actions=jsonObject.toString();
                 Log.e("recordNoteAction",actions);
 //                SocketMessageManager.getManager(mContext).sendMessage_MyActionFrame(actions, meetingConfig);
-                final List<String> ss=new ArrayList<>();
-                ss.add(actions);
-                ss.add(actions);
-                ss.add(actions);
-                ss.add(actions);
-                String noteactionname=  new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-                Observable.just(noteactionname).observeOn(Schedulers.io()).map(new Function<String, File>() {
-                    @Override
-                    public File apply(String name) throws Exception {
-                        File note=FileUtils.createNoteFile(name);
-                        if(note!=null){
-                            boolean is=FileUtils.writeNoteActonToFile(ss,note);
-                            Log.e("notename",note.getAbsolutePath()+"  "+is);
-                           if(is){
-                               return  note;
-                           }
-                        }
-                        return null;
-                    }
-                }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<File>() {
-                    @Override
-                    public void accept(File note) throws Exception {
-                        if(note!=null){
-                            Toast.makeText(mContext,note.getAbsolutePath()+"",Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }).subscribe();
+                noteActionList.add(jsonObject);
+                noteActionList.add(jsonObject);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -270,6 +252,7 @@ public class SoundtrackRecordManager implements View.OnClickListener {
     private boolean isPause=false;
 
     public void displayLayout() {
+        noteActionList.clear();
         audiosyncll.setVisibility(View.VISIBLE);
         playstop = audiosyncll.findViewById(R.id.playstop);
         playstop.setOnClickListener(this);
@@ -354,10 +337,51 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                     if (file != null) {
                         Log.e("syncing---", file.getAbsolutePath() + "   " + file.getName());
 //                        uploadAudioFile(file, soundtrackID, false, false);
-                        UploadAudioTool.getManager(mContext).uploadAudio(file,soundtrackID,fieldId,fieldNewPath,audiosyncll,meetingConfig);
+                        UploadAudioTool.getManager(mContext).uploadAudio(file,soundtrackID,fieldId,fieldNewPath,audiosyncll,meetingConfig,SoundtrackRecordManager.this);
                     }
                 }
             });
+        }
+    }
+
+    @Override
+    public void uploadAudioSuccess() {
+        stopRecordNoteAction();
+    }
+
+    @Override
+    public void uploadAudioFail() {
+
+    }
+
+    private void stopRecordNoteAction(){
+        if(noteActionList.size()>0){
+            final JSONArray jsonArray=new JSONArray();
+            for (int i = 0; i < noteActionList.size(); i++) {
+                jsonArray.put(noteActionList.get(i));
+            }
+            String noteactionname=  new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+            Observable.just(noteactionname).observeOn(Schedulers.io()).map(new Function<String, File>() {
+                @Override
+                public File apply(String name) throws Exception {
+                    File note=FileUtils.createNoteFile(name);
+                    if(note!=null){
+                        boolean is=FileUtils.writeNoteActonToFile(jsonArray.toString(),note);
+                        Log.e("notename",note.getAbsolutePath()+"  "+is+"  "+soundtrackID);
+                        if(is){
+                            return  note;
+                        }
+                    }
+                    return null;
+                }
+            }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<File>() {
+                @Override
+                public void accept(File note) throws Exception {
+                    if(note!=null){
+                        UploadAudioNoteActionTool.getManager(mContext).uploadNoteActon(note,soundtrackID,audiosyncll,meetingConfig);
+                    }
+                }
+            }).subscribe();
         }
     }
 
@@ -491,4 +515,6 @@ public class SoundtrackRecordManager implements View.OnClickListener {
     public int  getCurrentTime() {
         return  tttime;
     }
+
+
 }
