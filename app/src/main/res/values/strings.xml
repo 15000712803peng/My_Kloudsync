@@ -391,7 +391,7 @@
     <!--安排会议-->
     <string name="schStart">Start date</string>
     <string name="start_time">Start time</string>
-    <string name="schName">Name</string>
+    <string name="schName">Meeting theme</string>
     <string name="schEnd">End date</string>
     <string name="end_time">End time</string>
     <string name="schDuration">Duration</string>
@@ -399,6 +399,7 @@
     <string name="schMeeting">Schedule Meeting</string>
     <string name="schnames">please select name</string>
     <string name="schdate">please select date</string>
+    <string name="schduration">please select duration</string>
     <string name="invite_attendee">Invite attendee</string>
     <!--进入弹出窗口-->
     <string name="satOptions">Select Audio Tool Options</string>
@@ -807,6 +808,7 @@ Please input the cell phone number to add the contact
     <string name="Send">Send</string>
     <string name="meeting_id">Meeting ID</string>
     <string name="meeting_id_change">Modify meeting ID</string>
+    <string name="input_new_meeing_id">input new meeting id</string>
     <string name="modify_meeting_id">modify your meeting ID</string>
     <string name="about">about</string>
     <string name="privacy_statement">Privacy Statement</string>
@@ -815,6 +817,7 @@ Please input the cell phone number to add the contact
     <string name="sync">Sync</string>
     <string name="invite_new">invite new</string>
     <string name="request_to_be_my_contact">Request to be my contact</string>
+    <string name="Invite_Now">Invite Now</string>
     <string name="qrcode">qrcode</string>
     <string name="downloading">downloading...</string>
     <string name="move_sync">Move Sync</string>
@@ -839,7 +842,13 @@ Please input the cell phone number to add the contact
     <string name="paused">paused</string>
     <string name="title_select_digital_pen">Select Digital Pen</string>
     <string name="tips_orginzaiton_name_not_empty">Organization name can`t be empty</string>
+    <string name="invite_members">Invite members</string>
+    <string name="invite_now">Invite now</string>
+
     <string name="no_register_prompt">Don’t have an account?</string>
+
+    <string name="welcome_to_kloud">Welcome to kloud</string>
+
     <!--  QWX  -->
     <string name="enable_auto_sync_of_display_for_all_my_devices">Enable Auto Sync of Display \nfor All My Devices</string>
     <string name="list_of_devices">List of Devices</string>
@@ -866,7 +875,6 @@ Please input the cell phone number to add the contact
     <!--我-->
 
 
-
     <string name="prompt_is_my_personal_contact">该用户已存在我的"个人联系人中"\n点击对话与对方聊天</string>
     <string name="prompt_is_in_same_company">该用户为当前公司联系人\n点击"申请聊天"等待对方接受</string>
     <string name="prompt_is_in_other_company">该用户为其它公司联系人\n点击确定成为我的联系人</string>
@@ -891,11 +899,37 @@ Please input the cell phone number to add the contact
     <string name="scan_tv">Scanning TV devices</string>
     <string name="_meeting_id">Meeting id:</string>
     <string name="tips">tips</string>
-    <string name="share_kloudsync">Share KloudSync</string>
-    <string name="copy_link">Copy Link</string>
-    <string name="wechat">Wechat</string>
-    <string name="moment">Moment</string>
-    <string name="scan_to_download_app">Scan QR code to download app</string>
+
+    <string-array name="time_duration">
+        <item>15mininutes</item>
+        <item>30mins</item>
+        <item>45mins</item>
+        <item>60mins</item>
+        <item>90mins(1.5H)</item>
+        <item>120mins(2H)</item>
+        <item>180mins(3H)</item>
+        <item>240mins(4H)</item>
+        <item>300mins(5H)</item>
+        <item>360mins(6H)</item>
+        <item>420mins(7H)</item>
+        <item>480mins(8H)</item>
+    </string-array>
+
+    <integer-array name="time_millsecends">
+        <item>15</item>
+        <item>30</item>
+        <item>45</item>
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+        <item>180</item>
+        <item>240</item>
+        <item>300</item>
+        <item>360</item>
+        <item>420</item>
+        <item>480</item>
+    </integer-array>
+
 
 
 

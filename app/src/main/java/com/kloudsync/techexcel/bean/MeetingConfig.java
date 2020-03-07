@@ -1,5 +1,7 @@
 package com.kloudsync.techexcel.bean;
 
+import android.text.TextUtils;
+
 import com.ub.techexcel.bean.AgoraMember;
 
 import org.greenrobot.eventbus.EventBus;
@@ -119,7 +121,21 @@ public class MeetingConfig{
     }
 
     public void addAgoraMember(AgoraMember member){
-        if(!agoraMembers.contains(member)){
+        int index = agoraMembers.indexOf(member);
+        if(index >= 0){
+            AgoraMember _member = agoraMembers.get(index);
+            if(member.getSurfaceView() != null){
+                _member.setSurfaceView(member.getSurfaceView());
+            }
+
+            if(!TextUtils.isEmpty(member.getUserName())){
+                _member.setUserName(member.getUserName());
+            }
+
+            if(!TextUtils.isEmpty(member.getIconUrl())){
+                _member.setIconUrl(member.getIconUrl());
+            }
+        }else {
             agoraMembers.add(member);
         }
     }

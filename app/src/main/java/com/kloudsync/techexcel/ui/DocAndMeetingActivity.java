@@ -101,7 +101,6 @@ import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
 import com.kloudsync.techexcel.dialog.MeetingRecordManager;
 import com.kloudsync.techexcel.dialog.NoteRecordType;
-import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
@@ -276,6 +275,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Bind(R.id.meeting_menu_member)
     ImageView meetingMenuMemberImage;
 
+    @Bind(R.id.layout_note_container)
+    LinearLayout noteContainer;
 
     AgoraCameraAdapter cameraAdapter;
     FullAgoraCameraAdapter fullCameraAdapter;
@@ -540,7 +541,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (menuManager != null) {
             menuManager.release();
         }
-        if(soundtrackRecordManager!=null){
+        if (soundtrackRecordManager != null) {
             soundtrackRecordManager.release();
         }
         if (wakeLock != null) {
@@ -815,7 +816,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         } else {
             noteUsersLayout.setVisibility(View.VISIBLE);
         }
-        NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig);
+        NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig, noteContainer);
         notifyViewNote(note.getNote());
     }
 
@@ -853,7 +854,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         Log.e("followShowNote", "noteid:" + noteId);
         hideEnterLoading();
-        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menuIcon);
+        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menuIcon, noteContainer);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -999,8 +1000,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 _data.put("ShowInCenter", true);
                                 _data.put("TriggerEvent", true);
                                 noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                                //  画线处理
-                                RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
                             }
                         }
                     } catch (JSONException e) {
@@ -1089,12 +1088,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 }
             }
 
-            if(meetingConfig.getMode() == 2 || meetingConfig.getMode() == 1){
-                if(toggleCameraLayout.getVisibility() == View.VISIBLE){
+            if (meetingConfig.getMode() == 2 || meetingConfig.getMode() == 1) {
+                if (toggleCameraLayout.getVisibility() == View.VISIBLE) {
                     toggleCameraLayout.setVisibility(View.GONE);
                 }
-            }else {
-                if(toggleCameraLayout.getVisibility() != View.VISIBLE){
+            } else {
+                if (toggleCameraLayout.getVisibility() != View.VISIBLE) {
                     toggleCameraLayout.setVisibility(View.VISIBLE);
                 }
             }
@@ -1219,10 +1218,17 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         Log.e("check_send_agora_status", "user_id:" + AppConfig.UserID + ",agora_id:" + member.getUserId());
         if ((member.getUserId() + "").equals(AppConfig.UserID)) {
-            messageManager.sendMessage_AgoraStatusChange(meetingConfig, member);
-        }
+            if (meetingConfig.getType() != MeetingType.MEETING) {
+                return;
+            }
+            if (meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
+                messageManager.sendMessage_AgoraStatusChange(meetingConfig, member);
+            }
 
     }
+
+    }
+
 
     private EventShareScreen shareScreen;
 
@@ -1574,7 +1580,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             if ((eventMute.getAgoraMember().getUserId() + "").equals(AppConfig.UserID)) {
                 int index = meetingConfig.getAgoraMembers().indexOf(eventMute.getAgoraMember());
                 if (index >= 0) {
-                    messageManager.sendMessage_AgoraStatusChange(meetingConfig, meetingConfig.getAgoraMembers().get(index));
+                    if (meetingConfig.getType() != MeetingType.MEETING) {
+                        return;
+                    }
+                    if (meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
+                        messageManager.sendMessage_AgoraStatusChange(meetingConfig, meetingConfig.getAgoraMembers().get(index));
+                    }
+
                 }
 
             }
@@ -2599,7 +2611,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
         keepScreenWake();
-        MeetingRecordManager.getManager(this).initRecording( recordstatus,  messageManager,meetingConfig);
+        MeetingRecordManager.getManager(this).initRecording(recordstatus, messageManager, meetingConfig);
 
         MeetingKit.getInstance().startMeeting();
         meetingLayout.setVisibility(View.VISIBLE);
@@ -3152,7 +3164,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public void playSoundtrack(EventPlaySoundtrack soundtrack) {
         Log.e("check_play", "playSoundtrack");
         SoundtrackMediaInfo newAudioInfo = soundtrack.getSoundtrackDetail().getNewAudioInfo();
-        if (newAudioInfo == null) {
+        SoundtrackMediaInfo backgroundAudioInfo = soundtrack.getSoundtrackDetail().getBackgroudMusicInfo();
+        if (newAudioInfo == null && backgroundAudioInfo == null) {
             new AlertDialog.Builder(this, R.style.ThemeAlertDialog)
                     .setMessage(getResources().getString(R.string.sound_is_still_preparing_and_cannot_do_this))
                     .setNegativeButton(getResources().getText(R.string.know_the), null)
@@ -3525,7 +3538,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             handleExit(false);
         }
-        return super.onKeyDown(keyCode,event);
+        return true;
 
     }
 
@@ -3881,12 +3894,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             meetingConfig.setPresenterSessionId(joinMeetingMessage.getPresenterSessionId());
                         }
 
-                        if (dataJson.has("usersList")) {
-                            JSONArray users = dataJson.getJSONArray("usersList");
-                            if (users.length() >= 0) {
-                                getMeetingMembers(users);
-                            }
-                        }
+//                        if (dataJson.has("usersList")) {
+//                            JSONArray users = dataJson.getJSONArray("usersList");
+//                            if (users.length() >= 0) {
+//                                getMeetingMembers(users);
+//                            }
+//                        }
 
                         if (AppConfig.UserID.equals(joinMeetingMessage.getUserId())) {
                             // 说明是自己加入了会议返回的JOIN_MEETING的消息

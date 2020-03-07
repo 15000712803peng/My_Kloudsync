@@ -32,6 +32,8 @@ import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.ub.techexcel.adapter.NewMeetingContactAdapter;
+import com.ub.techexcel.tools.JoinMeetingPopup;
+import com.ub.techexcel.tools.SelectMeetingDurationDialog;
 
 import org.feezu.liuli.timeselector.TimeSelector;
 import org.json.JSONArray;
@@ -45,7 +47,7 @@ import java.util.List;
 /**
  * Created by wang on 2017/6/19.
  */
-public class NewMeetingActivity extends Activity implements View.OnClickListener {
+public class NewMeetingActivity extends Activity implements View.OnClickListener,SelectMeetingDurationDialog.OnDurationSelectedLinstener{
 
     private ImageView cancel;
     private Button submit;
@@ -62,6 +64,7 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
     private int schoolId;
     private List<Customer> customerList = new ArrayList<>();
     private SimpleDraweeView as_img_contact_one, as_img_contact_two, as_img_contact_three;
+    private ImageView durationArrowImage;
 
 
     @Override
@@ -73,16 +76,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
 
     }
 
-/*    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void post(List<Customer> ll) {
-        if (ll != null && ll.size() > 0) {
-            customerList.clear();
-            customerList.addAll(ll);
-            //newMeetingContactAdapter = new NewMeetingContactAdapter(this, customerList);
-            //mRecyclerView.setAdapter(newMeetingContactAdapter);
-
-        }
-    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -148,12 +141,15 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
         submit = findViewById(R.id.submit);
         submit.setEnabled(false);
         submit.setOnClickListener(this);
+        durationArrowImage = findViewById(R.id.image_duration_arrow);
+        durationArrowImage.setOnClickListener(this);
         meetingname = (EditText) findViewById(R.id.meetingname);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm:ss");
         String time = simpleDateFormat.format(new Date());
         //meetingname.setText(AppConfig.UserName + time);
         //meetingname.setSelection((AppConfig.UserName + time).length());
         meetingduration = (TextView) findViewById(R.id.meetingduration);
+        meetingduration.setOnClickListener(this);
         tv_p_schedule_size = (TextView) findViewById(R.id.tv_p_schedule_size);
 
         as_rl_contact = (RelativeLayout) findViewById(R.id.as_rl_contact);
@@ -227,6 +223,10 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 break;
             case R.id.submit:
                 submit();
+                break;
+            case R.id.image_duration_arrow:
+            case R.id.meetingduration:
+                showJoinMeetingDialog();
                 break;
         }
     }
@@ -314,6 +314,7 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             @Override
             public void handle(String time) {
                 try {
+
                     startsecond = formatter.parse(time).getTime();
                     if (startsecond != 0) {
                         meetingstartdate.setVisibility(View.VISIBLE);
@@ -373,10 +374,17 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             Toast.makeText(this, getResources().getString(R.string.schnames), Toast.LENGTH_LONG).show();
             return;
         }
-        if (startsecond == 0 || endsecond == 0) {
+        if (startsecond == 0) {
             Toast.makeText(this, getResources().getString(R.string.schdate), Toast.LENGTH_LONG).show();
             return;
         }
+
+        if(durationData == null){
+            Toast.makeText(this, getResources().getString(R.string.schduration), Toast.LENGTH_LONG).show();
+            return;
+        }
+        Log.e("check_time","startsecond:" + startsecond + "time:"+ durationData.time);
+        endsecond = startsecond + durationData.time;
 
         new ApiTask(new Runnable() {
             @Override
@@ -431,5 +439,28 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
         } else {
             return super.onKeyDown(keyCode, event);
         }
+    }
+
+    SelectMeetingDurationDialog durationDialog;
+
+    private void showJoinMeetingDialog() {
+        if (durationDialog != null) {
+            if (durationDialog.isShowing()) {
+                durationDialog.dismiss();
+            }
+            durationDialog = null;
+        }
+
+        durationDialog = new SelectMeetingDurationDialog(this);
+        durationDialog.setOnDurationSelectedLinstener(this);
+        durationDialog.show();
+    }
+
+    SelectMeetingDurationDialog.DurationData durationData;
+
+    @Override
+    public void onDuratonSelected(SelectMeetingDurationDialog.DurationData duration) {
+        this.durationData= duration;
+        meetingduration.setText(duration.duration);
     }
 }

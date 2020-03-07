@@ -75,13 +75,11 @@ import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.BottomMenuManager;
-import com.kloudsync.techexcel.help.ChatManager;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.DocVedioManager;
 import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
-import com.kloudsync.techexcel.help.PopBottomChat;
 import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.SetPresenterDialog;
@@ -607,7 +605,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         } else {
             noteUsersLayout.setVisibility(View.VISIBLE);
         }
-        NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig);
+//        NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig);
         notifyViewNote(note.getNote());
     }
 
@@ -646,7 +644,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         }
         Log.e("followShowNote", "noteid:" + noteId);
         hideEnterLoading();
-        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menu);
+//        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menu);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
