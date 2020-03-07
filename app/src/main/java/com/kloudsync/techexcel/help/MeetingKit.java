@@ -340,6 +340,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         refreshMembersAndPost(meetingConfig, uid, true);
         checkNetWorkStatus();
         MeetingRecordManager.getManager(host).startRecording(isRecordMeeting );
+
     }
 
 

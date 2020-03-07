@@ -372,7 +372,6 @@ public class UserNotesDialog implements View.OnClickListener, OnSpinnerItemSelec
             TextView pagenumber;
             ImageView viewer;
 
-
             public Holder(View itemView) {
                 super(itemView);
                 title = itemView.findViewById(R.id.title);

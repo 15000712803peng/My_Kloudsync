@@ -117,7 +117,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     /**
      *
-     * @param isrecordvoice 是否開啟錄製音頻  目前一直為true
+     * @param isrecordvoice 是否录制声音
      * @param soundtrackBean
      * @param audiosyncll
      */
@@ -153,18 +153,18 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     private List<JSONObject> noteActionList=new ArrayList<>();
 
     public void recordNoteAction(NoteRecordType noteRecordType, JSONObject data){
-        if(isrecordvoice){
+        if(audiosyncll!=null&&audiosyncll.getVisibility()==View.VISIBLE){
             int acitontype=noteRecordType.getActiontype();
             try {
                 JSONObject jsonObject=new JSONObject();
                 //{actionType:302,time:1,page:1,data:{newId:123,oldId:345}}
                 jsonObject.put("actionType",acitontype);
                 jsonObject.put("time",tttime);
-                jsonObject.put("page",meetingConfig.getPageNumber());
+//                jsonObject.put("page",meetingConfig.getPageNumber());
+                jsonObject.put("page",1);
                 jsonObject.put("data",data);
                 String actions=jsonObject.toString();
                 Log.e("recordNoteAction",actions);
-                noteActionList.add(jsonObject);
                 noteActionList.add(jsonObject);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -179,8 +179,14 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private void  initPlayMusic(final boolean isrecordvoice, String url,String url2){
         Log.e("syncing---", isrecordvoice+"  "+url+"  "+url2);
+        EventSoundSync soundSync=new EventSoundSync();
+        soundSync.setSoundtrackID(soundtrackID);
+        soundSync.setStatus(1);
+        soundSync.setTime(tttime);
+        EventBus.getDefault().post(soundSync);
         if(isrecordvoice){
-            startSync();  //开始录音
+            //启动录音程序
+            startAudioRecord();
         }
         //显示进度条
         displayLayout();
@@ -233,15 +239,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
 
-    private void  startSync(){
-        EventSoundSync soundSync=new EventSoundSync();
-        soundSync.setSoundtrackID(soundtrackID);
-        soundSync.setStatus(1);
-        soundSync.setTime(tttime);
-        EventBus.getDefault().post(soundSync);
-        //启动录音程序
-        startAudioRecord();
-    }
+
 
     private ImageView playstop,syncicon,close;
     private  TextView audiotime,isStatus;
@@ -440,16 +438,18 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
 
     public void release(){
-        if (isrecordvoice) {    // 完成录音
+        if(audiosyncll!=null&&audiosyncll.getVisibility()==View.VISIBLE){
             closeAudioSync();
             StopMedia();
-            stopAudioRecord(soundtrackID);
-            isrecordvoice=false;
+            if (isrecordvoice) {    // 完成录音
+                stopAudioRecord(soundtrackID);
+            }else{
+                stopRecordNoteAction(); //音响动作
+            }
         }
     }
 
     private void closeAudioSync() {
-
         EventSoundSync soundSync=new EventSoundSync();
         soundSync.setSoundtrackID(soundtrackID);
         soundSync.setStatus(0);
@@ -461,7 +461,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             public void getServiceReturnData(Object object) {
             }
         });
-
         if (audioplaytimer != null) {
             audioplaytimer.cancel();
             audioplaytimer = null;
@@ -469,9 +468,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             tttime=0;
         }
         audiosyncll.setVisibility(View.GONE);
-//        timeShow.setVisibility(View.GONE);
-//        getPageObjectsAfterChange(currentAttachmentPage);
-
     }
 
 

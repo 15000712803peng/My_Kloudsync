@@ -68,7 +68,7 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0x1001:
-                    mFavoritePoPListener.syncorrecord(true, soundtrackBean);
+                    mFavoritePoPListener.syncorrecord(checkBox.isChecked(), soundtrackBean);
                     break;
             }
             super.handleMessage(msg);
