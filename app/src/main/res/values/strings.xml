@@ -807,7 +807,6 @@ Please input the cell phone number to add the contact
     <string name="Send">Send</string>
     <string name="meeting_id">Meeting ID</string>
     <string name="meeting_id_change">Modify meeting ID</string>
-    <string name="input_new_meeing_id">input new meeting id</string>
     <string name="modify_meeting_id">modify your meeting ID</string>
     <string name="about">about</string>
     <string name="privacy_statement">Privacy Statement</string>
@@ -816,7 +815,6 @@ Please input the cell phone number to add the contact
     <string name="sync">Sync</string>
     <string name="invite_new">invite new</string>
     <string name="request_to_be_my_contact">Request to be my contact</string>
-    <string name="Invite_Now">Invite Now</string>
     <string name="qrcode">qrcode</string>
     <string name="downloading">downloading...</string>
     <string name="move_sync">Move Sync</string>
@@ -841,13 +839,7 @@ Please input the cell phone number to add the contact
     <string name="paused">paused</string>
     <string name="title_select_digital_pen">Select Digital Pen</string>
     <string name="tips_orginzaiton_name_not_empty">Organization name can`t be empty</string>
-    <string name="invite_members">Invite members</string>
-    <string name="invite_now">Invite now</string>
-
     <string name="no_register_prompt">Don’t have an account?</string>
-
-    <string name="welcome_to_kloud">Welcome to kloud</string>
-
     <!--  QWX  -->
     <string name="enable_auto_sync_of_display_for_all_my_devices">Enable Auto Sync of Display \nfor All My Devices</string>
     <string name="list_of_devices">List of Devices</string>
@@ -899,6 +891,11 @@ Please input the cell phone number to add the contact
     <string name="scan_tv">Scanning TV devices</string>
     <string name="_meeting_id">Meeting id:</string>
     <string name="tips">tips</string>
+    <string name="share_kloudsync">Share KloudSync</string>
+    <string name="copy_link">Copy Link</string>
+    <string name="wechat">Wechat</string>
+    <string name="moment">Moment</string>
+    <string name="scan_to_download_app">Scan QR code to download app</string>
 
 
 

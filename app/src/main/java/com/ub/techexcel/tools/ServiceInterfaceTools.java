@@ -3134,6 +3134,15 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncUpdateCompany(JSONObject params) {
+        String url = AppConfig.URL_MEETING_BASE
+                + "company/update_company";
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncUpdateCompany", "url:" + url + ",params:" + params + ",response:" + response);
+        return response;
+
+    }
+
     public JSONObject syncLoginRequst(String name, String password, int role, String deviceID, int deviceType, String DeviceName) {
         String url = AppConfig.URL_PUBLIC + "?login=" + name + "&password=" + password + "&role=" + role +
                 "&deviceID=" + deviceID + "&deviceType= " + deviceType + "&DeviceName=" + DeviceName;

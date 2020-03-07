@@ -75,11 +75,13 @@ import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.BottomMenuManager;
+import com.kloudsync.techexcel.help.ChatManager;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.DocVedioManager;
 import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
+import com.kloudsync.techexcel.help.PopBottomChat;
 import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.SetPresenterDialog;
@@ -365,7 +367,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         if (meetingConfig == null) {
             meetingConfig = new MeetingConfig();
         }
-        meetingConfig.setType(data.getIntExtra("meeting_type", MeetingType.DOC));
+        meetingConfig.setType(data.getIntExtra("meeting_type", MeetingType.MEETING));
         meetingConfig.setMeetingId(data.getStringExtra("meeting_id"));
         meetingConfig.setLessionId(data.getIntExtra("lession_id", 0));
         meetingConfig.setDocumentId(data.getStringExtra("document_id"));
@@ -1864,7 +1866,23 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
     @Override
     public void menuChatClicked() {
+        showChatPop();
+    }
 
+    PopBottomChat chatBottomPop;
+
+    private void showChatPop() {
+        String chatRoomId = getResources().getString(R.string.Classroom) + meetingConfig.getLessionId();
+        if (chatBottomPop != null) {
+            if (chatBottomPop.isShowing()) {
+                chatBottomPop.hide();
+                chatBottomPop = null;
+            }
+        }
+        String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
+        chatBottomPop = new PopBottomChat(this, meetingIndetifier, chatRoomId);
+        chatBottomPop.show(web, chatRoomId);
+        ChatManager.getManager(this, meetingIndetifier).setPopBottomChat(chatBottomPop, chatRoomId);
     }
 
     MeetingRecordsDialog recordsDialog;
