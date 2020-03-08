@@ -157,14 +157,12 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             int acitontype=noteRecordType.getActiontype();
             try {
                 JSONObject jsonObject=new JSONObject();
-                //{actionType:302,time:1,page:1,data:{newId:123,oldId:345}}
                 jsonObject.put("actionType",acitontype);
                 jsonObject.put("time",tttime);
 //                jsonObject.put("page",meetingConfig.getPageNumber());
                 jsonObject.put("page",1);
                 jsonObject.put("data",data);
-                String actions=jsonObject.toString();
-                Log.e("recordNoteAction",actions);
+                Log.e("notename",jsonObject.toString());
                 noteActionList.add(jsonObject);
             } catch (JSONException e) {
                 e.printStackTrace();
