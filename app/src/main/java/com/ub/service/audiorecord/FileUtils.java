@@ -153,8 +153,6 @@ public class FileUtils {
 
 
    public static  boolean writeNoteActonToFile(String actiondata,File note){
-
-       Log.e("notename",actiondata);
        try {
            if(note==null){
                return false;

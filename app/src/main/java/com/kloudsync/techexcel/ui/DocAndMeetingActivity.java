@@ -101,6 +101,7 @@ import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
 import com.kloudsync.techexcel.dialog.MeetingRecordManager;
 import com.kloudsync.techexcel.dialog.NoteRecordType;
+import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
@@ -760,6 +761,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
                 noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId,jsonObject);
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override
@@ -1000,6 +1002,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 _data.put("ShowInCenter", true);
                                 _data.put("TriggerEvent", true);
                                 noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                                RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
                             }
                         }
                     } catch (JSONException e) {

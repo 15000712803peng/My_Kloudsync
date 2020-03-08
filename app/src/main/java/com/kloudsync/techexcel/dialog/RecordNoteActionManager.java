@@ -32,7 +32,7 @@ public class RecordNoteActionManager {
 
 
     /**
-     *
+     * 304 画线
      * @param noteId  笔记id
      * @param noteData 笔记单条数据
      */
@@ -76,9 +76,20 @@ public class RecordNoteActionManager {
     }
 
 
-    public  void sendDisplayHomePageActions(long noteId, String strokeId){
+    /**
+     * 直接显示笔记到主界面  308
+     * @param noteId
+     * @param linejson
+     */
+    public  void sendDisplayHomePageActions(long noteId, JSONObject linejson){
 //      {actionType:308,time:1,page:1,data:{id:123,lastStrokeId:"1-2-3"}}
+        String strokeId="";
         try {
+            JSONArray linesjson=linejson.getJSONArray("lines");
+            if(linesjson.length()>0){
+                JSONObject linedata=linesjson.getJSONObject(linesjson.length()-1);
+                strokeId=linedata.getString("id");  //拿最后一条动作的id
+            }
             JSONObject jsonObject=new JSONObject();
             jsonObject.put("id",noteId);
             jsonObject.put("lastStrokeId",strokeId);
@@ -86,6 +97,23 @@ public class RecordNoteActionManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * 关闭主界面笔记 306
+     */
+    private void sendCloseHomePageActon(){
+
+
+    }
+
+
+    /**
+     * 笔记换页  302
+     */
+    private void sendChangepageActions(){
+
     }
 
 
