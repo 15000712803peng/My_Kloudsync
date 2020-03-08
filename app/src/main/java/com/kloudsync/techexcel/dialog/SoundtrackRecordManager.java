@@ -173,6 +173,53 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
 
+//    public void recordNoteAction(NoteRecordType noteRecordType, JSONObject data){
+//        if(isrecordvoice){
+//            int acitontype=noteRecordType.getActiontype();
+//            try {
+//                JSONObject jsonObject=new JSONObject();
+//                //{actionType:302,time:1,page:1,data:{newId:123,oldId:345}}
+//                jsonObject.put("actionType",acitontype);
+//                jsonObject.put("time",tttime);
+//                jsonObject.put("page",meetingConfig.getPageNumber());
+//                jsonObject.put("data",data);
+//                String actions=jsonObject.toString();
+//                Log.e("recordNoteAction",actions);
+////                SocketMessageManager.getManager(mContext).sendMessage_MyActionFrame(actions, meetingConfig);
+//                final List<String> ss=new ArrayList<>();
+//                ss.add(actions);
+//                ss.add(actions);
+//                ss.add(actions);
+//                ss.add(actions);
+//                String noteactionname=  new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+//                Observable.just(noteactionname).observeOn(Schedulers.io()).map(new Function<String, File>() {
+//                    @Override
+//                    public File apply(String name) throws Exception {
+//                        File note=FileUtils.createNoteFile(name);
+//                        if(note!=null){
+////                            boolean is=FileUtils.writeNoteActonToFile(ss,note);
+////                            Log.e("notename",note.getAbsolutePath()+"  "+is);
+////                           if(is){
+////                               return  note;
+////                           }
+//                        }
+//                        return null;
+//                    }
+//                }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<File>() {
+//                    @Override
+//                    public void accept(File note) throws Exception {
+//                        if(note!=null){
+//                            Toast.makeText(mContext,note.getAbsolutePath()+"",Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//                }).subscribe();
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
+
 
     private MediaPlayer mediaPlayer;
     private MediaPlayer mediaPlayer2;
@@ -350,34 +397,34 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
     private void stopRecordNoteAction(){
-        if(noteActionList.size()>0){
-            final JSONArray jsonArray=new JSONArray();
-            for (int i = 0; i < noteActionList.size(); i++) {
-                jsonArray.put(noteActionList.get(i));
-            }
-            String noteactionname=  new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-            Observable.just(noteactionname).observeOn(Schedulers.io()).map(new Function<String, File>() {
-                @Override
-                public File apply(String name) throws Exception {
-                    File note=FileUtils.createNoteFile(name);
-                    if(note!=null){
-                        boolean is=FileUtils.writeNoteActonToFile(jsonArray.toString(),note);
-                        Log.e("notename",note.getAbsolutePath()+"  "+is+"  "+soundtrackID);
-                        if(is){
-                            return  note;
-                        }
-                    }
-                    return null;
-                }
-            }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<File>() {
-                @Override
-                public void accept(File note) throws Exception {
-                    if(note!=null){
-                        UploadAudioNoteActionTool.getManager(mContext).uploadNoteActon(note,soundtrackID,audiosyncll,meetingConfig);
-                    }
-                }
-            }).subscribe();
-        }
+//        if(noteActionList.size()>0){
+//            final JSONArray jsonArray=new JSONArray();
+//            for (int i = 0; i < noteActionList.size(); i++) {
+//                jsonArray.put(noteActionList.get(i));
+//            }
+//            String noteactionname=  new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+//            Observable.just(noteactionname).observeOn(Schedulers.io()).map(new Function<String, File>() {
+//                @Override
+//                public File apply(String name) throws Exception {
+//                    File note=FileUtils.createNoteFile(name);
+//                    if(note!=null){
+//                        boolean is=FileUtils.writeNoteActonToFile(jsonArray.toString(),note);
+//                        Log.e("notename",note.getAbsolutePath()+"  "+is+"  "+soundtrackID);
+//                        if(is){
+//                            return  note;
+//                        }
+//                    }
+//                    return null;
+//                }
+//            }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<File>() {
+//                @Override
+//                public void accept(File note) throws Exception {
+//                    if(note!=null){
+//                        UploadAudioNoteActionTool.getManager(mContext).uploadNoteActon(note,soundtrackID,audiosyncll,meetingConfig);
+//                    }
+//                }
+//            }).subscribe();
+//        }
     }
 
     private void pauseOrStartAudioRecord() {
@@ -441,11 +488,8 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         if(audiosyncll!=null&&audiosyncll.getVisibility()==View.VISIBLE){
             closeAudioSync();
             StopMedia();
-            if (isrecordvoice) {    // 完成录音
-                stopAudioRecord(soundtrackID);
-            }else{
-                stopRecordNoteAction(); //音响动作
-            }
+            stopAudioRecord(soundtrackID);
+            isrecordvoice=false;
         }
     }
 

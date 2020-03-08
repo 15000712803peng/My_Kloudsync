@@ -899,6 +899,11 @@ Please input the cell phone number to add the contact
     <string name="scan_tv">Scanning TV devices</string>
     <string name="_meeting_id">Meeting id:</string>
     <string name="tips">tips</string>
+    <string name="share_kloudsync">Share KloudSync</string>
+    <string name="copy_link">Copy Link</string>
+    <string name="wechat">Wechat</string>
+    <string name="moment">Moment</string>
+    <string name="scan_to_download_app">Scan QR code to download app</string>
 
     <string-array name="time_duration">
         <item>15mininutes</item>
