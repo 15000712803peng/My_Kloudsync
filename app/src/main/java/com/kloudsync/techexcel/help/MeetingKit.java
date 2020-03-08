@@ -349,7 +349,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
      * 每隔30秒检查网络质量
      */
     private void checkNetWorkStatus() {
-        Log.e("checkNetWorkStatus", "打开网络测试");
+//        Log.e("checkNetWorkStatus", "打开网络测试");
 //        getRtcManager().rtcEngine().enableLastmileTest(); // 打开网络测试
         if (netCheckTimer != null) {
             netCheckTimer.cancel();
@@ -359,7 +359,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         netCheckTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Log.e("checkNetWorkStatus", "网络质量-------->  " + currentNetworkQuality);
+//                Log.e("checkNetWorkStatus", "网络质量-------->  " + currentNetworkQuality);
                 if (currentNetworkQuality == NetWorkQuality.QUALITY_UNKNOWN.getQuality() ||
                         currentNetworkQuality == NetWorkQuality.QUALITY_EXCELLENT.getQuality() ||
                         currentNetworkQuality == NetWorkQuality.QUALITY_GOOD.getQuality()) {   //网络状态良好
@@ -401,7 +401,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onNetworkQuality(int uid, int txQuality, int rxQuality) {
-        Log.e("checkNetWorkStatus", "网络质量更新中  " + uid + " " + txQuality + " " + rxQuality);
+//        Log.e("checkNetWorkStatus", "网络质量更新中  " + uid + " " + txQuality + " " + rxQuality);
         if (uid == 0 || uid == Integer.parseInt(AppConfig.UserID)) {
             currentNetworkQuality = txQuality; //上行网络质量，基于上行视频的发送码率、上行丢包率、平均往返时延和网络抖动计算
         }
@@ -419,6 +419,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             member.setMuteAudio(true);
             member.setMuteVideo(true);
             EventBus.getDefault().post(member);
+            requestMeetingMembers(meetingConfig);
         }
 
     }
@@ -922,7 +923,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                         }.getType());
                         if (members != null) {
                             for (MeetingMember member : members) {
-
                                 if (member.getRole() == 2) {
                                     meetingConfig.setMeetingHostId(member.getUserId() + "");
                                 }

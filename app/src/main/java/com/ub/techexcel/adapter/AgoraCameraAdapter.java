@@ -25,12 +25,14 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.ViewHolder> {
 
     private LayoutInflater inflater;
     private List<AgoraMember> users;
     private Context mContext;
     private ImageLoader imageLoader;
+
     public List<AgoraMember> getUsers() {
         return users;
     }
@@ -72,15 +74,23 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             }
             holder.vedioFrame.addView(videoname);
             SurfaceView target = user.getSurfaceView();
-            Log.e("agora_camera_adapter","is_mute_video:" +user.isMuteVideo() + ",surfaceview:" + target);
-            if (!user.isMuteVideo() && target != null) {
-                target.setVisibility(View.VISIBLE);
-                stripSurfaceView(target);
-                holder.vedioFrame.addView(target, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            Log.e("agora_camera_adapter", "is_mute_video:" + user.isMuteVideo() + ",surfaceview:" + target);
+            if (!user.isMuteVideo()) {
+                if (target != null) {
+                    user.setSurfaceShowing(true);
+                    target.setVisibility(View.VISIBLE);
+                    stripSurfaceView(target);
+                    holder.vedioFrame.addView(target, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                }
             } else {
-                Log.e("onBindViewHolder","target_gone");
-                stripSurfaceView(target);
-                target.setVisibility(View.INVISIBLE);
+                user.setSurfaceShowing(false);
+                Log.e("onBindViewHolder", "target_gone");
+                if (target != null) {
+                    stripSurfaceView(target);
+                    target.setVisibility(View.INVISIBLE);
+                }
+
+
             }
             myHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -94,29 +104,29 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             });
 
             //---
-            if(!TextUtils.isEmpty(user.getUserName())){
+            if (!TextUtils.isEmpty(user.getUserName())) {
                 holder.nameText.setText(user.getUserName());
-            }else {
+            } else {
                 holder.nameText.setText("");
             }
 
-            if(user.isMuteAudio()){
+            if (user.isMuteAudio()) {
                 holder.audioStatusImage.setImageResource(R.drawable.icon_command_mic_disable);
-            }else {
+            } else {
                 holder.audioStatusImage.setImageResource(R.drawable.icon_command_mic_enabel);
             }
 
-            if(TextUtils.isEmpty(user.getIconUrl())){
+            if (TextUtils.isEmpty(user.getIconUrl())) {
                 holder.iconImage.setImageResource(R.drawable.hello);
-            }else {
+            } else {
                 imageLoader.DisplayImage(user.getIconUrl(), holder.iconImage);
             }
 
-            if(user.isMuteVideo()){
+            if (user.isMuteVideo()) {
                 holder.vedioStatusImage.setImageResource(R.drawable.icon_command_webcam_disable);
                 holder.iconImage.setVisibility(View.VISIBLE);
 
-            }else {
+            } else {
                 holder.vedioStatusImage.setImageResource(R.drawable.icon_command_webcam_enable);
                 holder.iconImage.setVisibility(View.GONE);
             }
@@ -143,7 +153,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         int index = users.indexOf(new AgoraMember(myId));
         if (index >= 0 && index < users.size()) {
             users.get(index).setMuteVideo(isMute);
-            Log.e("muteOrOpenCamera","isMute:" + isMute);
+            Log.e("muteOrOpenCamera", "isMute:" + isMute);
             notifyDataSetChanged();
         }
     }
@@ -159,9 +169,21 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
 
     public void addUser(AgoraMember user) {
 
-        if (users.contains(user)) {
+        int index = users.indexOf(user);
+        if (index >= 0) {
+            AgoraMember member = users.get(index);
+            if (member.getSurfaceView() == null) {
+                member.setSurfaceView(user.getSurfaceView());
+                if (!user.isMuteVideo()) {
+                    member.setMuteVideo(user.isMuteVideo());
+                    notifyItemChanged(index);
+                }
+            }
+            Log.e("AgoraCameraAdapter", "contain,user,return");
             return;
         }
+        Log.e("AgoraCameraAdapter", "do add,user");
+
         this.users.add(user);
         Collections.sort(users);
         notifyItemInserted(this.users.indexOf(user));
@@ -169,7 +191,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
 
     public void removeUser(AgoraMember user) {
         int index = users.indexOf(user);
-        if(index >= 0){
+        if (index >= 0) {
             this.users.remove(user);
 //            Collections.sort(users);
             notifyItemRemoved(index);
@@ -195,47 +217,83 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         public CircleImageView iconImage;
     }
 
-   public void reset(){
-       for (AgoraMember member : this.users) {
-           SurfaceView surfaceView = member.getSurfaceView();
-           stripSurfaceView(surfaceView);
-       }
-       this.users.clear();
-       notifyDataSetChanged();
-   }
+    public void reset() {
+        for (AgoraMember member : this.users) {
+            SurfaceView surfaceView = member.getSurfaceView();
+            if (surfaceView != null) {
+                stripSurfaceView(surfaceView);
+            }
+        }
+        this.users.clear();
+        notifyDataSetChanged();
+    }
 
-   public void muteVideo(AgoraMember member,boolean isMute){
-       int index = this.users.indexOf(member);
-       if(index >= 0){
-           this.users.get(index).setMuteVideo(isMute);
-           notifyItemChanged(index);
-       }
-   }
-
-    public void muteAudio(AgoraMember member,boolean isMute){
+    public void muteVideo(AgoraMember member, boolean isMute) {
         int index = this.users.indexOf(member);
-        Log.e("AgoraCameraAdapter","muteAudio:" + isMute + ",index:" + index);
-        if(index >= 0){
+        if (index >= 0) {
+            this.users.get(index).setMuteVideo(isMute);
+            notifyItemChanged(index);
+        }
+    }
+
+    public void muteAudio(AgoraMember member, boolean isMute) {
+        int index = this.users.indexOf(member);
+        Log.e("AgoraCameraAdapter", "muteAudio:" + isMute + ",index:" + index);
+        if (index >= 0) {
             this.users.get(index).setMuteAudio(isMute);
             notifyItemChanged(index);
         }
     }
 
-    public void refreshAgoraMember(AgoraMember agoraMember){
+    public void refreshAgoraMember(AgoraMember agoraMember) {
         int index = this.users.indexOf(agoraMember);
-        if(index >= 0){
-            Log.e("AgoraCameraAdapter","refresh_agora_member");
+        if (index >= 0) {
+            Log.e("AgoraCameraAdapter", "refresh_agora_member");
             notifyItemChanged(index);
         }
     }
 
-    public void showFull(int position){
+    public void refreshVideoStatus(AgoraMember member) {
+
+        int index = this.users.indexOf(member);
+
+        if (index >= 0) {
+            AgoraMember agoraMember = this.users.get(index);
+
+            if (member.isMuteVideo() == agoraMember.isMuteVideo()){
+                if(!agoraMember.isMuteVideo()){
+                    if(!agoraMember.isSurfaceShowing()){
+                        notifyItemChanged(index);
+                    }
+                }else {
+                    if(agoraMember.isSurfaceShowing()){
+                        notifyItemChanged(index);
+                    }
+                }
+            }
+
+        }
+    }
+
+    public void refreshAudioStatus(AgoraMember member) {
+        int index = this.users.indexOf(member);
+        if (index >= 0) {
+            AgoraMember agoraMember = this.users.get(index);
+            if (!(agoraMember.isMuteAudio() == member.isMuteAudio())) {
+                agoraMember.setMuteAudio(member.isMuteAudio());
+                notifyItemChanged(index);
+            }
+
+        }
+    }
+
+    public void showFull(int position) {
         EventShowFullAgora showFullAgora = new EventShowFullAgora();
         showFullAgora.setAgoraMember(users.get(position));
         EventBus.getDefault().post(showFullAgora);
     }
 
-    public void showFull(AgoraMember member){
+    public void showFull(AgoraMember member) {
         EventShowFullAgora showFullAgora = new EventShowFullAgora();
         showFullAgora.setAgoraMember(member);
         EventBus.getDefault().post(showFullAgora);
