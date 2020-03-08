@@ -136,7 +136,7 @@ public class FileUtils {
             throw new IllegalStateException("sd card no found");
         }
         if (isSdcardExit()) {
-            notename = notename + ".txt";
+            notename = notename + ".json";
             String fileBasePath = Environment.getExternalStorageDirectory().getAbsolutePath() + NOTE_ACTION_BASEPATH;
             File file = new File(fileBasePath);
             //创建目录
@@ -145,21 +145,22 @@ public class FileUtils {
             }
             String  mAudioWavPath = fileBasePath + notename;
             File note=new File(mAudioWavPath);
+            Log.e("notename",note.getAbsolutePath());
             return note;
         }
         return null;
     }
 
-   public static boolean writeNoteActonToFile(List<String> actiondata,File note){
+
+   public static  boolean writeNoteActonToFile(String actiondata,File note){
+
+       Log.e("notename",actiondata);
        try {
            if(note==null){
                return false;
            }
            FileOutputStream fos = new FileOutputStream(note);
-           for (int i = 0; i < actiondata.size(); i++) {
-               String data =actiondata.get(i);
-               fos.write(data.getBytes());
-           }
+           fos.write(actiondata.getBytes());
            fos.flush();
            fos.close();
            return true;
