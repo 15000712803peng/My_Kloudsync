@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 public class RecordNoteActionManager {
 
-
     static volatile RecordNoteActionManager instance;
     private Context mContext;
     private SoundtrackRecordManager soundtrackRecordManager;
@@ -68,15 +67,27 @@ public class RecordNoteActionManager {
                 }
                 submit.put("strokeId",strokeId);
                 submit.put("duration",duration);
-
                 break;
             }
             soundtrackRecordManager.recordNoteAction(NoteRecordType.DRAW_LINE,submit);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
-
     }
+
+
+    public  void sendDisplayHomePageActions(long noteId, String strokeId){
+//      {actionType:308,time:1,page:1,data:{id:123,lastStrokeId:"1-2-3"}}
+        try {
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("id",noteId);
+            jsonObject.put("lastStrokeId",strokeId);
+            soundtrackRecordManager.recordNoteAction(NoteRecordType.DISPALY_HOMEPAGE,jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }
