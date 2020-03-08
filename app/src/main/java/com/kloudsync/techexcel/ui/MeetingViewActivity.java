@@ -607,7 +607,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         } else {
             noteUsersLayout.setVisibility(View.VISIBLE);
         }
-        NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig);
+//        NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig);
         notifyViewNote(note.getNote());
     }
 
@@ -646,7 +646,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         }
         Log.e("followShowNote", "noteid:" + noteId);
         hideEnterLoading();
-        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menu);
+//        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menu);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

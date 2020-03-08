@@ -122,6 +122,7 @@
 
 
     <RelativeLayout
+        android:visibility="gone"
         android:id="@+id/enddaterl"
         style="@style/ScheduleMeetingSettingLayoutStyle">
 
@@ -178,13 +179,18 @@
 
         <TextView
             android:id="@+id/meetingduration"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:layout_marginRight="@dimen/dp_35"
             android:gravity="center_vertical|right"
             android:textColor="@color/colorFont99"
             android:textSize="@dimen/sp_14" />
+
+        <ImageView
+            android:id="@+id/image_duration_arrow"
+            style="@style/ScheduleMeetingArrowIconStyle" />
     </LinearLayout>
 
 

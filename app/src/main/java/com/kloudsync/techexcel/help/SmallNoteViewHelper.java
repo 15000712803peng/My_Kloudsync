@@ -8,8 +8,6 @@ import android.widget.RelativeLayout;
 
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.SupportDevice;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
-import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.FileUtils;
 
 import org.json.JSONException;
@@ -22,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
-
 
 public class SmallNoteViewHelper {
     private XWalkView smallNoteView;

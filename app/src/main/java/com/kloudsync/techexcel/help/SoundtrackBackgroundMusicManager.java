@@ -8,38 +8,30 @@ import android.util.Log;
 
 import com.kloudsync.techexcel.bean.EventCloseSoundtrack;
 import com.kloudsync.techexcel.bean.SoundtrackMediaInfo;
-import com.ub.techexcel.bean.SectionVO;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import static android.media.MediaPlayer.SEEK_CLOSEST;
 
 
-public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
+public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
-    private static SoundtrackAudioManager instance;
+    private static SoundtrackBackgroundMusicManager instance;
     private MediaPlayer audioPlayer;
     private volatile long playTime;
     private Context context;
     private SoundtrackMediaInfo mediaInfo;
 
-    private SoundtrackAudioManager(Context context) {
+    private SoundtrackBackgroundMusicManager(Context context) {
         this.context = context;
-
     }
 
-    public static SoundtrackAudioManager getInstance(Context context) {
+    public static SoundtrackBackgroundMusicManager getInstance(Context context) {
         if (instance == null) {
-            synchronized (SoundtrackAudioManager.class) {
+            synchronized (SoundtrackBackgroundMusicManager.class) {
                 if (instance == null) {
-                    instance = new SoundtrackAudioManager(context);
+                    instance = new SoundtrackBackgroundMusicManager(context);
                 }
             }
         }
@@ -60,10 +52,8 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public void prepareAudioAndPlay(SoundtrackMediaInfo audioData) {
-
-        audioPlayer = new MediaPlayer();
         try {
-
+            audioPlayer = new MediaPlayer();
             try {
                 if(audioPlayer.isPlaying()){
                     return;
@@ -94,6 +84,9 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     private void reinit(SoundtrackMediaInfo mediaInfo){
+        if(this.mediaInfo == null){
+            return;
+        }
         audioPlayer = null;
         audioPlayer = new MediaPlayer();
         try {
@@ -110,9 +103,6 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        if(mediaInfo == null){
-            return;
-        }
         Log.e("check_play","onPrepared");
         if (mediaInfo != null) {
             Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());
@@ -133,7 +123,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public boolean isPlaying(){
-        if(mediaInfo == null){
+        if(this.mediaInfo == null){
             return false;
         }
         if(audioPlayer != null){
@@ -144,7 +134,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public long getPlayTime(){
-        if(mediaInfo == null){
+        if(this.mediaInfo == null){
             return 0;
         }
         if(audioPlayer == null){
@@ -154,7 +144,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public long getTotalTime(){
-        if(mediaInfo == null){
+        if(this.mediaInfo == null){
             return 0;
         }
         return audioPlayer.getDuration();
@@ -174,15 +164,15 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public long getDuration(){
-        if(mediaInfo == null){
+        if(this.mediaInfo == null){
             return 0;
         }
         return audioPlayer.getDuration();
     }
 
     public void pause(){
-        if(mediaInfo == null){
-            return;
+        if(this.mediaInfo == null){
+            return ;
         }
         if(audioPlayer != null){
             Log.e("vedio_check","pause_begin");
@@ -192,7 +182,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public void restart(){
-        if(mediaInfo == null){
+        if(this.mediaInfo == null){
             return;
         }
         if(audioPlayer != null){
@@ -201,13 +191,21 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public void seekTo(int time){
-        if(mediaInfo == null){
-            return;
+        if(this.mediaInfo == null){
+            return ;
         }
-        if(audioPlayer != null){
-            audioPlayer.seekTo(time);
-            Log.e("vedio_check","seek_to,time:" + time);
+
+        try {
+            if(audioPlayer != null){
+                if(time < audioPlayer.getDuration()){
+                    audioPlayer.seekTo(time);
+                }
+                Log.e("vedio_check","seek_to,time:" + time);
+            }
+        }catch (Exception e){
+
         }
+
     }
 
 }

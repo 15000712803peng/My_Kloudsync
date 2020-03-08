@@ -24,6 +24,15 @@ public class AgoraMember implements Comparable<AgoraMember>,Serializable {
     private boolean fromSmall;
     private int isMember = 1;
     private boolean tempHide;
+    private boolean isSurfaceShowing;
+
+    public boolean isSurfaceShowing() {
+        return isSurfaceShowing;
+    }
+
+    public void setSurfaceShowing(boolean surfaceShowing) {
+        isSurfaceShowing = surfaceShowing;
+    }
 
     public boolean isTempHide() {
         return tempHide;

@@ -280,6 +280,7 @@
         android:visibility="gone">
 
         <LinearLayout
+            android:id="@+id/layout_note_container"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -312,7 +313,6 @@
                         app:popupTextAlignment="0"
                         android:visibility="gone"
                         android:id="@+id/spinner_users"
-                        android:layout_centerInParent="true"
                         android:layout_width="match_parent"
                         android:hint="笔记"
                         android:textSize="13dp"

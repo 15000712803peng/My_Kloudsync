@@ -196,4 +196,29 @@ public class MeetingMember implements Comparable<MeetingMember>,Serializable {
         }
         return sort;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MeetingMember that = (MeetingMember) o;
+
+        return userId == that.userId;
+    }
+
+    @Override
+    public int hashCode() {
+        return userId;
+    }
+
+    public MeetingMember(int userId) {
+        this.userId = userId;
+    }
+
+    public MeetingMember() {
+        this.userId = userId;
+    }
+
+
 }
