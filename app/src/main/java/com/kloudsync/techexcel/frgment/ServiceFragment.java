@@ -909,7 +909,6 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                     if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
                         Toast.makeText(getActivity(), "你加入的课堂不存在!", Toast.LENGTH_LONG).show();
                     } else {
-//                                    getClassRoomLessonID(AppConfig.ClassRoomID);
                         doStartMeeting(AppConfig.ClassRoomID);
                     }
                 }

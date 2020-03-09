@@ -28,6 +28,15 @@ public class Note implements Serializable {
     private int PageCount;
     private List<DocumentPage> documentPages;
     private String newPath;
+    private String lastModifiedDate;
+
+    public String getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(String lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
     public String getNewPath() {
         return newPath;
