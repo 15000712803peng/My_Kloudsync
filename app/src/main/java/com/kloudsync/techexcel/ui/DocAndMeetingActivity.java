@@ -849,6 +849,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
 
+
     public synchronized void followShowNote(int noteId) {
         if (meetingConfig.getType() == MeetingType.MEETING) {
             noteUsersLayout.setVisibility(View.GONE);
@@ -2528,8 +2529,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Override
     public void menuNoteClicked() {
-        showNotesDialog();
-//        showNoteFloatingDialog();
+//        showNotesDialog();
+        showNoteFloatingDialog();
     }
 
     @Override
@@ -2861,6 +2862,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             floatingNoteDialog.show(currentNoteId, meetingConfig);
         }else{
              floatingNoteDialog = new FloatingNoteDialog(this);
+             floatingNoteDialog.setFloatingListener(new FloatingNoteDialog.FloatingListener() {
+                 @Override
+                 public void changeHomePage(int noteId) {
+                     followShowNote(noteId);
+                 }
+             });
              floatingNoteDialog.show(currentNoteId, meetingConfig);
         }
     }

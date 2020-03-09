@@ -38,7 +38,7 @@
                     android:layout_height="wrap_content"/>
                 <ImageView
                     android:layout_marginLeft="10dp"
-                    android:id="@+id/changefloatnote"
+                    android:id="@+id/changefloatingnote"
                     android:layout_width="30dp"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/switchsyncroom"

@@ -116,6 +116,30 @@ public class RecordNoteActionManager {
     }
 
 
+    /**
+     * 2.笔记从浮窗显示到主界面(前端)
+     * {actionType:301,time:1,page:1,data:{id:343,lastStrokeId:"1-2-3"}}
+     */
+    public  void sendDisplayPopupHomepageActions(long noteId,JSONObject linejson){
+        String strokeId="";
+        try {
+            JSONObject paintdata=linejson.getJSONObject("PaintData");
+            JSONArray linesjson=paintdata.getJSONArray("lines");
+            if(linesjson.length()>0){
+                JSONObject linedata=linesjson.getJSONObject(linesjson.length()-1);
+                strokeId=linedata.getString("id");  //拿最后一条动作的id
+            }
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("id",noteId);
+            jsonObject.put("lastStrokeId",strokeId);
+            soundtrackRecordManager.recordNoteAction(NoteRecordType.DISPLAY_POPUP_HOMEPAGE,jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 
     /**
      *

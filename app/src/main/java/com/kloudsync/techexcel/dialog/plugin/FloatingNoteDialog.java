@@ -68,12 +68,21 @@ public class FloatingNoteDialog implements View.OnClickListener {
     public int heigth;
     public Dialog dialog;
     private View view;
-
     private MeetingConfig meetingConfig;
     private ImageView backImage;
     private XWalkView floatwebview;
     private TextView title;
+    private ImageView changefloatingnote;
 
+    public interface  FloatingListener{
+        void changeHomePage(int noteId);
+    }
+
+    private FloatingListener floatingListener;
+
+    public void  setFloatingListener(FloatingListener floatingListener){
+        this.floatingListener=floatingListener;
+    }
 
     public FloatingNoteDialog(Context context) {
         mContext = context;
@@ -88,6 +97,8 @@ public class FloatingNoteDialog implements View.OnClickListener {
         backImage.setOnClickListener(this);
         floatwebview = view.findViewById(R.id.xwalkview);
         title = view.findViewById(R.id.title);
+        changefloatingnote = view.findViewById(R.id.changefloatingnote);
+        changefloatingnote.setOnClickListener(this);
         initWeb();
         heigth = (int) (mContext.getResources().getDisplayMetrics().heightPixels);
         dialog.setContentView(view);
@@ -148,6 +159,16 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 }
                 dismiss();
                 break;
+            case R.id.changefloatingnote:
+                if(currentNote!=null){
+                    RecordNoteActionManager.getManager(mContext).sendDisplayPopupHomepageActions(currentNote.getNoteID(),lastjsonObject);
+                }
+//                NoteViewManager.getInstance().requestNoteToShow(currentNote.getNoteID());
+                if(floatingListener!=null){
+                    floatingListener.changeHomePage(currentNote.getNoteID());
+                }
+                dismiss();
+                break;
         }
     }
 
@@ -165,6 +186,7 @@ public class FloatingNoteDialog implements View.OnClickListener {
     }
 
     Note currentNote;
+    private JSONObject lastjsonObject=new JSONObject();
     private void process(final long noteId, final MeetingConfig meetingConfig) {
         if (meetingConfig.getDocument() == null) {
             return;
@@ -205,6 +227,7 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 JSONObject jsonObject = new JSONObject();
                 if (!TextUtils.isEmpty(url)) {
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
+                    lastjsonObject=ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
                     Log.e("floatingnote", "url:" + url+"   "+jsonObject.toString());
                 }
                 return jsonObject;
