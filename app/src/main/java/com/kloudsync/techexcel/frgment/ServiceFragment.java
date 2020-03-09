@@ -45,6 +45,7 @@ import com.kloudsync.techexcel.school.SelectSchoolActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
+import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.service.activity.MeetingPropertyActivity;
 import com.ub.service.activity.MeetingSearchResultsActivity;
@@ -143,7 +144,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
                                 @Override
                                 public void view() {
-                                    Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+	                                Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                                     intent.putExtra("userid", bean.getUserId());
                                     intent.putExtra("meetingId", bean.getId() + "");
                                     intent.putExtra("teacherid", bean.getTeacherId());
@@ -152,6 +153,18 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                                     intent.putExtra("isStartCourse", true);
                                     intent.putExtra("isPrepare", true);
                                     intent.putExtra("yinxiangmode", 1);
+
+	                                // --------
+	                                intent.putExtra("meeting_id", bean.getId() + "");
+	                                intent.putExtra("meeting_type", 2);
+	                                intent.putExtra("meeting_role", bean.getRoleinlesson());
+	                                try {
+		                                intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
+
+	                                } catch (Exception e) {
+
+	                                }
+
                                     startActivity(intent);
                                 }
 
@@ -199,7 +212,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
                                 @Override
                                 public void view() {
-                                    Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+	                                Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                                     intent.putExtra("userid", bean.getUserId());
                                     intent.putExtra("meetingId", bean.getId() + "");
                                     intent.putExtra("teacherid", bean.getTeacherId());
@@ -210,6 +223,17 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                                     intent.putExtra("filemeetingId", bean.getId() + "");
                                     intent.putExtra("isFinished", true);
                                     intent.putExtra("yinxiangmode", 1);
+
+	                                // --------
+	                                intent.putExtra("meeting_id", bean.getId() + "");
+	                                intent.putExtra("meeting_type", 2);
+	                                intent.putExtra("meeting_role", bean.getRoleinlesson());
+	                                try {
+		                                intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
+
+	                                } catch (Exception e) {
+
+	                                }
                                     startActivity(intent);
                                 }
 

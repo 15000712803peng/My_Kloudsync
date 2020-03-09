@@ -160,10 +160,14 @@
     <color name="colorBGcf">#CFCFCF</color>
     <color name="colorFont99">#999999</color>
     <color name="colorBGdd">#DDDDDD</color>
+    <color name="colore96161">#E96161</color>
     <color name="color3d78fa">#3D78FA</color>
+    <color name="color3d78fb">#3D78FB</color>
+    <color name="colorf4f5fb">#F4F5FB</color>
     <color name="colorBG16">#161616</color>
     <color name="colorRegisterYellowTips">#FEA33D</color>
     <color name="colorRegisterRedTips">#FF616A</color>
     <color name="colorRegisterEditRedFrame">#FB6363</color>
-    <color name="colorDivider">#DADADE</color>
+    <color name="colorDividerDa">#DADADE</color>
+    <color name="colorDividerEc">#ECECEC</color>
 </resources>

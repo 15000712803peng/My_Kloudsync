@@ -15,7 +15,7 @@ dependencies {
 //    compile 'org.xwalk:xwalk_core_library:15.44.384.13'
     //    compile 'org.xwalk:xwalk_core_library:23.53.589.4'
     //    compile 'org.xwalk:xwalk_core_library:18.48.477.13'
-    compile ('org.xwalk:xwalk_core_library:23.53.589.4'){
+    compile('org.xwalk:xwalk_core_library:23.53.589.4') {
         exclude group: 'com.android.support'
     }
     compile project(':CallKit')
@@ -121,8 +121,6 @@ android {
 //    }
 
 
-
-
     useLibrary 'org.apache.http.legacy'
 
     //BuildConfig.class
@@ -150,6 +148,7 @@ dependencies {
     })
     implementation 'com.android.support:appcompat-v7:27.3.0'
     implementation 'com.android.support:design:27.3.0'
+    implementation 'com.android.support.constraint:constraint-layout:+'
     testCompile 'junit:junit:4.12'
     compile project(':IMKit')
     compile project(':librarypullrefresh')
@@ -198,6 +197,4 @@ dependencies {
     compile 'com.aliyun.dpa:oss-android-sdk:+'
 }
 
-dependencies {
-    compile 'com.android.support.constraint:constraint-layout:+'
-}
+

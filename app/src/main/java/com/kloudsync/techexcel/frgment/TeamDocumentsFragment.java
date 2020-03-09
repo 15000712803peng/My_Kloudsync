@@ -175,6 +175,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
+	    CreateFolderDialog.instance(getActivity()).destory();
         KloudCache.getInstance(getActivity()).clear();
     }
 
@@ -546,7 +547,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                 if (teamSpaceBean.getItemID() > 0) {
 //                    intent3.putExtra("ItemID", teamSpaceBean.getItemID());
 //                    startActivity(intent3);
-                    CreateFolderDialog.instance(getActivity()).showDialog();
+	                CreateFolderDialog.instance(getActivity()).showDialog(R.string.create_folder, R.string.please_input_new_folder_name, 0);
                     CreateFolderDialog.instance(getActivity()).setCreateFolderCallback(this);
                 } else {
                     Toast.makeText(getActivity(), "请先选择Team", Toast.LENGTH_LONG).show();
