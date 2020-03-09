@@ -3981,7 +3981,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         if (AppConfig.UserID.equals(joinMeetingMessage.getUserId())) {
                             // 说明是自己加入了会议返回的JOIN_MEETING的消息
                             Log.e("check_JOIN_MEETING", "my_self_join_in");
-                            delayRefreshAgoraList();
+//                            delayRefreshAgoraList();
                         }
 
                         MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
