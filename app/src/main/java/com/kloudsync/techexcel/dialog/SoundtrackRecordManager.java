@@ -153,6 +153,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     private List<JSONObject> noteActionList=new ArrayList<>();
 
     public void recordNoteAction(NoteRecordType noteRecordType, JSONObject data){
+        Log.e("floatingnote",data.toString());
         if(audiosyncll!=null&&audiosyncll.getVisibility()==View.VISIBLE){
             int acitontype=noteRecordType.getActiontype();
             try {

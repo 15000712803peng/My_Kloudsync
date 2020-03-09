@@ -105,6 +105,7 @@ import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
+import com.kloudsync.techexcel.dialog.plugin.FloatingNoteDialog;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -2528,6 +2529,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Override
     public void menuNoteClicked() {
         showNotesDialog();
+//        showNoteFloatingDialog();
     }
 
     @Override
@@ -2850,6 +2852,21 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         notesDialog = new UserNotesDialog(this);
         notesDialog.show(AppConfig.UserID, meetingConfig);
     }
+
+
+    FloatingNoteDialog floatingNoteDialog;
+
+    private void showNoteFloatingDialog(){
+        if (floatingNoteDialog != null) {
+            floatingNoteDialog.show(currentNoteId, meetingConfig);
+        }else{
+             floatingNoteDialog = new FloatingNoteDialog(this);
+             floatingNoteDialog.show(currentNoteId, meetingConfig);
+        }
+    }
+
+
+
 
     MeetingMembersDialog meetingMembersDialog;
 

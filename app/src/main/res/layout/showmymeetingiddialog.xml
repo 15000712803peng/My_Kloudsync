@@ -7,55 +7,129 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bottom_dialog_border"
+        android:background="@drawable/bottom_dialog_meeting_border"
         android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="@string/sMeeting"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:background="@color/divider_line"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical"
+            android:layout_marginRight="10dp"
+           >
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bottom_dialog_border"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:paddingBottom="16dp"
-                android:paddingTop="16dp">
-
+                android:layout_centerVertical="true"
+                android:orientation="vertical"
+                >
                 <TextView
                     android:id="@+id/myroom"
-                    android:layout_width="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
+                    android:textColor="@color/black"
                     android:text="@string/mymeetingid"
-                    android:textSize="16sp" />
+                    />
+
+                <CheckBox
+                    android:id="@+id/checkbox"
+                    android:layout_marginTop="3dp"
+                    android:layout_width="wrap_content"
+                    android:text="启用会议密码"
+                    android:layout_marginLeft="5dp"
+                    android:background="@null"
+                    android:textSize="12sp"
+                    android:textColor="@color/colorFont99"
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/startmeeting"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="@string/sMeeting"
+                android:textSize="16sp"
+                android:paddingLeft="13dp"
+                android:paddingRight="13dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:background="@drawable/do_join_bg"
+                android:textColor="@color/white"
+              />
+        </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/editrel"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/enter_meeting_bg"
+            android:visibility="gone"
+            android:layout_height="45dp">
+
+            <EditText
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:paddingLeft="10dp"
+                android:background="@null"
+                android:hint="请输入会议密码"
+                android:textSize="14sp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:textColor="#3C77FB"
+                android:layout_alignParentRight="true"
+                android:text="@string/satOk"
+                android:layout_height="wrap_content"/>
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:background="@color/divider_line"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"/>
             <LinearLayout
-                android:id="@+id/lin_enter"
+                android:id="@+id/lin_cancel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@color/skyblue"
+                android:background="@color/white"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:paddingBottom="16dp"
-                android:paddingTop="16dp">
-
+                android:paddingBottom="15dp"
+                android:paddingTop="15dp">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="@string/enter"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textSize="17sp"
+                    android:text="@string/Cancel"
+                    android:textColor="#3C77FB"
+                    />
             </LinearLayout>
-        </LinearLayout>
+
 
     </LinearLayout>
 

@@ -54,6 +54,7 @@ public class MeetingServiceTools {
     public static final int UPDATECOMPANYINFO = 0x2105;
     public static final int DELETECOMPANYLOGO = 0x2106;
     public static final int MEMBERONOTHERDEVICE = 0x2107;
+    public static final int GETBLUETOOTHNOTEDETAIL = 0x2108;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -292,6 +293,40 @@ public class MeetingServiceTools {
                         }
                         Message msg = Message.obtain();
                         msg.obj = items;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnJson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    public void getBlueToothNoteDetail(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                Log.e("floatingnote", url + returnJson.toString());
+                try {
+                    if (returnJson.getInt("RetCode") == 0) {
+                        JSONObject notejson = returnJson.getJSONObject("RetData");
+                        Note note=new Note();
+
+                        note.setTitle(notejson.getString("Title"));
+                        note.setNoteID(notejson.getInt("NoteID"));
+                        note.setAttachmentUrl(notejson.getString("AttachmentUrl"));
+                        note.setSourceFileUrl(notejson.getString("SourceFileUrl"));
+                        note.setLastModifiedDate(notejson.getString("LastModifiedDate"));
+
+                        Message msg = Message.obtain();
+                        msg.obj = note;
                         msg.what = code;
                         handler.sendMessage(msg);
                     } else {
