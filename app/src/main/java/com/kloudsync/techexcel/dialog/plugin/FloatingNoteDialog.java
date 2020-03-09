@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -135,7 +136,6 @@ public class FloatingNoteDialog implements View.OnClickListener {
     public void dismiss() {
         if (dialog != null) {
             dialog.cancel();
-            dialog = null;
         }
     }
 
@@ -143,21 +143,28 @@ public class FloatingNoteDialog implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.back:
+                if(currentNote!=null){
+                    RecordNoteActionManager.getManager(mContext).sendClosePopupActons(currentNote.getNoteID());
+                }
                 dismiss();
                 break;
         }
     }
 
-    public void show(long noteid, MeetingConfig meetingConfig) {
+    public void show(final long noteid, final MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
         if (dialog != null && !dialog.isShowing()) {
-            dialog.show();
-            process(noteid, meetingConfig);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dialog.show();
+                    process(noteid, meetingConfig);
+                }
+            },100);
         }
     }
 
-
-
+    Note currentNote;
     private void process(final long noteId, final MeetingConfig meetingConfig) {
         if (meetingConfig.getDocument() == null) {
             return;
@@ -166,15 +173,15 @@ public class FloatingNoteDialog implements View.OnClickListener {
         MeetingServiceTools.getInstance().getBlueToothNoteDetail(url, MeetingServiceTools.GETBLUETOOTHNOTEDETAIL, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
-                Note note= (Note) object;
-                title.setText(note.getTitle());
-                String lastModifiedDate=note.getLastModifiedDate();
+                currentNote= (Note) object;
+                title.setText(currentNote.getTitle());
+                String lastModifiedDate=currentNote.getLastModifiedDate();
                 String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
                 Log.e("floatingnote", localNoteBlankPage);
-                floatwebview.load("javascript:ShowPDF('" + localNoteBlankPage + "'," +1 + ",''," + note.getAttachmentID() + "," + true + ")", null);
+                floatwebview.load("javascript:ShowPDF('" + localNoteBlankPage + "'," +1 + ",''," + currentNote.getAttachmentID() + "," + true + ")", null);
 //                floatwebview.load("javascript:ShowToolbar(" + false + ")", null);
 //                floatwebview.load("javascript:StopRecord()", null);
-                handleBluetoothNote(note,lastModifiedDate);
+                handleBluetoothNote(currentNote,lastModifiedDate);
             }
         });
     }
@@ -212,7 +219,7 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 _data.put("TriggerEvent", false);
                 Log.e("floatingnote", "ShowDotPanData");
                 floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(mContext).sendDisplayHomePageActions(note.getNoteID(),jsonObject);
+                RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(note.getNoteID(),jsonObject);
             }
         }).subscribe();
     }
