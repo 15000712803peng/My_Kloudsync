@@ -162,7 +162,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 //                jsonObject.put("page",meetingConfig.getPageNumber());
                 jsonObject.put("page",1);
                 jsonObject.put("data",data);
-                Log.e("notename",jsonObject.toString());
+                Log.e("notename--data",jsonObject.toString());
                 noteActionList.add(jsonObject);
             } catch (JSONException e) {
                 e.printStackTrace();

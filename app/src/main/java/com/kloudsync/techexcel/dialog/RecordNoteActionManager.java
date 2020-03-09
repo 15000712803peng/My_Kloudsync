@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.dialog;
 
 import android.content.Context;
 
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.ub.techexcel.tools.Tools;
 
 import org.json.JSONArray;
@@ -103,8 +104,22 @@ public class RecordNoteActionManager {
     /**
      * 关闭主界面笔记 306
      */
-    private void sendCloseHomePageActon(){
-
+    public void sendCloseHomePageActon(long noteid, boolean isMeetingRecord, MeetingConfig meetingConfig){
+        // {actionType:306,time:1,page:1,data:{id:123,docId:345,pageNo:1}}
+       // id: noteid
+        // docId:关闭笔记后显示的文档id(会议录制增加)
+        // pageNo:显示的文档页码(会议录制增加)
+        try {
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("id",noteid);
+            if(isMeetingRecord){
+                jsonObject.put("docId",meetingConfig.getDocument().getItemID());
+                jsonObject.put("pageNo",meetingConfig.getPageNumber());
+            }
+            soundtrackRecordManager.recordNoteAction(NoteRecordType.CLOSE_HOMEPAGE_NOTE,jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -113,6 +128,7 @@ public class RecordNoteActionManager {
      * 笔记换页  302
      */
     private void sendChangepageActions(){
+
 
     }
 
