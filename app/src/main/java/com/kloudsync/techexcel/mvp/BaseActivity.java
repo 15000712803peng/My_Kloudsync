@@ -19,84 +19,84 @@ import butterknife.ButterKnife;
 public abstract class BaseActivity<P extends KloudPresenter> extends FragmentActivity implements KloudView, View.OnClickListener {
 
     protected P mPresenter;
-	protected LoadingDialog mLoadingDialog;
+    protected LoadingDialog mLoadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-	    App.setCustomDensity(this, 0);
+        App.setCustomDensity(this, 0);
         setContentView(getLayout());
-	    ButterKnife.bind(this);
-	    createLoadingDialog();
+        ButterKnife.bind(this);
+        createLoadingDialog();
         initPresenter();
-        if(mPresenter != null){
+        if (mPresenter != null) {
             mPresenter.attachView(this);
         }
-	    initView();
-	    initListener();
+        initView();
+        initListener();
         initData();
 
     }
 
-	private void createLoadingDialog() {
-		mLoadingDialog = new LoadingDialog.Builder(this).build();
-	}
+    private void createLoadingDialog() {
+        mLoadingDialog = new LoadingDialog.Builder(this).build();
+    }
 
-	protected abstract int getLayout();
+    protected abstract int getLayout();
 
     protected abstract void initPresenter();
 
     protected abstract void initView();
 
-	protected abstract void initListener();
+    protected abstract void initListener();
 
-	protected abstract void initData();
+    protected abstract void initData();
 
-    protected P getPresenter(){
+    protected P getPresenter() {
         return mPresenter;
     }
 
-	public void showToast(int resId) {
-		ToastUtils.show(this, resId);
-	}
+    public void showToast(int resId) {
+        ToastUtils.show(this, resId);
+    }
 
-	@Override
-	public void onClick(View v) {
+    @Override
+    public void onClick(View v) {
 
-	}
+    }
 
-	@Override
-	public void toast(String msg) {
-		ToastUtils.show(this, msg);
-	}
+    @Override
+    public void toast(String msg) {
+        ToastUtils.show(this, msg);
+    }
 
-	@Override
-	public void showLoading() {
-		if (mLoadingDialog != null && !mLoadingDialog.isShowing() && !this.isFinishing()) {
-			mLoadingDialog.show();
-		}
-	}
+    @Override
+    public void showLoading() {
+        if (mLoadingDialog != null && !mLoadingDialog.isShowing() && !this.isFinishing()) {
+            mLoadingDialog.show();
+        }
+    }
 
-	@Override
-	public void dismissLoading() {
-		if (mLoadingDialog != null && mLoadingDialog.isShowing() && !this.isFinishing()) {
-			mLoadingDialog.dismiss();
-		}
-	}
+    @Override
+    public void dismissLoading() {
+        if (mLoadingDialog != null && mLoadingDialog.isShowing() && !this.isFinishing()) {
+            mLoadingDialog.dismiss();
+        }
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-	    ButterKnife.unbind(this);
-	    if (mLoadingDialog != null) {
-		    mLoadingDialog.dismiss();
-		    mLoadingDialog = null;
-	    }
-        if(mPresenter != null){
+        ButterKnife.unbind(this);
+        if (mLoadingDialog != null) {
+            mLoadingDialog.dismiss();
+            mLoadingDialog = null;
+        }
+        if (mPresenter != null) {
             mPresenter.detachView();
             mPresenter = null;
         }
-	    System.gc();
+        System.gc();
 
     }
 }

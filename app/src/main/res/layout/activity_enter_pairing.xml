@@ -69,6 +69,7 @@
         app:layout_constraintTop_toBottomOf="@id/rly_pairing_pen_info">
 
         <ImageView
+            android:padding="10dp"
             android:id="@+id/iv_pairing_tips_pen_img"
             android:layout_width="@dimen/dp_112"
             android:layout_height="@dimen/dp_114"
@@ -126,6 +127,7 @@
         android:id="@+id/rv_pairing_pen"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+
         android:layout_marginLeft="@dimen/dp_17"
         android:layout_marginRight="@dimen/dp_17"
         android:layout_marginBottom="@dimen/dp_10"

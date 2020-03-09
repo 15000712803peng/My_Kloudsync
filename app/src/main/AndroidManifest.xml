@@ -1074,7 +1074,6 @@
         <activity
             android:name=".ui.SwitchPenActivity"
             android:launchMode="singleTop"
-            android:name=".pc.ui.ContactDetailActivity"
             android:screenOrientation="portrait" />
 
         <!--
