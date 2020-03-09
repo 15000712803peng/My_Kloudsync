@@ -90,7 +90,7 @@
         android:textSize="15sp"
         android:layout_margin="20dp"
         android:padding="10dp"
-        android:text="扫描电视设备"
+        android:text="@string/scan_tv"
         android:gravity="center"
         android:background="@drawable/bottom_blue_bg"
         android:textColor="@color/white"

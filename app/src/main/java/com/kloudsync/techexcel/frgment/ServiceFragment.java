@@ -83,8 +83,8 @@ import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSIO
 
 
 public class ServiceFragment extends MyFragment implements View.OnClickListener {
-    private boolean isPrepared = false;
 
+    private boolean isPrepared = false;
     private ServiceAdapter2 serviceAdapter1;
     private ListView serviceListView1;
     private ServiceAdapter2 serviceAdapter2;
@@ -671,7 +671,6 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
             case R.id.lin_join:
                 // join meeting
                 joinMeetingBeforeCheckPession();
-
                 break;
             case R.id.lin_schedule:
                 Intent schintent = new Intent(getActivity(), NewMeetingActivity.class);

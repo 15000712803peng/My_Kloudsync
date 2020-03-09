@@ -77,7 +77,6 @@ public class BottomMenuManager implements View.OnClickListener {
         } else {
             bottomMenuPop = null;
             bottomMenuPop = new PopBottomMenu(context,meetingConfig);
-            bottomMenuPop.setShowMeetingRecordPlay(isShowMeetingRecordPlay);
             bottomMenuPop.show(menuIcon,bottomMenuOperationsListener);
             menuIcon.setImageResource(R.drawable.icon_menu_active);
         }

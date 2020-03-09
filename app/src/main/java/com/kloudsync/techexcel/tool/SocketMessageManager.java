@@ -296,6 +296,7 @@ public class SocketMessageManager {
             message.put("meetingId", config.getMeetingId());
             message.put("lessonId", config.getLessionId());
             message.put("status", 1);
+            Log.e("startRecording",message.toString());
 //                    message.put("followToLeave", 1);
             doSendMessage(message.toString());
         } catch (JSONException e) {
@@ -345,6 +346,7 @@ public class SocketMessageManager {
             message.put("microphoneStatus", member.isMuteAudio() ? 3 : 2);
             message.put("cameraStatus", member.isMuteVideo() ? 3 : 2);
             message.put("screenStatus", 0);
+            message.put("client","android");
             doSendMessage(message.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -361,6 +363,7 @@ public class SocketMessageManager {
             message.put("microphoneStatus", isMicroOn? 2 : 3);
             message.put("cameraStatus", isCameraOn ? 2 : 3);
             message.put("screenStatus", 0);
+
             Log.e("startRecording",""+message.toString());
             doSendMessage(message.toString());
         } catch (JSONException e) {
@@ -454,6 +457,17 @@ public class SocketMessageManager {
         }
     }
 
+    public void sendMessage_KickMember(MeetingConfig meetingConfig,MeetingMember member){
+        JSONObject message = new JSONObject();
+        try {
+            message.put("actionType", 30);
+            message.put("meetingId", meetingConfig.getMeetingId());
+            message.put("userId", member.getUserId());
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 1, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", ""),member.getUserId()+""));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private WebSocketClient getClient() {
         socketClient = AppConfig.webSocketClient;
@@ -502,6 +516,21 @@ public class SocketMessageManager {
             e.printStackTrace();
         }
 
+        return message.toString();
+
+    }
+
+    private String wrapperSendMessage(String sessionId, int type, String data,String userList) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("action", "SEND_MESSAGE");
+            message.put("sessionId", sessionId);
+            message.put("type", type);
+            message.put("userList", userList);
+            message.put("data", data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return message.toString();
 
     }

@@ -530,6 +530,7 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
     }
 
     private void requestDetailAndPlay(final SoundTrack soundTrack) {
+
         Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
             @Override
             public SoundtrackDetailData apply(SoundTrack soundtrack) throws Exception {

@@ -193,6 +193,7 @@
             android:layout_height="18dp" />
 
         <TextView
+            android:id="@+id/txt_chat_or_apply"
             android:layout_toRightOf="@id/image_chat"
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"

@@ -14,7 +14,7 @@
     <dimen name="menu_top_margin">52dp</dimen>
     <dimen name="meeting_setting_dialog_width">320dp</dimen>
     <dimen name="meeting_warrn_dialog_width">400dp</dimen>
-    <dimen name="meeting_members_setting_width">160dp</dimen>
+    <dimen name="meeting_members_setting_width">180dp</dimen>
     <dimen name="filter_contact_width">170dp</dimen>
     <dimen name="pop_setting_left_margin">30dp</dimen>
 
@@ -82,7 +82,9 @@
     <dimen name="dp_114">114dp</dimen>
     <dimen name="dp_160">160dp</dimen>
     <dimen name="dp_179">179dp</dimen>
+    <dimen name="dp_180">180dp</dimen>
     <dimen name="dp_181">181dp</dimen>
+    <dimen name="dp_360">181dp</dimen>
 
     <dimen name="sp_11">11sp</dimen>
     <dimen name="sp_12">12sp</dimen>

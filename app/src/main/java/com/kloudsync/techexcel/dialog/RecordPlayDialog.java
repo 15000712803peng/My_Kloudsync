@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
@@ -121,6 +122,10 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     private SyncWebActionsCache webActionsCache;
     private ImageView closeVedioImage;
     private MeetingConfig meetingConfig;
+    private TextView onlyShowTimeText;
+    private ImageView hideControllerImage;
+
+
 
     public void setRecord(Record record) {
         this.record = record;
@@ -156,15 +161,26 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         statusText = view.findViewById(R.id.txt_status);
         centerLoaing = view.findViewById(R.id.layout_center_loading);
         playLayout = view.findViewById(R.id.layout_play);
+        onlyShowTimeText = view.findViewById(R.id.txt_only_show_time);
+        onlyShowTimeText.setOnClickListener(this);
         webActionsCache = SyncWebActionsCache.getInstance(host);
 //        centerStartImage = view.findViewById(R.id.image_center_start);
 //        centerStartImage.setOnClickListener(this);
         seekBar = view.findViewById(R.id.seek_bar);
         seekBar.setOnSeekBarChangeListener(this);
+        seekBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return true;
+            }
+        });
         userList = view.findViewById(R.id.list_user);
+            hideControllerImage = view.findViewById(R.id.txt_hidden);
+        hideControllerImage.setOnClickListener(this);
 
         close = view.findViewById(R.id.close);
         close.setOnClickListener(this);
+
         closeVedioImage = view.findViewById(R.id.image_close_veido);
         closeVedioImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,6 +266,16 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 break;
             case R.id.cancel:
                 dismiss();
+                break;
+            case R.id.txt_only_show_time:
+                if(onlyShowTimeText.getVisibility() == View.VISIBLE){
+                    onlyShowTimeText.setVisibility(View.GONE);
+                    playLayout.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.txt_hidden:
+                onlyShowTimeText.setVisibility(View.VISIBLE);
+                playLayout.setVisibility(View.GONE);
                 break;
 //            case R.id.image_center_start:
 //                if (playHandler != null) {
@@ -348,7 +374,6 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         }).subscribe();
 //        Log.e("check_part","part_size:" + partSize +", total_time:" + totalTime);
     }
-
 
     private List<WebAction> pageActions = new ArrayList<>();
 
@@ -530,9 +555,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 if (centerLoaing.getVisibility() == View.VISIBLE) {
                     centerLoaing.setVisibility(View.GONE);
                 }
-                if (playLayout.getVisibility() != View.VISIBLE) {
-                    playLayout.setVisibility(View.VISIBLE);
-                }
+
                 break;
             case MESSAGE_HIDE_CENTER_LOADING:
                 centerLoaing.setVisibility(View.GONE);
@@ -626,9 +649,9 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 if (channel.getType() == 4) {
                     userVedioManager.saveUserVedios(channel.getUserId() + "", channel.getSectionVOList());
                 }
-
             }
         }
+        userVedioManager.predownLoadUserVedio(host);
         actionsManager.setRecordId(recordDetail.getRecordingId());
         actionsManager.setTotalTime(recordDetail.getDuration());
         return 1;
@@ -704,6 +727,11 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         seekBar.setProgress((int) (playTime / 10));
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);
+        if(onlyShowTimeText.getVisibility() != View.VISIBLE){
+            if(playLayout.getVisibility() != View.VISIBLE){
+                playLayout.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

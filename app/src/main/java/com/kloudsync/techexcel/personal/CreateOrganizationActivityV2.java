@@ -13,12 +13,17 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +36,7 @@ import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.tool.UploadFileTool;
 import com.kloudsync.techexcel.ui.MainActivity;
+import com.kloudsync.techexcel.view.ClearEditText;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
@@ -61,7 +67,10 @@ import io.reactivex.schedulers.Schedulers;
 public class CreateOrganizationActivityV2 extends AppCompatActivity implements View.OnClickListener, SelectCompanyLogoDialog.LogoOptionsListener {
 
     private RelativeLayout backLayout,rl_organization_upload;
-    private EditText et_name;
+    private LinearLayout ll_code;
+    private CheckBox cb_code;
+    private EditText et_name,et_website;
+    private ClearEditText et_code;
     private TextView tv_submit;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -69,6 +78,7 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
     private ImageView selectLogoImage,iv_organization_upload;
     private TextView enterText;
     private boolean fromAppSetting;
+    private boolean mIsShowCode=false;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -251,7 +261,11 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
     private void initView() {
         rl_organization_upload= (RelativeLayout) findViewById(R.id.rl_organization_upload);
         backLayout = (RelativeLayout) findViewById(R.id.layout_back);
+        ll_code = (LinearLayout) findViewById(R.id.ll_code);
+        cb_code = (CheckBox) findViewById(R.id.cb_code);
         et_name = (EditText) findViewById(R.id.et_name);
+        et_website = (EditText) findViewById(R.id.et_website);
+        et_code = (ClearEditText) findViewById(R.id.et_code);
         tv_submit = (TextView) findViewById(R.id.tv_submit);
         titleText = (TextView) findViewById(R.id.tv_title);
         enterText = findViewById(R.id.txt_enter);
@@ -260,17 +274,41 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
         backLayout.setOnClickListener(this);
         tv_submit.setOnClickListener(this);
         rl_organization_upload.setOnClickListener(this);
+        ll_code.setOnClickListener(this);
 
         iv_organization_upload = (ImageView) findViewById(R.id.iv_organization_upload);
         selectLogoImage = (ImageView) findViewById(R.id.image_select_logo);
         selectLogoImage.setOnClickListener(this);
-//        if(fromAppSetting){
-//            tv_submit.setText(R.string.create_and_switch);
-//            enterText.setVisibility(View.GONE);
-//        }else {
-//            tv_submit.setText(R.string.Submit);
-//            enterText.setVisibility(View.VISIBLE);
-//        }
+
+        et_name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                et_code.setText(et_name.getText().toString());
+            }
+        });
+
+        cb_code.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(!b){
+                    et_code.setVisibility(View.GONE);
+                    mIsShowCode=false;
+                }else {
+                    et_code.setVisibility(View.VISIBLE);
+                    mIsShowCode=true;
+                }
+            }
+        });
     }
 
     SelectCompanyLogoDialog logoDialog;
@@ -292,6 +330,17 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
                 break;
             case R.id.txt_enter:
                 requestCreateNewCompanyAndEnterOrInvite(false);
+                break;
+            case R.id.ll_code:
+                if(!mIsShowCode){
+                    et_code.setVisibility(View.VISIBLE);
+                    mIsShowCode=true;
+                    cb_code.setChecked(true);
+                }else {
+                    et_code.setVisibility(View.GONE);
+                    mIsShowCode=false;
+                    cb_code.setChecked(false);
+                }
                 break;
             default:
                 break;
@@ -462,6 +511,29 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
                 JSONObject result = new JSONObject();
                 if(jsonObject.has("RetCode")){
                     if(jsonObject.getString("RetCode").equals("0")){
+                        int shoolId = jsonObject.getJSONObject("RetData").getInt("SchoolID");
+                        JSONObject jsonObjectCode = new JSONObject();
+                        try{
+                            jsonObjectCode.put("companyId", shoolId);
+                            jsonObjectCode.put("companyName", et_name.getText().toString());
+                            jsonObjectCode.put("userId", AppConfig.UserID);
+                            jsonObjectCode.put("webAddress", et_website.getText().toString());
+                            jsonObjectCode.put("enableInviteCode", true);
+                            jsonObjectCode.put("inviteCode", et_name.getText().toString());
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        result = ServiceInterfaceTools.getinstance().syncUpdateCompany(jsonObjectCode);
+                    }
+                }
+                return jsonObject;
+            }
+        }).map(new Function<JSONObject, JSONObject>() {
+            @Override
+            public JSONObject apply(JSONObject jsonObject) throws Exception {
+                JSONObject result = new JSONObject();
+                if(jsonObject.has("RetCode")){
+                    if(jsonObject.getString("RetCode").equals("0")){
                         // 创建公司成功
                         int shoolId = jsonObject.getJSONObject("RetData").getInt("SchoolID");
                         int teamId = jsonObject.getJSONObject("RetData").getInt("FirstTeamID");
@@ -502,6 +574,7 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
 //                            result.put("default_team",jsonArray.getJSONObject(0));
                             defaultTeam = teamSpaceBean;
                             result = ServiceInterfaceTools.getinstance().syncAddOrUpdateUserPreference(getUpdateUserParms());
+
                         }
                     }
                 }

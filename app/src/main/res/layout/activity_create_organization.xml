@@ -46,7 +46,7 @@
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:orientation="horizontal"
-            android:background="@color/white"
+            android:background="@drawable/bg_code_edit"
             android:layout_width="match_parent"
             android:gravity="center_vertical"
             android:layout_height="48dp" >
@@ -71,14 +71,44 @@
                 style="@style/PersonInfoTextContentStyle" />
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:paddingRight="16dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_code_edit"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:layout_height="48dp" >
 
+            <TextView
+                android:layout_marginLeft="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                style="@style/PersonInfoTextLabelStyle"
+                android:text="Website" />
+
+            <EditText
+                android:gravity="right|center_vertical"
+                android:id="@+id/et_website"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textColorHint="#9B9B9B"
+                android:textColor="#3E3F42"
+                android:background="@color/white"
+                android:hint="输入website"
+                style="@style/PersonInfoTextContentStyle" />
+
+        </LinearLayout>
         <LinearLayout
             android:paddingRight="16dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:layout_marginTop="15dp"
             android:gravity="center_vertical"
-            android:background="@color/white"
+            android:background="@drawable/bg_code_edit"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -149,8 +179,49 @@
 
 
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_code"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:layout_height="wrap_content" >
+            <CheckBox
+                android:id="@+id/cb_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
 
+            <TextView
+                android:layout_weight="1"
+                android:layout_marginLeft="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="启用公司邀请码" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="成员可以输入邀请码加入" />
+
+        </LinearLayout>
+
+        <com.kloudsync.techexcel.view.ClearEditText
+            android:id="@+id/et_code"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
+            android:background="@drawable/bg_code_edit"
+            />
     </LinearLayout>
 
 

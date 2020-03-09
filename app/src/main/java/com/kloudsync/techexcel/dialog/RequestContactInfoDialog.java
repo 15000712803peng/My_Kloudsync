@@ -43,6 +43,7 @@ public class RequestContactInfoDialog implements OnClickListener {
     private static final String OK_OPTIONS_CHAT = "CHAT";
     private static final String OK_OPTIONS_OTHER_COMPANY = "OTHER_COMPANY";
     private static final String OK_OPTIONS_SAME_COMPANY = "SAME_COMPANY";
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -51,52 +52,52 @@ public class RequestContactInfoDialog implements OnClickListener {
                 break;
             case R.id.ok:
                 String operation = (String) ok.getTag();
-                if(operation.equals(OK_OPTIONS_CHAT)){
-                    RongIM.getInstance().startConversation(mContext, Conversation.ConversationType.PRIVATE, contactData.getRongCloudId()+"", contactData.getUserName());
+                if (operation.equals(OK_OPTIONS_CHAT)) {
+                    RongIM.getInstance().startConversation(mContext, Conversation.ConversationType.PRIVATE, contactData.getRongCloudId() + "", contactData.getUserName());
 
-                }else if(operation.equals(OK_OPTIONS_OTHER_COMPANY)){
+                } else if (operation.equals(OK_OPTIONS_OTHER_COMPANY)) {
                     Observable.just("Request").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
                         @Override
                         public JSONObject apply(String s) throws Exception {
-                            return ServiceInterfaceTools.getinstance().syncApplyFriend(contactData.getUserId(), AppConfig.SchoolID);
+                            return ServiceInterfaceTools.getinstance().syncApplyChat(contactData.getUserId(), AppConfig.SchoolID);
                         }
                     }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
                         @Override
                         public void accept(JSONObject jsonObject) throws Exception {
-                            if(jsonObject.has("code")){
+                            if (jsonObject.has("code")) {
                                 int code = jsonObject.getInt("code");
-                                if(code == 0){
+                                if (code == 0) {
                                     sendHelloFriendMessage();
-                                    RongIM.getInstance().startConversation(mContext, Conversation.ConversationType.PRIVATE, contactData.getRongCloudId()+"", contactData.getUserName());
-
+                                    RongIM.getInstance().startConversation(mContext, Conversation.ConversationType.PRIVATE, contactData.getRongCloudId() + "", contactData.getUserName());
                                 }
                             }
                         }
                     }).subscribe();
 
-                }else if(operation.equals(OK_OPTIONS_SAME_COMPANY)){
+                } else if (operation.equals(OK_OPTIONS_SAME_COMPANY)) {
                     Observable.just("Request").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
                         @Override
                         public JSONObject apply(String s) throws Exception {
-                            return ServiceInterfaceTools.getinstance().syncApplyFriend(contactData.getUserId(), AppConfig.SchoolID);
+                            return ServiceInterfaceTools.getinstance().syncAddContact(contactData.getUserId(), AppConfig.SchoolID);
                         }
                     }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
                         @Override
                         public void accept(JSONObject jsonObject) throws Exception {
-                            if(jsonObject.has("code")){
+                            if (jsonObject.has("code")) {
                                 int code = jsonObject.getInt("code");
-                                if(code == 0){
+                                if (code == 0) {
                                     sendHelloFriendMessage();
-                                    RongIM.getInstance().startConversation(mContext, Conversation.ConversationType.PRIVATE, contactData.getRongCloudId()+"", contactData.getUserName());
-                                }else if(code == 37){
+                                    RongIM.getInstance().startConversation(mContext, Conversation.ConversationType.PRIVATE, contactData.getRongCloudId() + "", contactData.getUserName());
+                                } else if (code == 37) {
                                     String msg = jsonObject.getString("msg");
-                                    if(TextUtils.isEmpty(msg)){
+                                    if (TextUtils.isEmpty(msg)) {
                                         msg = mContext.getString(R.string.operate_failure);
                                     }
                                     new CenterToast.Builder(mContext).setSuccess(false).setMessage(msg).create();
                                 }
                             }
                         }
+
                     }).subscribe();
                 }
                 dialog.dismiss();
@@ -107,36 +108,36 @@ public class RequestContactInfoDialog implements OnClickListener {
         }
     }
 
-    private void sendHelloFriendMessage(){
+    private void sendHelloFriendMessage() {
         HelloFriendMessage friendMsg = new HelloFriendMessage();
-        friendMsg.setRongCloudId(contactData.getRongCloudId() +"");
+        friendMsg.setRongCloudId(contactData.getRongCloudId() + "");
         MessageTool.sendMessage(friendMsg, friendMsg.getRongCloudId(), Conversation.ConversationType.PRIVATE, new IRongCallback.ISendMediaMessageCallback() {
             @Override
             public void onProgress(io.rong.imlib.model.Message message, int i) {
-                Log.e("sendHello","onProgress");
+                Log.e("sendHello", "onProgress");
 
             }
 
             @Override
             public void onCanceled(io.rong.imlib.model.Message message) {
-                Log.e("sendHello","onCanceled");
+                Log.e("sendHello", "onCanceled");
 
             }
 
             @Override
             public void onAttached(io.rong.imlib.model.Message message) {
-                Log.e("sendHello","onAttached");
+                Log.e("sendHello", "onAttached");
 
             }
 
             @Override
             public void onSuccess(io.rong.imlib.model.Message message) {
-                Log.e("sendHello","onSuccess");
+                Log.e("sendHello", "onSuccess");
             }
 
             @Override
             public void onError(io.rong.imlib.model.Message message, RongIMClient.ErrorCode errorCode) {
-                Log.e("sendHello","onError:" + message.getContent() + ",errorcode:" + errorCode);
+                Log.e("sendHello", "onError:" + message.getContent() + ",errorcode:" + errorCode);
             }
         });
     }
@@ -183,7 +184,7 @@ public class RequestContactInfoDialog implements OnClickListener {
     }
 
     public void show(RequestContactData contactData, String phone) {
-        Log.e("RequestContactInfoDialog","dialog_show:" + 2);
+        Log.e("RequestContactInfoDialog", "dialog_show:" + 2);
         this.contactData = contactData;
         if (contactData.getAvatarUrl() != null) {
             contactImage.setImageURI(Uri.parse(contactData.getAvatarUrl()));
@@ -203,20 +204,34 @@ public class RequestContactInfoDialog implements OnClickListener {
         }
     }
 
-    private void fillViewByContactData(RequestContactData contactData){
-        if(contactData.isIfMyContact()){
+    private void fillViewByContactData(RequestContactData contactData) {
+        if (contactData.isIfMyContact()) {
             promtText.setText(mContext.getString(R.string.prompt_is_my_personal_contact));
             ok.setText(mContext.getString(R.string.mtChat));
             ok.setTag(OK_OPTIONS_CHAT);
-        }else {
-            if(contactData.isIfInSameCompany()){
-                promtText.setText(mContext.getString(R.string.prompt_is_in_same_company));
-                ok.setText("申请聊天");
-                ok.setTag(OK_OPTIONS_SAME_COMPANY);
-            }else {
-                promtText.setText(mContext.getString(R.string.prompt_is_in_other_company));
-                ok.setText(mContext.getString(R.string.satOk));
-                ok.setTag(OK_OPTIONS_OTHER_COMPANY);
+        } else {
+            if (contactData.isIfInSameCompany()) {
+                if (contactData.isIfMyContact()) {
+                    promtText.setText(mContext.getString(R.string.prompt_is_my_personal_contact));
+                    ok.setText(mContext.getString(R.string.mtChat));
+                    ok.setTag(OK_OPTIONS_CHAT);
+                } else {
+                    promtText.setText(mContext.getString(R.string.prompt_is_in_same_company));
+                    ok.setText("申请聊天");
+                    ok.setTag(OK_OPTIONS_SAME_COMPANY);
+                }
+
+            } else {
+                if (contactData.isIfMyContact()) {
+                    promtText.setText(mContext.getString(R.string.prompt_is_my_personal_contact));
+                    ok.setText(mContext.getString(R.string.mtChat));
+                    ok.setTag(OK_OPTIONS_CHAT);
+                } else {
+                    promtText.setText(mContext.getString(R.string.prompt_is_in_other_company));
+                    ok.setText(mContext.getString(R.string.satOk));
+                    ok.setTag(OK_OPTIONS_OTHER_COMPANY);
+                }
+
             }
         }
 

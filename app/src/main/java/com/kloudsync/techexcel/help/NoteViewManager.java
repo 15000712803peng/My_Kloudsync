@@ -3,6 +3,7 @@ package com.kloudsync.techexcel.help;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,6 +40,7 @@ import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
+import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -79,6 +81,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     private List<UserNotes> users;
     private MeetingConfig meetingConfig;
     private XWalkView noteWeb;
+    private LinearLayout noteContainer;
 
     public void setMeetingConfig(MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
@@ -92,22 +95,26 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         if(this.user == null){
             return;
         }
+
         UserNotes user = users.get(position);
         Log.e("onItemSelected","position:" + position + ",user:" + user);
         if (user.getUserId().equals(this.user.getUserId())) {
             Log.e("onItemSelected", "the same");
             return;
         }
+
         changeUser(user);
     }
 
-    public synchronized void setContent(Context context, final View view, Note note, XWalkView noteWeb,MeetingConfig meetingConfig) {
+    public synchronized void setContent(Context context, final View view, Note note, XWalkView noteWeb,MeetingConfig meetingConfig,LinearLayout noteContainer) {
+
         this.meetingConfig = meetingConfig;
         this.context = context;
         noteList = view.findViewById(R.id.list_note);
         backImage = view.findViewById(R.id.image_back);
         this.noteWeb = noteWeb;
         noteWeb.setVisibility(View.VISIBLE);
+        adjustOritation(context,noteContainer);
         backImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,6 +130,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         usersSpinner.setOnSpinnerItemSelectedListener(this);
         this.note = note;
         initWeb();
+
         downLoadNotePageAndShow(note);
         if(meetingConfig.getDocument() == null){
             view.setVisibility(View.GONE);
@@ -408,6 +416,13 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
 
     private void downLoadNotePageAndShow(Note note) {
         if(note == null || note.getDocumentPages() == null || note.getDocumentPages().size() <= 0){
+            if(!TextUtils.isEmpty(note.getLocalFileID()) && note.getLocalFileID().contains(".")){
+                EventShowNotePage eventShowNotePage = new EventShowNotePage();
+                eventShowNotePage.setNoteId(note.getNoteID());
+                eventShowNotePage.setAttachmendId(note.getAttachmentID());
+                eventShowNotePage.setNotePage(note.getDocumentPages().get(0));
+                EventBus.getDefault().post(eventShowNotePage);
+            }
             return;
         }
         Observable.just(note).observeOn(Schedulers.io()).doOnNext(new Consumer<Note>() {
@@ -570,12 +585,14 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
 
     }
 
+
     private void requestNoteToShow(final int noteId){
         Observable.just(noteId).observeOn(Schedulers.io()).map(new Function<Integer, EventNote>() {
             @Override
             public EventNote apply(Integer integer) throws Exception {
                 return MeetingServiceTools.getInstance().syncGetNoteByNoteId(noteId);
             }
+
         }).doOnNext(new Consumer<EventNote>() {
             @Override
             public void accept(EventNote note) throws Exception {
@@ -591,12 +608,14 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }).subscribe();
     }
 
-    public void followShowNote(Context context, final View view,XWalkView noteWeb,final int noteId,MeetingConfig meetingConfig,ImageView menuIcon){
+    public void followShowNote(Context context, final View view,XWalkView noteWeb,final int noteId,MeetingConfig meetingConfig,ImageView menuIcon,LinearLayout noteContainer){
+
         this.meetingConfig = meetingConfig;
         this.context = context;
         noteList = view.findViewById(R.id.list_note);
         backImage = view.findViewById(R.id.image_back);
         this.noteWeb = noteWeb;
+        adjustOritation(context,noteContainer);
 //        noteWeb.setVisibility(View.VISIBLE);
         backImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -606,13 +625,13 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
                 instance = null;
             }
         });
+
         pageCache = DocumentPageCache.getInstance(context);
         noteList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         usersSpinner = view.findViewById(R.id.spinner_users);
         usersSpinner.setOnSpinnerItemSelectedListener(this);
         initWeb();
         requestNoteToShow(noteId);
-
         if(meetingConfig.getType() == MeetingType.MEETING){
 
         }else {
@@ -628,6 +647,37 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
 
     public void getNotePageActionsToShow(MeetingConfig meetingConfig){
         PageActionsAndNotesMgr.requestActionsForNotePage(meetingConfig,note);
+    }
+
+    private void adjustOritation(Context activity,LinearLayout noteContainer){
+        this.noteContainer = noteContainer;
+        LinearLayout.LayoutParams webParams = (LinearLayout.LayoutParams) noteWeb.getLayoutParams();
+        LinearLayout userLayout = noteContainer.findViewById(R.id.layout_note_users);
+        if(Tools.isOrientationPortrait((Activity) activity)){
+            noteContainer.setOrientation(LinearLayout.VERTICAL);
+            ViewGroup.LayoutParams p = userLayout.getLayoutParams();
+            p.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            p.height = Tools.dip2px(activity,280);
+            userLayout.setLayoutParams(p);
+            webParams.height = 0;
+            webParams.weight = 1;
+            webParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            noteWeb.setLayoutParams(webParams);
+            noteContainer.removeAllViews();
+            noteContainer.addView(noteWeb);
+            noteContainer.addView(userLayout);
+
+        }else {
+            noteContainer.setOrientation(LinearLayout.HORIZONTAL);
+            ViewGroup.LayoutParams p = userLayout.getLayoutParams();
+            p.height = LinearLayout.LayoutParams.MATCH_PARENT;
+            p.width = Tools.dip2px(activity,230);
+            userLayout.setLayoutParams(p);
+            webParams.width = 0;
+            webParams.weight = 1;
+            webParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
+            noteWeb.setLayoutParams(webParams);
+        }
     }
 
 

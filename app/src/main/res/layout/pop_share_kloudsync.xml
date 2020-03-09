@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:padding="18dp"
-                android:text="Share"
+                android:text="@string/share_kloudsync"
                 android:textColor="#ff999999"
                 android:textSize="14sp" />
 
@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
-                    android:text="Copy Link"
+                    android:text="@string/copy_link"
                     android:textColor="#666666"
                     android:textSize="14sp" />
 
@@ -86,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
-                    android:text="Wechat"
+                    android:text="@string/wechat"
                     android:textColor="#666666"
                     android:textSize="14sp" />
 
@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
-                    android:text="Moment"
+                    android:text="@string/moment"
                     android:textColor="#666666"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -163,7 +163,7 @@
                 android:layout_marginBottom="15dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="扫描二维码，下载App"
+                android:text="@string/scan_to_download_app"
                 android:textColor="#ff999999"
                 android:textSize="12sp"
                 />

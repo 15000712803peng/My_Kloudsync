@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.dialog;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +10,12 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventKickOffMember;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.config.AppConfig;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by tonyan on 2019/12/20.
@@ -22,7 +26,7 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
     private Context context;
 
     private MeetingMember meetingMember;
-    private TextView setAuditor,setMainMember;
+    private TextView setAuditor,setMainMember,kickOffMember;
     private MeetingConfig meetingConfig;
     private View mView;
 
@@ -50,6 +54,8 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
         setMainMember = mView.findViewById(R.id.txt_setting_main_members);
         setMainMember.setOnClickListener(this);
         setAuditor.setOnClickListener(this);
+        kickOffMember = mView.findViewById(R.id.txt_kick_off);
+        kickOffMember.setOnClickListener(this);
         setContentView(mView);
         initWindow();
     }
@@ -70,11 +76,22 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
         if((meetingMember.getUserId() +"").equals(AppConfig.UserID)){
             setMainMember.setVisibility(View.GONE);
         }
-
+        if(meetingConfig.getMeetingHostId().equals(meetingMember.getUserId()+"")){
+            // 操作的成员是HOST
+            kickOffMember.setVisibility(View.GONE);
+        }else {
+            // 不是HOST，如果自己是HOST
+            if(AppConfig.UserID.equals(meetingConfig.getMeetingHostId())){
+                kickOffMember.setVisibility(View.VISIBLE);
+            }else {
+                kickOffMember.setVisibility(View.GONE);
+            }
+        }
         mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int popupHeight = mView.getMeasuredHeight();
-        int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_160);
+        int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_180);
         showAsDropDown(view,xoff,-popupHeight);
+
     }
 
 
@@ -94,6 +111,14 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
                 }
                 dismiss();
                 break;
+            case R.id.txt_kick_off:
+                if(meetingMember != null && onMemberSettingChanged != null){
+                    Log.e("check_post_kick_off","post_3");
+                    EventKickOffMember kickOffMember = new EventKickOffMember();
+                    kickOffMember.setMeetingMember(meetingMember);
+                    EventBus.getDefault().post(kickOffMember);
+                }
+                dismiss();
             default:
                 break;
         }

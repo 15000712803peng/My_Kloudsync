@@ -116,10 +116,11 @@ public class PageActionsAndNotesMgr {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
-                JSONObject jsonObject = ConnectService.submitDataByJson(AppConfig.URL_MEETING_BASE +
-                        "Lesson/save_instant_lesson?lessonID=" + config.getLessionId(), null);
-                Log.e("save_changed", "jsonObject:" + jsonObject);
-
+                String url=AppConfig.URL_MEETING_BASE +
+                        "lesson/save_instant_lesson?lessonId=" + config.getLessionId();
+                JSONObject jsonObject = ConnectService.submitDataByJson(url, null);
+                Log.e("startRecording", url+"  "+jsonObject.toString());
+               //https://wss.peertime.cn/MeetingServer/lesson/save_instant_lesson?lessonId=1950010
             }
         }).start(ThreadManager.getManager());
     }

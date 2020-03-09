@@ -13,6 +13,7 @@ import com.ub.techexcel.bean.SectionVO;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,7 +32,6 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
 
     private SoundtrackAudioManager(Context context) {
         this.context = context;
-        audioPlayer = new MediaPlayer();
 
     }
 
@@ -49,11 +49,19 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     public void setSoundtrackAudio(SoundtrackMediaInfo mediaInfo) {
         Log.e("check_play","mediaInfo:" + mediaInfo);
         this.mediaInfo = mediaInfo;
+        if(mediaInfo == null){
+            return;
+        }
         prepareAudioAndPlay(mediaInfo);
+    }
 
+    public SoundtrackMediaInfo getMediaInfo() {
+        return mediaInfo;
     }
 
     public void prepareAudioAndPlay(SoundtrackMediaInfo audioData) {
+
+        audioPlayer = new MediaPlayer();
         try {
 
             try {
@@ -68,7 +76,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
             audioPlayer.setOnErrorListener(this);
             Log.e("check_play","set_data_source:" + audioData.getAttachmentUrl());
             audioPlayer.reset();
-            audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
+            audioPlayer.setDataSource(context, Uri.parse(URLDecoder.decode(audioData.getAttachmentUrl(),"UTF-8")));
             audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
                 audioPlayer.prepareAsync();
@@ -102,6 +110,9 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        if(mediaInfo == null){
+            return;
+        }
         Log.e("check_play","onPrepared");
         if (mediaInfo != null) {
             Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());
@@ -122,6 +133,9 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public boolean isPlaying(){
+        if(mediaInfo == null){
+            return false;
+        }
         if(audioPlayer != null){
             return audioPlayer.isPlaying();
         }
@@ -130,6 +144,9 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public long getPlayTime(){
+        if(mediaInfo == null){
+            return 0;
+        }
         if(audioPlayer == null){
             return  0;
         }
@@ -137,6 +154,9 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public long getTotalTime(){
+        if(mediaInfo == null){
+            return 0;
+        }
         return audioPlayer.getDuration();
     }
 
@@ -154,10 +174,16 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public long getDuration(){
+        if(mediaInfo == null){
+            return 0;
+        }
         return audioPlayer.getDuration();
     }
 
     public void pause(){
+        if(mediaInfo == null){
+            return;
+        }
         if(audioPlayer != null){
             Log.e("vedio_check","pause_begin");
             audioPlayer.pause();
@@ -166,12 +192,18 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
     }
 
     public void restart(){
+        if(mediaInfo == null){
+            return;
+        }
         if(audioPlayer != null){
             audioPlayer.start();
         }
     }
 
     public void seekTo(int time){
+        if(mediaInfo == null){
+            return;
+        }
         if(audioPlayer != null){
             audioPlayer.seekTo(time);
             Log.e("vedio_check","seek_to,time:" + time);

@@ -1438,7 +1438,7 @@ public class ServiceInterfaceTools {
                 try {
                     JSONObject jsonObject = new JSONObject();
                     JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
-                    Log.e("syncing---", url + "      " + jsonObject.toString() + "  " + returnjson.toString());
+                    Log.e("syncing---tt", url + "      " + jsonObject.toString() + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
                         Message msg3 = Message.obtain();
                         msg3.what = code;
@@ -3134,6 +3134,15 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncUpdateCompany(JSONObject params) {
+        String url = AppConfig.URL_MEETING_BASE
+                + "company/update_company";
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncUpdateCompany", "url:" + url + ",params:" + params + ",response:" + response);
+        return response;
+
+    }
+
     public JSONObject syncLoginRequst(String name, String password, int role, String deviceID, int deviceType, String DeviceName) {
         String url = AppConfig.URL_PUBLIC + "?login=" + name + "&password=" + password + "&role=" + role +
                 "&deviceID=" + deviceID + "&deviceType= " + deviceType + "&DeviceName=" + DeviceName;
@@ -3245,6 +3254,37 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncApplyChat(long contactId,long companyId){
+        String url = AppConfig.URL_MEETING_BASE + "company_contact/apply_chat?contactId=" + contactId+"&companyId=" + companyId;
+        JSONObject params = new JSONObject();
+        try {
+            params.put("contactId",contactId);
+            params.put("companyId",companyId);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncApplyChat", "url:" + url + ",params:" + params + ",response:" + response);
+        return response;
+    }
+
+    public JSONObject syncAddContact(long contactId,long companyId){
+        String url = AppConfig.URL_MEETING_BASE + "company_contact/add_contact?contactId=" + contactId+"&companyId=" + companyId;
+        JSONObject params = new JSONObject();
+        try {
+            params.put("contactId",contactId);
+            params.put("companyId",companyId);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncAddContact", "url:" + url + ",params:" + params + ",response:" + response);
+        return response;
+    }
 
 
 }

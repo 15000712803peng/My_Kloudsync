@@ -52,14 +52,31 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_marginLeft="10dp"
+            <LinearLayout
+                android:gravity="bottom"
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Kloudsync"
-                android:textColor="@color/skyblue"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Kloudsync"
+                    android:textColor="@color/skyblue"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_meeting_id"
+                    android:layout_marginLeft="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/darkblack"
+                    android:textSize="16sp"
+                    />
+            </LinearLayout>
+
 
             <TextView
                 android:layout_marginLeft="10dp"
@@ -253,6 +270,78 @@
             android:layout_height="match_parent"></FrameLayout>
 
     </RelativeLayout>
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:id="@+id/layout_note"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/layout_note_container"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <org.xwalk.core.XWalkView
+                android:id="@+id/web_note"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"></org.xwalk.core.XWalkView>
+
+            <View
+                android:background="@color/divider_line"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"/>
+
+            <LinearLayout
+                android:id="@+id/layout_note_users"
+                android:orientation="vertical"
+                android:layout_width="260dp"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:padding="2dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:background="@drawable/bg_edit_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <com.kloudsync.techexcel.view.spinner.NiceSpinner
+                        app:popupTextAlignment="0"
+                        android:visibility="gone"
+                        android:id="@+id/spinner_users"
+                        android:layout_width="match_parent"
+                        android:hint="笔记"
+                        android:textSize="13dp"
+                        android:textColorHint="#ff9b9b9b"
+                        android:textColor="@color/brunette"
+                        android:background="@drawable/bg_edit_line"
+                        android:layout_height="32dp" />
+                </RelativeLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_marginTop="6dp"
+                    android:id="@+id/list_note"
+                    android:layout_marginRight="12dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/image_back"
+            android:padding="3dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/arrow_back2"
+            android:layout_width="40dp"
+            android:layout_height="30dp" />
+
+    </RelativeLayout>
+
 
 
     <RelativeLayout
@@ -455,76 +544,6 @@
     </RelativeLayout>
 
 
-    <RelativeLayout
-        android:orientation="horizontal"
-        android:background="@color/white"
-        android:id="@+id/layout_note"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <org.xwalk.core.XWalkView
-                android:id="@+id/web_note"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"></org.xwalk.core.XWalkView>
-
-            <View
-                android:background="@color/divider_line"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"/>
-
-            <LinearLayout
-                android:id="@+id/layout_note_users"
-                android:orientation="vertical"
-                android:layout_width="260dp"
-                android:layout_height="match_parent">
-
-                <RelativeLayout
-                    android:padding="2dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:background="@drawable/bg_edit_line"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <com.kloudsync.techexcel.view.spinner.NiceSpinner
-                        app:popupTextAlignment="0"
-                        android:visibility="gone"
-                        android:id="@+id/spinner_users"
-                        android:layout_centerInParent="true"
-                        android:layout_width="match_parent"
-                        android:hint="笔记"
-                        android:textSize="13dp"
-                        android:textColorHint="#ff9b9b9b"
-                        android:textColor="@color/brunette"
-                        android:background="@drawable/bg_edit_line"
-                        android:layout_height="32dp" />
-                </RelativeLayout>
-
-                <android.support.v7.widget.RecyclerView
-                    android:layout_marginTop="6dp"
-                    android:id="@+id/list_note"
-                    android:layout_marginRight="12dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
-            </LinearLayout>
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/image_back"
-            android:padding="3dp"
-            android:layout_margin="8dp"
-            android:src="@drawable/arrow_back2"
-            android:layout_width="40dp"
-            android:layout_height="30dp" />
-
-    </RelativeLayout>
 
     <ImageView
         android:id="@+id/menu"

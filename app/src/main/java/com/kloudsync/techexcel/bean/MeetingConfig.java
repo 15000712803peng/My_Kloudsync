@@ -1,5 +1,8 @@
 package com.kloudsync.techexcel.bean;
 
+import android.text.TextUtils;
+import android.util.Log;
+
 import com.ub.techexcel.bean.AgoraMember;
 
 import org.greenrobot.eventbus.EventBus;
@@ -7,12 +10,13 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by tonyan on 2019/11/19.
  */
 
-public class MeetingConfig{
+public class MeetingConfig {
     private int type;
     private String meetingId;
     private int fileId;
@@ -30,29 +34,29 @@ public class MeetingConfig{
     private String presenterSessionId;
     private boolean docModifide;
     private String notifyUrl;
-    private List<MeetingMember> meetingMembers = new ArrayList<>();
-    private List<MeetingMember> meetingAuditor = new ArrayList<>();
-    private List<MeetingMember> meetingInvitors = new ArrayList<>();
-    private String meetingHostId ="";
+    private CopyOnWriteArrayList<MeetingMember> meetingMembers = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<MeetingMember> meetingAuditor = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<MeetingMember> meetingInvitors = new CopyOnWriteArrayList<>();
+    private String meetingHostId = "";
     private String agoraChannelId;
     private String presenterId = "";
-    private List<AgoraMember> agoraMembers = new ArrayList<>();
+    private CopyOnWriteArrayList<AgoraMember> agoraMembers = new CopyOnWriteArrayList<>();
     private boolean fromMeeting;
     private int mode;
-    private String  currentMaxVideoUserId;
+    private String currentMaxVideoUserId;
     private int shareScreenUid;
     private JSONObject currentLinkProperty;
     private int spaceId;
     private DocumentPage currentDocumentPage;
-	private List<MeetingDocument> allDocuments;
+    private List<MeetingDocument> allDocuments;
 
-	public List<MeetingDocument> getAllDocuments() {
-		return allDocuments;
-	}
+    public List<MeetingDocument> getAllDocuments() {
+        return allDocuments;
+    }
 
-	public void setAllDocuments(List<MeetingDocument> allDocuments) {
-		this.allDocuments = allDocuments;
-	}
+    public void setAllDocuments(List<MeetingDocument> allDocuments) {
+        this.allDocuments = allDocuments;
+    }
 
     public String getCurrentMaxVideoUserId() {
         return currentMaxVideoUserId;
@@ -114,17 +118,31 @@ public class MeetingConfig{
         return agoraMembers;
     }
 
-    public void setAgoraMembers(List<AgoraMember> agoraMembers) {
-        this.agoraMembers = agoraMembers;
-    }
+    public void addAgoraMember(AgoraMember member) {
+        int index = agoraMembers.indexOf(member);
+        if (index >= 0) {
+            Log.e("MeetingConfig","refresh_agora_member_data:" + member);
+            AgoraMember _member = agoraMembers.get(index);
+            if (member.getSurfaceView() != null) {
+                _member.setSurfaceView(member.getSurfaceView());
+            }
 
-    public void addAgoraMember(AgoraMember member){
-        if(!agoraMembers.contains(member)){
+            if (!TextUtils.isEmpty(member.getUserName())) {
+                _member.setUserName(member.getUserName());
+            }
+
+            if (!TextUtils.isEmpty(member.getIconUrl())) {
+                _member.setIconUrl(member.getIconUrl());
+            }
+            _member.setMuteVideo(member.isMuteVideo());
+            _member.setMuteAudio(member.isMuteAudio());
+        } else {
+            Log.e("MeetingConfig","add_agora_member:" + member);
             agoraMembers.add(member);
         }
     }
 
-    public void deleteAgoraMember(AgoraMember member){
+    public void deleteAgoraMember(AgoraMember member) {
         agoraMembers.remove(member);
     }
 
@@ -133,7 +151,7 @@ public class MeetingConfig{
     }
 
     public void setPresenterId(String presenterId) {
-        if(!this.presenterId.equals(presenterId)){
+        if (!this.presenterId.equals(presenterId)) {
             EventPresnterChanged presnterChanged = new EventPresnterChanged();
             presnterChanged.setPresenterId(presenterId);
             EventBus.getDefault().post(presnterChanged);
@@ -184,10 +202,11 @@ public class MeetingConfig{
     }
 
     public synchronized void setMeetingMembers(List<MeetingMember> meetingMembers) {
+
         try {
             this.meetingMembers.clear();
             this.meetingMembers.addAll(meetingMembers);
-        }catch (Exception e){
+        } catch (Exception e) {
         }
 
     }
@@ -337,7 +356,7 @@ public class MeetingConfig{
         public static final int BE_INVITED = 4;
     }
 
-    public void reset(){
+    public void reset() {
         this.meetingMembers.clear();
         this.meetingAuditor.clear();
     }

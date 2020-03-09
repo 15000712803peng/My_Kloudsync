@@ -92,15 +92,20 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
 
         SurfaceView target = member.getSurfaceView();
         holderView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
-        if (!member.isMuteVideo() && target != null) {
-            target.setVisibility(View.VISIBLE);
-            stripSurfaceView(target);
-            Log.e("FullAgoraCameraAdapter", "add_surface_view:" + framelayoutHeight);
-            holderView.addView(target, 0, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
+        if (!member.isMuteVideo()) {
+            if(target != null){
+                target.setVisibility(View.VISIBLE);
+                stripSurfaceView(target);
+                Log.e("FullAgoraCameraAdapter", "add_surface_view:" + framelayoutHeight);
+                holderView.addView(target, 0, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
+            }
+
         } else {
-            Log.e("FullAgoraCameraAdapter", "surface_view_gone");
-            stripSurfaceView(target);
-            target.setVisibility(View.INVISIBLE);
+            if(target != null){
+                Log.e("FullAgoraCameraAdapter", "surface_view_gone");
+                stripSurfaceView(target);
+                target.setVisibility(View.INVISIBLE);
+            }
         }
 
         if (TextUtils.isEmpty(member.getUserName())) {
