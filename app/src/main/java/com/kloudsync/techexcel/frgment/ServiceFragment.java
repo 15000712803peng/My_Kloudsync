@@ -37,6 +37,7 @@ import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeeti
 import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.ModifyMeetingIdDialog;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.help.StartMeetingDialog;
@@ -44,6 +45,7 @@ import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.school.SelectSchoolActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.tool.StringUtils;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.mining.app.zxing.MipcaActivityCapture;
@@ -64,6 +66,7 @@ import com.ub.techexcel.tools.MeetingMoreOperationPopup;
 import com.ub.techexcel.tools.MenuEventPopup;
 import com.ub.techexcel.tools.Tools;
 
+import org.feezu.liuli.timeselector.Utils.TextUtil;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -331,6 +334,18 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                     intent5.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
                     intent5.putExtra("isStartCourse", true);
                     startActivity(intent5);
+                    break;
+                case 0x1006:
+                    int retcode = (int) msg.obj;
+                    if (retcode == -1) {
+                        Toast.makeText(getActivity(), getResources().getString(R.string.classroomid_occupied), Toast.LENGTH_LONG).show();
+                    } else {
+                        getRoomID();
+                    }
+                    break;
+                case 0x1007:
+                    String retdate = (String) msg.obj;
+                    AppConfig.ClassRoomID = retdate;
                     break;
                 default:
                     break;
@@ -665,8 +680,19 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 startActivity(searchIntnt);
                 break;
             case R.id.lin_myroom:
+                if(TextUtil.isEmpty(AppConfig.ClassRoomID)){
+                    ModifyMeetingIdDialog modifyMeetingIdDialog= new ModifyMeetingIdDialog(getActivity(),ModifyMeetingIdDialog.CREATE);
+                    modifyMeetingIdDialog.setModifyClickListner(new ModifyMeetingIdDialog.OnModifyClickListner() {
+                        @Override
+                        public void modifyClick(String newId) {
+                            UpdateClassRoomID(newId);
+                        }
+                    });
+                    modifyMeetingIdDialog.show();
+                }else {
+                    startMeetingBeforeCheckPession();
+                }
 
-                startMeetingBeforeCheckPession();
                 break;
             case R.id.lin_join:
                 // join meeting
@@ -903,4 +929,67 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         showStartMeetingDialog();
     }
 
+    private void UpdateClassRoomID(final String classRoomId) {
+
+        String regex = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{3,12}$";
+
+        if(TextUtils.isEmpty(classRoomId)){
+            Toast.makeText(getActivity(),"会议id不能是空",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if((classRoomId.length() < 3)){
+            Toast.makeText(getActivity(),"会议id的长度需要大于等于3",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(!StringUtils.hasChar(classRoomId)){
+            Toast.makeText(getActivity(),"会议id至少包含一个字母",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject js = new JSONObject();
+                    js.put("classroomID", classRoomId);
+                    JSONObject jsonObject = com.ub.techexcel.service.ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/UpdateClassRoomID?classRoomID=" + classRoomId, js);
+                    Log.e("getClassRoomLessonID2", jsonObject.toString()); //{"RetCode":0,"ErrorMessage":null,"DetailMessage":null,"RetData":2477}
+                    int retCode = jsonObject.getInt("RetCode");
+                    Message msg = Message.obtain();
+                    msg.what = 0x1006;
+                    msg.obj = retCode;
+                    handler.sendMessage(msg);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+
+    }
+
+    private void getRoomID() {
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomID");
+                    Log.e("getClassRoomLessonID2", jsonObject.toString()); //{"RetCode":0,"ErrorMessage":null,"DetailMessage":null,"RetData":2477}
+                    int retCode = jsonObject.getInt("RetCode");
+                    switch (retCode) {
+                        case 0:
+                            String retdate = jsonObject.getString("RetData");
+                            Message msg = Message.obtain();
+                            msg.what = 0x1007;
+                            msg.obj = retdate;
+                            handler.sendMessage(msg);
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
 }

@@ -935,6 +935,8 @@ Please input the cell phone number to add the contact
     <string name="wechat">Wechat</string>
     <string name="moment">Moment</string>
     <string name="scan_to_download_app">Scan QR code to download app</string>
+    <string name="create_meeting_id_now">Now create your meeting ID</string>
+    <string name="need_meeting_id_to_meet">You need a meeting ID to meet</string>
 
     <string-array name="time_duration">
         <item>15mininutes</item>

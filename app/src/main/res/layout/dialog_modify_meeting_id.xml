@@ -7,6 +7,7 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/tv_meeting_title"
         android:layout_marginTop="17dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,13 +19,15 @@
         android:textSize="16sp" />
 
     <TextView
+        android:id="@+id/tv_meeting_tip"
         android:visibility="gone"
-        android:layout_marginBottom="22dp"
-        android:textSize="14dp"
+        android:layout_marginTop="6dp"
+        android:textSize="14sp"
         android:layout_centerVertical="true"
         android:gravity="center"
         android:layout_gravity="center_horizontal"
-        android:text="@string/modify_meeting_id"
+        android:text="现在创建您的会议ID"
+        android:textColor="#3d78fb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

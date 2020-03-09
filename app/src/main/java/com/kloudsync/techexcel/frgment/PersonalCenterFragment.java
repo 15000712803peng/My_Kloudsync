@@ -441,7 +441,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
     ModifyMeetingIdDialog modifyMeetingIdDialog;
     private void modifyKlassRoomID() {
         if (modifyMeetingIdDialog == null) {
-            modifyMeetingIdDialog = new ModifyMeetingIdDialog(getActivity());
+            modifyMeetingIdDialog = new ModifyMeetingIdDialog(getActivity(),ModifyMeetingIdDialog.MODIFY);
             modifyMeetingIdDialog.setModifyClickListner(this);
         }
         modifyMeetingIdDialog.setCurrentMeetingId(tv_roomid.getText().toString().trim());
