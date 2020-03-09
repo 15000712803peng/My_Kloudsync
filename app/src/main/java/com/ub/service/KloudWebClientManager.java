@@ -80,7 +80,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
 
     private synchronized void reconnect() {
         if (this.uri != null) {
-            Log.e("KloundWebClientManager", "reconnect");
+//            Log.e("KloundWebClientManager", "reconnect");
             AppConfig.UserToken = context.getSharedPreferences(AppConfig.LOGININFO,
                     Context.MODE_PRIVATE).getString("UserToken", null);
             try {
@@ -100,7 +100,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
     @Override
 
     public void onMessage(String message) {
-        Log.e("KloundWebClientManager", "onMessage:" + message);
+//        Log.e("KloundWebClientManager", "onMessage:" + message);
         if (this.onMessageArrivedListener != null) {
             this.onMessageArrivedListener.onMessage(message);
         }
@@ -147,7 +147,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
              }
                 if (kloudWebClient != null) {
                     kloudWebClient.send(heartBeatMessage.toString());
-                    Log.e("KloundWebClientManager", "send heart beat message:" + heartBeatMessage.toString());
+//                    Log.e("KloundWebClientManager", "send heart beat message:" + heartBeatMessage.toString());
                 }
                 heartBeatStarted = true;
             } catch (JSONException e) {

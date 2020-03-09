@@ -157,6 +157,9 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
             }
         }
     };
+    private TextView mPenStatus;
+    private TextView mPenSource;
+    private TextView mCurrentPenStatus;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -288,6 +291,12 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         rl_pc_loginout = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_loginout);
         ll_digital_note = (RelativeLayout)view.findViewById(R.id.ll_digital_note);
+        mPenStatus = view.findViewById(R.id.tv_personal_pen_status);
+        mPenSource = view.findViewById(R.id.tv_personal_pen_source);
+        mCurrentPenStatus = view.findViewById(R.id.tv_personal_pen_current_status);
+        mPenStatus.setVisibility(View.GONE);
+        mPenSource.setVisibility(View.GONE);
+        mCurrentPenStatus.setVisibility(View.GONE);
         rl_pc_language = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_language);
         rl_pc_klassroomID = (RelativeLayout) view
@@ -991,7 +1000,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 
     private void startDigitalPens(){
         Intent intent = new Intent(getActivity(), DigitalPensActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 

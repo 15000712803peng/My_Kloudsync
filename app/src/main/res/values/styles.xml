@@ -397,5 +397,48 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!--当前蓝牙笔信息父布局样式-->
+    <style name="CurrentPenInfoLlyStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/dp_39</item>
+        <item name="android:layout_marginRight">@dimen/dp_39</item>
+    </style>
+
+    <!--当前蓝牙笔详细信息名称样式-->
+    <style name="CurrentPenInfoTvStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textColor">@color/colorFont33</item>
+        <item name="android:textSize">@dimen/sp_14</item>
+    </style>
+
+    <!--当前蓝牙笔详细信息数值样式-->
+    <style name="CurrentPenInfoNumberStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:textColor">@color/colorFont33</item>
+        <item name="android:textSize">@dimen/sp_19</item>
+    </style>
+
+    <style name="PenSeetingTextViewStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingLeft">@dimen/dp_20</item>
+        <item name="android:paddingTop">@dimen/dp_12</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textColor">@color/colorFont33</item>
+        <item name="android:paddingBottom">@dimen/dp_12</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="PenSeetingDividerStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@color/colorDividerEc</item>
+        <item name="android:layout_height">@dimen/dp_05</item>
+    </style>
+
 
 </resources>

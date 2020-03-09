@@ -1050,13 +1050,30 @@
             android:name=".personal.SyncTvActivity"
             android:launchMode="singleTop" />
 
-        <service android:name="com.kloudsync.techexcel.service.BluetoothLEService"
-            android:enabled="true"
-            />
+        <service
+            android:name=".service.BluetoothLEService"
+            android:enabled="true" />
 
         <activity
-            android:launchMode="singleTop"
             android:name=".pc.ui.ContactDetailActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.EnterPairingActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.CurrentPenStatusActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.PenSeetingActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.SwitchPenActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
 
         <!--

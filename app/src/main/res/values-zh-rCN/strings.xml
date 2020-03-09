@@ -857,6 +857,42 @@
     <string name="name_cannot_be_empty">名称不能为空</string>
     <string name="know_the">知道了</string>
     <string name="sound_is_still_preparing_and_cannot_do_this">音想还在准备中,不能这样做!</string>
+    <!--聊天-->
+    <!--会议-->
+    <!--音想-->
+    <!--我-->
+    <string name="enter_pairing">进入配对</string>
+    <string name="current_pen_status">当前笔的状态</string>
+    <string name="similar_pen_source2">有道云类似笔源</string>
+    <string name="similar_pen_source">印象笔记类似笔源</string>
+    <string name="enter_pairing_tips_text">长按电子笔2-3秒</string>
+    <string name="enter_pairing_tips_text2">绿灯长亮，进入配对状态</string>
+    <string name="enter_pairing_tips_text3">提示：橙灯闪烁表示电量不足，需充电</string>
+    <string name="please_make_sure_the_electronic_pen">请确保电子笔：1.电源开启；2.靠近手机；3.未连接其他手机</string>
+    <string name="battery_remaining">电池剩余</string>
+    <string name="storage_remaining">存储剩余</string>
+    <string name="writing_length">书写长度</string>
+    <string name="seeting">设置</string>
+    <string name="firmware_upgrade">固件升级</string>
+    <string name="use_guide">使用指南</string>
+    <string name="switch_the_current_pen_source">切换当前笔源</string>
+    <string name="switch_electronic_pen">切换电子笔</string>
+    <string name="delete_electronic_pen">删除电子笔</string>
+    <string name="add_new_electronic_pen">添加新的电子笔</string>
+    <string name="please_grant_relevant_permissions">请授予相关权限</string>
+    <string name="the_device_does_not_support_Bluetooth">设备不支持蓝牙</string>
+    <string name="device_does_not_support_ble">设备不支持BLE</string>
+    <string name="start_scanning">开始扫描</string>
+    <string name="is_scanning">正在扫描...</string>
+    <string name="the_connected">已连接</string>
+    <string name="not_connected">未连接</string>
+    <string name="go_to_my_notes">前往我的笔记</string>
+    <string name="connected">连接</string>
+    <string name="connecting">连接中...</string>
+    <string name="edit_pen_name">编辑笔名</string>
+    <string name="please_enter_a_pen_name">请输入笔名</string>
+    <string name="setup_failed">设置失败</string>
+
 
     <string name="contract_company">联系人 (公司)</string>
     <string name="contract_all">联系人(所有)</string>

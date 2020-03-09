@@ -1,13 +1,16 @@
 package com.kloudsync.techexcel.app;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.multidex.MultiDex;
+import android.util.DisplayMetrics;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -42,7 +45,7 @@ import io.rong.imkit.RongIM;
 
 public class App extends Application {
     private CrashHandler mCrashHandler;
-    public App instance;
+	public static App mApplication;
     private ThreadManager threadMgr;
     private Handler mainHandler;
     private MainActivity mainActivityInstance;
@@ -51,12 +54,16 @@ public class App extends Application {
         super.onCreate();
         threadMgr = ThreadManager.getManager();
         mainHandler = new Handler(Looper.getMainLooper());
-        instance = this;
+	    mApplication = this;
 //        startWBService();
         disableAPIDialog();
 //        getApplicationContext().startService(new Intent(getApplicationContext(), TransferService.class));
         asyncInit();
     }
+
+	public static Context getAppContext() {
+		return mApplication;
+	}
 
     public MainActivity getMainActivityInstance() {
         return mainActivityInstance;
@@ -221,6 +228,53 @@ public class App extends Application {
         }
     }
 
+	private static float mNoncompatDensity;
+	private static float mNoncompatScaledDensity;
+
+	/**
+	 * 设置屏幕自定义密度,需要在每个activity的setContentView之前调用一下
+	 *
+	 * @param activity
+	 * @param type     1表示以高为维度,0表示以宽为维度适配
+	 */
+	public static void setCustomDensity(Activity activity, int type) {
+		final DisplayMetrics appDisplayMetrics = mApplication.getResources().getDisplayMetrics();
+		if (mNoncompatDensity == 0) {
+			mNoncompatDensity = appDisplayMetrics.density;
+			mNoncompatScaledDensity = appDisplayMetrics.scaledDensity;
+			mApplication.registerComponentCallbacks(new ComponentCallbacks() {
+				@Override
+				public void onConfigurationChanged(Configuration newConfig) {
+					if (newConfig != null && newConfig.fontScale > 1) {
+						mNoncompatScaledDensity = mApplication.getResources().getDisplayMetrics().scaledDensity;
+					}
+				}
+
+				@Override
+				public void onLowMemory() {
+
+				}
+			});
+		}
+
+		final float targetDensity;
+		if (type == 1) {
+			targetDensity = appDisplayMetrics.heightPixels / 812.0f;
+		} else {
+			targetDensity = appDisplayMetrics.widthPixels / 375.0f;
+		}
+		final float targetScaledDensity = targetDensity * (mNoncompatScaledDensity / mNoncompatDensity);
+		final int targetDensityDpi = (int) (160 * targetDensity);
+
+		appDisplayMetrics.density = appDisplayMetrics.scaledDensity = targetDensity;
+		appDisplayMetrics.scaledDensity = targetScaledDensity;
+		appDisplayMetrics.densityDpi = targetDensityDpi;
+
+		DisplayMetrics activityDisplayMetrics = activity.getResources().getDisplayMetrics();
+		activityDisplayMetrics.density = activityDisplayMetrics.scaledDensity = targetDensity;
+		activityDisplayMetrics.scaledDensity = targetScaledDensity;
+		activityDisplayMetrics.densityDpi = targetDensityDpi;
+	}
 
 
 

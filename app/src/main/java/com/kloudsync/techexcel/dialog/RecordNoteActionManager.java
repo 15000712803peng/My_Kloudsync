@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.dialog;
 
 import android.content.Context;
 
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.ub.techexcel.tools.Tools;
 
 import org.json.JSONArray;
@@ -32,7 +33,7 @@ public class RecordNoteActionManager {
 
 
     /**
-     *
+     * 304 画线
      * @param noteId  笔记id
      * @param noteData 笔记单条数据
      */
@@ -76,9 +77,20 @@ public class RecordNoteActionManager {
     }
 
 
-    public  void sendDisplayHomePageActions(long noteId, String strokeId){
+    /**
+     * 直接显示笔记到主界面  308
+     * @param noteId
+     * @param linejson
+     */
+    public  void sendDisplayHomePageActions(long noteId, JSONObject linejson){
 //      {actionType:308,time:1,page:1,data:{id:123,lastStrokeId:"1-2-3"}}
+        String strokeId="";
         try {
+            JSONArray linesjson=linejson.getJSONArray("lines");
+            if(linesjson.length()>0){
+                JSONObject linedata=linesjson.getJSONObject(linesjson.length()-1);
+                strokeId=linedata.getString("id");  //拿最后一条动作的id
+            }
             JSONObject jsonObject=new JSONObject();
             jsonObject.put("id",noteId);
             jsonObject.put("lastStrokeId",strokeId);
@@ -86,6 +98,38 @@ public class RecordNoteActionManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * 关闭主界面笔记 306
+     */
+    public void sendCloseHomePageActon(long noteid, boolean isMeetingRecord, MeetingConfig meetingConfig){
+        // {actionType:306,time:1,page:1,data:{id:123,docId:345,pageNo:1}}
+       // id: noteid
+        // docId:关闭笔记后显示的文档id(会议录制增加)
+        // pageNo:显示的文档页码(会议录制增加)
+        try {
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("id",noteid);
+            if(isMeetingRecord){
+                jsonObject.put("docId",meetingConfig.getDocument().getItemID());
+                jsonObject.put("pageNo",meetingConfig.getPageNumber());
+            }
+            soundtrackRecordManager.recordNoteAction(NoteRecordType.CLOSE_HOMEPAGE_NOTE,jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    /**
+     * 笔记换页  302
+     */
+    private void sendChangepageActions(){
+
+
     }
 
 

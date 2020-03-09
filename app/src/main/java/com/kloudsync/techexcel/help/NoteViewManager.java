@@ -24,17 +24,15 @@ import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventShowNotePage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
-import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
-import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.UserNotes;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
-import com.kloudsync.techexcel.tool.NoteImageCache;
 import com.kloudsync.techexcel.view.spinner.NiceSpinner;
 import com.kloudsync.techexcel.view.spinner.OnSpinnerItemSelectedListener;
 import com.kloudsync.techexcel.view.spinner.UserNoteTextFormatter;
@@ -65,8 +63,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.kloudsync.techexcel.help.PageActionsAndNotesMgr.parseNote;
 
 /**
  * Created by tonyan on 2019/12/5.
@@ -143,6 +139,8 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }
         process(AppConfig.UserID, meetingConfig);
         view.setVisibility(View.VISIBLE);
+
+	    EverPenManger.getInstance((Activity) context).getBleManager().ReqOfflineDataTransfer(true);
     }
 
     private void close(){
@@ -611,8 +609,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }).subscribe();
     }
 
-    public void followShowNote(Context context, final View view,XWalkView noteWeb,final int noteId,MeetingConfig meetingConfig,ImageView menuIcon,LinearLayout noteContainer){
-
+    public void followShowNote(final Context context, final View view, XWalkView noteWeb, final int noteId, final MeetingConfig meetingConfig, ImageView menuIcon, LinearLayout noteContainer){
         this.meetingConfig = meetingConfig;
         this.context = context;
         noteList = view.findViewById(R.id.list_note);
@@ -626,6 +623,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
                 view.setVisibility(View.GONE);
                 close();
                 instance = null;
+                RecordNoteActionManager.getManager(context).sendCloseHomePageActon(noteId,false,meetingConfig);
             }
         });
 
