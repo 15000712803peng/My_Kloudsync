@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.help;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,17 +23,14 @@ import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventShowNotePage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
-import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
-import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.UserNotes;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
-import com.kloudsync.techexcel.tool.NoteImageCache;
 import com.kloudsync.techexcel.view.spinner.NiceSpinner;
 import com.kloudsync.techexcel.view.spinner.OnSpinnerItemSelectedListener;
 import com.kloudsync.techexcel.view.spinner.UserNoteTextFormatter;
@@ -62,8 +60,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.kloudsync.techexcel.help.PageActionsAndNotesMgr.parseNote;
 
 /**
  * Created by tonyan on 2019/12/5.
@@ -134,6 +130,8 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }
         process(AppConfig.UserID, meetingConfig);
         view.setVisibility(View.VISIBLE);
+
+	    EverPenManger.getInstance((Activity) context).getBleManager().ReqOfflineDataTransfer(true);
     }
 
     private void close(){

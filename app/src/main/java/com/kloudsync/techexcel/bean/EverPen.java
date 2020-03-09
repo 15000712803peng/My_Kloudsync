@@ -1,13 +1,16 @@
 package com.kloudsync.techexcel.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by tonyan on 2020/1/15.
  */
 
-public class EverPen {
+public class EverPen implements Serializable {
     private String macAddress;
     private String name;
     private boolean isConnected;
+	private boolean isClick;
 
     public boolean isConnected() {
         return isConnected;
@@ -16,6 +19,14 @@ public class EverPen {
     public void setConnected(boolean connected) {
         isConnected = connected;
     }
+
+	public boolean isClick() {
+		return isClick;
+	}
+
+	public void setClick(boolean click) {
+		isClick = click;
+	}
 
     public String getMacAddress() {
         return macAddress;

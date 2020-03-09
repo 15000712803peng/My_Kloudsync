@@ -65,18 +65,17 @@ import com.kloudsync.techexcel.dialog.message.ShareMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.SystemMessageItemProvider;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.kloudsync.techexcel.frgment.ContactFragment;
+import com.kloudsync.techexcel.frgment.PersonalCenterFragment;
 import com.kloudsync.techexcel.frgment.ProjectOneFragment;
+import com.kloudsync.techexcel.frgment.ServiceFragment;
 import com.kloudsync.techexcel.frgment.SpaceDocumentsFragment;
 import com.kloudsync.techexcel.frgment.SpaceSyncRoomFragment;
 import com.kloudsync.techexcel.frgment.TeamDocumentsFragment;
-import com.kloudsync.techexcel.frgment.PersonalCenterFragment;
-import com.kloudsync.techexcel.frgment.ServiceFragment;
 import com.kloudsync.techexcel.frgment.TopicFragment;
 import com.kloudsync.techexcel.frgment.TwoToOneFragment;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ContactHelpInterface;
 import com.kloudsync.techexcel.help.EverPenManger;
-import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.info.School;
 import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.NetworkResponse;
@@ -92,7 +91,6 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
-import com.pgyersdk.PgyerActivityManager;
 import com.pgyersdk.update.DownloadFileListener;
 import com.pgyersdk.update.PgyUpdateManager;
 import com.pgyersdk.update.UpdateManagerListener;
@@ -137,10 +135,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
-
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_FOR_INSTALL_APK;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
@@ -941,6 +937,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         // TODO Auto-generated method stub
         super.onDestroy();
         instance = null;
+        EverPenManger.getInstance(this).startOrStopFindDevice(false);
+        EverPenManger.getInstance(this).unBindService();
         app.setMainActivityInstance(null);
         AppConfig.isUpdateCustomer = false;
         AppConfig.isUpdateDialogue = false;

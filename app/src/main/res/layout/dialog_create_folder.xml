@@ -20,7 +20,6 @@
             android:id="@+id/tv_dialog_title"
             android:layout_width="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="@string/create_folder"
             android:layout_marginTop="@dimen/dp_17"
             android:textSize="@dimen/sp_16"
             android:textColor="@color/colorFont33"
@@ -39,7 +38,6 @@
             android:maxLines="1"
             android:paddingTop="@dimen/dp_12"
             android:paddingBottom="@dimen/dp_12"
-            android:hint="@string/please_input_new_folder_name"
             android:textColorHint="@color/colorFont99"
             android:layout_marginTop="@dimen/dp_16"
             android:background="@drawable/shape_white_all_radius_4"
@@ -51,7 +49,7 @@
             android:layout_height="@dimen/dp_05"
             android:layout_marginTop="@dimen/dp_19"
             android:layout_below="@id/et_dialog_folder_name"
-            android:background="@color/colorDivider"/>
+            android:background="@color/colorDividerDa" />
 
         <LinearLayout
             android:layout_below="@id/view_dialog_divider"
@@ -71,7 +69,7 @@
 
             <View
                 android:layout_width="@dimen/dp_05"
-                android:background="@color/colorDivider"
+                android:background="@color/colorDividerDa"
                 android:layout_height="match_parent"/>
 
             <Button
