@@ -193,6 +193,46 @@
             style="@style/ScheduleMeetingArrowIconStyle" />
     </LinearLayout>
 
+    <RelativeLayout
+        style="@style/ScheduleMeetingSettingLayoutStyle"
+        >
+
+        <TextView
+            style="@style/ScheduleMeetingSettingNameStyle"
+            android:text="启用会议密码" />
+
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/inputmeetingsecret"
+        android:visibility="gone"
+        style="@style/ScheduleMeetingSettingLayoutStyle"
+        android:gravity="center_vertical"
+        android:layout_marginTop="0dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/ScheduleMeetingSettingNameStyle"
+            android:text="会议密码" />
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:hint="请输入会议密码"
+            android:layout_marginRight="@dimen/dp_35"
+            android:textColor="@color/colorFont99"
+            android:textSize="@dimen/sp_14" />
+
+
+    </LinearLayout>
 
     <!--<LinearLayout
         android:layout_width="match_parent"

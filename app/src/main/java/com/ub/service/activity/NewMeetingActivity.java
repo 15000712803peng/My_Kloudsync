@@ -16,6 +16,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -65,6 +67,8 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
     private List<Customer> customerList = new ArrayList<>();
     private SimpleDraweeView as_img_contact_one, as_img_contact_two, as_img_contact_three;
     private ImageView durationArrowImage;
+    private CheckBox checkbox;
+    private LinearLayout inputmeetingsecret;
 
 
     @Override
@@ -142,6 +146,18 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
         submit.setEnabled(false);
         submit.setOnClickListener(this);
         durationArrowImage = findViewById(R.id.image_duration_arrow);
+        inputmeetingsecret = findViewById(R.id.inputmeetingsecret);
+        checkbox = findViewById(R.id.checkbox);
+        checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    inputmeetingsecret.setVisibility(View.VISIBLE);
+                }else{
+                    inputmeetingsecret.setVisibility(View.GONE);
+                }
+            }
+        });
         durationArrowImage.setOnClickListener(this);
         meetingname = (EditText) findViewById(R.id.meetingname);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm:ss");
