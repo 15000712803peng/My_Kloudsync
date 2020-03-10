@@ -293,12 +293,14 @@
             <View
                 android:background="@color/divider_line"
                 android:layout_width="1dp"
+                android:visibility="gone"
                 android:layout_height="match_parent"/>
 
             <LinearLayout
                 android:id="@+id/layout_note_users"
                 android:orientation="vertical"
                 android:layout_width="260dp"
+                android:visibility="gone"
                 android:layout_height="match_parent">
 
                 <RelativeLayout
@@ -336,9 +338,19 @@
             android:id="@+id/image_back"
             android:padding="3dp"
             android:layout_margin="8dp"
-            android:src="@drawable/arrow_back2"
+            android:src="@drawable/close"
             android:layout_width="40dp"
             android:layout_height="30dp" />
+
+        <ImageView
+            android:layout_toRightOf="@id/image_back"
+            android:id="@+id/openfloatingnote"
+            android:layout_margin="8dp"
+            android:src="@drawable/switchsyncroom"
+            android:layout_width="40dp"
+            android:layout_height="30dp"/>
+
+
 
     </RelativeLayout>
 

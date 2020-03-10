@@ -53,6 +53,7 @@ import com.kloudsync.techexcel.bean.EventCloseNoteView;
 import com.kloudsync.techexcel.bean.EventCloseShare;
 import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.EventExit;
+import com.kloudsync.techexcel.bean.EventFloatingNote;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.EventInviteUsers;
 import com.kloudsync.techexcel.bean.EventKickOffMember;
@@ -331,7 +332,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 //                                MeetingKit.getInstance().startMeeting();
                             } else {
                                 MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
-
                             }
                         }
                     }
@@ -982,7 +982,32 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             case SocketMessageManager.MESSAGE_AGORA_STATUS_CHANGE:
                 handleMessageAgoraStatusChange(socketMessage.getData());
                 break;
-
+            case SocketMessageManager.MESSAGE_OPEN_OR_CLOSE_NOTE:  //打开或关闭笔记
+                if (socketMessage.getData().has("retData")) {
+                    try {
+                        JSONObject retData=socketMessage.getData().getJSONObject("retData");
+                        int noteId=retData.getInt("noteId");
+                        int status=retData.getInt("status");
+                        if(status==1){ //打开浮窗
+                            showNoteFloatingDialog(noteId);
+                        }else if(status==0){  //关闭浮窗 或者 主界面
+                            if (noteLayout.getVisibility() == View.VISIBLE) {
+                                if (noteWeb != null) {
+//                                    NoteViewManager.getInstance().followShowNote();
+                                }
+                            }else{
+                                if(floatingNoteDialog!=null){
+                                    if(floatingNoteDialog.isShowing()){
+                                        floatingNoteDialog.closeFloating();
+                                    }
+                                }
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
             case SocketMessageManager.MESSAGE_NOTE_DATA:
                 if (socketMessage.getData().has("retData")) {
                     try {
@@ -1004,9 +1029,15 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 _data.put("ShowInCenter", true);
                                 _data.put("TriggerEvent", true);
                                 noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                                RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
+                            }
+                        }else{
+                            if(floatingNoteDialog!=null){
+                                if(floatingNoteDialog.isShowing()){
+                                    floatingNoteDialog.followDrawNewLine(noteId,noteData);
+                                }
                             }
                         }
+                        RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -1023,7 +1054,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
                 }
                 break;
-
             case SocketMessageManager.MESSAGE_NOTE_P1_CREATEAD:
                 if (socketMessage.getData().has("retData")) {
                     try {
@@ -2529,8 +2559,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Override
     public void menuNoteClicked() {
-//        showNotesDialog();
-        showNoteFloatingDialog();
+        showNotesDialog();
     }
 
     @Override
@@ -2857,9 +2886,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     FloatingNoteDialog floatingNoteDialog;
 
-    private void showNoteFloatingDialog(){
+    private void showNoteFloatingDialog(int noteId){
         if (floatingNoteDialog != null) {
-            floatingNoteDialog.show(currentNoteId, meetingConfig);
+            floatingNoteDialog.show(noteId, meetingConfig);
         }else{
              floatingNoteDialog = new FloatingNoteDialog(this);
              floatingNoteDialog.setFloatingListener(new FloatingNoteDialog.FloatingListener() {
@@ -2868,11 +2897,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                      followShowNote(noteId);
                  }
              });
-             floatingNoteDialog.show(currentNoteId, meetingConfig);
+             floatingNoteDialog.show(noteId, meetingConfig);
         }
     }
 
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiverOpenFloating(EventFloatingNote eventFloatingNote) {
+        showNoteFloatingDialog(eventFloatingNote.getNoteId());
+    }
 
 
     MeetingMembersDialog meetingMembersDialog;

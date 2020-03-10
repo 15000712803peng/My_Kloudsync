@@ -20,6 +20,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventCloseNoteView;
+import com.kloudsync.techexcel.bean.EventFloatingNote;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventShowNotePage;
@@ -74,6 +75,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     private Context context;
     //------
     private ImageView backImage;
+    private ImageView openFloatingNote;
     private NiceSpinner usersSpinner;
     private RecyclerView noteList;
     private NoteAdapter noteAdapter;
@@ -107,12 +109,13 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         changeUser(user);
     }
 
-    public synchronized void setContent(Context context, final View view, Note note, XWalkView noteWeb,MeetingConfig meetingConfig,LinearLayout noteContainer) {
+    public synchronized void setContent(final Context context, final View view, final Note note, XWalkView noteWeb, final MeetingConfig meetingConfig, LinearLayout noteContainer) {
 
         this.meetingConfig = meetingConfig;
         this.context = context;
         noteList = view.findViewById(R.id.list_note);
         backImage = view.findViewById(R.id.image_back);
+        openFloatingNote = view.findViewById(R.id.openfloatingnote);
         this.noteWeb = noteWeb;
         noteWeb.setVisibility(View.VISIBLE);
         adjustOritation(context,noteContainer);
@@ -123,6 +126,20 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
                 EventBus.getDefault().post(new EventCloseNoteView());
                 close();
                 instance = null;
+                RecordNoteActionManager.getManager(context).sendCloseHomePageActon(note.getNoteID(),false,meetingConfig);
+            }
+        });
+        openFloatingNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                view.setVisibility(View.GONE);
+                EventBus.getDefault().post(new EventCloseNoteView());
+                close();
+                instance = null;
+                // 切到浮窗
+                EventFloatingNote eventFloatingNote=new EventFloatingNote();
+                eventFloatingNote.setNoteId(note.getNoteID());
+                EventBus.getDefault().post(eventFloatingNote);
             }
         });
         pageCache = DocumentPageCache.getInstance(context);
@@ -402,8 +419,6 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
             SimpleDraweeView img_url;
             TextView date;
             LinearLayout container;
-
-
             public Holder(View itemView) {
                 super(itemView);
                 container = itemView.findViewById(R.id.container);
@@ -609,11 +624,13 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }).subscribe();
     }
 
+
     public void followShowNote(final Context context, final View view, XWalkView noteWeb, final int noteId, final MeetingConfig meetingConfig, ImageView menuIcon, LinearLayout noteContainer){
         this.meetingConfig = meetingConfig;
         this.context = context;
         noteList = view.findViewById(R.id.list_note);
         backImage = view.findViewById(R.id.image_back);
+        openFloatingNote = view.findViewById(R.id.openfloatingnote);
         this.noteWeb = noteWeb;
         adjustOritation(context,noteContainer);
 //        noteWeb.setVisibility(View.VISIBLE);
@@ -624,6 +641,18 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
                 close();
                 instance = null;
                 RecordNoteActionManager.getManager(context).sendCloseHomePageActon(noteId,false,meetingConfig);
+            }
+        });
+        openFloatingNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                view.setVisibility(View.GONE);
+                close();
+                instance = null;
+                // 切到浮窗
+                EventFloatingNote eventFloatingNote=new EventFloatingNote();
+                eventFloatingNote.setNoteId(note.getNoteID());
+                EventBus.getDefault().post(eventFloatingNote);
             }
         });
 

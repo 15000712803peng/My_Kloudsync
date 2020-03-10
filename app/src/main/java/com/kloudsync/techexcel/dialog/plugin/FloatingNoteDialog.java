@@ -46,6 +46,7 @@ import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.xwalk.core.XWalkPreferences;
 import org.xwalk.core.XWalkView;
@@ -154,22 +155,26 @@ public class FloatingNoteDialog implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.back:
-                if(currentNote!=null){
-                    RecordNoteActionManager.getManager(mContext).sendClosePopupActons(currentNote.getNoteID());
-                }
-                dismiss();
+                closeFloating();
                 break;
-            case R.id.changefloatingnote:
+            case R.id.changefloatingnote:  //跳到主界面
                 if(currentNote!=null){
                     RecordNoteActionManager.getManager(mContext).sendDisplayPopupHomepageActions(currentNote.getNoteID(),lastjsonObject);
                 }
-//                NoteViewManager.getInstance().requestNoteToShow(currentNote.getNoteID());
                 if(floatingListener!=null){
                     floatingListener.changeHomePage(currentNote.getNoteID());
                 }
                 dismiss();
                 break;
         }
+    }
+
+
+    public void  closeFloating(){
+        if(currentNote!=null){
+            RecordNoteActionManager.getManager(mContext).sendClosePopupActons(currentNote.getNoteID());
+        }
+        dismiss();
     }
 
     public void show(final long noteid, final MeetingConfig meetingConfig) {
@@ -191,7 +196,7 @@ public class FloatingNoteDialog implements View.OnClickListener {
         if (meetingConfig.getDocument() == null) {
             return;
         }
-        String url = AppConfig.URL_PUBLIC + "DocumentNote/Item?noteID=" + 1915234;
+        String url = AppConfig.URL_PUBLIC + "DocumentNote/Item?noteID=" + noteId;
         MeetingServiceTools.getInstance().getBlueToothNoteDetail(url, MeetingServiceTools.GETBLUETOOTHNOTEDETAIL, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
@@ -206,6 +211,30 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 handleBluetoothNote(currentNote,lastModifiedDate);
             }
         });
+    }
+
+
+    /**
+     *
+     * @param noteId
+     * @param noteData  编码后为  {"PageTokenBackup":"002ff42a-6f76-4d67-bfd5-c216116b9b57","PageToken":"3a986f8f-0d31-4241-8ac0-a85a2e75ebc6","Pai
+     */
+    public void followDrawNewLine(long noteId,String noteData){
+        if(currentNote.getNoteID()==noteId){
+            if (floatwebview != null) {
+                String key = "ShowDotPanData";
+                try {
+                    JSONObject _data = new JSONObject();
+                    _data.put("LinesData", Tools.getFromBase64(noteData));
+                    _data.put("ShowInCenter", true);
+                    _data.put("TriggerEvent", true);
+                    floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                    lastjsonObject=new JSONObject(Tools.getFromBase64(noteData));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private void handleBluetoothNote(final Note note, final String lastModifiedDate) {
@@ -248,7 +277,6 @@ public class FloatingNoteDialog implements View.OnClickListener {
     }
 
 
-
     public class FloatNoteJavascriptInterface {
 
         @org.xwalk.core.JavascriptInterface
@@ -270,9 +298,6 @@ public class FloatingNoteDialog implements View.OnClickListener {
         }
 
     }
-
-
-
 
 
 }
