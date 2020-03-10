@@ -171,7 +171,7 @@ public class RecordNoteActionManager {
      * 8.笔记从主界面显示到浮窗(前端)
      * {actionType:307,time:1,page:1,data:{id:343,lastStrokeId:"1-2-3"}}
      */
-    private void sendDisplayHomepagePopupActions(long noteId,JSONObject paintData){
+    public void sendDisplayHomepagePopupActions(long noteId,JSONObject paintData){
         soundtrackRecordManager.recordNoteAction(NoteRecordType.DISPLAY_HOMEPAGE_POPUP,getHomepagePopupLineData(noteId,paintData));
     }
 

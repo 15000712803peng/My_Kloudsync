@@ -113,6 +113,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
 
         this.meetingConfig = meetingConfig;
         this.context = context;
+        homeView=view;
         noteList = view.findViewById(R.id.list_note);
         backImage = view.findViewById(R.id.image_back);
         openFloatingNote = view.findViewById(R.id.openfloatingnote);
@@ -625,9 +626,37 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     }
 
 
+    public void followPaintLine(String noteData){
+        String key = "ShowDotPanData";
+        try {
+            JSONObject _data = new JSONObject();
+            _data.put("LinesData", Tools.getFromBase64(noteData));
+            _data.put("ShowInCenter", true);
+            _data.put("TriggerEvent", true);
+            if(noteWeb!=null){
+                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void closeNoteWeb(){
+        if(homeView!=null){
+            homeView.setVisibility(View.GONE);
+        }
+        close();
+        instance = null;
+        if(note!=null){
+            RecordNoteActionManager.getManager(context).sendCloseHomePageActon(note.getNoteID(),false,meetingConfig);
+        }
+    }
+
+    private View homeView;
     public void followShowNote(final Context context, final View view, XWalkView noteWeb, final int noteId, final MeetingConfig meetingConfig, ImageView menuIcon, LinearLayout noteContainer){
         this.meetingConfig = meetingConfig;
         this.context = context;
+        homeView=view;
         noteList = view.findViewById(R.id.list_note);
         backImage = view.findViewById(R.id.image_back);
         openFloatingNote = view.findViewById(R.id.openfloatingnote);
@@ -637,10 +666,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         backImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                view.setVisibility(View.GONE);
-                close();
-                instance = null;
-                RecordNoteActionManager.getManager(context).sendCloseHomePageActon(noteId,false,meetingConfig);
+                closeNoteWeb();
             }
         });
         openFloatingNote.setOnClickListener(new View.OnClickListener() {

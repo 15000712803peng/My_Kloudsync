@@ -995,7 +995,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         }else if(status==0){  //关闭浮窗 或者 主界面
                             if (noteLayout.getVisibility() == View.VISIBLE) {
                                 if (noteWeb != null) {
-//                                    NoteViewManager.getInstance().followShowNote();
+                                    NoteViewManager.getInstance().closeNoteWeb();
                                 }
                             }else{
                                 if(floatingNoteDialog!=null){
@@ -1023,14 +1023,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             newNoteDatas.add(_noteData);
                             return;
                         }
-                        String key = "ShowDotPanData";
+
+                        // 同一个笔记
                         if (noteLayout.getVisibility() == View.VISIBLE) {
                             if (noteWeb != null) {
-                                JSONObject _data = new JSONObject();
-                                _data.put("LinesData", Tools.getFromBase64(noteData));
-                                _data.put("ShowInCenter", true);
-                                _data.put("TriggerEvent", true);
-                                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                                noteweblastjsonObject=new JSONObject(Tools.getFromBase64(noteData));
+                                NoteViewManager.getInstance().followPaintLine(noteData);
                             }
                         }else{
                             if(floatingNoteDialog!=null){
@@ -1039,9 +1037,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 }
                             }
                         }
-                        // 同一个笔记
                         RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -2908,6 +2904,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiverOpenFloating(EventFloatingNote eventFloatingNote) {
+        //从主界面切回浮窗
+        RecordNoteActionManager.getManager(this).sendDisplayHomepagePopupActions(currentNoteId,noteweblastjsonObject);
         showNoteFloatingDialog(eventFloatingNote.getNoteId());
     }
 
