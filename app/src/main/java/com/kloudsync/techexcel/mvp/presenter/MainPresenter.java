@@ -31,7 +31,7 @@ public class MainPresenter extends TQLPenSignalKloudPresenter<IMainActivityView>
             @Override
             public void accept(NewBookPagesBean newBookPagesBean) throws Exception {
                 final String url = AppConfig.URL_PUBLIC + "newBookPages";
-                ServiceInterfaceTools.getinstance().requestNewBookPages(newBookPagesBean.getPeertimeToken(), newBookPagesBean.getBookPages());
+//                ServiceInterfaceTools.getinstance().requestNewBookPages(newBookPagesBean.getPeertimeToken(), newBookPagesBean.getBookPages());
 
             }
         }).subscribe();
