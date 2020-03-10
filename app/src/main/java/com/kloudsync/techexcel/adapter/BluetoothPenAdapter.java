@@ -38,7 +38,7 @@ public class BluetoothPenAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 	public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
 		final ViewHolder viewHolder = (ViewHolder) holder;
 		final EverPen everPen = mList.get(position);
-		viewHolder.mBluetoothPenName.setText(everPen.getName());
+		viewHolder.mBluetoothPenName.setText(everPen.getPenName());
 		if (everPen.isConnected()) {
 			viewHolder.mIvBluetoothPenConnected.setVisibility(View.VISIBLE);
 		} else {

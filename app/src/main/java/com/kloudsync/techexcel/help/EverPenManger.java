@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EverPen;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.service.BluetoothLEService;
@@ -92,6 +93,13 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 			if (mService.initialize(getInstance(host))) {
 				mService.setOnDataReceiveListener(getInstance(host));
 				agent = mService.getBleManager();
+				if (getBleManager() != null) {
+					Iterator<MyTQLPenSignal> it = mTQLPenSignalMap.keySet().iterator();
+					while (it.hasNext()) {
+						MyTQLPenSignal myTQLPenSignal = it.next();
+						myTQLPenSignal.getBleManager(getBleManager());
+					}
+				}
 				serviceConnected = true;
 				Log.e("EverPenManager", "onServiceConnected:" + agent);
 				mAutoPenInfo = mSp.getString(AppConfig.EVERPENINFO, EverPen.class);
@@ -206,25 +214,30 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	}
 
 	@Override
-	public void onReceiveDot(Dot dot) {
+	public void onReceiveDot(final Dot dot) {
 		Log.e("EverPenManager", "onReceiveDot:" + dot);
-
+		host.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Iterator<MyTQLPenSignal> it = mTQLPenSignalMap.keySet().iterator();
+				while (it.hasNext()) {
+					MyTQLPenSignal myTQLPenSignal = it.next();
+					myTQLPenSignal.onReceiveDot(dot);
+				}
+			}
+		});
 	}
 
 	@Override
-	public void onReceiveOfflineStrokes(Dot dot) {
+	public void onReceiveOfflineStrokes(final Dot dot) {
 		Log.e("EverPenManager", "onReceiveOfflineStrokes:" + dot);
 		host.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				if (mCurrentPen != null) {
-					mCurrentPen.setConnected(false);
-					mCurrentPen.setClick(false);
-				}
 				Iterator<MyTQLPenSignal> it = mTQLPenSignalMap.keySet().iterator();
 				while (it.hasNext()) {
 					MyTQLPenSignal myTQLPenSignal = it.next();
-					myTQLPenSignal.onConnectFailed();
+					myTQLPenSignal.onReceiveOfflineStrokes(dot);
 				}
 			}
 		});
@@ -510,6 +523,8 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 		Log.e("EverPenManager", "addScanedEverPen,device:" + bluetoothDevice);
 		EverPen everPen = new EverPen(bluetoothDevice.getAddress());
 		everPen.setName(bluetoothDevice.getName());
+		everPen.setSimilaPenSource(host.getResources().getString(R.string.similar_pen_source));
+		everPen.setPenType(host.getResources().getString(R.string.impression_electronic_pen));
 		if (mAutoPenInfo != null && mAutoPenInfo.getMacAddress().equals(everPen.getMacAddress())) {
 			mAutoPenInfo = everPen;
 			mAutoPenInfo.setClick(true);
@@ -572,6 +587,10 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 
 	public EverPen getCurrentPen() {
 		return mCurrentPen;
+	}
+
+	public EverPen getAutoPen() {
+		return mAutoPenInfo;
 	}
 
 	public void deleteAutoConnectPen() {

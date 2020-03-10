@@ -11,6 +11,9 @@ public class EverPen implements Serializable {
     private String name;
     private boolean isConnected;
 	private boolean isClick;
+    private String penName;
+    private String penType;
+    private String similaPenSource;
 
     public boolean isConnected() {
         return isConnected;
@@ -42,6 +45,31 @@ public class EverPen implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPenName() {
+        penName = macAddress + name;
+        return penName;
+    }
+
+    public void setPenName(String penName) {
+        this.penName = penName;
+    }
+
+    public String getPenType() {
+        return penType;
+    }
+
+    public void setPenType(String penType) {
+        this.penType = penType;
+    }
+
+    public String getSimilaPenSource() {
+        return similaPenSource;
+    }
+
+    public void setSimilaPenSource(String similaPenSource) {
+        this.similaPenSource = similaPenSource;
     }
 
     @Override

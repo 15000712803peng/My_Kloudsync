@@ -2,11 +2,10 @@ package com.kloudsync.techexcel.mvp.presenter;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EverPen;
-import com.kloudsync.techexcel.help.MyTQLPenSignal;
 import com.kloudsync.techexcel.mvp.view.CurrentPenStatusView;
 import com.tqltech.tqlpencomm.BLEException;
 
-public class CurrentPenStatusPresenter extends KloudPresenter<CurrentPenStatusView> implements MyTQLPenSignal {
+public class CurrentPenStatusPresenter extends TQLPenSignalKloudPresenter<CurrentPenStatusView> {
 	@Override
 	public void onScanResult(EverPen everPen) {
 

@@ -2,12 +2,16 @@ package com.kloudsync.techexcel.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.EverPen;
+import com.kloudsync.techexcel.help.EverPenManger;
 import com.kloudsync.techexcel.mvp.BaseActivity;
 import com.kloudsync.techexcel.mvp.presenter.DigitalPensPresenter;
 import com.kloudsync.techexcel.mvp.view.DigitalPensView;
@@ -60,6 +64,7 @@ public class DigitalPensActivity extends BaseActivity<DigitalPensPresenter> impl
 	@Override
 	protected void initView() {
 		mTitleText.setText(R.string.title_select_digital_pen);
+		App.mApplication.addActivity(this);
 	}
 
 	@Override
@@ -90,17 +95,28 @@ public class DigitalPensActivity extends BaseActivity<DigitalPensPresenter> impl
 				intent = new Intent(this, EnterPairingActivity.class);
 				intent.putExtra(EnterPairingActivity.SIMILARPENSOURCE, similarPenSource);
 				intent.putExtra(EnterPairingActivity.PENTYPE, penType);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 				break;
 			case R.id.lly_digital_you_dao_yun:
-				similarPenSource = mTvSimilarPenSource2.getText().toString().trim();
+				/*similarPenSource = mTvSimilarPenSource2.getText().toString().trim();
 				penType = mTvPenYDY.getText().toString().trim();
 				intent = new Intent(this, EnterPairingActivity.class);
 				intent.putExtra(EnterPairingActivity.SIMILARPENSOURCE, similarPenSource);
 				intent.putExtra(EnterPairingActivity.PENTYPE, penType);
-				startActivity(intent);
+				startActivity(intent);*/
+				showToast(R.string.stay_tuned);
 				break;
 		}
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		EverPen currentPen = EverPenManger.getInstance(this).getCurrentPen();
+		if (keyCode == KeyEvent.KEYCODE_BACK && currentPen != null && currentPen.isConnected()) {
+			App.mApplication.exitActivity();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override
@@ -120,6 +136,7 @@ public class DigitalPensActivity extends BaseActivity<DigitalPensPresenter> impl
 
 	@Override
 	protected void onDestroy() {
+		App.mApplication.removeActivity(this);
 		super.onDestroy();
     }
 }

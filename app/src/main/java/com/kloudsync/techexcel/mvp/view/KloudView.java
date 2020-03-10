@@ -6,9 +6,10 @@ package com.kloudsync.techexcel.mvp.view;
 
 public interface KloudView {
 
-    void showLoading();
-    
-    void dismissLoading();
+	void toast(String msg);
 
-    void toast(String msg);
+    void showLoading();
+
+	void dismissLoading();
+
 }

@@ -3,12 +3,14 @@ package com.kloudsync.techexcel.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EverPen;
 import com.kloudsync.techexcel.help.EverPenManger;
 import com.kloudsync.techexcel.mvp.BaseActivity;
@@ -70,7 +72,7 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		mCurrentPen = mEverPenManger.getCurrentPen();
-		mTvCurrentPenName.setText(mCurrentPen.getName());
+		mTvCurrentPenName.setText(mCurrentPen.getPenName());
 	}
 
 	@Override
@@ -100,7 +102,7 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 		mIvTitlebarSetting.setVisibility(View.VISIBLE);
 		mPenTypeAndSource = mPenType + mSimlarPenSource;
 		mCurrentPen = mEverPenManger.getCurrentPen();
-		mTvCurrentPenName.setText(mCurrentPen.getName());
+		mTvCurrentPenName.setText(mCurrentPen.getPenName());
 		mTvCurrentPenSource.setText(mPenTypeAndSource);
 		boolean connected = mCurrentPen.isConnected();
 		if (connected) {
@@ -111,6 +113,7 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 			setCurrentPenStatus(R.string.not_connected, R.drawable.register_red_tips_icon, R.string.connected);
 			mCurrentPenTips.setVisibility(View.VISIBLE);
 		}
+		App.mApplication.addActivity(this);
 	}
 
 	@Override
@@ -209,7 +212,7 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 	@Override
 	public void setPenName(boolean bIsSuccess) {
 		if (bIsSuccess) {
-			String name = mCurrentPen.getName();
+			String name = mCurrentPen.getPenName();
 			mTvCurrentPenName.setText(name);
 		}
 	}
@@ -231,6 +234,14 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 
 
 	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			App.mApplication.exitActivity();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
 	protected void onDestroy() {
 		mSimlarPenSource = null;
 		mPenType = null;
@@ -238,6 +249,7 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 		mEverPenManger = null;
 		mCurrentPen = null;
 		mPenTypeAndSource = null;
+		App.mApplication.mList.clear();
 		super.onDestroy();
 	}
 }

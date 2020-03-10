@@ -2,7 +2,6 @@ package com.ub.techexcel.tools;
 
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -36,7 +35,6 @@ import com.kloudsync.techexcel.bean.params.InviteTeamAdminParams;
 import com.kloudsync.techexcel.bean.params.InviteToCompanyParams;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
-import com.kloudsync.techexcel.help.OkHttpRequest;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.ConvertingResult;
 import com.kloudsync.techexcel.info.Customer;
@@ -65,18 +63,16 @@ import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.PageActionBean;
 import com.ub.techexcel.bean.Record;
-import com.ub.techexcel.bean.WebAction;
 import com.ub.techexcel.bean.RecordDetail;
 import com.ub.techexcel.bean.SectionVO;
 import com.ub.techexcel.bean.SoundtrackBean;
+import com.ub.techexcel.bean.WebAction;
 
 import org.feezu.liuli.timeselector.Utils.TextUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -2765,7 +2761,7 @@ public class ServiceInterfaceTools {
     }
 
 
-    public interface OnJsonResponseReceiver {
+	public interface OnJsonResponseReceiver {
         void jsonResponse(JSONObject jsonResponse);
     }
 

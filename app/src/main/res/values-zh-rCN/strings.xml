@@ -861,6 +861,7 @@
     <!--会议-->
     <!--音想-->
     <!--我-->
+    <string name="stay_tuned">敬请期待</string>
     <string name="enter_pairing">进入配对</string>
     <string name="current_pen_status">当前笔的状态</string>
     <string name="similar_pen_source">有道云类似笔源</string>
@@ -873,6 +874,7 @@
     <string name="storage_remaining">存储剩余</string>
     <string name="writing_length">书写长度</string>
     <string name="seeting">设置</string>
+    <string name="penName">笔名 :</string>
     <string name="firmware_upgrade">固件升级</string>
     <string name="use_guide">使用指南</string>
     <string name="switch_the_current_pen_source">切换当前笔源</string>

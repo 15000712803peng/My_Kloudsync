@@ -1,11 +1,10 @@
 package com.kloudsync.techexcel.mvp.presenter;
 
 import com.kloudsync.techexcel.bean.EverPen;
-import com.kloudsync.techexcel.help.MyTQLPenSignal;
 import com.kloudsync.techexcel.mvp.view.SwitchPenView;
 import com.tqltech.tqlpencomm.BLEException;
 
-public class SwitchPenPresenter extends KloudPresenter<SwitchPenView> implements MyTQLPenSignal {
+public class SwitchPenPresenter extends TQLPenSignalKloudPresenter<SwitchPenView> {
 	@Override
 	public void onScanResult(EverPen everPen) {
 		if (getView() != null) {

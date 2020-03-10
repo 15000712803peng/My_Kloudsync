@@ -38,6 +38,8 @@ import org.xutils.x;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 import io.agora.openlive.model.WorkerThread;
@@ -49,7 +51,9 @@ public class App extends Application {
     private ThreadManager threadMgr;
     private Handler mainHandler;
     private MainActivity mainActivityInstance;
-    @Override
+	public List<Activity> mList = new LinkedList<Activity>();
+
+	@Override
     public void onCreate() {
         super.onCreate();
         threadMgr = ThreadManager.getManager();
@@ -276,6 +280,24 @@ public class App extends Application {
 		activityDisplayMetrics.densityDpi = targetDensityDpi;
 	}
 
+	public void addActivity(Activity activity) {
+		mList.add(activity);
+	}
 
+	public void removeActivity(Activity activity) {
+		mList.remove(activity);
+	}
+
+	public void exitActivity() {
+		try {
+			for (Activity activity : mList) {
+				if (activity != null) {
+					activity.finish();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 }

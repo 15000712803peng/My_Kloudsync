@@ -1,13 +1,20 @@
 package com.kloudsync.techexcel.mvp.presenter;
 
 import com.kloudsync.techexcel.bean.EverPen;
-import com.kloudsync.techexcel.mvp.view.PenSeetingView;
+import com.kloudsync.techexcel.help.MyTQLPenSignal;
+import com.kloudsync.techexcel.mvp.view.KloudView;
 import com.tqltech.tqlpencomm.BLEException;
+import com.tqltech.tqlpencomm.Dot;
+import com.tqltech.tqlpencomm.PenCommAgent;
 
-public class PenSeetingPresenter extends TQLPenSignalKloudPresenter<PenSeetingView> {
+public class TQLPenSignalKloudPresenter<V extends KloudView> extends KloudPresenter<V> implements MyTQLPenSignal {
+	@Override
+	public void getBleManager(PenCommAgent bleManager) {
+
+	}
+
 	@Override
 	public void onScanResult(EverPen everPen) {
-
 	}
 
 	@Override
@@ -22,13 +29,21 @@ public class PenSeetingPresenter extends TQLPenSignalKloudPresenter<PenSeetingVi
 
 	@Override
 	public void onDisconnected() {
-		if (getView() != null) {
-			getView().onDisconnected();
-		}
+
 	}
 
 	@Override
 	public void onConnectFailed() {
+
+	}
+
+	@Override
+	public void onReceiveDot(Dot dot) {
+
+	}
+
+	@Override
+	public void onReceiveOfflineStrokes(Dot dot) {
 
 	}
 
@@ -64,8 +79,6 @@ public class PenSeetingPresenter extends TQLPenSignalKloudPresenter<PenSeetingVi
 
 	@Override
 	public void onPenNameSetupResponse(boolean bIsSuccess) {
-		if (getView() != null) {
-			getView().setPenName(bIsSuccess);
-		}
+
 	}
 }

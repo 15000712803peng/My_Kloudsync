@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.BluetoothPenAdapter;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EverPen;
 import com.kloudsync.techexcel.help.EverPenManger;
 import com.kloudsync.techexcel.mvp.BaseActivity;
@@ -25,7 +26,8 @@ import java.util.List;
 import butterknife.Bind;
 
 public class SwitchPenActivity extends BaseActivity<SwitchPenPresenter> implements SwitchPenView, BluetoothPenAdapter.OnItemClickListener {
-
+	public static final String SIMILARPENSOURCE = "similarpensource";
+	public static final String PENTYPE = "pentype";
 	@Bind(R.id.iv_titlebar_back)
 	ImageView mIvTitlebarBack;
 	@Bind(R.id.tv_titlebar_title)
@@ -35,6 +37,8 @@ public class SwitchPenActivity extends BaseActivity<SwitchPenPresenter> implemen
 	@Bind(R.id.lly_switch_pen_add)
 	LinearLayout mLlyAddPen;
 	private EverPenManger mEverPenManger;
+	private String mSimlarPenSource;
+	private String mPenType;
 	private List<EverPen> mEverPenList = new ArrayList<>();
 	private BluetoothPenAdapter mBluetoothPenAdapter;
 	private int mPosition;
@@ -59,7 +63,7 @@ public class SwitchPenActivity extends BaseActivity<SwitchPenPresenter> implemen
 	@Override
 	protected void initView() {
 		mTvTitlebarTitle.setText(R.string.switch_electronic_pen);
-
+		App.mApplication.addActivity(this);
 	}
 
 	@Override
@@ -72,6 +76,8 @@ public class SwitchPenActivity extends BaseActivity<SwitchPenPresenter> implemen
 	protected void initData() {
 		mEverPenManger = EverPenManger.getInstance(this);
 		mEverPenManger.addListener(mPresenter);
+		mSimlarPenSource = getIntent().getStringExtra(SIMILARPENSOURCE);
+		mPenType = getIntent().getStringExtra(PENTYPE);
 		mEverPenManger.startOrStopFindDevice(true);
 		if (mEverPenManger.getCurrentPen() != null && mEverPenManger.getCurrentPen().isConnected()) {
 			mEverPenList.add(mEverPenManger.getCurrentPen());
@@ -129,6 +135,8 @@ public class SwitchPenActivity extends BaseActivity<SwitchPenPresenter> implemen
 				break;
 			case R.id.lly_switch_pen_add:
 				Intent intent = new Intent(this, EnterPairingActivity.class);
+				intent.putExtra(EnterPairingActivity.SIMILARPENSOURCE, mSimlarPenSource);
+				intent.putExtra(EnterPairingActivity.PENTYPE, mPenType);
 				startActivity(intent);
 				break;
 		}
@@ -210,6 +218,7 @@ public class SwitchPenActivity extends BaseActivity<SwitchPenPresenter> implemen
 		mEverPenManger = null;
 		mEverPenList.clear();
 		mBluetoothPenAdapter = null;
+		App.mApplication.removeActivity(this);
 		super.onDestroy();
 	}
 

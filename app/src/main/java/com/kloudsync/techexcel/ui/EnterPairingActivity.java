@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.BluetoothPenAdapter;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EverPen;
 import com.kloudsync.techexcel.help.EverPenManger;
 import com.kloudsync.techexcel.mvp.BaseActivity;
@@ -76,6 +78,12 @@ public class EnterPairingActivity extends BaseActivity<EnterPairingPresenter> im
 		super.onCreate(savedInstanceState);
 	}
 
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+	}
+
 	private void requestPermission() {
 		ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
 				Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -100,6 +108,7 @@ public class EnterPairingActivity extends BaseActivity<EnterPairingPresenter> im
 		mTvTitlebarTitle.setText(R.string.enter_pairing);
 		mTvPairingPenName.setText(mPenType);
 		mTvPairingSource.setText(mSimilaPenSource);
+		App.mApplication.addActivity(this);
 	}
 
 	@Override
@@ -288,7 +297,7 @@ public class EnterPairingActivity extends BaseActivity<EnterPairingPresenter> im
 	@Override
 	public void setPenName(boolean bIsSuccess) {
 		if (bIsSuccess && mEverPenList.size() != 0) {
-			String name = mEverPenManger.getCurrentPen().getName();
+			String name = mEverPenManger.getCurrentPen().getPenName();
 			mEverPenList.get(mPosition).setName(name);
 			mBluetoothPenAdapter.notifyItemChanged(mPosition);
 		}
@@ -364,6 +373,14 @@ public class EnterPairingActivity extends BaseActivity<EnterPairingPresenter> im
 		}
 	};
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		EverPen currentPen = mEverPenManger.getCurrentPen();
+		if (keyCode == KeyEvent.KEYCODE_BACK && currentPen != null && currentPen.isConnected()) {
+			App.mApplication.exitActivity();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
 	@Override
 	protected void onDestroy() {
@@ -375,6 +392,7 @@ public class EnterPairingActivity extends BaseActivity<EnterPairingPresenter> im
 		mBleManager = null;
 		mEverPenManger = null;
 		unregisterReceiver(mBluetoothEnabledReceiver);
+		App.mApplication.removeActivity(this);
 		super.onDestroy();
 	}
 }

@@ -77,6 +77,8 @@ import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ContactHelpInterface;
 import com.kloudsync.techexcel.help.EverPenManger;
 import com.kloudsync.techexcel.info.School;
+import com.kloudsync.techexcel.mvp.presenter.MainPresenter;
+import com.kloudsync.techexcel.mvp.view.IMainActivityView;
 import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.service.UploadService;
@@ -84,6 +86,7 @@ import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.tool.DensityUtil;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
+import com.kloudsync.techexcel.tool.SyncWebNoteActionsCache;
 import com.kloudsync.techexcel.tool.UriTool;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
@@ -97,6 +100,8 @@ import com.pgyersdk.update.UpdateManagerListener;
 import com.pgyersdk.update.javabean.AppBean;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tqltech.tqlpencomm.Dot;
+import com.tqltech.tqlpencomm.PenCommAgent;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.service.KloudWebClientManager;
 import com.ub.service.activity.SocketService;
@@ -104,6 +109,9 @@ import com.ub.service.activity.SyncBookActivity;
 import com.ub.service.activity.SyncRoomActivity;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.EventViewDocPermissionGranted;
+import com.ub.techexcel.bean.NewBookPagesBean;
+import com.ub.techexcel.bean.NoteDotBean;
+import com.ub.techexcel.bean.SyncNoteBean;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -118,8 +126,12 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -143,7 +155,7 @@ import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSIO
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE;
 
 
-public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener, OnClickListener {
+public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener, OnClickListener, IMainActivityView {
 
     private List<TextView> tvs = new ArrayList<TextView>();
     private TextView tv_redcontact;
@@ -220,7 +232,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                             getString(R.string.uploadfailure),
                             Toast.LENGTH_SHORT).show();
                     break;
-
                 default:
                     break;
             }
@@ -230,6 +241,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     };
 
     long systemTime = 0;
+    private EverPenManger mEverPenManger;
+    private MainPresenter mPresenter;
+    private PenCommAgent mBleManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -249,7 +263,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         setContentView(R.layout.activity_main);
 //        PgyUpdateManager.register(this);
         initView();
-        EverPenManger.getInstance(this).init();
+        mEverPenManger = EverPenManger.getInstance(this);
+        mEverPenManger.init();
+        mBleManager = mEverPenManger.getBleManager();
         requestRongCloudOnlineStatus();
         GetSchoolInfo();
         initUpdate();
@@ -266,7 +282,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             addWxDocDialog.setSavedListener(this);
             addWxDocDialog.show();
         }
-
+        mPresenter = new MainPresenter();
+        mPresenter.attachView(this);
+        mEverPenManger.addListener(mPresenter);
     }
 
     private void requestRongCloudOnlineStatus() {
@@ -937,8 +955,16 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         // TODO Auto-generated method stub
         super.onDestroy();
         instance = null;
-        EverPenManger.getInstance(this).startOrStopFindDevice(false);
-        EverPenManger.getInstance(this).unBindService();
+        mEverPenManger.startOrStopFindDevice(false);
+        if (mBleManager != null) {
+            mBleManager.ReqOfflineDataTransfer(false);
+        }
+        mEverPenManger.removeListener(mPresenter);
+        mEverPenManger.unBindService();
+        mBleManager = null;
+        mEverPenManger = null;
+        mPresenter.detachView();
+        mPresenter = null;
         app.setMainActivityInstance(null);
         AppConfig.isUpdateCustomer = false;
         AppConfig.isUpdateDialogue = false;
@@ -947,6 +973,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         EventBus.getDefault().unregister(this);
         app.getThreadMgr().shutDown();
         KillFile();
+        System.gc();
     }
 
     private void stopService() {
@@ -1774,5 +1801,135 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         startActivity(intent);
     }
 
+    @Override
+    public void getBleManager(PenCommAgent bleManager) {
+        mBleManager = bleManager;
+        mBleManager.ReqOfflineDataTransfer(true);
+    }
+
+    @Override
+    public void onConnected() {
+        if (personalCenterFragment != null) {
+            personalCenterFragment.setCurrentPenNameAndStatus(true);
+        }
+    }
+
+    @Override
+    public void onDisconnected() {
+        if (personalCenterFragment != null) {
+            personalCenterFragment.setCurrentPenNameAndStatus(false);
+        }
+    }
+
+    @Override
+    public void onConnectFailed() {
+        if (personalCenterFragment != null) {
+            personalCenterFragment.setCurrentPenNameAndStatus(false);
+        }
+    }
+
+    private final double B5_WIDTH = 119.44;
+    private final double B5_HEIGHT = 168;
+    private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    @Override
+    public void onReceiveDot(Dot dot) {
+        int eventType = 0;
+        switch (dot.type) {
+            case PEN_DOWN:
+                eventType = 2;
+                break;
+            case PEN_MOVE:
+                eventType = 1;
+                break;
+            case PEN_UP:
+                //发送数据给web端
+                break;
+        }
+        int force = dot.force * 20;
+        if (force == 0) {
+            //不处理
+        } else if (force < 500) {
+            force = 500;
+        } else if (force > 1200) {
+            force = 1200;
+        }
+        Date date = null;
+        try {
+            date = mSimpleDateFormat.parse(" 2010-01-01 00:00:00");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        double dotX = Double.valueOf(dot.x + String.valueOf(dot.fx));
+        double dotY = Double.valueOf(dot.y + String.valueOf(dot.fy));
+        double x = dotX / B5_WIDTH * 5600;
+        double y = dotY / B5_HEIGHT * 7920;
+        String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
+        String address = String.valueOf(dot.OwnerID) + dot.SectionID + dot.BookID + dot.PageID;
+        NoteDotBean noteDotBean = new NoteDotBean();
+        noteDotBean.setDotId(uuid);
+        noteDotBean.setDot(dot);
+
+        SyncNoteBean syncNoteBean = new SyncNoteBean();
+        syncNoteBean.setPeertimeToken(AppConfig.UserToken);
+
+        List<SyncNoteBean.BookPagesBean> bookPagesList = new ArrayList<>();
+        List<SyncNoteBean.DrawingDataBean> drawingDataList = new ArrayList<>();
+        SyncNoteBean.BookPagesBean bookPagesBean = new SyncNoteBean.BookPagesBean();
+        bookPagesBean.setNoteId(dot.PageID);
+//        bookPagesBean.setFileId(); 请求接口获得
+//        bookPagesBean.setTargetFolderKey(); 请求接口获得
+        bookPagesBean.setPageAddress(address);
+        bookPagesList.add(bookPagesBean);
+        syncNoteBean.setBookPages(bookPagesList);
+
+        SyncNoteBean.DrawingDataBean drawingDataBean = new SyncNoteBean.DrawingDataBean();
+        drawingDataBean.setAddress(address);
+        drawingDataBean.setUserID(AppConfig.UserID);
+        drawingDataBean.setEvent_type(eventType);
+        drawingDataBean.setForce(force);
+        drawingDataBean.setPoint_x(String.valueOf(x));
+        drawingDataBean.setPoint_y(String.valueOf(y));
+        drawingDataBean.setTimestamp(String.valueOf(date.getTime() + dot.timelong));
+        drawingDataBean.setPenID(mEverPenManger.getCurrentPen().getMacAddress());
+        drawingDataBean.setStrokeID(uuid);
+        drawingDataList.add(drawingDataBean);
+        syncNoteBean.setDrawingData(drawingDataList);
+        SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);
+        SyncWebNoteActionsCache.getInstance(this).getPartWebActions(uuid);
+
+        NewBookPagesBean newBookPagesBean = new NewBookPagesBean();
+        newBookPagesBean.setPeertimeToken(AppConfig.UserToken);
+        NewBookPagesBean.BookPagesBean bookPagesBean1 = new NewBookPagesBean.BookPagesBean();
+        bookPagesBean1.setPageAddress(address);
+        bookPagesBean1.setPenId(uuid);
+        mPresenter.requestNewBookPages(newBookPagesBean);
+        mPresenter.uploadDrawing(syncNoteBean);
+    }
+
+    @Override
+    public void onReceiveOfflineStrokes(Dot dot) {
+        String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
+        NoteDotBean noteDotBean = new NoteDotBean();
+        noteDotBean.setDotId(uuid);
+        noteDotBean.setDot(dot);
+        SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);
+        SyncWebNoteActionsCache.getInstance(this).getPartWebActions(uuid);
+    }
+
+    @Override
+    public void toast(String msg) {
+
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void dismissLoading() {
+
+    }
 
 }

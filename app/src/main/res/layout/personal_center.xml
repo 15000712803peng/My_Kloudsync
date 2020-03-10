@@ -709,6 +709,7 @@
                     android:layout_alignRight="@id/tv_personal_pen_status"
                     android:textSize="@dimen/sp_11"
                     android:textColor="@color/colorFont99"
+                    android:visibility="gone"
                     android:layout_alignTop="@id/tv_personal_pen_source"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />

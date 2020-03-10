@@ -77,6 +77,7 @@ public class AppConfig {
 
     public static String LOGININFO = "LOGININFO";
     public static String EVERPENINFO = "EVERPENINFO";
+    public static String KLOUDWEBNOTEACTIONSCACHE = "KLOUDWEBNOTEACTIONSCACHE";
     public static String COMMONUSEDINFO = "COMMONUSEDINFO";
     public static String Name = "UBAO小博士";
     public static String Robot = "Robot";

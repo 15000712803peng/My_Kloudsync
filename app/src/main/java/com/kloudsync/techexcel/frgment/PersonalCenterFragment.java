@@ -34,10 +34,12 @@ import android.widget.Toast;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.EverPen;
 import com.kloudsync.techexcel.bean.params.EventChangeAccout;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.ModifyMeetingIdDialog;
 import com.kloudsync.techexcel.help.ApiTask;
+import com.kloudsync.techexcel.help.EverPenManger;
 import com.kloudsync.techexcel.help.PopShareKloudSync;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
@@ -64,6 +66,7 @@ import com.kloudsync.techexcel.start.LoginActivity;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.DensityUtil;
 import com.kloudsync.techexcel.tool.StringUtils;
+import com.kloudsync.techexcel.ui.CurrentPenStatusActivity;
 import com.kloudsync.techexcel.ui.DigitalPensActivity;
 import com.kloudsync.techexcel.ui.GuideActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
@@ -160,6 +163,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
     private TextView mPenStatus;
     private TextView mPenSource;
     private TextView mCurrentPenStatus;
+	private EverPen mCurrentPen;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -175,7 +179,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         ShowLanguage();
         GetSchoolInfo();
         getPersonInfo2();
-
+	    mCurrentPen = EverPenManger.getInstance(getActivity()).getCurrentPen();
         return view;
     }
 
@@ -294,9 +298,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         mPenStatus = view.findViewById(R.id.tv_personal_pen_status);
         mPenSource = view.findViewById(R.id.tv_personal_pen_source);
         mCurrentPenStatus = view.findViewById(R.id.tv_personal_pen_current_status);
-        mPenStatus.setVisibility(View.GONE);
-        mPenSource.setVisibility(View.GONE);
-        mCurrentPenStatus.setVisibility(View.GONE);
+
         rl_pc_language = (RelativeLayout) view
                 .findViewById(R.id.rl_pc_language);
         rl_pc_klassroomID = (RelativeLayout) view
@@ -342,6 +344,21 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 
         tv_pc_account_name.setText(account_name);
         // tv_pc_account_number.setText(account_number);
+	    EverPen autoPen = EverPenManger.getInstance(getActivity()).getAutoPen();
+	    if (autoPen != null) {
+		    mPenSource.setText(autoPen.getPenType() + autoPen.getSimilaPenSource() + autoPen.getPenName());
+		    if (autoPen.isConnected()) {
+			    mPenStatus.setText(R.string.the_connected);
+		    } else {
+			    mPenStatus.setText(R.string.not_connected);
+		    }
+	    } else {
+		    mPenStatus.setVisibility(View.GONE);
+		    mPenSource.setVisibility(View.GONE);
+		    mCurrentPenStatus.setVisibility(View.GONE);
+	    }
+
+
         ll_pc_publish_article.setOnClickListener(this);
         ll_pc_collection.setOnClickListener(this);
         ll_pc_note.setOnClickListener(this);
@@ -998,9 +1015,19 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         }
     }
 
-    private void startDigitalPens(){
-        Intent intent = new Intent(getActivity(), DigitalPensActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	private void startDigitalPens() {
+		Intent intent;
+		if (mCurrentPen != null) {
+			if (mCurrentPen.isConnected()) {
+				intent = new Intent(getActivity(), CurrentPenStatusActivity.class);
+				intent.putExtra(CurrentPenStatusActivity.SIMILARPENSOURCE, mCurrentPen.getSimilaPenSource());
+				intent.putExtra(CurrentPenStatusActivity.PENTYPE, mCurrentPen.getPenType());
+			} else {
+				intent = new Intent(getActivity(), DigitalPensActivity.class);
+			}
+		} else {
+			intent = new Intent(getActivity(), DigitalPensActivity.class);
+		}
         startActivity(intent);
     }
 
@@ -1008,4 +1035,24 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
     public void modifyClick(String newId) {
         UpdateClassRoomID(newId);
     }
+
+	public void setCurrentPenNameAndStatus(boolean isConnected) {
+		mCurrentPen = EverPenManger.getInstance(getActivity()).getCurrentPen();
+		EverPen autoPen = EverPenManger.getInstance(getActivity()).getAutoPen();
+		if (autoPen != null) {
+			mPenSource.setVisibility(View.VISIBLE);
+			mPenStatus.setVisibility(View.VISIBLE);
+			mPenSource.setText(mCurrentPen.getPenType() + mCurrentPen.getSimilaPenSource() + mCurrentPen.getPenName());
+			if (isConnected) {
+				mPenStatus.setText(R.string.the_connected);
+			} else {
+				mPenStatus.setText(R.string.not_connected);
+			}
+		} else {
+			mPenSource.setText("");
+			mPenStatus.setText("");
+			mPenSource.setVisibility(View.GONE);
+			mPenStatus.setVisibility(View.GONE);
+		}
+	}
 }

@@ -8,6 +8,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EverPen;
 import com.kloudsync.techexcel.dialog.CreateFolderDialog;
 import com.kloudsync.techexcel.help.EverPenManger;
@@ -46,6 +47,7 @@ public class PenSeetingActivity extends BaseActivity<PenSeetingPresenter> implem
 	private EverPen mCurrentPen;
 	private String mOldPenName;
 	private String mNewPenName;
+	private String mName;
 
 
 	@Override
@@ -72,7 +74,8 @@ public class PenSeetingActivity extends BaseActivity<PenSeetingPresenter> implem
 		mPenType = getIntent().getStringExtra(PENTYPE);
 		mTvPenSource.setText(mPenType + mSimlaPenSource);
 		mCurrentPen = mEverPenManger.getCurrentPen();
-		mTvPenName.setText(mCurrentPen.getName());
+		mTvPenName.setText(mCurrentPen.getPenName());
+		App.mApplication.addActivity(this);
 	}
 
 	@Override
@@ -100,13 +103,15 @@ public class PenSeetingActivity extends BaseActivity<PenSeetingPresenter> implem
 				break;
 			case R.id.iv_setting_pen_edit_name:
 				mOldPenName = mTvPenName.getText().toString();
+				mName = mCurrentPen.getName();
 				CreateFolderDialog.instance(this).showDialog(R.string.edit_pen_name, R.string.please_enter_a_pen_name, 20);
 				CreateFolderDialog.instance(this).setCreateFolderCallback(new CreateFolderDialog.CreateFolderCallback() {
 					@Override
 					public void createFolder(String folderName) {
-						mNewPenName = folderName;
-						mCurrentPen.setName(mNewPenName);
-						mTvPenName.setText(folderName);
+						mNewPenName = mCurrentPen.getMacAddress() + folderName;
+						mCurrentPen.setName(folderName);
+						mCurrentPen.setPenName(mNewPenName);
+						mTvPenName.setText(mNewPenName);
 						mEverPenManger.getBleManager().setPenName(folderName);
 					}
 				});
@@ -119,6 +124,8 @@ public class PenSeetingActivity extends BaseActivity<PenSeetingPresenter> implem
 				break;
 			case R.id.tv_pen_seeting_switch:
 				intent = new Intent(this, SwitchPenActivity.class);
+				intent.putExtra(PenSeetingActivity.SIMILARPENSOURCE, mSimlaPenSource);
+				intent.putExtra(PenSeetingActivity.PENTYPE, mPenType);
 				startActivity(intent);
 				break;
 			case R.id.tv_pen_seeting_delete:
@@ -138,7 +145,8 @@ public class PenSeetingActivity extends BaseActivity<PenSeetingPresenter> implem
 		if (!bIsSuccess) {
 			mTvPenName.setText(mOldPenName);
 			showToast(R.string.setup_failed);
-			mCurrentPen.setName(mOldPenName);
+			mCurrentPen.setName(mName);
+			mCurrentPen.setPenName(mOldPenName);
 		}
 	}
 
@@ -157,6 +165,7 @@ public class PenSeetingActivity extends BaseActivity<PenSeetingPresenter> implem
 		super.dismissLoading();
 	}
 
+
 	@Override
 	protected void onDestroy() {
 		mSimlaPenSource = null;
@@ -167,6 +176,7 @@ public class PenSeetingActivity extends BaseActivity<PenSeetingPresenter> implem
 		mCurrentPen = null;
 		mOldPenName = null;
 		mNewPenName = null;
+		App.mApplication.removeActivity(this);
 		super.onDestroy();
 	}
 }

@@ -2,8 +2,12 @@ package com.kloudsync.techexcel.help;
 
 import com.kloudsync.techexcel.bean.EverPen;
 import com.tqltech.tqlpencomm.BLEException;
+import com.tqltech.tqlpencomm.Dot;
+import com.tqltech.tqlpencomm.PenCommAgent;
 
 public interface MyTQLPenSignal {
+
+	void getBleManager(PenCommAgent bleManager);
 	/**扫描蓝牙设备回调start*/
 	/**
 	 * 扫描结果
@@ -36,6 +40,23 @@ public interface MyTQLPenSignal {
 	void onConnectFailed();
 
 	/**连接笔回调end*/
+
+	/**笔数据回调start*/
+	/**
+	 * 笔实时数据回调
+	 *
+	 * @param dot
+	 */
+	void onReceiveDot(Dot dot);
+
+	/**
+	 * 笔离线数据回调
+	 *
+	 * @param dot
+	 */
+	void onReceiveOfflineStrokes(Dot dot);
+
+	/**笔数据回调end*/
 
 	/**
 	 * 获取笔的电量信息回调函数
@@ -80,6 +101,8 @@ public interface MyTQLPenSignal {
 	 * @param bIsSuccess
 	 */
 	void onPenNameSetupResponse(boolean bIsSuccess);
+
+
 	/**对应错误码回调end*/
 
 }
