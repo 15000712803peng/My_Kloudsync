@@ -217,7 +217,7 @@ public class FloatingNoteDialog implements View.OnClickListener {
     /**
      *
      * @param noteId
-     * @param noteData  编码后为  {"PageTokenBackup":"002ff42a-6f76-4d67-bfd5-c216116b9b57","PageToken":"3a986f8f-0d31-4241-8ac0-a85a2e75ebc6","Pai
+     * @param noteData  编码后为  {"lines":[{"id":"D342A8CB-DB21-4990-BD62-987A4D0419CC","points":[[3004,5136,500,1583830777.256],[3014,5139,880,1583830777.2579999],
      */
     public void followDrawNewLine(long noteId,String noteData){
         if(currentNote.getNoteID()==noteId){
@@ -256,7 +256,7 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 JSONObject jsonObject = new JSONObject();
                 if (!TextUtils.isEmpty(url)) {
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    lastjsonObject=ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
+                    lastjsonObject=jsonObject.getJSONObject("PaintData");
                     Log.e("floatingnote", "url:" + url+"   "+jsonObject.toString());
                 }
                 return jsonObject;
@@ -271,7 +271,7 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 _data.put("TriggerEvent", false);
                 Log.e("floatingnote", "ShowDotPanData");
                 floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(note.getNoteID(),jsonObject);
+                RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(note.getNoteID(),lastjsonObject);
             }
         }).subscribe();
     }

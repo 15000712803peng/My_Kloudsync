@@ -731,6 +731,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
+    JSONObject noteweblastjsonObject=new JSONObject();
     private void handleBluetoothNote(final String url) {
         Observable.just(url).observeOn(Schedulers.io()).map(new Function<String, String>() {
             @Override
@@ -749,6 +750,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (!TextUtils.isEmpty(url)) {
                     Log.e("check_url", "url:" + url);
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
+                    noteweblastjsonObject=jsonObject.getJSONObject("PaintData");
                 }
                 return jsonObject;
             }
@@ -762,7 +764,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
                 noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId,jsonObject);
+                RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId,noteweblastjsonObject);
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override
@@ -1037,7 +1039,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 }
                             }
                         }
+                        // 同一个笔记
                         RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -2887,6 +2891,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     FloatingNoteDialog floatingNoteDialog;
 
     private void showNoteFloatingDialog(int noteId){
+        currentNoteId=noteId;
         if (floatingNoteDialog != null) {
             floatingNoteDialog.show(noteId, meetingConfig);
         }else{

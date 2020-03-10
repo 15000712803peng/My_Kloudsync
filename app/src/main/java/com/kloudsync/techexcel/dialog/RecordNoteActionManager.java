@@ -34,7 +34,7 @@ public class RecordNoteActionManager {
      * 5.画线(前端)
      * {actionType:304,time:1,page:1,data:{duration:11,strokeId:"3243-2342-24-4"}}
      * @param noteId  笔记id
-     * @param noteData 笔记单条数据
+     * @param noteData 笔记单条数据  noteData
      */
     public void sendDrawActions(long noteId, String noteData) {
 //        {actionType:304,time:1,page:1,data:{duration:11,strokeId:"3243-2342-24-4"}}
@@ -45,8 +45,7 @@ public class RecordNoteActionManager {
         String linealldata= Tools.getFromBase64(noteData);
         try {
             JSONObject jsonObject=new JSONObject(linealldata);
-            JSONObject paintdata=jsonObject.getJSONObject("PaintData");
-            JSONArray linesjson=paintdata.getJSONArray("lines");
+            JSONArray linesjson=jsonObject.getJSONArray("lines");
             JSONObject submit=new JSONObject();
             for(int i=0;i<linesjson.length();i++){
                 JSONObject linedata=linesjson.getJSONObject(i);
@@ -81,9 +80,9 @@ public class RecordNoteActionManager {
      * 1. 显示笔记到浮窗: (前端)
      * {actionType:300,time:1,page:1,data:{id:123,lastStrokeId:"1-2-3"}}
      * @param noteId
-     * @param linejson
+     * @param paintData
      */
-    public  void sendDisplayPopupActions(long noteId, JSONObject linejson){
+    public  void sendDisplayPopupActions(long noteId, JSONObject paintData){
         //  {
         //	"PageTokenBackup": "002ff42a-6f76-4d67-bfd5-c216116b9b57",
         //	"PageToken": "3a986f8f-0d31-4241-8ac0-a85a2e75ebc6",
@@ -98,13 +97,11 @@ public class RecordNoteActionManager {
 //      {actionType:308,time:1,page:1,data:{id:123,lastStrokeId:"1-2-3"}}
         String strokeId="";
         try {
-            JSONObject paintdata=linejson.getJSONObject("PaintData");
-            JSONArray linesjson=paintdata.getJSONArray("lines");
+            JSONArray linesjson=paintData.getJSONArray("lines");
             if(linesjson.length()>0){
                 JSONObject linedata=linesjson.getJSONObject(linesjson.length()-1);
                 strokeId=linedata.getString("id");  //拿最后一条动作的id
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -124,9 +121,9 @@ public class RecordNoteActionManager {
      * 9. 直接显示笔记到主界面: (前端,meeting:server)
      * {actionType:308,time:1,page:1,data:{id:123,lastStrokeId:"1-2-3"}}
      * @param noteId
-     * @param linejson
+     * @param paintData
      */
-    public  void sendDisplayHomePageActions(long noteId, JSONObject linejson){
+    public  void sendDisplayHomePageActions(long noteId, JSONObject paintData){
         //  {
         //	"PageTokenBackup": "002ff42a-6f76-4d67-bfd5-c216116b9b57",
         //	"PageToken": "3a986f8f-0d31-4241-8ac0-a85a2e75ebc6",
@@ -141,8 +138,7 @@ public class RecordNoteActionManager {
 //      {actionType:308,time:1,page:1,data:{id:123,lastStrokeId:"1-2-3"}}
         String strokeId="";
         try {
-            JSONObject paintdata=linejson.getJSONObject("PaintData");
-            JSONArray linesjson=paintdata.getJSONArray("lines");
+            JSONArray linesjson=paintData.getJSONArray("lines");
             if(linesjson.length()>0){
                 JSONObject linedata=linesjson.getJSONObject(linesjson.length()-1);
                 strokeId=linedata.getString("id");  //拿最后一条动作的id
@@ -167,29 +163,28 @@ public class RecordNoteActionManager {
      * 2.笔记从浮窗显示到主界面(前端)
      * {actionType:301,time:1,page:1,data:{id:343,lastStrokeId:"1-2-3"}}
      */
-    public  void sendDisplayPopupHomepageActions(long noteId,JSONObject linejson){
-        soundtrackRecordManager.recordNoteAction(NoteRecordType.DISPLAY_POPUP_HOMEPAGE,getHomepagePopupLineData(noteId,linejson));
+    public  void sendDisplayPopupHomepageActions(long noteId,JSONObject paintData){
+        soundtrackRecordManager.recordNoteAction(NoteRecordType.DISPLAY_POPUP_HOMEPAGE,getHomepagePopupLineData(noteId,paintData));
     }
 
     /**
      * 8.笔记从主界面显示到浮窗(前端)
      * {actionType:307,time:1,page:1,data:{id:343,lastStrokeId:"1-2-3"}}
      */
-    private void sendDisplayHomepagePopupActions(long noteId,JSONObject linejson){
-        soundtrackRecordManager.recordNoteAction(NoteRecordType.DISPLAY_HOMEPAGE_POPUP,getHomepagePopupLineData(noteId,linejson));
+    private void sendDisplayHomepagePopupActions(long noteId,JSONObject paintData){
+        soundtrackRecordManager.recordNoteAction(NoteRecordType.DISPLAY_HOMEPAGE_POPUP,getHomepagePopupLineData(noteId,paintData));
     }
 
     /**
      * 浮窗与主界面切换要录制的数据
      * @param noteId
-     * @param linejson
+     * @param paintData
      * @return
      */
-    private JSONObject getHomepagePopupLineData(long noteId,JSONObject linejson){
+    private JSONObject getHomepagePopupLineData(long noteId,JSONObject paintData){
         String strokeId="";
         try {
-            JSONObject paintdata=linejson.getJSONObject("PaintData");
-            JSONArray linesjson=paintdata.getJSONArray("lines");
+            JSONArray linesjson=paintData.getJSONArray("lines");
             if(linesjson.length()>0){
                 JSONObject linedata=linesjson.getJSONObject(linesjson.length()-1);
                 strokeId=linedata.getString("id");  //拿最后一条动作的id
@@ -197,7 +192,6 @@ public class RecordNoteActionManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         JSONObject jsonObject= null;
         try {
             jsonObject = new JSONObject();
@@ -210,16 +204,14 @@ public class RecordNoteActionManager {
     }
 
 
-
-
     /**
      * 6.关闭浮窗笔记(前端)
      * {actionType:305,time:1,page:1,data:{id:123}}
      */
-    public void sendClosePopupActons(long noteid){
+    public void sendClosePopupActons(long noteId){
         try {
             JSONObject jsonObject=new JSONObject();
-            jsonObject.put("id",noteid);
+            jsonObject.put("id",noteId);
             soundtrackRecordManager.recordNoteAction(NoteRecordType.CLOSE_POPUP_NOTE,jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -231,14 +223,14 @@ public class RecordNoteActionManager {
      * 7.关闭主界面笔记(前端)
      * {actionType:306,time:1,page:1,data:{id:123,docId:345,pageNo:1}}
      */
-    public void sendCloseHomePageActon(long noteid, boolean isMeetingRecord, MeetingConfig meetingConfig){
+    public void sendCloseHomePageActon(long noteId, boolean isMeetingRecord, MeetingConfig meetingConfig){
         // {actionType:306,time:1,page:1,data:{id:123,docId:345,pageNo:1}}
         // id: noteid
         // docId:关闭笔记后显示的文档id(会议录制增加)
         // pageNo:显示的文档页码(会议录制增加)
         try {
             JSONObject jsonObject=new JSONObject();
-            jsonObject.put("id",noteid);
+            jsonObject.put("id",noteId);
             if(isMeetingRecord){
                 jsonObject.put("docId",meetingConfig.getDocument().getItemID());
                 jsonObject.put("pageNo",meetingConfig.getPageNumber());
