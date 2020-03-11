@@ -246,6 +246,7 @@ public class ConnectService {
                 jsonObject = new JSONObject(result);
             }
         } catch (Exception e) {
+            Log.e("getIncidentbyHttpGet","exception:" + e);
             e.printStackTrace();
         }
         return jsonObject;

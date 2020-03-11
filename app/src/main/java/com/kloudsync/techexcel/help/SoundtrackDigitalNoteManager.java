@@ -21,6 +21,7 @@ import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Uploadao;
+import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.SyncNoteEventsCache;
@@ -121,7 +122,7 @@ public class SoundtrackDigitalNoteManager {
             }
         }
 
-        for (int i = 0 ; i < index + 1; ++i) {
+        for (int i = 0; i < index + 1; ++i) {
             executeEvent(_noteEvents.get(i));
         }
     }
@@ -259,6 +260,7 @@ public class SoundtrackDigitalNoteManager {
     ;
 
     public void release() {
+        _noteEvents = null;
         instance = null;
     }
 
@@ -864,25 +866,36 @@ public class SoundtrackDigitalNoteManager {
         return result;
     }
 
-    public void doProcess() {
-        Observable.just("request_note_controller").observeOn(Schedulers.io()).map(new Function<String, String>() {
-            @Override
-            public String apply(String s) throws Exception {
-                return getCacheNoteData(context);
-            }
-        }).doOnNext(new Consumer<String>() {
+    public void doProcess(final String url) {
+        String noteEvents = "";
+        if (noteEventsCache.containNoteEvents(url)) {
+            noteEvents = noteEventsCache.getCacheNoteEvents(url);
+        }
+        Observable.just(noteEvents).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String response) throws Exception {
                 if (!TextUtils.isEmpty(response)) {
+                    Log.e("check_noteEvents","note_events:" + response);
                     List<DigitalNoteEventInSoundtrack> noteEventsData = new Gson().fromJson(response, new TypeToken<List<DigitalNoteEventInSoundtrack>>() {
                     }.getType());
                     if (noteEventsData != null && noteEventsData.size() > 0) {
-//                        Log.e("noteEventsData", "noteEventsData_size:" + noteEventsData.size());
                         _noteEvents.addAll(noteEventsData);
-//                        doExecuteNoteEvent();
                     }
 
+                } else {
+                    Log.e("check_noteEvents","download_url:" + url);
+                    String _resonse = ConnectService.getResponseStringbyHttpGet(url);
+                    if (!TextUtils.isEmpty(_resonse)) {
+                        List<DigitalNoteEventInSoundtrack> noteEventsData = new Gson().fromJson(_resonse, new TypeToken<List<DigitalNoteEventInSoundtrack>>() {
+                        }.getType());
+                        if (noteEventsData != null && noteEventsData.size() > 0) {
+                            _noteEvents.addAll(noteEventsData);
+                        }
+                        noteEventsCache.cacheNoteEvents(url,_resonse);
+
+                    }
                 }
+                Log.e("check__noteEvents","_noteEvents_size:" +_noteEvents.size());
             }
         }).subscribe();
     }
