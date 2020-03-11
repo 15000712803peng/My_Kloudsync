@@ -55,6 +55,7 @@ import com.kloudsync.techexcel.bean.EventCloseNoteView;
 import com.kloudsync.techexcel.bean.EventCloseShare;
 import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.EventExit;
+import com.kloudsync.techexcel.bean.EventFloatingNote;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.EventInviteUsers;
 import com.kloudsync.techexcel.bean.EventKickOffMember;
@@ -107,6 +108,7 @@ import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
+import com.kloudsync.techexcel.dialog.plugin.FloatingNoteDialog;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -737,7 +739,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             toggleMembersCamera(true);
         }
     }
-
+    JSONObject noteweblastjsonObject=new JSONObject();
     private void handleBluetoothNote(final String url) {
         if (TextUtils.isEmpty(url)) {
             return;
@@ -793,6 +795,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (!TextUtils.isEmpty(url)) {
                     Log.e("check_url", "url:" + url);
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
+                    noteweblastjsonObject=jsonObject.getJSONObject("PaintData");
                 }
                 return jsonObject;
             }
@@ -806,7 +809,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
                 noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, jsonObject);
+                RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId,noteweblastjsonObject);
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override
@@ -1024,7 +1027,32 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             case SocketMessageManager.MESSAGE_AGORA_STATUS_CHANGE:
                 handleMessageAgoraStatusChange(socketMessage.getData());
                 break;
-
+            case SocketMessageManager.MESSAGE_OPEN_OR_CLOSE_NOTE:  //打开或关闭笔记
+                if (socketMessage.getData().has("retData")) {
+                    try {
+                        JSONObject retData=socketMessage.getData().getJSONObject("retData");
+                        int noteId=retData.getInt("noteId");
+                        int status=retData.getInt("status");
+                        if(status==1){ //打开浮窗
+                            showNoteFloatingDialog(noteId);
+                        }else if(status==0){  //关闭浮窗 或者 主界面
+                            if (noteLayout.getVisibility() == View.VISIBLE) {
+                                if (noteWeb != null) {
+                                    NoteViewManager.getInstance().closeNoteWeb();
+                                }
+                            }else{
+                                if(floatingNoteDialog!=null){
+                                    if(floatingNoteDialog.isShowing()){
+                                        floatingNoteDialog.closeFloating();
+                                    }
+                                }
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
             case SocketMessageManager.MESSAGE_NOTE_DATA:
                 if (socketMessage.getData().has("retData")) {
                     try {
@@ -1039,17 +1067,20 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             return;
                         }
 
-                        String key = "ShowDotPanData";
+                        // 同一个笔记
                         if (noteLayout.getVisibility() == View.VISIBLE) {
                             if (noteWeb != null) {
-                                JSONObject _data = new JSONObject();
-                                _data.put("LinesData", Tools.getFromBase64(noteData));
-                                _data.put("ShowInCenter", true);
-                                _data.put("TriggerEvent", true);
-                                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                                RecordNoteActionManager.getManager(this).sendDrawActions(noteId, noteData);
+                                noteweblastjsonObject=new JSONObject(Tools.getFromBase64(noteData));
+                                NoteViewManager.getInstance().followPaintLine(noteData);
+                            }
+                        }else{
+                            if(floatingNoteDialog!=null){
+                                if(floatingNoteDialog.isShowing()){
+                                    floatingNoteDialog.followDrawNewLine(noteId,noteData);
+                                }
                             }
                         }
+                        RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -1066,7 +1097,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
                 }
                 break;
-
             case SocketMessageManager.MESSAGE_NOTE_P1_CREATEAD:
                 if (socketMessage.getData().has("retData")) {
                     try {
@@ -2935,6 +2965,32 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         notesDialog = new UserNotesDialog(this);
         notesDialog.show(AppConfig.UserID, meetingConfig);
+    }
+
+
+    FloatingNoteDialog floatingNoteDialog;
+
+    private void showNoteFloatingDialog(int noteId){
+        currentNoteId=noteId;
+        if (floatingNoteDialog != null) {
+            floatingNoteDialog.show(noteId, meetingConfig);
+        }else{
+            floatingNoteDialog = new FloatingNoteDialog(this);
+            floatingNoteDialog.setFloatingListener(new FloatingNoteDialog.FloatingListener() {
+                @Override
+                public void changeHomePage(int noteId) {
+                    followShowNote(noteId);
+                }
+            });
+            floatingNoteDialog.show(noteId, meetingConfig);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiverOpenFloating(EventFloatingNote eventFloatingNote) {
+        //从主界面切回浮窗
+        RecordNoteActionManager.getManager(this).sendDisplayHomepagePopupActions(currentNoteId,noteweblastjsonObject);
+        showNoteFloatingDialog(eventFloatingNote.getNoteId());
     }
 
     MeetingMembersDialog meetingMembersDialog;

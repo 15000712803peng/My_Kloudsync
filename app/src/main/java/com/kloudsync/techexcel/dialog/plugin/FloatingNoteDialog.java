@@ -93,8 +93,7 @@ public class FloatingNoteDialog implements View.OnClickListener {
     public void initDialog() {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         view = layoutInflater.inflate(R.layout.floatingnotedialog, null);
-//        dialog = new Dialog(mContext, R.style.my_dialog);
-        dialog = new Dialog(mContext);
+        dialog = new Dialog(mContext, R.style.my_dialog);
         backImage = view.findViewById(R.id.back);
         backImage.setOnClickListener(this);
         floatwebview = view.findViewById(R.id.xwalkview);
