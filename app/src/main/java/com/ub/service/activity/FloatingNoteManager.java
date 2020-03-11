@@ -1,42 +1,27 @@
-package com.kloudsync.techexcel.dialog.plugin;
+package com.ub.service.activity;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
-import android.net.Uri;
+import android.graphics.PixelFormat;
 import android.os.Handler;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.webkit.WebSettings;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.MeetingConfig;
-import com.kloudsync.techexcel.bean.MeetingType;
-import com.kloudsync.techexcel.bean.NoteDetail;
-import com.kloudsync.techexcel.bean.SupportDevice;
-import com.kloudsync.techexcel.bean.UserNotes;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
-import com.kloudsync.techexcel.help.DeviceManager;
-import com.kloudsync.techexcel.help.NoteViewManager;
-import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
-import com.kloudsync.techexcel.info.Customer;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
-import com.kloudsync.techexcel.view.spinner.NiceSpinner;
-import com.kloudsync.techexcel.view.spinner.OnSpinnerItemSelectedListener;
-import com.kloudsync.techexcel.view.spinner.UserNoteTextFormatter;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.MeetingServiceTools;
@@ -44,17 +29,12 @@ import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
 
-import org.greenrobot.eventbus.EventBus;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xwalk.core.XWalkPreferences;
 import org.xwalk.core.XWalkView;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -62,65 +42,87 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
+import static io.rong.imkit.utilities.RongUtils.screenWidth;
 
-public class FloatingNoteDialog implements View.OnClickListener {
-    public Context mContext;
-    public int width;
-    public int heigth;
-    public Dialog dialog;
-    private View view;
+/**
+ * Created by wang on 2017/6/19.
+ */
+
+public class FloatingNoteManager implements View.OnClickListener {
+    /**
+     * 定义浮动窗口布局
+     */
+    LinearLayout mlayout1;
+    /**
+     * 悬浮窗控件
+     */
     private MeetingConfig meetingConfig;
     private ImageView backImage;
     private XWalkView floatwebview;
     private TextView title;
     private ImageView changefloatingnote;
+    /**
+     * 悬浮窗的布局
+     */
+    LayoutInflater inflater;
+    WindowManager mWindowManager;
+    WindowManager.LayoutParams layoutParams;
+    GestureDetector mGestureDetector;
 
-    public interface  FloatingListener{
+    public static  FloatingNoteManager instance;
+    private Context mContext;
+
+    public interface  FloatingChangeListener{
         void changeHomePage(int noteId);
     }
 
-    private FloatingListener floatingListener;
+    private FloatingChangeListener floatingChangeListener;
 
-    public void  setFloatingListener(FloatingListener floatingListener){
-        this.floatingListener=floatingListener;
+    public void  setFloatingChangeListener(FloatingChangeListener floatingChangeListener){
+        this.floatingChangeListener=floatingChangeListener;
     }
 
-    public FloatingNoteDialog(Context context) {
-        mContext = context;
-        initDialog();
+    public static FloatingNoteManager getManager(Context context) {
+        if (instance == null) {
+            synchronized (FloatingNoteManager.class) {
+                if (instance == null) {
+                    instance = new FloatingNoteManager(context);
+                }
+            }
+        }
+        return instance;
     }
 
-    public void initDialog() {
-        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-        view = layoutInflater.inflate(R.layout.floatingnotedialog, null);
-//        dialog = new Dialog(mContext, R.style.my_dialog);
-        dialog = new Dialog(mContext);
-        backImage = view.findViewById(R.id.back);
+
+    public FloatingNoteManager(Context context) {
+        this.mContext = context;
+        mWindowManager = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
+        inflater = LayoutInflater.from(mContext);
+        mlayout1 = (LinearLayout) inflater.inflate(R.layout.floatingnotedialog, null);
+        initFloating();
+        layoutParams=getParams();
+    }
+
+    public LayoutParams getParams() {
+        WindowManager.LayoutParams    layoutParams = new WindowManager.LayoutParams();
+        layoutParams.format =  PixelFormat.RGBA_8888;
+        layoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        layoutParams.flags = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        layoutParams.width = screenWidth * 3 / 4;
+        layoutParams.height =screenWidth * 3 / 4;
+        return layoutParams;
+    }
+    private void initFloating() {
+        mGestureDetector = new GestureDetector(mContext, new MyOnGestureListener1());
+        mlayout1.setOnTouchListener(new FloatingListener());
+        backImage = mlayout1.findViewById(R.id.back);
         backImage.setOnClickListener(this);
-        floatwebview = view.findViewById(R.id.xwalkview);
-        title = view.findViewById(R.id.title);
-        changefloatingnote = view.findViewById(R.id.changefloatingnote);
+        floatwebview = mlayout1.findViewById(R.id.xwalkview);
+        title = mlayout1.findViewById(R.id.title);
+        changefloatingnote = mlayout1.findViewById(R.id.changefloatingnote);
         changefloatingnote.setOnClickListener(this);
         initWeb();
-        heigth = (int) (mContext.getResources().getDisplayMetrics().heightPixels);
-        dialog.setContentView(view);
-        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
-        if (Tools.isOrientationPortrait((Activity) mContext)) {
-            //竖屏
-            Log.e("check_oritation", "oritation:portrait");
-            dialog.getWindow().setWindowAnimations(R.style.PopupAnimation5);
-            dialog.getWindow().setGravity(Gravity.BOTTOM);
-            params.width = mContext.getResources().getDisplayMetrics().widthPixels;
-            params.height = Tools.dip2px(mContext, 420);
-        } else {
-            Log.e("check_oritation", "oritation:landscape");
-            dialog.getWindow().setGravity(Gravity.RIGHT);
-            params.height = heigth;
-            params.width = Tools.dip2px(mContext, 300);
-            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            dialog.getWindow().setWindowAnimations(R.style.anination3);
-        }
-        dialog.getWindow().setAttributes(params);
     }
 
     private void initWeb() {
@@ -138,19 +140,6 @@ public class FloatingNoteDialog implements View.OnClickListener {
         floatwebview.load(indexUrl, null);
     }
 
-    public boolean isShowing() {
-        if (dialog != null) {
-            return dialog.isShowing();
-        }
-        return false;
-
-    }
-
-    public void dismiss() {
-        if (dialog != null) {
-            dialog.cancel();
-        }
-    }
 
     @Override
     public void onClick(View view) {
@@ -162,8 +151,8 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 if(currentNote!=null){
                     RecordNoteActionManager.getManager(mContext).sendDisplayPopupHomepageActions(currentNote.getNoteID(),lastjsonObject);
                 }
-                if(floatingListener!=null){
-                    floatingListener.changeHomePage(currentNote.getNoteID());
+                if(floatingChangeListener!=null){
+                    floatingChangeListener.changeHomePage(currentNote.getNoteID());
                 }
                 dismiss();
                 break;
@@ -178,21 +167,42 @@ public class FloatingNoteDialog implements View.OnClickListener {
         dismiss();
     }
 
+
     public void show(final long noteid, final MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
-        if (dialog != null && !dialog.isShowing()) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    dialog.show();
-                    process(noteid, meetingConfig);
-                }
-            },100);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mWindowManager.addView(mlayout1,layoutParams);
+                mlayout1.setVisibility(View.VISIBLE);
+                process(noteid, meetingConfig);
+            }
+        },100);
+    }
+
+    public boolean isShowing(){
+        if(mlayout1!=null){
+            if(mlayout1.getVisibility()==View.VISIBLE){
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+
+    public void dismiss() {
+        if (isShowing()) {
+            // 移除悬浮窗口
+            mlayout1.setVisibility(View.INVISIBLE);
+            mWindowManager.removeView(mlayout1);
         }
     }
 
-    Note currentNote;
+
+    private Note currentNote;
     private JSONObject lastjsonObject=new JSONObject();
+
     private void process(final long noteId, final MeetingConfig meetingConfig) {
         if (meetingConfig.getDocument() == null) {
             return;
@@ -207,8 +217,6 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
                 Log.e("floatingnote", localNoteBlankPage);
                 floatwebview.load("javascript:ShowPDF('" + localNoteBlankPage + "'," +1 + ",''," + currentNote.getAttachmentID() + "," + true + ")", null);
-//                floatwebview.load("javascript:ShowToolbar(" + false + ")", null);
-//                floatwebview.load("javascript:StopRecord()", null);
                 handleBluetoothNote(currentNote,lastModifiedDate);
             }
         });
@@ -278,6 +286,43 @@ public class FloatingNoteDialog implements View.OnClickListener {
     }
 
 
+    private int mTouchStartX, mTouchStartY, mTouchCurrentX, mTouchCurrentY;
+
+    private class FloatingListener implements OnTouchListener {
+
+        @Override
+        public boolean onTouch(View arg0, MotionEvent event) {
+            int action = event.getAction();
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    mTouchStartX = (int) event.getRawX();
+                    mTouchStartY = (int) event.getRawY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    mTouchCurrentX = (int) event.getRawX();
+                    mTouchCurrentY = (int) event.getRawY();
+                    layoutParams.x += mTouchCurrentX - mTouchStartX;
+                    layoutParams.y += mTouchCurrentY - mTouchStartY;
+                    mWindowManager.updateViewLayout(mlayout1, layoutParams);
+                    mTouchStartX = mTouchCurrentX;
+                    mTouchStartY = mTouchCurrentY;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    break;
+            }
+            return mGestureDetector.onTouchEvent(event);  // 此处必须返回false，否则OnClickListener获取不到监听
+        }
+    }
+
+
+
+    class MyOnGestureListener1 extends SimpleOnGestureListener {
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            return super.onSingleTapConfirmed(e);
+        }
+    }
+
     public class FloatNoteJavascriptInterface {
 
         @org.xwalk.core.JavascriptInterface
@@ -289,7 +334,7 @@ public class FloatingNoteDialog implements View.OnClickListener {
         @org.xwalk.core.JavascriptInterface
         public void afterChangePageFunction(final int pageNum, int type) {
 //            Log.e("JavascriptInterface", "note_afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
-            NoteViewManager.getInstance().getNotePageActionsToShow(meetingConfig);
+//            NoteViewManager.getInstance().getNotePageActionsToShow(meetingConfig);
         }
 
         @org.xwalk.core.JavascriptInterface
