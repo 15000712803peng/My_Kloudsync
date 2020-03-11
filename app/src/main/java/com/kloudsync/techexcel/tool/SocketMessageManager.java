@@ -355,7 +355,25 @@ public class SocketMessageManager {
 
     }
 
-    public void sendMessage_recording_AgoraStatusChange(MeetingConfig config,boolean isMicroOn ,boolean isCameraOn ) {
+    public void sendMessage_AgoraStatusChange(MeetingConfig config, boolean isMicroOn ,boolean isCameraOn) {
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "AGORA_STATUS_CHANGE");
+            message.put("sessionId", config.getUserToken());
+            message.put("agoraStatus", 1);
+            message.put("microphoneStatus", isMicroOn? 2 : 3);
+            message.put("cameraStatus", isCameraOn ? 2 : 3);
+            message.put("screenStatus", 0);
+            message.put("client","android");
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void sendMessage_recording_AgoraStatusChange(MeetingConfig config,boolean isMicroOn ,boolean isCameraOn) {
         try {
             JSONObject message = new JSONObject();
             message.put("action", "AGORA_STATUS_CHANGE");
@@ -476,15 +494,22 @@ public class SocketMessageManager {
     }
 
     private void doSendMessage(String message) {
+        JSONObject finalMessage = null;
+        try {
+            finalMessage = new JSONObject(message);
+            finalMessage.put("client","android");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         if (getClient() != null) {
             try {
-                getClient().send(message);
-                Log.e("doSendMessage", "send:" + message);
+                getClient().send(finalMessage.toString());
+                Log.e("doSendMessage", "send:" + finalMessage);
             } catch (Exception exception) {
                 Log.e("doSendMessage", "send_exception:" + exception.getMessage());
             }
         } else {
-            sendMessageAgain(message);
+            sendMessageAgain(finalMessage.toString());
             Log.e("doSendMessage", "send_exception,client_is_null");
         }
     }

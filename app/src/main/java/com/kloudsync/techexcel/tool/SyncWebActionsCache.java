@@ -35,17 +35,17 @@ public class SyncWebActionsCache {
         return instance;
     }
 
-
     public void cacheActions(PartWebActions partWebActions) {
 
         if (partWebActions == null || TextUtils.isEmpty(partWebActions.getUrl())) {
             return;
         }
+
         Map map = getPageMap();
-        if(map == null){
+        if (map == null) {
             return;
         }
-        map.put(partWebActions.getUrl(),partWebActions);
+        map.put(partWebActions.getUrl(), partWebActions);
         cachePreference.edit().putString("web_actions_map", new Gson().toJson(map)).commit();
     }
 
@@ -55,41 +55,42 @@ public class SyncWebActionsCache {
             return;
         }
         Map map = getPageMap();
-        if(map == null){
+        if (map == null) {
             return;
         }
+
         map.remove(url);
         cachePreference.edit().putString("web_actions_map", new Gson().toJson(map)).commit();
     }
 
-    private Map<String,PartWebActions> getPageMap() {
+    private Map<String, PartWebActions> getPageMap() {
         String json = cachePreference.getString("web_actions_map", "");
         if (TextUtil.isEmpty(json)) {
             return new HashMap<>();
         }
-        return gson.fromJson(json, new TypeToken<Map<String,PartWebActions>>() {
+        return gson.fromJson(json, new TypeToken<Map<String, PartWebActions>>() {
         }.getType());
     }
 
-    public PartWebActions getPartWebActions(String url){
-        Map<String,PartWebActions> map = getPageMap();
-        Log.e("SyncWebActionsCache","getPageCache, map:" + map);
-        if(map != null){
+    public PartWebActions getPartWebActions(String url) {
+        Map<String, PartWebActions> map = getPageMap();
+        Log.e("SyncWebActionsCache", "getPageCache, map:" + map);
+        if (map != null) {
             return map.get(url);
         }
         return null;
     }
 
-    public PartWebActions getPartWebActions(long playTime,int recordId){
-        Map<String,PartWebActions> map = getPageMap();
-        if(map != null){
+    public PartWebActions getPartWebActions(long playTime, int recordId) {
+        Map<String, PartWebActions> map = getPageMap();
+        if (map != null) {
             Set<String> urlSet = map.keySet();
             Iterator<String> iterator = urlSet.iterator();
-            while (iterator.hasNext()){
+            while (iterator.hasNext()) {
                 String url = iterator.next();
-                Log.e("SoundtrackActionsManager","check_cache_url:" + url.substring(url.indexOf("__time__separator__") + "__time__separator__".length(),url.length()));
-                String[] times = url.substring(url.indexOf("__time__separator__") + "__time__separator__".length(),url.length()).split("__");
-                if(playTime >= Long.parseLong(times[0]) && playTime <= Long.parseLong(times[1]) && recordId == Integer.parseInt(times[2])){
+                Log.e("SoundtrackActionsManager", "check_cache_url:" + url.substring(url.indexOf("__time__separator__") + "__time__separator__".length(), url.length()));
+                String[] times = url.substring(url.indexOf("__time__separator__") + "__time__separator__".length(), url.length()).split("__");
+                if (playTime >= Long.parseLong(times[0]) && playTime <= Long.parseLong(times[1]) && recordId == Integer.parseInt(times[2])) {
                     return map.get(url);
                 }
             }
@@ -99,8 +100,7 @@ public class SyncWebActionsCache {
     }
 
 
-
-    public boolean containPartWebActions(String url){
+    public boolean containPartWebActions(String url) {
         return getPageMap().containsKey(url);
     }
 

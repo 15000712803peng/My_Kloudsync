@@ -249,6 +249,28 @@ public class ConnectService {
         return jsonObject;
     }
 
+    public static String getResponseStringbyHttpGet(String url) {
+        String response = "";
+        try {
+            HttpClient client = new DefaultHttpClient();
+            HttpGet get = new HttpGet(url);
+            get.setHeader("UserToken", AppConfig.UserToken);
+            /*
+             * get.setHeader("UserToken", AppConfig.UserToken);
+			 * get.setHeader("LanguageID", AppConfig.LANGUAGEID + "");
+			 */
+            HttpResponse httpResponse = client.execute(get);
+            if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                HttpEntity entity = httpResponse.getEntity();
+                response = StringUtils.retrieveInputStream(entity);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
     // 利用http发送数据到服务器（addincident）
     public static JSONObject submitDataByJson(String path, JSONObject jsonObject) {
         JSONObject responsejson = new JSONObject();

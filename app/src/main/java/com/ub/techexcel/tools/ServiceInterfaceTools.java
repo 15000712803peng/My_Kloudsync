@@ -2980,7 +2980,6 @@ public class ServiceInterfaceTools {
         return response;
     }
 
-
     public JSONObject syncGetNotePageJson(String url) {
         JSONObject response = ConnectService.getIncidentbyHttpGet(url);
         Log.e("syncGetNotePageJson", "url:" + url + ",result:" + response);
@@ -3280,6 +3279,14 @@ public class ServiceInterfaceTools {
         JSONObject response = ConnectService.submitDataByJson(url, params);
         Log.e("syncAddContact", "url:" + url + ",params:" + params + ",response:" + response);
         return response;
+    }
+
+    public String syncGetNoteControlActions() {
+        String url = "https://peertime.oss-cn-shanghai.aliyuncs.com/NoteControlAction/37014/channel_1.json";
+        String response = ConnectService.getResponseStringbyHttpGet(url);
+        Log.e("syncGetNoteControlActions", "url:" + url + ",response:" + response);
+        return response;
+
     }
 
 

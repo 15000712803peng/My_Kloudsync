@@ -11,7 +11,7 @@ public class PartWebActions {
     private long startTime;
     private long endTime;
     private String url;
-	private List<WebAction> webActions = new ArrayList<>();
+    private List<WebAction> webActions = new ArrayList<>();
 
     public long getStartTime() {
         return startTime;

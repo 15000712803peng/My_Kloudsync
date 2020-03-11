@@ -764,7 +764,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                 finish();
                 break;
             case SocketMessageManager.MESSAGE_MEMBER_LIST_CHANGE:
-                MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                MeetingKit.getInstance().requestMeetingMembers(meetingConfig,false);
                 break;
             case SocketMessageManager.MESSAGE_AGORA_STATUS_CHANGE:
 //                handleMessageAgoraStatusChange(socketMessage.getData());
@@ -2401,7 +2401,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                 JSONObject result = ServiceInterfaceTools.getinstance().syncMakePresenter(eventSetPresenter.getMeetingMember().getUserId() + "");
                 if (result.has("code")) {
                     if (result.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig,false);
                     }
                 }
             }
@@ -2705,7 +2705,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             }
         }
 
-        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
 
     }
 
