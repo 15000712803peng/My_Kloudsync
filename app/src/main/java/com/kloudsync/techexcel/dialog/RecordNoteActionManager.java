@@ -212,6 +212,7 @@ public class RecordNoteActionManager {
 
         try {
             JSONObject jsonObject=new JSONObject();
+
             jsonObject.put("id",noteId);
             soundtrackRecordManager.recordNoteAction(NoteRecordType.CLOSE_POPUP_NOTE,jsonObject);
         } catch (JSONException e) {
