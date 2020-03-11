@@ -114,6 +114,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                 holder.audioStatusImage.setImageResource(R.drawable.icon_command_mic_disable);
             } else {
                 holder.audioStatusImage.setImageResource(R.drawable.icon_command_mic_enabel);
+                user.setHaveShowUnMuteAudioImage(true);
             }
 
             if (TextUtils.isEmpty(user.getIconUrl())) {
@@ -260,13 +261,13 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         if (index >= 0) {
             AgoraMember agoraMember = this.users.get(index);
 
-            if (member.isMuteVideo() == agoraMember.isMuteVideo()){
-                if(!agoraMember.isMuteVideo()){
-                    if(!agoraMember.isSurfaceShowing()){
+            if (member.isMuteVideo() == agoraMember.isMuteVideo()) {
+                if (!agoraMember.isMuteVideo()) {
+                    if (!agoraMember.isSurfaceShowing()) {
                         notifyItemChanged(index);
                     }
-                }else {
-                    if(agoraMember.isSurfaceShowing()){
+                } else {
+                    if (agoraMember.isSurfaceShowing()) {
                         notifyItemChanged(index);
                     }
                 }
@@ -279,9 +280,18 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         int index = this.users.indexOf(member);
         if (index >= 0) {
             AgoraMember agoraMember = this.users.get(index);
+
             if (!(agoraMember.isMuteAudio() == member.isMuteAudio())) {
                 agoraMember.setMuteAudio(member.isMuteAudio());
                 notifyItemChanged(index);
+
+            } else {
+
+                if (!agoraMember.isMuteAudio()) {
+                    if (!agoraMember.isHaveShowUnMuteAudioImage()) {
+                        notifyItemChanged(index);
+                    }
+                }
             }
 
         }
@@ -297,6 +307,16 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         EventShowFullAgora showFullAgora = new EventShowFullAgora();
         showFullAgora.setAgoraMember(member);
         EventBus.getDefault().post(showFullAgora);
+    }
+
+    public void setMySelfVedioSurface(SurfaceView surface, int userId) {
+        int index = this.users.indexOf(new AgoraMember(userId));
+        if (index >= 0) {
+            if (this.users.get(index).getSurfaceView() == null) {
+                this.users.get(index).setSurfaceView(surface);
+                notifyItemChanged(index);
+            }
+        }
     }
 
 }

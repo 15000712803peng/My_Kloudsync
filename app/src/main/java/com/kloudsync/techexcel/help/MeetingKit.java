@@ -69,7 +69,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     private Activity host;
 
     private String newMeetingId;
-
     //----
     private RtcManager rtcManager;
     private ImageView menu;
@@ -112,7 +111,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
         return rtcManager;
     }
-
 
     public void prepareStart(Activity host, MeetingConfig meetingConfig, String newMeetingId) {
         Log.e("prepareStart", "role:" + meetingConfig.getRole());
@@ -178,7 +176,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
         setEncoderConfigurationBaseMode();
         rtcManager.joinRtcChannle(meetingConfig.getMeetingId());
-
 
     }
 
@@ -295,10 +292,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         getRtcManager().rtcEngine().setVideoEncoderConfiguration(videoEncoderConfiguration);
     }
 
-    private boolean isRecordMeeting=false;
+    private boolean isRecordMeeting = false;
+
     @Override
     public void onUserStart(boolean isRecordMeeting) {
-        this.isRecordMeeting=isRecordMeeting;
+        this.isRecordMeeting = isRecordMeeting;
         Observable.just(newMeetingId).observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
@@ -314,7 +312,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onUserJoin(boolean isRecordMeeting) {
-        this.isRecordMeeting=isRecordMeeting;
+        this.isRecordMeeting = isRecordMeeting;
         SocketMessageManager.getManager(host).sendMessage_JoinMeeting(meetingConfig);
     }
 
@@ -339,7 +337,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
         refreshMembersAndPost(meetingConfig, uid, true);
         checkNetWorkStatus();
-        MeetingRecordManager.getManager(host).startRecording(isRecordMeeting );
+        MeetingRecordManager.getManager(host).startRecording(isRecordMeeting);
     }
 
 
@@ -419,7 +417,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             member.setMuteAudio(true);
             member.setMuteVideo(true);
             EventBus.getDefault().post(member);
-            requestMeetingMembers(meetingConfig);
+            requestMeetingMembers(meetingConfig,false);
         }
 
     }
@@ -435,7 +433,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     public void onUserMuteVideo(int uid, boolean muted) {
         Log.e("MeetingKit", "onUserMuteVideo:" + uid);
         AgoraMember member = new AgoraMember();
-
         member.setUserId(uid);
         EventMute eventMute = new EventMute();
         eventMute.setType(EventMute.TYPE_MUTE_VEDIO);
@@ -765,6 +762,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
     private void initAgora(Activity host) {
+
         int status = getSettingCache(host).getMeetingSetting().getVoiceStatus();
         boolean isMicroOn = getSettingCache(host).getMeetingSetting().isMicroOn();
         boolean isCameraOn = getSettingCache(host).getMeetingSetting().isCameraOn();
@@ -807,7 +805,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         return settingCache;
     }
 
-    public void requestMeetingMembers(MeetingConfig meetingConfig) {
+    public void requestMeetingMembers(MeetingConfig meetingConfig, final boolean needRefresh) {
         this.meetingConfig = meetingConfig;
         Observable.just(meetingConfig).observeOn(Schedulers.io()).map(new Function<MeetingConfig, MeetingConfig>() {
             @Override
@@ -882,6 +880,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 }
                 EventRefreshMembers refreshMembers = new EventRefreshMembers();
                 refreshMembers.setMeetingConfig(meetingConfig);
+                refreshMembers.setNeedRefresh(needRefresh);
                 Log.e("check_member", "member:" + meetingConfig.getMeetingMembers().size() + "," + "auditor:" + meetingConfig.getMeetingAuditor().size());
                 EventBus.getDefault().post(refreshMembers);
                 return meetingConfig;
@@ -930,7 +929,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                                 if (member.getPresenter() == 1) {
                                     meetingConfig.setPresenterId(member.getUserId() + "");
                                 }
+
                             }
+
                             meetingConfig.setMeetingMembers(members);
                         }
                     }
@@ -941,15 +942,34 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<MeetingConfig>() {
             @Override
             public void accept(MeetingConfig meetingConfig) throws Exception {
+
+                if (!meetingConfig.getMeetingMembers().contains(new MeetingMember(uid))) {
+                    // 加入的是member
+                    Log.e("check_disable","disable,1");
+                     if((uid+"").equals(AppConfig.UserID)){
+                         disableAudioAndVideoStream();
+                     }
+
+                }
+
                 if (isSelf) {
                     EventBus.getDefault().post(createSelfCamera(uid));
                 } else {
                     EventBus.getDefault().post(createMemberCamera(uid));
                 }
 
-
             }
         }).subscribe();
+    }
+
+    public void disableAudioAndVideoStream(){
+
+        MeetingKit.getInstance().menuMicroClicked(false);
+        MeetingKit.getInstance().menuCameraClicked(false);
+    }
+
+    public void enableAudioAndVideo(){
+
     }
 
 }

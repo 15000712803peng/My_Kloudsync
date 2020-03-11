@@ -38,6 +38,7 @@ public class DocumentModel {
                 if (response == null) {
 
                 } else {
+
                     try {
                         JSONObject retData = response.getJSONObject("RetData");
                         Log.e("asyncGetDocumentDetail", "ret data:" + retData);

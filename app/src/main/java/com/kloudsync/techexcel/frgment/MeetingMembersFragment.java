@@ -53,7 +53,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by tonyan on 2019/11/9.
  */
 
-public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged,PopMeetingSpeakMemberSetting.OnSpeakMemberSettingChanged, PopMeetingHandsMemberSetting.OnHandsMemberSettingChanged {
+public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged, PopMeetingSpeakMemberSetting.OnSpeakMemberSettingChanged, PopMeetingHandsMemberSetting.OnHandsMemberSettingChanged {
 
     private RecyclerView membersList;
     int type;
@@ -65,7 +65,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         super.onCreate(savedInstanceState);
         type = getArguments().getInt("type");
         meetingConfig = DocAndMeetingActivity.meetingConfig;
-        if(!EventBus.getDefault().isRegistered(this)){
+        if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
     }
@@ -73,7 +73,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(EventBus.getDefault().isRegistered(this)){
+        if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
     }
@@ -89,15 +89,14 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshMeetingMembers(EventRefreshMembers refreshMembers) {
         this.meetingConfig = refreshMembers.getMeetingConfig();
-        if(popMeetingMemberSetting != null && popMeetingMemberSetting.isShowing()){
+        if (popMeetingMemberSetting != null && popMeetingMemberSetting.isShowing()) {
             popMeetingMemberSetting.dismiss();
         }
-        if(popMeetingSpeakMemberSetting != null && popMeetingSpeakMemberSetting.isShowing()){
+        if (popMeetingSpeakMemberSetting != null && popMeetingSpeakMemberSetting.isShowing()) {
             popMeetingMemberSetting.dismiss();
         }
         loadMembers();
     }
-
 
 
     @Nullable
@@ -208,7 +207,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                         syncMakeUserUpAndDown(meetingMember.getUserId() + "", 0);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
                     } else if (response.getInt("code") == 22) {
                         Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                             @Override
@@ -231,7 +230,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                         syncChangeTemStatus(meetingMember.getUserId() + "", 0);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
                     } else if (response.getInt("code") == 22) {
                         Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                             @Override
@@ -251,10 +250,10 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             @Override
             public void accept(MeetingMember meetingMember) throws Exception {
                 JSONObject response = ServiceInterfaceTools.getinstance().
-                        syncMakeUserUpAndDownHands(meetingMember.getUserId() + "", 1,1);
+                        syncMakeUserUpAndDownHands(meetingMember.getUserId() + "", 1, 1);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
                     } else if (response.getInt("code") == 22) {
                         Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                             @Override
@@ -274,10 +273,10 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             @Override
             public void accept(String str) throws Exception {
                 JSONObject response = ServiceInterfaceTools.getinstance().
-                        syncHandUpOrDown(0,meetingMember.getUserId()+"");
+                        syncHandUpOrDown(0, meetingMember.getUserId() + "");
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
                     }
                 }
             }
@@ -290,10 +289,10 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             @Override
             public void accept(MeetingMember meetingMember) throws Exception {
                 JSONObject response = ServiceInterfaceTools.getinstance().
-                        syncMakeUserUpAndDownHands(meetingMember.getUserId() + "", 1,0);
+                        syncMakeUserUpAndDownHands(meetingMember.getUserId() + "", 1, 0);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
                     } else if (response.getInt("code") == 22) {
                         Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                             @Override
@@ -370,7 +369,9 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             me = view.findViewById(R.id.txt_is_me);
             type = view.findViewById(R.id.txt_type);
             settingImage = view.findViewById(R.id.image_setting);
+            speakImage = view.findViewById(R.id.image_speak);
             host = view.findViewById(R.id.txt_host);
+            stageDown = view.findViewById(R.id.txt_stage_down);
         }
 
         public CircleImageView icon;
@@ -378,8 +379,10 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         public TextView presenter;
         public TextView me;
         public TextView type;
+        public TextView stageDown;
         public ImageView settingImage;
         public TextView host;
+        public ImageView speakImage;
 
     }
 
@@ -463,7 +466,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
             final MeetingMember member = meetingMembers.get(position);
-            if(member == null){
+            if (member == null) {
                 return;
             }
 
@@ -486,7 +489,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             holder.kickOffMemberText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.e("check_post_kick_off","post_1");
+                    Log.e("check_post_kick_off", "post_1");
                     EventKickOffMember kickOffMember = new EventKickOffMember();
                     kickOffMember.setMeetingMember(member);
                     EventBus.getDefault().post(kickOffMember);
@@ -506,28 +509,28 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     holder.settingImage.setVisibility(View.VISIBLE);
                     holder.presenter.setVisibility(View.GONE);
                 }
-                if(meetingConfig.getMeetingHostId().equals(member.getUserId()+"")){
+                if (meetingConfig.getMeetingHostId().equals(member.getUserId() + "")) {
                     // 操作的成员是HOST
                     holder.kickOffMemberText.setVisibility(View.GONE);
-                }else {
+                } else {
                     // 不是HOST，如果自己是HOST
-                    if(AppConfig.UserID.equals(meetingConfig.getMeetingHostId())){
+                    if (AppConfig.UserID.equals(meetingConfig.getMeetingHostId())) {
                         holder.kickOffMemberText.setVisibility(View.VISIBLE);
-                    }else {
+                    } else {
                         holder.kickOffMemberText.setVisibility(View.GONE);
                     }
                 }
                 fillViewByRoleForMembers(member, holder);
                 //------
             } else if (type == 2) {
-                if(meetingConfig.getMeetingHostId().equals(member.getUserId()+"")){
+                if (meetingConfig.getMeetingHostId().equals(member.getUserId() + "")) {
                     // 操作的成员是HOST
                     holder.kickOffMemberText.setVisibility(View.GONE);
-                }else {
+                } else {
                     // 不是HOST，如果自己是HOST
-                    if(AppConfig.UserID.equals(meetingConfig.getMeetingHostId())){
+                    if (AppConfig.UserID.equals(meetingConfig.getMeetingHostId())) {
                         holder.kickOffMemberText.setVisibility(View.VISIBLE);
-                    }else {
+                    } else {
                         holder.kickOffMemberText.setVisibility(View.GONE);
                     }
                 }
@@ -671,7 +674,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
 
                 fillDeviceType(member.getDeviceType(), speakerViewHolder.type);
-                fillViewByRoleForSpeakingMembers(member,speakerViewHolder);
+                fillViewByRoleForSpeakingMembers(member, speakerViewHolder);
             } else if (holder instanceof HandsupTitleViewHolder) {
 
             } else if (holder instanceof HandsUpViewHolder) {
@@ -692,7 +695,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
 
                 fillDeviceType(member.getDeviceType(), handsUpViewHolder.type);
-                fillViewByRoleForHandsMembers(member,handsUpViewHolder);
+                fillViewByRoleForHandsMembers(member, handsUpViewHolder);
             }
         }
     }
@@ -774,6 +777,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     }
 
     PopMeetingHandsMemberSetting mPopMeetingHandsMemberSetting;
+
     private void showHandsMemberSetting(MeetingMember member, View view) {
         if (mPopMeetingHandsMemberSetting != null) {
             if (mPopMeetingHandsMemberSetting.isShowing()) {
@@ -786,7 +790,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         mPopMeetingHandsMemberSetting.setOnMemberSettingChanged(this);
         mPopMeetingHandsMemberSetting.showAtBottom(member, view, meetingConfig);
     }
-
 
 
     private void fillViewByRoleForMainSpeakingMembers(final MeetingMember meetingMember, final MainSpeakerViewHolder holder) {
@@ -931,6 +934,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             }
         });
 
+
 //        meetingConfig.getMeetingHostId().equals(member.getUserId() + "")  是否是host
         //
 
@@ -949,6 +953,32 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             } else {
                 holder.settingImage.setVisibility(View.VISIBLE);
             }
+        }
+
+        MeetingMember me = meetingConfig.getMe();
+        if (me != null) {
+            if (me.getRole() == MeetingConfig.MeetingRole.HOST || (me.getRole() == MeetingConfig.MeetingRole.MEMBER && me.getTempOnStage() == 0)) {
+                //是主讲人
+                holder.stageDown.setVisibility(View.VISIBLE);
+                holder.stageDown.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setSpeakToAuditor(meetingMember);
+                    }
+                });
+            } else {
+                holder.stageDown.setVisibility(View.GONE);
+            }
+        } else {
+            holder.stageDown.setVisibility(View.GONE);
+        }
+
+        if (meetingMember.getMicrophoneStatus() == 2) {
+            //打开状态
+            holder.speakImage.setImageResource(R.drawable.image_can_speak);
+        } else {
+            holder.speakImage.setImageResource(R.drawable.image_speak_off);
+
         }
 
     }
@@ -1014,7 +1044,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                         syncMakeUserUpAndDown(meetingMember.getUserId() + "", 0);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
                     } else if (response.getInt("code") == 22) {
                         Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                             @Override
@@ -1037,7 +1067,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                         syncChangeTemStatus(meetingMember.getUserId() + "", 1);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
                     } else if (response.getInt("code") == 22) {
                         Observable.just("toast_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                             @Override
@@ -1060,7 +1090,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                         syncMakeUserUpAndDown(meetingMember.getUserId() + "", 1);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
                     }
                 }
             }
@@ -1072,17 +1102,15 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             @Override
             public void accept(String str) throws Exception {
                 JSONObject response = ServiceInterfaceTools.getinstance().
-                        syncHandUpOrDown(1,null);
+                        syncHandUpOrDown(1, null);
                 if (response.has("code")) {
                     if (response.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
                     }
                 }
             }
         }).subscribe();
     }
-
-
 
 
 }

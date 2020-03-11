@@ -39,6 +39,7 @@ import com.kloudsync.techexcel.help.SmallNoteViewHelper;
 import com.kloudsync.techexcel.help.SoundtrackActionsManager;
 import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.SoundtrackBackgroundMusicManager;
+import com.kloudsync.techexcel.help.SoundtrackDigitalNoteManager;
 import com.kloudsync.techexcel.help.UserVedioManager;
 import com.kloudsync.techexcel.help.WebVedioManager;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
@@ -122,6 +123,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     //------
     private RelativeLayout smallNoteLayout;
     private XWalkView smallNoteWeb;
+    private XWalkView mainNoteWeb;
     SmallNoteViewHelper smallNoteViewHelper;
 
     public void setSoundtrackDetail(SoundtrackDetail soundtrackDetail) {
@@ -136,8 +138,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         this.soundtrackDetail = soundtrackDetail;
         totalTime = soundtrackDetail.getDuration();
         initDialog();
-        smallNoteViewHelper = new SmallNoteViewHelper(smallNoteLayout,smallNoteWeb,meetingConfig);
-        smallNoteViewHelper.init(host);
+//        smallNoteViewHelper = new SmallNoteViewHelper(smallNoteLayout,smallNoteWeb,meetingConfig);
+//        smallNoteViewHelper.init(host);
+        SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig,smallNoteLayout,smallNoteWeb,mainNoteWeb);
     }
 
     public void initDialog() {
@@ -147,6 +150,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         dialog = new Dialog(host, R.style.my_dialog);
         centerLoaing = view.findViewById(R.id.layout_center_loading);
         smallNoteLayout = view.findViewById(R.id.layout_small_note);
+        smallNoteWeb = view.findViewById(R.id.small_web_note);
+        mainNoteWeb = view.findViewById(R.id.main_note_web);
         smallNoteWeb = view.findViewById(R.id.small_web_note);
         webVedioSurface = view.findViewById(R.id.web_vedio_surface);
         web = view.findViewById(R.id.web);
@@ -300,6 +305,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 }
             }
         });
+        SoundtrackDigitalNoteManager.getInstance(host).doProcess();
+        mainNoteWeb.setVisibility(View.GONE);
         EventBus.getDefault().register(this);
         downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, 0);
@@ -394,6 +401,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
                 actionsManager.setTotalTime(totalTime);
                 actionsManager.setPlayTime(playTime);
+                if(SoundtrackDigitalNoteManager.getInstance(host).getNoteEvents().size() > 0){
+                    SoundtrackDigitalNoteManager.getInstance(host).setPlayTime(playTime);
+                }
 //                    playTime = soundtrackAudioManager.getPlayTime();
                 if (playHandler != null) {
                     playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
@@ -748,12 +758,14 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     }
 
     private void downloadActions(long totalTime, final int recordId) {
+
         int secends = (int) (totalTime / 1000) + 1;
         int partSize = secends / 20 + 1;
         Integer[] parts = new Integer[partSize];
         for (int i = 0; i < parts.length; ++i) {
             parts[i] = i;
         }
+
         Observable.fromArray(parts).delay(3000, TimeUnit.MILLISECONDS).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer index) throws Exception {

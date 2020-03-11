@@ -49,6 +49,15 @@ public class MeetingConfig {
     private int spaceId;
     private DocumentPage currentDocumentPage;
     private List<MeetingDocument> allDocuments;
+    private MeetingMember me;
+
+    public MeetingMember getMe() {
+        return me;
+    }
+
+    public void setMe(MeetingMember me) {
+        this.me = me;
+    }
 
     public List<MeetingDocument> getAllDocuments() {
         return allDocuments;
