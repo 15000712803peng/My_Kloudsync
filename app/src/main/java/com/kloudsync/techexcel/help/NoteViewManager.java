@@ -3,6 +3,7 @@ package com.kloudsync.techexcel.help;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventCloseNoteView;
+import com.kloudsync.techexcel.bean.EventFloatingNote;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventShowNotePage;
@@ -27,6 +29,7 @@ import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.UserNotes;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
@@ -72,6 +75,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     private Context context;
     //------
     private ImageView backImage;
+    private ImageView openFloatingNote;
     private NiceSpinner usersSpinner;
     private RecyclerView noteList;
     private NoteAdapter noteAdapter;
@@ -105,12 +109,14 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         changeUser(user);
     }
 
-    public synchronized void setContent(Context context, final View view, Note note, XWalkView noteWeb,MeetingConfig meetingConfig,LinearLayout noteContainer) {
+    public synchronized void setContent(final Context context, final View view, final Note note, XWalkView noteWeb, final MeetingConfig meetingConfig, LinearLayout noteContainer) {
 
         this.meetingConfig = meetingConfig;
         this.context = context;
+        homeView=view;
         noteList = view.findViewById(R.id.list_note);
         backImage = view.findViewById(R.id.image_back);
+        openFloatingNote = view.findViewById(R.id.openfloatingnote);
         this.noteWeb = noteWeb;
         noteWeb.setVisibility(View.VISIBLE);
         adjustOritation(context,noteContainer);
@@ -121,6 +127,20 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
                 EventBus.getDefault().post(new EventCloseNoteView());
                 close();
                 instance = null;
+                RecordNoteActionManager.getManager(context).sendCloseHomePageActon(note.getNoteID(),false,meetingConfig);
+            }
+        });
+        openFloatingNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                view.setVisibility(View.GONE);
+                EventBus.getDefault().post(new EventCloseNoteView());
+                close();
+                instance = null;
+                // 切到浮窗
+                EventFloatingNote eventFloatingNote=new EventFloatingNote();
+                eventFloatingNote.setNoteId(note.getNoteID());
+                EventBus.getDefault().post(eventFloatingNote);
             }
         });
         pageCache = DocumentPageCache.getInstance(context);
@@ -138,6 +158,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         process(AppConfig.UserID, meetingConfig);
         view.setVisibility(View.VISIBLE);
 
+	    EverPenManger.getInstance((Activity) context).getBleManager().ReqOfflineDataTransfer(true);
     }
 
     private void close(){
@@ -341,14 +362,14 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }
 
         @Override
-        public NoteAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(context).inflate(R.layout.note_item_v2, parent, false);
-            NoteAdapter.Holder holder = new NoteAdapter.Holder(view);
+            Holder holder = new Holder(view);
             return holder;
         }
 
         @Override
-        public void onBindViewHolder(final NoteAdapter.Holder holder, final int position) {
+        public void onBindViewHolder(final Holder holder, final int position) {
             final NoteDetail noteDetail = list.get(position);
             holder.title.setText(noteDetail.getTitle());
             String date = noteDetail.getCreatedDate();
@@ -399,8 +420,6 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
             SimpleDraweeView img_url;
             TextView date;
             LinearLayout container;
-
-
             public Holder(View itemView) {
                 super(itemView);
                 container = itemView.findViewById(R.id.container);
@@ -606,21 +625,60 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }).subscribe();
     }
 
-    public void followShowNote(Context context, final View view,XWalkView noteWeb,final int noteId,MeetingConfig meetingConfig,ImageView menuIcon,LinearLayout noteContainer){
 
+    public void followPaintLine(String noteData){
+        String key = "ShowDotPanData";
+        try {
+            JSONObject _data = new JSONObject();
+            _data.put("LinesData", Tools.getFromBase64(noteData));
+            _data.put("ShowInCenter", true);
+            _data.put("TriggerEvent", true);
+            if(noteWeb!=null){
+                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void closeNoteWeb(){
+        if(homeView!=null){
+            homeView.setVisibility(View.GONE);
+        }
+        close();
+        instance = null;
+        if(note!=null){
+            RecordNoteActionManager.getManager(context).sendCloseHomePageActon(note.getNoteID(),false,meetingConfig);
+        }
+    }
+
+    private View homeView;
+    public void followShowNote(final Context context, final View view, XWalkView noteWeb, final int noteId, final MeetingConfig meetingConfig, ImageView menuIcon, LinearLayout noteContainer){
         this.meetingConfig = meetingConfig;
         this.context = context;
+        homeView=view;
         noteList = view.findViewById(R.id.list_note);
         backImage = view.findViewById(R.id.image_back);
+        openFloatingNote = view.findViewById(R.id.openfloatingnote);
         this.noteWeb = noteWeb;
         adjustOritation(context,noteContainer);
 //        noteWeb.setVisibility(View.VISIBLE);
         backImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                closeNoteWeb();
+            }
+        });
+        openFloatingNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 view.setVisibility(View.GONE);
                 close();
                 instance = null;
+                // 切到浮窗
+                EventFloatingNote eventFloatingNote=new EventFloatingNote();
+                eventFloatingNote.setNoteId(note.getNoteID());
+                EventBus.getDefault().post(eventFloatingNote);
             }
         });
 

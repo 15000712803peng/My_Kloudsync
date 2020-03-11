@@ -54,6 +54,7 @@ public class SocketMessageManager {
     public static final String MESSAGE_AGORA_STATUS_CHANGE = "AGORA_STATUS_CHANGE";
     public static final String MESSAGE_MEMBER_LIST_CHANGE = "MEMBER_LIST_CHANGE";
     public static final String MESSAGE_NOTE_DATA = "NOTE_DATA";
+    public static final String MESSAGE_OPEN_OR_CLOSE_NOTE = "OPEN_OR_CLOSE_NOTE";
     public static final String MESSAGE_NOTE_CHANGE = "NOTE_CHANGE";
     public static final String MESSAGE_NOTE_P1_CREATEAD = "NOTE_ITEM_4_P1_CREATED";
     public static final String MESSAGE_HELLO = "HELLO";
