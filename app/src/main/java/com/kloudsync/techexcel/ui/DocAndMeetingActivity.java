@@ -2645,6 +2645,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Override
     public void menuNoteClicked() {
         showNotesDialog();
+//        showNoteFloatingDialog(1915234);
     }
 
     @Override
