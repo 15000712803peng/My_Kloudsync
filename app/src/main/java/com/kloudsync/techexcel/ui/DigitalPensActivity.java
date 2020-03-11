@@ -87,6 +87,10 @@ public class DigitalPensActivity extends BaseActivity<DigitalPensPresenter> impl
 		String penType;
 		switch (v.getId()) {
 			case R.id.layout_back:
+				EverPen currentPen = EverPenManger.getInstance(this).getCurrentPen();
+				if (currentPen != null && currentPen.isConnected()) {
+					App.mApplication.exitActivity();
+				}
 				finish();
 				break;
 			case R.id.lly_digital_impression:

@@ -192,6 +192,10 @@ public class EnterPairingActivity extends BaseActivity<EnterPairingPresenter> im
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.iv_titlebar_back:
+				EverPen currentPen = EverPenManger.getInstance(this).getCurrentPen();
+				if (currentPen != null && currentPen.isConnected()) {
+					App.mApplication.exitActivity();
+				}
 				finish();
 				break;
 			case R.id.btn_pairing_scanning:

@@ -134,6 +134,10 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 		Intent intent;
 		switch (v.getId()) {
 			case R.id.iv_titlebar_back:
+				EverPen currentPen = EverPenManger.getInstance(this).getCurrentPen();
+				if (currentPen != null && currentPen.isConnected()) {
+					App.mApplication.exitActivity();
+				}
 				finish();
 				break;
 			case R.id.iv_titlebar_setting:
@@ -235,7 +239,8 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
+		EverPen currentPen = EverPenManger.getInstance(this).getCurrentPen();
+		if (keyCode == KeyEvent.KEYCODE_BACK && currentPen != null && currentPen.isConnected()) {
 			App.mApplication.exitActivity();
 		}
 		return super.onKeyDown(keyCode, event);
