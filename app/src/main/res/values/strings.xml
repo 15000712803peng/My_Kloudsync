@@ -876,8 +876,8 @@ Please input the cell phone number to add the contact
     <string name="stay_tuned">Stay tuned</string>
     <string name="enter_pairing">Enter pairing</string>
     <string name="current_pen_status">Current pen status</string>
-    <string name="similar_pen_source">Youdao is similar to pen source</string>
-    <string name="similar_pen_source2">Evernote-like pen source</string>
+    <string name="similar_pen_source">Evernote-like pen source</string>
+    <string name="similar_pen_source2">Youdao is similar to pen source</string>
     <string name="enter_pairing_tips_text">Press and hold the electronic pen for 2-3 seconds</string>
     <string name="enter_pairing_tips_text2">Steady green light, entering pairing state</string>
     <string name="enter_pairing_tips_text3">Tip: The orange light flashes to indicate that the battery is low and needs to be charged</string>

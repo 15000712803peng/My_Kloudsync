@@ -41,7 +41,6 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	boolean serviceConnected;
 	List<EverPen> everPens = new ArrayList<>();
 	private final ConcurrentHashMap<MyTQLPenSignal, Integer> mTQLPenSignalMap = new ConcurrentHashMap<>();
-	private SharedPreferencesUtils mSp;
 	private EverPen mCurrentPen;
 	private EverPen mAutoPenInfo;
 	private static final int AUTOCONNECT = 100;
@@ -49,7 +48,6 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 
 	private EverPenManger(Activity host) {
 		this.host = host;
-		mSp = new SharedPreferencesUtils(host.getApplicationContext(), AppConfig.EVERPENINFO);
 	}
 
 	public static EverPenManger getInstance(Activity host) {
@@ -102,7 +100,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 				}
 				serviceConnected = true;
 				Log.e("EverPenManager", "onServiceConnected:" + agent);
-				mAutoPenInfo = mSp.getString(AppConfig.EVERPENINFO, EverPen.class);
+				mAutoPenInfo = SharedPreferencesUtils.getString(AppConfig.EVERPENINFO, AppConfig.EVERPENINFO, EverPen.class);
 				startOrStopFindDevice(true);
 
 			}
@@ -595,7 +593,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 
 	public void deleteAutoConnectPen() {
 		mAutoPenInfo = null;
-		mSp.setString(AppConfig.EVERPENINFO, null);
+		SharedPreferencesUtils.putString(AppConfig.EVERPENINFO, AppConfig.EVERPENINFO, null);
 		startOrStopFindDevice(true);
 	}
 
@@ -604,7 +602,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 		mCurrentPen = everPen;
 		mAutoPenInfo = everPen;
 		mAutoPenInfo.setClick(true);
-		mSp.setString(AppConfig.EVERPENINFO, mAutoPenInfo);
+		SharedPreferencesUtils.putString(AppConfig.EVERPENINFO, AppConfig.EVERPENINFO, mAutoPenInfo);
 		agent.connect(everPen.getMacAddress());
 	}
 

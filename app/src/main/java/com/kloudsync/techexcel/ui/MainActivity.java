@@ -86,7 +86,6 @@ import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.tool.DensityUtil;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
-import com.kloudsync.techexcel.tool.SyncWebNoteActionsCache;
 import com.kloudsync.techexcel.tool.UriTool;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
@@ -1865,7 +1864,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         double x = dotX / B5_WIDTH * 5600;
         double y = dotY / B5_HEIGHT * 7920;
         String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
-        String address = String.valueOf(dot.OwnerID) + dot.SectionID + dot.BookID + dot.PageID;
+        String address = dot.OwnerID + "." + dot.SectionID + "." + dot.BookID + "." + dot.PageID;
         NoteDotBean noteDotBean = new NoteDotBean();
         noteDotBean.setDotId(uuid);
         noteDotBean.setDot(dot);
@@ -1895,16 +1894,18 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         drawingDataBean.setStrokeID(uuid);
         drawingDataList.add(drawingDataBean);
         syncNoteBean.setDrawingData(drawingDataList);
-        SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);
-        SyncWebNoteActionsCache.getInstance(this).getPartWebActions(uuid);
+//        SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);
+//        SyncWebNoteActionsCache.getInstance(this).getPartWebActions(uuid);
 
         NewBookPagesBean newBookPagesBean = new NewBookPagesBean();
         newBookPagesBean.setPeertimeToken(AppConfig.UserToken);
         NewBookPagesBean.BookPagesBean bookPagesBean1 = new NewBookPagesBean.BookPagesBean();
         bookPagesBean1.setPageAddress(address);
         bookPagesBean1.setPenId(uuid);
-        mPresenter.requestNewBookPages(newBookPagesBean);
-        mPresenter.uploadDrawing(syncNoteBean);
+        newBookPagesBean.setBookPages(new ArrayList<NewBookPagesBean.BookPagesBean>());
+        newBookPagesBean.getBookPages().add(bookPagesBean1);
+//        mPresenter.requestNewBookPages(newBookPagesBean);
+//        mPresenter.uploadDrawing(syncNoteBean);
     }
 
     @Override
@@ -1913,8 +1914,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         NoteDotBean noteDotBean = new NoteDotBean();
         noteDotBean.setDotId(uuid);
         noteDotBean.setDot(dot);
-        SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);
-        SyncWebNoteActionsCache.getInstance(this).getPartWebActions(uuid);
+//        SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);
+//        SyncWebNoteActionsCache.getInstance(this).getPartWebActions(uuid);
     }
 
     @Override

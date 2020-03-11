@@ -60,7 +60,9 @@ import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.techexcel.bean.AudioActionBean;
 import com.ub.techexcel.bean.ChannelVO;
 import com.ub.techexcel.bean.LineItem;
+import com.ub.techexcel.bean.NewBookPagesBean;
 import com.ub.techexcel.bean.Note;
+import com.ub.techexcel.bean.NoteInfoBean;
 import com.ub.techexcel.bean.PageActionBean;
 import com.ub.techexcel.bean.Record;
 import com.ub.techexcel.bean.RecordDetail;
@@ -1664,6 +1666,33 @@ public class ServiceInterfaceTools {
 
     }
 
+    /**
+     * 获取服务器生成的笔记信息
+     *
+     * @param path
+     * @param peertimeToken
+     * @param bookPages
+     * @return
+     */
+    public NoteInfoBean requestNewBookPages(String path, String peertimeToken, List<NewBookPagesBean.BookPagesBean> bookPages) {
+        JSONObject jsonObject = new JSONObject();
+        NoteInfoBean noteInfoBean = null;
+        try {
+            jsonObject.put("PeertimeToken", peertimeToken);
+            String pages = new Gson().toJson(bookPages);
+            JSONArray jsonArray = new JSONArray(pages);
+            jsonObject.put("BookPages", jsonArray);
+            String response = ConnectService.requestNewBookPages(path, jsonObject);
+            if (response != null) {
+                noteInfoBean = new Gson().fromJson(response, NoteInfoBean.class);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return noteInfoBean;
+    }
+
     public void changeBindTvStatus(final String url, final int code, boolean status, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         try {
@@ -2761,7 +2790,7 @@ public class ServiceInterfaceTools {
     }
 
 
-	public interface OnJsonResponseReceiver {
+    public interface OnJsonResponseReceiver {
         void jsonResponse(JSONObject jsonResponse);
     }
 
@@ -3025,6 +3054,8 @@ public class ServiceInterfaceTools {
         return response;
     }
 
+
+
     public List<WebAction> syncGetRecordActions(final String url) {
 
         JSONObject response = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
@@ -3281,6 +3312,8 @@ public class ServiceInterfaceTools {
         Log.e("syncAddContact", "url:" + url + ",params:" + params + ",response:" + response);
         return response;
     }
+
+
 
 
 }

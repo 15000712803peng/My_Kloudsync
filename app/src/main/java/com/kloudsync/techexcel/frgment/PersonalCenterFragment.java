@@ -179,7 +179,6 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         ShowLanguage();
         GetSchoolInfo();
         getPersonInfo2();
-	    mCurrentPen = EverPenManger.getInstance(getActivity()).getCurrentPen();
         return view;
     }
 
@@ -345,9 +344,10 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         tv_pc_account_name.setText(account_name);
         // tv_pc_account_number.setText(account_number);
 	    EverPen autoPen = EverPenManger.getInstance(getActivity()).getAutoPen();
-	    if (autoPen != null) {
+        mCurrentPen = EverPenManger.getInstance(getActivity()).getCurrentPen();
+        if (autoPen != null) {
 		    mPenSource.setText(autoPen.getPenType() + autoPen.getSimilaPenSource() + autoPen.getPenName());
-		    if (autoPen.isConnected()) {
+            if (mCurrentPen != null && mCurrentPen.isConnected()) {
 			    mPenStatus.setText(R.string.the_connected);
 		    } else {
 			    mPenStatus.setText(R.string.not_connected);
@@ -1037,22 +1037,24 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
     }
 
 	public void setCurrentPenNameAndStatus(boolean isConnected) {
-		mCurrentPen = EverPenManger.getInstance(getActivity()).getCurrentPen();
-		EverPen autoPen = EverPenManger.getInstance(getActivity()).getAutoPen();
-		if (autoPen != null) {
-			mPenSource.setVisibility(View.VISIBLE);
-			mPenStatus.setVisibility(View.VISIBLE);
-			mPenSource.setText(mCurrentPen.getPenType() + mCurrentPen.getSimilaPenSource() + mCurrentPen.getPenName());
-			if (isConnected) {
-				mPenStatus.setText(R.string.the_connected);
-			} else {
-				mPenStatus.setText(R.string.not_connected);
-			}
-		} else {
-			mPenSource.setText("");
-			mPenStatus.setText("");
-			mPenSource.setVisibility(View.GONE);
-			mPenStatus.setVisibility(View.GONE);
-		}
-	}
+        if (mPenSource != null && mPenStatus != null) {
+            mCurrentPen = EverPenManger.getInstance(getActivity()).getCurrentPen();
+            EverPen autoPen = EverPenManger.getInstance(getActivity()).getAutoPen();
+            if (autoPen != null) {
+                mPenSource.setVisibility(View.VISIBLE);
+                mPenStatus.setVisibility(View.VISIBLE);
+                mPenSource.setText(mCurrentPen.getPenType() + mCurrentPen.getSimilaPenSource() + mCurrentPen.getPenName());
+                if (isConnected) {
+                    mPenStatus.setText(R.string.the_connected);
+                } else {
+                    mPenStatus.setText(R.string.not_connected);
+                }
+            } else {
+                mPenSource.setText("");
+                mPenStatus.setText("");
+                mPenSource.setVisibility(View.GONE);
+                mPenStatus.setVisibility(View.GONE);
+            }
+        }
+    }
 }
