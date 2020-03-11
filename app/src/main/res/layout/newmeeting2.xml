@@ -194,6 +194,7 @@
     </LinearLayout>
 
     <RelativeLayout
+        android:visibility="gone"
         style="@style/ScheduleMeetingSettingLayoutStyle"
         >
 
