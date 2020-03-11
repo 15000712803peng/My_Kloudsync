@@ -7,7 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
@@ -16,9 +19,12 @@ import com.kloudsync.techexcel.bean.TeamMember;
 public class StartMeetingDialog implements OnClickListener {
     public Context mContext;
     public Dialog dialog;
-    private LinearLayout lin_enter;
+    private LinearLayout lin_cancel;
     private TextView myroom;
     private String rooid;
+    private TextView startmeeting;
+    private CheckBox checkbox;
+    private RelativeLayout editrel;
 
     public interface InviteOptionsLinstener {
         void enter();
@@ -43,8 +49,22 @@ public class StartMeetingDialog implements OnClickListener {
         dialog = new Dialog(mContext, R.style.bottom_dialog);
         myroom = view.findViewById(R.id.myroom);
         myroom.setText(mContext.getString(R.string.mymeetingid) + " " + rooid);
-        lin_enter = view.findViewById(R.id.lin_enter);
-        lin_enter.setOnClickListener(this);
+        lin_cancel = view.findViewById(R.id.lin_cancel);
+        startmeeting = view.findViewById(R.id.startmeeting);
+        editrel = view.findViewById(R.id.editrel);
+        checkbox = view.findViewById(R.id.checkbox);
+        checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    editrel.setVisibility(View.VISIBLE);
+                }else{
+                    editrel.setVisibility(View.GONE);
+                }
+            }
+        });
+        lin_cancel.setOnClickListener(this);
+        startmeeting.setOnClickListener(this);
         dialog.setContentView(view);
         dialog.getWindow().setWindowAnimations(R.style.PopupAnimation5);
         dialog.getWindow().setGravity(Gravity.BOTTOM);
@@ -69,10 +89,13 @@ public class StartMeetingDialog implements OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.lin_enter:
+            case R.id.startmeeting:
                 if (optionsLinstener != null) {
                     optionsLinstener.enter();
                 }
+                dismiss();
+                break;
+            case R.id.lin_cancel:
                 dismiss();
                 break;
 

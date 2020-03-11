@@ -158,7 +158,6 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 closeFloating();
                 break;
             case R.id.changefloatingnote:  //跳到主界面
-
                 if(currentNote!=null){
                     RecordNoteActionManager.getManager(mContext).sendDisplayPopupHomepageActions(currentNote.getNoteID(),lastjsonObject);
                 }

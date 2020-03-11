@@ -209,10 +209,9 @@ public class RecordNoteActionManager {
      * {actionType:305,time:1,page:1,data:{id:123}}
      */
     public void sendClosePopupActons(long noteId){
-
+        
         try {
             JSONObject jsonObject=new JSONObject();
-
             jsonObject.put("id",noteId);
             soundtrackRecordManager.recordNoteAction(NoteRecordType.CLOSE_POPUP_NOTE,jsonObject);
         } catch (JSONException e) {

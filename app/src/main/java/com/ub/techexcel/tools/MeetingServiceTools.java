@@ -54,6 +54,7 @@ public class MeetingServiceTools {
     public static final int UPDATECOMPANYINFO = 0x2105;
     public static final int DELETECOMPANYLOGO = 0x2106;
     public static final int MEMBERONOTHERDEVICE = 0x2107;
+    public static final int GETBLUETOOTHNOTEDETAIL = 0x2108;
 
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
@@ -107,7 +108,7 @@ public class MeetingServiceTools {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
                 Log.e("meetingservicrtools", url + returnJson.toString());
                 try {
                     if (returnJson.getInt("RetCode") == 0) {
@@ -152,7 +153,7 @@ public class MeetingServiceTools {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
                 Log.e("meetingservicrtools", url + returnJson.toString());
                 try {
                     if (returnJson.getInt("code") == 0 && returnJson.getString("msg").equals("success")) {
@@ -201,7 +202,7 @@ public class MeetingServiceTools {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
-                JSONObject returnJson = com.ub.techexcel.service.ConnectService.submitDataByJson(url, jsonObject);
+                JSONObject returnJson = ConnectService.submitDataByJson(url, jsonObject);
                 Log.e("meetingservicrtools", url + returnJson.toString());
                 try {
                     if (returnJson.getInt("code") == 0 && returnJson.getString("msg").equals("success")) {
@@ -226,7 +227,7 @@ public class MeetingServiceTools {
 
     public void syncGetDocuments(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
 
-        JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+        JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
         Log.e("meetingservicrtools", url + returnJson.toString());
         try {
             if (returnJson.getInt("RetCode") == 0) {
@@ -262,7 +263,7 @@ public class MeetingServiceTools {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
                 Log.e("meetingservicrtools", url + returnJson.toString());
                 try {
                     if (returnJson.getInt("RetCode") == 0) {
@@ -306,6 +307,40 @@ public class MeetingServiceTools {
             }
         }).start();
     }
+    public void getBlueToothNoteDetail(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
+                Log.e("floatingnote", url + returnJson.toString());
+                try {
+                    if (returnJson.getInt("RetCode") == 0) {
+                        JSONObject notejson = returnJson.getJSONObject("RetData");
+                        Note note=new Note();
+
+                        note.setTitle(notejson.getString("Title"));
+                        note.setNoteID(notejson.getInt("NoteID"));
+                        note.setAttachmentUrl(notejson.getString("AttachmentUrl"));
+                        note.setSourceFileUrl(notejson.getString("SourceFileUrl"));
+                        note.setLastModifiedDate(notejson.getString("LastModifiedDate"));
+
+                        Message msg = Message.obtain();
+                        msg.obj = note;
+                        msg.what = code;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = returnJson.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
 
 
     public void getMemberOnOtherDevice(final String url, final int code, ServiceInterfaceListener serviceInterfaceListener) {
@@ -313,7 +348,7 @@ public class MeetingServiceTools {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
                 Log.e("meetingservicrtools", url + returnJson.toString());
                 TvDevice tvDevice = new TvDevice();
                 try {
@@ -349,7 +384,7 @@ public class MeetingServiceTools {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
                 Log.e("meetingservicrtools", url + "   " + returnJson.toString());
                 try {
 
@@ -408,7 +443,7 @@ public class MeetingServiceTools {
 		}
 
 
-		JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+		JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
 		Log.e("syncGetPageActions", url + "   " + returnJson.toString());
 		EventPageActions pageActions = new EventPageActions();
 		pageActions.setPageNumber(config.getPageNumber());
@@ -462,7 +497,7 @@ public class MeetingServiceTools {
 		}
 
 
-		JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+		JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
 		Log.e("syncGetPageActions", url + "   " + returnJson.toString());
 		EventPageActionsForSoundtrack pageActions = new EventPageActionsForSoundtrack();
 		pageActions.setPageNumber(config.getPageNumber());
@@ -522,7 +557,7 @@ public class MeetingServiceTools {
         }
 
 
-        JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+        JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
         Log.e("syncGetPageActions", url + "   " + returnJson.toString());
         EventNotePageActions pageActions = new EventNotePageActions();
         pageActions.setPageNumber(config.getPageNumber());
@@ -745,7 +780,7 @@ public class MeetingServiceTools {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
-                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
                 Log.e("meetingservicrtools", url + returnJson.toString());
                 try {
                     if (returnJson.getInt("RetCode") == 0) {
@@ -796,7 +831,7 @@ public class MeetingServiceTools {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
-                JSONObject returnJson = com.ub.techexcel.service.ConnectService.submitDataByJson(url, null);
+                JSONObject returnJson = ConnectService.submitDataByJson(url, null);
                 Log.e("meetingservicrtools", url + returnJson.toString());
                 Message msg = Message.obtain();
                 msg.obj = returnJson;
@@ -813,7 +848,7 @@ public class MeetingServiceTools {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                JSONObject returnJson = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+                JSONObject returnJson = ConnectService.getIncidentbyHttpGet(url);
                 Log.e("meetingservicrtools", url + returnJson.toString());
                 try {
                     if (returnJson.getInt("RetCode") == 0) {
@@ -939,7 +974,7 @@ public class MeetingServiceTools {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
-                JSONObject returnJson = com.ub.techexcel.service.ConnectService.submitDataByJson(url, null);
+                JSONObject returnJson = ConnectService.submitDataByJson(url, null);
 
                 Log.e("startRecording", url + "   " + returnJson.toString());
                 try {
