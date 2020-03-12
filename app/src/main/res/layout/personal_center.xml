@@ -694,25 +694,39 @@
                     android:padding="2dp"
                     android:src="@drawable/arrow2" />
 
-                <TextView
-                    android:id="@+id/tv_personal_pen_source"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_alignLeft="@id/tv_digital_note"
+                    android:layout_alignRight="@id/tv_personal_pen_status"
+                    android:orientation="horizontal"
                     android:layout_below="@id/tv_digital_note"
-                    android:layout_marginTop="@dimen/dp_10"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tv_personal_pen_source"
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
                     android:textSize="@dimen/sp_11"
+                        android:singleLine="true"
+                        android:layout_marginRight="@dimen/dp_5"
+                        android:ellipsize="end"
+                        android:layout_marginTop="@dimen/dp_10"
                     android:textColor="@color/colorFont99"
                     android:layout_height="wrap_content" />
 
                 <TextView
                     android:id="@+id/tv_personal_pen_current_status"
-                    android:layout_alignRight="@id/tv_personal_pen_status"
                     android:textSize="@dimen/sp_11"
+                    android:gravity="right"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:layout_marginTop="@dimen/dp_10"
                     android:textColor="@color/colorFont99"
-                    android:visibility="gone"
                     android:layout_alignTop="@id/tv_personal_pen_source"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content" />
+                </LinearLayout>
             </RelativeLayout>
 
 

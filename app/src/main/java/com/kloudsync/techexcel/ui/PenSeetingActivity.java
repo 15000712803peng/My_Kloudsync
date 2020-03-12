@@ -1,7 +1,9 @@
 package com.kloudsync.techexcel.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -129,7 +131,26 @@ public class PenSeetingActivity extends BaseActivity<PenSeetingPresenter> implem
 				startActivity(intent);
 				break;
 			case R.id.tv_pen_seeting_delete:
-				mEverPenManger.disconnect(mCurrentPen);
+				EverPen autoPen = EverPenManger.getInstance(this).getAutoPen();
+				if (autoPen != null) {
+					new AlertDialog.Builder(this)
+							.setTitle(R.string.delete_electronic_pen)
+							.setMessage(autoPen.getPenName())
+							.setPositiveButton(R.string.base_enter, new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									if (mCurrentPen.isConnected()) {
+										mEverPenManger.disconnect(mCurrentPen);
+									} else {
+										onDisconnected();
+									}
+
+								}
+							})
+							.setNegativeButton(R.string.base_cancel, null)
+							.show();
+
+				}
 				break;
 		}
 	}
@@ -137,7 +158,7 @@ public class PenSeetingActivity extends BaseActivity<PenSeetingPresenter> implem
 	@Override
 	public void onDisconnected() {
 		mEverPenManger.deleteAutoConnectPen();
-		finish();
+		App.mApplication.exitActivity();
 	}
 
 	@Override

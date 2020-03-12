@@ -13,13 +13,17 @@ public class CurrentPenStatusPresenter extends TQLPenSignalKloudPresenter<Curren
 
 	@Override
 	public void onScanFailed(BLEException e) {
-
+		if (getView() != null) {
+			getView().setPenStatusTextColor(R.color.c5);
+			getView().setCurrentPenStatus(R.string.scanning, R.drawable.enter_pairing_tips_info_icon, R.string.connected);
+		}
 	}
 
 	@Override
 	public void onConnected() {
 		if (getView() != null) {
 			getView().setCurrentPenStatus(R.string.the_connected, R.drawable.current_pen_connected_icon, R.string.go_to_my_notes);
+			getView().setPenStatusTextColor(R.color.color3d78fb);
 			getView().setCurrentPenTips(true);
 			getView().getPenPower();
 			getView().getPenMemory();
@@ -29,6 +33,7 @@ public class CurrentPenStatusPresenter extends TQLPenSignalKloudPresenter<Curren
 	@Override
 	public void onDisconnected() {
 		if (getView() != null) {
+			getView().setPenStatusTextColor(R.color.red2);
 			getView().setCurrentPenStatus(R.string.not_connected, R.drawable.register_red_tips_icon, R.string.connected);
 			getView().setCurrentPenTips(false);
 		}
@@ -37,6 +42,7 @@ public class CurrentPenStatusPresenter extends TQLPenSignalKloudPresenter<Curren
 	@Override
 	public void onConnectFailed() {
 		if (getView() != null) {
+			getView().setPenStatusTextColor(R.color.red2);
 			getView().setCurrentPenStatus(R.string.not_connected, R.drawable.register_red_tips_icon, R.string.connected);
 			getView().setCurrentPenTips(false);
 		}
@@ -61,6 +67,7 @@ public class CurrentPenStatusPresenter extends TQLPenSignalKloudPresenter<Curren
 	public void bleConnectTimeout() {
 		if (getView() != null) {
 			getView().setCurrentPenStatus(R.string.not_connected, R.drawable.register_red_tips_icon, R.string.connected);
+			getView().setPenStatusTextColor(R.color.red2);
 		}
 	}
 
