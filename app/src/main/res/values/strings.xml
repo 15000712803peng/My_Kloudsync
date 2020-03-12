@@ -335,7 +335,7 @@
 
     <string name="About">About</string>
     <string name="HelpCenter">Help center</string>
-    <string name="ShareKS">Share KloudSync</string>
+    <string name="ShareKS">Share Kloud</string>
 
     <string name="Submit">Submit</string>
     <string name="Create">Create</string>
@@ -787,7 +787,7 @@ Please input the cell phone number to add the contact
     <string name="area_code">+86</string>
 
     <string name="register_means_you_agree_to">Register means you agree to\t\t</string>
-    <string name="kloud_sync_terms">KloudSync’s terms</string>
+    <string name="kloud_sync_terms">Kloud’s terms</string>
     <string name="password_rules">8-14 digit password, must contain two kinds of letters, numbers and symbols</string>
     <string name="Sign_up">Sign Up</string>
     <string name="registration_failed">Registration failed</string>
@@ -933,7 +933,7 @@ Please input the cell phone number to add the contact
     <string name="scan_tv">Scanning TV devices</string>
     <string name="_meeting_id">Meeting id:</string>
     <string name="tips">tips</string>
-    <string name="share_kloudsync">Share KloudSync</string>
+    <string name="share_kloudsync">Share Kloud</string>
     <string name="copy_link">Copy Link</string>
     <string name="wechat">Wechat</string>
     <string name="moment">Moment</string>

@@ -42,6 +42,8 @@ import com.kloudsync.techexcel.help.SoundtrackBackgroundMusicManager;
 import com.kloudsync.techexcel.help.SoundtrackDigitalNoteManager;
 import com.kloudsync.techexcel.help.UserVedioManager;
 import com.kloudsync.techexcel.help.WebVedioManager;
+import com.kloudsync.techexcel.info.Uploadao;
+import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.tool.SyncWebActionsCache;
 import com.ub.techexcel.bean.PartWebActions;
@@ -57,6 +59,7 @@ import org.json.JSONObject;
 import org.xwalk.core.XWalkPreferences;
 import org.xwalk.core.XWalkView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,6 +69,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -140,7 +144,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         initDialog();
 //        smallNoteViewHelper = new SmallNoteViewHelper(smallNoteLayout,smallNoteWeb,meetingConfig);
 //        smallNoteViewHelper.init(host);
-        SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig,smallNoteLayout,smallNoteWeb,mainNoteWeb);
+        SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
     }
 
     public void initDialog() {
@@ -169,13 +173,13 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         startPauseImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(soundtrackAudioManager.getMediaInfo() == null){
-                    if(isStarted){
+                if (soundtrackAudioManager.getMediaInfo() == null) {
+                    if (isStarted) {
                         pause();
-                    }else {
+                    } else {
                         restart();
                     }
-                }else {
+                } else {
                     if (soundtrackAudioManager.isPlaying()) {
                         pause();
                     } else {
@@ -240,7 +244,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             params.width = Tools.dip2px(host, 330);
             params.bottomMargin = Tools.dip2px(host, 20);
 
-            Log.e("check_set_oritation","width:" + Tools.dip2px(host, 360));
+            Log.e("check_set_oritation", "width:" + Tools.dip2px(host, 360));
         } else {
             params.width = Tools.dip2px(host, 420);
         }
@@ -271,7 +275,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 dismiss();
                 break;
             case R.id.txt_only_show_time:
-                if(onlyShowTimeText.getVisibility() == View.VISIBLE){
+                if (onlyShowTimeText.getVisibility() == View.VISIBLE) {
                     onlyShowTimeText.setVisibility(View.GONE);
                     controllerLayout.setVisibility(View.VISIBLE);
                 }
@@ -305,7 +309,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 }
             }
         });
-        SoundtrackDigitalNoteManager.getInstance(host).doProcess();
         mainNoteWeb.setVisibility(View.GONE);
         EventBus.getDefault().register(this);
         downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
@@ -321,6 +324,36 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             public void accept(String s) throws Exception {
                 syncDownloadFirst(soundtrackDetail.getSoundtrackID());
                 Log.e("check_play_step", "step_one:preload");
+            }
+        }).map(new Function<String, String>() {
+            @Override
+            public String apply(String s) throws Exception {
+//                https://peertime.oss-cn-shanghai.aliyuncs.com/NoteControlAction/37014/channel_1.json
+                final String centerPart = "NoteControlAction" + File.separator + soundtrackDetail.getSoundtrackID();
+                JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+                        centerPart);
+                String url = "";
+                if (queryDocumentResult != null) {
+                    Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+
+                    if (uploadao != null) {
+                        if (1 == uploadao.getServiceProviderId()) {
+                            url = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
+                                    + "/channel_1.json";
+                        } else if (2 == uploadao.getServiceProviderId()) {
+                            url = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/channel_1.json";
+                        }
+                        Log.e("check_transform_url", "url:" + url);
+                    }
+                }
+                return url;
+            }
+        }).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String url) throws Exception {
+                if (!TextUtils.isEmpty(url)) {
+                    SoundtrackDigitalNoteManager.getInstance(host).doProcess(url);
+                }
             }
         }).doOnNext(new Consumer<String>() {
             @Override
@@ -354,16 +387,16 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             // 播放完成或者手动关闭dialog isFinished = true;
             while (!isFinished) {
                 boolean isPlaying = false;
-                if(soundtrackAudioManager.getMediaInfo() == null){
+                if (soundtrackAudioManager.getMediaInfo() == null) {
                     // 没有newinfo文件
                     isPlaying = true;
-                }else {
-                     isPlaying = SoundtrackAudioManager.getInstance(host).isPlaying();
+                } else {
+                    isPlaying = SoundtrackAudioManager.getInstance(host).isPlaying();
                 }
 
 
                 Log.e("check_play", "mediaInfo,isPlaying:" + isPlaying);
-                if(dialog == null || !dialog.isShowing()){
+                if (dialog == null || !dialog.isShowing()) {
                     isFinished = true;
                 }
 
@@ -377,7 +410,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 }
 
                 if (totalTime <= 0) {
-                    if(soundtrackAudioManager.getMediaInfo() != null){
+                    if (soundtrackAudioManager.getMediaInfo() != null) {
                         totalTime = SoundtrackAudioManager.getInstance(host).getDuration();
                     }
 
@@ -393,15 +426,15 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 //                synchronized (SoundtrackPlayDialog.this) {
 //
 //                }
-                if(soundtrackAudioManager.getMediaInfo() != null){
+                if (soundtrackAudioManager.getMediaInfo() != null) {
                     playTime = SoundtrackAudioManager.getInstance(host).getPlayTime();
-                }else {
+                } else {
                     playTime += 500;
                 }
 
                 actionsManager.setTotalTime(totalTime);
                 actionsManager.setPlayTime(playTime);
-                if(SoundtrackDigitalNoteManager.getInstance(host).getNoteEvents().size() > 0){
+                if (SoundtrackDigitalNoteManager.getInstance(host).getNoteEvents().size() > 0) {
                     SoundtrackDigitalNoteManager.getInstance(host).setPlayTime(playTime);
                 }
 //                    playTime = soundtrackAudioManager.getPlayTime();
@@ -442,9 +475,11 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         if (actionsManager != null) {
             actionsManager.release();
         }
-        if(backgroundMusicManager != null){
+        if (backgroundMusicManager != null) {
             backgroundMusicManager.release();
         }
+
+        SoundtrackDigitalNoteManager.getInstance(host).release();
     }
 
     private void handlePlayMessage(Message message) {
@@ -471,8 +506,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         if (centerLoaing.getVisibility() == View.VISIBLE) {
             centerLoaing.setVisibility(View.GONE);
         }
-        if(onlyShowTimeText.getVisibility() != View.VISIBLE){
-            if(controllerLayout.getVisibility() != View.VISIBLE){
+        if (onlyShowTimeText.getVisibility() != View.VISIBLE) {
+            if (controllerLayout.getVisibility() != View.VISIBLE) {
                 controllerLayout.setVisibility(View.VISIBLE);
             }
         }
@@ -695,11 +730,11 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     }
 
     public void followRestart() {
-        if(soundtrackDetail.getNewAudioInfo() != null){
+        if (soundtrackDetail.getNewAudioInfo() != null) {
             if (!soundtrackAudioManager.isPlaying()) {
                 restart();
             }
-        }else {
+        } else {
             restart();
         }
 
@@ -755,6 +790,10 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 //
             }
         }
+    }
+
+    private void syncDownloadNoteControl(String noteid) {
+
     }
 
     private void downloadActions(long totalTime, final int recordId) {
@@ -844,6 +883,25 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             return true;
         }
         return false;
+    }
+
+    private Uploadao parseQueryResponse(final String jsonstring) {
+        try {
+            JSONObject returnjson = new JSONObject(jsonstring);
+            if (returnjson.getBoolean("Success")) {
+                JSONObject data = returnjson.getJSONObject("Data");
+
+                JSONObject bucket = data.getJSONObject("Bucket");
+                Uploadao uploadao = new Uploadao();
+                uploadao.setServiceProviderId(bucket.getInt("ServiceProviderId"));
+                uploadao.setRegionName(bucket.getString("RegionName"));
+                uploadao.setBucketName(bucket.getString("BucketName"));
+                return uploadao;
+            }
+        } catch (JSONException e) {
+            return null;
+        }
+        return null;
     }
 
 }
