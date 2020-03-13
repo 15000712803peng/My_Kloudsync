@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.mvp.presenter;
 
+import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.mvp.view.IMainActivityView;
 import com.kloudsync.techexcel.tool.SharedPreferencesUtils;
@@ -47,10 +48,12 @@ public class MainPresenter extends TQLPenSignalKloudPresenter<IMainActivityView>
                 if (noteinfobean != null) {
                     if (noteinfobean.isSuccess()) {
                         List<NoteInfoBean.DataBean> dataBeanList = noteinfobean.getData();
+	                    List<NoteInfoBean.DataBean> list = SharedPreferencesUtils.getList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, new TypeToken<List<NoteInfoBean.DataBean>>() {
+	                    });
                         for (NoteInfoBean.DataBean bean : dataBeanList) {
-                            String address = bean.getAddress();
-                            SharedPreferencesUtils.putString(AppConfig.NEWBOOKPAGES, address, bean);
+	                        list.add(bean);
                         }
+	                    SharedPreferencesUtils.putList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, list);
                     } else {
                         if (getView() != null) {
                             NoteInfoBean.ErrorBean error = noteinfobean.getError();

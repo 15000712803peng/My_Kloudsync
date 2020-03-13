@@ -211,6 +211,7 @@ public class AppConfig {
     public static final int GET_INVITATIONS = 70;
     public static final int COMPANY_SUBSYSTEMS = 71;
     public static final int UUSERBINDTVINFO = 72;
+	public static final int UPLOADPENDATA = 73;
 
     //  汪雄峰
 //	public final static String targetUrl = "http://ub.servicewise.net.cn/CWKnowledgeWise/Preview.aspx?49,3602";  //正式版
