@@ -55,6 +55,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
+import static io.agora.rtc.Constants.CLIENT_ROLE_AUDIENCE;
 import static io.agora.rtc.Constants.CLIENT_ROLE_BROADCASTER;
 
 
@@ -76,6 +77,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     private boolean isStarted;
     private AgoraCameraAdapter cameraAdapter;
     private FullAgoraCameraAdapter fullCameraAdapter;
+    private int role;
 
     public void setCameraAdapter(AgoraCameraAdapter cameraAdapter) {
         this.cameraAdapter = cameraAdapter;
@@ -949,7 +951,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                      if((uid+"").equals(AppConfig.UserID)){
                          disableAudioAndVideoStream();
                      }
-
                 }
 
                 if (isSelf) {
@@ -966,10 +967,19 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
         MeetingKit.getInstance().menuMicroClicked(false);
         MeetingKit.getInstance().menuCameraClicked(false);
+        MeetingKit.getInstance().changeAgoraRole(CLIENT_ROLE_AUDIENCE);
     }
 
     public void enableAudioAndVideo(){
+        MeetingKit.getInstance().changeAgoraRole(CLIENT_ROLE_BROADCASTER);
 
+    }
+
+    public void changeAgoraRole(int role){
+        if(rtcManager != null){
+            Log.e("changeAgoraRole","role:" + role);
+            rtcManager.doConfigEngine(role);
+        }
     }
 
 }

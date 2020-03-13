@@ -209,7 +209,6 @@ public class RecordNoteActionManager {
      * {actionType:305,time:1,page:1,data:{id:123}}
      */
     public void sendClosePopupActons(long noteId){
-        
         try {
             JSONObject jsonObject=new JSONObject();
             jsonObject.put("id",noteId);
@@ -244,13 +243,22 @@ public class RecordNoteActionManager {
 
 
     /**
-     * 笔记换页  302
+     * 3.笔记换页:(前端;meeting:1.笔在新一页写.2.手动换一个笔记)
+     * {actionType:302,time:1,page:1,data:{newId:123,oldId:345,lastStrokeId:"1-2-3"}}}
+     * newId: 切换到的笔记Id
+     * oldId:切换之前的笔记Id
      */
-    private void sendChangepageActions(){
-
-
+    public void sendChangePageActions(int noteId, int oldNoteId, JSONObject lastjsonObject) {
+        try {
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("newId",noteId);
+            jsonObject.put("oldId",oldNoteId);
+            jsonObject.put("lastStrokeId",lastjsonObject);
+            soundtrackRecordManager.recordNoteAction(NoteRecordType.CLOSE_HOMEPAGE_NOTE,jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
-
 
 
 }

@@ -939,6 +939,8 @@ Please input the cell phone number to add the contact
     <string name="moment">Moment</string>
     <string name="scan_to_download_app">Scan QR code to download app</string>
 
+    <string name="my_contact">My contact</string>
+
     <string-array name="time_duration">
         <item>15mininutes</item>
         <item>30mins</item>

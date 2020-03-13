@@ -59,6 +59,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.kloudsync.techexcel.config.AppConfig.ClassRoomID;
+
 public class LoginGet {
 
     private static String URL_LOGIN;
@@ -1261,6 +1263,7 @@ public class LoginGet {
                 editor.putInt("UserID", UserID);
 //                editor.putBoolean("isLogIn", true);
                 editor.putString("UserToken", UserToken);
+                editor.putString("MeetingId",ClassRoomID);
                 editor.putString("Name", Name);
 //                if (-1 == x || !isLogIn) {
 //                    editor.putInt("SchoolID", AppConfig.SchoolID);

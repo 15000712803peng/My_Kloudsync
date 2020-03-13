@@ -113,40 +113,45 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     List<MeetingMember> meetingMembers = new ArrayList<>();
 
     private void loadMembers() {
-        meetingMembers.clear();
-        if (meetingConfig.getMeetingMembers() == null || meetingConfig.getMeetingMembers().size() <= 0) {
-            return;
-        }
-
-        membersList.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
-        if (type == 1) {
-            meetingMembers.addAll(meetingConfig.getMeetingMembers());
-            Collections.sort(meetingMembers);
-            fetchCategoryDataForSpeakerTab(meetingConfig);
-            if (mainSpeakersAdapter == null) {
-                mainSpeakersAdapter = new MeetingMainSpeakersAdapter(getActivity(), tabSpeakersMembers);
-                membersList.setAdapter(mainSpeakersAdapter);
-            } else {
-                mainSpeakersAdapter.updateMembers(tabSpeakersMembers);
+        try {
+            meetingMembers.clear();
+            if (meetingConfig.getMeetingMembers() == null || meetingConfig.getMeetingMembers().size() <= 0) {
+                return;
             }
 
-        } else if (type == 2) {
-            meetingMembers.addAll(meetingConfig.getMeetingAuditor());
-            if (membersAdapter == null) {
-                membersAdapter = new MeetingMembersAdapter(getActivity(), meetingMembers);
-                membersList.setAdapter(membersAdapter);
-            } else {
-                membersAdapter.updateMembers(meetingMembers);
+            membersList.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
+            if (type == 1) {
+                meetingMembers.addAll(meetingConfig.getMeetingMembers());
+                Collections.sort(meetingMembers);
+                fetchCategoryDataForSpeakerTab(meetingConfig);
+                if (mainSpeakersAdapter == null) {
+                    mainSpeakersAdapter = new MeetingMainSpeakersAdapter(getActivity(), tabSpeakersMembers);
+                    membersList.setAdapter(mainSpeakersAdapter);
+                } else {
+                    mainSpeakersAdapter.updateMembers(tabSpeakersMembers);
+                }
+
+            } else if (type == 2) {
+                meetingMembers.addAll(meetingConfig.getMeetingAuditor());
+                if (membersAdapter == null) {
+                    membersAdapter = new MeetingMembersAdapter(getActivity(), meetingMembers);
+                    membersList.setAdapter(membersAdapter);
+                } else {
+                    membersAdapter.updateMembers(meetingMembers);
+                }
+            } else if (type == 3) {
+                meetingMembers.addAll(meetingConfig.getMeetingInvitors());
+                if (membersAdapter == null) {
+                    membersAdapter = new MeetingMembersAdapter(getActivity(), meetingMembers);
+                    membersList.setAdapter(membersAdapter);
+                } else {
+                    membersAdapter.updateMembers(meetingMembers);
+                }
             }
-        } else if (type == 3) {
-            meetingMembers.addAll(meetingConfig.getMeetingInvitors());
-            if (membersAdapter == null) {
-                membersAdapter = new MeetingMembersAdapter(getActivity(), meetingMembers);
-                membersList.setAdapter(membersAdapter);
-            } else {
-                membersAdapter.updateMembers(meetingMembers);
-            }
+        } catch (Exception e) {
+
         }
+
     }
 
     List<MeetingMember> tabSpeakersMembers = new ArrayList<>();
