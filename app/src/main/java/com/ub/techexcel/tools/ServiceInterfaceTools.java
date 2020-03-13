@@ -68,6 +68,8 @@ import com.ub.techexcel.bean.Record;
 import com.ub.techexcel.bean.RecordDetail;
 import com.ub.techexcel.bean.SectionVO;
 import com.ub.techexcel.bean.SoundtrackBean;
+import com.ub.techexcel.bean.SyncNoteBean;
+import com.ub.techexcel.bean.UploadNoteBean;
 import com.ub.techexcel.bean.WebAction;
 
 import org.feezu.liuli.timeselector.Utils.TextUtil;
@@ -1676,15 +1678,16 @@ public class ServiceInterfaceTools {
      */
     public NoteInfoBean requestNewBookPages(String path, String peertimeToken, List<NewBookPagesBean.BookPagesBean> bookPages) {
         JSONObject jsonObject = new JSONObject();
+	    Gson gson = new Gson();
         NoteInfoBean noteInfoBean = null;
         try {
             jsonObject.put("PeertimeToken", peertimeToken);
-            String pages = new Gson().toJson(bookPages);
+	        String pages = gson.toJson(bookPages);
             JSONArray jsonArray = new JSONArray(pages);
             jsonObject.put("BookPages", jsonArray);
             String response = ConnectService.requestNewBookPages(path, jsonObject);
             if (response != null) {
-                noteInfoBean = new Gson().fromJson(response, NoteInfoBean.class);
+	            noteInfoBean = gson.fromJson(response, NoteInfoBean.class);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1692,6 +1695,38 @@ public class ServiceInterfaceTools {
 
         return noteInfoBean;
     }
+
+	/**
+	 * 上传笔记数据
+	 *
+	 * @param path
+	 * @param peertimeToken
+	 * @param bookPages
+	 * @param drawingData
+	 * @return
+	 */
+	public UploadNoteBean uploadDrawing(String path, String peertimeToken, List<SyncNoteBean.BookPagesBean> bookPages,
+	                                    List<SyncNoteBean.DrawingDataBean> drawingData) {
+		JSONObject jsonObject = new JSONObject();
+		Gson gson = new Gson();
+		UploadNoteBean uploadNoteBean = null;
+		try {
+			jsonObject.put("PeertimeToken", peertimeToken);
+			String pages = gson.toJson(bookPages);
+			JSONArray jsonArray = new JSONArray(pages);
+			jsonObject.put("BookPages", jsonArray);
+			String drawingList = gson.toJson(drawingData);
+			JSONArray drawingJsonArray = new JSONArray(drawingList);
+			jsonObject.put("DrawingData", drawingJsonArray);
+			String response = ConnectService.uploadDrawing(path, jsonObject);
+			if (response != null) {
+				uploadNoteBean = gson.fromJson(response, UploadNoteBean.class);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return uploadNoteBean;
+	}
 
     public void changeBindTvStatus(final String url, final int code, boolean status, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
@@ -2788,6 +2823,8 @@ public class ServiceInterfaceTools {
         Log.e("syncGetSimpleNoteInfoByLinkId", url + jsonObject.toString() + "  " + response.toString());
         return response;
     }
+
+
 
 
     public interface OnJsonResponseReceiver {

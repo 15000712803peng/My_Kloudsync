@@ -306,8 +306,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 						            if (!dataBean.getAddress().equals(address)) {
 							            SyncNoteBean.BookPagesBean bookPagesBean = new SyncNoteBean.BookPagesBean();
 							            bookPagesBean.setNoteId(dot.PageID);
-							            //        bookPagesBean.setFileId(); 请求接口获得
-							            //        bookPagesBean.setTargetFolderKey(); 请求接口获得
+							            bookPagesBean.setNoteId(dataBean.getNoteId());
+							            bookPagesBean.setFileId(dataBean.getFileId());
 							            bookPagesBean.setPageAddress(address);
 							            bookPagesList.add(bookPagesBean);
 						            }
@@ -348,6 +348,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 				            mPresenter.uploadDrawing(syncNoteBean);
 			            }
 		            }
+		            handler.sendEmptyMessageDelayed(AppConfig.UPLOADPENDATA, 5000);
 		            break;
                 default:
                     break;
@@ -402,6 +403,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         mPresenter = new MainPresenter();
         mPresenter.attachView(this);
         mEverPenManger.addListener(mPresenter);
+	    handler.sendEmptyMessage(AppConfig.UPLOADPENDATA);
     }
 
     private void requestRongCloudOnlineStatus() {

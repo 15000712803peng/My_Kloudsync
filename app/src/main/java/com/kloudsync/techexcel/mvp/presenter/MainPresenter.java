@@ -9,6 +9,7 @@ import com.tqltech.tqlpencomm.PenCommAgent;
 import com.ub.techexcel.bean.NewBookPagesBean;
 import com.ub.techexcel.bean.NoteInfoBean;
 import com.ub.techexcel.bean.SyncNoteBean;
+import com.ub.techexcel.bean.UploadNoteBean;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import java.util.ArrayList;
@@ -67,12 +68,27 @@ public class MainPresenter extends TQLPenSignalKloudPresenter<IMainActivityView>
         }).subscribe();
     }
 
-    public void uploadDrawing(SyncNoteBean syncNoteBean) {
-        Observable.just(syncNoteBean).observeOn(Schedulers.io()).doOnNext(new Consumer<SyncNoteBean>() {
+	public void uploadDrawing(final SyncNoteBean syncNoteBean) {
+		Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, UploadNoteBean>() {
+			@Override
+			public UploadNoteBean apply(String s) throws Exception {
+				String path = AppConfig.URL_LIVEDOC + "uploadDrawing";
+				return mRequsetTools.uploadDrawing(path, syncNoteBean.getPeertimeToken(), syncNoteBean.getBookPages(), syncNoteBean.getDrawingData());
+			}
+		}).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<UploadNoteBean>() {
             @Override
-            public void accept(SyncNoteBean noteBean) throws Exception {
-//                final String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + startTime + "&endTime=" + endTime;
-//                mRequsetTools.uploadDrawing(noteBean);
+            public void accept(UploadNoteBean bean) throws Exception {
+	            if (bean != null) {
+		            if (bean.isSuccess()) {
+
+		            } else {
+			            if (getView() != null) {
+				            UploadNoteBean.ErrorBean error = bean.getError();
+				            String errorMessage = error.getErrorMessage();
+				            getView().toast(errorMessage);
+			            }
+		            }
+	            }
             }
         }).subscribe();
     }
