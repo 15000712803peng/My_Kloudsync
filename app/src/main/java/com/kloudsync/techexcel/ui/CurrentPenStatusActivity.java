@@ -106,10 +106,12 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 		mTvCurrentPenSource.setText(mPenTypeAndSource);
 		boolean connected = mCurrentPen.isConnected();
 		if (connected) {
+			setPenStatusTextColor(R.color.color3d78fb);
 			setCurrentPenStatus(R.string.the_connected, R.drawable.current_pen_connected_icon, R.string.go_to_my_notes);
 			mCurrentPenTips.setVisibility(View.GONE);
 			getPenPower();
 		} else {
+			setPenStatusTextColor(R.color.red2);
 			setCurrentPenStatus(R.string.not_connected, R.drawable.register_red_tips_icon, R.string.connected);
 			mCurrentPenTips.setVisibility(View.VISIBLE);
 		}
@@ -151,10 +153,10 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 					mTvCurrentStatusGoMyNote.setEnabled(false);
 					mTvCurrentStatusGoMyNote.setText(R.string.connecting);
 					mTvCurrentStatusGoMyNote.setAlpha(0.6f);
-					if (!mCurrentPen.isClick()) {
-						mCurrentPen.setClick(true);
-						mEverPenManger.connect(mCurrentPen);
-					}
+//					if (!mCurrentPen.isClick()) {
+					mCurrentPen.setClick(true);
+					mEverPenManger.connect(mCurrentPen);
+//					}
 				} else {
 					intent = new Intent(this, MyNoteActivity.class);
 					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -171,6 +173,11 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 		mTvCurrentStatusGoMyNote.setText(resBtnStringId);
 		mTvCurrentStatusGoMyNote.setEnabled(true);
 		mTvCurrentStatusGoMyNote.setAlpha(1.0f);
+	}
+
+	@Override
+	public void setPenStatusTextColor(int resColorId) {
+		mTvCurrentConnectedStatus.setTextColor(resColorId);
 	}
 
 	@Override
@@ -193,6 +200,8 @@ public class CurrentPenStatusActivity extends BaseActivity<CurrentPenStatusPrese
 			mCurrentPenTips.setVisibility(View.VISIBLE);
 			mPbCurrentPenInfo.setProgress(0);
 			mPbCurrentPenInfo2.setProgress(0);
+			mTvCurrentPenInfoNumber.setText("- -");
+			mTvCurrentPenInfoNumber2.setText("- -");
 		}
 	}
 

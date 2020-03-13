@@ -900,6 +900,7 @@ Please input the cell phone number to add the contact
     <string name="is_scanning">Is scanning...</string>
     <string name="the_connected">The connected</string>
     <string name="not_connected">Not connected</string>
+    <string name="scanning">Scanning</string>
     <string name="go_to_my_notes">Go to my notes</string>
     <string name="connected">Connected</string>
     <string name="connecting">Connecting...</string>

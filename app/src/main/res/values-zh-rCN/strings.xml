@@ -888,6 +888,7 @@
     <string name="is_scanning">正在扫描...</string>
     <string name="the_connected">已连接</string>
     <string name="not_connected">未连接</string>
+    <string name="scanning">扫描中</string>
     <string name="go_to_my_notes">前往我的笔记</string>
     <string name="connected">连接</string>
     <string name="connecting">连接中...</string>

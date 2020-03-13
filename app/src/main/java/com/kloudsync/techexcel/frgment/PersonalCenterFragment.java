@@ -262,6 +262,26 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         if (tv_sname != null) {
             GetSchoolInfo();
         }
+
+        EverPen autoPen = EverPenManger.getInstance(getActivity()).getAutoPen();
+        if (autoPen != null) {
+            mPenSource.setText(autoPen.getPenType() + autoPen.getSimilaPenSource() + autoPen.getPenName());
+            if (mCurrentPen != null && mCurrentPen.isConnected()) {
+                mPenStatus.setText(R.string.the_connected);
+            } else {
+                mPenStatus.setText(R.string.not_connected);
+			    /*if (mCurrentPen.isClick()) {
+                    mCurrentPenStatus.setText(R.string.connecting);
+                }else {
+                    mCurrentPenStatus.setText(R.string.is_scanning);
+                }*/
+                mCurrentPenStatus.setText(R.string.is_scanning);
+            }
+        } else {
+            mPenStatus.setVisibility(View.GONE);
+            mPenSource.setVisibility(View.GONE);
+            mCurrentPenStatus.setVisibility(View.GONE);
+        }
         super.onResume();
     }
 
@@ -343,21 +363,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 
         tv_pc_account_name.setText(account_name);
         // tv_pc_account_number.setText(account_number);
-	    EverPen autoPen = EverPenManger.getInstance(getActivity()).getAutoPen();
         mCurrentPen = EverPenManger.getInstance(getActivity()).getCurrentPen();
-        if (autoPen != null) {
-		    mPenSource.setText(autoPen.getPenType() + autoPen.getSimilaPenSource() + autoPen.getPenName());
-            if (mCurrentPen != null && mCurrentPen.isConnected()) {
-			    mPenStatus.setText(R.string.the_connected);
-		    } else {
-			    mPenStatus.setText(R.string.not_connected);
-		    }
-	    } else {
-		    mPenStatus.setVisibility(View.GONE);
-		    mPenSource.setVisibility(View.GONE);
-		    mCurrentPenStatus.setVisibility(View.GONE);
-	    }
-
 
         ll_pc_publish_article.setOnClickListener(this);
         ll_pc_collection.setOnClickListener(this);
@@ -1017,14 +1023,11 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 
 	private void startDigitalPens() {
 		Intent intent;
-		if (mCurrentPen != null) {
-			if (mCurrentPen.isConnected()) {
-				intent = new Intent(getActivity(), CurrentPenStatusActivity.class);
-				intent.putExtra(CurrentPenStatusActivity.SIMILARPENSOURCE, mCurrentPen.getSimilaPenSource());
-				intent.putExtra(CurrentPenStatusActivity.PENTYPE, mCurrentPen.getPenType());
-			} else {
-				intent = new Intent(getActivity(), DigitalPensActivity.class);
-			}
+        EverPen autoPen = EverPenManger.getInstance(getActivity()).getAutoPen();
+        if (autoPen != null) {
+            intent = new Intent(getActivity(), CurrentPenStatusActivity.class);
+            intent.putExtra(CurrentPenStatusActivity.SIMILARPENSOURCE, mCurrentPen.getSimilaPenSource());
+            intent.putExtra(CurrentPenStatusActivity.PENTYPE, mCurrentPen.getPenType());
 		} else {
 			intent = new Intent(getActivity(), DigitalPensActivity.class);
 		}
@@ -1037,23 +1040,29 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
     }
 
 	public void setCurrentPenNameAndStatus(boolean isConnected) {
-        if (mPenSource != null && mPenStatus != null) {
+        if (mPenSource != null && mPenStatus != null && mCurrentPenStatus != null) {
             mCurrentPen = EverPenManger.getInstance(getActivity()).getCurrentPen();
             EverPen autoPen = EverPenManger.getInstance(getActivity()).getAutoPen();
             if (autoPen != null) {
                 mPenSource.setVisibility(View.VISIBLE);
                 mPenStatus.setVisibility(View.VISIBLE);
+                mCurrentPenStatus.setVisibility(View.VISIBLE);
                 mPenSource.setText(mCurrentPen.getPenType() + mCurrentPen.getSimilaPenSource() + mCurrentPen.getPenName());
                 if (isConnected) {
                     mPenStatus.setText(R.string.the_connected);
+                    mCurrentPenStatus.setText("");
                 } else {
                     mPenStatus.setText(R.string.not_connected);
+                    mCurrentPenStatus.setText(R.string.is_scanning);
                 }
+
             } else {
                 mPenSource.setText("");
                 mPenStatus.setText("");
+                mCurrentPenStatus.setText("");
                 mPenSource.setVisibility(View.GONE);
                 mPenStatus.setVisibility(View.GONE);
+                mCurrentPenStatus.setVisibility(View.GONE);
             }
         }
     }

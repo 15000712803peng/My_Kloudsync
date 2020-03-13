@@ -254,6 +254,13 @@ public class EnterPairingActivity extends BaseActivity<EnterPairingPresenter> im
 		}
 		if (mEverPenList.size() != 0) {
 			mEverPenList.get(mPosition).setConnected(isConnected);
+			if (isConnected) {
+				Intent intent = new Intent(this, CurrentPenStatusActivity.class);
+				intent.putExtra(CurrentPenStatusActivity.SIMILARPENSOURCE, mSimilaPenSource);
+				intent.putExtra(CurrentPenStatusActivity.PENTYPE, mPenType);
+				intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				startActivity(intent);
+			}
 		}
 	}
 

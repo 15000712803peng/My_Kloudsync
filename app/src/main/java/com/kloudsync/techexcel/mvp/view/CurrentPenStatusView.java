@@ -4,6 +4,8 @@ public interface CurrentPenStatusView extends KloudView {
 
 	void setCurrentPenStatus(int resStringId, int resImgId, int resBtnStringId);
 
+	void setPenStatusTextColor(int resColorId);
+
 	void getPenPower();
 
 	void getPenMemory();
