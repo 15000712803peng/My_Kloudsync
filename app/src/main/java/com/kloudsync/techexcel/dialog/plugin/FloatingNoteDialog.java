@@ -33,6 +33,8 @@ import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
 import com.kloudsync.techexcel.info.Customer;
+import com.kloudsync.techexcel.info.Uploadao;
+import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.kloudsync.techexcel.view.spinner.NiceSpinner;
 import com.kloudsync.techexcel.view.spinner.OnSpinnerItemSelectedListener;
@@ -52,6 +54,7 @@ import org.xwalk.core.XWalkPreferences;
 import org.xwalk.core.XWalkView;
 
 import java.io.File;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -190,8 +193,9 @@ public class FloatingNoteDialog implements View.OnClickListener {
         }
     }
 
-    Note currentNote;
+    private Note currentNote;
     private JSONObject lastjsonObject=new JSONObject();
+
     private void process(final long noteId, final MeetingConfig meetingConfig) {
         if (meetingConfig.getDocument() == null) {
             return;
@@ -237,13 +241,62 @@ public class FloatingNoteDialog implements View.OnClickListener {
         }
     }
 
+    /**
+     * 笔记先于音想打开
+     */
+    public void displayPopupActions(){
+        RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(currentNote.getNoteID(),lastjsonObject);
+    }
+
+    private int oldNoteId=0;
+
+    public void setOldNoteId(int oldNoteId){
+        this.oldNoteId=oldNoteId;
+    }
+
     private void handleBluetoothNote(final Note note, final String lastModifiedDate) {
         final String url=note.getSourceFileUrl();
-        //https://peertime.oss-cn-shanghai.aliyuncs.com/P49/Attachment/D80370/book_page_data.json?_=1583735802772
+        if(TextUtils.isEmpty(url)){
+            //https://peertime.oss-cn-shanghai.aliyuncs.com/P49/Attachment/D80370/book_page_data.json?_=1583735802772
+            return;
+        }
         Observable.just(url).observeOn(Schedulers.io()).map(new Function<String, String>() {
             @Override
-            public String apply(String s) throws Exception {
+            public String apply(String url) throws Exception {
                 String newUrl = "";
+                URL _url = new URL(url);
+                Log.e("floatingnote", _url.getPath());
+                String path = _url.getPath();
+                if (!TextUtils.isEmpty(path)) {
+                    if (path.startsWith("/")) {
+                        path = path.substring(1);
+                    }
+                    int index = path.lastIndexOf("/");
+                    if (index >= 0 && index < path.length()) {
+                        String centerPart = path.substring(0, index);
+                        String fileName = path.substring(index + 1, path.length());
+                        Log.e("floatingnote", "centerPart:" + centerPart + ",fileName:" + fileName);
+                        if (!TextUtils.isEmpty(centerPart)) {
+                            JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+                                    centerPart);
+                            if (queryDocumentResult != null) {
+                                Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+                                String part = "";
+                                if (uploadao != null) {
+                                    if (1 == uploadao.getServiceProviderId()) {
+                                        part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
+                                                + "/" + fileName;
+                                    } else if (2 == uploadao.getServiceProviderId()) {
+                                        part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/" + fileName;
+                                    }
+                                    url = part;
+                                    Log.e("floatingnote", "url:" + url);
+                                }
+
+                            }
+                        }
+                    }
+                }
                 int index = url.lastIndexOf("/");
                 if (index > 0 && index < url.length() - 2) {
                     newUrl = url.substring(0, index + 1) + "book_page_data.json?="+lastModifiedDate;
@@ -256,11 +309,7 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 JSONObject jsonObject = new JSONObject();
                 if (!TextUtils.isEmpty(url)) {
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    if(jsonObject.has("PaintData")){
-                        lastjsonObject=jsonObject.getJSONObject("PaintData");
-                    }
-
-                    Log.e("floatingnote", "url:" + url+"   "+jsonObject.toString());
+                    lastjsonObject=jsonObject.getJSONObject("PaintData");
                 }
                 return jsonObject;
             }
@@ -274,7 +323,12 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 _data.put("TriggerEvent", false);
                 Log.e("floatingnote", "ShowDotPanData");
                 floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(note.getNoteID(),lastjsonObject);
+                if(oldNoteId==0){
+                    RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(note.getNoteID(),lastjsonObject);
+                }else{
+                    RecordNoteActionManager.getManager(mContext).sendChangePageActions(note.getNoteID(),oldNoteId,lastjsonObject);
+                    oldNoteId=0;
+                }
             }
         }).subscribe();
     }
@@ -299,7 +353,26 @@ public class FloatingNoteDialog implements View.OnClickListener {
             Log.e("JavascriptInterface", "reflect,result:  " + result);
 
         }
+    }
 
+
+    private Uploadao parseQueryResponse(final String jsonstring) {
+        try {
+            JSONObject returnjson = new JSONObject(jsonstring);
+            if (returnjson.getBoolean("Success")) {
+                JSONObject data = returnjson.getJSONObject("Data");
+
+                JSONObject bucket = data.getJSONObject("Bucket");
+                Uploadao uploadao = new Uploadao();
+                uploadao.setServiceProviderId(bucket.getInt("ServiceProviderId"));
+                uploadao.setRegionName(bucket.getString("RegionName"));
+                uploadao.setBucketName(bucket.getString("BucketName"));
+                return uploadao;
+            }
+        } catch (JSONException e) {
+            return null;
+        }
+        return null;
     }
 
 

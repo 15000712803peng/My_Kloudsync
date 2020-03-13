@@ -286,7 +286,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     AgoraCameraAdapter cameraAdapter;
     FullAgoraCameraAdapter fullCameraAdapter;
     Gson gson;
-    String test;
     private SharedPreferences sharedPreferences;
     private SurfaceView surfaceView;
 
@@ -305,6 +304,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
 
+//        Log.e("check_crash",null);
         writeNoteBlankPageImage();
         initViews();
         //----
@@ -343,7 +343,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 }
             });
         }
-
         pageCache = DocumentPageCache.getInstance(this);
         //--
         menuManager = BottomMenuManager.getInstance(this, meetingConfig);
@@ -739,8 +738,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    JSONObject noteweblastjsonObject = new JSONObject();
-
+    JSONObject lastjsonObject=new JSONObject();
     private void handleBluetoothNote(final String url) {
         if (TextUtils.isEmpty(url)) {
             return;
@@ -796,7 +794,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (!TextUtils.isEmpty(url)) {
                     Log.e("check_url", "url:" + url);
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    noteweblastjsonObject = jsonObject.getJSONObject("PaintData");
+                    lastjsonObject=jsonObject.getJSONObject("PaintData");
                 }
                 return jsonObject;
             }
@@ -810,7 +808,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
                 noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, noteweblastjsonObject);
+                RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId,lastjsonObject);
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override
@@ -1024,82 +1022,81 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 finish();
                 break;
             case SocketMessageManager.MESSAGE_MEMBER_LIST_CHANGE:
-                MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
+                MeetingKit.getInstance().requestMeetingMembers(meetingConfig,false);
                 break;
             case SocketMessageManager.MESSAGE_AGORA_STATUS_CHANGE:
                 handleMessageAgoraStatusChange(socketMessage.getData());
                 break;
             case SocketMessageManager.MESSAGE_OPEN_OR_CLOSE_NOTE:  //打开或关闭笔记
                 if (socketMessage.getData().has("retData")) {
-                    try {
-                        JSONObject retData = socketMessage.getData().getJSONObject("retData");
-                        int noteId = retData.getInt("noteId");
-                        int status = retData.getInt("status");
-                        if (status == 1) { //打开浮窗
-                            showNoteFloatingDialog(noteId);
-                        } else if (status == 0) {  //关闭浮窗 或者 主界面
-                            if (noteLayout.getVisibility() == View.VISIBLE) {
-                                if (noteWeb != null) {
-                                    NoteViewManager.getInstance().closeNoteWeb();
-                                }
-                            } else {
-                                if (floatingNoteDialog != null) {
-                                    if (floatingNoteDialog.isShowing()) {
-                                        floatingNoteDialog.closeFloating();
-                                    }
-                                }
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    openOrCloseNote(socketMessage);
                 }
                 break;
-            case SocketMessageManager.MESSAGE_NOTE_DATA:
+            case SocketMessageManager.MESSAGE_NOTE_DATA:  // 浮窗或主界面正在展示的场景下
                 if (socketMessage.getData().has("retData")) {
                     try {
                         JSONObject retData = socketMessage.getData().getJSONObject("retData");
                         String noteData = retData.getString("data");
-                        long noteId = retData.getInt("noteId");
+                        int noteId = retData.getInt("noteId");
                         if (currentNoteId != noteId) {
                             TempNoteData _noteData = new TempNoteData();
                             _noteData.setData(Tools.getFromBase64(noteData));
                             _noteData.setNoteId(noteId);
                             newNoteDatas.add(_noteData);
-                            return;
-                        }
-
-                        // 同一个笔记
-                        if (noteLayout.getVisibility() == View.VISIBLE) {
-                            if (noteWeb != null) {
-                                noteweblastjsonObject = new JSONObject(Tools.getFromBase64(noteData));
-                                NoteViewManager.getInstance().followPaintLine(noteData);
-                            }
-                        } else {
-                            if (floatingNoteDialog != null) {
-                                if (floatingNoteDialog.isShowing()) {
-                                    floatingNoteDialog.followDrawNewLine(noteId, noteData);
+//                            return;
+                            if (noteLayout.getVisibility() == View.VISIBLE) {
+                                if (noteWeb != null) {
+                                    followShowNote(noteId);
+                                }
+                            }else{
+                                if(floatingNoteDialog!=null){
+                                    if(floatingNoteDialog.isShowing()){
+                                        floatingNoteDialog.setOldNoteId((int) currentNoteId);
+                                        showNoteFloatingDialog(noteId);  //换个笔记了
+                                    }
                                 }
                             }
+                        }else {  // 同一个笔记
+                            if (noteLayout.getVisibility() == View.VISIBLE) {
+                                if (noteWeb != null) {
+                                    lastjsonObject=new JSONObject(Tools.getFromBase64(noteData));
+                                    NoteViewManager.getInstance().followPaintLine(noteData);
+                                }
+                            }else{
+                                if(floatingNoteDialog!=null){
+                                    if(floatingNoteDialog.isShowing()){
+                                        floatingNoteDialog.followDrawNewLine(noteId,noteData);
+                                    }
+                                }
+                            }
+                            RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
                         }
-                        RecordNoteActionManager.getManager(this).sendDrawActions(noteId, noteData);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
                 break;
-
             case SocketMessageManager.MESSAGE_NOTE_CHANGE:
                 if (socketMessage.getData().has("retData")) {
                     try {
                         int noteId = socketMessage.getData().getJSONObject("retData").getInt("noteId");
-                        followShowNote(noteId);
+                        if (noteLayout.getVisibility() == View.VISIBLE) {
+                            if (noteWeb != null) {
+                                followShowNote(noteId);
+                            }
+                        }else{
+                            if(floatingNoteDialog!=null){
+                                if(floatingNoteDialog.isShowing()){
+                                    floatingNoteDialog.setOldNoteId((int) currentNoteId);
+                                }
+                            }
+                            showNoteFloatingDialog(noteId);  //换个笔记了
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
                 break;
-
             case SocketMessageManager.MESSAGE_NOTE_P1_CREATEAD:
                 if (socketMessage.getData().has("retData")) {
                     try {
@@ -1136,7 +1133,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             meetingMenu.setVisibility(View.VISIBLE);
             //---处理笔记
             if (meetingConfig.getMode() == 0) {
-                shareScreen = null;
                 if (!TextUtils.isEmpty(helloMessage.getPrevDocInfo()) && helloMessage.getNoteId() > 0) {
                     // 心跳显示处于查看笔记
                     if (noteLayout.getVisibility() != View.VISIBLE) {
@@ -1150,7 +1146,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
                 }
             }
-
             // ---处理presenter
             if (!TextUtils.isEmpty(helloMessage.getCurrentPresenter()) && !TextUtils.isEmpty(AppConfig.UserID)) {
                 meetingConfig.justSetPresenterId(helloMessage.getCurrentPresenter());
@@ -1178,31 +1173,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             } else {
                 if (toggleCameraLayout.getVisibility() != View.VISIBLE) {
                     toggleCameraLayout.setVisibility(View.VISIBLE);
-                }
-            }
-
-            if (meetingConfig.getMode() != 3) {
-                // 不是屏幕共享
-                if (remoteShareLayout.getVisibility() == View.VISIBLE || remoteShareFrame.getVisibility() == View.VISIBLE) {
-                    if (shareScreen == null) {
-                        closeShareScreen(new EventCloseShare());
-                    }
-
-                }
-            }
-
-            if (meetingConfig.getRole() != MeetingConfig.MeetingRole.HOST && meetingConfig.getRole() != MeetingConfig.MeetingRole.MEMBER) {
-                // 自己不是host也不是主讲人
-                if (menuIcon.getVisibility() == View.VISIBLE) {
-                    MeetingKit.getInstance().disableAudioAndVideoStream();
-                    menuIcon.setVisibility(View.GONE);
-                    meetingMenuMemberImage.setVisibility(View.VISIBLE);
-                }
-
-            }else {
-                if(meetingMenuMemberImage.getVisibility() == View.VISIBLE){
-                    menuIcon.setVisibility(View.VISIBLE);
-                    meetingMenuMemberImage.setVisibility(View.GONE);
                 }
             }
         }
@@ -1377,7 +1347,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void inviteUsers(EventInviteUsers inviteUsers) {
         messageManager.sendMessage_InviteToMeeting(meetingConfig, inviteUsers.getUsers());
-        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
+        MeetingKit.getInstance().requestMeetingMembers(meetingConfig,false);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -1656,9 +1626,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         if (meetingMembersDialog != null && meetingMembersDialog.isShowing()) {
             Log.e("refreshMeetingMembers", "dialog_is_show,need_refresh:" + refreshMembers.isNeedRefresh());
-            if (refreshMembers.isNeedRefresh()) {
+            if(refreshMembers.isNeedRefresh()){
                 meetingMembersDialog.refresh(refreshMembers);
-            } else {
+            }else {
                 if (meetingConfig.getMeetingMembers().size() + meetingConfig.getMeetingAuditor().size() <= 10) {
                     meetingMembersDialog.refresh(refreshMembers);
                 }
@@ -1894,7 +1864,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 meetingConfig.setRole(member.getRole());
                 meetingConfig.setMe(member);
             }
-
             for (AgoraMember agoraMember : meetingConfig.getAgoraMembers()) {
                 if ((member.getUserId() + "").equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
@@ -2674,7 +2643,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Override
     public void menuNoteClicked() {
-        showNotesDialog();
+//        showNotesDialog();
+        showNoteFloatingDialog(1915234);
     }
 
     @Override
@@ -2836,7 +2806,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
         keepScreenWake();
-
         MeetingRecordManager.getManager(this).initRecording(recordstatus, messageManager, meetingConfig);
 
         MeetingKit.getInstance().startMeeting();
@@ -3002,26 +2971,51 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     FloatingNoteDialog floatingNoteDialog;
 
-    private void showNoteFloatingDialog(int noteId) {
-        currentNoteId = noteId;
+    private void showNoteFloatingDialog(int noteId){
+        currentNoteId=noteId;
         if (floatingNoteDialog != null) {
             floatingNoteDialog.show(noteId, meetingConfig);
-        } else {
-            floatingNoteDialog = new FloatingNoteDialog(this);
-            floatingNoteDialog.setFloatingListener(new FloatingNoteDialog.FloatingListener() {
-                @Override
-                public void changeHomePage(int noteId) {
-                    followShowNote(noteId);
+        }else{
+             floatingNoteDialog = new FloatingNoteDialog(this);
+             floatingNoteDialog.setFloatingListener(new FloatingNoteDialog.FloatingListener() {
+                 @Override
+                 public void changeHomePage(int noteId) {
+                     followShowNote(noteId);
+                 }
+             });
+             floatingNoteDialog.show(noteId, meetingConfig);
+        }
+    }
+
+    private  void openOrCloseNote(EventSocketMessage socketMessage){
+        try {
+            JSONObject retData=socketMessage.getData().getJSONObject("retData");
+            int noteId=retData.getInt("noteId");
+            int status=retData.getInt("status");
+            if(status==1){ //打开浮窗
+                showNoteFloatingDialog(noteId);
+            }else if(status==0){  //关闭浮窗 或者 主界面
+                if (noteLayout.getVisibility() == View.VISIBLE) {
+                    if (noteWeb != null) {
+                        NoteViewManager.getInstance().closeNoteWeb();
+                    }
+                }else{
+                    if(floatingNoteDialog!=null){
+                        if(floatingNoteDialog.isShowing()){
+                            floatingNoteDialog.closeFloating();
+                        }
+                    }
                 }
-            });
-            floatingNoteDialog.show(noteId, meetingConfig);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receiverOpenFloating(EventFloatingNote eventFloatingNote) {
+    public void receiverOpenFloating(EventFloatingNote eventFloatingNote) {  //从主界面切到浮窗
         //从主界面切回浮窗
-        RecordNoteActionManager.getManager(this).sendDisplayHomepagePopupActions(currentNoteId, noteweblastjsonObject);
+        RecordNoteActionManager.getManager(this).sendDisplayHomepagePopupActions(eventFloatingNote.getNoteId(),lastjsonObject);
         showNoteFloatingDialog(eventFloatingNote.getNoteId());
     }
 
@@ -3029,7 +3023,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     MeetingMembersDialog meetingMembersDialog;
 
     private void showMembersDialog() {
-        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
+        MeetingKit.getInstance().requestMeetingMembers(meetingConfig,true);
         if (meetingMembersDialog != null) {
             if (meetingMembersDialog.isShowing()) {
                 meetingMembersDialog.dismiss();
@@ -3404,7 +3398,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 JSONObject result = ServiceInterfaceTools.getinstance().syncMakePresenter(eventSetPresenter.getMeetingMember().getUserId() + "");
                 if (result.has("code")) {
                     if (result.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig,true);
                     }
                 }
             }
@@ -3639,6 +3633,20 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             getJspPagenumber();
             messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
             recordstatus.setVisibility(View.VISIBLE);
+
+            //判断笔记是否打开
+            if (noteLayout.getVisibility() == View.VISIBLE) {
+                if (noteWeb != null) {
+                     // 笔记先于音想打开
+                    RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId,lastjsonObject);
+                }
+            }else{
+                if(floatingNoteDialog!=null){
+                    if(floatingNoteDialog.isShowing()){
+                        floatingNoteDialog.displayPopupActions();
+                    }
+                }
+            }
         } else if (eventSoundSync.getStatus() == 0) {   //录音结束
             recordstatus.setVisibility(View.GONE);
             isSyncing = false;
@@ -4076,7 +4084,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
         }
 
-        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, true);
+        MeetingKit.getInstance().requestMeetingMembers(meetingConfig,true);
 
     }
 
@@ -4123,7 +4131,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     meetingConfig.setPageNumber((int) page);
                     meetingConfig.setType(joinMeetingMessage.getType());
                     if (dataJson.has("currentMode")) {
-                        Log.e("check_JOIN_MEETING", "check_mode:" + joinMeetingMessage.getCurrentMode());
                         meetingConfig.setMode(joinMeetingMessage.getCurrentMode());
                     }
                     if (dataJson.has("currentMaxVideoUserId")) {
@@ -4157,21 +4164,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         if (AppConfig.UserID.equals(joinMeetingMessage.getUserId())) {
                             // 说明是自己加入了会议返回的JOIN_MEETING的消息
                             Log.e("check_JOIN_MEETING", "my_self_join_in");
-
-                            if (dataJson.has("role")) {
-                                meetingConfig.setRole(dataJson.getInt("role"));
-                            }
-
-                            if (meetingConfig.getRole() != MeetingConfig.MeetingRole.HOST && meetingConfig.getRole() != MeetingConfig.MeetingRole.MEMBER) {
-                                // 进来自己不是host也不是主讲人
-                                MeetingKit.getInstance().disableAudioAndVideoStream();
-                                menuIcon.setVisibility(View.GONE);
-                                meetingMenuMemberImage.setVisibility(View.VISIBLE);
-                            }
 //                            delayRefreshAgoraList();
                         }
 
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig,false);
 
                         if (meetingConfig.isInRealMeeting()) {
                             return;
@@ -4206,7 +4202,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (data.has("retCode")) {
             try {
                 if (data.getInt("retCode") == 0) {
-                    MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
+                    MeetingKit.getInstance().requestMeetingMembers(meetingConfig,false);
                 }
 //                JSONObject _data = data.getJSONObject("retData");
 //                if (_data.has("usersList")) {
