@@ -343,6 +343,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 }
             });
         }
+
         pageCache = DocumentPageCache.getInstance(this);
         //--
         menuManager = BottomMenuManager.getInstance(this, meetingConfig);
