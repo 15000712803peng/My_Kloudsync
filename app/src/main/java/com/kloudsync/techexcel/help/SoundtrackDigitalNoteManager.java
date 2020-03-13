@@ -550,7 +550,6 @@ public class SoundtrackDigitalNoteManager {
                     Observable.just("delay_load").delay(5000, TimeUnit.MICROSECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                         @Override
                         public void accept(String s) throws Exception {
-                            Toast.makeText(context, "draw_note", Toast.LENGTH_LONG).show();
                             mainNoteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
                             smallNoteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
 
@@ -876,24 +875,34 @@ public class SoundtrackDigitalNoteManager {
             public void accept(String response) throws Exception {
                 if (!TextUtils.isEmpty(response)) {
                     Log.e("check_noteEvents","note_events:" + response);
-                    List<DigitalNoteEventInSoundtrack> noteEventsData = new Gson().fromJson(response, new TypeToken<List<DigitalNoteEventInSoundtrack>>() {
-                    }.getType());
-                    if (noteEventsData != null && noteEventsData.size() > 0) {
-                        _noteEvents.addAll(noteEventsData);
+
+                    try {
+                        List<DigitalNoteEventInSoundtrack> noteEventsData = new Gson().fromJson(response, new TypeToken<List<DigitalNoteEventInSoundtrack>>() {
+                        }.getType());
+                        if (noteEventsData != null && noteEventsData.size() > 0) {
+                            _noteEvents.addAll(noteEventsData);
+                        }
+                    }catch (Exception e){
+
                     }
 
                 } else {
                     Log.e("check_noteEvents","download_url:" + url);
                     String _resonse = ConnectService.getResponseStringbyHttpGet(url);
-                    if (!TextUtils.isEmpty(_resonse)) {
-                        List<DigitalNoteEventInSoundtrack> noteEventsData = new Gson().fromJson(_resonse, new TypeToken<List<DigitalNoteEventInSoundtrack>>() {
-                        }.getType());
-                        if (noteEventsData != null && noteEventsData.size() > 0) {
-                            _noteEvents.addAll(noteEventsData);
+                    try {
+                        if (!TextUtils.isEmpty(_resonse)) {
+                            List<DigitalNoteEventInSoundtrack> noteEventsData = new Gson().fromJson(_resonse, new TypeToken<List<DigitalNoteEventInSoundtrack>>() {
+                            }.getType());
+                            if (noteEventsData != null && noteEventsData.size() > 0) {
+                                _noteEvents.addAll(noteEventsData);
+                            }
+                            noteEventsCache.cacheNoteEvents(url,_resonse);
+
                         }
-                        noteEventsCache.cacheNoteEvents(url,_resonse);
+                    }catch (Exception e){
 
                     }
+
                 }
                 Log.e("check__noteEvents","_noteEvents_size:" +_noteEvents.size());
             }

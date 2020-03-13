@@ -709,7 +709,6 @@
                 android:layout_gravity="center_vertical"
                 android:background="@color/white" />
 
-
             <ImageView
                 android:id="@+id/syncicon"
                 android:layout_width="20dp"

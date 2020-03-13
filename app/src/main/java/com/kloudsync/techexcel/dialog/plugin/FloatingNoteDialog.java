@@ -256,7 +256,10 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 JSONObject jsonObject = new JSONObject();
                 if (!TextUtils.isEmpty(url)) {
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    lastjsonObject=jsonObject.getJSONObject("PaintData");
+                    if(jsonObject.has("PaintData")){
+                        lastjsonObject=jsonObject.getJSONObject("PaintData");
+                    }
+
                     Log.e("floatingnote", "url:" + url+"   "+jsonObject.toString());
                 }
                 return jsonObject;

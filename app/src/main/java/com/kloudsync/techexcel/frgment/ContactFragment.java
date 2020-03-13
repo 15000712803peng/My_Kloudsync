@@ -157,7 +157,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
         list.setAdapter(cAdapter);
         list.setOnItemClickListener(new MyOnitem());
         filterImage.setOnClickListener(this);
-        showContactByType(sharedPreferences.getInt("contact_type",1));
+        showContactByType(sharedPreferences.getInt("contact_type",0));
     }
 
     private View initHeader() {
@@ -474,7 +474,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
         Observable.just(type).observeOn(Schedulers.io()).map(new Function<Integer, List<SameLetterFriends>>() {
             @Override
             public List<SameLetterFriends> apply(Integer integer) throws Exception {
-                JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetFriendList(schoolId, type);
+                JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetFriendList(schoolId, 0);
                 if (jsonObject.has("code")) {
                     if (jsonObject.getInt("code") == 0) {
                         sharedPreferences.edit().putInt("contact_type",type).commit();
@@ -502,13 +502,13 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
                 }else {
                     noContactText.setVisibility(View.GONE);
                 }
-                if(type == 0){
-                    filterImage.setImageResource(R.drawable.icon_filter);
-                    contactTitle.setText(getString(R.string.contract_company));
-                }else if(type == 1){
-                    filterImage.setImageResource(R.drawable.filter_red);
-                    contactTitle.setText(getString(R.string.contract_all));
-                }
+//                if(type == 0){
+//                    filterImage.setImageResource(R.drawable.icon_filter);
+//                    contactTitle.setText(getString(R.string.contract_company));
+//                }else if(type == 1){
+//                    filterImage.setImageResource(R.drawable.filter_red);
+//                    contactTitle.setText(getString(R.string.contract_all));
+//                }
 
                 adapter = new FriendContactAdapter(getActivity(), sameLetterFriends);
                 Log.e("check_contact", "set_adapter:" + sameLetterFriends.size());

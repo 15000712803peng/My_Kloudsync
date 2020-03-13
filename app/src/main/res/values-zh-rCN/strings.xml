@@ -927,6 +927,8 @@
     <string name="kick_off_from_meeting">请他离开会议</string>
     <string name="tips">提示</string>
 
+    <string name="my_contact">我的联系人</string>
+
     <string-array name="time_duration">
         <item>15分钟</item>
         <item>30分钟</item>

@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -78,6 +79,7 @@ import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
 
@@ -121,6 +123,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     private RelativeLayout search_layout;
     private ImageView switchCompanyImage;
 
+    private SharedPreferences sharedPreferences;
+
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -144,7 +148,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
                                 @Override
                                 public void view() {
-	                                Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
+                                    Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                                     intent.putExtra("userid", bean.getUserId());
                                     intent.putExtra("meetingId", bean.getId() + "");
                                     intent.putExtra("teacherid", bean.getTeacherId());
@@ -154,16 +158,16 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                                     intent.putExtra("isPrepare", true);
                                     intent.putExtra("yinxiangmode", 1);
 
-	                                // --------
-	                                intent.putExtra("meeting_id", bean.getId() + "");
-	                                intent.putExtra("meeting_type", 2);
-	                                intent.putExtra("meeting_role", bean.getRoleinlesson());
-	                                try {
-		                                intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
+                                    // --------
+                                    intent.putExtra("meeting_id", bean.getId() + "");
+                                    intent.putExtra("meeting_type", 2);
+                                    intent.putExtra("meeting_role", bean.getRoleinlesson());
+                                    try {
+                                        intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
 
-	                                } catch (Exception e) {
+                                    } catch (Exception e) {
 
-	                                }
+                                    }
 
                                     startActivity(intent);
                                 }
@@ -212,7 +216,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
                                 @Override
                                 public void view() {
-	                                Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
+                                    Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                                     intent.putExtra("userid", bean.getUserId());
                                     intent.putExtra("meetingId", bean.getId() + "");
                                     intent.putExtra("teacherid", bean.getTeacherId());
@@ -224,16 +228,16 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                                     intent.putExtra("isFinished", true);
                                     intent.putExtra("yinxiangmode", 1);
 
-	                                // --------
-	                                intent.putExtra("meeting_id", bean.getId() + "");
-	                                intent.putExtra("meeting_type", 2);
-	                                intent.putExtra("meeting_role", bean.getRoleinlesson());
-	                                try {
-		                                intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
+                                    // --------
+                                    intent.putExtra("meeting_id", bean.getId() + "");
+                                    intent.putExtra("meeting_type", 2);
+                                    intent.putExtra("meeting_role", bean.getRoleinlesson());
+                                    try {
+                                        intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
 
-	                                } catch (Exception e) {
+                                    } catch (Exception e) {
 
-	                                }
+                                    }
                                     startActivity(intent);
                                 }
 
@@ -401,6 +405,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
+        sharedPreferences = getActivity().getSharedPreferences(AppConfig.LOGININFO,
+                MODE_PRIVATE);
     }
 
 
@@ -829,18 +835,18 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     private void joinMeetingBeforeCheckPession() {
         if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
             showJoinMeetingDialog();
-        }else {
+        } else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{
-                    Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING);
+                    Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING);
         }
     }
 
     private void startMeetingBeforeCheckPession() {
         if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
             showStartMeetingDialog();
-        }else {
+        } else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{
-                    Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING);
+                    Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING);
         }
     }
 
@@ -868,12 +874,20 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         joinMeetingDialog.show();
     }
 
-    private void showStartMeetingDialog(){
+    private void showStartMeetingDialog() {
         if (startMeetingDialog != null) {
-            if(startMeetingDialog.isShowing()){
+            if (startMeetingDialog.isShowing()) {
                 startMeetingDialog.dismiss();
                 startMeetingDialog = null;
             }
+        }
+        if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
+            AppConfig.ClassRoomID = sharedPreferences.getString("MeetingId", "");
+        }
+        if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
+            Toast.makeText(getActivity(), "你还没有设置会议ID!", Toast.LENGTH_LONG).show();
+
+            return;
         }
         startMeetingDialog = new StartMeetingDialog(getActivity(), AppConfig.ClassRoomID.replaceAll("-", ""));
         startMeetingDialog.setOptionsLinstener(new StartMeetingDialog.InviteOptionsLinstener() {
@@ -894,12 +908,12 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
 
     @Subscribe
-    public void eventJoinMeetingAfterPerssionGranted(EventCameraAndStoragePermissionForJoinMeetingGranted joinMeetingGranted){
+    public void eventJoinMeetingAfterPerssionGranted(EventCameraAndStoragePermissionForJoinMeetingGranted joinMeetingGranted) {
         showJoinMeetingDialog();
     }
 
     @Subscribe
-    public void eventStartMeetingAfterPerssionGranted(EventCameraAndStoragePermissionForStartMeetingGranted startMeetingGranted){
+    public void eventStartMeetingAfterPerssionGranted(EventCameraAndStoragePermissionForStartMeetingGranted startMeetingGranted) {
         showStartMeetingDialog();
     }
 

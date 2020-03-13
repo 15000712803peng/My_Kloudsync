@@ -525,6 +525,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         editor.putString("UserID", AppConfig.UserID);
         editor.putString("UserToken", AppConfig.UserToken);
         editor.putString("Name", AppConfig.UserName);
+        editor.putString("MeetingId",ClassRoomID);
         editor.commit();
     }
 

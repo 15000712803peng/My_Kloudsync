@@ -207,20 +207,25 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
     }
 
     private void init(){
-        membersPager.setSaveEnabled(false);
-        membersPager.addOnPageChangeListener(this);
-        tab1.setText("主讲人" +"(" + meetingConfig.getMeetingMembers().size() + ")");
-        tab2.setText("参会者" +"(" + meetingConfig.getMeetingAuditor().size() + ")");
-        tab3.setText("被邀请人" +"(" + meetingConfig.getMeetingInvitors().size() + ")");
-        if(meetingConfig.getMeetingInvitors().size() > 0){
-            invitorsTab.setVisibility(View.VISIBLE);
-        }else {
-            invitorsTab.setVisibility(View.GONE);
+        try {
+            membersPager.setSaveEnabled(false);
+            membersPager.addOnPageChangeListener(this);
+            tab1.setText("主讲人" +"(" + meetingConfig.getMeetingMembers().size() + ")");
+            tab2.setText("参会者" +"(" + meetingConfig.getMeetingAuditor().size() + ")");
+            tab3.setText("被邀请人" +"(" + meetingConfig.getMeetingInvitors().size() + ")");
+            if(meetingConfig.getMeetingInvitors().size() > 0){
+                invitorsTab.setVisibility(View.VISIBLE);
+            }else {
+                invitorsTab.setVisibility(View.GONE);
+            }
+            if(membersAdapter != null){
+                membersAdapter.notifyDataSetChanged();
+            }
+            initIndicators();
+        }catch (Exception e){
+
         }
-        if(membersAdapter != null){
-            membersAdapter.notifyDataSetChanged();
-        }
-        initIndicators();
+
     }
 
     private void initIndicators(){

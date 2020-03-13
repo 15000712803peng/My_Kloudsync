@@ -388,12 +388,12 @@ public class MeetingServiceTools {
                 Log.e("meetingservicrtools", url + "   " + returnJson.toString());
                 try {
 
-                    if (returnJson.getInt("RetCode") == 0) {
-                        JSONArray data = returnJson.getJSONArray("RetData");
+                    if (returnJson.getInt("code") == 0) {
+                        JSONArray data = returnJson.getJSONArray("data");
                         String mmm = "";
                         for (int i = 0; i < data.length(); i++) {
                             JSONObject jsonObject1 = data.getJSONObject(i);
-                            String ddd = jsonObject1.getString("Data");
+                            String ddd = jsonObject1.getString("data");
                             if (!TextUtil.isEmpty(ddd)) {
                                 String dd = "'" + Tools.getFromBase64(ddd) + "'";
                                 if (i == 0) {
@@ -428,11 +428,13 @@ public class MeetingServiceTools {
 		String url = "";
 		switch (config.getType()) {
 			case MeetingType.DOC:
-				url = "https://api.peertime.cn/peertime/V1/PageObject/GetPageObjects?lessonID=0&itemID=" + 0 + "&pageNumber=" + config.getPageNumber() +
-						"&attachmentID=" + config.getDocument().getAttachmentID() + "&soundtrackID=0&displayDrawingLine=0";
+				url = "https://wss.peertime.cn/MeetingServer/page_object/list?lessonId=0&itemId=" + 0 + "&pageNumber=" + config.getPageNumber() +
+						"&attachmentId=" + config.getDocument().getAttachmentID() + "&soundtrackId=0&displayDrawingLine=0";
 				break;
+
+                  //  https://wss.peertime.cn/MeetingServer/page_object/list?lessonId=0&itemId=0&pageNumber=1&attachmentId=58352&soundtrackId=0&displayDrawingLine=0
 			case MeetingType.MEETING:
-				url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=" + config.getLessionId() + "&itemID=" +
+				url = "https://wss.peertime.cn/MeetingServer/page_object/list?lessonId=" + config.getLessionId() + "&itemId=" +
 						config.getDocument().getItemID() + "&pageNumber=" + config.getPageNumber();
 				break;
 			case MeetingType.SYNCBOOK:
@@ -448,29 +450,32 @@ public class MeetingServiceTools {
 		EventPageActions pageActions = new EventPageActions();
 		pageActions.setPageNumber(config.getPageNumber());
 		try {
-			if (returnJson.getInt("RetCode") == 0) {
-				JSONArray data = returnJson.getJSONArray("RetData");
-				String dataJson = "";
-				for (int i = 0; i < data.length(); i++) {
-					JSONObject jsonObject1 = data.getJSONObject(i);
-					String _data = jsonObject1.getString("Data");
-					if (!TextUtil.isEmpty(_data)) {
-						String dd = "'" + Tools.getFromBase64(_data) + "'";
-						if (i == 0) {
-							dataJson += "[" + dd;
-						} else {
-							dataJson += "," + dd;
-						}
-						if (i == data.length() - 1) {
-							dataJson += "]";
-						}
-					}
-				}
+                    if(returnJson.has("code")){
+                        if (returnJson.getInt("code") == 0) {
+                            JSONArray data = returnJson.getJSONArray("data");
+                            String dataJson = "";
+                            for (int i = 0; i < data.length(); i++) {
+                                JSONObject jsonObject1 = data.getJSONObject(i);
+                                String _data = jsonObject1.getString("data");
+                                if (!TextUtil.isEmpty(_data)) {
+                                    String dd = "'" + Tools.getFromBase64(_data) + "'";
+                                    if (i == 0) {
+                                        dataJson += "[" + dd;
+                                    } else {
+                                        dataJson += "," + dd;
+                                    }
+                                    if (i == data.length() - 1) {
+                                        dataJson += "]";
+                                    }
+                                }
+                            }
 
-				pageActions.setData(dataJson);
-			} else {
+                            pageActions.setData(dataJson);
+                        } else {
 
-			}
+                        }
+                    }
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -482,11 +487,14 @@ public class MeetingServiceTools {
 		String url = "";
 		switch (config.getType()) {
 			case MeetingType.DOC:
-				url = "https://api.peertime.cn/peertime/V1/PageObject/GetPageObjects?lessonID=0&itemID=" + 0 + "&pageNumber=" + pageNumber +
-						"&attachmentID=" + attachmentId + "&soundtrackID=" + soundtrackID + "&displayDrawingLine=0";
-				break;
+
+                            url = "https://wss.peertime.cn/MeetingServer/page_object/list?lessonId=0&itemId=" + 0 + "&pageNumber=" + pageNumber +
+                                    "&attachmentId=" + attachmentId + "&soundtrackId="+ soundtrackID + "&displayDrawingLine=0";
+//				url = "https://api.peertime.cn/peertime/V1/PageObject/GetPageObjects?lessonID=0&itemID=" + 0 + "&pageNumber=" + pageNumber +
+//						"&attachmentID=" + attachmentId + "&soundtrackID=" + soundtrackID + "&displayDrawingLine=0";
+                            break;
 			case MeetingType.MEETING:
-				url = AppConfig.URL_PUBLIC + "PageObject/GetPageObjects?lessonID=" + config.getLessionId() + "&itemID=" +
+				url = "https://wss.peertime.cn/MeetingServer/page_object/list?lessonId=" + config.getLessionId() + "&itemId=" +
 						itemId + "&pageNumber=" + pageNumber;
 				break;
 			case MeetingType.SYNCBOOK:
@@ -502,29 +510,32 @@ public class MeetingServiceTools {
 		EventPageActionsForSoundtrack pageActions = new EventPageActionsForSoundtrack();
 		pageActions.setPageNumber(config.getPageNumber());
 		try {
-			if (returnJson.getInt("RetCode") == 0) {
-				JSONArray data = returnJson.getJSONArray("RetData");
-				String dataJson = "";
-				for (int i = 0; i < data.length(); i++) {
-					JSONObject jsonObject1 = data.getJSONObject(i);
-					String _data = jsonObject1.getString("Data");
-					if (!TextUtil.isEmpty(_data)) {
-						String dd = "'" + Tools.getFromBase64(_data) + "'";
-						if (i == 0) {
-							dataJson += "[" + dd;
-						} else {
-							dataJson += "," + dd;
-						}
-						if (i == data.length() - 1) {
-							dataJson += "]";
-						}
-					}
-				}
+		    if(returnJson.has("code")){
+                        if (returnJson.getInt("code") == 0) {
+                            JSONArray data = returnJson.getJSONArray("data");
+                            String dataJson = "";
+                            for (int i = 0; i < data.length(); i++) {
+                                JSONObject jsonObject1 = data.getJSONObject(i);
+                                String _data = jsonObject1.getString("data");
+                                if (!TextUtil.isEmpty(_data)) {
+                                    String dd = "'" + Tools.getFromBase64(_data) + "'";
+                                    if (i == 0) {
+                                        dataJson += "[" + dd;
+                                    } else {
+                                        dataJson += "," + dd;
+                                    }
+                                    if (i == data.length() - 1) {
+                                        dataJson += "]";
+                                    }
+                                }
+                            }
 
-				pageActions.setData(dataJson);
-			} else {
+                            pageActions.setData(dataJson);
+                        } else {
 
-			}
+                        }
+                    }
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

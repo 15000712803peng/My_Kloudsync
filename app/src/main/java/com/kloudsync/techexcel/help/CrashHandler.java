@@ -83,14 +83,14 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         //1.收集错误信息
         //2.保存错误信息
         //3.上传到服务器
-
+        Log.e("uncaughtException", "e:" + e + ", e_instance:" + (e instanceof NullPointerException));
         if (!handleException(e)) {
-            //未处，调用系统默认的处理器处理
+//            //未处，调用系统默认的处理器处理
             if (mDefaultHandler != null) {
                 mDefaultHandler.uncaughtException(t, e);
             }
         } else {
-            //已经人为处理
+            Log.e("uncaughtException","kill_app");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e1) {
@@ -109,10 +109,11 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
      * @return true:已经处理，false：没有处理
      */
     private boolean handleException(Throwable e) {
+
         if (e == null) {
             return false;
         }
-        Log.e("Throwable e",e.toString() + ";;;");
+        Log.e("Throwable_e", e.toString() + ";;;");
         //收集错误信息
         collectErrorInfo();
         //保存错误信息
@@ -131,7 +132,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         if (FileUtils.createCrashFilesDir(mContext)) {
             String path = FileUtils.getBaseCrashDir();
             File dir = new File(path);
-            File txtFile = new File(dir,fileName);
+            File txtFile = new File(dir, fileName);
             if (!txtFile.exists())
                 txtFile.createNewFile();
             FileOutputStream fos = new FileOutputStream(txtFile, true);

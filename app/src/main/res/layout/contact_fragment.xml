@@ -114,7 +114,7 @@
                 android:textStyle="bold"
                 android:paddingLeft="20dp"
                 android:textSize="16dp"
-                android:text="联系人"
+                android:text="@string/my_contact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -123,6 +123,7 @@
                 android:layout_height="wrap_content" />
 
             <ImageView
+                android:visibility="gone"
                 android:id="@+id/image_filter_contact"
                 android:layout_marginRight="16dp"
                 android:layout_width="20dp"

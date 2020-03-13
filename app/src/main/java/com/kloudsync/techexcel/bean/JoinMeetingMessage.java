@@ -37,6 +37,8 @@ public class JoinMeetingMessage {
     private int recordingStatus;
     private int shareNoteStatus;
 
+
+
     public String getCurrentMaxVideoUserId() {
         return currentMaxVideoUserId;
     }
