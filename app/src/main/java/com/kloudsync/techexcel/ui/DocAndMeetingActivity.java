@@ -1046,7 +1046,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             _noteData.setData(Tools.getFromBase64(noteData));
                             _noteData.setNoteId(noteId);
                             newNoteDatas.add(_noteData);
-//                            return;
                             if (noteLayout.getVisibility() == View.VISIBLE) {
                                 if (noteWeb != null) {
                                     followShowNote(noteId);

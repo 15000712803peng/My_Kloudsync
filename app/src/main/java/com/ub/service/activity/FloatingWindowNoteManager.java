@@ -332,7 +332,6 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
                                     url = part;
                                     Log.e("floatingnote", "url:" + url);
                                 }
-
                             }
                         }
                     }
@@ -380,20 +379,18 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
 
         @org.xwalk.core.JavascriptInterface
         public void afterLoadPageFunction() {
-            Log.e("floatingnote", "afterLoadPageFunction");
+
         }
 
 
         @org.xwalk.core.JavascriptInterface
         public void afterChangePageFunction(final int pageNum, int type) {
-//            Log.e("JavascriptInterface", "note_afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
-//            NoteViewManager.getInstance().getNotePageActionsToShow(meetingConfig);
+
         }
 
         @org.xwalk.core.JavascriptInterface
         public void reflect(String result) {
             Log.e("JavascriptInterface", "reflect,result:  " + result);
-
         }
 
     }
