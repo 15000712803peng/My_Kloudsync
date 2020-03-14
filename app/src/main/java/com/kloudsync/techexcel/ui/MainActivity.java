@@ -290,7 +290,23 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 				            double x = dotX / B5_WIDTH * 5600;
 				            double y = dotY / B5_HEIGHT * 7920;
 
-				            if (bookPagesList.size() == 0) {
+				            if (noteInfoList.size() == 0) {
+					            NewBookPagesBean.BookPagesBean pagesBean = new NewBookPagesBean.BookPagesBean();
+					            pagesBean.setPageAddress(address);
+					            pagesBean.setPenId(uuid);
+					            bookPagesBeans.add(pagesBean);
+				            } else {
+					            for (NoteInfoBean.DataBean dataBean : noteInfoList) {
+						            if (!dataBean.getAddress().equals(address)) {
+							            NewBookPagesBean.BookPagesBean pagesBean = new NewBookPagesBean.BookPagesBean();
+							            pagesBean.setPageAddress(address);
+							            pagesBean.setPenId(uuid);
+							            bookPagesBeans.add(pagesBean);
+						            }
+					            }
+				            }
+
+//				            if (bookPagesList.size() == 0) {
 					            for (NoteInfoBean.DataBean dataBean : noteInfoList) {
 						            if (dataBean.getAddress().equals(address)) {
 							            SyncNoteBean.BookPagesBean bookPagesBean = new SyncNoteBean.BookPagesBean();
@@ -301,18 +317,18 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 							            bookPagesList.add(bookPagesBean);
 						            }
 					            }
-				            } else {
+				            /*} else {
 					            for (NoteInfoBean.DataBean dataBean : noteInfoList) {
 						            if (!dataBean.getAddress().equals(address)) {
 							            SyncNoteBean.BookPagesBean bookPagesBean = new SyncNoteBean.BookPagesBean();
-							            bookPagesBean.setNoteId(dot.PageID);
+							            bookPagesBean.setNoteId(dataBean.getNoteId());
 							            bookPagesBean.setNoteId(dataBean.getNoteId());
 							            bookPagesBean.setFileId(dataBean.getFileId());
 							            bookPagesBean.setPageAddress(address);
 							            bookPagesList.add(bookPagesBean);
 						            }
 					            }
-				            }
+				            }*/
 
 				            SyncNoteBean.DrawingDataBean drawingDataBean = new SyncNoteBean.DrawingDataBean();
 				            drawingDataBean.setAddress(address);
@@ -327,15 +343,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 					            drawingDataBean.setStrokeID(uuid);
 				            }
 				            drawingDataList.add(drawingDataBean);
-
-				            for (NoteInfoBean.DataBean dataBean : noteInfoList) {
-					            if (!dataBean.getAddress().equals(address)) {
-						            NewBookPagesBean.BookPagesBean pagesBean = new NewBookPagesBean.BookPagesBean();
-						            pagesBean.setPageAddress(address);
-						            pagesBean.setPenId(uuid);
-						            bookPagesBeans.add(pagesBean);
-					            }
-				            }
 
 			            }
 			            syncNoteBean.setBookPages(bookPagesList);
@@ -1083,6 +1090,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         mEverPenManger = null;
         mPresenter.detachView();
         mPresenter = null;
+	    handler.removeCallbacksAndMessages(null);
         app.setMainActivityInstance(null);
         AppConfig.isUpdateCustomer = false;
         AppConfig.isUpdateDialogue = false;
@@ -1938,6 +1946,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         if (personalCenterFragment != null) {
             personalCenterFragment.setCurrentPenNameAndStatus(false);
         }
+	    handler.removeMessages(AppConfig.UPLOADPENDATA);
     }
 
     @Override
@@ -1945,6 +1954,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         if (personalCenterFragment != null) {
             personalCenterFragment.setCurrentPenNameAndStatus(false);
         }
+	    handler.removeMessages(AppConfig.UPLOADPENDATA);
     }
 
     private final double B5_WIDTH = 119.44;
