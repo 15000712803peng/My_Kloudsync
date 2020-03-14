@@ -1068,15 +1068,17 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 if (noteWeb != null) {
                                     lastjsonObject=new JSONObject(Tools.getFromBase64(noteData));
                                     NoteViewManager.getInstance().followPaintLine(noteData);
+                                    RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
                                 }
                             }else{
                                 if(mFloatingWindowNoteManager!=null){
                                     if(mFloatingWindowNoteManager.isShowing()){
                                         mFloatingWindowNoteManager.followDrawNewLine(noteId,noteData);
+                                        RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
                                     }
                                 }
                             }
-                            RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1095,9 +1097,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             if(mFloatingWindowNoteManager!=null){
                                 if(mFloatingWindowNoteManager.isShowing()){
                                     mFloatingWindowNoteManager.setOldNoteId((int) currentNoteId);
+                                    showNoteFloatingDialog(noteId);  //换个笔记了
+                                }else{
+                                    showNoteFloatingDialog(noteId);
                                 }
+                            }else{
+                                showNoteFloatingDialog(noteId);
                             }
-                            showNoteFloatingDialog(noteId);  //换个笔记了
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -2991,8 +2998,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 followShowNote(noteId);
             }
         });
-
-
     }
 
     private  void openOrCloseNote(EventSocketMessage socketMessage){
@@ -3007,14 +3012,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     if (noteWeb != null) {
                         NoteViewManager.getInstance().closeNoteWeb();
                     }
-                }else{
-                    if(mFloatingWindowNoteManager!=null){
+                }
+                if(mFloatingWindowNoteManager!=null){
                         if(mFloatingWindowNoteManager.isShowing()){
                             mFloatingWindowNoteManager.closeFloating();
                         }
                     }
                 }
-            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -4261,7 +4265,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         @org.xwalk.core.JavascriptInterface
         public void afterChangePageFunction(final int pageNum, int type) {
 //            Log.e("JavascriptInterface", "note_afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
-//            NoteViewManager.getInstance().getNotePageActionsToShow(meetingConfig);
+            NoteViewManager.getInstance().getNotePageActionsToShow(meetingConfig);
         }
 
         @org.xwalk.core.JavascriptInterface
@@ -4269,7 +4273,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             Log.e("JavascriptInterface", "reflect,result:  " + result);
             Note note = NoteViewManager.getInstance().getNote();
             if (note != null) {
-//                notifyMyNoteWebActions(result, note);
+                notifyMyNoteWebActions(result, note);
             }
         }
 
