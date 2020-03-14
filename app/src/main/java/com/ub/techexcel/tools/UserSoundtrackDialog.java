@@ -7,6 +7,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -31,6 +32,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.*;
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.EventPlaySoundtrack;
 import com.kloudsync.techexcel.bean.EventSoundtrackList;
@@ -66,6 +68,8 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.content.Context.MODE_PRIVATE;
+
 
 public class UserSoundtrackDialog implements View.OnClickListener, DialogInterface.OnDismissListener, SoundtrackManager.OnSoundtrackResponse, PopSoundtrackOperations.OnSoundtrackOperationListener, SoundtrackAdapter.OnSoundtrackClickedListener, SoundtrackShareDialog.OnSoundtrackShareOptionsClickListener {
 
@@ -83,6 +87,8 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
     private RelativeLayout backimg;
     private TextView ok;
     private RecyclerView allrecycleview;
+    private SharedPreferences sharedPreferences;
+    private TextView createsynctext;
 
     private void init() {
         if (null != dialog) {
@@ -99,12 +105,14 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
     }
 
     public void initPopuptWindow() {
+        sharedPreferences = host.getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
         LayoutInflater layoutInflater = LayoutInflater.from(host);
         view = layoutInflater.inflate(R.layout.dialog_soundtrack, null);
         close = (ImageView) view.findViewById(R.id.close);
         selectmore=view.findViewById(R.id.selectmore);
         ll1 = (RelativeLayout) view.findViewById(R.id.ll1);
         ll2 = (RelativeLayout) view.findViewById(R.id.ll2);
+        createsynctext = (TextView) view.findViewById(R.id.createsynctext);
         ok = (TextView) view.findViewById(R.id.ok);
         ok.setOnClickListener(this);
         backimg = (RelativeLayout) view.findViewById(R.id.layout_back);
@@ -136,6 +144,10 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
             params.width = Tools.dip2px(host, 300);
             dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             dialog.getWindow().setWindowAnimations(R.style.anination3);
+        }
+        String str=getBindViewText(1035);
+        if(!TextUtils.isEmpty(str)){
+            createsynctext.setText(str);
         }
         dialog.getWindow().setAttributes(params);
 
@@ -558,4 +570,26 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
         }).subscribe();
     }
 
+    private String getBindViewText(int fileId){
+        String appBindName="";
+        int language = sharedPreferences.getInt("language",1);
+        if(language==1&&App.appENNames!=null){
+            for(int i=0;i<App.appENNames.size();i++){
+                if(fileId==App.appENNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
+                    appBindName=App.appENNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }else if(language==2&&App.appCNNames!=null){
+            for(int i=0;i<App.appCNNames.size();i++){
+                if(fileId==App.appCNNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
+                    appBindName=App.appCNNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }
+        return appBindName;
+    }
 }

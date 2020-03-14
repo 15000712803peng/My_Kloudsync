@@ -917,6 +917,7 @@
     <string name="wechat">微信</string>
     <string name="moment">朋友圈</string>
     <string name="scan_to_download_app">扫描二维码，下载APP</string>
+    <string name="login_name_tip">手机号登录请输入完整号码：如 +16267807552</string>
 
     <string name="join_compnay">加入一个公司/机构</string>
     <string name="input_invite_code">请输入公司/机构邀请码</string>

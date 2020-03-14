@@ -21,8 +21,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.AppName;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.LoginResult;
 import com.kloudsync.techexcel.bean.RongCloudData;
@@ -43,6 +46,8 @@ import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
@@ -51,6 +56,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.kloudsync.techexcel.config.AppConfig.ClassRoomID;
@@ -254,6 +261,7 @@ public class StartUbao extends Activity {
         } else {
             config.locale = locale;
         }
+
         res.updateConfiguration(config, dm);
     }
 
@@ -319,7 +327,8 @@ public class StartUbao extends Activity {
                                 RongCloudData data = response.body().getRetData();
                                 AppConfig.RongUserToken = data.getUserToken();
                                 AppConfig.RongUserID = data.getRongCloudUserID();
-                                goToMainActivity();
+                                getAppNames();
+
                             }
                         }
                     } catch (UnknownHostException e) {
@@ -396,5 +405,44 @@ public class StartUbao extends Activity {
             }
 
         }
+    }
+
+    private void getAppNames() {
+        int mId=sharedPreferences.getInt("SchoolID",0);
+        int id=mId==0?AppConfig.SchoolID:mId;
+        ServiceInterfaceTools.getinstance().getAppNames(id).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body().toString());
+                    if(jsonObject.getString("msg").equals("success")){
+                        Gson gson = new Gson();
+                        List<AppName> appCNNameList=new ArrayList<AppName>();
+                        List<AppName> appENNameList=new ArrayList<AppName>();
+                        List<AppName> appNameList= gson.fromJson(jsonObject.getString("data"), new TypeToken<List<AppName>>(){}.getType());
+                        App.appNames=appNameList;
+                        for(AppName appName:appNameList){
+                            if(appName.getLanguageId()==0){
+                                appCNNameList.add(appName);
+                            }else {
+                                appENNameList.add(appName);
+                            }
+                        }
+                        App.appCNNames=appCNNameList;
+                        App.appENNames=appENNameList;
+                        System.out.println("App.appNames->"+App.appENNames.size());
+                        goToMainActivity();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                System.out.println(t.getLocalizedMessage());
+                goToMainActivity();
+            }
+        });
     }
 }
