@@ -1025,7 +1025,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 	private void startDigitalPens() {
 		Intent intent;
         EverPen autoPen = EverPenManger.getInstance(getActivity()).getAutoPen();
-        if (autoPen != null) {
+        if (autoPen != null && mCurrentPen != null) {
             intent = new Intent(getActivity(), CurrentPenStatusActivity.class);
             intent.putExtra(CurrentPenStatusActivity.SIMILARPENSOURCE, mCurrentPen.getSimilaPenSource());
             intent.putExtra(CurrentPenStatusActivity.PENTYPE, mCurrentPen.getPenType());

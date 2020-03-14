@@ -141,6 +141,7 @@ import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.AddMeetingMemberActivity;
+import com.ub.service.activity.FloatingWindowNoteManager;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
@@ -1746,10 +1747,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (cameraList.getVisibility() == View.VISIBLE) {
             if (cameraAdapter != null) {
                 if (eventMute.getType() == EventMute.TYPE_MUTE_VEDIO) {
-                    Log.e("muteAgoraMember", "muteVideo");
                     cameraAdapter.muteVideo(eventMute.getAgoraMember(), eventMute.isMuteVedio());
                 } else if (eventMute.getType() == EventMute.TYPE_MUTE_AUDIO) {
-                    Log.e("muteAgoraMember", "muteAudio");
                     cameraAdapter.muteAudio(eventMute.getAgoraMember(), eventMute.isMuteAudio());
                 }
 
@@ -4359,6 +4358,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())) {
             return;
         }
+
         SocketMessageManager.getManager(this).sendMessage_ViewModeStatus(viewMode, userId);
 
         meetingConfig.setMode(viewMode);
