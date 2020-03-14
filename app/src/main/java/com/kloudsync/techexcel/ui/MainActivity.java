@@ -33,7 +33,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
@@ -87,8 +86,7 @@ import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.tool.DensityUtil;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
-import com.kloudsync.techexcel.tool.SharedPreferencesUtils;
-import com.kloudsync.techexcel.tool.SyncWebNoteActionsCache;
+import com.kloudsync.techexcel.tool.ToastUtils;
 import com.kloudsync.techexcel.tool.UriTool;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
@@ -111,10 +109,6 @@ import com.ub.service.activity.SyncBookActivity;
 import com.ub.service.activity.SyncRoomActivity;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.EventViewDocPermissionGranted;
-import com.ub.techexcel.bean.NewBookPagesBean;
-import com.ub.techexcel.bean.NoteDotBean;
-import com.ub.techexcel.bean.NoteInfoBean;
-import com.ub.techexcel.bean.SyncNoteBean;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -129,14 +123,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.net.URLEncoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -237,134 +225,10 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                             getString(R.string.uploadfailure),
                             Toast.LENGTH_SHORT).show();
                     break;
-	            case AppConfig.UPLOADPENDATA:
-		            List<NoteInfoBean.DataBean> noteInfoList = SharedPreferencesUtils.getList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, new TypeToken<List<NoteInfoBean.DataBean>>() {
-		            });
-		            Map<String, NoteDotBean> partWebActions = SyncWebNoteActionsCache.getInstance(MainActivity.this).getPartWebActions();
-		            if (partWebActions != null && partWebActions.size() != 0) {
-			            //上传笔数据请求参数实体类
-			            SyncNoteBean syncNoteBean = new SyncNoteBean();
-			            syncNoteBean.setPeertimeToken(AppConfig.UserToken);
-			            List<SyncNoteBean.BookPagesBean> bookPagesList = new ArrayList<>();
-			            List<SyncNoteBean.DrawingDataBean> drawingDataList = new ArrayList<>();
-			            //请求noteId相关信息请求参数实体类
-			            NewBookPagesBean newBookPagesBean = new NewBookPagesBean();
-			            newBookPagesBean.setPeertimeToken(AppConfig.UserToken);
-			            List<NewBookPagesBean.BookPagesBean> bookPagesBeans = new ArrayList<>();
-
-			            Date date = null;
-			            try {
-				            date = mSimpleDateFormat.parse(" 2010-01-01 00:00:00");
-			            } catch (ParseException e) {
-				            e.printStackTrace();
-			            }
-			            Iterator<String> iterator = partWebActions.keySet().iterator();
-			            while (iterator.hasNext()) {
-				            String dotId = iterator.next();
-				            NoteDotBean noteDotBean = partWebActions.get(dotId);
-				            String uuid = noteDotBean.getDotId();
-				            Dot dot = noteDotBean.getDot();
-				            String address = dot.OwnerID + "." + dot.SectionID + "." + dot.BookID + "." + dot.PageID;
-				            int eventType = 0;
-				            switch (dot.type) {
-					            case PEN_DOWN:
-						            eventType = 2;
-						            break;
-					            case PEN_MOVE:
-						            eventType = 1;
-						            break;
-					            case PEN_UP:
-						            //发送数据给web端
-						            break;
-				            }
-				            int force = dot.force * 20;
-				            if (force == 0) {
-					            //不处理
-				            } else if (force < 500) {
-					            force = 500;
-				            } else if (force > 1200) {
-					            force = 1200;
-				            }
-				            double dotX = Double.valueOf(dot.x + String.valueOf(dot.fx));
-				            double dotY = Double.valueOf(dot.y + String.valueOf(dot.fy));
-				            double x = dotX / B5_WIDTH * 5600;
-				            double y = dotY / B5_HEIGHT * 7920;
-
-				            if (noteInfoList.size() == 0) {
-					            NewBookPagesBean.BookPagesBean pagesBean = new NewBookPagesBean.BookPagesBean();
-					            pagesBean.setPageAddress(address);
-					            pagesBean.setPenId(uuid);
-					            if (!bookPagesBeans.contains(pagesBean)) {
-						            bookPagesBeans.add(pagesBean);
-					            }
-				            } else {
-					            for (NoteInfoBean.DataBean dataBean : noteInfoList) {
-						            if (!dataBean.getAddress().equals(address)) {
-							            NewBookPagesBean.BookPagesBean pagesBean = new NewBookPagesBean.BookPagesBean();
-							            pagesBean.setPageAddress(address);
-							            pagesBean.setPenId(uuid);
-							            bookPagesBeans.add(pagesBean);
-						            }
-					            }
-				            }
-
-//				            if (bookPagesList.size() == 0) {
-					            for (NoteInfoBean.DataBean dataBean : noteInfoList) {
-						            if (dataBean.getAddress().equals(address)) {
-							            SyncNoteBean.BookPagesBean bookPagesBean = new SyncNoteBean.BookPagesBean();
-							            bookPagesBean.setNoteId(dataBean.getNoteId());
-							            bookPagesBean.setFileId(dataBean.getFileId());
-							            bookPagesBean.setTargetFolderKey(dataBean.getTargetFolder());
-							            bookPagesBean.setPageAddress(address);
-							            bookPagesList.add(bookPagesBean);
-						            }
-					            }
-				            /*} else {
-					            for (NoteInfoBean.DataBean dataBean : noteInfoList) {
-						            if (!dataBean.getAddress().equals(address)) {
-							            SyncNoteBean.BookPagesBean bookPagesBean = new SyncNoteBean.BookPagesBean();
-							            bookPagesBean.setNoteId(dataBean.getNoteId());
-							            bookPagesBean.setNoteId(dataBean.getNoteId());
-							            bookPagesBean.setFileId(dataBean.getFileId());
-							            bookPagesBean.setPageAddress(address);
-							            bookPagesList.add(bookPagesBean);
-						            }
-					            }
-				            }*/
-
-				            SyncNoteBean.DrawingDataBean drawingDataBean = new SyncNoteBean.DrawingDataBean();
-				            drawingDataBean.setAddress(address);
-				            drawingDataBean.setUserID(AppConfig.UserID);
-				            drawingDataBean.setEvent_type(eventType);
-				            drawingDataBean.setForce(force);
-				            drawingDataBean.setPoint_x(String.valueOf(x));
-				            drawingDataBean.setPoint_y(String.valueOf(y));
-				            drawingDataBean.setTimestamp(String.valueOf(date.getTime() + dot.timelong));
-				            drawingDataBean.setPenID(mEverPenManger.getCurrentPen().getMacAddress());
-				            if (eventType == 2) {
-					            drawingDataBean.setStrokeID(uuid);
-				            }
-				            drawingDataList.add(drawingDataBean);
-
-			            }
-			            syncNoteBean.setBookPages(bookPagesList);
-			            syncNoteBean.setDrawingData(drawingDataList);
-			            newBookPagesBean.setBookPages(bookPagesBeans);
-
-			            if (newBookPagesBean.getBookPages().size() > 0) {
-				            mPresenter.requestNewBookPages(newBookPagesBean);
-			            } else {
-				            mPresenter.uploadDrawing(syncNoteBean);
-			            }
-		            }
-		            sendEmptyMessageDelayed(AppConfig.UPLOADPENDATA, 5000);
-		            break;
                 default:
                     break;
             }
         }
-
-        ;
     };
 
     long systemTime = 0;
@@ -392,7 +256,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         initView();
         mEverPenManger = EverPenManger.getInstance(this);
         mEverPenManger.init();
-        mBleManager = mEverPenManger.getBleManager();
+//        mBleManager = mEverPenManger.getBleManager();
         requestRongCloudOnlineStatus();
         GetSchoolInfo();
         initUpdate();
@@ -1939,8 +1803,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         if (personalCenterFragment != null) {
             personalCenterFragment.setCurrentPenNameAndStatus(true);
         }
-	    mBleManager.ReqOfflineDataTransfer(true);
-	    handler.sendEmptyMessage(AppConfig.UPLOADPENDATA);
     }
 
     @Override
@@ -1948,7 +1810,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         if (personalCenterFragment != null) {
             personalCenterFragment.setCurrentPenNameAndStatus(false);
         }
-	    handler.removeMessages(AppConfig.UPLOADPENDATA);
     }
 
     @Override
@@ -1956,37 +1817,34 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         if (personalCenterFragment != null) {
             personalCenterFragment.setCurrentPenNameAndStatus(false);
         }
-	    handler.removeMessages(AppConfig.UPLOADPENDATA);
     }
 
-    private final double B5_WIDTH = 119.44;
-    private final double B5_HEIGHT = 168;
-    private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 
     @Override
     public void onReceiveDot(Dot dot) {
-        String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
+       /* String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
         NoteDotBean noteDotBean = new NoteDotBean();
         noteDotBean.setDotId(uuid);
         noteDotBean.setDot(dot);
-	    SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);
+	    SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);*/
     }
 
     @Override
     public void onReceiveOfflineStrokes(Dot dot) {
-        String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
+      /*  String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
         NoteDotBean noteDotBean = new NoteDotBean();
         noteDotBean.setDotId(uuid);
         noteDotBean.setDot(dot);
-	    SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);
+	    SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);*/
     }
 
-    @Override
-    public void toast(String msg) {
+	@Override
+	public void toast(String msg) {
+		ToastUtils.show(this, msg);
+	}
 
-    }
-
-    @Override
+	@Override
     public void showLoading() {
 
     }

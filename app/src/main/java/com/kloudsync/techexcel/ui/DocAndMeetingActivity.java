@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -102,7 +101,6 @@ import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
 import com.kloudsync.techexcel.dialog.MeetingRecordManager;
-import com.kloudsync.techexcel.dialog.NoteRecordType;
 import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
@@ -112,11 +110,11 @@ import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.AudiencePromptDialog;
+import com.kloudsync.techexcel.help.BottomMenuManager;
 import com.kloudsync.techexcel.help.ChatManager;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.DocVedioManager;
 import com.kloudsync.techexcel.help.MeetingKit;
-import com.kloudsync.techexcel.help.BottomMenuManager;
 import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
 import com.kloudsync.techexcel.help.PopBottomChat;
@@ -152,7 +150,6 @@ import com.ub.techexcel.bean.EventUnmuteAll;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.bean.TelePhoneCall;
-import com.ub.techexcel.tools.CreateSyncDialog;
 import com.ub.techexcel.tools.DevicesListDialog;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
@@ -809,7 +806,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
                 noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, noteweblastjsonObject);
+	            RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override
@@ -3046,7 +3043,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiverOpenFloating(EventFloatingNote eventFloatingNote) {
         //从主界面切回浮窗
-        RecordNoteActionManager.getManager(this).sendDisplayHomepagePopupActions(currentNoteId, noteweblastjsonObject);
+	    RecordNoteActionManager.getManager(this).sendDisplayHomepagePopupActions(currentNoteId, lastjsonObject);
         showNoteFloatingDialog(eventFloatingNote.getNoteId());
     }
 

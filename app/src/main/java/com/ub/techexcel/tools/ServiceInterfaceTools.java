@@ -1679,7 +1679,7 @@ public class ServiceInterfaceTools {
     public NoteInfoBean requestNewBookPages(String path, String peertimeToken, List<NewBookPagesBean.BookPagesBean> bookPages) {
         JSONObject jsonObject = new JSONObject();
 	    Gson gson = new Gson();
-        NoteInfoBean noteInfoBean = null;
+	    NoteInfoBean noteInfoBean = new NoteInfoBean();
         try {
             jsonObject.put("PeertimeToken", peertimeToken);
 	        String pages = gson.toJson(bookPages);
@@ -1689,7 +1689,7 @@ public class ServiceInterfaceTools {
             if (response != null) {
 	            noteInfoBean = gson.fromJson(response, NoteInfoBean.class);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1709,7 +1709,7 @@ public class ServiceInterfaceTools {
 	                                    List<SyncNoteBean.DrawingDataBean> drawingData) {
 		JSONObject jsonObject = new JSONObject();
 		Gson gson = new Gson();
-		UploadNoteBean uploadNoteBean = null;
+		UploadNoteBean uploadNoteBean = new UploadNoteBean();
 		try {
 			jsonObject.put("PeertimeToken", peertimeToken);
 			String pages = gson.toJson(bookPages);
@@ -1722,7 +1722,7 @@ public class ServiceInterfaceTools {
 			if (response != null) {
 				uploadNoteBean = gson.fromJson(response, UploadNoteBean.class);
 			}
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return uploadNoteBean;

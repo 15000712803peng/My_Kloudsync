@@ -84,6 +84,21 @@ public class SyncNoteBean implements Serializable {
 		public void setNoteId(int NoteId) {
 			this.NoteId = NoteId;
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			BookPagesBean bean = (BookPagesBean) o;
+
+			return PageAddress != null ? PageAddress.equals(bean.PageAddress) : bean.PageAddress == null;
+		}
+
+		@Override
+		public int hashCode() {
+			return PageAddress != null ? PageAddress.hashCode() : 0;
+		}
 	}
 
 	public static class DrawingDataBean {
