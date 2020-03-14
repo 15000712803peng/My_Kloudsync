@@ -1507,6 +1507,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
                 }
             }
+
             fullCameraAdapter = new FullAgoraCameraAdapter(this);
             fullCameraAdapter.setMembers(copyMembers);
             fitFullCameraList(copyMembers);
@@ -1899,7 +1900,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if ((member.getUserId() + "").equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
-
                     if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
                         // 该主讲人不是自己
                         MeetingKit.getInstance().setMemberAgoraStutas(member);
@@ -2030,6 +2030,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     private void queryAndDownLoadPageToShow(final DocumentPage documentPage, final boolean needRedownload) {
         String pageUrl = documentPage.getPageUrl();
+        String downloadUrl = pageUrl;
         DocumentPage page = pageCache.getPageCache(pageUrl);
         Log.e("check_download_page", "get_cach_page:" + page + "--> url:" + documentPage.getPageUrl());
         if (page != null && !TextUtils.isEmpty(page.getPageUrl())
@@ -2053,20 +2054,22 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (queryDocumentResult != null) {
             Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
             String fileName = pageUrl.substring(pageUrl.lastIndexOf("/") + 1);
-            String part = "";
-            if (1 == uploadao.getServiceProviderId()) {
-                part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + document.getNewPath()
-                        + "/" + fileName;
-            } else if (2 == uploadao.getServiceProviderId()) {
-                part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + document.getNewPath() + "/" + fileName;
+
+            if(uploadao != null){
+                if (1 == uploadao.getServiceProviderId()) {
+                    downloadUrl = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + document.getNewPath()
+                            + "/" + fileName;
+                } else if (2 == uploadao.getServiceProviderId()) {
+                    downloadUrl = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + document.getNewPath() + "/" + fileName;
+                }
             }
 
             String pathLocalPath = FileUtils.getBaseDir() +
-                    meetingId + "_" + encoderByMd5(part).replaceAll("/", "_") +
+                    meetingId + "_" + encoderByMd5(downloadUrl).replaceAll("/", "_") +
                     "_" + (documentPage.getPageNumber()) +
                     pageUrl.substring(pageUrl.lastIndexOf("."));
             final String showUrl = FileUtils.getBaseDir() +
-                    meetingId + "_" + encoderByMd5(part).replaceAll("/", "_") +
+                    meetingId + "_" + encoderByMd5(downloadUrl).replaceAll("/", "_") +
                     "_<" + document.getPageCount() + ">" +
                     pageUrl.substring(pageUrl.lastIndexOf("."));
             int pageIndex = 1;
@@ -2076,13 +2079,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 pageIndex = meetingConfig.getPageNumber();
             }
 
-
             documentPage.setSavedLocalPath(pathLocalPath);
 
             Log.e("check_download_page", "download_page:" + documentPage);
             //保存在本地的地址
 
-            DownloadUtil.get().download(pageUrl, pathLocalPath, new DownloadUtil.OnDownloadListener() {
+            DownloadUtil.get().download(downloadUrl, pathLocalPath, new DownloadUtil.OnDownloadListener() {
                 @SuppressLint("LongLogTag")
                 @Override
                 public void onDownloadSuccess(int arg0) {
@@ -2112,6 +2114,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private synchronized void queryAndDownLoadPageToShow(final MeetingDocument document, final int pageNumber, final boolean needRedownload) {
         final DocumentPage _page = document.getDocumentPages().get(pageNumber - 1);
         String pageUrl = _page.getPageUrl();
+        String downloadUrl = pageUrl;
         final DocumentPage page = pageCache.getPageCache(pageUrl);
         Log.e("-", "get cach page:" + page + "--> url:" + pageUrl);
         if (page != null && !TextUtils.isEmpty(page.getPageUrl())
@@ -2130,23 +2133,27 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         String meetingId = meetingConfig.getMeetingId();
         JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
                 document.getNewPath());
+
         if (queryDocumentResult != null) {
             Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
             String fileName = pageUrl.substring(pageUrl.lastIndexOf("/") + 1);
-            String part = "";
-            if (1 == uploadao.getServiceProviderId()) {
-                part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + document.getNewPath()
-                        + "/" + fileName;
-            } else if (2 == uploadao.getServiceProviderId()) {
-                part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + document.getNewPath() + "/" + fileName;
+
+            if(uploadao != null){
+                if (1 == uploadao.getServiceProviderId()) {
+                    downloadUrl = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + document.getNewPath()
+                            + "/" + fileName;
+                } else if (2 == uploadao.getServiceProviderId()) {
+                    downloadUrl = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + document.getNewPath() + "/" + fileName;
+                }
+
             }
 
             String pathLocalPath = FileUtils.getBaseDir() +
-                    meetingId + "_" + encoderByMd5(part).replaceAll("/", "_") +
+                    meetingId + "_" + encoderByMd5(downloadUrl).replaceAll("/", "_") +
                     "_" + (_page.getPageNumber()) +
                     pageUrl.substring(pageUrl.lastIndexOf("."));
             final String showUrl = FileUtils.getBaseDir() +
-                    meetingId + "_" + encoderByMd5(part).replaceAll("/", "_") +
+                    meetingId + "_" + encoderByMd5(downloadUrl).replaceAll("/", "_") +
                     "_<" + document.getPageCount() + ">" +
                     pageUrl.substring(pageUrl.lastIndexOf("."));
 
@@ -2157,7 +2164,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             Log.e("-", "page:" + _page);
             //保存在本地的地址
 
-            DownloadUtil.get().download(pageUrl, pathLocalPath, new DownloadUtil.OnDownloadListener() {
+            DownloadUtil.get().download(downloadUrl, pathLocalPath, new DownloadUtil.OnDownloadListener() {
                 @SuppressLint("LongLogTag")
                 @Override
                 public void onDownloadSuccess(int arg0) {

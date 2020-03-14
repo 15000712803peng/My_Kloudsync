@@ -118,22 +118,22 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 
 	@Override
 	public void onDataReceive(Dot dot) {
-
+		Log.e("EverPenManager", "onDataReceive,dot:" + dot);
 	}
 
 	@Override
 	public void onOfflineDataReceive(Dot dot) {
-
+		Log.e("EverPenManager", "onOfflineDataReceive,dot:" + dot);
 	}
 
 	@Override
 	public void onFinishedOfflineDown(boolean success) {
-
+		Log.e("EverPenManager", "onFinishedOfflineDown,success:" + success);
 	}
 
 	@Override
 	public void onOfflineDataNum(int num) {
-
+		Log.e("EverPenManager", "onOfflineDataNum,num:" + num);
 	}
 
 	/**
@@ -141,6 +141,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	 */
 	@Override
 	public void onConnected() {
+		Log.e("EverPenManager", "onConnected");
 		agent.ReqOfflineDataTransfer(true);
 		host.runOnUiThread(new Runnable() {
 			@Override
