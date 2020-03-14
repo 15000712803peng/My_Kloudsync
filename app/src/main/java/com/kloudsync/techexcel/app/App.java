@@ -13,6 +13,7 @@ import android.support.multidex.MultiDex;
 import android.util.DisplayMetrics;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.kloudsync.techexcel.bean.AppName;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.message.ChangeItemMessage;
 import com.kloudsync.techexcel.dialog.message.CourseMessage;
@@ -53,7 +54,10 @@ public class App extends Application {
     private MainActivity mainActivityInstance;
 	public List<Activity> mList = new LinkedList<Activity>();
 
-	@Override
+    public static List<AppName> appNames;
+    public static List<AppName> appCNNames;
+    public static List<AppName> appENNames;
+    @Override
     public void onCreate() {
         super.onCreate();
         threadMgr = ThreadManager.getManager();

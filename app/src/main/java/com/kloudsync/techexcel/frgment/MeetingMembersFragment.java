@@ -1,12 +1,14 @@
 package com.kloudsync.techexcel.frgment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.DeviceType;
 import com.kloudsync.techexcel.bean.EventKickOffMember;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
@@ -49,6 +52,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by tonyan on 2019/11/9.
  */
@@ -59,6 +64,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     int type;
     private MeetingConfig meetingConfig;
     private MeetingMembersAdapter membersAdapter;
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,6 +74,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
+        sharedPreferences = getActivity().getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
     }
 
     @Override
@@ -176,7 +183,9 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             if (tempStageMembers.size() > 0) {
                 MeetingMember title = new MeetingMember();
                 title.setViewType(MeetingMember.TYPE_SPARKER_TITLE);
-                title.setTitle("可讲话参会者");
+                //title.setTitle("可讲话参会者");
+                String str=getBindViewText(1030);
+                title.setTitle(TextUtils.isEmpty(str)? "可讲话参会者":str);
                 tabSpeakersMembers.add(title);
                 tabSpeakersMembers.addAll(tempStageMembers);
 
@@ -195,7 +204,9 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             if (handsUpMembers.size() > 0) {
                 MeetingMember title = new MeetingMember();
                 title.setViewType(MeetingMember.TYPE_HANDSUP_TITLE);
-                title.setTitle("已举手参会者");
+                //title.setTitle("已举手参会者");
+                String str=getBindViewText(1029);
+                title.setTitle(TextUtils.isEmpty(str)? "已举手参会者":str);
                 tabSpeakersMembers.add(title);
                 tabSpeakersMembers.addAll(handsUpMembers);
             }
@@ -624,6 +635,28 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             return viewHolder;
         }
 
+        private String getBindViewText(int fileId){
+            String appBindName="";
+            int language = sharedPreferences.getInt("language",1);
+            if(language==1&&App.appENNames!=null){
+                for(int i=0;i<App.appENNames.size();i++){
+                    if(fileId==App.appENNames.get(i).getFieldId()){
+                        System.out.println("Name->"+App.appENNames.get(i).getFieldName());
+                        appBindName=App.appENNames.get(i).getFieldName();
+                        break;
+                    }
+                }
+            }else if(language==2&&App.appCNNames!=null){
+                for(int i=0;i<App.appCNNames.size();i++){
+                    if(fileId==App.appCNNames.get(i).getFieldId()){
+                        System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
+                        appBindName=App.appCNNames.get(i).getFieldName();
+                        break;
+                    }
+                }
+            }
+            return appBindName;
+        }
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             if (holder instanceof MainSpeakerViewHolder) {
@@ -639,6 +672,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
                 if ((member.getUserId() + "").equals(AppConfig.UserID)) {
                     mainSpeakerViewHolder.me.setVisibility(View.VISIBLE);
+                    String me=getBindViewText(1028);
+                    if(!TextUtils.isEmpty(me))mainSpeakerViewHolder.presenter.setText(me);
                 } else {
                     mainSpeakerViewHolder.me.setVisibility(View.GONE);
                 }
@@ -653,6 +688,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 if (member.getPresenter() == 1) {
                     mainSpeakerViewHolder.settingImage.setVisibility(View.GONE);
                     mainSpeakerViewHolder.presenter.setVisibility(View.VISIBLE);
+                    String host=getBindViewText(1027);
+                    if(!TextUtils.isEmpty(host))mainSpeakerViewHolder.presenter.setText(host);
                 } else {
                     mainSpeakerViewHolder.settingImage.setVisibility(View.VISIBLE);
                     mainSpeakerViewHolder.presenter.setVisibility(View.GONE);
@@ -1117,5 +1154,26 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }).subscribe();
     }
 
-
+    private String getBindViewText(int fileId){
+        String appBindName="";
+        int language = sharedPreferences.getInt("language",1);
+        if(language==1&&App.appENNames!=null){
+            for(int i=0;i<App.appENNames.size();i++){
+                if(fileId==App.appENNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
+                    appBindName=App.appENNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }else if(language==2&&App.appCNNames!=null){
+            for(int i=0;i<App.appCNNames.size();i++){
+                if(fileId==App.appCNNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
+                    appBindName=App.appCNNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }
+        return appBindName;
+    }
 }

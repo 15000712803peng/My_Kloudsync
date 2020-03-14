@@ -173,6 +173,7 @@
                     android:src="@drawable/icon_startt" />
 
                 <TextView
+                    android:id="@+id/tv_start_meeting"
                     android:layout_centerHorizontal="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -227,6 +228,7 @@
                     android:src="@drawable/icon_schedule" />
 
                 <TextView
+                    android:id="@+id/tv_schedule_meeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/new_join"

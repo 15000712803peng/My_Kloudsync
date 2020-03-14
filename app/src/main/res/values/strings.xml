@@ -938,6 +938,7 @@ Please input the cell phone number to add the contact
     <string name="wechat">Wechat</string>
     <string name="moment">Moment</string>
     <string name="scan_to_download_app">Scan QR code to download app</string>
+    <string name="login_name_tip">Phone # format as +16267807552</string>
 
     <string name="my_contact">My contact</string>
 

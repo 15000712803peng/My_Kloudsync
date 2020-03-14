@@ -33,6 +33,8 @@ import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.AppNameView;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventJoinMeeting;
@@ -45,6 +47,7 @@ import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.school.SelectSchoolActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.tool.StringUtils;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.mining.app.zxing.MipcaActivityCapture;
@@ -85,7 +88,6 @@ import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSIO
 
 
 public class ServiceFragment extends MyFragment implements View.OnClickListener {
-
     private boolean isPrepared = false;
     private ServiceAdapter2 serviceAdapter1;
     private ListView serviceListView1;
@@ -123,6 +125,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     private RelativeLayout search_layout;
     private ImageView switchCompanyImage;
 
+    private TextView tv_schedule_meeting,tv_start_meeting;
     private SharedPreferences sharedPreferences;
 
     @SuppressLint("HandlerLeak")
@@ -453,6 +456,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
     @Override
     protected void lazyLoad() {
+        setBindViewText();
         if (isPrepared && isVisible) {
 
         }
@@ -462,6 +466,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     @Override
     public void onResume() {
         super.onResume();
+        setBindViewText();
+
         if (AppConfig.newlesson) {  //新建课程刷新
             AppConfig.newlesson = false;
         }
@@ -495,6 +501,9 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         lp.width = width / 2; //设置滑动条的宽度为屏幕的1/6
         lp.leftMargin = width / 4;
         inprogressunderline.setLayoutParams(lp);
+
+        tv_start_meeting = (TextView) view.findViewById(R.id.tv_start_meeting);
+        tv_schedule_meeting = (TextView) view.findViewById(R.id.tv_schedule_meeting);
 
         upcoming = (TextView) view.findViewById(R.id.upcoming);
         upcoming.setOnClickListener(this);
@@ -827,7 +836,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         intent.putExtra("meeting_type", 0);
         intent.putExtra("lession_id", eventJoinMeeting.getLessionId());
         intent.putExtra("meeting_role", eventJoinMeeting.getRole());
-//        intent.putExtra("meeting_role", 3);
+        //intent.putExtra("meeting_role", 3);
         intent.putExtra("from_meeting", true);
         startActivity(intent);
     }
@@ -917,4 +926,100 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         showStartMeetingDialog();
     }
 
+    private void UpdateClassRoomID(final String classRoomId) {
+
+        String regex = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{3,12}$";
+
+        if(TextUtils.isEmpty(classRoomId)){
+            Toast.makeText(getActivity(),"会议id不能是空",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if((classRoomId.length() < 3)){
+            Toast.makeText(getActivity(),"会议id的长度需要大于等于3",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(!StringUtils.hasChar(classRoomId)){
+            Toast.makeText(getActivity(),"会议id至少包含一个字母",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject js = new JSONObject();
+                    js.put("classroomID", classRoomId);
+                    JSONObject jsonObject = com.ub.techexcel.service.ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/UpdateClassRoomID?classRoomID=" + classRoomId, js);
+                    Log.e("getClassRoomLessonID2", jsonObject.toString()); //{"RetCode":0,"ErrorMessage":null,"DetailMessage":null,"RetData":2477}
+                    int retCode = jsonObject.getInt("RetCode");
+                    Message msg = Message.obtain();
+                    msg.what = 0x1006;
+                    msg.obj = retCode;
+                    handler.sendMessage(msg);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+
+    }
+
+    private void getRoomID() {
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomID");
+                    Log.e("getClassRoomLessonID2", jsonObject.toString()); //{"RetCode":0,"ErrorMessage":null,"DetailMessage":null,"RetData":2477}
+                    int retCode = jsonObject.getInt("RetCode");
+                    switch (retCode) {
+                        case 0:
+                            String retdate = jsonObject.getString("RetData");
+                            Message msg = Message.obtain();
+                            msg.what = 0x1007;
+                            msg.obj = retdate;
+                            handler.sendMessage(msg);
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+    private String getBindViewText(int fileId){
+        String appBindName="";
+        int language = sharedPreferences.getInt("language",1);
+        if(language==1&&App.appENNames!=null){
+            for(int i=0;i<App.appENNames.size();i++){
+                if(fileId==App.appENNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
+                    appBindName=App.appENNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }else if(language==2&&App.appCNNames!=null){
+            for(int i=0;i<App.appCNNames.size();i++){
+                if(fileId==App.appCNNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
+                    appBindName=App.appCNNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }
+        return appBindName;
+    }
+    private void setBindViewText(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String startMeet=getBindViewText(1014);
+                tv_start_meeting.setText(TextUtils.isEmpty(startMeet)? getString(R.string.MyKlassroom):startMeet);
+                String scheduleMeet=getBindViewText(1013);
+                tv_schedule_meeting.setText(TextUtils.isEmpty(scheduleMeet)? getString(R.string.schMeeting):scheduleMeet);
+            }
+        },500);
+    }
 }
