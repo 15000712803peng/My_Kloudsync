@@ -739,7 +739,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    JSONObject lastjsonObject=new JSONObject();
+    JSONObject lastjsonObject = new JSONObject();
+
     private void handleBluetoothNote(final String url) {
         if (TextUtils.isEmpty(url)) {
             return;
@@ -795,7 +796,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (!TextUtils.isEmpty(url)) {
                     Log.e("check_url", "url:" + url);
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    lastjsonObject=jsonObject.getJSONObject("PaintData");
+                    lastjsonObject = jsonObject.getJSONObject("PaintData");
                 }
                 return jsonObject;
             }
@@ -1049,28 +1050,28 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 if (noteWeb != null) {
                                     followShowNote(noteId);
                                 }
-                            }else{
-                                if(floatingNoteDialog!=null){
-                                    if(floatingNoteDialog.isShowing()){
+                            } else {
+                                if (floatingNoteDialog != null) {
+                                    if (floatingNoteDialog.isShowing()) {
                                         floatingNoteDialog.setOldNoteId((int) currentNoteId);
                                         showNoteFloatingDialog(noteId);  //换个笔记了
                                     }
                                 }
                             }
-                        }else {  // 同一个笔记
+                        } else {  // 同一个笔记
                             if (noteLayout.getVisibility() == View.VISIBLE) {
                                 if (noteWeb != null) {
-                                    lastjsonObject=new JSONObject(Tools.getFromBase64(noteData));
+                                    lastjsonObject = new JSONObject(Tools.getFromBase64(noteData));
                                     NoteViewManager.getInstance().followPaintLine(noteData);
                                 }
-                            }else{
-                                if(floatingNoteDialog!=null){
-                                    if(floatingNoteDialog.isShowing()){
-                                        floatingNoteDialog.followDrawNewLine(noteId,noteData);
+                            } else {
+                                if (floatingNoteDialog != null) {
+                                    if (floatingNoteDialog.isShowing()) {
+                                        floatingNoteDialog.followDrawNewLine(noteId, noteData);
                                     }
                                 }
                             }
-                            RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
+                            RecordNoteActionManager.getManager(this).sendDrawActions(noteId, noteData);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1086,9 +1087,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             if (noteWeb != null) {
                                 followShowNote(noteId);
                             }
-                        }else{
-                            if(floatingNoteDialog!=null){
-                                if(floatingNoteDialog.isShowing()){
+                        } else {
+                            if (floatingNoteDialog != null) {
+                                if (floatingNoteDialog.isShowing()) {
                                     floatingNoteDialog.setOldNoteId((int) currentNoteId);
                                 }
                             }
@@ -1199,8 +1200,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     meetingMenuMemberImage.setVisibility(View.VISIBLE);
                 }
 
-            }else {
-                if(meetingMenuMemberImage.getVisibility() == View.VISIBLE){
+            } else {
+                if (meetingMenuMemberImage.getVisibility() == View.VISIBLE) {
                     menuIcon.setVisibility(View.VISIBLE);
                     meetingMenuMemberImage.setVisibility(View.GONE);
                 }
@@ -1889,6 +1890,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void checkAgoraMemberNameAndAgoraStatus() {
+        if(meetingConfig.getType() != MeetingType.MEETING){
+            return;
+        }
         for (MeetingMember member : meetingConfig.getMeetingMembers()) {
             if ((member.getUserId() + "").equals(AppConfig.UserID)) {
                 meetingConfig.setRole(member.getRole());
@@ -1899,11 +1903,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if ((member.getUserId() + "").equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
-//                    if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
-//                        agoraMember.setMuteVideo(member.getCameraStatus() != 2);
-//                        agoraMember.setMuteAudio(member.getMicrophoneStatus() != 2);
-//
-//                    }
+
+                    if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
+                        // 该主讲人不是自己
+                        MeetingKit.getInstance().setMemberAgoraStutas(member);
+                    }else {
+                        // 该主讲人是自己
+                        MeetingKit.getInstance().setMyAgoraStutas(member);
+                    }
                     Log.e("check_audio", "audio_status1:" + member.getMicrophoneStatus());
                     agoraMember.setMuteVideo(member.getCameraStatus() != 2);
                     agoraMember.setMuteAudio(member.getMicrophoneStatus() != 2);
@@ -1923,6 +1930,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
                     agoraMember.setIsMember(0);
+                    if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
+                        // 该参会者不是自己
+                        MeetingKit.getInstance().unsubscribeAudiorsAudioAndVedio(agoraMember.getUserId());
+                    }else {
+                        // 该参会者是自己
+                        MeetingKit.getInstance().unsubscribeMineAudioAndVedio();
+                    }
                     break;
                 }
             }
@@ -2623,6 +2637,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (exitDialog.isEndMeeting() && meetingConfig.isInRealMeeting()) {
                     messageManager.sendMessage_EndMeeting(meetingConfig);
                 }
+
                 finish();
             }
         });
@@ -2797,7 +2812,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         addFileFromFavoriteDialog.setOnFavoriteDocSelectedListener(this);
         addFileFromFavoriteDialog.show();
     }
-
 
     @Override
     public void onFavoriteDocSelected(String docId) {
@@ -3018,21 +3032,21 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    private  void openOrCloseNote(EventSocketMessage socketMessage){
+    private void openOrCloseNote(EventSocketMessage socketMessage) {
         try {
-            JSONObject retData=socketMessage.getData().getJSONObject("retData");
-            int noteId=retData.getInt("noteId");
-            int status=retData.getInt("status");
-            if(status==1){ //打开浮窗
+            JSONObject retData = socketMessage.getData().getJSONObject("retData");
+            int noteId = retData.getInt("noteId");
+            int status = retData.getInt("status");
+            if (status == 1) { //打开浮窗
                 showNoteFloatingDialog(noteId);
-            }else if(status==0){  //关闭浮窗 或者 主界面
+            } else if (status == 0) {  //关闭浮窗 或者 主界面
                 if (noteLayout.getVisibility() == View.VISIBLE) {
                     if (noteWeb != null) {
                         NoteViewManager.getInstance().closeNoteWeb();
                     }
-                }else{
-                    if(floatingNoteDialog!=null){
-                        if(floatingNoteDialog.isShowing()){
+                } else {
+                    if (floatingNoteDialog != null) {
+                        if (floatingNoteDialog.isShowing()) {
                             floatingNoteDialog.closeFloating();
                         }
                     }
@@ -3668,12 +3682,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             //判断笔记是否打开
             if (noteLayout.getVisibility() == View.VISIBLE) {
                 if (noteWeb != null) {
-                     // 笔记先于音想打开
-                    RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId,lastjsonObject);
+                    // 笔记先于音想打开
+                    RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
                 }
-            }else{
-                if(floatingNoteDialog!=null){
-                    if(floatingNoteDialog.isShowing()){
+            } else {
+                if (floatingNoteDialog != null) {
+                    if (floatingNoteDialog.isShowing()) {
                         floatingNoteDialog.displayPopupActions();
                     }
                 }
@@ -3829,8 +3843,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             handleExit(false);
         }
-        return true;
-
+        return super.onKeyDown(keyCode,event);
     }
 
     //------Camera vedio options

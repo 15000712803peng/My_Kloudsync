@@ -176,6 +176,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
             initView();
             EventBus.getDefault().register(this);
         }
+
         ShowLanguage();
         GetSchoolInfo();
         getPersonInfo2();
