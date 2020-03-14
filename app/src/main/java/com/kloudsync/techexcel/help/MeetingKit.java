@@ -961,6 +961,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }).subscribe();
     }
 
+
     public void disableAudioAndVideoStream() {
         MeetingKit.getInstance().menuMicroClicked(false);
         MeetingKit.getInstance().menuCameraClicked(false);
@@ -1017,6 +1018,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
     public void setMyAgoraStutas(MeetingMember meetingMember) {
+
         if (rtcManager == null) {
             rtcManager = MeetingKit.getInstance().getRtcManager();
         }

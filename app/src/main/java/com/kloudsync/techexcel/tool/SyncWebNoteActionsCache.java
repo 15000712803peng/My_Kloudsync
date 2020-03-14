@@ -98,7 +98,6 @@ public class SyncWebNoteActionsCache {
         return getPageMap().containsKey(dotId);
     }
 
-
     public void clear() {
         cachePreference.edit().putString("dot_actions_map", "").commit();
     }

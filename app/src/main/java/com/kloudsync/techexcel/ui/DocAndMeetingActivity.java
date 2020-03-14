@@ -112,11 +112,11 @@ import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.AudiencePromptDialog;
+import com.kloudsync.techexcel.help.BottomMenuManager;
 import com.kloudsync.techexcel.help.ChatManager;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.DocVedioManager;
 import com.kloudsync.techexcel.help.MeetingKit;
-import com.kloudsync.techexcel.help.BottomMenuManager;
 import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
 import com.kloudsync.techexcel.help.PopBottomChat;
@@ -141,7 +141,6 @@ import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.AddMeetingMemberActivity;
-import com.ub.service.activity.FloatingWindowNoteManager;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
@@ -1889,9 +1888,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void checkAgoraMemberNameAndAgoraStatus() {
-        if(meetingConfig.getType() != MeetingType.MEETING){
-            return;
-        }
+
         for (MeetingMember member : meetingConfig.getMeetingMembers()) {
             if ((member.getUserId() + "").equals(AppConfig.UserID)) {
                 meetingConfig.setRole(member.getRole());
@@ -1906,7 +1903,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
                         // 该主讲人不是自己
                         MeetingKit.getInstance().setMemberAgoraStutas(member);
-                    }else {
+                    } else {
                         // 该主讲人是自己
                         MeetingKit.getInstance().setMyAgoraStutas(member);
                     }
@@ -1932,7 +1929,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
                         // 该参会者不是自己
                         MeetingKit.getInstance().unsubscribeAudiorsAudioAndVedio(agoraMember.getUserId());
-                    }else {
+                    } else {
                         // 该参会者是自己
                         MeetingKit.getInstance().unsubscribeMineAudioAndVedio();
                     }
@@ -2636,7 +2633,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (exitDialog.isEndMeeting() && meetingConfig.isInRealMeeting()) {
                     messageManager.sendMessage_EndMeeting(meetingConfig);
                 }
-
                 finish();
             }
         });
@@ -2811,6 +2807,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         addFileFromFavoriteDialog.setOnFavoriteDocSelectedListener(this);
         addFileFromFavoriteDialog.show();
     }
+
 
     @Override
     public void onFavoriteDocSelected(String docId) {
@@ -3842,7 +3839,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             handleExit(false);
         }
-        return super.onKeyDown(keyCode,event);
+        return true;
+
     }
 
     //------Camera vedio options
@@ -4379,7 +4377,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             if (kickOffMemberDialog.isShowing()) {
                 kickOffMemberDialog.dismiss();
             }
-
             kickOffMemberDialog = null;
         }
 

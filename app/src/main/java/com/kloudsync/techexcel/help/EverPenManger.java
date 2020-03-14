@@ -29,9 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
-/**
- * Created by tonyan on 2020/1/15.
- */
 
 public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, BLEScanner.OnBLEScanListener, TQLPenSignal {
 	private static EverPenManger manger;
@@ -103,6 +100,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 				mAutoPenInfo = SharedPreferencesUtils.getString(AppConfig.EVERPENINFO, AppConfig.EVERPENINFO, EverPen.class);
 				mCurrentPen = mAutoPenInfo;
 				startOrStopFindDevice(true);
+
 			}
 
 		}
@@ -608,7 +606,6 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 		SharedPreferencesUtils.putString(AppConfig.EVERPENINFO, AppConfig.EVERPENINFO, null);
 		startOrStopFindDevice(true);
 	}
-
 
 	public void connect(EverPen everPen) {
 		mCurrentPen = everPen;
