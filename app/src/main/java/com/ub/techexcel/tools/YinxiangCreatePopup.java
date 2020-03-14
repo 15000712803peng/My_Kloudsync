@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -20,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
@@ -32,6 +34,8 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by wang on 2017/9/18.
@@ -62,6 +66,8 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     private RelativeLayout voiceItemLayout;
     private LinearLayout addVoiceLayout;
     private CheckBox isPublic;
+    private TextView tv_bg_audio, tv_record_voice;
+    private SharedPreferences sharedPreferences;
 
     private Handler handler = new Handler() {
         @Override
@@ -125,11 +131,14 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         }
     }
     public void initPopuptWindow() {
+        sharedPreferences = mContext.getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         view = layoutInflater.inflate(R.layout.yinxiang_create_popup, null);
         close = (ImageView) view.findViewById(R.id.close);
         cancel = (TextView) view.findViewById(R.id.cancel);
         cancel.setOnClickListener(this);
+        tv_record_voice = (TextView) view.findViewById(R.id.tv_record_voice);
+        tv_bg_audio = (TextView) view.findViewById(R.id.tv_bg_audio);
         addaudio = (TextView) view.findViewById(R.id.addaudio);
         addrecord = (TextView) view.findViewById(R.id.addrecord);
         recordname = (TextView) view.findViewById(R.id.recordname);
@@ -177,6 +186,7 @@ public class YinxiangCreatePopup implements View.OnClickListener {
 //                }
 //            }
 //        });
+        setBindViewText();
         delete1 = (ImageView) view.findViewById(R.id.delete1);
         delete2 = (ImageView) view.findViewById(R.id.delete2);
         delete1.setOnClickListener(this);
@@ -203,9 +213,14 @@ public class YinxiangCreatePopup implements View.OnClickListener {
             View root = ((Activity) mContext).getWindow().getDecorView();
             params.height = root.getMeasuredHeight() * 4 / 5 + 30;
         }
-
         mPopupWindow.getWindow().setAttributes(params);
+    }
 
+    private void setBindViewText(){
+        String voice=getBindViewText(1020);
+        tv_record_voice.setText(TextUtils.isEmpty(voice)? "录制新的声音":"录制" +voice);
+        String audio=getBindViewText(1018);
+        tv_bg_audio.setText(TextUtils.isEmpty(audio)? "开启背景音频":"开启"+audio);
     }
 
 
@@ -419,4 +434,26 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         }
     }
 
+    private String getBindViewText(int fileId){
+        String appBindName="";
+        int language = sharedPreferences.getInt("language",1);
+        if(language==1&&App.appENNames!=null){
+            for(int i=0;i<App.appENNames.size();i++){
+                if(fileId==App.appENNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
+                    appBindName=App.appENNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }else if(language==2&&App.appCNNames!=null){
+            for(int i=0;i<App.appCNNames.size();i++){
+                if(fileId==App.appCNNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
+                    appBindName=App.appCNNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }
+        return appBindName;
+    }
 }

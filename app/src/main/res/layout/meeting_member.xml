@@ -33,7 +33,6 @@
 
         <TextView
             android:layout_centerVertical="true"
-            android:visibility="gone"
             android:layout_marginLeft="8dp"
             android:id="@+id/txt_host"
             android:textSize="12sp"
@@ -50,7 +49,6 @@
         
         <TextView
             android:layout_centerVertical="true"
-            android:visibility="gone"
             android:layout_marginLeft="8dp"
             android:id="@+id/txt_presenter"
             android:textSize="12sp"
@@ -67,7 +65,7 @@
 
         <TextView
             android:layout_centerVertical="true"
-            android:visibility="gone"
+            
             android:layout_marginLeft="8dp"
             android:id="@+id/txt_is_me"
             android:textSize="12sp"
@@ -97,7 +95,6 @@
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:visibility="gone"
             android:id="@+id/image_setting"
             android:layout_marginRight="16dp"
             android:padding="3dp"
@@ -114,7 +111,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <TextView
-                android:visibility="gone"
                 android:background="@drawable/change_auditor_bg"
                 android:id="@+id/txt_change_to_member"
                 android:layout_width="wrap_content"
@@ -130,7 +126,6 @@
 
             <TextView
                 android:layout_toRightOf="@id/txt_change_to_member"
-                android:visibility="gone"
                 android:background="@drawable/change_auditor_bg"
                 android:id="@+id/txt_hands_up"
                 android:layout_width="wrap_content"

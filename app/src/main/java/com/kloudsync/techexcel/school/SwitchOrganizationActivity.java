@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.school;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,8 +20,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.OrganizationAdapterV2;
+import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.AppName;
 import com.kloudsync.techexcel.bean.Company;
 import com.kloudsync.techexcel.bean.CompanySubsystem;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
@@ -380,6 +385,10 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
             case R.id.txt_ok:
                 if (sAdapter.getSelectCompany() != null) {
                     school = sAdapter.getSelectCompany();
+                    editor = sharedPreferences.edit();
+                    editor.putInt("SchoolID", school.getSchoolID());
+                    editor.commit();
+                    getAppNames(school.getSchoolID());
                     getMyTeamList();
                 }
 //                ShowPop(v);
@@ -426,7 +435,6 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
     }
 
     public void getMyTeamList() {
-
         TeamSpaceInterfaceTools.getinstance().getTeamSpaceList(AppConfig.URL_PUBLIC + "TeamSpace/List?companyID=" + school.getSchoolID() + "&type=1&parentID=0",
                 TeamSpaceInterfaceTools.GETTEAMSPACELIST, new TeamSpaceInterfaceListener() {
                     @Override
@@ -576,4 +584,38 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
 
     private List<Company> companies;
 
+    private void getAppNames(int id) {
+        ServiceInterfaceTools.getinstance().getAppNames(id).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body().toString());
+                    if(jsonObject.getString("msg").equals("success")){
+                        Gson gson = new Gson();
+                        List<AppName> appCNNameList=new ArrayList<AppName>();
+                        List<AppName> appENNameList=new ArrayList<AppName>();
+                        List<AppName> appNameList= gson.fromJson(jsonObject.getString("data"), new TypeToken<List<AppName>>(){}.getType());
+                        App.appNames=appNameList;
+                        for(AppName appName:appNameList){
+                            if(appName.getLanguageId()==0){
+                                appCNNameList.add(appName);
+                            }else {
+                                appENNameList.add(appName);
+                            }
+                        }
+                        App.appCNNames=appCNNameList;
+                        App.appENNames=appENNameList;
+                        System.out.println("App.appNames->"+App.appENNames.size());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                System.out.println(t.getLocalizedMessage());
+            }
+        });
+    }
 }

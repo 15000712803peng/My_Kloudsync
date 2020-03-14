@@ -10,6 +10,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.kloudsync.techexcel.bean.CompanyContact;
 import com.kloudsync.techexcel.bean.CompanySubsystem;
 import com.kloudsync.techexcel.bean.ContactSearchData;
@@ -2717,6 +2718,11 @@ public class ServiceInterfaceTools {
 
     public Call<DevicesResponse> getBindTvs() {
         return request.getBindTvs(AppConfig.wssServer + "/tv/current_user_bind_tv_info", AppConfig.UserToken);
+    }
+
+    public Call<JsonObject> getAppNames(int id) {
+        String appNameUrl=AppConfig.wssServer + "/company_custom_display_name/name_list?companyId="+id;
+        return request.getAppNames(appNameUrl, AppConfig.UserToken);
     }
 
     public Call<BindTvStatusResponse> changeBindTvStatus(int status) {

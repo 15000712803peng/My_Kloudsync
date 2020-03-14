@@ -182,14 +182,14 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     private TextView documentTab, chatTab, meetingTab, syncroomTab, personalTab;
 
+
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
 
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case AppConfig.RONGCONNECT_ERROR:
-                    sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
-                            MODE_PRIVATE);
+                    sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
                     editor = sharedPreferences.edit();
                     editor.putBoolean("isLogIn", false);
                     editor.commit();
@@ -529,6 +529,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         spaceFrame = findViewById(R.id.frame_tab_space);
         initTabs();
         RongConnect();
+        setBindViewText();
     }
 
     private void initTabs() {
@@ -632,6 +633,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             } else {
                 changeTeamFragment((TextView) v);
             }
+            setBindViewText();
 
         }
     }
@@ -914,7 +916,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         MobclickAgent.onResume(this);
         Tools.keepSocketServiceOn(this);
         Log.e("time_interval", "interval:" + (System.currentTimeMillis() - systemTime));//统计时长
-
     }
 
     public void onPause() {
@@ -1853,5 +1854,42 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     public void dismissLoading() {
 
     }
+    private String getBindViewText(int fileId){
+        String appBindName="";
+        int language = sharedPreferences.getInt("language",1);
+        if(language==1&&App.appENNames!=null){
+            for(int i=0;i<App.appENNames.size();i++){
+                if(fileId==App.appENNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
+                    appBindName=App.appENNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }else if(language==2&&App.appCNNames!=null){
+            for(int i=0;i<App.appCNNames.size();i++){
+                if(fileId==App.appCNNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
+                    appBindName=App.appCNNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }
+        return appBindName;
+    }
+    private void setBindViewText(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String document=getBindViewText(1004);
+                documentTab.setText(TextUtils.isEmpty(document)? getString(R.string.documents):document);
+                String chat=getBindViewText(1005);
+                chatTab.setText(TextUtils.isEmpty(chat)? getString(R.string.dialogue):chat);
+                String meeting=getBindViewText(1007);
+                meetingTab.setText(TextUtils.isEmpty(meeting)? getString(R.string.Meeting):meeting);
+                String syncroom=getBindViewText(1001);
+                syncroomTab.setText(TextUtils.isEmpty(syncroom)? getString(R.string.community):syncroom);
+            }
+        },500);
 
+    }
 }

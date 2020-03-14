@@ -104,7 +104,6 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 				mAutoPenInfo = SharedPreferencesUtils.getString(AppConfig.EVERPENINFO, AppConfig.EVERPENINFO, EverPen.class);
 				mCurrentPen = mAutoPenInfo;
 				startOrStopFindDevice(true);
-
 			}
 
 		}
