@@ -210,8 +210,22 @@ public class FloatingNoteDialog implements View.OnClickListener {
                 String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
                 Log.e("floatingnote", localNoteBlankPage);
                 floatwebview.load("javascript:ShowPDF('" + localNoteBlankPage + "'," +1 + ",''," + currentNote.getAttachmentID() + "," + true + ")", null);
-//                floatwebview.load("javascript:ShowToolbar(" + false + ")", null);
-//                floatwebview.load("javascript:StopRecord()", null);
+
+                String key = "ChangeMovePageButton";
+                JSONObject _data = new JSONObject();
+                JSONObject _left = new JSONObject();
+                JSONObject _right = new JSONObject();
+                try {
+                    _left.put("Show", false);
+                    _right.put("Show", false);
+                    _data.put("Left", _left);
+                    _data.put("Right", _right);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                floatwebview.load("javascript:ShowToolbar(" + false + ")", null);
+                floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                floatwebview.load("javascript:Record()", null);
                 handleBluetoothNote(currentNote,lastModifiedDate);
             }
         });

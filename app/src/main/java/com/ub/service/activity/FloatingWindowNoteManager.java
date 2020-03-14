@@ -1,18 +1,13 @@
 package com.ub.service.activity;
 
 import android.content.Context;
-import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
 import android.webkit.WebSettings;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,6 +18,8 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
+import com.kloudsync.techexcel.info.Uploadao;
+import com.kloudsync.techexcel.tool.DocumentModel;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.MeetingServiceTools;
@@ -36,6 +33,7 @@ import org.xwalk.core.XWalkPreferences;
 import org.xwalk.core.XWalkView;
 
 import java.io.File;
+import java.net.URL;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -43,13 +41,11 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-import static io.rong.imkit.utilities.RongUtils.screenWidth;
-
 /**
  * Created by wang on 2017/6/19.
  */
 
-public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListener{
+public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchListener{
     /**
      * 定义浮动窗口布局
      */
@@ -64,9 +60,8 @@ public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListen
     private ImageView changefloatingnote;
     LayoutInflater inflater;
 
-    public static FloatingNoteManager2 instance;
+    public static FloatingWindowNoteManager instance;
     private Context mContext;
-
 
     public interface  FloatingChangeListener{
         void changeHomePage(int noteId);
@@ -78,11 +73,11 @@ public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListen
         this.floatingChangeListener=floatingChangeListener;
     }
 
-    public static FloatingNoteManager2 getManager(Context context,View view) {
+    public static FloatingWindowNoteManager getManager(Context context, View view) {
         if (instance == null) {
-            synchronized (FloatingNoteManager2.class) {
+            synchronized (FloatingWindowNoteManager.class) {
                 if (instance == null) {
-                    instance = new FloatingNoteManager2(context,view);
+                    instance = new FloatingWindowNoteManager(context,view);
                 }
             }
         }
@@ -90,7 +85,7 @@ public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListen
     }
 
 
-    public FloatingNoteManager2(Context context,View view) {
+    public FloatingWindowNoteManager(Context context, View view) {
         this.mContext = context;
         inflater = LayoutInflater.from(mContext);
         mView = view;
@@ -159,7 +154,6 @@ public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListen
                 int moveY = (int) event.getRawY();
                 int move_bigX = moveX - startX;
                 int move_bigY = moveY - startY;
-                Log.e("手指移动距离的大小", move_bigX + "    " + move_bigY);
                 if (Math.abs(move_bigX) > 0 || Math.abs(move_bigY) > 0) {
                     //拿到当前控件未移动的坐标
                     int left = mView.getLeft();
@@ -195,10 +189,11 @@ public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListen
 
     public void show(final long noteid, final MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
+        mView.setVisibility(View.VISIBLE);
+        floatwebview.setVisibility(View.VISIBLE);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                mView.setVisibility(View.VISIBLE);
                 process(noteid, meetingConfig);
             }
         },100);
@@ -218,13 +213,14 @@ public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListen
     public void dismiss() {
         if (isShowing()) {
             mView.setVisibility(View.GONE);
+            floatwebview.setVisibility(View.GONE);
+            floatwebview.load("javascript:ClearPath()", null);
         }
     }
 
 
     private Note currentNote;
     private JSONObject lastjsonObject=new JSONObject();
-
 
     private void process(final long noteId, final MeetingConfig meetingConfig) {
         if (meetingConfig.getDocument() == null) {
@@ -240,6 +236,21 @@ public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListen
                 String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
                 Log.e("floatingnote", localNoteBlankPage);
                 floatwebview.load("javascript:ShowPDF('" + localNoteBlankPage + "'," +1 + ",''," + currentNote.getAttachmentID() + "," + true + ")", null);
+                String key = "ChangeMovePageButton";
+                JSONObject _data = new JSONObject();
+                JSONObject _left = new JSONObject();
+                JSONObject _right = new JSONObject();
+                try {
+                    _left.put("Show", false);
+                    _right.put("Show", false);
+                    _data.put("Left", _left);
+                    _data.put("Right", _right);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                floatwebview.load("javascript:ShowToolbar(" + false + ")", null);
+                floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                floatwebview.load("javascript:Record()", null);
                 handleBluetoothNote(currentNote,lastModifiedDate);
             }
         });
@@ -269,13 +280,63 @@ public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListen
         }
     }
 
+
+    /**
+     * 笔记先于音想打开
+     */
+    public void displayPopupActions(){
+        RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(currentNote.getNoteID(),lastjsonObject);
+    }
+
+    private int oldNoteId=0;
+
+    public void setOldNoteId(int oldNoteId){
+        this.oldNoteId=oldNoteId;
+    }
+
     private void handleBluetoothNote(final Note note, final String lastModifiedDate) {
         final String url=note.getSourceFileUrl();
-        //https://peertime.oss-cn-shanghai.aliyuncs.com/P49/Attachment/D80370/book_page_data.json?_=1583735802772
+        if(TextUtils.isEmpty(url)){
+            //https://peertime.oss-cn-shanghai.aliyuncs.com/P49/Attachment/D80370/book_page_data.json?_=1583735802772
+            return;
+        }
         Observable.just(url).observeOn(Schedulers.io()).map(new Function<String, String>() {
             @Override
-            public String apply(String s) throws Exception {
+            public String apply(String url) throws Exception {
                 String newUrl = "";
+                URL _url = new URL(url);
+                Log.e("floatingnote", _url.getPath());
+                String path = _url.getPath();
+                if (!TextUtils.isEmpty(path)) {
+                    if (path.startsWith("/")) {
+                        path = path.substring(1);
+                    }
+                    int index = path.lastIndexOf("/");
+                    if (index >= 0 && index < path.length()) {
+                        String centerPart = path.substring(0, index);
+                        String fileName = path.substring(index + 1, path.length());
+                        Log.e("floatingnote", "centerPart:" + centerPart + ",fileName:" + fileName);
+                        if (!TextUtils.isEmpty(centerPart)) {
+                            JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+                                    centerPart);
+                            if (queryDocumentResult != null) {
+                                Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+                                String part = "";
+                                if (uploadao != null) {
+                                    if (1 == uploadao.getServiceProviderId()) {
+                                        part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
+                                                + "/" + fileName;
+                                    } else if (2 == uploadao.getServiceProviderId()) {
+                                        part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/" + fileName;
+                                    }
+                                    url = part;
+                                    Log.e("floatingnote", "url:" + url);
+                                }
+
+                            }
+                        }
+                    }
+                }
                 int index = url.lastIndexOf("/");
                 if (index > 0 && index < url.length() - 2) {
                     newUrl = url.substring(0, index + 1) + "book_page_data.json?="+lastModifiedDate;
@@ -289,7 +350,6 @@ public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListen
                 if (!TextUtils.isEmpty(url)) {
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
                     lastjsonObject=jsonObject.getJSONObject("PaintData");
-                    Log.e("floatingnote", "url:" + url+"   "+jsonObject.toString());
                 }
                 return jsonObject;
             }
@@ -303,7 +363,12 @@ public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListen
                 _data.put("TriggerEvent", false);
                 Log.e("floatingnote", "ShowDotPanData");
                 floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(note.getNoteID(),lastjsonObject);
+                if(oldNoteId==0){
+                    RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(note.getNoteID(),lastjsonObject);
+                }else{
+                    RecordNoteActionManager.getManager(mContext).sendChangePageActions(note.getNoteID(),oldNoteId,lastjsonObject);
+                    oldNoteId=0;
+                }
             }
         }).subscribe();
     }
@@ -331,6 +396,26 @@ public class FloatingNoteManager2 implements View.OnClickListener ,OnTouchListen
 
         }
 
+    }
+
+
+    private Uploadao parseQueryResponse(final String jsonstring) {
+        try {
+            JSONObject returnjson = new JSONObject(jsonstring);
+            if (returnjson.getBoolean("Success")) {
+                JSONObject data = returnjson.getJSONObject("Data");
+
+                JSONObject bucket = data.getJSONObject("Bucket");
+                Uploadao uploadao = new Uploadao();
+                uploadao.setServiceProviderId(bucket.getInt("ServiceProviderId"));
+                uploadao.setRegionName(bucket.getString("RegionName"));
+                uploadao.setBucketName(bucket.getString("BucketName"));
+                return uploadao;
+            }
+        } catch (JSONException e) {
+            return null;
+        }
+        return null;
     }
 
 

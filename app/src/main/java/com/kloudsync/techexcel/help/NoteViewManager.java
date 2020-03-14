@@ -119,7 +119,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         openFloatingNote = view.findViewById(R.id.openfloatingnote);
         this.noteWeb = noteWeb;
         noteWeb.setVisibility(View.VISIBLE);
-        adjustOritation(context,noteContainer);
+//        adjustOritation(context,noteContainer);
         backImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -661,7 +661,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         backImage = view.findViewById(R.id.image_back);
         openFloatingNote = view.findViewById(R.id.openfloatingnote);
         this.noteWeb = noteWeb;
-        adjustOritation(context,noteContainer);
+//        adjustOritation(context,noteContainer);
 //        noteWeb.setVisibility(View.VISIBLE);
         backImage.setOnClickListener(new View.OnClickListener() {
             @Override
