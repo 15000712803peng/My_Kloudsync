@@ -81,6 +81,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 		host.unbindService(mServiceConnection);
 		mService.stopSelf();
 		mService = null;
+		EverPenDataManger.getInstace(this, host).removeCallbacksAndMessages(null);
 		manger = null;
 	}
 
@@ -144,10 +145,10 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	@Override
 	public void onConnected() {
 		agent.ReqOfflineDataTransfer(true);
-		EverPenDataManger.getInstace(this, host).sendHandlerMessage();
 		host.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				EverPenDataManger.getInstace(EverPenManger.this, host).sendHandlerMessage();
 				if (mCurrentPen != null) {
 					mCurrentPen.setConnected(true);
 					mCurrentPen.setClick(false);
@@ -170,10 +171,10 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	@Override
 	public void onDisconnected() {
 		Log.e("EverPenManager", "onDisconnected");
-		EverPenDataManger.getInstace(this, host).removeHandlerMessage();
 		host.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				EverPenDataManger.getInstace(EverPenManger.this, host).removeHandlerMessage();
 				if (mCurrentPen != null) {
 					mCurrentPen.setConnected(false);
 					mCurrentPen.setClick(false);
@@ -191,10 +192,10 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	@Override
 	public void onConnectFailed() {
 		Log.e("EverPenManager", "notifyDataSetChanged");
-		EverPenDataManger.getInstace(this, host).removeHandlerMessage();
 		host.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				EverPenDataManger.getInstace(EverPenManger.this, host).removeHandlerMessage();
 				if (mCurrentPen != null) {
 					mCurrentPen.setConnected(false);
 					mCurrentPen.setClick(false);

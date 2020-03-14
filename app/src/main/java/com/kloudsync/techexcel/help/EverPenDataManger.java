@@ -200,6 +200,10 @@ public class EverPenDataManger {
 		mHandler.removeMessages(AppConfig.UPLOADPENDATA);
 	}
 
+	public void removeCallbacksAndMessages(Object token) {
+		mHandler.removeCallbacksAndMessages(token);
+	}
+
 	public void cacheDotData(Dot dot) {
 		String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
 		NoteDotBean noteDotBean = new NoteDotBean();
