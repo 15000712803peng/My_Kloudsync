@@ -34,7 +34,6 @@ import android.widget.Toast;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
-import com.kloudsync.techexcel.bean.AppNameView;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventJoinMeeting;

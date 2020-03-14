@@ -17,18 +17,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
-import com.kloudsync.techexcel.bean.AppNameView;
 import com.kloudsync.techexcel.bean.EventSearchChat;
 import com.kloudsync.techexcel.bean.EventSearchContact;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.InviteContactDialog;
-import com.kloudsync.techexcel.help.InviteNewDialog;
 import com.kloudsync.techexcel.help.PopContactHAHA;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.search.ui.ContactSearchAndAddActivity;

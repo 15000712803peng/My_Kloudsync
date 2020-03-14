@@ -229,7 +229,6 @@ public class MainActivityV3 extends FragmentActivity implements AddWxDocDialog.O
             addWxDocDialog.setSavedListener(this);
             addWxDocDialog.show();
         }
-
     }
 
     private void requestRongCloudOnlineStatus() {
