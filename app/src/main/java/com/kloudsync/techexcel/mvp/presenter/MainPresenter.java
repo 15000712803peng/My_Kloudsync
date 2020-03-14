@@ -12,7 +12,6 @@ import com.ub.techexcel.bean.SyncNoteBean;
 import com.ub.techexcel.bean.UploadNoteBean;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -29,7 +28,6 @@ public class MainPresenter extends TQLPenSignalKloudPresenter<IMainActivityView>
     ServiceInterfaceTools mRequsetTools;
     public MainPresenter() {
         mRequsetTools = ServiceInterfaceTools.getinstance();
-        List<Integer> mNoteIdList = new ArrayList<>();
     }
 
     public void requestUserPathInfo() {

@@ -403,7 +403,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         mPresenter = new MainPresenter();
         mPresenter.attachView(this);
         mEverPenManger.addListener(mPresenter);
-	    handler.sendEmptyMessage(AppConfig.UPLOADPENDATA);
     }
 
     private void requestRongCloudOnlineStatus() {
@@ -1923,7 +1922,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Override
     public void getBleManager(PenCommAgent bleManager) {
         mBleManager = bleManager;
-        mBleManager.ReqOfflineDataTransfer(true);
     }
 
     @Override
@@ -1931,6 +1929,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         if (personalCenterFragment != null) {
             personalCenterFragment.setCurrentPenNameAndStatus(true);
         }
+	    mBleManager.ReqOfflineDataTransfer(true);
+	    handler.sendEmptyMessage(AppConfig.UPLOADPENDATA);
     }
 
     @Override
