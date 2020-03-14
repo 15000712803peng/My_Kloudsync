@@ -506,10 +506,6 @@
                 onZoom: function (zoom, midpoint)
                 {
                     isMove=true;
-                    if (IsToolBarShow==false)
-                    {
-                        return;
-                    }
                     //ShowMsg("Zoom:" + zoom);
                     var container = GetPageContainer(PageNumber);
                     //var oldw = container.width();
@@ -1401,8 +1397,7 @@
             }
             //CloseToolsEx();
         }
-        function CheckZoom()
-        {
+        function CheckZoom() {
             //console.log("CheckZoom");
             //whiteboard.RefreshDocument(()=>{
             //    whiteboard.TriggerViewChange();
@@ -1412,40 +1407,40 @@
             var ow = parseInt(container.attr("CW"));
             var cw = getViewWidth() * CurrentScale;
             var diff = Math.abs(ow - cw);
-            if (diff < 50)
-            {
+            if (diff < 50) {
                 return;
             }
             //ShowLog("CheckZoom");
             $("#main").css({ "width": getViewWidth(), "height": getViewHeight() });
 
-            if (IsPPT)
-            {
+            if (IsPPT) {
                 ZOOM = document.body.clientWidth / (presSettings.Width + 2);
                 //$("#main").css({ "zoom": ZOOM });
                 $("#main").css({ "transform": "scale(" + ZOOM + ", " + ZOOM + ")" });
 
             }
-            else
-            {
+            else {
                 //IsLoadingPage = true;
-                
-                var info = GetPageInfo(PageNumber);                                
+
+                var info = GetPageInfo(PageNumber);
                 var newW = getViewWidth() * CurrentScale;
                 $("#pageContainer" + PageNumber).css({ "width": newW }).attr("CW", newW);
                 $("#canvas" + PageNumber).width(newW);
                 $("#pageContainer" + PageNumber).height($("#img_" + PageNumber).height());
                 //$("#main").height($("#img_" + PageNumber).height());
-                setTimeout(function ()
-                {
-                    if (IsShowPageInfo) {
-                        return
-                    }
-                    IsShowPageInfo = true;
-                    $("#svg" + PageNumber).empty();
-                    ShowPageInfo(PageNumber, info);
-                }, 300);
-                
+                whiteboard.ZoomTo(1, function () {
+                    setTimeout(function () {
+                        if (IsShowPageInfo) {
+                            return
+                        }
+                        IsShowPageInfo = true;
+                        $("#svg" + PageNumber).empty();
+
+                        ShowPageInfo(PageNumber, info);
+
+                    }, 300);
+                });
+
                 DrawTarget = null;
                 ToPointer();
             }

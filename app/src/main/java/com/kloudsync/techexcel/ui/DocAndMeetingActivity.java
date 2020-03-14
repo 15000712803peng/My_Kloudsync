@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -101,6 +102,7 @@ import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
 import com.kloudsync.techexcel.dialog.MeetingRecordManager;
+import com.kloudsync.techexcel.dialog.NoteRecordType;
 import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
@@ -110,11 +112,11 @@ import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.AudiencePromptDialog;
-import com.kloudsync.techexcel.help.BottomMenuManager;
 import com.kloudsync.techexcel.help.ChatManager;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.DocVedioManager;
 import com.kloudsync.techexcel.help.MeetingKit;
+import com.kloudsync.techexcel.help.BottomMenuManager;
 import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
 import com.kloudsync.techexcel.help.PopBottomChat;
@@ -139,6 +141,7 @@ import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.AddMeetingMemberActivity;
+import com.ub.service.activity.FloatingWindowNoteManager;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
@@ -150,6 +153,7 @@ import com.ub.techexcel.bean.EventUnmuteAll;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.bean.TelePhoneCall;
+import com.ub.techexcel.tools.CreateSyncDialog;
 import com.ub.techexcel.tools.DevicesListDialog;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
@@ -736,7 +740,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    JSONObject lastjsonObject=new JSONObject();
+    JSONObject lastjsonObject = new JSONObject();
+
     private void handleBluetoothNote(final String url) {
         if (TextUtils.isEmpty(url)) {
             return;
@@ -792,7 +797,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (!TextUtils.isEmpty(url)) {
                     Log.e("check_url", "url:" + url);
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    lastjsonObject=jsonObject.getJSONObject("PaintData");
+                    lastjsonObject = jsonObject.getJSONObject("PaintData");
                 }
                 return jsonObject;
             }
@@ -806,7 +811,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
                 noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-	            RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+                RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override
@@ -1046,28 +1051,28 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 if (noteWeb != null) {
                                     followShowNote(noteId);
                                 }
-                            }else{
-                                if(floatingNoteDialog!=null){
-                                    if(floatingNoteDialog.isShowing()){
+                            } else {
+                                if (floatingNoteDialog != null) {
+                                    if (floatingNoteDialog.isShowing()) {
                                         floatingNoteDialog.setOldNoteId((int) currentNoteId);
                                         showNoteFloatingDialog(noteId);  //换个笔记了
                                     }
                                 }
                             }
-                        }else {  // 同一个笔记
+                        } else {  // 同一个笔记
                             if (noteLayout.getVisibility() == View.VISIBLE) {
                                 if (noteWeb != null) {
-                                    lastjsonObject=new JSONObject(Tools.getFromBase64(noteData));
+                                    lastjsonObject = new JSONObject(Tools.getFromBase64(noteData));
                                     NoteViewManager.getInstance().followPaintLine(noteData);
                                 }
-                            }else{
-                                if(floatingNoteDialog!=null){
-                                    if(floatingNoteDialog.isShowing()){
-                                        floatingNoteDialog.followDrawNewLine(noteId,noteData);
+                            } else {
+                                if (floatingNoteDialog != null) {
+                                    if (floatingNoteDialog.isShowing()) {
+                                        floatingNoteDialog.followDrawNewLine(noteId, noteData);
                                     }
                                 }
                             }
-                            RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
+                            RecordNoteActionManager.getManager(this).sendDrawActions(noteId, noteData);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1083,9 +1088,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             if (noteWeb != null) {
                                 followShowNote(noteId);
                             }
-                        }else{
-                            if(floatingNoteDialog!=null){
-                                if(floatingNoteDialog.isShowing()){
+                        } else {
+                            if (floatingNoteDialog != null) {
+                                if (floatingNoteDialog.isShowing()) {
                                     floatingNoteDialog.setOldNoteId((int) currentNoteId);
                                 }
                             }
@@ -1196,8 +1201,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     meetingMenuMemberImage.setVisibility(View.VISIBLE);
                 }
 
-            }else {
-                if(meetingMenuMemberImage.getVisibility() == View.VISIBLE){
+            } else {
+                if (meetingMenuMemberImage.getVisibility() == View.VISIBLE) {
                     menuIcon.setVisibility(View.VISIBLE);
                     meetingMenuMemberImage.setVisibility(View.GONE);
                 }
@@ -1742,10 +1747,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (cameraList.getVisibility() == View.VISIBLE) {
             if (cameraAdapter != null) {
                 if (eventMute.getType() == EventMute.TYPE_MUTE_VEDIO) {
-                    Log.e("muteAgoraMember", "muteVideo");
                     cameraAdapter.muteVideo(eventMute.getAgoraMember(), eventMute.isMuteVedio());
                 } else if (eventMute.getType() == EventMute.TYPE_MUTE_AUDIO) {
-                    Log.e("muteAgoraMember", "muteAudio");
                     cameraAdapter.muteAudio(eventMute.getAgoraMember(), eventMute.isMuteAudio());
                 }
 
@@ -1886,6 +1889,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     private void checkAgoraMemberNameAndAgoraStatus() {
+        if(meetingConfig.getType() != MeetingType.MEETING){
+            return;
+        }
         for (MeetingMember member : meetingConfig.getMeetingMembers()) {
             if ((member.getUserId() + "").equals(AppConfig.UserID)) {
                 meetingConfig.setRole(member.getRole());
@@ -1896,11 +1902,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if ((member.getUserId() + "").equals(agoraMember.getUserId() + "")) {
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
-//                    if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
-//                        agoraMember.setMuteVideo(member.getCameraStatus() != 2);
-//                        agoraMember.setMuteAudio(member.getMicrophoneStatus() != 2);
-//
-//                    }
+
+                    if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
+                        // 该主讲人不是自己
+                        MeetingKit.getInstance().setMemberAgoraStutas(member);
+                    }else {
+                        // 该主讲人是自己
+                        MeetingKit.getInstance().setMyAgoraStutas(member);
+                    }
                     Log.e("check_audio", "audio_status1:" + member.getMicrophoneStatus());
                     agoraMember.setMuteVideo(member.getCameraStatus() != 2);
                     agoraMember.setMuteAudio(member.getMicrophoneStatus() != 2);
@@ -1920,6 +1929,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     agoraMember.setUserName(member.getUserName());
                     agoraMember.setIconUrl(member.getAvatarUrl());
                     agoraMember.setIsMember(0);
+                    if (!(member.getUserId() + "").equals(AppConfig.UserID)) {
+                        // 该参会者不是自己
+                        MeetingKit.getInstance().unsubscribeAudiorsAudioAndVedio(agoraMember.getUserId());
+                    }else {
+                        // 该参会者是自己
+                        MeetingKit.getInstance().unsubscribeMineAudioAndVedio();
+                    }
                     break;
                 }
             }
@@ -2620,6 +2636,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (exitDialog.isEndMeeting() && meetingConfig.isInRealMeeting()) {
                     messageManager.sendMessage_EndMeeting(meetingConfig);
                 }
+
                 finish();
             }
         });
@@ -2794,7 +2811,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         addFileFromFavoriteDialog.setOnFavoriteDocSelectedListener(this);
         addFileFromFavoriteDialog.show();
     }
-
 
     @Override
     public void onFavoriteDocSelected(String docId) {
@@ -3015,21 +3031,21 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    private  void openOrCloseNote(EventSocketMessage socketMessage){
+    private void openOrCloseNote(EventSocketMessage socketMessage) {
         try {
-            JSONObject retData=socketMessage.getData().getJSONObject("retData");
-            int noteId=retData.getInt("noteId");
-            int status=retData.getInt("status");
-            if(status==1){ //打开浮窗
+            JSONObject retData = socketMessage.getData().getJSONObject("retData");
+            int noteId = retData.getInt("noteId");
+            int status = retData.getInt("status");
+            if (status == 1) { //打开浮窗
                 showNoteFloatingDialog(noteId);
-            }else if(status==0){  //关闭浮窗 或者 主界面
+            } else if (status == 0) {  //关闭浮窗 或者 主界面
                 if (noteLayout.getVisibility() == View.VISIBLE) {
                     if (noteWeb != null) {
                         NoteViewManager.getInstance().closeNoteWeb();
                     }
-                }else{
-                    if(floatingNoteDialog!=null){
-                        if(floatingNoteDialog.isShowing()){
+                } else {
+                    if (floatingNoteDialog != null) {
+                        if (floatingNoteDialog.isShowing()) {
                             floatingNoteDialog.closeFloating();
                         }
                     }
@@ -3043,7 +3059,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiverOpenFloating(EventFloatingNote eventFloatingNote) {
         //从主界面切回浮窗
-	    RecordNoteActionManager.getManager(this).sendDisplayHomepagePopupActions(currentNoteId, lastjsonObject);
+        RecordNoteActionManager.getManager(this).sendDisplayHomepagePopupActions(currentNoteId, lastjsonObject);
         showNoteFloatingDialog(eventFloatingNote.getNoteId());
     }
 
@@ -3665,12 +3681,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             //判断笔记是否打开
             if (noteLayout.getVisibility() == View.VISIBLE) {
                 if (noteWeb != null) {
-                     // 笔记先于音想打开
-                    RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId,lastjsonObject);
+                    // 笔记先于音想打开
+                    RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
                 }
-            }else{
-                if(floatingNoteDialog!=null){
-                    if(floatingNoteDialog.isShowing()){
+            } else {
+                if (floatingNoteDialog != null) {
+                    if (floatingNoteDialog.isShowing()) {
                         floatingNoteDialog.displayPopupActions();
                     }
                 }
@@ -3826,8 +3842,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             handleExit(false);
         }
-        return true;
-
+        return super.onKeyDown(keyCode,event);
     }
 
     //------Camera vedio options
@@ -4343,6 +4358,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())) {
             return;
         }
+
         SocketMessageManager.getManager(this).sendMessage_ViewModeStatus(viewMode, userId);
 
         meetingConfig.setMode(viewMode);

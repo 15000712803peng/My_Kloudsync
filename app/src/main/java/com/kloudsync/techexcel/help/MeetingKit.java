@@ -419,7 +419,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             member.setMuteAudio(true);
             member.setMuteVideo(true);
             EventBus.getDefault().post(member);
-            requestMeetingMembers(meetingConfig,false);
+            requestMeetingMembers(meetingConfig, false);
         }
 
     }
@@ -773,7 +773,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 getRtcManager().worker().getRtcEngine().muteAllRemoteAudioStreams(false);
                 getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(true);
                 getRtcManager().worker().getRtcEngine().setEnableSpeakerphone(true);
-
             } else if (status == 1) {
                 getRtcManager().worker().getRtcEngine().muteAllRemoteAudioStreams(false);
                 getRtcManager().worker().getRtcEngine().setDefaultAudioRoutetoSpeakerphone(false);
@@ -947,12 +946,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
                 if (!meetingConfig.getMeetingMembers().contains(new MeetingMember(uid))) {
                     // 加入的是member
-                    Log.e("check_disable","disable,1");
-                     if((uid+"").equals(AppConfig.UserID)){
-                         disableAudioAndVideoStream();
-                     }
+                    Log.e("check_disable", "disable,1");
+                    if ((uid + "").equals(AppConfig.UserID)) {
+                        disableAudioAndVideoStream();
+                    }
                 }
-
                 if (isSelf) {
                     EventBus.getDefault().post(createSelfCamera(uid));
                 } else {
@@ -963,22 +961,97 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }).subscribe();
     }
 
-    public void disableAudioAndVideoStream(){
+    public void disableAudioAndVideoStream() {
         MeetingKit.getInstance().menuMicroClicked(false);
         MeetingKit.getInstance().menuCameraClicked(false);
         MeetingKit.getInstance().changeAgoraRole(CLIENT_ROLE_AUDIENCE);
     }
 
-    public void enableAudioAndVideo(){
+    public void enableAudioAndVideo() {
         MeetingKit.getInstance().changeAgoraRole(CLIENT_ROLE_BROADCASTER);
 
     }
 
-    public void changeAgoraRole(int role){
-        if(rtcManager != null){
-            Log.e("changeAgoraRole","role:" + role);
+    public void changeAgoraRole(int role) {
+        if (rtcManager != null) {
+            Log.e("changeAgoraRole", "role:" + role);
             rtcManager.doConfigEngine(role);
         }
+    }
+
+    public void unsubscribeAudio(int userId) {
+
+        if (rtcManager == null) {
+            rtcManager = MeetingKit.getInstance().getRtcManager();
+        }
+        rtcManager.worker().getRtcEngine().muteRemoteAudioStream(userId, true);
+    }
+
+    public void unsubscribeVedio(int userId) {
+
+        if (rtcManager == null) {
+            rtcManager = MeetingKit.getInstance().getRtcManager();
+        }
+        rtcManager.worker().getRtcEngine().muteRemoteVideoStream(userId, true);
+    }
+
+    public void subscribeAudio(int userId) {
+
+        if (rtcManager == null) {
+            rtcManager = MeetingKit.getInstance().getRtcManager();
+        }
+        rtcManager.worker().getRtcEngine().muteRemoteAudioStream(userId, false);
+    }
+
+    public void unsubscribeAudiorsAudioAndVedio(int userId) {
+        unsubscribeAudio(userId);
+        unsubscribeVedio(userId);
+    }
+
+    public void unsubscribeMineAudioAndVedio() {
+        if (rtcManager == null) {
+            rtcManager = MeetingKit.getInstance().getRtcManager();
+        }
+        rtcManager.worker().getRtcEngine().muteLocalAudioStream(true);
+        rtcManager.worker().getRtcEngine().muteLocalVideoStream(true);
+    }
+
+    public void setMyAgoraStutas(MeetingMember meetingMember) {
+        if (rtcManager == null) {
+            rtcManager = MeetingKit.getInstance().getRtcManager();
+        }
+
+        if (meetingMember.getMicrophoneStatus() != 2) {
+            if (!settingCache.getMeetingSetting().isMicroOn()) {
+                rtcManager.worker().getRtcEngine().muteLocalAudioStream(true);
+            }
+        }
+
+        if (meetingMember.getCameraStatus() != 2) {
+            if (!settingCache.getMeetingSetting().isCameraOn()) {
+                rtcManager.worker().getRtcEngine().muteLocalVideoStream(true);
+            }
+        }
+    }
+
+    public void setMemberAgoraStutas(MeetingMember meetingMember) {
+
+        if (rtcManager == null) {
+            rtcManager = MeetingKit.getInstance().getRtcManager();
+        }
+
+        if (meetingMember.getMicrophoneStatus() != 2) {
+            rtcManager.worker().getRtcEngine().muteRemoteAudioStream(meetingMember.getUserId(), true);
+        }else {
+            rtcManager.worker().getRtcEngine().muteRemoteAudioStream(meetingMember.getUserId(), false);
+        }
+
+        if (meetingMember.getCameraStatus() != 2) {
+            rtcManager.worker().getRtcEngine().muteRemoteVideoStream(meetingMember.getUserId(), true);
+        }else {
+            rtcManager.worker().getRtcEngine().muteRemoteVideoStream(meetingMember.getUserId(), false);
+        }
+
     }
 
 }

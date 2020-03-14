@@ -6,23 +6,23 @@ import java.io.Serializable;
 
 public class NoteDotBean implements Serializable {
 
-	private String dotId;
-	private Dot dot;
+    private String dotId;
+    private Dot dot;
 
-	public String getDotId() {
-		return dotId;
-	}
+    public String getDotId() {
+        return dotId;
+    }
 
-	public void setDotId(String dotId) {
-		this.dotId = dotId;
-	}
+    public void setDotId(String dotId) {
+        this.dotId = dotId;
+    }
 
-	public Dot getDot() {
-		return dot;
-	}
+    public Dot getDot() {
+        return dot;
+    }
 
-	public void setDot(Dot dot) {
-		this.dot = dot;
-	}
+    public void setDot(Dot dot) {
+        this.dot = dot;
+    }
 
 }
