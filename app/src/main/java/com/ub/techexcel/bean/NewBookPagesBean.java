@@ -54,5 +54,20 @@ public class NewBookPagesBean implements Serializable {
 		public void setPenId(String PenId) {
 			this.PenId = PenId;
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			BookPagesBean bean = (BookPagesBean) o;
+
+			return PageAddress != null ? PageAddress.equals(bean.PageAddress) : bean.PageAddress == null;
+		}
+
+		@Override
+		public int hashCode() {
+			return PageAddress != null ? PageAddress.hashCode() : 0;
+		}
 	}
 }

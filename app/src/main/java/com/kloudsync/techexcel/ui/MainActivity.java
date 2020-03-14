@@ -294,7 +294,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 					            NewBookPagesBean.BookPagesBean pagesBean = new NewBookPagesBean.BookPagesBean();
 					            pagesBean.setPageAddress(address);
 					            pagesBean.setPenId(uuid);
-					            bookPagesBeans.add(pagesBean);
+					            if (!bookPagesBeans.contains(pagesBean)) {
+						            bookPagesBeans.add(pagesBean);
+					            }
 				            } else {
 					            for (NoteInfoBean.DataBean dataBean : noteInfoList) {
 						            if (!dataBean.getAddress().equals(address)) {
@@ -355,7 +357,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 				            mPresenter.uploadDrawing(syncNoteBean);
 			            }
 		            }
-		            handler.sendEmptyMessageDelayed(AppConfig.UPLOADPENDATA, 5000);
+		            sendEmptyMessageDelayed(AppConfig.UPLOADPENDATA, 5000);
 		            break;
                 default:
                     break;
