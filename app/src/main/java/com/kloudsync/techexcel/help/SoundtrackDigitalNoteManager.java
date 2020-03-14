@@ -38,10 +38,7 @@ import org.xwalk.core.XWalkView;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +52,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-/**
- * Created by tonyan on 2019/11/21.
- */
+
 
 public class SoundtrackDigitalNoteManager {
 
