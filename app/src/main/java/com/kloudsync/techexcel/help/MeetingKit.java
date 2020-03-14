@@ -964,7 +964,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
     public void disableAudioAndVideoStream(){
-
         MeetingKit.getInstance().menuMicroClicked(false);
         MeetingKit.getInstance().menuCameraClicked(false);
         MeetingKit.getInstance().changeAgoraRole(CLIENT_ROLE_AUDIENCE);

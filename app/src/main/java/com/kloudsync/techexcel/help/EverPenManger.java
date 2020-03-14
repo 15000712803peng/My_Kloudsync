@@ -249,41 +249,44 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 
 	@Override
 	public void onStartOfflineDownload(boolean b) {
+		Log.e("EverPenManager", "onStartOfflineDownload:" + b);
 
 	}
 
 	@Override
 	public void onStopOfflineDownload(boolean b) {
-
+		Log.e("EverPenManager", "onStopOfflineDownload:" + b);
 	}
 
 	@Override
 	public void onPenPauseOfflineDataTransferResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenPauseOfflineDataTransferResponse:" + b);
 	}
 
 	@Override
 	public void onPenContinueOfflineDataTransferResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenContinueOfflineDataTransferResponse:" + b);
 	}
 
 	@Override
 	public void onFinishedOfflineDownload(boolean b) {
-
+		Log.e("EverPenManager", "onFinishedOfflineDownload:" + b);
 	}
 
 	@Override
 	public void onReceiveOfflineProgress(int i) {
+		Log.e("EverPenManager", "onReceiveOfflineProgress:" + i);
 
 	}
 
 	@Override
 	public void onPenDeleteOfflineDataResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenDeleteOfflineDataResponse:" + b);
 	}
 
 	@Override
 	public void onPenNameSetupResponse(final boolean b) {
+		Log.e("EverPenManager", "onPenNameSetupResponse:" + b);
 		host.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -298,21 +301,24 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 
 	@Override
 	public void onReceivePenName(String s) {
+		Log.e("EverPenManager", "onReceivePenName:" + s);
 
 	}
 
 	@Override
 	public void onReceivePenMac(String s) {
-
+		Log.e("EverPenManager", "onReceivePenMac:" + s);
 	}
 
 	@Override
 	public void onReceivePenBtFirmware(String s) {
+		Log.e("EverPenManager", "onReceivePenBtFirmware:" + s);
 
 	}
 
 	@Override
 	public void onReceivePenBattery(final int i, final boolean b) {
+		Log.e("EverPenManager", "onReceivePenBattery:" + i + ",b:" + b);
 		host.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -327,31 +333,32 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 
 	@Override
 	public void onPenTimetickSetupResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenTimetickSetupResponse:" + b);
 	}
 
 	@Override
 	public void onReceivePenTime(long l) {
-
+		Log.e("EverPenManager", "onReceivePenTime:" + l);
 	}
 
 	@Override
 	public void onPenAutoShutdownSetUpResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenAutoShutdownSetUpResponse:" + b);
 	}
 
 	@Override
 	public void onReceivePenAutoOffTime(int i) {
-
+		Log.e("EverPenManager", "onReceivePenAutoOffTime:" + i);
 	}
 
 	@Override
 	public void onPenFactoryResetSetUpResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenFactoryResetSetUpResponse:" + b);
 	}
 
 	@Override
 	public void onReceivePenMemory(final int i) {
+		Log.e("EverPenManager", "onReceivePenMemory:" + i);
 		host.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -366,77 +373,77 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 
 	@Override
 	public void onPenAutoPowerOnSetUpResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenAutoPowerOnSetUpResponse:" + b);
 	}
 
 	@Override
 	public void onReceivePenAutoPowerOnModel(boolean b) {
-
+		Log.e("EverPenManager", "onReceivePenAutoPowerOnModel:" + b);
 	}
 
 	@Override
 	public void onPenBeepSetUpResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenBeepSetUpResponse:" + b);
 	}
 
 	@Override
 	public void onReceivePenBeepModel(boolean b) {
-
+		Log.e("EverPenManager", "onReceivePenBeepModel:" + b);
 	}
 
 	@Override
 	public void onPenSensitivitySetUpResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenSensitivitySetUpResponse:" + b);
 	}
 
 	@Override
 	public void onReceivePenSensitivity(int i) {
-
+		Log.e("EverPenManager", "onReceivePenSensitivity:" + i);
 	}
 
 	@Override
 	public void onPenLedConfigResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenLedConfigResponse:" + b);
 	}
 
 	@Override
 	public void onReceivePenLedConfig(int i) {
-
+		Log.e("EverPenManager", "onReceivePenLedConfig:" + i);
 	}
 
 	@Override
 	public void onPenDotTypeResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenDotTypeResponse:" + b);
 	}
 
 	@Override
 	public void onPenChangeLedColorResponse(boolean b) {
-
+		Log.e("EverPenManager", "onPenChangeLedColorResponse:" + b);
 	}
 
 	@Override
 	public void onReceivePresssureValue(int i, int i1) {
-
+		Log.e("EverPenManager", "onReceivePresssureValue:" + i);
 	}
 
 	@Override
 	public void onReceivePenMcuVersion(String s) {
-
+		Log.e("EverPenManager", "onReceivePresssureValue:" + s);
 	}
 
 	@Override
 	public void onReceivePenDotType(int i) {
-
+		Log.e("EverPenManager", "onReceivePenDotType:" + i);
 	}
 
 	@Override
 	public void onReceivePenAllStatus(PenStatus penStatus) {
-
+		Log.e("EverPenManager", "onReceivePenAllStatus:" + penStatus);
 	}
 
 	@Override
 	public void onReceivePenLED(int color) {
-
+		Log.e("EverPenManager", "onReceivePenLED:" + color);
 	}
 
 	@Override
@@ -477,27 +484,27 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 
 	@Override
 	public void onException(BLEException e) {
-
+		Log.e("EverPenManager", "onException:" + e);
 	}
 
 	@Override
 	public void onReceivePenType(String type) {
-
+		Log.e("EverPenManager", "onReceivePenType:" + type);
 	}
 
 	@Override
 	public void onReceivePenEnableLed(Boolean aBoolean) {
-
+		Log.e("EverPenManager", "onReceivePenEnableLed:" + aBoolean);
 	}
 
 	@Override
 	public void onReceivePenHandwritingColor(int i) {
-
+		Log.e("EverPenManager", "onReceivePenHandwritingColor:" + i);
 	}
 
 	@Override
 	public void onReceiveElementCode(ElementCode elementCode) {
-
+		Log.e("EverPenManager", "onReceiveElementCode:" + elementCode);
 	}
 
 	/**
@@ -505,6 +512,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	 */
 
 	public void startOrStopFindDevice(boolean enable) {
+		Log.e("EverPenManager", "startOrStopFindDevice:" + enable);
 		if (agent != null) {
 			if (enable) {
 				removeNoConnected();
@@ -519,7 +527,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 
 	@Override
 	public void onScanResult(BluetoothDevice bluetoothDevice, int i, byte[] bytes) {
-		Log.e("EverPenManager", "addScanedEverPen,device:" + bluetoothDevice);
+		Log.e("EverPenManager", "onScanResult,device:" + bluetoothDevice);
 		EverPen everPen = new EverPen(bluetoothDevice.getAddress());
 		everPen.setName(bluetoothDevice.getName());
 		everPen.setSimilaPenSource(host.getResources().getString(R.string.similar_pen_source));

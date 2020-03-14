@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -1199,8 +1200,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     meetingMenuMemberImage.setVisibility(View.VISIBLE);
                 }
 
-            }else {
-                if(meetingMenuMemberImage.getVisibility() == View.VISIBLE){
+            } else {
+                MeetingKit.getInstance().enableAudioAndVideo();
+                if (meetingMenuMemberImage.getVisibility() == View.VISIBLE) {
                     menuIcon.setVisibility(View.VISIBLE);
                     meetingMenuMemberImage.setVisibility(View.GONE);
                 }
@@ -2627,6 +2629,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
         });
         exitDialog.show();
+
     }
 
     @Override
@@ -3758,7 +3761,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 return;
             }
         }
-
         Intent intent = new Intent();
         intent.putExtra("OPEN_NOTE_BEAN", new Gson().toJson(bookNote));
         ComponentName comp = new ComponentName("com.onyx.android.note", "com.onyx.android.note.note.ui.ScribbleActivity");
@@ -3789,8 +3791,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             handleExit(false);
+        }else if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN){
+//            getSystemService(Context.AUDIO_SERVICE).adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE,AudioManager.FX_FOCUS_NAVIGATION_UP);
+
         }
-        return true;
+
+        return false;
 
     }
 
@@ -4167,6 +4173,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 MeetingKit.getInstance().disableAudioAndVideoStream();
                                 menuIcon.setVisibility(View.GONE);
                                 meetingMenuMemberImage.setVisibility(View.VISIBLE);
+                            } else {
+                                MeetingKit.getInstance().enableAudioAndVideo();
+                                menuIcon.setVisibility(View.VISIBLE);
+                                meetingMenuMemberImage.setVisibility(View.GONE);
+
                             }
 //                            delayRefreshAgoraList();
                         }
