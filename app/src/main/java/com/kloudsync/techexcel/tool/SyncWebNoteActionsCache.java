@@ -37,7 +37,7 @@ public class SyncWebNoteActionsCache {
 		if (dot == null) {
 			return;
 		}
-		Map map = getPageMap(dot.getDotId());
+		Map map = getPageMap();
 		if (map == null) {
 			return;
 		}
@@ -50,7 +50,7 @@ public class SyncWebNoteActionsCache {
 		if (TextUtils.isEmpty(dotId)) {
 			return;
 		}
-		Map map = getPageMap(dotId);
+		Map map = getPageMap();
 		if (map == null) {
 			return;
 		}
@@ -58,7 +58,7 @@ public class SyncWebNoteActionsCache {
 		cachePreference.edit().putString("dot_actions_map", new Gson().toJson(map)).commit();
 	}
 
-	private Map<String, NoteDotBean> getPageMap(String dotId) {
+	private Map<String, NoteDotBean> getPageMap() {
 		String json = cachePreference.getString("dot_actions_map", "");
 		if (TextUtil.isEmpty(json)) {
 			return new HashMap<>();
@@ -67,11 +67,11 @@ public class SyncWebNoteActionsCache {
 		}.getType());
 	}
 
-	public NoteDotBean getPartWebActions(String dotId) {
-		Map<String, NoteDotBean> map = getPageMap(dotId);
+	public Map<String, NoteDotBean> getPartWebActions() {
+		Map<String, NoteDotBean> map = getPageMap();
 		Log.e("SyncWebActionsCache", "getPageCache, map:" + map);
 		if (map != null) {
-			return map.get(dotId);
+			return map;
 		}
 		return null;
 	}
@@ -96,7 +96,7 @@ public class SyncWebNoteActionsCache {
 
 
 	public boolean containPartWebActions(String dotId) {
-		return getPageMap(dotId).containsKey(dotId);
+		return getPageMap().containsKey(dotId);
 	}
 
 

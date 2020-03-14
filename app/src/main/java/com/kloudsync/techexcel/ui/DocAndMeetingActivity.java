@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -740,8 +739,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    JSONObject noteweblastjsonObject = new JSONObject();
-
+    JSONObject lastjsonObject=new JSONObject();
     private void handleBluetoothNote(final String url) {
         if (TextUtils.isEmpty(url)) {
             return;
@@ -797,7 +795,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (!TextUtils.isEmpty(url)) {
                     Log.e("check_url", "url:" + url);
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    noteweblastjsonObject = jsonObject.getJSONObject("PaintData");
+                    lastjsonObject=jsonObject.getJSONObject("PaintData");
                 }
                 return jsonObject;
             }
@@ -1032,58 +1030,48 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 break;
             case SocketMessageManager.MESSAGE_OPEN_OR_CLOSE_NOTE:  //打开或关闭笔记
                 if (socketMessage.getData().has("retData")) {
-                    try {
-                        JSONObject retData = socketMessage.getData().getJSONObject("retData");
-                        int noteId = retData.getInt("noteId");
-                        int status = retData.getInt("status");
-                        if (status == 1) { //打开浮窗
-                            showNoteFloatingDialog(noteId);
-                        } else if (status == 0) {  //关闭浮窗 或者 主界面
-                            if (noteLayout.getVisibility() == View.VISIBLE) {
-                                if (noteWeb != null) {
-                                    NoteViewManager.getInstance().closeNoteWeb();
-                                }
-                            } else {
-                                if (floatingNoteDialog != null) {
-                                    if (floatingNoteDialog.isShowing()) {
-                                        floatingNoteDialog.closeFloating();
-                                    }
-                                }
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    openOrCloseNote(socketMessage);
                 }
                 break;
-            case SocketMessageManager.MESSAGE_NOTE_DATA:
+            case SocketMessageManager.MESSAGE_NOTE_DATA:  // 浮窗或主界面正在展示的场景下
                 if (socketMessage.getData().has("retData")) {
                     try {
                         JSONObject retData = socketMessage.getData().getJSONObject("retData");
                         String noteData = retData.getString("data");
-                        long noteId = retData.getInt("noteId");
+                        int noteId = retData.getInt("noteId");
                         if (currentNoteId != noteId) {
                             TempNoteData _noteData = new TempNoteData();
                             _noteData.setData(Tools.getFromBase64(noteData));
                             _noteData.setNoteId(noteId);
                             newNoteDatas.add(_noteData);
-                            return;
-                        }
-
-                        // 同一个笔记
-                        if (noteLayout.getVisibility() == View.VISIBLE) {
-                            if (noteWeb != null) {
-                                noteweblastjsonObject = new JSONObject(Tools.getFromBase64(noteData));
-                                NoteViewManager.getInstance().followPaintLine(noteData);
-                            }
-                        } else {
-                            if (floatingNoteDialog != null) {
-                                if (floatingNoteDialog.isShowing()) {
-                                    floatingNoteDialog.followDrawNewLine(noteId, noteData);
+//                            return;
+                            if (noteLayout.getVisibility() == View.VISIBLE) {
+                                if (noteWeb != null) {
+                                    followShowNote(noteId);
+                                }
+                            }else{
+                                if(floatingNoteDialog!=null){
+                                    if(floatingNoteDialog.isShowing()){
+                                        floatingNoteDialog.setOldNoteId((int) currentNoteId);
+                                        showNoteFloatingDialog(noteId);  //换个笔记了
+                                    }
                                 }
                             }
+                        }else {  // 同一个笔记
+                            if (noteLayout.getVisibility() == View.VISIBLE) {
+                                if (noteWeb != null) {
+                                    lastjsonObject=new JSONObject(Tools.getFromBase64(noteData));
+                                    NoteViewManager.getInstance().followPaintLine(noteData);
+                                }
+                            }else{
+                                if(floatingNoteDialog!=null){
+                                    if(floatingNoteDialog.isShowing()){
+                                        floatingNoteDialog.followDrawNewLine(noteId,noteData);
+                                    }
+                                }
+                            }
+                            RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
                         }
-                        RecordNoteActionManager.getManager(this).sendDrawActions(noteId, noteData);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -1094,7 +1082,18 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (socketMessage.getData().has("retData")) {
                     try {
                         int noteId = socketMessage.getData().getJSONObject("retData").getInt("noteId");
-                        followShowNote(noteId);
+                        if (noteLayout.getVisibility() == View.VISIBLE) {
+                            if (noteWeb != null) {
+                                followShowNote(noteId);
+                            }
+                        }else{
+                            if(floatingNoteDialog!=null){
+                                if(floatingNoteDialog.isShowing()){
+                                    floatingNoteDialog.setOldNoteId((int) currentNoteId);
+                                }
+                            }
+                            showNoteFloatingDialog(noteId);  //换个笔记了
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -1200,9 +1199,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     meetingMenuMemberImage.setVisibility(View.VISIBLE);
                 }
 
-            } else {
-                MeetingKit.getInstance().enableAudioAndVideo();
-                if (meetingMenuMemberImage.getVisibility() == View.VISIBLE) {
+            }else {
+                if(meetingMenuMemberImage.getVisibility() == View.VISIBLE){
                     menuIcon.setVisibility(View.VISIBLE);
                     meetingMenuMemberImage.setVisibility(View.GONE);
                 }
@@ -2629,7 +2627,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
         });
         exitDialog.show();
-
     }
 
     @Override
@@ -3018,6 +3015,31 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 }
             });
             floatingNoteDialog.show(noteId, meetingConfig);
+        }
+    }
+
+    private  void openOrCloseNote(EventSocketMessage socketMessage){
+        try {
+            JSONObject retData=socketMessage.getData().getJSONObject("retData");
+            int noteId=retData.getInt("noteId");
+            int status=retData.getInt("status");
+            if(status==1){ //打开浮窗
+                showNoteFloatingDialog(noteId);
+            }else if(status==0){  //关闭浮窗 或者 主界面
+                if (noteLayout.getVisibility() == View.VISIBLE) {
+                    if (noteWeb != null) {
+                        NoteViewManager.getInstance().closeNoteWeb();
+                    }
+                }else{
+                    if(floatingNoteDialog!=null){
+                        if(floatingNoteDialog.isShowing()){
+                            floatingNoteDialog.closeFloating();
+                        }
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -3642,6 +3664,20 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             getJspPagenumber();
             messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
             recordstatus.setVisibility(View.VISIBLE);
+
+            //判断笔记是否打开
+            if (noteLayout.getVisibility() == View.VISIBLE) {
+                if (noteWeb != null) {
+                     // 笔记先于音想打开
+                    RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId,lastjsonObject);
+                }
+            }else{
+                if(floatingNoteDialog!=null){
+                    if(floatingNoteDialog.isShowing()){
+                        floatingNoteDialog.displayPopupActions();
+                    }
+                }
+            }
         } else if (eventSoundSync.getStatus() == 0) {   //录音结束
             recordstatus.setVisibility(View.GONE);
             isSyncing = false;
@@ -3761,6 +3797,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 return;
             }
         }
+
         Intent intent = new Intent();
         intent.putExtra("OPEN_NOTE_BEAN", new Gson().toJson(bookNote));
         ComponentName comp = new ComponentName("com.onyx.android.note", "com.onyx.android.note.note.ui.ScribbleActivity");
@@ -3791,12 +3828,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             handleExit(false);
-        }else if(keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN){
-//            getSystemService(Context.AUDIO_SERVICE).adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE,AudioManager.FX_FOCUS_NAVIGATION_UP);
-
         }
-
-        return false;
+        return true;
 
     }
 
@@ -4129,7 +4162,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     meetingConfig.setPageNumber((int) page);
                     meetingConfig.setType(joinMeetingMessage.getType());
                     if (dataJson.has("currentMode")) {
-                        Log.e("check_JOIN_MEETING", "check_mode:" + joinMeetingMessage.getCurrentMode());
                         meetingConfig.setMode(joinMeetingMessage.getCurrentMode());
                     }
                     if (dataJson.has("currentMaxVideoUserId")) {
@@ -4173,11 +4205,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 MeetingKit.getInstance().disableAudioAndVideoStream();
                                 menuIcon.setVisibility(View.GONE);
                                 meetingMenuMemberImage.setVisibility(View.VISIBLE);
-                            } else {
-                                MeetingKit.getInstance().enableAudioAndVideo();
-                                menuIcon.setVisibility(View.VISIBLE);
-                                meetingMenuMemberImage.setVisibility(View.GONE);
-
                             }
 //                            delayRefreshAgoraList();
                         }

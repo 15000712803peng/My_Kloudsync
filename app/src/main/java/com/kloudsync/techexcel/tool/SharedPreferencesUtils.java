@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.app.App;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,7 +31,7 @@ public class SharedPreferencesUtils {
 		editor.commit();
 	}
 
-	public <T> void putList(String fileName, String tag, List<T> datalist) {
+	public static <T> void putList(String fileName, String tag, List<T> datalist) {
 		if (null == datalist)
 			return;
 		SharedPreferences.Editor editor = getSharedPreference(fileName).edit();
@@ -52,11 +53,11 @@ public class SharedPreferencesUtils {
 		}
 	}
 
-	public <T> List<T> getList(String fileName, String key, TypeToken<List<T>> typeToken) {
+	public static <T> List<T> getList(String fileName, String key, TypeToken<List<T>> typeToken) {
 		SharedPreferences sp = getSharedPreference(fileName);
 		String strJson = sp.getString(key, null);
-		List<T> datalist = null;
-		if (datalist == null) {
+		List<T> datalist = new ArrayList<>();
+		if (strJson == null) {
 			return datalist;
 		}
 		datalist = new Gson().fromJson(strJson, typeToken.getType());

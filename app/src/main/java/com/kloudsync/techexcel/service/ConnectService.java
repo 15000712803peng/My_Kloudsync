@@ -425,6 +425,42 @@ public class ConnectService {
         return result;
     }
 
+	/**
+	 * 上传笔记数据
+	 *
+	 * @param path
+	 * @param jsonObject
+	 * @return
+	 */
+	public static String uploadDrawing(String path, JSONObject jsonObject) {
+		String result = null;
+		try {
+			URL url = new URL(path);
+			String content = String.valueOf(jsonObject);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setConnectTimeout(5000);
+			connection.addRequestProperty("Authorization", "Bearer " + AppConfig.liveToken);
+			connection.setDoOutput(true);
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("User-Agent", "Fiddler");
+			connection.setRequestProperty("Content-Type", "application/json");
+			connection.setRequestProperty("Charset", "utf-8");
+			OutputStream os = new BufferedOutputStream(connection.getOutputStream());
+			os.write(content.getBytes());
+			os.close();
+			int code = connection.getResponseCode();
+			if (code == 200) {
+				InputStream is = new BufferedInputStream(connection.getInputStream());
+				result = StringUtils.inputStreamTString(is);
+				is.close();
+				connection.disconnect();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 
     // 利用http发送数据到服务器（addincident）
     public static JSONObject submitDataByJsonArray(String path, JSONArray jsonObject) {
@@ -497,5 +533,6 @@ public class ConnectService {
         }
         return responsejson;
     }
+
 
 }
