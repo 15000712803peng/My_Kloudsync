@@ -138,13 +138,13 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                     if (meetingConfig.getDocument() != null) {
                         heartBeatMessage.put("currentItemId", meetingConfig.getDocument().getItemID());
                     }
-                    if(isStartMeetingRecord){
-                        if(meetingConfig.isInRealMeeting()&&(meetingConfig.getRole()== MeetingConfig.MeetingRole.HOST ||meetingConfig.getRole()==MeetingConfig.MeetingRole.MEMBER)){
-                            heartBeatMessage.put("agoraStatus", 1);
-                            heartBeatMessage.put("microphoneStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isMicroOn()? 2 : 3);
-                            heartBeatMessage.put("cameraStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isCameraOn()? 2 : 3);
-                            heartBeatMessage.put("screenStatus", 0);
-                        }
+                    if (meetingConfig.getType() == MeetingType.MEETING &&
+                            meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER
+                            || meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST){
+                        heartBeatMessage.put("agoraStatus", 1);
+                        heartBeatMessage.put("microphoneStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isMicroOn()? 2 : 3);
+                        heartBeatMessage.put("cameraStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isCameraOn()? 2 : 3);
+                        heartBeatMessage.put("screenStatus", 0);
                     }
              }
                 if (kloudWebClient != null) {
