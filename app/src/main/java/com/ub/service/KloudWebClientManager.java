@@ -129,7 +129,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                 heartBeatMessage.put("changeNumber", 0);
 
                 MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
-                if (meetingConfig != null && meetingConfig.isInRealMeeting()) {
+                if (meetingConfig != null && meetingConfig.isInRealMeeting()&&(meetingConfig.getRole()==2||meetingConfig.getRole()==1)) {
                     heartBeatMessage.put("status", "0");
                     heartBeatMessage.put("currentLine", 0);
                     heartBeatMessage.put("currentMode", "0");
@@ -147,7 +147,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
              }
                 if (kloudWebClient != null) {
                     kloudWebClient.send(heartBeatMessage.toString());
-//                    Log.e("KloundWebClientManager", "send heart beat message:" + heartBeatMessage.toString());
+                    Log.e("KloundWebClientManager", "send heart beat message:" + heartBeatMessage.toString());
                 }
                 heartBeatStarted = true;
             } catch (JSONException e) {
