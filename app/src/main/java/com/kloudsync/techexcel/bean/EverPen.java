@@ -10,7 +10,7 @@ public class EverPen implements Serializable {
     private String macAddress;
     private String name;
     private boolean isConnected;
-	private boolean isClick;
+    private boolean isClick;
     private String penName;
     private String penType;
     private String similaPenSource;
@@ -23,13 +23,13 @@ public class EverPen implements Serializable {
         isConnected = connected;
     }
 
-	public boolean isClick() {
-		return isClick;
-	}
+    public boolean isClick() {
+        return isClick;
+    }
 
-	public void setClick(boolean click) {
-		isClick = click;
-	}
+    public void setClick(boolean click) {
+        isClick = click;
+    }
 
     public String getMacAddress() {
         return macAddress;
@@ -87,11 +87,11 @@ public class EverPen implements Serializable {
         return macAddress != null ? macAddress.hashCode() : 0;
     }
 
-    public EverPen(String macAddress){
+    public EverPen(String macAddress) {
         this.macAddress = macAddress;
     }
 
-    public EverPen(){
+    public EverPen() {
 
     }
 }

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
@@ -42,6 +43,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	private EverPen mAutoPenInfo;
 	private static final int AUTOCONNECT = 100;
 	private boolean mIsAutoConnected = false;
+	private CopyOnWriteArrayList<PenDotsReceiver> dotsReceivers = new CopyOnWriteArrayList<>();
 
 	private EverPenManger(Activity host) {
 		this.host = host;
@@ -189,7 +191,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 
 	@Override
 	public void onConnectFailed() {
-		Log.e("EverPenManager", "notifyDataSetChanged");
+		Log.e("EverPenManager", "onConnectFailed");
 		host.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -223,6 +225,10 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 					MyTQLPenSignal myTQLPenSignal = it.next();
 					myTQLPenSignal.onReceiveDot(dot);
 				}
+
+				for(PenDotsReceiver receiver : dotsReceivers){
+					receiver.onDotReceive(dot);
+				}
 			}
 		});
 		EverPenDataManger.getInstace(this, host).cacheDotData(dot);
@@ -239,6 +245,9 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 				while (it.hasNext()) {
 					MyTQLPenSignal myTQLPenSignal = it.next();
 					myTQLPenSignal.onReceiveOfflineStrokes(dot);
+				}
+				for(PenDotsReceiver receiver : dotsReceivers){
+					receiver.onDotReceive(dot);
 				}
 			}
 		});
@@ -621,5 +630,21 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 		String macAddress = everPen.getMacAddress();
 		agent.disconnect(macAddress);
 
+	}
+
+	public interface PenDotsReceiver{
+		void onDotReceive(Dot dot);
+	}
+
+	public void addDotsReceiver(PenDotsReceiver receiver){
+		if(!dotsReceivers.contains(receiver)){
+			dotsReceivers.add(receiver);
+		}
+	}
+
+	public void removeDotsReceiver(PenDotsReceiver receiver){
+		if(dotsReceivers.contains(receiver)){
+			dotsReceivers.remove(receiver);
+		}
 	}
 }

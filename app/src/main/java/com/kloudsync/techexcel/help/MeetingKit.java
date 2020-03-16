@@ -384,7 +384,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         QUALITY_VBAD(5),//网络质量非常差，基本不能沟通
         QUALITY_DOWN(6),//网络连接断开，完全无法沟通
         QUALITY_DETECTING(8);//SDK 正在探测网络质量
-
         private final int quality;
 
         NetWorkQuality(int quality) {

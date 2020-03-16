@@ -2081,7 +2081,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
             documentPage.setSavedLocalPath(pathLocalPath);
 
-            Log.e("check_download_page", "download_page:" + documentPage);
+            Log.e("check_download_page", "download_page:downloadUrl" + downloadUrl);
             //保存在本地的地址
 
             DownloadUtil.get().download(downloadUrl, pathLocalPath, new DownloadUtil.OnDownloadListener() {
@@ -2161,7 +2161,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
             _page.setSavedLocalPath(pathLocalPath);
 
-            Log.e("-", "page:" + _page);
+            Log.e("check_download_page", "download_page:downloadUrl" + downloadUrl);
             //保存在本地的地址
 
             DownloadUtil.get().download(downloadUrl, pathLocalPath, new DownloadUtil.OnDownloadListener() {
