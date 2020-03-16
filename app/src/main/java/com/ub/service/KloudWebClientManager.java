@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
 
 import com.kloudsync.techexcel.tool.Md5Tool;
@@ -129,7 +130,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                 heartBeatMessage.put("changeNumber", 0);
 
                 MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
-                if (meetingConfig != null && meetingConfig.isInRealMeeting()&&(meetingConfig.getRole()==2||meetingConfig.getRole()==1)) {
+                if (meetingConfig != null  ) {
                     heartBeatMessage.put("status", "0");
                     heartBeatMessage.put("currentLine", 0);
                     heartBeatMessage.put("currentMode", "0");
@@ -137,12 +138,13 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                     if (meetingConfig.getDocument() != null) {
                         heartBeatMessage.put("currentItemId", meetingConfig.getDocument().getItemID());
                     }
-
                     if(isStartMeetingRecord){
-                        heartBeatMessage.put("agoraStatus", 1);
-                        heartBeatMessage.put("microphoneStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isMicroOn()? 2 : 3);
-                        heartBeatMessage.put("cameraStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isCameraOn()? 2 : 3);
-                        heartBeatMessage.put("screenStatus", 0);
+                        if(meetingConfig.isInRealMeeting()&&(meetingConfig.getRole()== MeetingConfig.MeetingRole.HOST ||meetingConfig.getRole()==MeetingConfig.MeetingRole.MEMBER)){
+                            heartBeatMessage.put("agoraStatus", 1);
+                            heartBeatMessage.put("microphoneStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isMicroOn()? 2 : 3);
+                            heartBeatMessage.put("cameraStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isCameraOn()? 2 : 3);
+                            heartBeatMessage.put("screenStatus", 0);
+                        }
                     }
              }
                 if (kloudWebClient != null) {
