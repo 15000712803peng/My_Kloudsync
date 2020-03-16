@@ -557,7 +557,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (wakeLock != null) {
             wakeLock.release();
         }
-
+        if (mFloatingWindowNoteManager!=null){
+            mFloatingWindowNoteManager.closeFloating();
+            mFloatingWindowNoteManager=null;
+            FloatingWindowNoteManager.instance=null;
+        }
         MeetingKit.getInstance().release();
         if (web != null) {
             web.removeAllViews();
@@ -1029,11 +1033,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             case SocketMessageManager.MESSAGE_AGORA_STATUS_CHANGE:
                 handleMessageAgoraStatusChange(socketMessage.getData());
                 break;
-            case SocketMessageManager.MESSAGE_OPEN_OR_CLOSE_NOTE:  //打开或关闭笔记
-                if (socketMessage.getData().has("retData")) {
-                    openOrCloseNote(socketMessage);
-                }
-                break;
             case SocketMessageManager.MESSAGE_NOTE_DATA:  // 浮窗或主界面正在展示的场景下
                 if (socketMessage.getData().has("retData")) {
                     try {
@@ -1045,40 +1044,44 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             _noteData.setData(Tools.getFromBase64(noteData));
                             _noteData.setNoteId(noteId);
                             newNoteDatas.add(_noteData);
-//                            return;
                             if (noteLayout.getVisibility() == View.VISIBLE) {
                                 if (noteWeb != null) {
                                     followShowNote(noteId);
                                 }
-                            } else {
-                                if (floatingNoteDialog != null) {
-                                    if (floatingNoteDialog.isShowing()) {
-                                        floatingNoteDialog.setOldNoteId((int) currentNoteId);
+                            }else{
+                                if(mFloatingWindowNoteManager!=null){
+                                    if(mFloatingWindowNoteManager.isShowing()){
+                                        mFloatingWindowNoteManager.setOldNoteId((int) currentNoteId);
                                         showNoteFloatingDialog(noteId);  //换个笔记了
+                                    }else{
+                                        showNoteFloatingDialog(noteId);
                                     }
+                                }else{
+                                    showNoteFloatingDialog(noteId);
                                 }
                             }
-                        } else {  // 同一个笔记
+                        }else {  // 同一个笔记
                             if (noteLayout.getVisibility() == View.VISIBLE) {
                                 if (noteWeb != null) {
-                                    lastjsonObject = new JSONObject(Tools.getFromBase64(noteData));
+                                    lastjsonObject=new JSONObject(Tools.getFromBase64(noteData));
                                     NoteViewManager.getInstance().followPaintLine(noteData);
+                                    RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
                                 }
-                            } else {
-                                if (floatingNoteDialog != null) {
-                                    if (floatingNoteDialog.isShowing()) {
-                                        floatingNoteDialog.followDrawNewLine(noteId, noteData);
+                            }else{
+                                if(mFloatingWindowNoteManager!=null){
+                                    if(mFloatingWindowNoteManager.isShowing()){
+                                        mFloatingWindowNoteManager.followDrawNewLine(noteId,noteData);
+                                        RecordNoteActionManager.getManager(this).sendDrawActions(noteId,noteData);
                                     }
                                 }
                             }
-                            RecordNoteActionManager.getManager(this).sendDrawActions(noteId, noteData);
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
                 break;
-
             case SocketMessageManager.MESSAGE_NOTE_CHANGE:
                 if (socketMessage.getData().has("retData")) {
                     try {
@@ -1087,20 +1090,24 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             if (noteWeb != null) {
                                 followShowNote(noteId);
                             }
-                        } else {
-                            if (floatingNoteDialog != null) {
-                                if (floatingNoteDialog.isShowing()) {
-                                    floatingNoteDialog.setOldNoteId((int) currentNoteId);
+                        }else{
+                            if(mFloatingWindowNoteManager!=null){
+                                if(mFloatingWindowNoteManager.isShowing()){
+                                    mFloatingWindowNoteManager.setOldNoteId((int) currentNoteId);
+                                    showNoteFloatingDialog(noteId);  //换个笔记了
+                                }else{
+                                    showNoteFloatingDialog(noteId);
                                 }
+                            }else{
+                                showNoteFloatingDialog(noteId);
                             }
-                            showNoteFloatingDialog(noteId);  //换个笔记了
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
                 break;
-
             case SocketMessageManager.MESSAGE_NOTE_P1_CREATEAD:
                 if (socketMessage.getData().has("retData")) {
                     try {
@@ -1111,7 +1118,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
                 }
                 break;
-
             case SocketMessageManager.MESSAGE_HELLO:
                 if (socketMessage.getData().has("data")) {
                     try {
@@ -2083,7 +2089,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
             Log.e("check_download_page", "download_page:downloadUrl" + downloadUrl);
             //保存在本地的地址
-
+            Log.e("======",pageUrl+"  \n "+downloadUrl);
             DownloadUtil.get().download(downloadUrl, pathLocalPath, new DownloadUtil.OnDownloadListener() {
                 @SuppressLint("LongLogTag")
                 @Override
@@ -2691,7 +2697,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Override
     public void menuNoteClicked() {
-        showNotesDialog();
+//        showNotesDialog();
+        showNoteFloatingDialog(1915234);
     }
 
     @Override
@@ -3017,41 +3024,38 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
 
-    FloatingNoteDialog floatingNoteDialog;
+    private FloatingWindowNoteManager mFloatingWindowNoteManager;
 
-    private void showNoteFloatingDialog(int noteId) {
-        currentNoteId = noteId;
-        if (floatingNoteDialog != null) {
-            floatingNoteDialog.show(noteId, meetingConfig);
-        } else {
-            floatingNoteDialog = new FloatingNoteDialog(this);
-            floatingNoteDialog.setFloatingListener(new FloatingNoteDialog.FloatingListener() {
-                @Override
-                public void changeHomePage(int noteId) {
-                    followShowNote(noteId);
-                }
-            });
-            floatingNoteDialog.show(noteId, meetingConfig);
+    private void showNoteFloatingDialog(int noteId){
+        currentNoteId=noteId;
+        if(mFloatingWindowNoteManager==null){
+            mFloatingWindowNoteManager= FloatingWindowNoteManager.getManager(this,findViewById(R.id.floatnoteview));
         }
+        mFloatingWindowNoteManager.show(noteId,meetingConfig);
+        mFloatingWindowNoteManager.setFloatingChangeListener(new FloatingWindowNoteManager.FloatingChangeListener() {
+            @Override
+            public void changeHomePage(int noteId) {
+                followShowNote(noteId);
+            }
+        });
     }
 
-    private void openOrCloseNote(EventSocketMessage socketMessage) {
+    private  void openOrCloseNote(EventSocketMessage socketMessage){
         try {
-            JSONObject retData = socketMessage.getData().getJSONObject("retData");
-            int noteId = retData.getInt("noteId");
-            int status = retData.getInt("status");
-            if (status == 1) { //打开浮窗
+            JSONObject retData=socketMessage.getData().getJSONObject("retData");
+            int noteId=retData.getInt("noteId");
+            int status=retData.getInt("status");
+            if(status==1){ //打开浮窗
                 showNoteFloatingDialog(noteId);
-            } else if (status == 0) {  //关闭浮窗 或者 主界面
+            }else if(status==0){  //关闭浮窗 或者 主界面
                 if (noteLayout.getVisibility() == View.VISIBLE) {
                     if (noteWeb != null) {
                         NoteViewManager.getInstance().closeNoteWeb();
                     }
-                } else {
-                    if (floatingNoteDialog != null) {
-                        if (floatingNoteDialog.isShowing()) {
-                            floatingNoteDialog.closeFloating();
-                        }
+                }
+                if(mFloatingWindowNoteManager!=null){
+                    if(mFloatingWindowNoteManager.isShowing()){
+                        mFloatingWindowNoteManager.closeFloating();
                     }
                 }
             }
@@ -3686,12 +3690,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             if (noteLayout.getVisibility() == View.VISIBLE) {
                 if (noteWeb != null) {
                     // 笔记先于音想打开
-                    RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+                    RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId,lastjsonObject);
                 }
-            } else {
-                if (floatingNoteDialog != null) {
-                    if (floatingNoteDialog.isShowing()) {
-                        floatingNoteDialog.displayPopupActions();
+            }else{
+                if(mFloatingWindowNoteManager!=null){
+                    if(mFloatingWindowNoteManager.isShowing()){
+                        mFloatingWindowNoteManager.displayPopupActions();
                     }
                 }
             }

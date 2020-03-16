@@ -97,6 +97,7 @@
             android:layout_height="wrap_content" />
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/image_setting"
             android:layout_marginRight="16dp"
             android:padding="3dp"
@@ -107,7 +108,6 @@
             android:layout_height="20dp" />
         <RelativeLayout
             android:layout_marginRight="16dp"
-
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"
