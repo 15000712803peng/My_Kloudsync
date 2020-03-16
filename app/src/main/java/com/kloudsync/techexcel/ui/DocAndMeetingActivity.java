@@ -141,6 +141,7 @@ import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.AddMeetingMemberActivity;
+import com.ub.service.activity.FloatingWindowNoteManager;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
@@ -1032,6 +1033,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 break;
             case SocketMessageManager.MESSAGE_AGORA_STATUS_CHANGE:
                 handleMessageAgoraStatusChange(socketMessage.getData());
+                break;
+            case SocketMessageManager.MESSAGE_OPEN_OR_CLOSE_NOTE:
+                if (socketMessage.getData().has("retData")) {
+                    openOrCloseNote(socketMessage);
+                }
                 break;
             case SocketMessageManager.MESSAGE_NOTE_DATA:  // 浮窗或主界面正在展示的场景下
                 if (socketMessage.getData().has("retData")) {
