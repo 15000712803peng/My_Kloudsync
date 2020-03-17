@@ -305,7 +305,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             finish();
             return;
         }
-
+        meetingSettingCache = MeetingSettingCache.getInstance(this);
         writeNoteBlankPageImage();
         initViews();
         //----
@@ -1132,7 +1132,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (socketMessage.getData().has("data")) {
                     try {
                         String helloJson = Tools.getFromBase64(socketMessage.getData().getString("data"));
-//                        handleAgoraStatusInHelloMessage(helloJson);
+                        handleAgoraStatusInHelloMessage(helloJson);
                         HelloMessage helloMessage = gson.fromJson(helloJson,
                                 HelloMessage.class);
                         handleMessageHelloMessage(helloMessage);
@@ -1160,15 +1160,12 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
                 meetingConfig.setRole(role);
 
-                if (role != MeetingConfig.MeetingRole.MEMBER || role != MeetingConfig.MeetingRole.HOST) {
+                if (meetingSettingCache == null) {
+                    meetingSettingCache = MeetingSettingCache.getInstance(this);
+                }
 
-                    if (meetingSettingCache.getMeetingSetting().isMicroOn()) {
-                        MeetingKit.getInstance().disableAudioAndVideoStream();
-                    }
-
-                } else {
-
-//                    MeetingKit.getInstance().enableAudioAndVideo();
+                if (role == MeetingConfig.MeetingRole.MEMBER || role == MeetingConfig.MeetingRole.HOST) {
+                    Log.e("check_hello_json", "is:1");
                     // 是主讲人
                     if (helloJson.has("microphoneStatus")) {
                         int microphoneStatus = helloJson.getInt("microphoneStatus");
@@ -1186,6 +1183,15 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             MeetingKit.getInstance().menuCameraClicked(false);
                         }
                     }
+
+
+                } else {
+                    Log.e("check_hello_json", "is:1");
+                    if (meetingSettingCache.getMeetingSetting().isMicroOn()) {
+                        MeetingKit.getInstance().disableAudioAndVideoStream();
+                    }
+//                    MeetingKit.getInstance().enableAudioAndVideo();
+
                 }
             }
 
@@ -3915,7 +3921,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             handleExit(false);
         }
-        return super.onKeyDown(keyCode,event);
+        return super.onKeyDown(keyCode, event);
 
     }
 
@@ -4350,7 +4356,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (data.has("retCode")) {
             try {
                 if (data.getInt("retCode") == 0) {
-                    MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
+//                    MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
                 }
 //                JSONObject _data = data.getJSONObject("retData");
 //                if (_data.has("usersList")) {
