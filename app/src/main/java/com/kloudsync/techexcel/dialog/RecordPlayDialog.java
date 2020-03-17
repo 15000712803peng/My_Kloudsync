@@ -288,24 +288,6 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         }
     }
 
-
-    public void changeDocument(final MeetingConfig meetingConfig){
-        this.meetingConfig=meetingConfig;
-        Observable.just("delay_load_parentpage").delay(100, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                if (centerLoaing.getVisibility() == View.VISIBLE) {
-                    centerLoaing.setVisibility(View.GONE);
-                }
-                DocumentPage documentPage = meetingConfig.getCurrentDocumentPage();
-                if (documentPage != null) {
-                    web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-                    web.load("javascript:Record()", null);
-                }
-            }
-        });
-    }
-
     public void show() {
         if (dialog != null && !dialog.isShowing()) {
             dialog.show();

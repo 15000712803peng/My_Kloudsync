@@ -384,6 +384,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         QUALITY_VBAD(5),//网络质量非常差，基本不能沟通
         QUALITY_DOWN(6),//网络连接断开，完全无法沟通
         QUALITY_DETECTING(8);//SDK 正在探测网络质量
+
         private final int quality;
 
         NetWorkQuality(int quality) {
@@ -432,7 +433,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onUserMuteVideo(int uid, boolean muted) {
-        Log.e("MeetingKit", "onUserMuteVideo:" + uid + ",muted:" + muted);
+        Log.e("MeetingKit", "onUserMuteVideo:" + uid);
         AgoraMember member = new AgoraMember();
         member.setUserId(uid);
         EventMute eventMute = new EventMute();
@@ -960,11 +961,10 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }).subscribe();
     }
 
-
     public void disableAudioAndVideoStream() {
-        MeetingKit.getInstance().changeAgoraRole(CLIENT_ROLE_AUDIENCE);
         MeetingKit.getInstance().menuMicroClicked(false);
         MeetingKit.getInstance().menuCameraClicked(false);
+        MeetingKit.getInstance().changeAgoraRole(CLIENT_ROLE_AUDIENCE);
     }
 
     public void enableAudioAndVideo() {
@@ -1016,22 +1016,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         rtcManager.worker().getRtcEngine().muteLocalVideoStream(true);
     }
 
-    public void muteMyAudio(boolean isMuted) {
-        if (rtcManager == null) {
-            rtcManager = MeetingKit.getInstance().getRtcManager();
-        }
-        rtcManager.worker().getRtcEngine().muteLocalAudioStream(isMuted);
-    }
-
-    public void muteMyVideo(boolean isMuted) {
-        if (rtcManager == null) {
-            rtcManager = MeetingKit.getInstance().getRtcManager();
-        }
-        rtcManager.worker().getRtcEngine().muteLocalVideoStream(isMuted);
-    }
-
     public void setMyAgoraStutas(MeetingMember meetingMember) {
-
         if (rtcManager == null) {
             rtcManager = MeetingKit.getInstance().getRtcManager();
         }
@@ -1057,13 +1042,13 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
         if (meetingMember.getMicrophoneStatus() != 2) {
             rtcManager.worker().getRtcEngine().muteRemoteAudioStream(meetingMember.getUserId(), true);
-        } else {
+        }else {
             rtcManager.worker().getRtcEngine().muteRemoteAudioStream(meetingMember.getUserId(), false);
         }
 
         if (meetingMember.getCameraStatus() != 2) {
             rtcManager.worker().getRtcEngine().muteRemoteVideoStream(meetingMember.getUserId(), true);
-        } else {
+        }else {
             rtcManager.worker().getRtcEngine().muteRemoteVideoStream(meetingMember.getUserId(), false);
         }
 

@@ -6,33 +6,38 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventNote;
+import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventPlayWebVedio;
 import com.kloudsync.techexcel.bean.EventShowNotePage;
 import com.kloudsync.techexcel.bean.MediaPlayPage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.WebVedio;
-import com.kloudsync.techexcel.bean.params.EventPlayMeetingChangeDocument;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.SyncWebActionsCache;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.WebAction;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.MeetingServiceTools;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xwalk.core.XWalkView;
@@ -276,7 +281,7 @@ public class RecordActionsManager {
         Log.e("executeActions", "size:" + actions.size());
         for (final WebAction action : actions) {
 //            Log.e("check_action", "action:" + action);
-            Log.e("SoundtrackActionsManager", "executeActions" + action + ",action_executed:" + action.isExecuted());
+            Log.e("SoundtrackActionsManager", "executeActions" + actions + ",action_executed:" + action.isExecuted());
             if (action.isExecuted()) {
                 continue;
             }
@@ -385,22 +390,6 @@ public class RecordActionsManager {
                         if (data.getInt("docType") == 1) {
                             // 加载笔记
                             handleNote(data.getInt("itemId"), data.getString("notePageId"));
-                        }else{
-                           int itemId= data.getInt("itemId");
-                           int pageNumber=data.getInt("pageNumber");
-                           Log.e("当前文档id",meetingConfig.getCurrentDocumentPage().getDocumentId()+"   "+itemId+"  ");
-                           if(itemId!=meetingConfig.getCurrentDocumentPage().getDocumentId()){
-                               final EventPlayMeetingChangeDocument eventPlayMeetingChangeDocument =new EventPlayMeetingChangeDocument();
-                               eventPlayMeetingChangeDocument.setPlayMeeting(true);
-                               eventPlayMeetingChangeDocument.setItemId(itemId);
-                               eventPlayMeetingChangeDocument.setPageNumber(pageNumber);
-                               Observable.just("").observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
-                                   @Override
-                                   public void accept(String page) throws Exception {
-                                      EventBus.getDefault().post(eventPlayMeetingChangeDocument);
-                                   }
-                               }).subscribe();
-                           }
                         }
                         break;
                 }

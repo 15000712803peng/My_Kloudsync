@@ -43,12 +43,12 @@
                     android:layout_centerHorizontal="true" />
 
                 <!--<com.kloudsync.techexcel.ui.DrawView-->
-                    <!--android:background="@color/orange"-->
-                    <!--android:id="@+id/image_live"-->
-                    <!--android:layout_width="80dp"-->
-                    <!--android:layout_height="122dp"-->
-                    <!--android:layout_gravity="center_vertical"-->
-                    <!--android:scaleType="fitXY" />-->
+                <!--android:background="@color/orange"-->
+                <!--android:id="@+id/image_live"-->
+                <!--android:layout_width="80dp"-->
+                <!--android:layout_height="122dp"-->
+                <!--android:layout_gravity="center_vertical"-->
+                <!--android:scaleType="fitXY" />-->
 
             </RelativeLayout>
 

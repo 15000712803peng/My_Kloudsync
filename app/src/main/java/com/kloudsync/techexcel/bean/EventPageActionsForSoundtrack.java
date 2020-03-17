@@ -23,12 +23,4 @@ public class EventPageActionsForSoundtrack {
 	public void setData(String data) {
 		this.data = data;
 	}
-
-	@Override
-	public String toString() {
-		return "EventPageActionsForSoundtrack{" +
-				"pageNumber=" + pageNumber +
-				", data='" + data + '\'' +
-				'}';
-	}
 }

@@ -129,5 +129,20 @@ public class NoteInfoBean {
 		public void setErrMsg(String ErrMsg) {
 			this.ErrMsg = ErrMsg;
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			NoteInfoBean.DataBean bean = (NoteInfoBean.DataBean) o;
+
+			return Address != null ? Address.equals(bean.Address) : bean.Address == null;
+		}
+
+		@Override
+		public int hashCode() {
+			return Address != null ? Address.hashCode() : 0;
+		}
 	}
 }

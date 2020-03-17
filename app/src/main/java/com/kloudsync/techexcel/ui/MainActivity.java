@@ -189,7 +189,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case AppConfig.RONGCONNECT_ERROR:
-                    sharedPreferences = getSharedPreferences(AppConfig.LOGININFO, MODE_PRIVATE);
+                    sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
                     editor = sharedPreferences.edit();
                     editor.putBoolean("isLogIn", false);
                     editor.commit();
@@ -254,8 +254,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         setContentView(R.layout.activity_main);
 //        PgyUpdateManager.register(this);
         initView();
-//        mEverPenManger = EverPenManger.getInstance(this);
-//        mEverPenManger.init();
+        mEverPenManger = EverPenManger.getInstance(this);
+        mEverPenManger.init();
 //        mBleManager = mEverPenManger.getBleManager();
         requestRongCloudOnlineStatus();
         GetSchoolInfo();
@@ -273,9 +273,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             addWxDocDialog.setSavedListener(this);
             addWxDocDialog.show();
         }
-//        mPresenter = new MainPresenter();
-//        mPresenter.attachView(this);
-//        mEverPenManger.addListener(mPresenter);
+        mPresenter = new MainPresenter();
+        mPresenter.attachView(this);
+        mEverPenManger.addListener(mPresenter);
     }
 
     private void requestRongCloudOnlineStatus() {
@@ -436,7 +436,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                                                     int which) {
                                                 PgyUpdateManager.downLoadApk(appBean.getDownloadURL());
                                             }
-                                        }).setCancelable(false).show();
+                                        }).show();
                     }
 
                     @Override
@@ -509,10 +509,10 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 //        }
 
 //        PgyUpdateManager.installApk(uri);
-        String filePath = UriTool.getFilePathByUri(this, uri);
-        if (!TextUtils.isEmpty(filePath)) {
+        String filePath = UriTool.getFilePathByUri(this,uri);
+        if(!TextUtils.isEmpty(filePath)){
             File file = new File(filePath);
-            if (file.exists()) {
+            if(file.exists()){
                 installAPK(file);
             }
         }
@@ -947,17 +947,17 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         // TODO Auto-generated method stub
         super.onDestroy();
         instance = null;
-//        mEverPenManger.startOrStopFindDevice(false);
-//        if (mBleManager != null) {
-//            mBleManager.ReqOfflineDataTransfer(false);
-//        }
-//        mEverPenManger.removeListener(mPresenter);
-//        mEverPenManger.unBindService();
-//        mBleManager = null;
-//        mEverPenManger = null;
-//        mPresenter.detachView();
-//        mPresenter = null;
-        handler.removeCallbacksAndMessages(null);
+        mEverPenManger.startOrStopFindDevice(false);
+        if (mBleManager != null) {
+            mBleManager.ReqOfflineDataTransfer(false);
+        }
+        mEverPenManger.removeListener(mPresenter);
+        mEverPenManger.unBindService();
+        mBleManager = null;
+        mEverPenManger = null;
+        mPresenter.detachView();
+        mPresenter = null;
+	    handler.removeCallbacksAndMessages(null);
         app.setMainActivityInstance(null);
         AppConfig.isUpdateCustomer = false;
         AppConfig.isUpdateDialogue = false;
@@ -1767,7 +1767,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     installApkBeforeCheckPermission(installUri);
                 }
             }
-        } else if (requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE) {
+        }else if(requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE){
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 EventViewDocInSpacePermissionGranted viewDocPermissionGranted = new EventViewDocInSpacePermissionGranted();
@@ -1779,18 +1779,18 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
     }
 
-    public void installAPK(File apkFile) {
+    public void installAPK(File apkFile){
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             //第二个参数需要与<provider>标签中的android:authorities属性相同
-            uri = FileProvider.getUriForFile(this, "com.kloudsync.techexcel.FileProvider", apkFile);
-        } else {
+            uri = FileProvider.getUriForFile(this,"com.kloudsync.techexcel.FileProvider",apkFile);
+        }else{
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             uri = Uri.fromFile(apkFile);
         }
-        intent.setDataAndType(uri, "application/vnd.android.package-archive");
+        intent.setDataAndType(uri ,"application/vnd.android.package-archive");
         startActivity(intent);
     }
 
@@ -1821,6 +1821,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
 
+
     @Override
     public void onReceiveDot(Dot dot) {
        /* String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
@@ -1839,12 +1840,12 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 	    SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);*/
     }
 
-    @Override
-    public void toast(String msg) {
-        ToastUtils.show(this, msg);
-    }
+	@Override
+	public void toast(String msg) {
+		ToastUtils.show(this, msg);
+	}
 
-    @Override
+	@Override
     public void showLoading() {
 
     }
@@ -1853,44 +1854,42 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     public void dismissLoading() {
 
     }
-
-    private String getBindViewText(int fileId) {
-        String appBindName = "";
-        int language = sharedPreferences.getInt("language", 1);
-        if (language == 1 && App.appENNames != null) {
-            for (int i = 0; i < App.appENNames.size(); i++) {
-                if (fileId == App.appENNames.get(i).getFieldId()) {
-                    System.out.println("Name->" + App.appENNames.get(i).getFieldName());
-                    appBindName = App.appENNames.get(i).getFieldName();
+    private String getBindViewText(int fileId){
+        String appBindName="";
+        int language = sharedPreferences.getInt("language",1);
+        if(language==1&&App.appENNames!=null){
+            for(int i=0;i<App.appENNames.size();i++){
+                if(fileId==App.appENNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
+                    appBindName=App.appENNames.get(i).getFieldName();
                     break;
                 }
             }
-        } else if (language == 2 && App.appCNNames != null) {
-            for (int i = 0; i < App.appCNNames.size(); i++) {
-                if (fileId == App.appCNNames.get(i).getFieldId()) {
-                    System.out.println("Name->" + App.appCNNames.get(i).getFieldName());
-                    appBindName = App.appCNNames.get(i).getFieldName();
+        }else if(language==2&&App.appCNNames!=null){
+            for(int i=0;i<App.appCNNames.size();i++){
+                if(fileId==App.appCNNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
+                    appBindName=App.appCNNames.get(i).getFieldName();
                     break;
                 }
             }
         }
         return appBindName;
     }
-
-    private void setBindViewText() {
+    private void setBindViewText(){
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                String document = getBindViewText(1004);
-                documentTab.setText(TextUtils.isEmpty(document) ? getString(R.string.documents) : document);
-                String chat = getBindViewText(1005);
-                chatTab.setText(TextUtils.isEmpty(chat) ? getString(R.string.dialogue) : chat);
-                String meeting = getBindViewText(1007);
-                meetingTab.setText(TextUtils.isEmpty(meeting) ? getString(R.string.Meeting) : meeting);
-                String syncroom = getBindViewText(1001);
-                syncroomTab.setText(TextUtils.isEmpty(syncroom) ? getString(R.string.community) : syncroom);
+                String document=getBindViewText(1004);
+                documentTab.setText(TextUtils.isEmpty(document)? getString(R.string.documents):document);
+                String chat=getBindViewText(1005);
+                chatTab.setText(TextUtils.isEmpty(chat)? getString(R.string.dialogue):chat);
+                String meeting=getBindViewText(1007);
+                meetingTab.setText(TextUtils.isEmpty(meeting)? getString(R.string.Meeting):meeting);
+                String syncroom=getBindViewText(1001);
+                syncroomTab.setText(TextUtils.isEmpty(syncroom)? getString(R.string.community):syncroom);
             }
-        }, 500);
+        },500);
 
     }
 }

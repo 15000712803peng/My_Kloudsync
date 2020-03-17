@@ -563,16 +563,17 @@
     <LinearLayout
         android:id="@+id/floatnoteview"
         android:visibility="gone"
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="300dp"
-        android:background="@drawable/floatingwindow_bg"
+        android:background="@color/divider_line"
+        android:layout_marginTop="10dp"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
         android:orientation="vertical">
 
         <LinearLayout
+            android:background="@color/white"
             android:orientation="vertical"
-            android:layout_width="match_parent"
+            android:layout_width="300dp"
             android:layout_height="40dp">
 
             <RelativeLayout
@@ -580,8 +581,7 @@
                 android:layout_height="39dp">
                 <TextView
                     android:id="@+id/title"
-                    android:layout_width="130dp"
-                    android:singleLine="true"
+                    android:layout_width="match_parent"
                     android:layout_height="39dp"
                     android:layout_centerVertical="true"
                     android:paddingLeft="10dp"
@@ -600,7 +600,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_height="wrap_content"/>
                     <ImageView
-                        android:layout_marginLeft="8dp"
+                        android:layout_marginLeft="10dp"
                         android:id="@+id/changefloatingnote"
                         android:layout_width="30dp"
                         android:layout_gravity="center_vertical"
@@ -608,6 +608,7 @@
                         android:layout_height="30dp"/>
 
                     <ImageView
+                        android:layout_marginLeft="10dp"
                         android:id="@+id/back"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
@@ -622,10 +623,9 @@
         </LinearLayout>
 
         <org.xwalk.core.XWalkView
-            android:padding="1dp"
-            android:layout_width="250dp"
+            android:layout_width="300dp"
             android:id="@+id/xwalkview"
-            android:layout_height="260dp"/>
+            android:layout_height="259dp"/>
 
     </LinearLayout>
 

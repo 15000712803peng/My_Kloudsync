@@ -1,4 +1,5 @@
 package com.kloudsync.techexcel.ui;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.widget.Toast;
+
 import com.facebook.network.connectionclass.ConnectionClassManager;
 import com.facebook.network.connectionclass.ConnectionQuality;
 import com.google.gson.Gson;
@@ -63,7 +65,6 @@ import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SoundtrackDetailData;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TvDevice;
-import com.kloudsync.techexcel.bean.params.EventPlayMeetingChangeDocument;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
@@ -117,6 +118,7 @@ import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.UserSoundtrackDialog;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -124,6 +126,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xwalk.core.XWalkPreferences;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -136,6 +139,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+
 import Decoder.BASE64Encoder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -468,14 +472,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             bottomFilePop.removeTempDoc();
         } else {
             menu.setVisibility(View.VISIBLE);
-        }
-        if(isplaymeeting){ //判断是否在播放会议
-            if(recordPlayDialog!=null){
-                Log.e("当前文档id--",meetingConfig.getCurrentDocumentPage().getDocumentId()+"   "+"  ");
-                recordPlayDialog.changeDocument(meetingConfig);
-                isplaymeeting=false;
-            }
-
         }
     }
 
@@ -898,7 +894,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         String data = pageActions.getData();
         if (!TextUtils.isEmpty(data)) {
             if (pageActions.getPageNumber() == meetingConfig.getPageNumber()) {
-//                Log.e("check_play_txt","PlayActionByArray:" + data);
+	            Log.e("check_play_txt", "PlayActionByArray:" + data);
                 web.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
             }
         }
@@ -1368,16 +1364,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     private synchronized void changeDocument(MeetingDocument document, int pageNumber) {
         Log.e("changeDocument", "document:" + document);
         downLoadDocumentPageAndShow(document, pageNumber);
-    }
-
-    /**
-     * 切换文档
-     */
-    private boolean isplaymeeting=false;
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void eventChangeDocument(EventPlayMeetingChangeDocument eventPlayMeetingChangeDocument){
-        isplaymeeting= eventPlayMeetingChangeDocument.isPlayMeeting();
-        changeDocument(eventPlayMeetingChangeDocument.getItemId(), eventPlayMeetingChangeDocument.getPageNumber());
     }
 
     private synchronized void changeDocument(int itemId, int pageNumber) {

@@ -165,10 +165,8 @@ public class DocumentUploadTool {
             @Override
             public void getUD(Uploadao ud) {
                 if (1 == ud.getServiceProviderId()) {
-                    Log.e("=======","亚马逊"+ud.getServiceProviderId());
                     uploadWithTransferUtility(ud);
                 } else if (2 == ud.getServiceProviderId()) {
-                    Log.e("=======","阿里云"+ud.getServiceProviderId());
                     initOSS(ud);
                 }
             }

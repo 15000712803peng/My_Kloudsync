@@ -29,14 +29,6 @@ public class Note implements Serializable {
     private List<DocumentPage> documentPages;
     private String newPath;
     private String lastModifiedDate;
-    private int noteType = 2;
-    public int getNoteType() {
-        return noteType;
-    }
-
-    public void setNoteType(int noteType) {
-        this.noteType = noteType;
-    }
 
     public String getLastModifiedDate() {
         return lastModifiedDate;
