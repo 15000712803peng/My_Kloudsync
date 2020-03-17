@@ -10,10 +10,12 @@ import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EverPen;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.service.BluetoothLEService;
 import com.kloudsync.techexcel.tool.SharedPreferencesUtils;
+import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.tool.SyncWebNoteActionsCache;
 import com.tqltech.tqlpencomm.BLEException;
 import com.tqltech.tqlpencomm.BLEScanner;
@@ -23,6 +25,7 @@ import com.tqltech.tqlpencomm.ErrorStatus;
 import com.tqltech.tqlpencomm.PenCommAgent;
 import com.tqltech.tqlpencomm.PenStatus;
 import com.tqltech.tqlpencomm.listener.TQLPenSignal;
+import com.ub.service.KloudWebClientManager;
 import com.ub.techexcel.bean.NewBookPagesBean;
 import com.ub.techexcel.bean.NoteDotBean;
 import com.ub.techexcel.bean.NoteInfoBean;
@@ -332,6 +335,21 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 					}
 
 				}
+
+				webScoketDataBean.setLines(linesBeans);
+				webScoketDataBean.setWidth(5600);
+				webScoketDataBean.setHeight(7920);
+				webScoketDataBean.setPaper("A4");
+				if (bookPagesBeans != null && bookPagesBeans.size() > 0) {
+
+				} else {
+					if (KloudWebClientManager.getInstance() != null) {
+						SocketMessageManager.getManager(App.getAppContext()).sendMessage_myNoteData(address, noteId, webScoketDataBean);
+					}
+				}
+				EverPenDataManger.getInstace(this, host).cacheDotListData(mDotOnlineList);
+				mDotOnlineList.clear();
+				break;
 		}
 	}
 
