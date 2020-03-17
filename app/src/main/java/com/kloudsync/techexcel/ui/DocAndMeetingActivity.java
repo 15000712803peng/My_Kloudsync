@@ -1037,6 +1037,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             case SocketMessageManager.MESSAGE_AGORA_STATUS_CHANGE:
                 handleMessageAgoraStatusChange(socketMessage.getData());
                 break;
+            case SocketMessageManager.MESSAGE_OPEN_OR_CLOSE_NOTE:
+                if (socketMessage.getData().has("retData")) {
+                    openOrCloseNote(socketMessage);
+                }
+                break;
             case SocketMessageManager.MESSAGE_NOTE_DATA:  // 浮窗或主界面正在展示的场景下
                 if (socketMessage.getData().has("retData")) {
                     try {
@@ -3910,7 +3915,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             handleExit(false);
         }
-        return true;
+        return super.onKeyDown(keyCode,event);
 
     }
 
