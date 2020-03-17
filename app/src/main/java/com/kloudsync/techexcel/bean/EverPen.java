@@ -87,11 +87,11 @@ public class EverPen implements Serializable {
         return macAddress != null ? macAddress.hashCode() : 0;
     }
 
-    public EverPen(String macAddress){
+	public EverPen(String macAddress) {
         this.macAddress = macAddress;
     }
 
-    public EverPen(){
+	public EverPen() {
 
     }
 }

@@ -8,15 +8,12 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EverPen;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.service.BluetoothLEService;
 import com.kloudsync.techexcel.tool.SharedPreferencesUtils;
-import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.tool.SyncWebNoteActionsCache;
 import com.tqltech.tqlpencomm.BLEException;
 import com.tqltech.tqlpencomm.BLEScanner;
@@ -26,7 +23,6 @@ import com.tqltech.tqlpencomm.ErrorStatus;
 import com.tqltech.tqlpencomm.PenCommAgent;
 import com.tqltech.tqlpencomm.PenStatus;
 import com.tqltech.tqlpencomm.listener.TQLPenSignal;
-import com.ub.service.KloudWebClientManager;
 import com.ub.techexcel.bean.NewBookPagesBean;
 import com.ub.techexcel.bean.NoteDotBean;
 import com.ub.techexcel.bean.NoteInfoBean;
@@ -41,12 +37,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static android.content.Context.BIND_AUTO_CREATE;
-
-/**
- * Created by tonyan on 2020/1/15.
- */
 
 public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, BLEScanner.OnBLEScanListener, TQLPenSignal {
 	private static EverPenManger manger;
@@ -60,9 +53,9 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	private EverPen mAutoPenInfo;
 	private static final int AUTOCONNECT = 100;
 	private boolean mIsAutoConnected = false;
+	private CopyOnWriteArrayList<PenDotsReceiver> dotsReceivers = new CopyOnWriteArrayList<>();
 	private List<NoteDotBean> mDotOnlineList = new ArrayList<>();
 	private List<NoteDotBean> mDotOfflineList = new ArrayList<>();
-	private Gson mGson = new Gson();
 
 	private EverPenManger(Activity host) {
 		this.host = host;
@@ -246,6 +239,10 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 				}
 			}
 		});
+
+		for (PenDotsReceiver receiver : dotsReceivers) {
+			receiver.onDotReceive(dot);
+		}
 		String uuid = UUID.randomUUID().toString()/* + System.currentTimeMillis()*/;
 		NoteDotBean noteDotBean = new NoteDotBean();
 		noteDotBean.setDotId(uuid);
@@ -335,21 +332,6 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 					}
 
 				}
-
-				webScoketDataBean.setLines(linesBeans);
-				webScoketDataBean.setWidth(5600);
-				webScoketDataBean.setHeight(7920);
-				webScoketDataBean.setPaper("A4");
-				if (bookPagesBeans != null && bookPagesBeans.size() > 0) {
-
-				} else {
-					if (KloudWebClientManager.getInstance() != null) {
-						SocketMessageManager.getManager(App.getAppContext()).sendMessage_myNoteData(address, noteId, webScoketDataBean);
-					}
-				}
-				EverPenDataManger.getInstace(this, host).cacheDotListData(mDotOnlineList);
-				mDotOnlineList.clear();
-				break;
 		}
 	}
 
@@ -707,9 +689,9 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 			MyTQLPenSignal myTQLPenSignal = it.next();
 			myTQLPenSignal.onScanFailed(e);
 		}
-		if (mAutoPenInfo != null) {
-			startOrStopFindDevice(true);
-		}
+//        if (mAutoPenInfo != null) {
+//            startOrStopFindDevice(true);
+//        }
 	}
 
 	public PenCommAgent getBleManager() {
@@ -756,7 +738,6 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 		startOrStopFindDevice(true);
 	}
 
-
 	public void connect(EverPen everPen) {
 		mCurrentPen = everPen;
 		mAutoPenInfo = everPen;
@@ -769,5 +750,21 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 		String macAddress = everPen.getMacAddress();
 		agent.disconnect(macAddress);
 
+	}
+
+	public interface PenDotsReceiver {
+		void onDotReceive(Dot dot);
+	}
+
+	public void addDotsReceiver(PenDotsReceiver receiver) {
+		if (!dotsReceivers.contains(receiver)) {
+			dotsReceivers.add(receiver);
+		}
+	}
+
+	public void removeDotsReceiver(PenDotsReceiver receiver) {
+		if (dotsReceivers.contains(receiver)) {
+			dotsReceivers.remove(receiver);
+		}
 	}
 }
