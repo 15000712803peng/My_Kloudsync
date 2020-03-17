@@ -525,6 +525,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     holder.settingImage.setVisibility(View.VISIBLE);
                     holder.presenter.setVisibility(View.GONE);
                 }
+
                 if (meetingConfig.getMeetingHostId().equals(member.getUserId() + "")) {
                     // 操作的成员是HOST
                     holder.kickOffMemberText.setVisibility(View.GONE);

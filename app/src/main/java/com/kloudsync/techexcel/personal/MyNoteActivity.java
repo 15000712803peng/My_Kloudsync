@@ -56,14 +56,9 @@ public class MyNoteActivity extends Activity implements View.OnClickListener,Eve
     private LinearLayout search_layout;
     private RecyclerView rv_pc;
     private UserNotesAdapter notesAdapter;
-
     private List<Note> notes = new ArrayList<>();
-
     private static final int TYPE_LIVE_NOTE = 1;
     private static final int TYPE_NOTE = 2;
-    private DrawView[] bDrawl = new DrawView[2];  //add 2016-06-15 for draw
-
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -143,7 +138,7 @@ public class MyNoteActivity extends Activity implements View.OnClickListener,Eve
 
     @Override
     public void onDotReceive(Dot dot) {
-        Log.e("onDotReceive","dot:" + dot);
+        Log.e("onDotReceive","dot:" + dot + ",notesAdapter:" + notesAdapter + ",thread:" + Thread.currentThread());
         if(notesAdapter != null){
             notesAdapter.drawDot(dot);
         }
@@ -176,6 +171,7 @@ public class MyNoteActivity extends Activity implements View.OnClickListener,Eve
         }
 
         public void drawDot(Dot dot){
+            Log.e("check_canvasImage","canvasImage3:" + canvasImage);
             if(canvasImage != null){
                 PenDotTool.processEachDot(dot,canvasImage);
             }
@@ -188,10 +184,12 @@ public class MyNoteActivity extends Activity implements View.OnClickListener,Eve
             switch (viewType) {
                 case TYPE_LIVE_NOTE:
                     view = LayoutInflater.from(context).inflate(R.layout.live_note_item, parent, false);
-                    canvasImage = view.findViewById(R.id.image_live);
+                    canvasImage = new DrawView(MyNoteActivity.this);
                     noteLayout = view.findViewById(R.id.layout_note);
-
-                    Log.e("onBindViewHolder","set_bdrawl");
+                    canvasImage.setBackgroundColor(getColor(R.color.tab_blue));
+                    RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    noteLayout.addView(canvasImage, param);
+                    Log.e("check_canvasImage","canvasImage1:" + canvasImage);
                     //TODO new draw
                     //newDrawPenView = new NewDrawPenView(this);
                     return new LiveNoteHolder(view);
@@ -205,6 +203,7 @@ public class MyNoteActivity extends Activity implements View.OnClickListener,Eve
         @Override
         public int getItemViewType(int position) {
             if (position == 0) {
+
                 return TYPE_LIVE_NOTE;
             } else {
                 return TYPE_NOTE;
@@ -219,7 +218,7 @@ public class MyNoteActivity extends Activity implements View.OnClickListener,Eve
                 case TYPE_LIVE_NOTE:
                     if(holder instanceof LiveNoteHolder){
                         LiveNoteHolder noteHolder = (LiveNoteHolder) holder;
-                        canvasImage = noteHolder.noteImage;
+                        Log.e("check_canvasImage","canvasImage2:" + canvasImage);
                         noteLayout = noteHolder.noteLayout;
                     }
                     break;
@@ -236,6 +235,7 @@ public class MyNoteActivity extends Activity implements View.OnClickListener,Eve
                             String haha = simpleDateFormat.format(dd);
                             holder2.date.setText(haha);
                         }
+
                         holder2.ll.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -304,12 +304,10 @@ public class MyNoteActivity extends Activity implements View.OnClickListener,Eve
 
     public class LiveNoteHolder extends RecyclerView.ViewHolder {
 
-        public DrawView noteImage;
         public RelativeLayout noteLayout;
 
         public LiveNoteHolder(View itemView) {
             super(itemView);
-            noteImage = itemView.findViewById(R.id.image_live);
             noteLayout = itemView.findViewById(R.id.layout_note);
         }
     }

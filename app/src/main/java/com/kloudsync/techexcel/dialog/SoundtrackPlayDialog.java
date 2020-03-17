@@ -631,25 +631,31 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         Log.e("JavascriptInterface", "preLoadFileFunctiona," + url + "     currentpageNum   " + currentpageNum + "   showLoading    " + showLoading);
     }
 
+    int currentPaegNum;
     @org.xwalk.core.JavascriptInterface
     public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum" + pageNum + ",type" + type);
+        currentPaegNum = pageNum;
 //        SoundtrackActionsManager.getInstance(host).setCurrentPage(Integer.parseInt(pageNum));
-        if (meetingConfig.getAllDocuments() != null) {
-            int size = meetingConfig.getAllDocuments().size();
+        if (meetingConfig.getDocument().getDocumentPages() != null) {
+            int size = meetingConfig.getDocument().getDocumentPages().size();
             if (pageNum < 0 || pageNum > size) {
                 return;
             }
         }
-        MeetingDocument document = meetingConfig.getAllDocuments().get(pageNum - 1);
-        if (document != null && soundtrackDetail != null) {
-            PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, pageNum + "",
-                    document.getAttachmentID() + "", document.getItemID() + "",
-                    soundtrackDetail.getSoundtrackID() + "");
 
+        if(meetingConfig.getDocument() == null){
+            return;
         }
 
-    }
+        PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, pageNum + "",
+                meetingConfig.getDocument().getAttachmentID() + "",  "0",
+                soundtrackDetail.getSoundtrackID() + "");
+
+        PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig,pageNum+"",soundtrackDetail.getSoundtrackID() + "",playTime);
+
+
+}
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showWebVedio(EventPlayWebVedio webVedio) {
@@ -670,9 +676,10 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receivePageActions(EventPageActionsForSoundtrack pageActions) {
         String data = pageActions.getData();
+        Log.e("receivePageActions","pageActions:" + pageActions);
         if (!TextUtils.isEmpty(data)) {
-            if (pageActions.getPageNumber() == meetingConfig.getPageNumber()) {
-//                Log.e("check_play_txt","PlayActionByArray:" + data);
+            if (pageActions.getPageNumber() == currentPaegNum) {
+                Log.e("check_play_txt", "PlayActionByArray:" + data);
                 if (web != null) {
                     web.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
 

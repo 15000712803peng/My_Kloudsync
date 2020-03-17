@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ll"
     android:layout_width="350dp"
-    android:layout_height="wrap_content"
+    android:layout_height="460dp"
     android:background="@color/white"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="350dp"
-        android:layout_height="wrap_content"
+        android:layout_height="460dp"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="5dp"
         android:orientation="horizontal">
@@ -28,19 +28,27 @@
             <RelativeLayout
                 android:id="@+id/layout_note"
                 android:layout_width="350dp"
-                android:layout_height="wrap_content"
+                android:layout_height="460dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/gray_border"
                 android:gravity="center_vertical"
                 android:padding="1dp">
 
-                <com.kloudsync.techexcel.ui.DrawView
-                    android:id="@+id/image_live"
-                    android:layout_width="80dp"
-                    android:layout_height="122dp"
-                    android:layout_gravity="center_vertical"
-                    android:scaleType="fitXY" />
+                <ImageView
+                    android:background="@drawable/p0"
+                    android:layout_width="288dp"
+                    android:layout_height="238dp"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true" />
+
+                <!--<com.kloudsync.techexcel.ui.DrawView-->
+                    <!--android:background="@color/orange"-->
+                    <!--android:id="@+id/image_live"-->
+                    <!--android:layout_width="80dp"-->
+                    <!--android:layout_height="122dp"-->
+                    <!--android:layout_gravity="center_vertical"-->
+                    <!--android:scaleType="fitXY" />-->
 
             </RelativeLayout>
 

@@ -45,7 +45,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by wang on 2017/6/19.
  */
 
-public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchListener{
+public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchListener {
     /**
      * 定义浮动窗口布局
      */
@@ -63,21 +63,21 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
     public static FloatingWindowNoteManager instance;
     private Context mContext;
 
-    public interface  FloatingChangeListener{
+    public interface FloatingChangeListener {
         void changeHomePage(int noteId);
     }
 
     private FloatingChangeListener floatingChangeListener;
 
-    public void  setFloatingChangeListener(FloatingChangeListener floatingChangeListener){
-        this.floatingChangeListener=floatingChangeListener;
+    public void setFloatingChangeListener(FloatingChangeListener floatingChangeListener) {
+        this.floatingChangeListener = floatingChangeListener;
     }
 
     public static FloatingWindowNoteManager getManager(Context context, View view) {
         if (instance == null) {
             synchronized (FloatingWindowNoteManager.class) {
                 if (instance == null) {
-                    instance = new FloatingWindowNoteManager(context,view);
+                    instance = new FloatingWindowNoteManager(context, view);
                 }
             }
         }
@@ -91,7 +91,6 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
         mView = view;
         initFloating();
     }
-
 
 
     private void initFloating() {
@@ -128,10 +127,10 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
                 closeFloating();
                 break;
             case R.id.changefloatingnote:  //跳到主界面
-                if(currentNote!=null){
-                    RecordNoteActionManager.getManager(mContext).sendDisplayPopupHomepageActions(currentNote.getNoteID(),lastjsonObject);
+                if (currentNote != null) {
+                    RecordNoteActionManager.getManager(mContext).sendDisplayPopupHomepageActions(currentNote.getNoteID(), lastjsonObject);
                 }
-                if(floatingChangeListener!=null){
+                if (floatingChangeListener != null) {
                     floatingChangeListener.changeHomePage(currentNote.getNoteID());
                 }
                 dismiss();
@@ -179,8 +178,8 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
     }
 
 
-    public void  closeFloating(){
-        if(currentNote!=null){
+    public void closeFloating() {
+        if (currentNote != null) {
             RecordNoteActionManager.getManager(mContext).sendClosePopupActons(currentNote.getNoteID());
         }
         dismiss();
@@ -196,12 +195,12 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
             public void run() {
                 process(noteid, meetingConfig);
             }
-        },100);
+        }, 100);
     }
 
-    public boolean isShowing(){
-        if(mView!=null){
-            if(mView.getVisibility()==View.VISIBLE){
+    public boolean isShowing() {
+        if (mView != null) {
+            if (mView.getVisibility() == View.VISIBLE) {
                 return true;
             }
         }
@@ -220,7 +219,7 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
 
 
     private Note currentNote;
-    private JSONObject lastjsonObject=new JSONObject();
+    private JSONObject lastjsonObject = new JSONObject();
 
     private void process(final long noteId, final MeetingConfig meetingConfig) {
         if (meetingConfig.getDocument() == null) {
@@ -230,12 +229,12 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
         MeetingServiceTools.getInstance().getBlueToothNoteDetail(url, MeetingServiceTools.GETBLUETOOTHNOTEDETAIL, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
-                currentNote= (Note) object;
+                currentNote = (Note) object;
                 title.setText(currentNote.getTitle());
-                String lastModifiedDate=currentNote.getLastModifiedDate();
+                String lastModifiedDate = currentNote.getLastModifiedDate();
                 String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
                 Log.e("floatingnote", localNoteBlankPage);
-                floatwebview.load("javascript:ShowPDF('" + localNoteBlankPage + "'," +1 + ",''," + currentNote.getAttachmentID() + "," + true + ")", null);
+                floatwebview.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + 1 + ",''," + currentNote.getAttachmentID() + "," + true + ")", null);
                 String key = "ChangeMovePageButton";
                 JSONObject _data = new JSONObject();
                 JSONObject _left = new JSONObject();
@@ -251,19 +250,18 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
                 floatwebview.load("javascript:ShowToolbar(" + false + ")", null);
                 floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
                 floatwebview.load("javascript:Record()", null);
-                handleBluetoothNote(currentNote,lastModifiedDate);
+                handleBluetoothNote(currentNote, lastModifiedDate);
             }
         });
     }
 
 
     /**
-     *
      * @param noteId
-     * @param noteData  编码后为  {"lines":[{"id":"D342A8CB-DB21-4990-BD62-987A4D0419CC","points":[[3004,5136,500,1583830777.256],[3014,5139,880,1583830777.2579999],
+     * @param noteData 编码后为  {"lines":[{"id":"D342A8CB-DB21-4990-BD62-987A4D0419CC","points":[[3004,5136,500,1583830777.256],[3014,5139,880,1583830777.2579999],
      */
-    public void followDrawNewLine(long noteId,String noteData){
-        if(currentNote.getNoteID()==noteId){
+    public void followDrawNewLine(long noteId, String noteData) {
+        if (currentNote.getNoteID() == noteId) {
             if (floatwebview != null) {
                 String key = "ShowDotPanData";
                 try {
@@ -272,7 +270,7 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
                     _data.put("ShowInCenter", true);
                     _data.put("TriggerEvent", true);
                     floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                    lastjsonObject=new JSONObject(Tools.getFromBase64(noteData));
+                    lastjsonObject = new JSONObject(Tools.getFromBase64(noteData));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -284,19 +282,19 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
     /**
      * 笔记先于音想打开
      */
-    public void displayPopupActions(){
-        RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(currentNote.getNoteID(),lastjsonObject);
+    public void displayPopupActions() {
+        RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(currentNote.getNoteID(), lastjsonObject);
     }
 
-    private int oldNoteId=0;
+    private int oldNoteId = 0;
 
-    public void setOldNoteId(int oldNoteId){
-        this.oldNoteId=oldNoteId;
+    public void setOldNoteId(int oldNoteId) {
+        this.oldNoteId = oldNoteId;
     }
 
     private void handleBluetoothNote(final Note note, final String lastModifiedDate) {
-        final String url=note.getSourceFileUrl();
-        if(TextUtils.isEmpty(url)){
+        final String url = note.getSourceFileUrl();
+        if (TextUtils.isEmpty(url)) {
             //https://peertime.oss-cn-shanghai.aliyuncs.com/P49/Attachment/D80370/book_page_data.json?_=1583735802772
             return;
         }
@@ -336,9 +334,10 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
                         }
                     }
                 }
+
                 int index = url.lastIndexOf("/");
                 if (index > 0 && index < url.length() - 2) {
-                    newUrl = url.substring(0, index + 1) + "book_page_data.json?="+lastModifiedDate;
+                    newUrl = url.substring(0, index + 1) + "book_page_data.json?=" + lastModifiedDate;
                 }
                 return newUrl;
             }
@@ -348,7 +347,9 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
                 JSONObject jsonObject = new JSONObject();
                 if (!TextUtils.isEmpty(url)) {
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    lastjsonObject=jsonObject.getJSONObject("PaintData");
+                    if (jsonObject != null && jsonObject.has("PaintData")) {
+                        lastjsonObject = jsonObject.getJSONObject("PaintData");
+                    }
                 }
                 return jsonObject;
             }
@@ -362,17 +363,15 @@ public class FloatingWindowNoteManager implements View.OnClickListener ,OnTouchL
                 _data.put("TriggerEvent", false);
                 Log.e("floatingnote", "ShowDotPanData");
                 floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                if(oldNoteId==0){
-                    RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(note.getNoteID(),lastjsonObject);
-                }else{
-                    RecordNoteActionManager.getManager(mContext).sendChangePageActions(note.getNoteID(),oldNoteId,lastjsonObject);
-                    oldNoteId=0;
+                if (oldNoteId == 0) {
+                    RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(note.getNoteID(), lastjsonObject);
+                } else {
+                    RecordNoteActionManager.getManager(mContext).sendChangePageActions(note.getNoteID(), oldNoteId, lastjsonObject);
+                    oldNoteId = 0;
                 }
             }
         }).subscribe();
     }
-
-
 
 
     public class FloatNoteJavascriptInterface {
