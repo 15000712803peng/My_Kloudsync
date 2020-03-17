@@ -6,24 +6,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 
-import com.kloudsync.techexcel.R;
+import com.google.gson.Gson;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
-import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.VedioData;
-import com.kloudsync.techexcel.bean.params.EventPlaySoundSync;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.Note;
-import com.ub.techexcel.tools.ServiceInterfaceListener;
-import com.ub.techexcel.tools.ServiceInterfaceTools;
-import com.ub.techexcel.tools.SpliteSocket;
+import com.ub.techexcel.bean.SendWebScoketNoteBean;
 import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -488,6 +483,12 @@ public class SocketMessageManager {
         }
     }
 
+    public void sendMessage_myNoteData(String pageIdentiﬁer, int noteId, SendWebScoketNoteBean sendWebNoteData) {
+        String dataStr = Tools.getBase64(new Gson().toJson(sendWebNoteData));
+        Log.e("SocketMessageManage", "sendMessage_myNoteData_dataStr = " + dataStr);
+        doSendMessage(wrapperSendMessage(AppConfig.UserToken, pageIdentiﬁer, noteId, dataStr));
+    }
+
     private WebSocketClient getClient() {
         socketClient = AppConfig.webSocketClient;
         return socketClient;
@@ -546,6 +547,22 @@ public class SocketMessageManager {
 
     }
 
+    private String wrapperSendMessage(String sessionId, String pageIdentiﬁer, int noteId, String data) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("action", "NOTE_DATA");
+            message.put("sessionId", sessionId);
+            message.put("pageIdentiﬁer", pageIdentiﬁer);
+            message.put("noteId", noteId);
+            message.put("data", data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return message.toString();
+
+    }
+
     private String wrapperSendMessage(String sessionId, int type, String data,String userList) {
         JSONObject message = new JSONObject();
         try {
@@ -571,6 +588,5 @@ public class SocketMessageManager {
         context.unregisterReceiver(messageReceiver);
         instance = null;
     }
-
 
 }

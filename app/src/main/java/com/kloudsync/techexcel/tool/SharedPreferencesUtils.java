@@ -18,33 +18,49 @@ public class SharedPreferencesUtils {
 		return App.getAppContext().getSharedPreferences(fileName, Context.MODE_PRIVATE);
 	}
 
-	public static <T> void putString(String fileName, String tag, T value) {
+	public static <T> void putString(String fileName, String key, T value) {
 		SharedPreferences.Editor editor = getSharedPreference(fileName).edit();
 		String strJson;
 		if (null == value) {
-			editor.putString(tag, (String) value);
+			editor.putString(key, (String) value);
 		} else {
 			//转换成json数据，再保存
 			strJson = new Gson().toJson(value);
-			editor.putString(tag, strJson);
+			editor.putString(key, strJson);
 		}
 		editor.commit();
 	}
 
-	public static <T> void putList(String fileName, String tag, List<T> datalist) {
+	public static <T> void putList(String fileName, String key, List<T> datalist) {
 		if (null == datalist)
 			return;
 		SharedPreferences.Editor editor = getSharedPreference(fileName).edit();
 		//转换成json数据，再保存
 		String strJson = new Gson().toJson(datalist);
-		editor.putString(tag, strJson);
+		editor.putString(key, strJson);
 		editor.commit();
 	}
 
-	public static <T> T getString(String fileName, String tag, Class<T> classOfT) {
+	public static <T> void putPenInfoList(String fileName, String key, List<T> datalist) {
+		if (null == datalist) return;
+		SharedPreferences.Editor editor = getSharedPreference(fileName).edit();
+		List<T> penInfoList = getList(fileName, key, new TypeToken<List<T>>() {
+		});
+		for (T bean : datalist) {
+//			if (!penInfoList.contains(bean)) {
+			penInfoList.add(bean);
+//			}
+		}
+		//转换成json数据，再保存
+		String strJson = new Gson().toJson(penInfoList);
+		editor.putString(key, strJson);
+		editor.commit();
+	}
+
+	public static <T> T getString(String fileName, String key, Class<T> classOfT) {
 		SharedPreferences sp = getSharedPreference(fileName);
 		T value;
-		String strJson = sp.getString(tag, null);
+		String strJson = sp.getString(key, null);
 		if (strJson == null) {
 			return null;
 		} else {

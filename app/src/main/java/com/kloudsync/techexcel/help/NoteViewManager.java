@@ -3,7 +3,6 @@ package com.kloudsync.techexcel.help;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -158,7 +157,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         process(AppConfig.UserID, meetingConfig);
         view.setVisibility(View.VISIBLE);
 
-	    EverPenManger.getInstance((Activity) context).getBleManager().ReqOfflineDataTransfer(true);
+//	    EverPenManger.getInstance((Activity) context).getBleManager().ReqOfflineDataTransfer(true);
     }
 
     private void close(){

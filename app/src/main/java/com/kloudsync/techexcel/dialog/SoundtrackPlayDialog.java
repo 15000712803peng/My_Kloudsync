@@ -672,7 +672,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         String data = pageActions.getData();
         if (!TextUtils.isEmpty(data)) {
             if (pageActions.getPageNumber() == meetingConfig.getPageNumber()) {
-//                Log.e("check_play_txt","PlayActionByArray:" + data);
+	            Log.e("check_play_txt", "PlayActionByArray:" + data);
                 if (web != null) {
                     web.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
 
