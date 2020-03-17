@@ -129,7 +129,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                 heartBeatMessage.put("changeNumber", 0);
 
                 MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
-                if (meetingConfig != null && meetingConfig.isInRealMeeting()) {
+                if (meetingConfig != null && meetingConfig.getType() == MeetingType.MEETING) {
                     heartBeatMessage.put("status", "0");
                     heartBeatMessage.put("currentLine", 0);
                     heartBeatMessage.put("currentMode", "0");
@@ -138,12 +138,12 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                         heartBeatMessage.put("currentItemId", meetingConfig.getDocument().getItemID());
                     }
 
-                    if (meetingConfig.getType() == MeetingType.MEETING && meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER || meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
-                        heartBeatMessage.put("agoraStatus", 1);
-                        heartBeatMessage.put("microphoneStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isMicroOn() ? 2 : 3);
-                        heartBeatMessage.put("cameraStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isCameraOn() ? 2 : 3);
-                        heartBeatMessage.put("screenStatus", 0);
-                    }
+//                    if (meetingConfig.getType() == MeetingType.MEETING && meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER || meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
+//                        heartBeatMessage.put("agoraStatus", 1);
+//                        heartBeatMessage.put("microphoneStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isMicroOn() ? 2 : 3);
+//                        heartBeatMessage.put("cameraStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isCameraOn() ? 2 : 3);
+//                        heartBeatMessage.put("screenStatus", 0);
+//                    }
                 }
                 if (kloudWebClient != null) {
                     kloudWebClient.send(heartBeatMessage.toString());
