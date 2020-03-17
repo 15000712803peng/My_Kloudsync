@@ -317,7 +317,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
             if (Tools.isOrientationPortrait(this)) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
             //是meeting
             MeetingKit.getInstance().init(this, meetingConfig);
@@ -361,6 +361,17 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     private void safeJoinMeetingIfAlreadyInMeeting() {
 
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(newConfig.orientation==Configuration.ORIENTATION_PORTRAIT){
+//            Toast.makeText(DocAndMeetingActivity.this,"现在是竖屏", Toast.LENGTH_SHORT).show();
+        }
+        if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
+//            Toast.makeText(DocAndMeetingActivity.this,"现在是横屏", Toast.LENGTH_SHORT).show();
+        }
     }
 
     AudiencePromptDialog audiencePromptDialog;
