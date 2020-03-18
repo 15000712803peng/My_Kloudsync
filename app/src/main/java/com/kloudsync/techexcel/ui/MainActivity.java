@@ -256,7 +256,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         initView();
         mEverPenManger = EverPenManger.getInstance(this);
         mEverPenManger.init();
-//        mBleManager = mEverPenManger.getBleManager();
+        mBleManager = mEverPenManger.getBleManager();
         requestRongCloudOnlineStatus();
         GetSchoolInfo();
         initUpdate();
@@ -941,7 +941,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         isOpenYinxiang();
     }
 
-
     @Override
     protected void onDestroy() {
         // TODO Auto-generated method stub
@@ -957,7 +956,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         mEverPenManger = null;
         mPresenter.detachView();
         mPresenter = null;
-	    handler.removeCallbacksAndMessages(null);
+        handler.removeCallbacksAndMessages(null);
         app.setMainActivityInstance(null);
         AppConfig.isUpdateCustomer = false;
         AppConfig.isUpdateDialogue = false;

@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventShowFullAgora;
+import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.view.CircleImageView;
 import com.ub.techexcel.bean.AgoraMember;
@@ -173,6 +175,8 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         int index = users.indexOf(user);
         if (index >= 0) {
             AgoraMember member = users.get(index);
+            member.setMuteVideo(user.isMuteVideo());
+            member.setMuteAudio(user.isMuteAudio());
             if (member.getSurfaceView() == null) {
                 member.setSurfaceView(user.getSurfaceView());
                 if (!user.isMuteVideo()) {
@@ -316,6 +320,18 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                 this.users.get(index).setSurfaceView(surface);
                 notifyItemChanged(index);
             }
+        }
+    }
+
+    public void refreshMyAgoraStatus(AgoraMember agoraMember){
+        int index = this.users.indexOf(agoraMember);
+        Log.e("refreshMyAgoraStatus","notifyItemChanged,user:" + this.users.get(index));
+        if(index >= 0){
+            AgoraMember _member = this.users.get(index);
+            _member.setMuteAudio(agoraMember.isMuteAudio());
+            _member.setMuteVideo(agoraMember.isMuteVideo());
+            Log.e("refreshMyAgoraStatus","notifyItemChanged,user:" + this.users.get(index));
+            notifyItemChanged(index);
         }
     }
 
