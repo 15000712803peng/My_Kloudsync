@@ -317,7 +317,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
             if (Tools.isOrientationPortrait(this)) {
-//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
             //是meeting
             MeetingKit.getInstance().init(this, meetingConfig);
