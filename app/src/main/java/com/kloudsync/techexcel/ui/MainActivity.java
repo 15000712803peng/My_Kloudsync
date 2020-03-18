@@ -38,6 +38,9 @@ import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventDoc;
+import com.kloudsync.techexcel.bean.EventNote;
+import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
+import com.kloudsync.techexcel.bean.EventOpenOrCloseBluethoothNote;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.bean.EventSpaceData;
 import com.kloudsync.techexcel.bean.EventSpaceFragment;
@@ -76,6 +79,7 @@ import com.kloudsync.techexcel.frgment.TwoToOneFragment;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ContactHelpInterface;
 import com.kloudsync.techexcel.help.EverPenManger;
+import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.info.School;
 import com.kloudsync.techexcel.mvp.presenter.MainPresenter;
 import com.kloudsync.techexcel.mvp.view.IMainActivityView;
@@ -102,6 +106,7 @@ import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.tqltech.tqlpencomm.Dot;
 import com.tqltech.tqlpencomm.PenCommAgent;
+import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.service.KloudWebClientManager;
 import com.ub.service.activity.SocketService;
@@ -109,7 +114,9 @@ import com.ub.service.activity.SyncBookActivity;
 import com.ub.service.activity.SyncRoomActivity;
 import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.EventViewDocPermissionGranted;
+import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
@@ -189,7 +196,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case AppConfig.RONGCONNECT_ERROR:
-                    sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
+                    sharedPreferences = getSharedPreferences(AppConfig.LOGININFO, MODE_PRIVATE);
                     editor = sharedPreferences.edit();
                     editor.putBoolean("isLogIn", false);
                     editor.commit();
@@ -248,7 +255,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        EventBus.getDefault().register(this);
+
         editor.putBoolean("isLogIn", true).commit();
         fragmentManager = getSupportFragmentManager();
         setContentView(R.layout.activity_main);
@@ -426,8 +433,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                                         // TODO Auto-generated method stub
                                         dialog.dismiss();
                                     }
-                                })
-                                .setNegativeButton(
+                                }).setCancelable(false).setNegativeButton(
                                         getResources().getString(R.string.update),
                                         new DialogInterface.OnClickListener() {
                                             @Override
@@ -509,10 +515,10 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 //        }
 
 //        PgyUpdateManager.installApk(uri);
-        String filePath = UriTool.getFilePathByUri(this,uri);
-        if(!TextUtils.isEmpty(filePath)){
+        String filePath = UriTool.getFilePathByUri(this, uri);
+        if (!TextUtils.isEmpty(filePath)) {
             File file = new File(filePath);
-            if(file.exists()){
+            if (file.exists()) {
                 installAPK(file);
             }
         }
@@ -909,13 +915,27 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             DisplayRed(false);
         }
 
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+
+
         AppConfig.isToPersonalCenter = false;
         AppConfig.isRefreshRed = false;
 
         MobclickAgent.onPageStart("MainActivity");
         MobclickAgent.onResume(this);
         Tools.keepSocketServiceOn(this);
+//        testNote();
         Log.e("time_interval", "interval:" + (System.currentTimeMillis() - systemTime));//统计时长
+    }
+
+
+    private void testNote() {
+        EventOpenOrCloseBluethoothNote note = new EventOpenOrCloseBluethoothNote();
+        note.setNoteId("1915234");
+        handleBluetoothNote(note);
     }
 
     public void onPause() {
@@ -923,6 +943,10 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         super.onPause();
         MobclickAgent.onPageEnd("MainActivity");
         MobclickAgent.onPause(this);
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+
 
     }
 
@@ -962,7 +986,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         AppConfig.isUpdateDialogue = false;
         AppConfig.HASUPDATAINFO = false;
         stopService();
-        EventBus.getDefault().unregister(this);
+
         app.getThreadMgr().shutDown();
         KillFile();
         System.gc();
@@ -1766,7 +1790,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     installApkBeforeCheckPermission(installUri);
                 }
             }
-        }else if(requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE){
+        } else if (requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 EventViewDocInSpacePermissionGranted viewDocPermissionGranted = new EventViewDocInSpacePermissionGranted();
@@ -1778,18 +1802,18 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         }
     }
 
-    public void installAPK(File apkFile){
+    public void installAPK(File apkFile) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             //第二个参数需要与<provider>标签中的android:authorities属性相同
-            uri = FileProvider.getUriForFile(this,"com.kloudsync.techexcel.FileProvider",apkFile);
-        }else{
+            uri = FileProvider.getUriForFile(this, "com.kloudsync.techexcel.FileProvider", apkFile);
+        } else {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             uri = Uri.fromFile(apkFile);
         }
-        intent.setDataAndType(uri ,"application/vnd.android.package-archive");
+        intent.setDataAndType(uri, "application/vnd.android.package-archive");
         startActivity(intent);
     }
 
@@ -1820,7 +1844,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     }
 
 
-
     @Override
     public void onReceiveDot(Dot dot) {
        /* String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
@@ -1839,12 +1862,12 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 	    SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);*/
     }
 
-	@Override
-	public void toast(String msg) {
-		ToastUtils.show(this, msg);
-	}
+    @Override
+    public void toast(String msg) {
+        ToastUtils.show(this, msg);
+    }
 
-	@Override
+    @Override
     public void showLoading() {
 
     }
@@ -1853,42 +1876,118 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     public void dismissLoading() {
 
     }
-    private String getBindViewText(int fileId){
-        String appBindName="";
-        int language = sharedPreferences.getInt("language",1);
-        if(language==1&&App.appENNames!=null){
-            for(int i=0;i<App.appENNames.size();i++){
-                if(fileId==App.appENNames.get(i).getFieldId()){
-                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
-                    appBindName=App.appENNames.get(i).getFieldName();
+
+    private String getBindViewText(int fileId) {
+        String appBindName = "";
+        int language = sharedPreferences.getInt("language", 1);
+        if (language == 1 && App.appENNames != null) {
+            for (int i = 0; i < App.appENNames.size(); i++) {
+                if (fileId == App.appENNames.get(i).getFieldId()) {
+                    System.out.println("Name->" + App.appENNames.get(i).getFieldName());
+                    appBindName = App.appENNames.get(i).getFieldName();
                     break;
                 }
             }
-        }else if(language==2&&App.appCNNames!=null){
-            for(int i=0;i<App.appCNNames.size();i++){
-                if(fileId==App.appCNNames.get(i).getFieldId()){
-                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
-                    appBindName=App.appCNNames.get(i).getFieldName();
+        } else if (language == 2 && App.appCNNames != null) {
+            for (int i = 0; i < App.appCNNames.size(); i++) {
+                if (fileId == App.appCNNames.get(i).getFieldId()) {
+                    System.out.println("Name->" + App.appCNNames.get(i).getFieldName());
+                    appBindName = App.appCNNames.get(i).getFieldName();
                     break;
                 }
             }
         }
         return appBindName;
     }
-    private void setBindViewText(){
+
+    private void setBindViewText() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                String document=getBindViewText(1004);
-                documentTab.setText(TextUtils.isEmpty(document)? getString(R.string.documents):document);
-                String chat=getBindViewText(1005);
-                chatTab.setText(TextUtils.isEmpty(chat)? getString(R.string.dialogue):chat);
-                String meeting=getBindViewText(1007);
-                meetingTab.setText(TextUtils.isEmpty(meeting)? getString(R.string.Meeting):meeting);
-                String syncroom=getBindViewText(1001);
-                syncroomTab.setText(TextUtils.isEmpty(syncroom)? getString(R.string.community):syncroom);
+                String document = getBindViewText(1004);
+                documentTab.setText(TextUtils.isEmpty(document) ? getString(R.string.documents) : document);
+                String chat = getBindViewText(1005);
+                chatTab.setText(TextUtils.isEmpty(chat) ? getString(R.string.dialogue) : chat);
+                String meeting = getBindViewText(1007);
+                meetingTab.setText(TextUtils.isEmpty(meeting) ? getString(R.string.Meeting) : meeting);
+                String syncroom = getBindViewText(1001);
+                syncroomTab.setText(TextUtils.isEmpty(syncroom) ? getString(R.string.community) : syncroom);
             }
-        },500);
+        }, 500);
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void handleBluetoothNote(EventOpenOrCloseBluethoothNote note) {
+
+        if (!TextUtils.isEmpty(note.getNoteId())) {
+            if(note.getStatus() == 1){
+                Observable.just(note.getNoteId()).observeOn(Schedulers.io()).map(new Function<String, Note>() {
+                    @Override
+                    public Note apply(String noteId) throws Exception {
+                        return MeetingServiceTools.getInstance().syncGetNoteByNoteId(noteId);
+                    }
+
+                }).doOnNext(new Consumer<Note>() {
+                    @Override
+                    public void accept(final Note note) throws Exception {
+                        if (note.getAttachmentID() > 0) {
+                            String title = note.getTitle();
+                            if (TextUtils.isEmpty(title)) {
+                                title = "";
+                            }
+                            String url = AppConfig.URL_PUBLIC
+                                    + "Lesson/AddTempLessonWithOriginalDocument?attachmentID=" + note.getAttachmentID()
+                                    + "&Title=" + URLEncoder.encode(LoginGet.getBase64Password(""), "UTF-8");
+                            JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetTempLessonWithOriginalDocument(url);
+                            if (jsonObject.has("RetCode")) {
+                                if (jsonObject.getInt("RetCode") == 0) {
+                                    JSONObject data = jsonObject.getJSONObject("RetData");
+                                    final String lessionId = data.optLong("LessonID") + "";
+                                    final String itemId = data.optLong("ItemID") + "";
+                                    if (!TextUtils.isEmpty(lessionId)) {
+                                        Observable.just("view_note").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                                            @Override
+                                            public void accept(String s) throws Exception {
+                                                goToViewNote(lessionId, itemId, note);
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }).subscribe();
+            }
+
+        }
+    }
+
+    private void goToViewNote(String lessonId, String itemId, Note note) {
+        updateSocket();
+        Intent intent = new Intent(this, NoteViewActivity.class);
+//        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("userid", AppConfig.UserID);
+        //-----
+        intent.putExtra("meeting_id", Integer.parseInt(lessonId) + "," + AppConfig.UserID);
+//        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
+        intent.putExtra("document_id", itemId);
+        intent.putExtra("meeting_type", 2);
+        intent.putExtra("lession_id", Integer.parseInt(itemId));
+        intent.putExtra("url", note.getAttachmentUrl());
+        intent.putExtra("note_id", note.getNoteID());
+        startActivity(intent);
+    }
+
+    private void updateSocket() {
+        Intent service = new Intent(this, SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                context.startForegroundService(service);
+            startService(service);
+        } else {
+            startService(service);
+        }
     }
 }

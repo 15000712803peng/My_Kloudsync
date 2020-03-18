@@ -922,14 +922,10 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     private void refreshMembersAndPost(final MeetingConfig meetingConfig, final int uid, final boolean isSelf) {
         this.meetingConfig = meetingConfig;
-        Observable.just(meetingConfig).observeOn(Schedulers.io()).map(new Function<MeetingConfig, AgoraMember>() {
+        Observable.just(meetingConfig).observeOn(AndroidSchedulers.mainThread()).map(new Function<MeetingConfig, AgoraMember>() {
             @Override
             public AgoraMember apply(MeetingConfig meetingConfig) throws Exception {
-
-//                return meetingConfig;
-
                 AgoraMember agoraMember = null;
-
                 if (isSelf) {
                     agoraMember = createSelfCamera(uid);
                 } else {
@@ -942,6 +938,12 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                     //delete user
                     meetingConfig.deleteAgoraMember(agoraMember);
                 }
+                return  agoraMember;
+            }
+
+        }).observeOn(Schedulers.io()).map(new Function<AgoraMember, AgoraMember>() {
+            @Override
+            public AgoraMember apply(AgoraMember agoraMember) throws Exception {
 
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.MEMBER);
                 if (result.has("code")) {
@@ -966,7 +968,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
                 return agoraMember;
             }
-
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<AgoraMember>() {
             @Override
             public void accept(AgoraMember agoraMember) throws Exception {

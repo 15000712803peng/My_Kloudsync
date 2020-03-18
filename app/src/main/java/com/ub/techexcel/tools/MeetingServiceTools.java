@@ -1109,5 +1109,74 @@ public class MeetingServiceTools {
         return attachmentUrl;
     }
 
+    public Note syncGetNoteByNoteId(String noteId) {
+        String url = URL_PUBLIC + "DocumentNote/Item?noteID=" + noteId;
+        JSONObject returnjson = com.kloudsync.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetNoteByNoteId", url + "  " + returnjson.toString());
+
+        Note note = new Note();
+        try {
+
+            if (returnjson.getInt("RetCode") == 0) {
+                JSONObject lineitem = returnjson.getJSONObject("RetData");
+
+                String attachmentUrl = lineitem.getString("AttachmentUrl");
+                note.setLocalFileID(lineitem.getString("LocalFileID"));
+                Log.e("syncGetNoteByNoteId", "set_local_file_id:" + lineitem.getString("LocalFileID"));
+                note.setNoteID(lineitem.getInt("NoteID"));
+//                note.setLinkID(lineitem.getInt("LinkID"));
+
+                note.setDocumentItemID(lineitem.getInt("AttachmentFileID"));
+                note.setFileName(lineitem.getString("Title"));
+                note.setAttachmentUrl(attachmentUrl);
+                note.setPageCount(lineitem.getInt("PageCount"));
+                note.setSourceFileUrl(lineitem.getString("SourceFileUrl"));
+                note.setAttachmentID(lineitem.getInt("AttachmentID"));
+                String noteUrl = attachmentUrl.substring(0, attachmentUrl.lastIndexOf("<")) + 1 + attachmentUrl.substring(attachmentUrl.lastIndexOf("."));
+                note.setUrl(noteUrl);
+
+                String preUrl = "";
+                String endUrl = "";
+                if (!TextUtils.isEmpty(attachmentUrl)) {
+                    int index = attachmentUrl.lastIndexOf("<");
+                    int index2 = attachmentUrl.lastIndexOf(">");
+                    if (index > 0) {
+                        preUrl = attachmentUrl.substring(0, index);
+                    }
+                    if (index2 > 0) {
+                        endUrl = attachmentUrl.substring(index2 + 1, attachmentUrl.length());
+                    }
+                }
+
+                note.setNewPath(attachmentUrl.substring(attachmentUrl.indexOf(".com") + 5, attachmentUrl.lastIndexOf("/")));
+
+                List<DocumentPage> pages = new ArrayList<>();
+                for (int j = 0; j < note.getPageCount(); ++j) {
+                    String pageUrl = "";
+                    DocumentPage page = new DocumentPage();
+                    page.setPageNumber(j + 1);
+                    page.setDocumentId(note.getDocumentItemID());
+                    page.setLocalFileId(note.getLocalFileID());
+                    if (TextUtils.isEmpty(preUrl)) {
+                        page.setPageUrl(pageUrl);
+                    } else {
+                        page.setPageUrl(preUrl + (j + 1) + endUrl);
+                    }
+                    pages.add(page);
+                }
+                note.setDocumentPages(pages);
+                Log.e("check_note", "local_file_id:" + note.getLocalFileID());
+            } else {
+
+            }
+        } catch (JSONException e) {
+            Log.e("syncGetNoteByNoteId", "JSONException:" + e.getMessage());
+
+            e.printStackTrace();
+        }
+        return note;
+    }
+
+
 
 }

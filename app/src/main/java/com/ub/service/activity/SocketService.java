@@ -13,6 +13,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventOpenNote;
+import com.kloudsync.techexcel.bean.EventOpenOrCloseBluethoothNote;
 import com.kloudsync.techexcel.bean.FollowInfo;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.plugin.SingleCallActivity2;
@@ -318,6 +320,23 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }else if(actionString.equals("OPEN_OR_CLOSE_NOTE")){
+
+            String d = getRetCodeByReturnData2("retData", msg);
+            try {
+                JSONObject data = new JSONObject(d);
+                EventOpenOrCloseBluethoothNote note = new EventOpenOrCloseBluethoothNote();
+                if(data.has("noteId")){
+                    note.setNoteId(data.getLong("noteId") +"");
+                }
+                if(data.has("status")){
+                    note.setStatus(data.getInt("status"));
+                }
+                EventBus.getDefault().post(note);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
 
 
@@ -352,8 +371,6 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
             }
             EventBus.getDefault().post(info);
         }
-
-
 
 
         Intent intent = new Intent();

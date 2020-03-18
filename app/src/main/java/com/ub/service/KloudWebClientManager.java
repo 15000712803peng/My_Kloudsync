@@ -100,7 +100,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
     @Override
 
     public void onMessage(String message) {
-//        Log.e("KloundWebClientManager", "onMessage:" + message);
+        Log.e("KloundWebClientManager", "onMessage:" + message);
         if (this.onMessageArrivedListener != null) {
             this.onMessageArrivedListener.onMessage(message);
         }
