@@ -197,9 +197,11 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
                     break;
                 case R.id.txt_chat_unselected:
                     ChangeList(0);
+                    setBindViewText();
                     break;
                 case R.id.txt_contact_unselected:
                     ChangeList(1);
+                    setBindViewText();
                     break;
                 default:
                     break;
@@ -343,12 +345,12 @@ public class TwoToOneFragment extends Fragment implements ViewPager.OnPageChange
             public void run() {
                 String chat=getBindViewText(1005);
                 chatUnselected.setText(TextUtils.isEmpty(chat)? getString(R.string.dialogue):chat);
-                tv_chat.setText(TextUtils.isEmpty(chat)? getString(R.string.schMeeting):chat);
+                tv_chat.setText(TextUtils.isEmpty(chat)? getString(R.string.dialogue):chat);
                 String contact=getBindViewText(1006);
-                contactUnseleted.setText(TextUtils.isEmpty(contact)? getString(R.string.schMeeting):contact);
-                tv_contact.setText(TextUtils.isEmpty(contact)? getString(R.string.schMeeting):contact);
+                contactUnseleted.setText(TextUtils.isEmpty(contact)? getString(R.string.contact):contact);
+                tv_contact.setText(TextUtils.isEmpty(contact)? getString(R.string.contact):contact);
             }
-        },500);
+        },100);
     }
 
     @Override
