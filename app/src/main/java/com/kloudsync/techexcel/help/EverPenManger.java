@@ -699,6 +699,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 		addScanedEverPen(everPen);
 	}
 
+
 	@Override
 	public void onScanFailed(BLEException e) {
 		Log.e("EverPenManager", "onScanFailed,exception:" + e.getMessage());

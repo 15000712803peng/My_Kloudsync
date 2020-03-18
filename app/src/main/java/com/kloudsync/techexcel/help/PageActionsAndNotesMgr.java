@@ -95,6 +95,24 @@ public class PageActionsAndNotesMgr {
 
 	}
 
+    public static void requestActionsAndNoteForSoundtrackByTime(MeetingConfig config, final String pageNumber, final String soundtrackID, final long time) {
+        Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageActionsForSoundtrack>() {
+            @Override
+            public EventPageActionsForSoundtrack apply(MeetingConfig config) throws Exception {
+                return MeetingServiceTools.getInstance().syncGetPageActionsInSountrackByTime(time, Integer.parseInt(pageNumber), soundtrackID);
+            }
+        }).doOnNext(new Consumer<EventPageActionsForSoundtrack>() {
+            @Override
+            public void accept(EventPageActionsForSoundtrack eventPageActions) throws Exception {
+                EventBus.getDefault().post(eventPageActions);
+            }
+        }).subscribe();
+
+
+    }
+
+//    https://api.peertime.cn/peertime/V1/Soundtrack/PageActions?soundtrackID=37402&time=30008&pageNumber=2
+
     public static void requestActionsForNotePage(MeetingConfig config, final Note note) {
         Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventNotePageActions>() {
             @Override
