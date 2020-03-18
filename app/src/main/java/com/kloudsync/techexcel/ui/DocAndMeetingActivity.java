@@ -364,6 +364,17 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(newConfig.orientation==Configuration.ORIENTATION_PORTRAIT){
+//            Toast.makeText(DocAndMeetingActivity.this,"现在是竖屏", Toast.LENGTH_SHORT).show();
+        }
+        if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
+//            Toast.makeText(DocAndMeetingActivity.this,"现在是横屏", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     AudiencePromptDialog audiencePromptDialog;
 
     private void showAudiencePromptDialog() {
@@ -909,7 +920,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getType() == MeetingType.MEETING) {
             noteUsersLayout.setVisibility(View.GONE);
         } else {
-            noteUsersLayout.setVisibility(View.VISIBLE);
+            noteUsersLayout.setVisibility(View.GONE);
         }
         Log.e("followShowNote", "noteid:" + noteId);
         hideEnterLoading();
@@ -3184,7 +3195,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             int noteId = retData.getInt("noteId");
             int status = retData.getInt("status");
             if (status == 1) { //打开浮窗
-                showNoteFloatingDialog(noteId);
+                if (noteLayout.getVisibility() == View.VISIBLE) {
+                    if (noteWeb != null) {
+                       followShowNote(noteId);
+                    }
+                }else{
+                    showNoteFloatingDialog(noteId);
+                }
             } else if (status == 0) {  //关闭浮窗 或者 主界面
                 if (noteLayout.getVisibility() == View.VISIBLE) {
                     if (noteWeb != null) {

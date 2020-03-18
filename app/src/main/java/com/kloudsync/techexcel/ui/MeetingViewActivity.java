@@ -65,6 +65,7 @@ import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SoundtrackDetailData;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TvDevice;
+import com.kloudsync.techexcel.bean.params.EventPlayMeetingChangeDocument;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
@@ -472,6 +473,14 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             bottomFilePop.removeTempDoc();
         } else {
             menu.setVisibility(View.VISIBLE);
+        }
+        if(isplaymeeting){ //判断是否在播放会议
+            if(recordPlayDialog!=null){
+                Log.e("当前文档id--",meetingConfig.getCurrentDocumentPage().getDocumentId()+"   "+"  ");
+                recordPlayDialog.changeDocument(meetingConfig);
+                isplaymeeting=false;
+            }
+
         }
     }
 
@@ -1364,6 +1373,14 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     private synchronized void changeDocument(MeetingDocument document, int pageNumber) {
         Log.e("changeDocument", "document:" + document);
         downLoadDocumentPageAndShow(document, pageNumber);
+    }
+
+    private boolean isplaymeeting=false;
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventChangeDocument(EventPlayMeetingChangeDocument eventPlayMeetingChangeDocument){
+        isplaymeeting= eventPlayMeetingChangeDocument.isPlayMeeting();
+        changeDocument(eventPlayMeetingChangeDocument.getItemId(), eventPlayMeetingChangeDocument.getPageNumber());
     }
 
     private synchronized void changeDocument(int itemId, int pageNumber) {

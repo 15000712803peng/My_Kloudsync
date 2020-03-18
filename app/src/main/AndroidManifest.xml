@@ -760,7 +760,7 @@
         <activity
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:name="com.kloudsync.techexcel.ui.DocAndMeetingActivity"
-            android:configChanges="orientation|keyboardHidden|keyboard"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="sensor"
