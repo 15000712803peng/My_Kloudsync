@@ -218,7 +218,7 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 	}
 
 
-	private Note currentNote;
+	private Note currentNote=new Note();
 	private JSONObject lastjsonObject = new JSONObject();
 
 	private void process(final long noteId, final MeetingConfig meetingConfig) {
@@ -328,7 +328,6 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 										part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/" + fileName;
 									}
 									url = part;
-									Log.e("floatingnote", "url:" + url);
 								}
 							}
 						}
