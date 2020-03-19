@@ -54,7 +54,8 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	private List<NoteDotBean> mWebSocketOfflineList;
 	private long mGetPenRtcTimeCurrentTime;//获取笔的rtc时间时的当前时间戳
 	private long mDifferenceTime;//当前时间与笔时间的时间戳差值
-
+	private long mOneDayTime = 24 * 60 * 60 * 1000;
+	
 	private EverPenManger(Activity host) {
 		this.host = host;
 	}
@@ -255,8 +256,6 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 				break;
 		}
 	}
-
-	long mOneDayTime = 24 * 60 * 60 * 1000;
 
 	@Override
 	public void onReceiveOfflineStrokes(final Dot dot) {
