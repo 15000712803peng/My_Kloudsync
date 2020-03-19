@@ -41,18 +41,24 @@ public class SharedPreferencesUtils {
 		editor.commit();
 	}
 
-	public static <T> void putPenInfoList(String fileName, String key, List<T> datalist) {
+	public static synchronized <T> void putPenInfoList(String fileName, String key, List<T> datalist, TypeToken<List<T>> typeToken) {
 		if (null == datalist) return;
-		SharedPreferences.Editor editor = getSharedPreference(fileName).edit();
-		List<T> penInfoList = getList(fileName, key, new TypeToken<List<T>>() {
-		});
+		SharedPreferences sp = getSharedPreference(fileName);
+		SharedPreferences.Editor editor = sp.edit();
+		String strJson = sp.getString(key, null);
+		List<T> penInfoList;
+		if (strJson == null) {
+			penInfoList = new ArrayList<>();
+		} else {
+			penInfoList = new Gson().fromJson(strJson, typeToken.getType());
+		}
 		for (T bean : datalist) {
-//			if (!penInfoList.contains(bean)) {
-			penInfoList.add(bean);
-//			}
+			if (!penInfoList.contains(bean)) {
+				penInfoList.add(bean);
+			}
 		}
 		//转换成json数据，再保存
-		String strJson = new Gson().toJson(penInfoList);
+		strJson = new Gson().toJson(penInfoList);
 		editor.putString(key, strJson);
 		editor.commit();
 	}

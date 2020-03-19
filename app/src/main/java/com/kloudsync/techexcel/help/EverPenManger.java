@@ -8,14 +8,11 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EverPen;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.service.BluetoothLEService;
 import com.kloudsync.techexcel.tool.SharedPreferencesUtils;
-import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.tool.SyncWebNoteActionsCache;
 import com.tqltech.tqlpencomm.BLEException;
 import com.tqltech.tqlpencomm.BLEScanner;
@@ -25,13 +22,8 @@ import com.tqltech.tqlpencomm.ErrorStatus;
 import com.tqltech.tqlpencomm.PenCommAgent;
 import com.tqltech.tqlpencomm.PenStatus;
 import com.tqltech.tqlpencomm.listener.TQLPenSignal;
-import com.ub.service.KloudWebClientManager;
-import com.ub.techexcel.bean.NewBookPagesBean;
 import com.ub.techexcel.bean.NoteDotBean;
-import com.ub.techexcel.bean.NoteInfoBean;
-import com.ub.techexcel.bean.SendWebScoketNoteBean;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,7 +50,10 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	private boolean mIsAutoConnected = false;
 	private CopyOnWriteArrayList<PenDotsReceiver> dotsReceivers = new CopyOnWriteArrayList<>();
 	private List<NoteDotBean> mDotOnlineList = new ArrayList<>();
-	private List<NoteDotBean> mDotOfflineList = new ArrayList<>();
+	private List<NoteDotBean> mDotOfflineList;
+	private List<NoteDotBean> mWebSocketOfflineList;
+	private long mGetPenRtcTimeCurrentTime;//获取笔的rtc时间时的当前时间戳
+	private long mDifferenceTime;//当前时间与笔时间的时间戳差值
 
 	private EverPenManger(Activity host) {
 		this.host = host;
@@ -229,6 +224,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	private final double B5_WIDTH = 119.44;
 	private final double B5_HEIGHT = 168;
 	private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 	@Override
 	public void onReceiveDot(final Dot dot) {
 		Log.e("EverPenManager", "onReceiveDot:" + dot);
@@ -253,109 +249,25 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 		mDotOnlineList.add(noteDotBean);
 		switch (dot.type) {
 			case PEN_UP:
-				List<NoteInfoBean.DataBean> noteInfoList = SharedPreferencesUtils.getList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, new TypeToken<List<NoteInfoBean.DataBean>>() {
-				});
-				List<NewBookPagesBean.BookPagesBean> bookPagesBeans = null;
-				String address = dot.OwnerID + "." + dot.SectionID + "." + dot.BookID + "." + dot.PageID;
-				int noteId = 0;
-
-				NoteInfoBean.DataBean newPagesDataBean = new NoteInfoBean.DataBean();
-				newPagesDataBean.setAddress(address);
-				if (!noteInfoList.contains(newPagesDataBean)) {
-					bookPagesBeans = new ArrayList<>();
-					NewBookPagesBean.BookPagesBean pagesBean = new NewBookPagesBean.BookPagesBean();
-					pagesBean.setPageAddress(address);
-					pagesBean.setPenId(getCurrentPen().getMacAddress());
-					if (!bookPagesBeans.contains(pagesBean)) {
-						bookPagesBeans.add(pagesBean);
-					}
-				} else {
-					for (int i = 0; i < noteInfoList.size(); i++) {
-						if (noteInfoList.get(i).getAddress().equals(address)) {
-							noteId = noteInfoList.get(i).getNoteId();
-							break;
-						}
-					}
-				}
-
-				Date date = null;
-				try {
-					date = mSimpleDateFormat.parse(" 2010-01-01 00:00:00");
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-				SendWebScoketNoteBean webScoketDataBean = new SendWebScoketNoteBean();
-				webScoketDataBean.setAddress(address);
-				List<SendWebScoketNoteBean.LinesBean> linesBeans = new ArrayList<>();
-
-				for (NoteDotBean dotBean : mDotOnlineList) {
-					Dot bean = dotBean.getDot();
-					int eventType = 0;
-					switch (bean.type) {
-						case PEN_DOWN:
-							eventType = 2;
-							break;
-					}
-					if (eventType == 2) {
-						SendWebScoketNoteBean.LinesBean linesBean = new SendWebScoketNoteBean.LinesBean();
-						List<List<String>> pointList = new ArrayList<>();
-
-						linesBean.setId(dotBean.getDotId());
-						for (NoteDotBean dotbean2 : mDotOnlineList) {
-							Dot pointDot = dotbean2.getDot();
-							int force = bean.force * 20;
-							if (force == 0) {
-								//不处理
-							} else if (force < 500) {
-								force = 500;
-							} else if (force > 1200) {
-								force = 1200;
-							}
-							double dotX = pointDot.x + Double.valueOf("0." + pointDot.fx);
-							double dotY = pointDot.y + Double.valueOf("0." + pointDot.fy);
-							int x = (int) (dotX / B5_WIDTH * 5600);
-							int y = (int) (dotY / B5_HEIGHT * 7920);
-
-							long timelong = date.getTime() + pointDot.timelong;
-							BigDecimal bigDecimal = new BigDecimal(String.valueOf(timelong));
-							BigDecimal bigDecimal2 = new BigDecimal("1000");
-							bigDecimal.setScale(3, BigDecimal.ROUND_HALF_UP);
-							bigDecimal2.setScale(3, BigDecimal.ROUND_HALF_UP);
-							String time = bigDecimal.divide(bigDecimal2).toString();
-
-							List<String> pointDataList = new ArrayList<>();
-							pointDataList.add(String.valueOf(x));
-							pointDataList.add(String.valueOf(y));
-							pointDataList.add(String.valueOf(force));
-							pointDataList.add(time);
-							pointList.add(pointDataList);
-						}
-						linesBean.setPoints(pointList);
-						linesBeans.add(linesBean);
-					}
-
-				}
-
-				webScoketDataBean.setLines(linesBeans);
-				webScoketDataBean.setWidth(5600);
-				webScoketDataBean.setHeight(7920);
-				webScoketDataBean.setPaper("A4");
-				if (bookPagesBeans != null && bookPagesBeans.size() > 0) {
-
-				} else {
-					if (KloudWebClientManager.getInstance() != null) {
-						SocketMessageManager.getManager(App.getAppContext()).sendMessage_myNoteData(address, noteId, webScoketDataBean);
-					}
-				}
+				EverPenDataManger.getInstace(this, host).sendNoteDataToWebSocket(dot, mDotOnlineList);
 				EverPenDataManger.getInstace(this, host).cacheDotListData(mDotOnlineList);
 				mDotOnlineList.clear();
 				break;
 		}
 	}
 
+	long mOneDayTime = 24 * 60 * 60 * 1000;
+
 	@Override
 	public void onReceiveOfflineStrokes(final Dot dot) {
 		Log.e("EverPenManager", "onReceiveOfflineStrokes:" + dot);
+		long l = mGetPenRtcTimeCurrentTime - dot.timelong;
+		long l1 = dot.timelong - mGetPenRtcTimeCurrentTime;
+		if (l > mOneDayTime) {
+			dot.timelong = dot.timelong + mDifferenceTime;
+		} else if (l1 > mOneDayTime) {
+			dot.timelong = dot.timelong - mDifferenceTime;
+		}
 		host.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -370,15 +282,25 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 		NoteDotBean noteDotBean = new NoteDotBean();
 		noteDotBean.setDotId(uuid);
 		noteDotBean.setDot(dot);
+		mWebSocketOfflineList.add(noteDotBean);
 		mDotOfflineList.add(noteDotBean);
+		switch (dot.type) {
+			case PEN_UP:
+				EverPenDataManger.getInstace(this, host).sendNoteDataToWebSocket(dot, mWebSocketOfflineList);
+				mWebSocketOfflineList.clear();
+				break;
+		}
 	}
 
 	@Override
 	public void onOfflineDataList(int i) {
 		Log.e("EverPenManager", "onOfflineDataList:" + i);
 		if (i == 0) {
-			EverPenDataManger.getInstace(EverPenManger.this, host).sendHandlerMessage();
+			agent.ReqAdjustRTC();
+			EverPenDataManger.getInstace(this, host).sendHandlerMessage();
 		} else {
+			mWebSocketOfflineList = new ArrayList<>();
+			mDotOfflineList = new ArrayList<>();
 			agent.ReqOfflineDataTransfer(true);
 		}
 	}
@@ -408,6 +330,7 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	public void onFinishedOfflineDownload(boolean b) {
 		Log.e("EverPenManager", "onFinishedOfflineDownload:" + b);
 		if (b) {
+			agent.ReqAdjustRTC();
 			EverPenDataManger.getInstace(this, host).cacheDotListData(mDotOfflineList);
 			EverPenDataManger.getInstace(this, host).sendHandlerMessage();
 			mDotOfflineList.clear();
@@ -484,11 +407,24 @@ public class EverPenManger implements BluetoothLEService.OnDataReceiveListener, 
 	@Override
 	public void onPenTimetickSetupResponse(boolean b) {
 		Log.e("EverPenManager", "onPenTimetickSetupResponse:" + b);
+		if (b) {
+			agent.getPenRtc();
+		}
 	}
 
 	@Override
 	public void onReceivePenTime(long l) {
 		Log.e("EverPenManager", "onReceivePenTime:" + l);
+		try {
+			l *= 1000;
+			Date date = mSimpleDateFormat.parse(" 2010-01-01 00:00:00");
+			long time = date.getTime();
+			mGetPenRtcTimeCurrentTime = System.currentTimeMillis() - time;
+			mDifferenceTime = mGetPenRtcTimeCurrentTime - l;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override

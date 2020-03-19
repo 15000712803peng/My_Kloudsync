@@ -11,12 +11,15 @@ import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.tool.SharedPreferencesUtils;
+import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.tool.SyncWebNoteActionsCache;
 import com.kloudsync.techexcel.tool.ToastUtils;
 import com.tqltech.tqlpencomm.Dot;
+import com.ub.service.KloudWebClientManager;
 import com.ub.techexcel.bean.NewBookPagesBean;
 import com.ub.techexcel.bean.NoteDotBean;
 import com.ub.techexcel.bean.NoteInfoBean;
+import com.ub.techexcel.bean.SendWebScoketNoteBean;
 import com.ub.techexcel.bean.SyncNoteBean;
 import com.ub.techexcel.bean.UploadNoteBean;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -39,6 +42,7 @@ import static com.kloudsync.techexcel.config.AppConfig.UPLOADPENDATA;
 
 public class EverPenDataManger {
 	private final String TAG = EverPenDataManger.class.getSimpleName();
+
 	private static EverPenDataManger mManger;
 	private EverPenManger mEverPenManger;
 	private Activity mActivity;
@@ -55,11 +59,11 @@ public class EverPenDataManger {
 					Observable.just("getData").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
 						@Override
 						public void accept(String s) throws Exception {
-							List<NoteInfoBean.DataBean> noteInfoList = SharedPreferencesUtils.getList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, new TypeToken<List<NoteInfoBean.DataBean>>() {
-							});
+
 							Map<String, NoteDotBean> partWebActions = SyncWebNoteActionsCache.getInstance(App.getAppContext()).getPartWebActions();
 							if (partWebActions != null && partWebActions.size() != 0) {
-
+								List<NoteInfoBean.DataBean> noteInfoList = SharedPreferencesUtils.getList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, new TypeToken<List<NoteInfoBean.DataBean>>() {
+								});
 								//请求noteId相关信息请求参数实体类
 								NewBookPagesBean newBookPagesBean = new NewBookPagesBean();
 								newBookPagesBean.setPeertimeToken(AppConfig.UserToken);
@@ -113,14 +117,6 @@ public class EverPenDataManger {
 									int x = (int) (dotX / B5_WIDTH * 5600);
 									int y = (int) (dotY / B5_HEIGHT * 7920);
 
-									/*if (noteInfoList.size() == 0) {
-										NewBookPagesBean.BookPagesBean pagesBean = new NewBookPagesBean.BookPagesBean();
-										pagesBean.setPageAddress(address);
-										pagesBean.setPenId(uuid);
-										if (!bookPagesBeans.contains(pagesBean)) {
-											bookPagesBeans.add(pagesBean);
-										}
-									} else {*/
 									NoteInfoBean.DataBean newBookPagesDataBean = new NoteInfoBean.DataBean();
 									newBookPagesDataBean.setAddress(address);
 									if (!noteInfoList.contains(newBookPagesDataBean)) {
@@ -132,9 +128,6 @@ public class EverPenDataManger {
 										}
 									}
 
-//									}
-
-//				            if (bookPagesList.size() == 0) {
 									for (NoteInfoBean.DataBean noteInfoDataBean : noteInfoList) {
 										if (noteInfoDataBean.getAddress().equals(address)) {
 											SyncNoteBean.BookPagesBean syncNoteBookPagesBean = new SyncNoteBean.BookPagesBean();
@@ -147,18 +140,7 @@ public class EverPenDataManger {
 											}
 										}
 									}
-				            /*} else {
-					            for (NoteInfoBean.DataBean dataBean : noteInfoList) {
-						            if (!dataBean.getAddress().equals(address)) {
-							            SyncNoteBean.BookPagesBean bookPagesBean = new SyncNoteBean.BookPagesBean();
-							            bookPagesBean.setNoteId(dataBean.getNoteId());
-							            bookPagesBean.setNoteId(dataBean.getNoteId());
-							            bookPagesBean.setFileId(dataBean.getFileId());
-							            bookPagesBean.setPageAddress(address);
-							            bookPagesList.add(bookPagesBean);
-						            }
-					            }
-				            }*/
+
 
 									SyncNoteBean.DrawingDataBean drawingDataBean = new SyncNoteBean.DrawingDataBean();
 									drawingDataBean.setAddress(address);
@@ -185,17 +167,22 @@ public class EverPenDataManger {
 								newBookPagesBean.setBookPages(bookPagesBeans);
 								Log.e(TAG, TAG + "handleMessage_UPLOADPENDATA_noteInfoList" + noteInfoList.size() + "_syncNoteBean.setBookPages = " + bookPagesList.size()
 										+ "_syncNoteBean.setDrawingData=" + drawingDataList.size() + "_newBookPagesBean.setBookPages=" + bookPagesBeans.size());
+
+							/*	post(new Runnable() {
+									@Override
+									public void run() {*/
 								if (newBookPagesBean.getBookPages().size() > 0) {
-									requestNewBookPages(syncNoteBean, newBookPagesBean, uuidList);
+									requestNewBookPages(syncNoteBean, newBookPagesBean, uuidList, null);
 								} else {
 									uploadDrawing(syncNoteBean, uuidList);
 								}
+									/*}
+								});*/
 							} else {
 								sendEmptyMessageDelayed(UPLOADPENDATA, 5000);
 							}
 						}
 					}).subscribe();
-
 					break;
 			}
 		}
@@ -234,36 +221,174 @@ public class EverPenDataManger {
 		SyncWebNoteActionsCache.getInstance(App.getAppContext()).cacheMapActions(noteDotBeans);
 	}
 
-	public synchronized void requestNewBookPages(final SyncNoteBean syncNoteBean, final NewBookPagesBean newBookPagesBean, final List<String> uuidList) {
-		Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, NoteInfoBean>() {
-			@Override
-			public NoteInfoBean apply(String s) throws Exception {
-				String path = AppConfig.URL_LIVEDOC + "newBookPages";
-				return mRequsetTools.requestNewBookPages(path, newBookPagesBean.getPeertimeToken(), newBookPagesBean.getBookPages());
+	public void sendNoteDataToWebSocket(final Dot dot, final List<NoteDotBean> dotList) {
+		final List<NoteInfoBean.DataBean> noteInfoList = SharedPreferencesUtils.getList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, new TypeToken<List<NoteInfoBean.DataBean>>() {
+		});
+
+		NewBookPagesBean newBookPagesBean = null;
+		List<NewBookPagesBean.BookPagesBean> bookPagesBeans = null;
+		SendWebScoketNoteBean webScoketDataBean = new SendWebScoketNoteBean();
+		int noteId = 0;
+		String address = dot.OwnerID + "." + dot.SectionID + "." + dot.BookID + "." + dot.PageID;
+		NoteInfoBean.DataBean newPagesDataBean = new NoteInfoBean.DataBean();
+		newPagesDataBean.setAddress(address);
+		if (!noteInfoList.contains(newPagesDataBean)) {
+			newBookPagesBean = new NewBookPagesBean();
+			newBookPagesBean.setPeertimeToken(AppConfig.UserToken);
+			bookPagesBeans = new ArrayList<>();
+			NewBookPagesBean.BookPagesBean pagesBean = new NewBookPagesBean.BookPagesBean();
+			pagesBean.setPageAddress(address);
+			pagesBean.setPenId(mEverPenManger.getCurrentPen().getMacAddress());
+			if (!bookPagesBeans.contains(pagesBean)) {
+				bookPagesBeans.add(pagesBean);
 			}
+			newBookPagesBean.setBookPages(bookPagesBeans);
+		} else {
+			for (int i = 0; i < noteInfoList.size(); i++) {
+				if (noteInfoList.get(i).getAddress().equals(address)) {
+					noteId = noteInfoList.get(i).getNoteId();
+					break;
+				}
+			}
+		}
+
+		Date date = null;
+		try {
+			date = mSimpleDateFormat.parse(" 2010-01-01 00:00:00");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		webScoketDataBean.setAddress(address);
+		List<SendWebScoketNoteBean.LinesBean> linesBeans = new ArrayList<>();
+
+		for (NoteDotBean noteDotBean : dotList) {
+			Dot bean = noteDotBean.getDot();
+			int eventType = 0;
+			switch (bean.type) {
+				case PEN_DOWN:
+					eventType = 2;
+					break;
+			}
+			if (eventType == 2) {
+				SendWebScoketNoteBean.LinesBean linesBean = new SendWebScoketNoteBean.LinesBean();
+				List<List<String>> pointList = new ArrayList<>();
+
+				linesBean.setId(noteDotBean.getDotId());
+				for (NoteDotBean dotbean2 : dotList) {
+					Dot pointDot = dotbean2.getDot();
+					int force = bean.force * 20;
+					if (force == 0) {
+						//不处理
+					} else if (force < 500) {
+						force = 500;
+					} else if (force > 1200) {
+						force = 1200;
+					}
+					double dotX = pointDot.x + Double.valueOf("0." + pointDot.fx);
+					double dotY = pointDot.y + Double.valueOf("0." + pointDot.fy);
+					int x = (int) (dotX / B5_WIDTH * 5600);
+					int y = (int) (dotY / B5_HEIGHT * 7920);
+
+					long timelong = date.getTime() + pointDot.timelong;
+					BigDecimal bigDecimal = new BigDecimal(String.valueOf(timelong));
+					BigDecimal bigDecimal2 = new BigDecimal("1000");
+					bigDecimal.setScale(3, BigDecimal.ROUND_HALF_UP);
+					bigDecimal2.setScale(3, BigDecimal.ROUND_HALF_UP);
+					String time = bigDecimal.divide(bigDecimal2).toString();
+
+					List<String> pointDataList = new ArrayList<>();
+					pointDataList.add(String.valueOf(x));
+					pointDataList.add(String.valueOf(y));
+					pointDataList.add(String.valueOf(force));
+					pointDataList.add(time);
+					pointList.add(pointDataList);
+				}
+				linesBean.setPoints(pointList);
+				linesBeans.add(linesBean);
+			}
+
+		}
+		webScoketDataBean.setLines(linesBeans);
+		webScoketDataBean.setWidth(5600);
+		webScoketDataBean.setHeight(7920);
+		webScoketDataBean.setPaper("A4");
+		Log.e(TAG, "sendNoteDataToWebSocket : noteInfoList = " + noteInfoList.size() + "address = " + address + "noteId = "
+				+ noteId + "webScoketDataBean.getLines() = " + webScoketDataBean.getLines().size());
+		/*mHandler.post(new Runnable() {
+			@Override
+			public void run() {*/
+		if (bookPagesBeans != null && bookPagesBeans.size() > 0) {
+			requestNewBookPages(null, newBookPagesBean, null, webScoketDataBean);
+		} else {
+			if (KloudWebClientManager.getInstance() != null) {
+				SocketMessageManager.getManager(App.getAppContext()).sendMessage_myNoteData(address, noteId, webScoketDataBean);
+			}
+		}
+			/*}
+		});*/
+	}
+
+	public synchronized void requestNewBookPages(final SyncNoteBean syncNoteBean, final NewBookPagesBean newBookPagesBean,
+	                                             final List<String> uuidList, final SendWebScoketNoteBean webScoketDataBean) {
+//		Log.e(TAG, Thread.currentThread().toString());
+		/*Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, NoteInfoBean>() {
+			@Override
+			public NoteInfoBean apply(String s) throws Exception {*/
+				String path = AppConfig.URL_LIVEDOC + "newBookPages";
+		/*return */
+		final NoteInfoBean noteinfobean = mRequsetTools.requestNewBookPages(path, newBookPagesBean.getPeertimeToken(), newBookPagesBean.getBookPages());
+			/*}
 		}).doOnNext(new Consumer<NoteInfoBean>() {
 			@Override
-			public void accept(final NoteInfoBean noteinfobean) throws Exception {
+			public void accept(final NoteInfoBean noteinfobean) throws Exception {*/
 				if (noteinfobean != null) {
 					if (noteinfobean.isSuccess()) {
 						List<NoteInfoBean.DataBean> dataBeanList = noteinfobean.getData();
-						for (NoteInfoBean.DataBean bean : dataBeanList) {
-							SyncNoteBean.BookPagesBean bookPagesBean = new SyncNoteBean.BookPagesBean();
-							bookPagesBean.setNoteId(bean.getNoteId());
-							bookPagesBean.setFileId(bean.getFileId());
-							bookPagesBean.setTargetFolderKey(bean.getTargetFolder());
-							bookPagesBean.setPageAddress(bean.getAddress());
-							syncNoteBean.getBookPages().add(bookPagesBean);
+						for (int i = 0; i < dataBeanList.size(); i++) {
+							if (dataBeanList.get(i).isSuccess()) {
+								Log.e(TAG, Thread.currentThread().toString() + dataBeanList.get(i).getNoteId());
+							} else {
+								Log.e(TAG, Thread.currentThread().toString() + dataBeanList.get(i).getErrMsg());
+							}
 						}
-						SharedPreferencesUtils.putPenInfoList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, dataBeanList);
-						uploadDrawing(syncNoteBean, uuidList);
+						if (webScoketDataBean == null) {
+							for (NoteInfoBean.DataBean bean : dataBeanList) {
+								SyncNoteBean.BookPagesBean bookPagesBean = new SyncNoteBean.BookPagesBean();
+								bookPagesBean.setNoteId(bean.getNoteId());
+								bookPagesBean.setFileId(bean.getFileId());
+								bookPagesBean.setTargetFolderKey(bean.getTargetFolder());
+								bookPagesBean.setPageAddress(bean.getAddress());
+								syncNoteBean.getBookPages().add(bookPagesBean);
+								Log.e(TAG, "requestNewBookPages : dataBeanList = " + dataBeanList.size() + "noteid = " + bean.getNoteId());
+							}
+							SharedPreferencesUtils.putPenInfoList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, dataBeanList, new TypeToken<List<NoteInfoBean.DataBean>>() {
+							});
+							mHandler.post(new Runnable() {
+								@Override
+								public void run() {
+									uploadDrawing(syncNoteBean, uuidList);
+								}
+							});
+						} else {
+							SharedPreferencesUtils.putPenInfoList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, dataBeanList, new TypeToken<List<NoteInfoBean.DataBean>>() {
+							});
+							for (NoteInfoBean.DataBean bean : dataBeanList) {
+								if (KloudWebClientManager.getInstance() != null) {
+									SocketMessageManager.getManager(App.getAppContext()).sendMessage_myNoteData(webScoketDataBean.getAddress(), bean.getNoteId(), webScoketDataBean);
+									Log.e(TAG, "requestNewBookPagesSocket : dataBeanList = " + dataBeanList.size() + "address = " + webScoketDataBean.getAddress()
+											+ "noteId = " + bean.getNoteId() + "webScoketDataBean.getLines() = " + webScoketDataBean.getLines().size());
+								}
+							}
+						}
 					} else {
 						mActivity.runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
 								NoteInfoBean.ErrorBean error = noteinfobean.getError();
-								String errorMessage = error.getErrorMessage();
-								ToastUtils.show(mActivity, errorMessage);
+								if (error != null) {
+									String errorMessage = error.getErrorMessage();
+									ToastUtils.show(mActivity, errorMessage);
+								}
 							}
 						});
 						sendHandlerMessage();
@@ -272,8 +397,8 @@ public class EverPenDataManger {
 					sendHandlerMessage();
 				}
 
-			}
-		}).subscribe();
+			/*}
+		}).subscribe();*/
 	}
 
 	public synchronized void uploadDrawing(final SyncNoteBean syncNoteBean, final List<String> uuidList) {

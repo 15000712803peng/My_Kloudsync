@@ -23,14 +23,12 @@ import com.ub.techexcel.bean.NotifyBean;
 import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
-import org.java_websocket.client.WebSocketClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Timer;
 
 import io.rong.callkit.RongCallAction;
 import io.rong.callkit.RongVoIPIntent;
@@ -190,7 +188,7 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
     @Override
     public void onMessage(String message) {
         String msg = Tools.getFromBase64(message);
-//        Log.e("socket服务器返回结果--------2", msg);
+        Log.e("socket服务器返回结果--------2", msg);
         String actionString = getRetCodeByReturnData2("action", msg);
         if (TextUtils.isEmpty(actionString)) {
             return;
