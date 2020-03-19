@@ -117,6 +117,7 @@ import com.ub.techexcel.tools.ExitDialog;
 import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.MeetingRecordsDialog;
+import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
@@ -167,6 +168,8 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
     private PopBottomFile bottomFilePop;
     Gson gson;
     private String attachmentUrl;
+
+    private String localFileId;
 
     @Override
     public void showErrorPage() {
@@ -315,9 +318,6 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
         web.load("javascript:ShowToolbar(" + false + ")", null);
         web.load("javascript:Record()", null);
 
-        noteWeb.load(url, null);
-        noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
-        noteWeb.load("javascript:Record()", null);
     }
 
     private MeetingConfig getConfig() {
@@ -334,7 +334,9 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
         meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting", false));
         meetingConfig.setSpaceId(getIntent().getIntExtra("spaceId", 0));
         attachmentUrl = data.getStringExtra("url");
+        localFileId = data.getStringExtra("local_file_id");
         currentNoteId = data.getIntExtra("note_id",0);
+
         return meetingConfig;
     }
 
@@ -663,9 +665,11 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
                             TempNoteData _noteData = new TempNoteData();
                             _noteData.setData(Tools.getFromBase64(noteData));
                             _noteData.setNoteId(noteId);
+                            handleBluetoothNote(noteId);
 //                            newNoteDatas.add(_noteData);
                             return;
                         }
+                        Log.e("check_note_id","current_note_id:" + currentNoteId + ",note_id:" + noteId);
                         String key = "ShowDotPanData";
 
                             if (web != null) {
@@ -1360,17 +1364,22 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
     //-----  JavascriptInterface ----
     @org.xwalk.core.JavascriptInterface
     public void afterLoadPageFunction() {
+
+        Log.e("local_file_id","localFileId:" + localFileId);
         Log.e("JavascriptInterface", "afterLoadPageFunction");
-        Observable.just("load_note_page").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                hideEnterLoading();
-                String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
-                Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + 1 + ",''," + meetingConfig.getDocumentId() + "," + true + ")");
-                web.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocumentId() + "," + true + ")", null);
-                web.load("javascript:Record()", null);
-            }
-        });
+        if(!TextUtils.isEmpty(localFileId) && localFileId.contains(".")){
+            Observable.just("load_note_page").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                @Override
+                public void accept(String s) throws Exception {
+                    hideEnterLoading();
+                    String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
+                    Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + 1 + ",''," + meetingConfig.getDocumentId() + "," + true + ")");
+                    web.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocumentId() + "," + true + ")", null);
+                    web.load("javascript:Record()", null);
+                }
+            });
+        }
+
 
     }
 
@@ -2562,6 +2571,9 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
                         meetingConfig.setCurrentMaxVideoUserId(joinMeetingMessage.getCurrentMaxVideoUserId());
                     }
                     if (documents == null || documents.size() <= 0) {
+                        if(!TextUtils.isEmpty(localFileId) && localFileId.contains(".")){
+                            return;
+                        }
                         requestDocumentsAndShowPage();
                     } else {
 //                        requestDocuments();
@@ -2777,6 +2789,7 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
         intent.putExtra("lession_id", Integer.parseInt(itemId));
         intent.putExtra("url", note.getAttachmentUrl());
         intent.putExtra("note_id", note.getNoteID());
+        intent.putExtra("local_file_id", note.getLocalFileID());
         startActivity(intent);
     }
 
@@ -2789,6 +2802,145 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
             startService(service);
         }
     }
+
+    private void handleBluetoothNote(final long noteId) {
+        if (noteId <= 0) {
+            return;
+        }
+
+        Observable.just(noteId+"").observeOn(Schedulers.io()).map(new Function<String, Note>() {
+            @Override
+            public Note apply(String noteId) throws Exception {
+                return MeetingServiceTools.getInstance().syncGetNoteByNoteId(noteId);
+            }
+
+        }).map(new Function<Note, String>() {
+            @Override
+            public String apply(Note note) throws Exception {
+                String newUrl = "";
+                String url = note.getAttachmentUrl();
+
+                if(!TextUtils.isEmpty(url)){
+                    URL _url = new URL(url);
+                    Log.e("check_url_path", _url.getPath());
+                    String path = _url.getPath();
+                    if (!TextUtils.isEmpty(path)) {
+                        if (path.startsWith("/")) {
+                            path = path.substring(1);
+                        }
+                        int index = path.lastIndexOf("/");
+                        if (index >= 0 && index < path.length()) {
+                            String centerPart = path.substring(0, index);
+                            String fileName = path.substring(index + 1, path.length());
+                            Log.e("check_transform_url", "centerPart:" + centerPart + ",fileName:" + fileName);
+                            if (!TextUtils.isEmpty(centerPart)) {
+                                JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+                                        centerPart);
+                                if (queryDocumentResult != null) {
+                                    Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+                                    String part = "";
+                                    if (uploadao != null) {
+                                        if (1 == uploadao.getServiceProviderId()) {
+                                            part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
+                                                    + "/" + fileName;
+                                        } else if (2 == uploadao.getServiceProviderId()) {
+                                            part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/" + fileName;
+                                        }
+                                        url = part;
+                                        Log.e("check_transform_url", "url:" + url);
+                                    }
+
+                                }
+                                currentNoteId = note.getNoteID();
+
+                            }
+                        }
+                    }
+
+                    int checkIndex = url.lastIndexOf("/");
+                    if (checkIndex > 0 && checkIndex < url.length() - 2) {
+                        newUrl = url.substring(0, checkIndex + 1) + "book_page_data.json";
+                    }
+                }
+
+
+                return newUrl;
+            }
+        }).map(new Function<String, JSONObject>() {
+            @Override
+            public JSONObject apply(String url) throws Exception {
+                JSONObject jsonObject = new JSONObject();
+                if (!TextUtils.isEmpty(url)) {
+                    Log.e("check_url", "url:" + url);
+                    jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
+                    lastjsonObject = jsonObject.getJSONObject("PaintData");
+                }
+                return jsonObject;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                if(web == null){
+                    return;
+                }
+                web.load("javascript:ClearPageAndAction()", null);
+                String key = "ShowDotPanData";
+                JSONObject _data = new JSONObject();
+                _data.put("LinesData", jsonObject);
+                _data.put("ShowInCenter", false);
+                _data.put("TriggerEvent", false);
+                Log.e("ShowDotPanData", "ShowDotPanData");
+                web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                RecordNoteActionManager.getManager(NoteViewActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+            }
+        }).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                if (!newNoteDatas.isEmpty()) {
+                    Observable.fromIterable(newNoteDatas).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<TempNoteData>() {
+                        @Override
+                        public void accept(TempNoteData tempNoteData) throws Exception {
+                            Log.e("draw_new_note", "temp_note_note");
+                            if (tempNoteData.getNoteId() == currentNoteId) {
+                                String key = "ShowDotPanData";
+                                JSONObject _data = new JSONObject();
+                                _data.put("LinesData", tempNoteData.getData());
+                                _data.put("ShowInCenter", true);
+                                _data.put("TriggerEvent", true);
+                                web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                            }
+                            newNoteDatas.remove(tempNoteData);
+                        }
+                    }).subscribe();
+                }
+            }
+        }).observeOn(Schedulers.io()).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                JSONObject result = ServiceInterfaceTools.getinstance().syncGetNoteP1Item(currentNoteId);
+                if (result.has("code")) {
+                    if (result.getInt("code") == 0) {
+                        JSONArray dataArray = result.getJSONArray("data");
+                        Observable.just(dataArray).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONArray>() {
+                            @Override
+                            public void accept(JSONArray _jsonArray) throws Exception {
+                                for (int i = 0; i < _jsonArray.length(); ++i) {
+                                    JSONObject data = _jsonArray.getJSONObject(i);
+                                    addLinkBorderForDTNew(data);
+                                }
+
+                            }
+                        }).subscribe();
+
+
+                    }
+                }
+            }
+        }).subscribe();
+    }
+
+
+
 
 
 }

@@ -241,6 +241,7 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
         intent.putExtra("lession_id", Integer.parseInt(itemId));
         intent.putExtra("url", note.getAttachmentUrl());
         intent.putExtra("note_id", note.getNoteID());
+        intent.putExtra("local_file_id", note.getLocalFileID());
         startActivity(intent);
     }
 
