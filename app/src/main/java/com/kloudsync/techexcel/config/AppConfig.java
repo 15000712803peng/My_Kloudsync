@@ -35,7 +35,6 @@ public class AppConfig {
     public static String URL_PUBLIC_AUDIENCE = "https://wss.peertime.cn/";
 
 //    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
-
     //     正式
     public static String URL_PUBLIC = "https://api.peertime.cn/peertime/V1/";
     public static String URL_MEETING_BASE = "https://wss.peertime.cn/MeetingServer/";
@@ -48,6 +47,7 @@ public class AppConfig {
 //    public static String COURSE_SOCKET = "wss://testwss.peertime.cn:8443/MeetingServer/websocket";
 //    public static String liveToken = "01427aa4-396e-44b7-82ab-84d802099bb0";
 //    public static String  wssServer = "https://testwss.peertime.cn:8443/MeetingServer";
+//    public static String URL_MEETING_BASE = "https://testwss.peertime.cn/MeetingServer/";
 
 
     public static String URL_IMAGE = "http://ub.servicewise.net.cn/CWKnowledgeWise/ImagePreview.aspx?ProjectID=49&FileID=";
@@ -126,7 +126,6 @@ public class AppConfig {
     public static int SchoolID;
     public static String selectedSubSystemId;
     public static int deviceType;
-
     public static int Online;
     public static final int LOGIN = 1;
     public static final int NETERROR = 2;

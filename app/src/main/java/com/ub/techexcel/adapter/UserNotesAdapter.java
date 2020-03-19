@@ -13,12 +13,26 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventOpenOrCloseBluethoothNote;
+import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.techexcel.bean.Note;
+import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.NoteOperatorPopup;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
 
+import org.json.JSONObject;
+
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class UserNotesAdapter extends RecyclerView.Adapter<UserNotesAdapter.RecycleHolder2> {
 
@@ -117,6 +131,9 @@ public class UserNotesAdapter extends RecyclerView.Adapter<UserNotesAdapter.Recy
             operationmore = itemView.findViewById(R.id.operationmore);
         }
     }
+
+
+
 }
 
 

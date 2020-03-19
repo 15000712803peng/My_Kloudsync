@@ -1679,16 +1679,16 @@ public class ServiceInterfaceTools {
      */
     public NoteInfoBean requestNewBookPages(String path, String peertimeToken, List<NewBookPagesBean.BookPagesBean> bookPages) {
         JSONObject jsonObject = new JSONObject();
-	    Gson gson = new Gson();
-	    NoteInfoBean noteInfoBean = new NoteInfoBean();
+        Gson gson = new Gson();
+        NoteInfoBean noteInfoBean = new NoteInfoBean();
         try {
             jsonObject.put("PeertimeToken", peertimeToken);
-	        String pages = gson.toJson(bookPages);
+            String pages = gson.toJson(bookPages);
             JSONArray jsonArray = new JSONArray(pages);
             jsonObject.put("BookPages", jsonArray);
             String response = ConnectService.requestNewBookPages(path, jsonObject);
             if (response != null) {
-	            noteInfoBean = gson.fromJson(response, NoteInfoBean.class);
+                noteInfoBean = gson.fromJson(response, NoteInfoBean.class);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1697,37 +1697,37 @@ public class ServiceInterfaceTools {
         return noteInfoBean;
     }
 
-	/**
-	 * 上传笔记数据
-	 *
-	 * @param path
-	 * @param peertimeToken
-	 * @param bookPages
-	 * @param drawingData
-	 * @return
-	 */
-	public UploadNoteBean uploadDrawing(String path, String peertimeToken, List<SyncNoteBean.BookPagesBean> bookPages,
-	                                    List<SyncNoteBean.DrawingDataBean> drawingData) {
-		JSONObject jsonObject = new JSONObject();
-		Gson gson = new Gson();
-		UploadNoteBean uploadNoteBean = new UploadNoteBean();
-		try {
-			jsonObject.put("PeertimeToken", peertimeToken);
-			String pages = gson.toJson(bookPages);
-			JSONArray jsonArray = new JSONArray(pages);
-			jsonObject.put("BookPages", jsonArray);
-			String drawingList = gson.toJson(drawingData);
-			JSONArray drawingJsonArray = new JSONArray(drawingList);
-			jsonObject.put("DrawingData", drawingJsonArray);
-			String response = ConnectService.uploadDrawing(path, jsonObject);
-			if (response != null) {
-				uploadNoteBean = gson.fromJson(response, UploadNoteBean.class);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return uploadNoteBean;
-	}
+    /**
+     * 上传笔记数据
+     *
+     * @param path
+     * @param peertimeToken
+     * @param bookPages
+     * @param drawingData
+     * @return
+     */
+    public UploadNoteBean uploadDrawing(String path, String peertimeToken, List<SyncNoteBean.BookPagesBean> bookPages,
+                                        List<SyncNoteBean.DrawingDataBean> drawingData) {
+        JSONObject jsonObject = new JSONObject();
+        Gson gson = new Gson();
+        UploadNoteBean uploadNoteBean = new UploadNoteBean();
+        try {
+            jsonObject.put("PeertimeToken", peertimeToken);
+            String pages = gson.toJson(bookPages);
+            JSONArray jsonArray = new JSONArray(pages);
+            jsonObject.put("BookPages", jsonArray);
+            String drawingList = gson.toJson(drawingData);
+            JSONArray drawingJsonArray = new JSONArray(drawingList);
+            jsonObject.put("DrawingData", drawingJsonArray);
+            String response = ConnectService.uploadDrawing(path, jsonObject);
+            if (response != null) {
+                uploadNoteBean = gson.fromJson(response, UploadNoteBean.class);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return uploadNoteBean;
+    }
 
     public void changeBindTvStatus(final String url, final int code, boolean status, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
@@ -2721,7 +2721,7 @@ public class ServiceInterfaceTools {
     }
 
     public Call<JsonObject> getAppNames(int id) {
-        String appNameUrl=AppConfig.wssServer + "/company_custom_display_name/name_list?companyId="+id;
+        String appNameUrl = AppConfig.wssServer + "/company_custom_display_name/name_list?companyId=" + id;
         return request.getAppNames(appNameUrl, AppConfig.UserToken);
     }
 
@@ -2829,8 +2829,6 @@ public class ServiceInterfaceTools {
         Log.e("syncGetSimpleNoteInfoByLinkId", url + jsonObject.toString() + "  " + response.toString());
         return response;
     }
-
-
 
 
     public interface OnJsonResponseReceiver {
@@ -3097,7 +3095,6 @@ public class ServiceInterfaceTools {
     }
 
 
-
     public List<WebAction> syncGetRecordActions(final String url) {
 
         JSONObject response = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
@@ -3305,15 +3302,15 @@ public class ServiceInterfaceTools {
 
     }
 
-    public JSONObject syncInviteNewToCompany(String phone){
+    public JSONObject syncInviteNewToCompany(String phone) {
         String url = AppConfig.URL_PUBLIC + "Invite/InviteNewToCompany";
         JSONObject params = new JSONObject();
         try {
-            params.put("CompanyID",AppConfig.SchoolID);
-            params.put("InviteTo",AppConfig.SchoolID);
-            params.put("Mobile",phone);
-            params.put("InviteToType",0);
-            params.put("RequestAddFriend",1);
+            params.put("CompanyID", AppConfig.SchoolID);
+            params.put("InviteTo", AppConfig.SchoolID);
+            params.put("Mobile", phone);
+            params.put("InviteToType", 0);
+            params.put("RequestAddFriend", 1);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -3323,12 +3320,12 @@ public class ServiceInterfaceTools {
 
     }
 
-    public JSONObject syncApplyChat(long contactId,long companyId){
-        String url = AppConfig.URL_MEETING_BASE + "company_contact/apply_chat?contactId=" + contactId+"&companyId=" + companyId;
+    public JSONObject syncApplyChat(long contactId, long companyId) {
+        String url = AppConfig.URL_MEETING_BASE + "company_contact/apply_chat?contactId=" + contactId + "&companyId=" + companyId;
         JSONObject params = new JSONObject();
         try {
-            params.put("contactId",contactId);
-            params.put("companyId",companyId);
+            params.put("contactId", contactId);
+            params.put("companyId", companyId);
 
 
         } catch (JSONException e) {
@@ -3339,12 +3336,12 @@ public class ServiceInterfaceTools {
         return response;
     }
 
-    public JSONObject syncAddContact(long contactId,long companyId){
-        String url = AppConfig.URL_MEETING_BASE + "company_contact/add_contact?contactId=" + contactId+"&companyId=" + companyId;
+    public JSONObject syncAddContact(long contactId, long companyId) {
+        String url = AppConfig.URL_MEETING_BASE + "company_contact/add_contact?contactId=" + contactId + "&companyId=" + companyId;
         JSONObject params = new JSONObject();
         try {
-            params.put("contactId",contactId);
-            params.put("companyId",companyId);
+            params.put("contactId", contactId);
+            params.put("companyId", companyId);
 
 
         } catch (JSONException e) {
@@ -3363,7 +3360,13 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncGetTempLessonWithOriginalDocument(final String url) {
+        JSONObject response = ConnectService.submitDataByJson(url, null);
+        Log.e("syncGetTempLessonWithOriginalDocument", url + "  " + response.toString());
+        return response;
 
+
+    }
 
 
 }

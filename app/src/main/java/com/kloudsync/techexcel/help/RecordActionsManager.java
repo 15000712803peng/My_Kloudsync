@@ -21,6 +21,7 @@ import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.WebVedio;
+import com.kloudsync.techexcel.bean.params.EventPlayMeetingChangeDocument;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
@@ -390,6 +391,22 @@ public class RecordActionsManager {
                         if (data.getInt("docType") == 1) {
                             // 加载笔记
                             handleNote(data.getInt("itemId"), data.getString("notePageId"));
+                        }else{
+                           int itemId= data.getInt("itemId");
+                           int pageNumber=data.getInt("pageNumber");
+                           Log.e("当前文档id",meetingConfig.getCurrentDocumentPage().getDocumentId()+"   "+itemId+"  ");
+                           if(itemId!=meetingConfig.getCurrentDocumentPage().getDocumentId()){
+                               final EventPlayMeetingChangeDocument eventPlayMeetingChangeDocument =new EventPlayMeetingChangeDocument();
+                               eventPlayMeetingChangeDocument.setPlayMeeting(true);
+                               eventPlayMeetingChangeDocument.setItemId(itemId);
+                               eventPlayMeetingChangeDocument.setPageNumber(pageNumber);
+                               Observable.just("").observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+                                   @Override
+                                   public void accept(String page) throws Exception {
+                                      EventBus.getDefault().post(eventPlayMeetingChangeDocument);
+                                   }
+                               }).subscribe();
+                           }
                         }
                         break;
                 }

@@ -418,9 +418,18 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             member.setUserId(uid);
             member.setMuteAudio(true);
             member.setMuteVideo(true);
+            if (member.isAdd()) {
+                meetingConfig.addAgoraMember(member);
+            } else {
+                //delete user
+                meetingConfig.deleteAgoraMember(member);
+            }
+
             EventBus.getDefault().post(member);
+
             requestMeetingMembers(meetingConfig, false);
         }
+
 
     }
 
@@ -911,11 +920,31 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
     }
 
-    private void refreshMembersAndPost(MeetingConfig meetingConfig, final int uid, final boolean isSelf) {
+    private void refreshMembersAndPost(final MeetingConfig meetingConfig, final int uid, final boolean isSelf) {
         this.meetingConfig = meetingConfig;
-        Observable.just(meetingConfig).observeOn(Schedulers.io()).map(new Function<MeetingConfig, MeetingConfig>() {
+        Observable.just(meetingConfig).observeOn(AndroidSchedulers.mainThread()).map(new Function<MeetingConfig, AgoraMember>() {
             @Override
-            public MeetingConfig apply(MeetingConfig meetingConfig) throws Exception {
+            public AgoraMember apply(MeetingConfig meetingConfig) throws Exception {
+                AgoraMember agoraMember = null;
+                if (isSelf) {
+                    agoraMember = createSelfCamera(uid);
+                } else {
+                    agoraMember = createMemberCamera(uid);
+                }
+
+                if (agoraMember.isAdd()) {
+                    meetingConfig.addAgoraMember(agoraMember);
+                } else {
+                    //delete user
+                    meetingConfig.deleteAgoraMember(agoraMember);
+                }
+                return  agoraMember;
+            }
+
+        }).observeOn(Schedulers.io()).map(new Function<AgoraMember, AgoraMember>() {
+            @Override
+            public AgoraMember apply(AgoraMember agoraMember) throws Exception {
+
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.MEMBER);
                 if (result.has("code")) {
                     if (result.getInt("code") == 0) {
@@ -930,19 +959,18 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                                 if (member.getPresenter() == 1) {
                                     meetingConfig.setPresenterId(member.getUserId() + "");
                                 }
-
                             }
 
                             meetingConfig.setMeetingMembers(members);
                         }
                     }
                 }
-                return meetingConfig;
-            }
 
-        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<MeetingConfig>() {
+                return agoraMember;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<AgoraMember>() {
             @Override
-            public void accept(MeetingConfig meetingConfig) throws Exception {
+            public void accept(AgoraMember agoraMember) throws Exception {
 
                 if (!meetingConfig.getMeetingMembers().contains(new MeetingMember(uid))) {
                     // 加入的是member
@@ -952,9 +980,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                     }
                 }
                 if (isSelf) {
-                    EventBus.getDefault().post(createSelfCamera(uid));
+                    EventBus.getDefault().post(agoraMember);
                 } else {
-                    EventBus.getDefault().post(createMemberCamera(uid));
+                    EventBus.getDefault().post(agoraMember);
                 }
 
             }
@@ -964,11 +992,19 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     public void disableAudioAndVideoStream() {
         MeetingKit.getInstance().menuMicroClicked(false);
         MeetingKit.getInstance().menuCameraClicked(false);
-        MeetingKit.getInstance().changeAgoraRole(CLIENT_ROLE_AUDIENCE);
+//        MeetingKit.getInstance().changeAgoraRole(CLIENT_ROLE_AUDIENCE);
+    }
+
+    public void disableAudioStream() {
+        MeetingKit.getInstance().menuMicroClicked(false);
+    }
+
+    public void disableVedioStream() {
+        MeetingKit.getInstance().menuCameraClicked(false);
     }
 
     public void enableAudioAndVideo() {
-        MeetingKit.getInstance().changeAgoraRole(CLIENT_ROLE_BROADCASTER);
+//        MeetingKit.getInstance().changeAgoraRole(CLIENT_ROLE_BROADCASTER);
 
     }
 
@@ -1042,13 +1078,13 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
         if (meetingMember.getMicrophoneStatus() != 2) {
             rtcManager.worker().getRtcEngine().muteRemoteAudioStream(meetingMember.getUserId(), true);
-        }else {
+        } else {
             rtcManager.worker().getRtcEngine().muteRemoteAudioStream(meetingMember.getUserId(), false);
         }
 
         if (meetingMember.getCameraStatus() != 2) {
             rtcManager.worker().getRtcEngine().muteRemoteVideoStream(meetingMember.getUserId(), true);
-        }else {
+        } else {
             rtcManager.worker().getRtcEngine().muteRemoteVideoStream(meetingMember.getUserId(), false);
         }
 

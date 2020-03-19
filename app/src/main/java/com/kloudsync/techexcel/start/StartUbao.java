@@ -281,7 +281,7 @@ public class StartUbao extends Activity {
                 try {
                     Response<NetworkResponse<LoginData>> response = ServiceInterfaceTools.getinstance().login(name, password).execute();
                     Log.e("processLogin", "LoginData,success:" + response.isSuccessful() + ",body:" + response.body());
-                    if (response == null || !response.isSuccessful() || response.body() == null) {
+                    if (response == null || !response.isSuccessful() || response.body() == null || response.body().getRetCode() != 0) {
                         Observable.just("go_to_login").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                             @Override
                             public void accept(String s) throws Exception {

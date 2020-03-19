@@ -174,14 +174,15 @@
                     </com.kloudsync.techexcel.ui.MaskViewGroup>
 
                     <TextView
+                        android:visibility="invisible"
                         android:id="@+id/txt_chat_unselected"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
                         android:gravity="center"
                         android:text="@string/dialogue"
                         android:textColor="#ff666666"
-                        android:textSize="17sp"
-                        android:visibility="invisible" />
+                        android:textSize="17sp" />
                 </RelativeLayout>
 
 

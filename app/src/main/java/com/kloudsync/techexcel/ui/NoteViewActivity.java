@@ -41,6 +41,7 @@ import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventNotePageActions;
 import com.kloudsync.techexcel.bean.EventOpenNote;
+import com.kloudsync.techexcel.bean.EventOpenOrCloseBluethoothNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
 import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.EventPlaySoundtrack;
@@ -65,12 +66,12 @@ import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SoundtrackDetailData;
 import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.TvDevice;
-import com.kloudsync.techexcel.bean.params.EventPlayMeetingChangeDocument;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
+import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.dialog.RecordPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
@@ -104,6 +105,7 @@ import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
+import com.ub.service.activity.SocketService;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.bean.EventMuteAll;
 import com.ub.techexcel.bean.EventUnmuteAll;
@@ -132,6 +134,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -150,11 +153,12 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 /**
  * Created by tonyan on 2019/11/19.
  */
-public class MeetingViewActivity extends BaseMeetingViewActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
-        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingRecordsDialog.OnPlayRecordListener {
+public class NoteViewActivity extends BaseMeetingViewActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
+        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener {
 
     public static MeetingConfig meetingConfig;
     private SocketMessageManager messageManager;
@@ -162,6 +166,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     private BottomMenuManager menuManager;
     private PopBottomFile bottomFilePop;
     Gson gson;
+    private String attachmentUrl;
 
     @Override
     public void showErrorPage() {
@@ -178,7 +183,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             return;
         }
 
-//        Log.e("check_crash",null);
         writeNoteBlankPageImage();
         initViews();
         //----
@@ -187,8 +191,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         messageManager = SocketMessageManager.getManager(this);
         messageManager.registerMessageReceiver();
         messageManager.sendMessage_JoinMeeting(meetingConfig);
-        handleMainPagePlayIfHasMeetingRecord();
-
         pageCache = DocumentPageCache.getInstance(this);
         //--
         initWeb();
@@ -198,40 +200,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         menuManager.setMenuIcon(menu);
         bottomFilePop = new PopBottomFile(this);
         gson = new Gson();
-    }
-
-    private void handleMainPagePlayIfHasMeetingRecord() {
-
-        String url = "https://wss.peertime.cn/MeetingServer/recording/recording_list?lessonId=" + meetingConfig.getMeetingId();
-        ServiceInterfaceTools.getinstance().getRecordingList(url, ServiceInterfaceTools.GETRECORDINGLIST, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-
-                final List<Record> records = new ArrayList<>();
-                if(object instanceof List){
-                    records.addAll((List<Record>) object);
-                }
-
-                if (records.size() > 0) {
-                    Observable.just("handle_result").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-                        @Override
-                        public void accept(String s) throws Exception {
-                            playMeetingLayout.setVisibility(View.VISIBLE);
-                            playMeetingImage.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    playMeetingLayout.setVisibility(View.GONE);
-                                    play(records.get(0));
-                                }
-                            });
-                        }
-                    });
-                }else {
-                    playMeetingLayout.setVisibility(View.GONE);
-                }
-            }
-        });
-
     }
 
 
@@ -289,22 +257,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
     private ConnectionChangedListener connectionChangedListener = new ConnectionChangedListener();
 
-    RecordPlayDialog recordPlayDialog;
-
-    @Override
-    public void play(Record record) {
-        FileUtils.createRecordingFilesDir(this);
-        Log.e("WatchCourseActivity2", "play_record:" + record);
-        boolean play = true;
-        if (play) {
-            play = false;
-            if (recordPlayDialog != null) {
-                recordPlayDialog.dismiss();
-            }
-            recordPlayDialog = new RecordPlayDialog(this, record, meetingConfig);
-            recordPlayDialog.show();
-        }
-    }
 
     private class ConnectionChangedListener implements ConnectionClassManager.ConnectionClassStateChangeListener {
         @Override
@@ -381,6 +333,8 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         meetingConfig.setUserToken(UserData.getUserToken(this));
         meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting", false));
         meetingConfig.setSpaceId(getIntent().getIntExtra("spaceId", 0));
+        attachmentUrl = data.getStringExtra("url");
+        currentNoteId = data.getIntExtra("note_id",0);
         return meetingConfig;
     }
 
@@ -474,14 +428,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         } else {
             menu.setVisibility(View.VISIBLE);
         }
-        if(isplaymeeting){ //判断是否在播放会议
-            if(recordPlayDialog!=null){
-                Log.e("当前文档id--",meetingConfig.getCurrentDocumentPage().getDocumentId()+"   "+"  ");
-                recordPlayDialog.changeDocument(meetingConfig);
-                isplaymeeting=false;
-            }
-
-        }
     }
 
 
@@ -534,83 +480,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     }
 
 
-    private void handleBluetoothNote(final String url) {
-        Observable.just(url).observeOn(Schedulers.io()).map(new Function<String, String>() {
-            @Override
-            public String apply(String s) throws Exception {
-                String newUrl = "";
-                int index = url.lastIndexOf("/");
-                if (index > 0 && index < url.length() - 2) {
-                    newUrl = url.substring(0, index + 1) + "book_page_data.json";
-                }
-                return newUrl;
-            }
-        }).map(new Function<String, JSONObject>() {
-            @Override
-            public JSONObject apply(String url) throws Exception {
-                JSONObject jsonObject = new JSONObject();
-                if (!TextUtils.isEmpty(url)) {
-                    Log.e("check_url", "url:" + url);
-                    jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                }
-                return jsonObject;
-            }
-        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
-            @Override
-            public void accept(JSONObject jsonObject) throws Exception {
-                String key = "ShowDotPanData";
-                JSONObject _data = new JSONObject();
-                _data.put("LinesData", jsonObject);
-                _data.put("ShowInCenter", false);
-                _data.put("TriggerEvent", false);
-                Log.e("ShowDotPanData", "ShowDotPanData");
-                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-            }
-        }).doOnNext(new Consumer<JSONObject>() {
-            @Override
-            public void accept(JSONObject jsonObject) throws Exception {
-                if (!newNoteDatas.isEmpty()) {
-                    Observable.fromIterable(newNoteDatas).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<TempNoteData>() {
-                        @Override
-                        public void accept(TempNoteData tempNoteData) throws Exception {
-                            Log.e("draw_new_note", "temp_note_note");
-                            if (tempNoteData.getNoteId() == currentNoteId) {
-                                String key = "ShowDotPanData";
-                                JSONObject _data = new JSONObject();
-                                _data.put("LinesData", tempNoteData.getData());
-                                _data.put("ShowInCenter", true);
-                                _data.put("TriggerEvent", true);
-                                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                            }
-                            newNoteDatas.remove(tempNoteData);
-                        }
-                    }).subscribe();
-                }
-            }
-        }).observeOn(Schedulers.io()).doOnNext(new Consumer<JSONObject>() {
-            @Override
-            public void accept(JSONObject jsonObject) throws Exception {
-                JSONObject result = ServiceInterfaceTools.getinstance().syncGetNoteP1Item(currentNoteId);
-                if (result.has("code")) {
-                    if (result.getInt("code") == 0) {
-                        JSONArray dataArray = result.getJSONArray("data");
-                        Observable.just(dataArray).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONArray>() {
-                            @Override
-                            public void accept(JSONArray _jsonArray) throws Exception {
-                                for (int i = 0; i < _jsonArray.length(); ++i) {
-                                    JSONObject data = _jsonArray.getJSONObject(i);
-                                    addLinkBorderForDTNew(data);
-                                }
-
-                            }
-                        }).subscribe();
-
-
-                    }
-                }
-            }
-        }).subscribe();
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public synchronized void showNote(EventNote note) {
@@ -778,7 +647,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                 finish();
                 break;
             case SocketMessageManager.MESSAGE_MEMBER_LIST_CHANGE:
-                MeetingKit.getInstance().requestMeetingMembers(meetingConfig,false);
+                MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
                 break;
             case SocketMessageManager.MESSAGE_AGORA_STATUS_CHANGE:
 //                handleMessageAgoraStatusChange(socketMessage.getData());
@@ -794,18 +663,18 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                             TempNoteData _noteData = new TempNoteData();
                             _noteData.setData(Tools.getFromBase64(noteData));
                             _noteData.setNoteId(noteId);
-                            newNoteDatas.add(_noteData);
+//                            newNoteDatas.add(_noteData);
                             return;
                         }
                         String key = "ShowDotPanData";
-                        if (noteLayout.getVisibility() == View.VISIBLE) {
-                            if (noteWeb != null) {
+
+                            if (web != null) {
                                 JSONObject _data = new JSONObject();
                                 _data.put("LinesData", Tools.getFromBase64(noteData));
                                 _data.put("ShowInCenter", true);
                                 _data.put("TriggerEvent", true);
-                                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                            }
+                                web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -903,7 +772,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         String data = pageActions.getData();
         if (!TextUtils.isEmpty(data)) {
             if (pageActions.getPageNumber() == meetingConfig.getPageNumber()) {
-	            Log.e("check_play_txt", "PlayActionByArray:" + data);
+                Log.e("check_play_txt", "PlayActionByArray:" + data);
                 web.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
             }
         }
@@ -1375,14 +1244,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         downLoadDocumentPageAndShow(document, pageNumber);
     }
 
-    private boolean isplaymeeting=false;
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void eventChangeDocument(EventPlayMeetingChangeDocument eventPlayMeetingChangeDocument){
-        isplaymeeting= eventPlayMeetingChangeDocument.isPlayMeeting();
-        changeDocument(eventPlayMeetingChangeDocument.getItemId(), eventPlayMeetingChangeDocument.getPageNumber());
-    }
-
     private synchronized void changeDocument(int itemId, int pageNumber) {
         if (hasLoadedFile) {
             int index = documents.indexOf(new MeetingDocument(itemId));
@@ -1500,6 +1361,17 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     @org.xwalk.core.JavascriptInterface
     public void afterLoadPageFunction() {
         Log.e("JavascriptInterface", "afterLoadPageFunction");
+        Observable.just("load_note_page").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                hideEnterLoading();
+                String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
+                Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + 1 + ",''," + meetingConfig.getDocumentId() + "," + true + ")");
+                web.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocumentId() + "," + true + ")", null);
+                web.load("javascript:Record()", null);
+            }
+        });
+
     }
 
     @org.xwalk.core.JavascriptInterface
@@ -1511,55 +1383,6 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     @org.xwalk.core.JavascriptInterface
     public synchronized void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
         Log.e("JavascriptInterface", "preLoadFileFunction,url:  " + url + ", currentpageNum:" + currentpageNum + ",showLoading:" + showLoading);
-        meetingConfig.setNotifyUrl(url);
-        if (currentpageNum - 1 < 0) {
-            return;
-        }
-
-        final DocumentPage page = meetingConfig.getDocument().getDocumentPages().get(currentpageNum - 1);
-
-        final String pathLocalPath = url.substring(0, url.lastIndexOf("<")) +
-                currentpageNum + url.substring(url.lastIndexOf("."));
-
-        if (page != null && !TextUtils.isEmpty(page.getPageUrl())) {
-            DocumentPage _page = pageCache.getPageCache(page.getPageUrl());
-            Log.e("check_cache_page", "_page:" + _page + "，page:" + page);
-            if (_page != null && page.getPageUrl().equals(_page.getPageUrl())) {
-                if (!TextUtils.isEmpty(_page.getSavedLocalPath())) {
-                    File localFile = new File(_page.getSavedLocalPath());
-                    if (localFile.exists()) {
-                        if (!pathLocalPath.equals(localFile.getAbsolutePath())) {
-                            if (localFile.renameTo(new File(pathLocalPath))) {
-                                Log.e("preLoadFileFunction", "uncorrect_file_name,rename");
-                                notifyWebFilePrepared(url, currentpageNum);
-                                return;
-                            } else {
-                                Log.e("preLoadFileFunction", "uncorrect_file_name,delete");
-                                localFile.delete();
-                            }
-                        } else {
-                            Log.e("preLoadFileFunction", "correct_file_name,notify");
-                            notifyWebFilePrepared(url, currentpageNum);
-                            return;
-                        }
-
-                    } else {
-                        //清楚缓存
-                        pageCache.removeFile(_page.getPageUrl());
-                    }
-
-                }
-            }
-        }
-
-        Log.e("JavascriptInterface", "preLoadFileFunction,page:  " + page);
-
-        new ApiTask(new Runnable() {
-            @Override
-            public void run() {
-                safeDownloadFile(pathLocalPath, page, url, currentpageNum, true);
-            }
-        }).start(ThreadManager.getManager());
 
     }
 
@@ -1570,6 +1393,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     public void afterLoadFileFunction() {
         Log.e("JavascriptInterface", "afterLoadFileFunction");
         hasLoadedFile = true;
+
 
     }
 
@@ -1582,19 +1406,15 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     @org.xwalk.core.JavascriptInterface
     public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
-        meetingConfig.setPageNumber(pageNum);
-        PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
-        if (meetingConfig.getCurrentDocumentPage() != null) {
-            meetingConfig.getCurrentDocumentPage().setPageNumber(pageNum);
+        if(!TextUtils.isEmpty(attachmentUrl)){
+            handleBluetoothNote(attachmentUrl);
         }
+
     }
 
     @org.xwalk.core.JavascriptInterface
     public void reflect(String result) {
         Log.e("JavascriptInterface", "reflect,result:  " + result);
-        meetingConfig.setDocModifide(checkIfModifyDoc(result));
-        notifyMyWebActions(result);
-        DocVedioManager.getInstance(this).prepareVedio(result);
     }
 
     private boolean checkIfModifyDoc(String result) {
@@ -1784,7 +1604,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         Observable.just(data).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                PageActionsAndNotesMgr.handleNoteActions(MeetingViewActivity.this, action, new JSONObject(data), meetingConfig);
+                PageActionsAndNotesMgr.handleNoteActions(NoteViewActivity.this, action, new JSONObject(data), meetingConfig);
             }
         }).subscribe();
 
@@ -1878,59 +1698,22 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
     @Override
     public void menuSyncClicked() {
-        showSoundtrackDialog();
+
     }
 
     @Override
     public void menuPlayMeetingRecordClicked() {
-        showRecordingMeetingPlayDialog();
+
     }
 
     @Override
     public void menuChatClicked() {
-        showChatPop();
+
     }
 
-    PopBottomChat chatBottomPop;
 
-    private void showChatPop() {
-        String chatRoomId = getResources().getString(R.string.Classroom) + meetingConfig.getLessionId();
-        if (chatBottomPop != null) {
-            if (chatBottomPop.isShowing()) {
-                chatBottomPop.hide();
-                chatBottomPop = null;
-            }
-        }
-        String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
-        chatBottomPop = new PopBottomChat(this, meetingIndetifier, chatRoomId);
-        chatBottomPop.show(web, chatRoomId);
-        ChatManager.getManager(this, meetingIndetifier).setPopBottomChat(chatBottomPop, chatRoomId);
-    }
 
-    MeetingRecordsDialog recordsDialog;
 
-    private void showRecordingMeetingPlayDialog() {
-        if (recordsDialog != null) {
-            recordsDialog.dismiss();
-            recordsDialog = null;
-        }
-        recordsDialog = new MeetingRecordsDialog(this);
-        recordsDialog.setOnPlayRecordListener(this);
-        recordsDialog.StartPop(meetingConfig.getMeetingId());
-    }
-
-    private UserSoundtrackDialog soundtrackDialog;
-
-    private void showSoundtrackDialog() {
-        if (soundtrackDialog != null) {
-            if (soundtrackDialog.isShowing()) {
-                soundtrackDialog.dismiss();
-                soundtrackDialog = null;
-            }
-        }
-        soundtrackDialog = new UserSoundtrackDialog(this);
-        soundtrackDialog.show(meetingConfig);
-    }
 
 
     //-----
@@ -2264,7 +2047,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            new CenterToast.Builder(MeetingViewActivity.this).
+                            new CenterToast.Builder(NoteViewActivity.this).
                                     setSuccess(false).setMessage("operate failed").create().show();
                             bottomFilePop.removeTempDoc();
                         }
@@ -2299,7 +2082,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new CenterToast.Builder(MeetingViewActivity.this).
+                    new CenterToast.Builder(NoteViewActivity.this).
                             setSuccess(true).setMessage("operate success").create().show();
                 }
             });
@@ -2320,7 +2103,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                         boolean enable = response.body().getData().isEnableBind();
                         if (devices != null && devices.size() > 0) {
                             devicesListDialog = new DevicesListDialog();
-                            devicesListDialog.getPopwindow(MeetingViewActivity.this);
+                            devicesListDialog.getPopwindow(NoteViewActivity.this);
                             devicesListDialog.setWebCamPopupListener(new DevicesListDialog.WebCamPopupListener() {
                                 @Override
                                 public void scanTv() {
@@ -2387,7 +2170,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = new Intent(MeetingViewActivity.this, MipcaActivityCapture.class);
+                    Intent intent = new Intent(NoteViewActivity.this, MipcaActivityCapture.class);
                     intent.putExtra("isHorization", true);
                     intent.putExtra("type", 0);
                     startActivityForResult(intent, REQUEST_SCAN);
@@ -2395,7 +2178,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             }, 500);
 
         } else {
-            Intent intent = new Intent(MeetingViewActivity.this, MipcaActivityCapture.class);
+            Intent intent = new Intent(NoteViewActivity.this, MipcaActivityCapture.class);
             intent.putExtra("isHorization", true);
             intent.putExtra("type", 0);
             startActivityForResult(intent, REQUEST_SCAN);
@@ -2423,7 +2206,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                 JSONObject result = ServiceInterfaceTools.getinstance().syncMakePresenter(eventSetPresenter.getMeetingMember().getUserId() + "");
                 if (result.has("code")) {
                     if (result.getInt("code") == 0) {
-                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig,false);
+                        MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
                     }
                 }
             }
@@ -2556,7 +2339,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MeetingViewActivity.this, "笔记在本地设备不存在", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NoteViewActivity.this, "笔记在本地设备不存在", Toast.LENGTH_SHORT).show();
                     }
                 });
                 return;
@@ -2848,5 +2631,164 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         MeetingKit.getInstance().setEncoderConfigurationBaseMode();
 //        SocketMessageManager.getManager(this).sendMessage_MyNoteActionFrame(actions, meetingConfig, note);
     }
+
+    JSONObject lastjsonObject;
+
+    private void handleBluetoothNote(final String url) {
+        if (TextUtils.isEmpty(url)) {
+            return;
+        }
+        Observable.just(url).observeOn(Schedulers.io()).map(new Function<String, String>() {
+            @Override
+            public String apply(String url) throws Exception {
+                String newUrl = "";
+                URL _url = new URL(url);
+                Log.e("check_url_path", _url.getPath());
+                String path = _url.getPath();
+                if (!TextUtils.isEmpty(path)) {
+                    if (path.startsWith("/")) {
+                        path = path.substring(1);
+                    }
+                    int index = path.lastIndexOf("/");
+                    if (index >= 0 && index < path.length()) {
+                        String centerPart = path.substring(0, index);
+                        String fileName = path.substring(index + 1, path.length());
+                        Log.e("check_transform_url", "centerPart:" + centerPart + ",fileName:" + fileName);
+                        if (!TextUtils.isEmpty(centerPart)) {
+                            JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+                                    centerPart);
+                            if (queryDocumentResult != null) {
+                                Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+                                String part = "";
+                                if (uploadao != null) {
+                                    if (1 == uploadao.getServiceProviderId()) {
+                                        part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
+                                                + "/" + fileName;
+                                    } else if (2 == uploadao.getServiceProviderId()) {
+                                        part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/" + fileName;
+                                    }
+                                    url = part;
+                                    Log.e("check_transform_url", "url:" + url);
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                int checkIndex = url.lastIndexOf("/");
+                if (checkIndex > 0 && checkIndex < url.length() - 2) {
+                    newUrl = url.substring(0, checkIndex + 1) + "book_page_data.json";
+                }
+                return newUrl;
+            }
+        }).map(new Function<String, JSONObject>() {
+            @Override
+            public JSONObject apply(String url) throws Exception {
+                JSONObject jsonObject = new JSONObject();
+                if (!TextUtils.isEmpty(url)) {
+                    Log.e("check_url", "url:" + url);
+                    jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
+                    lastjsonObject = jsonObject.getJSONObject("PaintData");
+                }
+                return jsonObject;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                if(web == null){
+                    return;
+                }
+                String key = "ShowDotPanData";
+                JSONObject _data = new JSONObject();
+                _data.put("LinesData", jsonObject);
+                _data.put("ShowInCenter", false);
+                _data.put("TriggerEvent", false);
+                Log.e("ShowDotPanData", "ShowDotPanData");
+                web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                RecordNoteActionManager.getManager(NoteViewActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+            }
+        }).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                if (!newNoteDatas.isEmpty()) {
+                    Observable.fromIterable(newNoteDatas).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<TempNoteData>() {
+                        @Override
+                        public void accept(TempNoteData tempNoteData) throws Exception {
+                            Log.e("draw_new_note", "temp_note_note");
+                            if (tempNoteData.getNoteId() == currentNoteId) {
+                                String key = "ShowDotPanData";
+                                JSONObject _data = new JSONObject();
+                                _data.put("LinesData", tempNoteData.getData());
+                                _data.put("ShowInCenter", true);
+                                _data.put("TriggerEvent", true);
+                                web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                            }
+                            newNoteDatas.remove(tempNoteData);
+                        }
+                    }).subscribe();
+                }
+            }
+        }).observeOn(Schedulers.io()).doOnNext(new Consumer<JSONObject>() {
+            @Override
+            public void accept(JSONObject jsonObject) throws Exception {
+                JSONObject result = ServiceInterfaceTools.getinstance().syncGetNoteP1Item(currentNoteId);
+                if (result.has("code")) {
+                    if (result.getInt("code") == 0) {
+                        JSONArray dataArray = result.getJSONArray("data");
+                        Observable.just(dataArray).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONArray>() {
+                            @Override
+                            public void accept(JSONArray _jsonArray) throws Exception {
+                                for (int i = 0; i < _jsonArray.length(); ++i) {
+                                    JSONObject data = _jsonArray.getJSONObject(i);
+                                    addLinkBorderForDTNew(data);
+                                }
+
+                            }
+                        }).subscribe();
+
+
+                    }
+                }
+            }
+        }).subscribe();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void handleBluetoothNote(EventOpenOrCloseBluethoothNote note) {
+        if(note != null){
+            if(note.getStatus() == 0){
+                finish();
+            }
+        }
+    }
+
+    private void goToViewNote(String lessonId, String itemId, Note note) {
+        updateSocket();
+        Intent intent = new Intent(this, NoteViewActivity.class);
+//        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("userid", AppConfig.UserID);
+        //-----
+        intent.putExtra("meeting_id", Integer.parseInt(lessonId) + "," + AppConfig.UserID);
+//        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
+        intent.putExtra("document_id", itemId);
+        intent.putExtra("meeting_type", 2);
+        intent.putExtra("lession_id", Integer.parseInt(itemId));
+        intent.putExtra("url", note.getAttachmentUrl());
+        intent.putExtra("note_id", note.getNoteID());
+        startActivity(intent);
+    }
+
+    private void updateSocket() {
+        Intent service = new Intent(this, SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                context.startForegroundService(service);
+            startService(service);
+        } else {
+            startService(service);
+        }
+    }
+
 
 }

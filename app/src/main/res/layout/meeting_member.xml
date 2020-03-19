@@ -40,6 +40,7 @@
             android:paddingBottom="3dp"
             android:paddingLeft="6dp"
             android:paddingRight="6dp"
+            android:visibility="gone"
             android:background="@drawable/starter_bg"
             android:textColor="#3D78FB"
             android:layout_toRightOf="@id/name"
@@ -49,6 +50,7 @@
         
         <TextView
             android:layout_centerVertical="true"
+            android:visibility="gone"
             android:layout_marginLeft="8dp"
             android:id="@+id/txt_presenter"
             android:textSize="12sp"
@@ -65,7 +67,7 @@
 
         <TextView
             android:layout_centerVertical="true"
-            
+            android:visibility="gone"
             android:layout_marginLeft="8dp"
             android:id="@+id/txt_is_me"
             android:textSize="12sp"
@@ -81,6 +83,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
+            android:visibility="gone"
             android:layout_centerVertical="true"
             android:layout_marginLeft="8dp"
             android:id="@+id/txt_type"
@@ -95,6 +98,7 @@
             android:layout_height="wrap_content" />
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/image_setting"
             android:layout_marginRight="16dp"
             android:padding="3dp"
@@ -111,6 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <TextView
+                android:visibility="gone"
                 android:background="@drawable/change_auditor_bg"
                 android:id="@+id/txt_change_to_member"
                 android:layout_width="wrap_content"
@@ -125,6 +130,7 @@
                 />
 
             <TextView
+                android:visibility="gone"
                 android:layout_toRightOf="@id/txt_change_to_member"
                 android:background="@drawable/change_auditor_bg"
                 android:id="@+id/txt_hands_up"

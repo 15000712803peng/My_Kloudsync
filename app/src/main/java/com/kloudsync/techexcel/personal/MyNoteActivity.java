@@ -1,23 +1,35 @@
 package com.kloudsync.techexcel.personal;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.SelectNoteDialog;
-import com.ub.techexcel.adapter.SyncRoomNoteListAdapter;
-import com.ub.techexcel.adapter.UserNotesAdapter;
+import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.ui.NoteViewActivity;
+import com.ub.service.activity.SocketService;
+
 import com.ub.techexcel.bean.Note;
+import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.SyncRoomOtherNoteListPopup;
@@ -25,9 +37,18 @@ import com.ub.techexcel.tools.SyncRoomOtherNoteListPopup;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class MyNoteActivity extends Activity implements View.OnClickListener {
 
@@ -36,7 +57,6 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
     private LinearLayout search_layout;
     private RecyclerView rv_pc;
     private UserNotesAdapter notesAdapter;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,12 +67,10 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
         getNoteData(AppConfig.UserID);
     }
 
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void eventNote(Note note) {
 
     }
-
 
     private void initView() {
         tv_title = findViewById(R.id.tv_title);
@@ -62,7 +80,6 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
         rv_pc = findViewById(R.id.rv_pc);
         rv_pc.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
     }
-
 
     private void getNoteData(String useid) {
         String url = AppConfig.URL_PUBLIC + "DocumentNote/UserNoteList?userID=" + useid;
@@ -76,7 +93,6 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
             }
         });
     }
-
 
     @Override
     public void onClick(View v) {
@@ -108,5 +124,180 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
+
+
+    public class UserNotesAdapter extends RecyclerView.Adapter<UserNotesAdapter.RecycleHolder2> {
+
+        private Context context;
+
+        private List<Note> list = new ArrayList<>();
+
+        private OnNotesOperationsListener notesOperationsListener;
+
+        public OnNotesOperationsListener getNotesOperationsListener() {
+            return notesOperationsListener;
+        }
+
+        public void setNotesOperationsListener(OnNotesOperationsListener notesOperationsListener) {
+            this.notesOperationsListener = notesOperationsListener;
+        }
+
+        public UserNotesAdapter(Context context, List<Note> list) {
+            this.context = context;
+            this.list = list;
+        }
+
+        @Override
+        public UserNotesAdapter.RecycleHolder2 onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(context).inflate(R.layout.user_note_item, parent, false);
+            UserNotesAdapter.RecycleHolder2 holder = new UserNotesAdapter.RecycleHolder2(view);
+            return holder;
+        }
+
+        @Override
+        public void onBindViewHolder(final UserNotesAdapter.RecycleHolder2 holder, final int position) {
+            final Note noteDetail = list.get(position);
+            holder.title.setText(noteDetail.getTitle());
+            String date = noteDetail.getCreatedDate();
+            if (!TextUtils.isEmpty(date)) {
+                long dd = Long.parseLong(date);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd  HH:mm:ss");
+                String haha = simpleDateFormat.format(dd);
+                holder.date.setText(haha);
+            }
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("check_click","item_view,clicked");
+                    handleBluetoothNote(noteDetail);
+                }
+            });
+            String url = noteDetail.getAttachmentUrl();
+            if (!TextUtils.isEmpty(url)) {
+                url = url.substring(0, url.lastIndexOf("<")) + "1" + url.substring(url.lastIndexOf("."), url.length());
+                Uri imageUri = null;
+                if (!TextUtils.isEmpty(url)) {
+                    imageUri = Uri.parse(url);
+                }
+                holder.img_url.setImageURI(imageUri);
+            }
+//        holder.operationmore.setVisibility(View.GONE);
+            holder.operationmore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+
+        class RecycleHolder2 extends RecyclerView.ViewHolder {
+            TextView title;
+            LinearLayout ll;
+            SimpleDraweeView img_url;
+            TextView date;
+            ImageView operationmore;
+
+            public RecycleHolder2(View itemView) {
+                super(itemView);
+                title = itemView.findViewById(R.id.title);
+                date = itemView.findViewById(R.id.date);
+                ll = itemView.findViewById(R.id.ll);
+                img_url = itemView.findViewById(R.id.img_url);
+                operationmore = itemView.findViewById(R.id.operationmore);
+            }
+        }
+
+
+    }
+
+    public  interface OnNotesOperationsListener {
+
+        void viewNote(Note note);
+
+        void deleteNote(Note note);
+
+        void moveNote(Note note);
+
+        void renameNote(Note note);
+    }
+
+    private void goToViewNote(String lessonId, String itemId, Note note) {
+        updateSocket();
+        Intent intent = new Intent(this, NoteViewActivity.class);
+//        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("userid", AppConfig.UserID);
+        //-----
+        intent.putExtra("meeting_id", Integer.parseInt(lessonId) + "," + AppConfig.UserID);
+//        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
+        intent.putExtra("document_id", itemId);
+        intent.putExtra("meeting_type", 2);
+        intent.putExtra("lession_id", Integer.parseInt(itemId));
+        intent.putExtra("url", note.getAttachmentUrl());
+        intent.putExtra("note_id", note.getNoteID());
+        startActivity(intent);
+    }
+
+    private void updateSocket() {
+        Intent service = new Intent(this, SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                context.startForegroundService(service);
+            startService(service);
+        } else {
+            startService(service);
+        }
+    }
+
+    public void handleBluetoothNote(Note note) {
+
+        if (note.getNoteID() > 0) {
+
+                Observable.just(note.getNoteID() + "").observeOn(Schedulers.io()).map(new Function<String, Note>() {
+                    @Override
+                    public Note apply(String noteId) throws Exception {
+                        return MeetingServiceTools.getInstance().syncGetNoteByNoteId(noteId);
+                    }
+
+                }).doOnNext(new Consumer<Note>() {
+                    @Override
+                    public void accept(final Note note) throws Exception {
+                        if (note.getAttachmentID() > 0) {
+                            String title = note.getTitle();
+                            if (TextUtils.isEmpty(title)) {
+                                title = "";
+                            }
+                            String url = AppConfig.URL_PUBLIC
+                                    + "Lesson/AddTempLessonWithOriginalDocument?attachmentID=" + note.getAttachmentID()
+                                    + "&Title=" + URLEncoder.encode(LoginGet.getBase64Password(""), "UTF-8");
+                            JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetTempLessonWithOriginalDocument(url);
+                            if (jsonObject.has("RetCode")) {
+                                if (jsonObject.getInt("RetCode") == 0) {
+                                    JSONObject data = jsonObject.getJSONObject("RetData");
+                                    final String lessionId = data.optLong("LessonID") + "";
+                                    final String itemId = data.optLong("ItemID") + "";
+                                    if (!TextUtils.isEmpty(lessionId)) {
+                                        Observable.just("view_note").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                                            @Override
+                                            public void accept(String s) throws Exception {
+                                                goToViewNote(lessionId, itemId, note);
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }).subscribe();
+            }
+
+
+    }
+
 
 }
