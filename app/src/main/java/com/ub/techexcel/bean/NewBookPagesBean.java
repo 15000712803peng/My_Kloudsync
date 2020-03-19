@@ -30,7 +30,7 @@ public class NewBookPagesBean implements Serializable {
 		this.BookPages = BookPages;
 	}
 
-	public static class BookPagesBean {
+	public static class BookPagesBean implements Serializable {
 		/**
 		 * PageAddress : sample string 1
 		 * PenId : sample string 2
