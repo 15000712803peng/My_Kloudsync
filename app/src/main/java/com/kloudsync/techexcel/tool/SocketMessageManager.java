@@ -493,6 +493,20 @@ public class SocketMessageManager {
         doSendMessage(wrapperSendMessage(AppConfig.UserToken, pageIdentiﬁer, noteId, dataStr));
     }
 
+    public void sendMessage_openOrCloseNote(String address, int noteId, String uuid) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("action", "OPEN_OR_CLOSE_NOTE");
+            message.put("sessionId", AppConfig.UserToken);
+            message.put("noteId", noteId);
+            message.put("address", address);
+            message.put("strokeId", uuid);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        doSendMessage(message.toString());
+    }
+
     private WebSocketClient getClient() {
         socketClient = AppConfig.webSocketClient;
         return socketClient;
@@ -592,5 +606,6 @@ public class SocketMessageManager {
         context.unregisterReceiver(messageReceiver);
         instance = null;
     }
+
 
 }

@@ -49,6 +49,8 @@ public class EverPenDataManger {
 	private ServiceInterfaceTools mRequsetTools;
 	private final double B5_WIDTH = 119.44;
 	private final double B5_HEIGHT = 168;
+	private final int RIBBONWIDECENTER = 2156;
+	private final int RIBBONHEIGHT = 600;
 	private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler(Looper.getMainLooper()) {
@@ -172,7 +174,7 @@ public class EverPenDataManger {
 									@Override
 									public void run() {*/
 								if (newBookPagesBean.getBookPages().size() > 0) {
-									requestNewBookPages(syncNoteBean, newBookPagesBean, uuidList, null);
+									requestNewBookPages(syncNoteBean, newBookPagesBean, uuidList, null, false, false, null);
 								} else {
 									uploadDrawing(syncNoteBean, uuidList);
 								}
@@ -222,13 +224,18 @@ public class EverPenDataManger {
 	}
 
 	public void sendNoteDataToWebSocket(final Dot dot, final List<NoteDotBean> dotList) {
+		int noteId = 0;
+		long downTimeLong = 0;
+		long upTimeLong;
+		String uuid = null;
+		boolean isSendOpenOrCloseMsg = false;
+		boolean isSendOCRMsg = false;
 		final List<NoteInfoBean.DataBean> noteInfoList = SharedPreferencesUtils.getList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, new TypeToken<List<NoteInfoBean.DataBean>>() {
 		});
 
 		NewBookPagesBean newBookPagesBean = null;
 		List<NewBookPagesBean.BookPagesBean> bookPagesBeans = null;
 		SendWebScoketNoteBean webScoketDataBean = new SendWebScoketNoteBean();
-		int noteId = 0;
 		String address = dot.OwnerID + "." + dot.SectionID + "." + dot.BookID + "." + dot.PageID;
 		NoteInfoBean.DataBean newPagesDataBean = new NoteInfoBean.DataBean();
 		newPagesDataBean.setAddress(address);
@@ -266,7 +273,26 @@ public class EverPenDataManger {
 			int eventType = 0;
 			switch (bean.type) {
 				case PEN_DOWN:
+					uuid = noteDotBean.getDotId();
+					downTimeLong = bean.timelong;
 					eventType = 2;
+					break;
+				case PEN_UP:
+					upTimeLong = bean.timelong;
+					long differenceTime = upTimeLong - downTimeLong;
+					if (differenceTime < 8) {//只是点一个点的话笔的timelong时间不精确,正常时间过了两秒,笔的按下和抬起的timelong差值才个位数
+						double dotX = bean.x + Double.valueOf("0." + bean.fx);
+						double dotY = bean.y + Double.valueOf("0." + bean.fy);
+						int x = (int) (dotX / B5_WIDTH * 5600);
+						int y = (int) (dotY / B5_HEIGHT * 7920);
+						if (y < RIBBONHEIGHT) {
+							if (x < RIBBONWIDECENTER && !isSendOCRMsg && !isSendOpenOrCloseMsg) {
+								isSendOCRMsg = true;
+							} else if (x > RIBBONWIDECENTER && !isSendOpenOrCloseMsg && !isSendOCRMsg) {
+								isSendOpenOrCloseMsg = true;
+							}
+						}
+					}
 					break;
 			}
 			if (eventType == 2) {
@@ -288,7 +314,6 @@ public class EverPenDataManger {
 					double dotY = pointDot.y + Double.valueOf("0." + pointDot.fy);
 					int x = (int) (dotX / B5_WIDTH * 5600);
 					int y = (int) (dotY / B5_HEIGHT * 7920);
-
 					long timelong = date.getTime() + pointDot.timelong;
 					BigDecimal bigDecimal = new BigDecimal(String.valueOf(timelong));
 					BigDecimal bigDecimal2 = new BigDecimal("1000");
@@ -318,84 +343,108 @@ public class EverPenDataManger {
 			@Override
 			public void run() {*/
 		if (bookPagesBeans != null && bookPagesBeans.size() > 0) {
-			requestNewBookPages(null, newBookPagesBean, null, webScoketDataBean);
+			requestNewBookPages(null, newBookPagesBean, null, webScoketDataBean, isSendOCRMsg, isSendOpenOrCloseMsg, uuid);
 		} else {
-			if (KloudWebClientManager.getInstance() != null) {
-				SocketMessageManager.getManager(App.getAppContext()).sendMessage_myNoteData(address, noteId, webScoketDataBean);
+			if (!isSendOCRMsg && !isSendOpenOrCloseMsg) {
+				if (KloudWebClientManager.getInstance() != null) {
+					SocketMessageManager.getManager(App.getAppContext()).sendMessage_myNoteData(address, noteId, webScoketDataBean);
+				}
+			} else {
+				if (isSendOCRMsg) {
+					//发送OCR消息
+				} else if (isSendOpenOrCloseMsg) {
+					//发送OPENORCLOSE消息
+					if (KloudWebClientManager.getInstance() != null) {
+						SocketMessageManager.getManager(App.getAppContext()).sendMessage_openOrCloseNote(address, noteId, uuid);
+					}
+				}
 			}
 		}
+
 			/*}
 		});*/
 	}
 
-	public synchronized void requestNewBookPages(final SyncNoteBean syncNoteBean, final NewBookPagesBean newBookPagesBean,
-	                                             final List<String> uuidList, final SendWebScoketNoteBean webScoketDataBean) {
+	public synchronized void requestNewBookPages(final SyncNoteBean syncNoteBean, final NewBookPagesBean newBookPagesBean, final List<String> uuidList,
+	                                             final SendWebScoketNoteBean webScoketDataBean, boolean isSendOCRMsg, boolean isSendOpenOrCloseMsg, String uuid) {
 //		Log.e(TAG, Thread.currentThread().toString());
 		/*Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, NoteInfoBean>() {
 			@Override
 			public NoteInfoBean apply(String s) throws Exception {*/
-				String path = AppConfig.URL_LIVEDOC + "newBookPages";
+		String path = AppConfig.URL_LIVEDOC + "newBookPages";
 		/*return */
 		final NoteInfoBean noteinfobean = mRequsetTools.requestNewBookPages(path, newBookPagesBean.getPeertimeToken(), newBookPagesBean.getBookPages());
 			/*}
 		}).doOnNext(new Consumer<NoteInfoBean>() {
 			@Override
 			public void accept(final NoteInfoBean noteinfobean) throws Exception {*/
-				if (noteinfobean != null) {
-					if (noteinfobean.isSuccess()) {
-						List<NoteInfoBean.DataBean> dataBeanList = noteinfobean.getData();
-						for (int i = 0; i < dataBeanList.size(); i++) {
-							if (dataBeanList.get(i).isSuccess()) {
-								Log.e(TAG, Thread.currentThread().toString() + dataBeanList.get(i).getNoteId());
-							} else {
-								Log.e(TAG, Thread.currentThread().toString() + dataBeanList.get(i).getErrMsg());
-							}
-						}
-						if (webScoketDataBean == null) {
-							for (NoteInfoBean.DataBean bean : dataBeanList) {
-								SyncNoteBean.BookPagesBean bookPagesBean = new SyncNoteBean.BookPagesBean();
-								bookPagesBean.setNoteId(bean.getNoteId());
-								bookPagesBean.setFileId(bean.getFileId());
-								bookPagesBean.setTargetFolderKey(bean.getTargetFolder());
-								bookPagesBean.setPageAddress(bean.getAddress());
-								syncNoteBean.getBookPages().add(bookPagesBean);
-								Log.e(TAG, "requestNewBookPages : dataBeanList = " + dataBeanList.size() + "noteid = " + bean.getNoteId());
-							}
-							SharedPreferencesUtils.putPenInfoList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, dataBeanList, new TypeToken<List<NoteInfoBean.DataBean>>() {
-							});
-							mHandler.post(new Runnable() {
-								@Override
-								public void run() {
-									uploadDrawing(syncNoteBean, uuidList);
-								}
-							});
-						} else {
-							SharedPreferencesUtils.putPenInfoList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, dataBeanList, new TypeToken<List<NoteInfoBean.DataBean>>() {
-							});
-							for (NoteInfoBean.DataBean bean : dataBeanList) {
-								if (KloudWebClientManager.getInstance() != null) {
-									SocketMessageManager.getManager(App.getAppContext()).sendMessage_myNoteData(webScoketDataBean.getAddress(), bean.getNoteId(), webScoketDataBean);
-									Log.e(TAG, "requestNewBookPagesSocket : dataBeanList = " + dataBeanList.size() + "address = " + webScoketDataBean.getAddress()
-											+ "noteId = " + bean.getNoteId() + "webScoketDataBean.getLines() = " + webScoketDataBean.getLines().size());
-								}
-							}
-						}
+		if (noteinfobean != null) {
+			if (noteinfobean.isSuccess()) {
+				List<NoteInfoBean.DataBean> dataBeanList = noteinfobean.getData();
+				for (int i = 0; i < dataBeanList.size(); i++) {
+					if (dataBeanList.get(i).isSuccess()) {
+						Log.e(TAG, Thread.currentThread().toString() + dataBeanList.get(i).getNoteId());
 					} else {
-						mActivity.runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								NoteInfoBean.ErrorBean error = noteinfobean.getError();
-								if (error != null) {
-									String errorMessage = error.getErrorMessage();
-									ToastUtils.show(mActivity, errorMessage);
+						Log.e(TAG, Thread.currentThread().toString() + dataBeanList.get(i).getErrMsg());
+					}
+				}
+				if (webScoketDataBean == null) {
+					for (NoteInfoBean.DataBean bean : dataBeanList) {
+						SyncNoteBean.BookPagesBean bookPagesBean = new SyncNoteBean.BookPagesBean();
+						bookPagesBean.setNoteId(bean.getNoteId());
+						bookPagesBean.setFileId(bean.getFileId());
+						bookPagesBean.setTargetFolderKey(bean.getTargetFolder());
+						bookPagesBean.setPageAddress(bean.getAddress());
+						syncNoteBean.getBookPages().add(bookPagesBean);
+						Log.e(TAG, "requestNewBookPages : dataBeanList = " + dataBeanList.size() + "noteid = " + bean.getNoteId());
+					}
+					SharedPreferencesUtils.putPenInfoList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, dataBeanList, new TypeToken<List<NoteInfoBean.DataBean>>() {
+					});
+					/*mHandler.post(new Runnable() {
+						@Override
+						public void run() {*/
+					uploadDrawing(syncNoteBean, uuidList);
+						/*}
+					});*/
+				} else {
+					SharedPreferencesUtils.putPenInfoList(AppConfig.NEWBOOKPAGES, AppConfig.NEWBOOKPAGES, dataBeanList, new TypeToken<List<NoteInfoBean.DataBean>>() {
+					});
+					for (NoteInfoBean.DataBean bean : dataBeanList) {
+						if (!isSendOCRMsg && !isSendOpenOrCloseMsg) {
+							//发送笔记数据消息
+							if (KloudWebClientManager.getInstance() != null) {
+								SocketMessageManager.getManager(App.getAppContext()).sendMessage_myNoteData(webScoketDataBean.getAddress(), bean.getNoteId(), webScoketDataBean);
+							}
+						} else {
+							if (isSendOCRMsg) {
+								//发送OCR消息
+							} else if (isSendOpenOrCloseMsg) {
+								//发送OPENORCLOSE消息
+								if (KloudWebClientManager.getInstance() != null) {
+									SocketMessageManager.getManager(App.getAppContext()).sendMessage_openOrCloseNote(webScoketDataBean.getAddress(), bean.getNoteId(), uuid);
 								}
 							}
-						});
-						sendHandlerMessage();
+						}
+						Log.e(TAG, "requestNewBookPagesSocket : dataBeanList = " + dataBeanList.size() + "address = " + webScoketDataBean.getAddress()
+								+ "noteId = " + bean.getNoteId() + "webScoketDataBean.getLines() = " + webScoketDataBean.getLines().size());
 					}
-				} else {
-					sendHandlerMessage();
 				}
+			} else {
+				mActivity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						NoteInfoBean.ErrorBean error = noteinfobean.getError();
+						if (error != null) {
+							String errorMessage = error.getErrorMessage();
+							ToastUtils.show(mActivity, errorMessage);
+						}
+					}
+				});
+				sendHandlerMessage();
+			}
+		} else {
+			sendHandlerMessage();
+		}
 
 			/*}
 		}).subscribe();*/

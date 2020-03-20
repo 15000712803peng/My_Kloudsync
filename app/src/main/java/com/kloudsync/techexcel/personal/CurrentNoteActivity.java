@@ -23,7 +23,7 @@ public class CurrentNoteActivity extends BaseActivity<CurrentNotePresenter> impl
 
 	@Override
 	protected void initPresenter() {
-
+		mPresenter = new CurrentNotePresenter();
 	}
 
 	@Override
@@ -39,5 +39,25 @@ public class CurrentNoteActivity extends BaseActivity<CurrentNotePresenter> impl
 	@Override
 	protected void initData() {
 
+	}
+
+	@Override
+	public void toast(String msg) {
+		super.toast(msg);
+	}
+
+	@Override
+	public void showLoading() {
+		super.showLoading();
+	}
+
+	@Override
+	public void dismissLoading() {
+		super.dismissLoading();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 	}
 }
