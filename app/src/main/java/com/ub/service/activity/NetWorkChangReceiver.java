@@ -50,10 +50,9 @@ public class NetWorkChangReceiver extends BroadcastReceiver {
             for (int i=0; i < networks.length; i++){
                 //获取ConnectivityManager对象对应的NetworkInfo对象
                 NetworkInfo networkInfo = connMgr.getNetworkInfo(networks[i]);
+                Log.e("NetWorkChangReceiver",networkInfo.getTypeName()+ "  " +networkInfo.getType()+"   " +  networkInfo.getState().name());
 
-                Log.e("NetWorkChangReceiver",networkInfo.getTypeName()+ "  " +networkInfo.getType()+"   "+networkInfo.getDetailedState().name() +  networkInfo.isConnectedOrConnecting());
             }
-
         }
     }
 }

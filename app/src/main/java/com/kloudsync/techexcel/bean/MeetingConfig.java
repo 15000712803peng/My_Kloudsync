@@ -50,6 +50,15 @@ public class MeetingConfig {
     private DocumentPage currentDocumentPage;
     private List<MeetingDocument> allDocuments;
     private MeetingMember me;
+    private int currentNetworkQuality;
+
+    public int getCurrentNetworkQuality() {
+        return currentNetworkQuality;
+    }
+
+    public void setCurrentNetworkQuality(int currentNetworkQuality) {
+        this.currentNetworkQuality = currentNetworkQuality;
+    }
 
     public MeetingMember getMe() {
         return me;

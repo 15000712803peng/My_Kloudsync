@@ -404,6 +404,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         Log.e("checkNetWorkStatus", "网络质量更新中  " + uid + " " + txQuality + " " + rxQuality);
         if (uid == 0 || uid == Integer.parseInt(AppConfig.UserID)) {
             currentNetworkQuality = txQuality; //上行网络质量，基于上行视频的发送码率、上行丢包率、平均往返时延和网络抖动计算
+            meetingConfig.setCurrentNetworkQuality(currentNetworkQuality);
         }
     }
 
