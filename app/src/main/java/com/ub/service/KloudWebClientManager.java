@@ -2,6 +2,7 @@ package com.ub.service;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import com.kloudsync.techexcel.bean.MeetingConfig;
@@ -110,7 +111,21 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
 
     @Override
     public synchronized void onReconnect() {
-        reconnect();
+        MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
+        Log.e("KloudWebClient","onReconnect"+meetingConfig.getCurrentNetworkQuality()+"");
+        if(meetingConfig.getCurrentNetworkQuality()==0||
+                meetingConfig.getCurrentNetworkQuality()==1||
+                meetingConfig.getCurrentNetworkQuality()==2){
+            reconnect();
+        }else{
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    onReconnect();
+                }
+            },5000);
+
+        }
     }
 
     private boolean isStartMeetingRecord = true;
