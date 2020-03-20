@@ -335,7 +335,7 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
         meetingConfig.setSpaceId(getIntent().getIntExtra("spaceId", 0));
         attachmentUrl = data.getStringExtra("url");
         localFileId = data.getStringExtra("local_file_id");
-        currentNoteId = data.getIntExtra("note_id",0);
+        currentNoteId = data.getIntExtra("note_id", 0);
 
         return meetingConfig;
     }
@@ -480,7 +480,6 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
         noteWeb.load("javascript:Record()", null);
 
     }
-
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -662,22 +661,23 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
                         String noteData = retData.getString("data");
                         long noteId = retData.getInt("noteId");
                         if (currentNoteId != noteId) {
+                            newNoteDatas.clear();
                             TempNoteData _noteData = new TempNoteData();
                             _noteData.setData(Tools.getFromBase64(noteData));
                             _noteData.setNoteId(noteId);
                             handleBluetoothNote(noteId);
-//                            newNoteDatas.add(_noteData);
+                            newNoteDatas.add(_noteData);
                             return;
                         }
-                        Log.e("check_note_id","current_note_id:" + currentNoteId + ",note_id:" + noteId);
+                        Log.e("check_note_id", "current_note_id:" + currentNoteId + ",note_id:" + noteId);
                         String key = "ShowDotPanData";
 
-                            if (web != null) {
-                                JSONObject _data = new JSONObject();
-                                _data.put("LinesData", Tools.getFromBase64(noteData));
-                                _data.put("ShowInCenter", true);
-                                _data.put("TriggerEvent", true);
-                                web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                        if (web != null) {
+                            JSONObject _data = new JSONObject();
+                            _data.put("LinesData", Tools.getFromBase64(noteData));
+                            _data.put("ShowInCenter", true);
+                            _data.put("TriggerEvent", true);
+                            web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
 
                         }
                     } catch (JSONException e) {
@@ -1365,9 +1365,9 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
     @org.xwalk.core.JavascriptInterface
     public void afterLoadPageFunction() {
 
-        Log.e("local_file_id","localFileId:" + localFileId);
+        Log.e("local_file_id", "localFileId:" + localFileId);
         Log.e("JavascriptInterface", "afterLoadPageFunction");
-        if(!TextUtils.isEmpty(localFileId) && localFileId.contains(".")){
+        if (!TextUtils.isEmpty(localFileId) && localFileId.contains(".")) {
             Observable.just("load_note_page").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                 @Override
                 public void accept(String s) throws Exception {
@@ -1415,7 +1415,7 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
     @org.xwalk.core.JavascriptInterface
     public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
-        if(!TextUtils.isEmpty(attachmentUrl)){
+        if (!TextUtils.isEmpty(attachmentUrl)) {
             handleBluetoothNote(attachmentUrl);
         }
 
@@ -1719,10 +1719,6 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
     public void menuChatClicked() {
 
     }
-
-
-
-
 
 
     //-----
@@ -2571,7 +2567,7 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
                         meetingConfig.setCurrentMaxVideoUserId(joinMeetingMessage.getCurrentMaxVideoUserId());
                     }
                     if (documents == null || documents.size() <= 0) {
-                        if(!TextUtils.isEmpty(localFileId) && localFileId.contains(".")){
+                        if (!TextUtils.isEmpty(localFileId) && localFileId.contains(".")) {
                             return;
                         }
                         requestDocumentsAndShowPage();
@@ -2650,6 +2646,7 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
         if (TextUtils.isEmpty(url)) {
             return;
         }
+
         Observable.just(url).observeOn(Schedulers.io()).map(new Function<String, String>() {
             @Override
             public String apply(String url) throws Exception {
@@ -2701,14 +2698,18 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
                 if (!TextUtils.isEmpty(url)) {
                     Log.e("check_url", "url:" + url);
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    lastjsonObject = jsonObject.getJSONObject("PaintData");
+                    try {
+                        lastjsonObject = jsonObject.getJSONObject("PaintData");
+                    } catch (Exception e) {
+
+                    }
                 }
                 return jsonObject;
             }
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
             @Override
             public void accept(JSONObject jsonObject) throws Exception {
-                if(web == null){
+                if (web == null) {
                     return;
                 }
                 String key = "ShowDotPanData";
@@ -2768,8 +2769,8 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void handleBluetoothNote(EventOpenOrCloseBluethoothNote note) {
-        if(note != null){
-            if(note.getStatus() == 0){
+        if (note != null) {
+            if (note.getStatus() == 0) {
                 finish();
             }
         }
@@ -2808,7 +2809,7 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
             return;
         }
 
-        Observable.just(noteId+"").observeOn(Schedulers.io()).map(new Function<String, Note>() {
+        Observable.just(noteId + "").observeOn(Schedulers.io()).map(new Function<String, Note>() {
             @Override
             public Note apply(String noteId) throws Exception {
                 return MeetingServiceTools.getInstance().syncGetNoteByNoteId(noteId);
@@ -2820,7 +2821,7 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
                 String newUrl = "";
                 String url = note.getAttachmentUrl();
 
-                if(!TextUtils.isEmpty(url)){
+                if (!TextUtils.isEmpty(url)) {
                     URL _url = new URL(url);
                     Log.e("check_url_path", _url.getPath());
                     String path = _url.getPath();
@@ -2880,7 +2881,7 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
             @Override
             public void accept(JSONObject jsonObject) throws Exception {
-                if(web == null){
+                if (web == null) {
                     return;
                 }
                 web.load("javascript:ClearPageAndAction()", null);
@@ -2938,9 +2939,6 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
             }
         }).subscribe();
     }
-
-
-
 
 
 }

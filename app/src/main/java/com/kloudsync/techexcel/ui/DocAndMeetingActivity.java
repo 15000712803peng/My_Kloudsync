@@ -1421,6 +1421,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             if (meetingConfig.getType() != MeetingType.MEETING) {
                 return;
             }
+
             boolean isMicroOn = MeetingSettingCache.getInstance(this).getMeetingSetting().isMicroOn();
             boolean isCameraOn = MeetingSettingCache.getInstance(this).getMeetingSetting().isCameraOn();
             if (meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
@@ -3667,9 +3668,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public void handleMemberRoleChanged(EventRoleChanged roleChanged) {
         Log.e("check_event_role_change", "role_changed");
         if ((roleChanged.getAgoraMember().getUserId() + "").equals(AppConfig.UserID)) {
-
+            handleAgoraMemberRoleChanged(roleChanged.getAgoraMember());
         }
-        handleAgoraMemberRoleChanged(roleChanged.getAgoraMember());
+
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -3732,6 +3734,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     fullCameraAdapter.removeUser(agoraMember);
                 }
             }
+        }
+
+        boolean isMicroOn = MeetingSettingCache.getInstance(this).getMeetingSetting().isMicroOn();
+        boolean isCameraOn = MeetingSettingCache.getInstance(this).getMeetingSetting().isCameraOn();
+        if (meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
+            messageManager.sendMessage_AgoraStatusChange(meetingConfig, isMicroOn, isCameraOn);
+            return;
         }
     }
 
