@@ -1205,8 +1205,11 @@ public class WatchCourseActivity3 extends BaseActivity implements View.OnClickLi
                         poornetworktv.setVisibility(View.GONE);
                     }
                 }, 2000);
+
+                Toast.makeText(WatchCourseActivity3.this,"网络异常",Toast.LENGTH_LONG).show();
             } else {
                 poornetworkll.setVisibility(View.GONE);
+                Toast.makeText(WatchCourseActivity3.this,"网络好了",Toast.LENGTH_LONG).show();
             }
         }
     }

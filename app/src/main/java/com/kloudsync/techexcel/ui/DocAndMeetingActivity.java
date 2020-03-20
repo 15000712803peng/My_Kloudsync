@@ -815,7 +815,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 if (!TextUtils.isEmpty(url)) {
                     Log.e("check_url", "url:" + url);
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    lastjsonObject = jsonObject.getJSONObject("PaintData");
+                    try {
+                        lastjsonObject = jsonObject.getJSONObject("PaintData");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
                 return jsonObject;
             }

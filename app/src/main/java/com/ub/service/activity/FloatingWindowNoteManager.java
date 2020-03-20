@@ -105,7 +105,7 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 	}
 
 	private void initWeb() {
-		floatwebview.setZOrderOnTop(false);
+		floatwebview.setZOrderOnTop(true);
 		floatwebview.getSettings().setJavaScriptEnabled(true);
 		floatwebview.getSettings().setDomStorageEnabled(true);
 		floatwebview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -347,7 +347,11 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 				if (!TextUtils.isEmpty(url)) {
 					jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
 					if (jsonObject != null && jsonObject.has("PaintData")) {
-						lastjsonObject = jsonObject.getJSONObject("PaintData");
+						try {
+							lastjsonObject = jsonObject.getJSONObject("PaintData");
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 				return jsonObject;
