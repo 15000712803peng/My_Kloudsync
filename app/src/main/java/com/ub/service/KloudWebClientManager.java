@@ -29,7 +29,6 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
     private boolean heartBeatStarted = false;
     private Context context;
 
-
     public interface OnMessageArrivedListener {
         void onMessage(String message);
     }
@@ -136,6 +135,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                     if (meetingConfig.getDocument() != null) {
                         heartBeatMessage.put("currentItemId", meetingConfig.getDocument().getItemID());
                     }
+
                     heartBeatMessage.put("currentPageNumber", meetingConfig.getPageNumber());
                     heartBeatMessage.put("agoraStatus", 1);
                     heartBeatMessage.put("microphoneStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isMicroOn() ? 2 : 3);

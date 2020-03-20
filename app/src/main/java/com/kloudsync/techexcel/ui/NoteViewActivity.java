@@ -2719,7 +2719,10 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
                 web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(NoteViewActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+                if(lastjsonObject != null){
+                    RecordNoteActionManager.getManager(NoteViewActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+
+                }
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override
