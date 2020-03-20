@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.ub.techexcel.bean.AgoraMember;
+import com.ub.techexcel.bean.EventNetworkFineChanged;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
@@ -50,6 +51,17 @@ public class MeetingConfig {
     private DocumentPage currentDocumentPage;
     private List<MeetingDocument> allDocuments;
     private MeetingMember me;
+    private boolean netWorkFine = true;
+
+    public void setNetWorkFine(boolean _netWorkFine) {
+        if(this.netWorkFine != _netWorkFine){
+            this.netWorkFine = _netWorkFine;
+            if(this.netWorkFine == true){
+                EventBus.getDefault().post(new EventNetworkFineChanged());
+            }
+        }
+
+    }
 
     public MeetingMember getMe() {
         return me;

@@ -28,6 +28,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
     private URI uri;
     private boolean heartBeatStarted = false;
     private Context context;
+    private MeetingConfig meetingConfig;
 
     public interface OnMessageArrivedListener {
         void onMessage(String message);
@@ -104,6 +105,8 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
             this.onMessageArrivedListener.onMessage(message);
         }
     }
+
+
 
     @Override
     public synchronized void onReconnect() {

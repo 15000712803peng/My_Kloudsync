@@ -106,7 +106,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         return kit;
     }
 
-
     private RtcManager getRtcManager() {
         if (rtcManager == null) {
             return RtcManager.getDefault(host);
@@ -360,40 +359,31 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             @Override
             public void run() {
 //                Log.e("checkNetWorkStatus", "网络质量-------->  " + currentNetworkQuality);
-                if (currentNetworkQuality == NetWorkQuality.QUALITY_UNKNOWN.getQuality() ||
-                        currentNetworkQuality == NetWorkQuality.QUALITY_EXCELLENT.getQuality() ||
-                        currentNetworkQuality == NetWorkQuality.QUALITY_GOOD.getQuality()) {   //网络状态良好
+                if (currentNetworkQuality == NetWorkQuality.QUALITY_UNKNOWN ||
+                        currentNetworkQuality == NetWorkQuality.QUALITY_EXCELLENT ||
+                        currentNetworkQuality == NetWorkQuality.QUALITY_GOOD) {   //网络状态良好
                     retSetResolutionRatio(true);
-                } else if (currentNetworkQuality == NetWorkQuality.QUALITY_POOR.getQuality() ||
-                        currentNetworkQuality == NetWorkQuality.QUALITY_BAD.getQuality() ||
-                        currentNetworkQuality == NetWorkQuality.QUALITY_VBAD.getQuality() ||
-                        currentNetworkQuality == NetWorkQuality.QUALITY_DOWN.getQuality() ||
-                        currentNetworkQuality == NetWorkQuality.QUALITY_DETECTING.getQuality()) {
+                } else if (currentNetworkQuality == NetWorkQuality.QUALITY_POOR ||
+                        currentNetworkQuality == NetWorkQuality.QUALITY_BAD ||
+                        currentNetworkQuality == NetWorkQuality.QUALITY_VBAD ||
+                        currentNetworkQuality == NetWorkQuality.QUALITY_DOWN ||
+                        currentNetworkQuality == NetWorkQuality.QUALITY_DETECTING) {
                     retSetResolutionRatio(false);
                 }
             }
         }, 10000, 50000);
     }
 
-    public enum NetWorkQuality {
-        QUALITY_UNKNOWN(0),//质量未知
-        QUALITY_EXCELLENT(1),//质量极好
-        QUALITY_GOOD(2),//用户主观感觉和极好差不多，但码率可能略低于极好
-        QUALITY_POOR(3),//用户主观感受有瑕疵但不影响沟通
-        QUALITY_BAD(4),//勉强能沟通但不顺畅
-        QUALITY_VBAD(5),//网络质量非常差，基本不能沟通
-        QUALITY_DOWN(6),//网络连接断开，完全无法沟通
-        QUALITY_DETECTING(8);//SDK 正在探测网络质量
+    public static class NetWorkQuality {
+        public static int QUALITY_UNKNOWN = 0;//质量未知
+        public static int QUALITY_EXCELLENT = 1;//质量极好
+        public static int QUALITY_GOOD = 2;//用户主观感觉和极好差不多，但码率可能略低于极好
+        public static int QUALITY_POOR = 3;//用户主观感受有瑕疵但不影响沟通
+        public static int QUALITY_BAD = 4;//勉强能沟通但不顺畅
+        public static int QUALITY_VBAD = 5;//网络质量非常差，基本不能沟通
+        public static int QUALITY_DOWN = 6;//网络连接断开，完全无法沟通
+        public static int QUALITY_DETECTING = 8;//SDK 正在探测网络质量
 
-        private final int quality;
-
-        NetWorkQuality(int quality) {
-            this.quality = quality;
-        }
-
-        public int getQuality() {
-            return quality;
-        }
     }
 
 
@@ -404,6 +394,18 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 //        Log.e("checkNetWorkStatus", "网络质量更新中  " + uid + " " + txQuality + " " + rxQuality);
         if (uid == 0 || uid == Integer.parseInt(AppConfig.UserID)) {
             currentNetworkQuality = txQuality; //上行网络质量，基于上行视频的发送码率、上行丢包率、平均往返时延和网络抖动计算
+            if (currentNetworkQuality == NetWorkQuality.QUALITY_UNKNOWN ||
+                    currentNetworkQuality == NetWorkQuality.QUALITY_EXCELLENT ||
+                    currentNetworkQuality == NetWorkQuality.QUALITY_GOOD){
+                if(meetingConfig != null){
+                    meetingConfig.setNetWorkFine(true);
+                }
+            }else if(currentNetworkQuality == NetWorkQuality.QUALITY_VBAD ||
+                    currentNetworkQuality == NetWorkQuality.QUALITY_DOWN){
+                if(meetingConfig != null){
+                    meetingConfig.setNetWorkFine(false);
+                }
+            }
         }
     }
 
@@ -938,7 +940,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                     //delete user
                     meetingConfig.deleteAgoraMember(agoraMember);
                 }
-                return  agoraMember;
+                return agoraMember;
             }
 
         }).observeOn(Schedulers.io()).map(new Function<AgoraMember, AgoraMember>() {

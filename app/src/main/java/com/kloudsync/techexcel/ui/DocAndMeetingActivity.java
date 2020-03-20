@@ -143,12 +143,14 @@ import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.AddMeetingMemberActivity;
 import com.ub.service.activity.FloatingWindowNoteManager;
+import com.ub.service.activity.SocketService;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
 import com.ub.techexcel.adapter.MeetingMembersAdapter;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.EventMuteAll;
+import com.ub.techexcel.bean.EventNetworkFineChanged;
 import com.ub.techexcel.bean.EventRoleChanged;
 import com.ub.techexcel.bean.EventUnmuteAll;
 import com.ub.techexcel.bean.Note;
@@ -306,6 +308,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             finish();
             return;
         }
+
         meetingSettingCache = MeetingSettingCache.getInstance(this);
         writeNoteBlankPageImage();
         initViews();
@@ -367,10 +370,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if(newConfig.orientation==Configuration.ORIENTATION_PORTRAIT){
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是竖屏", Toast.LENGTH_SHORT).show();
         }
-        if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是横屏", Toast.LENGTH_SHORT).show();
         }
     }
@@ -3198,9 +3201,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             if (status == 1) { //打开浮窗
                 if (noteLayout.getVisibility() == View.VISIBLE) {
                     if (noteWeb != null) {
-                       followShowNote(noteId);
+                        followShowNote(noteId);
                     }
-                }else{
+                } else {
                     showNoteFloatingDialog(noteId);
                 }
             } else if (status == 0) {  //关闭浮窗 或者 主界面
@@ -3670,7 +3673,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if ((roleChanged.getAgoraMember().getUserId() + "").equals(AppConfig.UserID)) {
             handleAgoraMemberRoleChanged(roleChanged.getAgoraMember());
         }
-
 
     }
 
@@ -4587,16 +4589,32 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void handleBluetoothNote(EventOpenOrCloseBluethoothNote note) {
-        if(note != null){
-            if(note.getStatus() == 1){
+        if (note != null) {
+            if (note.getStatus() == 1) {
                 showNoteFloatingDialog(Integer.parseInt(note.getNoteId()));
-            }else if(note.getStatus() == 0){
+            } else if (note.getStatus() == 0) {
                 if (mFloatingWindowNoteManager != null && mFloatingWindowNoteManager.isShowing()) {
                     mFloatingWindowNoteManager.closeFloating();
                     mFloatingWindowNoteManager = null;
                     FloatingWindowNoteManager.instance = null;
                 }
             }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void networkBecameFine(EventNetworkFineChanged networkFineChanged) {
+        Log.e("networkBecameFine", "refresh_web_socket");
+        updateSocket();
+    }
+
+    private void updateSocket() {
+        Intent service = new Intent(getApplicationContext(), SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                context.startForegroundService(service);
+            startService(service);
+        } else {
+            startService(service);
         }
     }
 
