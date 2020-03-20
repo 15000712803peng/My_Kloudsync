@@ -38,8 +38,6 @@ import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventDoc;
-import com.kloudsync.techexcel.bean.EventNote;
-import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventOpenOrCloseBluethoothNote;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.bean.EventSpaceData;
@@ -79,7 +77,6 @@ import com.kloudsync.techexcel.frgment.TwoToOneFragment;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ContactHelpInterface;
 import com.kloudsync.techexcel.help.EverPenManger;
-import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.info.School;
 import com.kloudsync.techexcel.mvp.presenter.MainPresenter;
 import com.kloudsync.techexcel.mvp.view.IMainActivityView;
@@ -106,7 +103,6 @@ import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.tqltech.tqlpencomm.Dot;
 import com.tqltech.tqlpencomm.PenCommAgent;
-import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.service.KloudWebClientManager;
 import com.ub.service.activity.SocketService;
@@ -1855,11 +1851,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     @Override
     public void onReceiveOfflineStrokes(Dot dot) {
-      /*  String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
-        NoteDotBean noteDotBean = new NoteDotBean();
-        noteDotBean.setDotId(uuid);
-        noteDotBean.setDot(dot);
-	    SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);*/
+
     }
 
     @Override

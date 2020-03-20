@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ll"
     android:layout_width="350dp"
-    android:layout_height="460dp"
+    android:layout_height="wrap_content"
     android:background="@color/white"
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="350dp"
-        android:layout_height="460dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="5dp"
         android:orientation="horizontal">
 
         <com.kloudsync.techexcel.ui.MaskViewGroup
-            android:layout_width="350dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:containerCornerRadius="16dp"
             app:containerDeltaLength="10dp"
@@ -27,8 +27,8 @@
 
             <RelativeLayout
                 android:id="@+id/layout_note"
-                android:layout_width="350dp"
-                android:layout_height="460dp"
+                android:layout_width="80dp"
+                android:layout_height="112dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/gray_border"
@@ -37,8 +37,8 @@
 
                 <ImageView
                     android:background="@drawable/p0"
-                    android:layout_width="288dp"
-                    android:layout_height="238dp"
+                    android:layout_width="80dp"
+                    android:layout_height="112dp"
                     android:layout_centerVertical="true"
                     android:layout_centerHorizontal="true" />
 
@@ -54,6 +54,53 @@
 
 
         </com.kloudsync.techexcel.ui.MaskViewGroup>
+
+        <RelativeLayout
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/layout_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/item_tv_current_page"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="25dp"
+                    android:maxLines="2"
+                    android:text="当前笔记"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_below="@id/layout_title"
+                android:id="@+id/item_tv_page_update_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="2019-10-12 21:09"
+                android:textSize="12sp" />
+
+            <!-- <ImageView
+                 android:padding="2dp"
+                 android:layout_centerVertical="true"
+                 android:id="@+id/operationmore"
+                 android:layout_width="20dp"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentRight="true"
+                 android:src="@drawable/more_favor" />-->
+
+
+        </RelativeLayout>
 
     </LinearLayout>
 
