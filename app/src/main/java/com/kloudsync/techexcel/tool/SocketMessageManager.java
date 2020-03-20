@@ -161,6 +161,10 @@ public class SocketMessageManager {
      */
     public void sendMessage_UpdateAttchment(MeetingConfig meetingConfig) {
         JSONObject message = new JSONObject();
+        if(meetingConfig.getDocument() == null){
+            return;
+        }
+
         try {
             message.put("sessionId", AppConfig.UserToken);
             if (meetingConfig.getType() == MeetingType.MEETING) {
