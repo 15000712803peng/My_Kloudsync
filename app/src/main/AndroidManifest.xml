@@ -70,6 +70,7 @@
         android:screenOrientation="portrait"
         android:theme="@style/ThemeActivity"
         tools:replace="android:icon, android:theme">
+        <activity android:name=".personal.CurrentNoteActivity"></activity>
 
         <meta-data
             android:name="android.max_aspect"
