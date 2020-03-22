@@ -3,6 +3,7 @@ package com.kloudsync.techexcel.help;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.View;
 
@@ -39,8 +40,6 @@ public class PenDotTool {
 	private static int BG_HEIGHT;                                   //显示背景图高
 	private static int A5_X_OFFSET;                                 //笔迹X轴偏移量
 	private static int A5_Y_OFFSET;                                 //笔迹Y轴偏移量
-	private static int gcontentLeft;                                //内容显示区域left坐标
-	private static int gcontentTop;
 	private static int gPIndex;
 
 
@@ -73,6 +72,12 @@ public class PenDotTool {
 	public static float g_norm;
 	public static float g_n_x2, g_n_y2;
 
+	public static void setData(int bgWidth, int bgHeight, int a5XOffset, int a5YOffset) {
+		BG_WIDTH = bgWidth;
+		BG_HEIGHT = bgHeight;
+		A5_X_OFFSET = a5XOffset;
+		A5_Y_OFFSET = a5YOffset;
+	}
 
 	public static void processEachDot(Dot dot, DrawView _drawView) {
 		drawView = _drawView;
@@ -125,6 +130,7 @@ public class PenDotTool {
 				//Log.i(TAG, "PageID=" + PageID + ",gCurPageID=" + gCurPageID + ",BookID=" + BookID + ",gCurBookID=" + gCurBookID);
 				if (pageID != gCurPageID || bookID != gCurBookID) {
 					gbSetNormal = false;
+					drawView.canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 					bIsOfficeLine = true;
 					gCurPageID = pageID;
 					gCurBookID = bookID;

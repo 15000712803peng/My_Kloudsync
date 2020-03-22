@@ -280,7 +280,7 @@ public class EverPenDataManger {
 				case PEN_UP:
 					upTimeLong = bean.timelong;
 					long differenceTime = upTimeLong - downTimeLong;
-					if (differenceTime < 8) {//只是点一个点的话笔的timelong时间不精确,正常时间过了两秒,笔的按下和抬起的timelong差值才个位数
+					if (differenceTime < 800) {//只是点一个点的话笔的timelong时间不精确,正常时间过了两秒,笔的按下和抬起的timelong差值才个位数
 						double dotX = bean.x + Double.valueOf("0." + bean.fx);
 						double dotY = bean.y + Double.valueOf("0." + bean.fy);
 						int x = (int) (dotX / B5_WIDTH * 5600);

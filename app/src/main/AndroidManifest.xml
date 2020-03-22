@@ -70,7 +70,6 @@
         android:screenOrientation="portrait"
         android:theme="@style/ThemeActivity"
         tools:replace="android:icon, android:theme">
-        <activity android:name=".personal.CurrentNoteActivity"></activity>
 
         <meta-data
             android:name="android.max_aspect"
@@ -1085,6 +1084,12 @@
             android:name=".ui.SwitchPenActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".personal.CurrentNoteActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
 
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
