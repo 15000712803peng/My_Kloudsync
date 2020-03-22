@@ -2,6 +2,7 @@ package com.ub.service;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import com.kloudsync.techexcel.bean.MeetingConfig;
@@ -28,7 +29,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
     private URI uri;
     private boolean heartBeatStarted = false;
     private Context context;
-
+    private MeetingConfig meetingConfig;
 
     public interface OnMessageArrivedListener {
         void onMessage(String message);
@@ -106,9 +107,25 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
         }
     }
 
+
+
     @Override
     public synchronized void onReconnect() {
-        reconnect();
+        MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
+        Log.e("KloudWebClient","onReconnect"+meetingConfig.getCurrentNetworkQuality()+"");
+        if(meetingConfig.getCurrentNetworkQuality()==0||
+                meetingConfig.getCurrentNetworkQuality()==1||
+                meetingConfig.getCurrentNetworkQuality()==2){
+            reconnect();
+        }else{
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    onReconnect();
+                }
+            },5000);
+
+        }
     }
 
     private boolean isStartMeetingRecord = true;
@@ -136,6 +153,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                     if (meetingConfig.getDocument() != null) {
                         heartBeatMessage.put("currentItemId", meetingConfig.getDocument().getItemID());
                     }
+
                     heartBeatMessage.put("currentPageNumber", meetingConfig.getPageNumber());
                     heartBeatMessage.put("agoraStatus", 1);
                     heartBeatMessage.put("microphoneStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isMicroOn() ? 2 : 3);

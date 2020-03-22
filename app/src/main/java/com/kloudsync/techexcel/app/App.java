@@ -5,14 +5,21 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.multidex.MultiDex;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.network.connectionclass.ConnectionClassManager;
+import com.facebook.network.connectionclass.ConnectionQuality;
 import com.kloudsync.techexcel.bean.AppName;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.message.ChangeItemMessage;
@@ -34,6 +41,8 @@ import com.kloudsync.techexcel.ui.MainActivity;
 import com.pgyersdk.Pgyer;
 import com.pgyersdk.PgyerActivityManager;
 import com.pgyersdk.crash.PgyCrashManager;
+import com.ub.service.activity.NetWorkChangReceiver;
+import com.ub.service.activity.WatchCourseActivity3;
 
 import org.xutils.x;
 
@@ -67,9 +76,32 @@ public class App extends Application {
         disableAPIDialog();
 //        getApplicationContext().startService(new Intent(getApplicationContext(), TransferService.class));
         asyncInit();
+        initBroadcastReceiver();
     }
 
-	public static Context getAppContext() {
+
+    private NetWorkChangReceiver netWorkChangReceiver;
+
+    private void initBroadcastReceiver() {
+        if (netWorkChangReceiver == null) {
+            netWorkChangReceiver = new NetWorkChangReceiver();
+        }
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(netWorkChangReceiver, filter);
+
+    }
+
+
+
+    @Override
+    public void onTerminate() {
+        unregisterReceiver(netWorkChangReceiver);
+        super.onTerminate();
+
+    }
+
+    public static Context getAppContext() {
 		return mApplication;
 	}
 

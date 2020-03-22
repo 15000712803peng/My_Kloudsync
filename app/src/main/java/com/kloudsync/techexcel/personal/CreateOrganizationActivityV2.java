@@ -503,9 +503,25 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
                 JSONObject response = ConnectService.submitDataByJson(
                         AppConfig.URL_PUBLIC
                                 + "School/CreateSchool", jsonObject);
+                Log.e("createschoolv2",jsonObject.toString());
                 return response;
             }
-        }).map(new Function<JSONObject, JSONObject>() {
+        }).observeOn(AndroidSchedulers.mainThread()).map(new Function<JSONObject, JSONObject>() {
+            @Override
+            public JSONObject apply(JSONObject jsonObject) throws Exception {
+                JSONObject result = new JSONObject();
+                if(jsonObject.has("RetCode")){
+                    if(jsonObject.getString("RetCode").equals("0")){
+                        return jsonObject;
+                    }else {
+                        String error=jsonObject.getString("ErrorMessage");
+                        Toast.makeText(CreateOrganizationActivityV2.this,error,Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                return result;
+            }
+        }).observeOn(Schedulers.io()).map(new Function<JSONObject, JSONObject>() {
             @Override
             public JSONObject apply(JSONObject jsonObject) throws Exception {
                 JSONObject result = new JSONObject();
@@ -660,7 +676,7 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
             @Override
             public void accept(JSONObject jsonObject) throws Exception {
                 if(!jsonObject.has("create_succ")){
-                    Toast.makeText(getApplicationContext(),R.string.create_Fail,Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(),R.string.create_Fail,Toast.LENGTH_SHORT).show();
                 }
             }
         }).subscribe();

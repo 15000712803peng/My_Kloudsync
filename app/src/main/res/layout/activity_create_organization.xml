@@ -88,7 +88,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 style="@style/PersonInfoTextLabelStyle"
-                android:text="Website" />
+                android:text="@string/companywebsite"
+               />
 
             <EditText
                 android:gravity="right|center_vertical"
@@ -126,7 +127,7 @@
                     <TextView
                         android:layout_marginLeft="16dp"
                         style="@style/PersonInfoTextLabelStyle"
-                        android:text="logo"
+                        android:text="@string/loge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                     <TextView
@@ -190,6 +191,7 @@
             android:layout_height="wrap_content" >
             <CheckBox
                 android:id="@+id/cb_code"
+                android:checked="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -212,7 +214,7 @@
 
         <com.kloudsync.techexcel.view.ClearEditText
             android:id="@+id/et_code"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="10dp"
