@@ -1080,11 +1080,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                     if (mFloatingWindowNoteManager.isShowing()) {
                                         mFloatingWindowNoteManager.setOldNoteId((int) currentNoteId);
                                         showNoteFloatingDialog(noteId);  //换个笔记了
-                                    } else {
-                                        showNoteFloatingDialog(noteId);
                                     }
-                                } else {
-                                    showNoteFloatingDialog(noteId);
                                 }
                             }
                         } else {  // 同一个笔记
@@ -1102,7 +1098,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                     }
                                 }
                             }
-
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1122,13 +1117,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 if (mFloatingWindowNoteManager.isShowing()) {
                                     mFloatingWindowNoteManager.setOldNoteId((int) currentNoteId);
                                     showNoteFloatingDialog(noteId);  //换个笔记了
-                                } else {
-                                    showNoteFloatingDialog(noteId);
                                 }
-                            } else {
-                                showNoteFloatingDialog(noteId);
                             }
-
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
