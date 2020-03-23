@@ -49,10 +49,8 @@ public class CurrentNoteActivity extends BaseActivity<CurrentNotePresenter> impl
 	private boolean mHasMeasured;
 	private int BG_WIDTH;                                    //显示背景图宽
 	private int BG_HEIGHT;                                   //显示背景图高
-	private int gcontentLeft;                                //内容显示区域left坐标
-	private int gcontentTop;                                 //内容显示区域top坐标
-	private int A5_X_OFFSET;                                 //笔迹X轴偏移量
-	private int A5_Y_OFFSET;                                 //笔迹Y轴偏移量
+	private int A5_X_OFFSET;
+	private int A5_Y_OFFSET;
 	public static float mWidth;                              //屏幕宽
 	public static float mHeight;                             //屏幕高
 	private boolean isNotchScreen = false;     //刘海屏标记
@@ -111,8 +109,8 @@ public class CurrentNoteActivity extends BaseActivity<CurrentNotePresenter> impl
 					para.height = BG_HEIGHT;
 					mIvCurrentNoteDraw.setLayoutParams(para);
 
-					gcontentLeft = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getLeft();
-					gcontentTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+					int gcontentLeft = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getLeft(); //内容显示区域left坐标
+					int gcontentTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();//内容显示区域top坐标
 
 					int statusHeight = getStatusBarHeight();
 					int statusHeight2 = getStatusBarHeight(CurrentNoteActivity.this);
@@ -121,7 +119,8 @@ public class CurrentNoteActivity extends BaseActivity<CurrentNotePresenter> impl
 					Log.i(TAG, "onGlobalLayout: mHeight=" + mHeight + ",mWidth=" + mWidth);
 					Log.i(TAG, "onGlobalLayout: gcontentTop=" + gcontentTop + ",gcontentLeft=" + gcontentLeft);
 					Log.i(TAG, "onGlobalLayout: BG_HEIGHT=" + BG_HEIGHT + ",BG_WIDTH=" + BG_WIDTH);
-					A5_X_OFFSET = (int) (mWidth - gcontentLeft - BG_WIDTH) / 2;
+					int A5_X_OFFSET = (int) (mWidth - gcontentLeft - BG_WIDTH) / 2;//笔迹X轴偏移量
+					int A5_Y_OFFSET; //笔迹Y轴偏移量
 					if (isNotchScreen) {
 						A5_Y_OFFSET = (int) (mHeight - gcontentTop - BG_HEIGHT + notchscreenHeight) / 2 /*- 12*/;
 					} else {

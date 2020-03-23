@@ -909,6 +909,7 @@ Please input the cell phone number to add the contact
     <string name="edit_pen_name">Edit pen name</string>
     <string name="please_enter_a_pen_name">Please enter a pen name</string>
     <string name="setup_failed">Setup failed</string>
+    <string name="no_notes_currently">No notes currently</string>
 
 
     <string name="prompt_is_my_personal_contact">该用户已存在我的"个人联系人中"\n点击对话与对方聊天</string>
