@@ -2557,7 +2557,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
         meetingConfig.setPageNumber(pageNum);
-        PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
+        if (meetingConfig.getDocument() != null) {
+            PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
+        }
+
         if (meetingConfig.getCurrentDocumentPage() != null) {
             meetingConfig.getCurrentDocumentPage().setPageNumber(pageNum);
         }

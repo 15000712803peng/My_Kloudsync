@@ -25,6 +25,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.ui.DrawView;
 import com.kloudsync.techexcel.ui.NoteViewActivity;
+import com.kloudsync.techexcel.ui.NoteViewActivityV2;
 import com.ub.service.activity.SocketService;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.MeetingServiceTools;
@@ -299,7 +300,7 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
 
     private void goToViewNote(String lessonId, String itemId, Note note) {
         updateSocket();
-        Intent intent = new Intent(this, NoteViewActivity.class);
+        Intent intent = new Intent(this, NoteViewActivityV2.class);
 //        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("userid", AppConfig.UserID);
@@ -308,7 +309,7 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
 //        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
         intent.putExtra("document_id", itemId);
         intent.putExtra("meeting_type", 2);
-        intent.putExtra("lession_id", Integer.parseInt(itemId));
+        intent.putExtra("lession_id", Integer.parseInt(lessonId));
         intent.putExtra("url", note.getAttachmentUrl());
         intent.putExtra("note_id", note.getNoteID());
         intent.putExtra("local_file_id", note.getLocalFileID());
@@ -328,7 +329,6 @@ public class MyNoteActivity extends Activity implements View.OnClickListener {
     public void handleBluetoothNote(Note note) {
 
         if (note.getNoteID() > 0) {
-
             Observable.just(note.getNoteID() + "").observeOn(Schedulers.io()).map(new Function<String, Note>() {
                 @Override
                 public Note apply(String noteId) throws Exception {

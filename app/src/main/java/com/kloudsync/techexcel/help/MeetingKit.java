@@ -400,7 +400,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 if(meetingConfig != null){
                     meetingConfig.setNetWorkFine(true);
                 }
-            }else if(currentNetworkQuality == NetWorkQuality.QUALITY_VBAD ||
+            }else if(currentNetworkQuality == NetWorkQuality.QUALITY_VBAD || currentNetworkQuality == NetWorkQuality.QUALITY_VBAD ||
                     currentNetworkQuality == NetWorkQuality.QUALITY_DOWN){
                 if(meetingConfig != null){
                     meetingConfig.setNetWorkFine(false);

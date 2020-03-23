@@ -52,6 +52,42 @@ public class MeetingConfig {
     private List<MeetingDocument> allDocuments;
     private MeetingMember me;
     private boolean netWorkFine = true;
+    private String noteAttachmentUrl;
+    private String localFileId;
+    private long currentNoteId;
+    private boolean isInViewDigitalNote = true;
+
+    public boolean isInViewDigitalNote() {
+        return isInViewDigitalNote;
+    }
+
+    public void setInViewDigitalNote(boolean inViewDigitalNote) {
+        isInViewDigitalNote = inViewDigitalNote;
+    }
+
+    public String getNoteAttachmentUrl() {
+        return noteAttachmentUrl;
+    }
+
+    public void setNoteAttachmentUrl(String noteAttachmentUrl) {
+        this.noteAttachmentUrl = noteAttachmentUrl;
+    }
+
+    public String getLocalFileId() {
+        return localFileId;
+    }
+
+    public void setLocalFileId(String localFileId) {
+        this.localFileId = localFileId;
+    }
+
+    public long getCurrentNoteId() {
+        return currentNoteId;
+    }
+
+    public void setCurrentNoteId(long currentNoteId) {
+        this.currentNoteId = currentNoteId;
+    }
 
     public void setNetWorkFine(boolean _netWorkFine) {
         if(this.netWorkFine != _netWorkFine){
@@ -399,9 +435,30 @@ public class MeetingConfig {
                 ", isCameraOn=" + isCameraOn +
                 ", isInRealMeeting=" + isInRealMeeting +
                 ", isMembersCameraToggle=" + isMembersCameraToggle +
-                ", agoraMembers=" + agoraMembers +
                 ", presenterSessionId='" + presenterSessionId + '\'' +
                 ", docModifide=" + docModifide +
+                ", notifyUrl='" + notifyUrl + '\'' +
+                ", meetingMembers=" + meetingMembers +
+                ", meetingAuditor=" + meetingAuditor +
+                ", meetingInvitors=" + meetingInvitors +
+                ", meetingHostId='" + meetingHostId + '\'' +
+                ", agoraChannelId='" + agoraChannelId + '\'' +
+                ", presenterId='" + presenterId + '\'' +
+                ", agoraMembers=" + agoraMembers +
+                ", fromMeeting=" + fromMeeting +
+                ", mode=" + mode +
+                ", currentMaxVideoUserId='" + currentMaxVideoUserId + '\'' +
+                ", shareScreenUid=" + shareScreenUid +
+                ", currentLinkProperty=" + currentLinkProperty +
+                ", spaceId=" + spaceId +
+                ", currentDocumentPage=" + currentDocumentPage +
+                ", allDocuments=" + allDocuments +
+                ", me=" + me +
+                ", netWorkFine=" + netWorkFine +
+                ", noteAttachmentUrl='" + noteAttachmentUrl + '\'' +
+                ", localFileId='" + localFileId + '\'' +
+                ", currentNoteId=" + currentNoteId +
+                ", isInViewDigitalNote=" + isInViewDigitalNote +
                 '}';
     }
 }
