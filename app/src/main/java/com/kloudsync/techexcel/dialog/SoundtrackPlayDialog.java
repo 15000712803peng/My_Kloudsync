@@ -556,7 +556,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             @Override
             public void accept(List<WebAction> webActions) throws Exception {
                 for (WebAction action : webActions) {
-
                     if (action.getTime() >= time) {
                         Log.e("check_page_time", "seek_time:" + time + ",action_time:" + action.getTime());
                         SoundtrackActionsManager.getInstance(host).doChangePageAction(action);
@@ -845,7 +844,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         }).subscribe();
 //        Log.e("check_part","part_size:" + partSize +", total_time:" + totalTime);
     }
-
 
     private List<WebAction> pageActions = new ArrayList<>();
 

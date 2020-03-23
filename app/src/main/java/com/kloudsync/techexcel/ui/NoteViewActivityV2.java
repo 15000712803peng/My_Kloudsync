@@ -979,7 +979,6 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
                                 newNoteDatas.add(_noteData);
                                 return;
                             }
-
                             Log.e("check_note_id", "current_note_id:" + currentNoteId + ",note_id:" + noteId);
                             String key = "ShowDotPanData";
 
@@ -1954,7 +1953,6 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
                 e.printStackTrace();
             }
 
-
             web.load("javascript:ShowToolbar(" + true + ")", null);
             web.load("javascript:Record()", null);
             web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
@@ -1963,7 +1961,6 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
             noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
 
         } else {
-
             // show left right arrow
             web.load("javascript:ShowToolbar(" + false + ")", null);
             web.load("javascript:StopRecord()", null);
@@ -4285,6 +4282,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
                         getMeetingMembers(usersList);
                     }
                 }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
