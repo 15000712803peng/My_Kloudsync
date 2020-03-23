@@ -255,6 +255,9 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
     @Bind(R.id.audiosyncll)
     LinearLayout audiosyncll;
 
+    @Bind(R.id.timeshow)
+    TextView timeshow;
+
     @Bind(R.id.recordstatus)
     ImageView recordstatus;
 
@@ -983,6 +986,9 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
                             Log.e("check_note_id", "current_note_id:" + currentNoteId + ",note_id:" + noteId);
                             String key = "ShowDotPanData";
 
+                            lastjsonObject = new JSONObject(Tools.getFromBase64(noteData));
+                            RecordNoteActionManager.getManager(this).sendDrawActions(noteId, noteData);
+
                             if (web != null) {
                                 JSONObject _data = new JSONObject();
                                 _data.put("LinesData", Tools.getFromBase64(noteData));
@@ -996,55 +1002,6 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
                         }
                     }
                     return;
-                }
-
-                if (socketMessage.getData().has("retData")) {
-                    try {
-                        JSONObject retData = socketMessage.getData().getJSONObject("retData");
-                        String noteData = retData.getString("data");
-                        int noteId = retData.getInt("noteId");
-                        if (currentNoteId != noteId) {
-                            newNoteDatas.clear();
-                            TempNoteData _noteData = new TempNoteData();
-                            _noteData.setData(Tools.getFromBase64(noteData));
-                            _noteData.setNoteId(noteId);
-                            newNoteDatas.add(_noteData);
-                            if (noteLayout.getVisibility() == View.VISIBLE) {
-                                if (noteWeb != null) {
-                                    followShowNote(noteId);
-                                }
-                            } else {
-                                if (mFloatingWindowNoteManager != null) {
-                                    if (mFloatingWindowNoteManager.isShowing()) {
-                                        mFloatingWindowNoteManager.setOldNoteId((int) currentNoteId);
-                                        showNoteFloatingDialog(noteId);  //换个笔记了
-                                    } else {
-                                        showNoteFloatingDialog(noteId);
-                                    }
-                                } else {
-                                    showNoteFloatingDialog(noteId);
-                                }
-                            }
-                        } else {  // 同一个笔记
-                            if (noteLayout.getVisibility() == View.VISIBLE) {
-                                if (noteWeb != null) {
-                                    lastjsonObject = new JSONObject(Tools.getFromBase64(noteData));
-                                    NoteViewManager.getInstance().followPaintLine(noteData);
-                                    RecordNoteActionManager.getManager(this).sendDrawActions(noteId, noteData);
-                                }
-                            } else {
-                                if (mFloatingWindowNoteManager != null) {
-                                    if (mFloatingWindowNoteManager.isShowing()) {
-                                        mFloatingWindowNoteManager.followDrawNewLine(noteId, noteData);
-                                        RecordNoteActionManager.getManager(this).sendDrawActions(noteId, noteData);
-                                    }
-                                }
-                            }
-
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
                 }
                 break;
             case SocketMessageManager.MESSAGE_NOTE_CHANGE:
@@ -3756,9 +3713,10 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
             @Override
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
                 soundtrackRecordManager = SoundtrackRecordManager.getManager(NoteViewActivityV2.this);
-                soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll, meetingConfig);
+                soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll,timeshow, meetingConfig);
             }
         });
+        Log.e("syncing---",meetingConfig.getDocument().getAttachmentID() + "");
         yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
     }
 
@@ -3820,19 +3778,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
             messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
             recordstatus.setVisibility(View.VISIBLE);
 
-            //判断笔记是否打开
-            if (noteLayout.getVisibility() == View.VISIBLE) {
-                if (noteWeb != null) {
-                    // 笔记先于音想打开
-                    RecordNoteActionManager.getManager(NoteViewActivityV2.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
-                }
-            } else {
-                if (mFloatingWindowNoteManager != null) {
-                    if (mFloatingWindowNoteManager.isShowing()) {
-                        mFloatingWindowNoteManager.displayPopupActions();
-                    }
-                }
-            }
+            RecordNoteActionManager.getManager(NoteViewActivityV2.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
         } else if (eventSoundSync.getStatus() == 0) {   //录音结束
             recordstatus.setVisibility(View.GONE);
             isSyncing = false;
