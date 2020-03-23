@@ -587,6 +587,8 @@ Please input the cell phone number to add the contact
     <string name="sure_password">Confirm</string>
     <string name="input_again">Please input the new password</string>
     <string name="OK">OK</string>
+    <string name="companywebsite">Website</string>
+    <string name="loge">loge</string>
     <string name="All_set">All set</string>
     <string name="coursenotify">Notifications</string>
     <string name="opencourse">Open Course</string>

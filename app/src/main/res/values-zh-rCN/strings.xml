@@ -405,6 +405,8 @@
     <string name="sure_password">确认密码</string>
     <string name="input_again">请再次输入新密码</string>
     <string name="OK">完成</string>
+    <string name="companywebsite">网址</string>
+    <string name="loge">机构徽标</string>
     <string name="coursenotify">通知</string>
 
     <string name="opencourse">打开课程</string>

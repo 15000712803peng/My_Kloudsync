@@ -7,11 +7,15 @@ public class CurrentNotePresenter extends TQLPenSignalKloudPresenter<CurrentNote
 
 	@Override
 	public void onReceiveDot(Dot dot) {
-		super.onReceiveDot(dot);
+		if (getView() != null) {
+			getView().onReceiveDot(dot);
+		}
 	}
 
 	@Override
 	public void onReceiveOfflineStrokes(Dot dot) {
-		super.onReceiveOfflineStrokes(dot);
+		if (getView() != null) {
+			getView().onReceiveOfflineStrokes(dot);
+		}
 	}
 }
