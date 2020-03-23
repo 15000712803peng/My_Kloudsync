@@ -258,6 +258,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     @Bind(R.id.audiosyncll)
     LinearLayout audiosyncll;
 
+    @Bind(R.id.timeshow)
+    TextView timeshow;
+
     @Bind(R.id.recordstatus)
     ImageView recordstatus;
 
@@ -3785,7 +3788,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             @Override
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
                 soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
-                soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll, meetingConfig);
+                soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll,timeshow, meetingConfig);
             }
         });
         yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
