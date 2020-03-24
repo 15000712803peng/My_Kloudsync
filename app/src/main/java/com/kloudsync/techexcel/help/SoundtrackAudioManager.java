@@ -80,13 +80,11 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
 
     public void prepareAudioAndPlay(final SoundtrackMediaInfo audioData) {
 
-
         Observable.just("play").observeOn(Schedulers.io()).subscribe(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
                 audioPlayer = new MediaPlayer();
                 try {
-
                     try {
                         if (audioPlayer.isPlaying()) {
                             return;
@@ -94,6 +92,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
                     } catch (IllegalStateException exception) {
 
                     }
+
                     audioPlayer.setOnPreparedListener(SoundtrackAudioManager.this);
                     audioPlayer.setOnCompletionListener(SoundtrackAudioManager.this);
                     audioPlayer.setOnErrorListener(SoundtrackAudioManager.this);
@@ -101,44 +100,42 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
                     if (audioCache.containFile(audioData.getAttachmentUrl())) {
                         File file = new File(audioCache.getAudioPath(audioData.getAttachmentUrl()));
                         if (file.exists()) {
-                            Log.e("check_soundtack_play", "to_play:" + file.getAbsolutePath());
-                            audioPlayer.setDataSource(file.getAbsolutePath());
+//                            audioPlayer.setDataSource(file.getAbsolutePath());
+                            audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
                         } else {
-                            Log.e("check_soundtack_play", "set_data_source:" + audioData.getAttachmentUrl());
                             audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
                         }
+
                     } else {
-                        Log.e("check_soundtack_play", "set_data_source:" + audioData.getAttachmentUrl());
                         audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
                     }
 
 //                    audioPlayer.setDataSource(context, Uri.parse(URLDecoder.decode(audioData.getAttachmentUrl(),"UTF-8")));
                     audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
                     try {
-                        Log.e("check_soundtack_play", "prepare");
+                        Log.e("check_prepare_soundtrack","url:" + audioData.getAttachmentUrl());
                         audioPlayer.prepare();
                     } catch (IllegalStateException e) {
-                        Log.e("check_soundtack_play", "IllegalStateException," + e.getMessage());
+                        Log.e("check_prepare_soundtrack","IllegalStateException:" + e.getMessage());
                         reinit(audioData);
                     }
+                    Log.e("check_prepare_soundtrack","player start");
                     audioPlayer.start();
-                    Log.e("check_soundtack_play", "start");
-
                     audioData.setPreparing(false);
                     audioData.setPrepared(true);
 
                 } catch (IOException e) {
-                    Log.e("check_play", "IOException," + e.getMessage());
                     e.printStackTrace();
                     audioData.setPreparing(false);
                 }
             }
         });
 
-
     }
 
     private void reinit(SoundtrackMediaInfo mediaInfo) {
+
         audioPlayer = null;
         audioPlayer = new MediaPlayer();
         try {
@@ -195,6 +192,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
         if (audioPlayer == null) {
             return 0;
         }
+
         return audioPlayer.getCurrentPosition();
     }
 
@@ -230,9 +228,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
             return;
         }
         if (audioPlayer != null) {
-            Log.e("vedio_check", "pause_begin");
             audioPlayer.pause();
-            Log.e("vedio_check", "pause_");
         }
     }
 
@@ -266,9 +262,11 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
                 Log.e("check_url_path", _url.getPath());
                 String path = _url.getPath();
                 if (!TextUtils.isEmpty(path)) {
+
                     if (path.startsWith("/")) {
                         path = path.substring(1);
                     }
+
                     int index = path.lastIndexOf("/");
                     if (index >= 0 && index < path.length()) {
                         String centerPart = path.substring(0, index);
@@ -307,7 +305,6 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
 
 
     }
-
 
     private synchronized void safeDownloadFile(final String url, final String savePath, final boolean needRedownload) {
         audioCache = SoundtrackAudioCache.getInstance(context);
@@ -363,9 +360,8 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
 
                             String _path = FileUtils.getBaseAudiosDir();
                             File dir = new File(_path);
-                            String name = url.substring(url.lastIndexOf("/"), url.length());
+                            String name = mediaInfo.getItemID()+"_" + url.substring(url.lastIndexOf("/"), url.length());
                             File audioFile = new File(dir, name);
-                            Log.e("predownLoadUserVedio", "vedioFile:" + audioFile.getAbsolutePath());
                             queryDocumentAndDownLoad(url, audioFile.getAbsolutePath());
 
                         }

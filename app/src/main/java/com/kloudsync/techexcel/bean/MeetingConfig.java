@@ -56,6 +56,7 @@ public class MeetingConfig {
     private String localFileId;
     private long currentNoteId;
     private boolean isInViewDigitalNote = true;
+    private DocumentPage restoreDocument;
 
     public boolean isInViewDigitalNote() {
         return isInViewDigitalNote;

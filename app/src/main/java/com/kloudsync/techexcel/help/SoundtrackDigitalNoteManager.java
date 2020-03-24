@@ -107,7 +107,6 @@ public class SoundtrackDigitalNoteManager {
 
     }
 
-
     private void executeNoteEvents(long playTime) {
         int index = 0;
         for (DigitalNoteEventInSoundtrack noteEvent : _noteEvents) {
@@ -301,6 +300,9 @@ public class SoundtrackDigitalNoteManager {
     JSONObject currentPageData;
 
     public void handleNoteShowInMainWindow(final int noteId, final String lastStokeId) {
+        if(noteId <= 0){
+            return;
+        }
 
         Observable.just(noteId).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Integer>() {
             @Override
@@ -416,7 +418,9 @@ public class SoundtrackDigitalNoteManager {
 
 
     public void handleNoteShowInSmallWindow(final int noteId, final String lastStokeId) {
-
+        if(noteId <= 0){
+            return;
+        }
         Observable.just(noteId).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer integer) throws Exception {

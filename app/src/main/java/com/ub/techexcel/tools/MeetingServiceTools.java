@@ -769,6 +769,9 @@ public class MeetingServiceTools {
     }
 
     public EventNote syncGetNoteByNoteId(int noteId) {
+        if(noteId <= 0){
+            return new EventNote();
+        }
         String url = URL_PUBLIC + "DocumentNote/Item?noteID=" + noteId;
         JSONObject returnjson = com.kloudsync.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
         Log.e("syncGetNoteByNoteId", url + "  " + returnjson.toString());
@@ -1090,6 +1093,7 @@ public class MeetingServiceTools {
     }
 
     public String syncGetNoteAttachmentUrlByNoteId(int noteId) {
+
         String url = URL_PUBLIC + "DocumentNote/Item?noteID=" + noteId;
         JSONObject returnjson = com.kloudsync.techexcel.service.ConnectService.getIncidentbyHttpGet(url);
         Log.e("syncGetNoteByNoteId", url + "  " + returnjson.toString());

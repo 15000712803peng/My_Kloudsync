@@ -572,6 +572,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (menuManager != null) {
             menuManager.release();
         }
+
         if (soundtrackRecordManager != null) {
             soundtrackRecordManager.release();
         }
@@ -1936,6 +1937,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
+
         String userId = AppConfig.UserID;
         if (TextUtils.isEmpty(userId)) {
             userId = sharedPreferences.getString("UserID", "");
@@ -3628,6 +3630,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     .setNegativeButton(getResources().getText(R.string.know_the), null)
                     .show();
         } else {
+
             showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
         }
     }
@@ -3995,12 +3998,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private SoundtrackPlayDialog soundtrackPlayDialog;
 
     private void showSoundtrackPlayDialog(SoundtrackDetail soundtrackDetail) {
+
         if (soundtrackPlayDialog != null) {
             if (soundtrackPlayDialog.isShowing()) {
                 soundtrackPlayDialog.dismiss();
                 soundtrackPlayDialog = null;
             }
         }
+
         soundtrackPlayDialog = new SoundtrackPlayDialog(this, soundtrackDetail, meetingConfig);
         soundtrackPlayDialog.show();
     }

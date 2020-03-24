@@ -282,15 +282,18 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
 
     public void refreshAudioStatus(AgoraMember member) {
         int index = this.users.indexOf(member);
+
         if (index >= 0) {
             AgoraMember agoraMember = this.users.get(index);
 
             if (!(agoraMember.isMuteAudio() == member.isMuteAudio())) {
+                Log.e("refreshAudioStatus","member:" + member.isMuteAudio() + ",agoraMember:" + agoraMember.isMuteAudio());
                 agoraMember.setMuteAudio(member.isMuteAudio());
                 notifyItemChanged(index);
 
             } else {
-
+                Log.e("refreshAudioStatus","member:" + member.isMuteAudio() + ",agoraMember:" + agoraMember.isMuteAudio());
+                Log.e("refreshAudioStatus","have_show_un_mute:" + agoraMember.isHaveShowUnMuteAudioImage());
                 if (!agoraMember.isMuteAudio()) {
                     if (!agoraMember.isHaveShowUnMuteAudioImage()) {
                         notifyItemChanged(index);

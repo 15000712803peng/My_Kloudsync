@@ -3780,8 +3780,8 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
             recordstatus.setVisibility(View.GONE);
             isSyncing = false;
             //清除最后一页上的数据
-            web.load("javascript:ClearPageAndAction()", null);
-            PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
+//                web.load("javascript:ClearPageAndAction()", null);
+//                PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
 //            JSONObject jsonObject=new JSONObject();
 //            try {
 //                jsonObject.put("id",12);

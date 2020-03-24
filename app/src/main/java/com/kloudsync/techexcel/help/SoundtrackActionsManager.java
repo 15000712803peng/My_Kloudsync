@@ -362,11 +362,13 @@ public class SoundtrackActionsManager {
         action.setExecuted(true);
         try {
             JSONObject data = new JSONObject(action.getData());
-            Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
+//            Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
             if (data.getInt("type") == 2) {
                 isLoadingPage = true;
                 downLoadDocumentPageAndShow(data.getInt("page"));
+
             } else {
+                Log.e("doExecuteAction", "action," + action.getData() + ",playtime:" + playTime);
                 web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
                 web.load("javascript:Record()", null);
             }
@@ -676,7 +678,7 @@ public class SoundtrackActionsManager {
                 if (web == null) {
                     return;
                 }
-
+                Log.e("showCurrentPage","page:" + documentPage);
                 web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
                 web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
                 web.load("javascript:Record()", null);
