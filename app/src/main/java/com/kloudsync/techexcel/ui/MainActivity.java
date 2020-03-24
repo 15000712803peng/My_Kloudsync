@@ -1958,7 +1958,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     private void goToViewNote(String lessonId, String itemId, Note note) {
         updateSocket();
-        Intent intent = new Intent(this, NoteViewActivity.class);
+	    Intent intent = new Intent(this, NoteViewActivityV2.class);
 //        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("userid", AppConfig.UserID);
@@ -1967,7 +1967,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 //        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
         intent.putExtra("document_id", itemId);
         intent.putExtra("meeting_type", 2);
-        intent.putExtra("lession_id", Integer.parseInt(itemId));
+	    intent.putExtra("lession_id", Integer.parseInt(lessonId));
         intent.putExtra("url", note.getAttachmentUrl());
         intent.putExtra("note_id", note.getNoteID());
         intent.putExtra("local_file_id", note.getLocalFileID());

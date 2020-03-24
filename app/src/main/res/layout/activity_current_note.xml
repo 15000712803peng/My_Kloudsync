@@ -16,21 +16,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_height="wrap_content">
 
-        <com.kloudsync.techexcel.ui.MaskViewGroup
-            app:containerCornerRadius="0dp"
-            app:containerDeltaLength="@dimen/dp_3"
-            app:containerShadowColor="@color/white"
-            app:containerShadowRadius="6dp"
-            app:deltaX="0dp"
-            app:deltaY="3dp"
-            app:enable="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/iv_current_note_draw"
             android:layout_width="@dimen/dp_288"
+            android:scaleType="fitXY"
             android:layout_centerInParent="true"
             android:layout_height="@dimen/dp_438" />
-        </com.kloudsync.techexcel.ui.MaskViewGroup>
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

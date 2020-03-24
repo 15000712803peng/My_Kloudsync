@@ -15,13 +15,11 @@ import com.kloudsync.techexcel.bean.EventPlayWebVedio;
 import com.kloudsync.techexcel.bean.MediaPlayPage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
-import com.kloudsync.techexcel.bean.PreloadPage;
 import com.kloudsync.techexcel.bean.WebVedio;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
-import com.kloudsync.techexcel.tool.RecordingPageCache;
 import com.kloudsync.techexcel.tool.SyncWebActionsCache;
 import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.WebAction;
@@ -74,6 +72,7 @@ public class SoundtrackActionsManager {
     private MeetingConfig meetingConfig;
     private RelativeLayout webVedioPlayLayout;
     private SyncWebActionsCache webActionsCache;
+	private DocumentPage currentDocumentPage;
 
     public void setUserVedioManager(UserVedioManager userVedioManager) {
         this.userVedioManager = userVedioManager;
@@ -391,7 +390,7 @@ public class SoundtrackActionsManager {
 //                }
                 isLoadingPage = true;
                 downLoadDocumentPageAndShow(page);
-                currentPage = page;
+
             } else {
                 web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
                 web.load("javascript:Record()", null);
@@ -647,7 +646,7 @@ public class SoundtrackActionsManager {
             web = null;
         }
         webActions.clear();
-        currentPartWebActions =  null;
+	    currentPartWebActions = null;
         mediaPlayPages.clear();
         requests.clear();
         if (webVedioManager != null) {
@@ -661,7 +660,6 @@ public class SoundtrackActionsManager {
         Observable.just(meetingConfig.getDocument()).observeOn(Schedulers.io()).map(new Function<MeetingDocument, Object>() {
             @Override
             public Object apply(MeetingDocument document) throws Exception {
-
                 DocumentPage page = document.getDocumentPages().get(pageNumber - 1);
                 queryAndDownLoadPageToShow(page, true);
                 return page;
@@ -673,10 +671,11 @@ public class SoundtrackActionsManager {
         Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
             @Override
             public void accept(DocumentPage page) throws Exception {
-                if(web == null){
+	            if (web == null) {
                     return;
                 }
-                web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+
+	            web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
                 web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
                 web.load("javascript:Record()", null);
             }

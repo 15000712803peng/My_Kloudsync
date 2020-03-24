@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ll"
     android:layout_width="350dp"
     android:layout_height="wrap_content"
@@ -14,7 +13,7 @@
         android:layout_marginTop="@dimen/dp_5"
         android:orientation="horizontal">
 
-        <com.kloudsync.techexcel.ui.MaskViewGroup
+        <!--<com.kloudsync.techexcel.ui.MaskViewGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:containerCornerRadius="0dp"
@@ -23,37 +22,26 @@
             app:containerShadowRadius="@dimen/dp_6"
             app:deltaX="0dp"
             app:deltaY="@dimen/dp_3"
-            app:enable="true">
+            app:enable="true">-->
 
             <RelativeLayout
                 android:id="@+id/layout_note"
-                android:layout_width="@dimen/dp_80"
-                android:layout_height="@dimen/dp_112"
-                android:layout_gravity="center_vertical"
+                android:layout_width="@dimen/dp_288"
+                android:layout_height="@dimen/dp_438"
                 android:layout_marginTop="@dimen/dp_5"
-                android:background="@drawable/gray_border"
-                android:gravity="center_vertical"
                 android:padding="@dimen/dp_1">
 
                 <ImageView
                     android:id="@+id/iv_my_current_note"
-                    android:layout_width="@dimen/dp_80"
-                    android:layout_height="@dimen/dp_112"
-                    android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true" />
-
-                <!--<com.kloudsync.techexcel.ui.DrawView-->
-                <!--android:background="@color/orange"-->
-                <!--android:id="@+id/image_live"-->
-                <!--android:layout_width="80dp"-->
-                <!--android:layout_height="122dp"-->
-                <!--android:layout_gravity="center_vertical"-->
-                <!--android:scaleType="fitXY" />-->
+                    android:layout_width="@dimen/dp_288"
+                    android:layout_height="@dimen/dp_438"
+                    android:scaleType="fitXY"
+                    android:layout_centerInParent="true" />
 
             </RelativeLayout>
 
 
-        </com.kloudsync.techexcel.ui.MaskViewGroup>
+        <!--        </com.kloudsync.techexcel.ui.MaskViewGroup>-->
 
         <RelativeLayout
             android:gravity="center_vertical"
@@ -87,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_15"
-                android:text="0000-00-00 00:00:00"
+                android:text="0000_00_00 00:00:00"
                 android:textSize="@dimen/sp_12" />
 
             <!-- <ImageView

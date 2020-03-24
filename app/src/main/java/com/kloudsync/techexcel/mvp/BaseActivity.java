@@ -10,8 +10,6 @@ import com.kloudsync.techexcel.mvp.presenter.KloudPresenter;
 import com.kloudsync.techexcel.mvp.view.KloudView;
 import com.kloudsync.techexcel.tool.ToastUtils;
 
-import org.greenrobot.eventbus.EventBus;
-
 import butterknife.ButterKnife;
 
 /**
@@ -29,7 +27,6 @@ public abstract class BaseActivity<P extends KloudPresenter> extends FragmentAct
 	    App.setCustomDensity(this, 0);
         setContentView(getLayout());
 	    ButterKnife.bind(this);
-	    EventBus.getDefault().register(this);
 	    createLoadingDialog();
         initPresenter();
         if(mPresenter != null){
@@ -91,7 +88,6 @@ public abstract class BaseActivity<P extends KloudPresenter> extends FragmentAct
     protected void onDestroy() {
         super.onDestroy();
 	    ButterKnife.unbind(this);
-	    EventBus.getDefault().unregister(this);
 	    if (mLoadingDialog != null) {
 		    mLoadingDialog.dismiss();
 		    mLoadingDialog = null;

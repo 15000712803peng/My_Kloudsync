@@ -72,25 +72,20 @@ import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
-import com.kloudsync.techexcel.dialog.RecordPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
-import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.BottomMenuManager;
-import com.kloudsync.techexcel.help.ChatManager;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.DocVedioManager;
 import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
-import com.kloudsync.techexcel.help.PopBottomChat;
 import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.SetPresenterDialog;
 import com.kloudsync.techexcel.help.ShareDocumentDialog;
-import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.response.DevicesResponse;
@@ -110,18 +105,15 @@ import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.bean.EventMuteAll;
 import com.ub.techexcel.bean.EventUnmuteAll;
 import com.ub.techexcel.bean.Note;
-import com.ub.techexcel.bean.Record;
 import com.ub.techexcel.tools.DevicesListDialog;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
 import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
-import com.ub.techexcel.tools.MeetingRecordsDialog;
 import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
-import com.ub.techexcel.tools.UserSoundtrackDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -2563,9 +2555,11 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
                     if (dataJson.has("currentMode")) {
                         meetingConfig.setMode(joinMeetingMessage.getCurrentMode());
                     }
+
                     if (dataJson.has("currentMaxVideoUserId")) {
                         meetingConfig.setCurrentMaxVideoUserId(joinMeetingMessage.getCurrentMaxVideoUserId());
                     }
+
                     if (documents == null || documents.size() <= 0) {
                         if (!TextUtils.isEmpty(localFileId) && localFileId.contains(".")) {
                             return;
@@ -2877,7 +2871,12 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
                 if (!TextUtils.isEmpty(url)) {
                     Log.e("check_url", "url:" + url);
                     jsonObject = ServiceInterfaceTools.getinstance().syncGetNotePageJson(url);
-                    lastjsonObject = jsonObject.getJSONObject("PaintData");
+	                try {
+		                lastjsonObject = jsonObject.getJSONObject("PaintData");
+	                } catch (Exception e) {
+
+	                }
+
                 }
                 return jsonObject;
             }
@@ -2895,7 +2894,9 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
                 web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(NoteViewActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+	            if (lastjsonObject != null) {
+		            RecordNoteActionManager.getManager(NoteViewActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+	            }
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override

@@ -1,16 +1,12 @@
 package com.kloudsync.techexcel.dialog;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -20,13 +16,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.MeetingConfig;
-import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
@@ -57,7 +48,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -89,10 +79,9 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             case MESSAGE_PLAY_TIME_REFRESHED:
                 String time= (String) message.obj;
                 audiotime.setText(time);
-//              timeShow.setText(time);
+	            timeShow.setText(time);
                 break;
         }
-
     }
 
     static volatile SoundtrackRecordManager instance;
@@ -114,6 +103,8 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     private int fieldId;
     private String fieldNewPath;
     private MeetingConfig meetingConfig;
+	private TextView timeShow;
+
 
     /**
      *
@@ -121,7 +112,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
      * @param soundtrackBean
      * @param audiosyncll
      */
-    public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, MeetingConfig meetingConfig) {
+    public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, TextView timeshow, MeetingConfig meetingConfig) {
         if(Tools.isOrientationPortrait((Activity) mContext)){
             Log.e("henshupng","竖屏");
             Tools.setPortrait((Activity) mContext);
@@ -129,6 +120,8 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             Log.e("henshupng","横屏");
             Tools.setLandscape((Activity) mContext);
         }
+	    this.timeShow = timeshow;
+	    timeShow.setOnClickListener(this);
         this.audiosyncll=audiosyncll;
         this.isrecordvoice=isrecordvoice;
         this.meetingConfig=meetingConfig;
@@ -153,7 +146,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     private List<JSONObject> noteActionList=new ArrayList<>();
 
     public void recordNoteAction(NoteRecordType noteRecordType, JSONObject data){
-        if(audiosyncll!=null&&audiosyncll.getVisibility()==View.VISIBLE){
+	    if (audiosyncll != null && (audiosyncll.getVisibility() == View.VISIBLE || timeShow.getVisibility() == View.VISIBLE)) {
             int acitontype=noteRecordType.getActiontype();
             try {
                 JSONObject jsonObject=new JSONObject();
@@ -177,17 +170,19 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private void  initPlayMusic(final boolean isrecordvoice, String url,String url2){
         Log.e("syncing---", isrecordvoice+"  "+url+"  "+url2);
+	    if (isrecordvoice) {
+		    //启动录音程序
+		    startAudioRecord();
+	    }
+	    //显示进度条
+	    displayLayout();
+
         EventSoundSync soundSync=new EventSoundSync();
         soundSync.setSoundtrackID(soundtrackID);
         soundSync.setStatus(1);
         soundSync.setTime(tttime);
         EventBus.getDefault().post(soundSync);
-        if(isrecordvoice){
-            //启动录音程序
-            startAudioRecord();
-        }
-        //显示进度条
-        displayLayout();
+
         if(!TextUtils.isEmpty(url)) {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
@@ -241,6 +236,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private ImageView playstop,syncicon,close;
     private  TextView audiotime,isStatus;
+	private ImageView timeHidden;
     private SeekBar mSeekBar;
     private boolean isPause=false;
 
@@ -248,6 +244,8 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         noteActionList.clear();
         audiosyncll.setVisibility(View.VISIBLE);
         playstop = audiosyncll.findViewById(R.id.playstop);
+	    timeHidden = audiosyncll.findViewById(R.id.timehidden);
+	    timeHidden.setOnClickListener(this);
         playstop.setOnClickListener(this);
         playstop.setImageResource(R.drawable.video_stop);
         syncicon =  audiosyncll.findViewById(R.id.syncicon);
@@ -409,6 +407,14 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             case R.id.close: //结束录音
                 release();
                 break;
+	        case R.id.timehidden:
+		        timeShow.setVisibility(View.VISIBLE);
+		        audiosyncll.setVisibility(View.GONE);
+		        break;
+	        case R.id.timeshow:
+		        timeShow.setVisibility(View.GONE);
+		        audiosyncll.setVisibility(View.VISIBLE);
+		        break;
         }
     }
 
@@ -466,6 +472,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             tttime=0;
         }
         audiosyncll.setVisibility(View.GONE);
+	    timeShow.setVisibility(View.GONE);
     }
 
 

@@ -27,7 +27,6 @@ import com.kloudsync.techexcel.bean.EventPageActionsForSoundtrack;
 import com.kloudsync.techexcel.bean.EventPageNotesForSoundtrack;
 import com.kloudsync.techexcel.bean.EventPlayWebVedio;
 import com.kloudsync.techexcel.bean.MeetingConfig;
-import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.SoundtrackDetail;
@@ -556,7 +555,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             @Override
             public void accept(List<WebAction> webActions) throws Exception {
                 for (WebAction action : webActions) {
-
                     if (action.getTime() >= time) {
                         Log.e("check_page_time", "seek_time:" + time + ",action_time:" + action.getTime());
                         SoundtrackActionsManager.getInstance(host).doChangePageAction(action);
@@ -845,7 +843,6 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         }).subscribe();
 //        Log.e("check_part","part_size:" + partSize +", total_time:" + totalTime);
     }
-
 
     private List<WebAction> pageActions = new ArrayList<>();
 

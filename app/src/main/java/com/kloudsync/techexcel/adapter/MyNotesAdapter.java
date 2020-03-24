@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,7 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -34,7 +37,9 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import org.json.JSONObject;
 
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -49,15 +54,20 @@ import static com.kloudsync.techexcel.personal.MyNoteActivity.TYPE_NOTE;
 
 public class MyNotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+	private final String TAG = MyNotesAdapter.class.getSimpleName();
+
 	private Context mContext;
 	private DrawView mCanvasImage;
-	private boolean hasMeasured = false;
 
 	private List<Note> mList;
 	SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("yyyy_MM_dd  HH:mm:ss");
 
 	private OnNotesOperationsListener notesOperationsListener;
-	private final Note mCurrentNote;
+	private Note mCurrentNote;
+	private boolean mHasMeasured = false;
+	private boolean misNotchScreen;
+	private final int mWidth;
+	private final int mHeight;
 
 	public OnNotesOperationsListener getNotesOperationsListener() {
 		return notesOperationsListener;
@@ -67,10 +77,14 @@ public class MyNotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 		this.notesOperationsListener = notesOperationsListener;
 	}
 
-	public MyNotesAdapter(Context context, List<Note> list) {
+	public MyNotesAdapter(Context context, List<Note> list, boolean isNotchScreen, int widthPixels, int heightPixels) {
 		this.mContext = context;
 		this.mList = list;
+		mCanvasImage = new DrawView(mContext);
 		mCurrentNote = list.get(0);
+		misNotchScreen = isNotchScreen;
+		mWidth = widthPixels;
+		mHeight = heightPixels;
 	}
 
 	@Override
@@ -85,50 +99,47 @@ public class MyNotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 	@NonNull
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View view = null;
+		View view;
 		switch (viewType) {
 			case TYPE_LIVE_NOTE:
 				view = LayoutInflater.from(mContext).inflate(R.layout.live_note_item, parent, false);
-				final LiveNoteHolder liveNoteHolder = new LiveNoteHolder(view);
-				mCanvasImage = new DrawView(mContext);
-				ViewGroup.LayoutParams param = liveNoteHolder.noteLayout.getLayoutParams();
-				liveNoteHolder.noteLayout.addView(mCanvasImage, param);
-				Log.e("check_canvasImage", "canvasImage1:" + mCanvasImage);
-				liveNoteHolder.mIvMyCurrentNote.setImageResource(R.drawable.p0);
-				liveNoteHolder.mIvMyCurrentNote.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+				final LiveNoteHolder noteHolder = new LiveNoteHolder(view);
+				noteHolder.mIvMyCurrentNote.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 					@Override
 					public void onGlobalLayout() {
-						if (hasMeasured == false) {
-							hasMeasured = true;
+						if (!mHasMeasured) {
+							mHasMeasured = true;
 							//计算
-							/*BG_WIDTH = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_80);
-							BG_HEIGHT = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_112);
+							int BG_WIDTH = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_288);//显示背景图宽
+							int BG_HEIGHT = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_438);//显示背景图高
 
-							ViewGroup.LayoutParams para = liveNoteHolder.mIvMyCurrentNote.getLayoutParams();
+							ViewGroup.LayoutParams para = noteHolder.mIvMyCurrentNote.getLayoutParams();
 							para.width = BG_WIDTH;
 							para.height = BG_HEIGHT;
-							gImageView.setLayoutParams(para);
+							noteHolder.mIvMyCurrentNote.setLayoutParams(para);
 
-							gcontentLeft = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getLeft();
-							gcontentTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+							int gcontentLeft = ((Activity) mContext).getWindow().findViewById(Window.ID_ANDROID_CONTENT).getLeft(); //内容显示区域left坐标
+							int gcontentTop = ((Activity) mContext).getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();//内容显示区域top坐标
 
-							int statusHeight = getStatusBarHeight();
-							int statusHeight2 = getStatusBarHeight(OidActivity.this);
+							int statusHeight = PenDotTool.getStatusBarHeightClass(mContext);
+							int statusHeight2 = PenDotTool.getStatusBarHeight(mContext);
 
-							Log.i(TAG, "onGlobalLayout: actionBarHeight=" + actionBarHeight + ",statusHeight=" + statusHeight + ",statusHeight2=" + statusHeight2);
+							Log.i(TAG, "onGlobalLayout: statusHeight=" + statusHeight + ",statusHeight2=" + statusHeight2);
 							Log.i(TAG, "onGlobalLayout: mHeight=" + mHeight + ",mWidth=" + mWidth);
 							Log.i(TAG, "onGlobalLayout: gcontentTop=" + gcontentTop + ",gcontentLeft=" + gcontentLeft);
 							Log.i(TAG, "onGlobalLayout: BG_HEIGHT=" + BG_HEIGHT + ",BG_WIDTH=" + BG_WIDTH);
-							A5_X_OFFSET = (int) (mWidth - gcontentLeft - BG_WIDTH) / 2;
-							if (isNotchScreen) {
-								A5_Y_OFFSET = (int) (mHeight - gcontentTop - BG_HEIGHT + notchscreenHeight) / 2 *//*- 12*//*;
+							int A5_X_OFFSET = (int) (mWidth - gcontentLeft - BG_WIDTH) / 2;//笔迹X轴偏移量
+							int A5_Y_OFFSET; //笔迹Y轴偏移量
+							if (misNotchScreen) {
+								A5_Y_OFFSET = (int) (mHeight - gcontentTop - BG_HEIGHT + PenDotTool.getNotchscreenHeight()) / 2 /*- 12*/;
 							} else {
 								A5_Y_OFFSET = (int) (mHeight - gcontentTop - BG_HEIGHT) / 2;
-							}*/
+							}
+							PenDotTool.setData(BG_WIDTH, BG_HEIGHT, A5_X_OFFSET, A5_Y_OFFSET);
 						}
 					}
 				});
-				return liveNoteHolder;
+				return new LiveNoteHolder(view);
 			case TYPE_NOTE:
 				view = LayoutInflater.from(mContext).inflate(R.layout.user_note_item, parent, false);
 				return new RecycleHolder2(view);
@@ -144,8 +155,21 @@ public class MyNotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 				if (holder instanceof LiveNoteHolder) {
 					Note note = mList.get(position);
 					final LiveNoteHolder noteHolder = (LiveNoteHolder) holder;
+					RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+					ViewParent viewParent = mCanvasImage.getParent();
+					if (viewParent != null) {
+						((RelativeLayout) viewParent).removeView(mCanvasImage);
+					}
+					noteHolder.mIvMyCurrentNote.setImageResource(R.drawable.p0);
+					noteHolder.noteLayout.addView(mCanvasImage, param);
+
 					noteHolder.mTvCurrentPage.setText(note.getTitle());
-					noteHolder.mTvPageUpdateDate.setText(note.getCreatedDate());
+					String date = note.getCreatedDate();
+					if (!TextUtils.isEmpty(date)) {
+						long dd = Long.parseLong(date);
+						String haha = mSimpleDateFormat.format(dd);
+						noteHolder.mTvPageUpdateDate.setText(haha);
+					}
 					Log.e("check_canvasImage", "canvasImage2:" + mCanvasImage);
 					noteHolder.itemView.setOnClickListener(new View.OnClickListener() {
 						@Override
@@ -205,10 +229,36 @@ public class MyNotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 	public void onReceiveDot(Dot dot) {
 		PenDotTool.processEachDot(dot, mCanvasImage);
+		String title = dot.OwnerID + "." + dot.SectionID + "." + dot.BookID + "." + dot.PageID;
+		if (!mCurrentNote.getTitle().equals(title)) {
+			try {
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = simpleDateFormat.parse(" 2010-01-01 00:00:00");
+				long timeMillis = date.getTime() + dot.timelong;
+				mCurrentNote.setTitle(title);
+				mCurrentNote.setCreatedDate(String.valueOf(timeMillis));
+				notifyItemChanged(0);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void onReceiveOfflineStrokes(Dot dot) {
 		PenDotTool.processEachDot(dot, mCanvasImage);
+		String title = dot.OwnerID + "." + dot.SectionID + "." + dot.BookID + "." + dot.PageID;
+		if (!mCurrentNote.getTitle().equals(title)) {
+			try {
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = simpleDateFormat.parse(" 2010-01-01 00:00:00");
+				long timeMillis = date.getTime() + dot.timelong;
+				mCurrentNote.setTitle(title);
+				mCurrentNote.setCreatedDate(String.valueOf(timeMillis));
+				notifyItemChanged(0);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private static class RecycleHolder2 extends RecyclerView.ViewHolder {
