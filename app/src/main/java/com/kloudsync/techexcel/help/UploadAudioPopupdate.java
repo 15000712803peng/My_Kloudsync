@@ -88,19 +88,21 @@ public class UploadAudioPopupdate implements View.OnClickListener{
                 }
             }
             mPopupWindow.show();
-
-
         }
     }
 
     public boolean isShowing() {
-        return mPopupWindow.isShowing();
+        if (mPopupWindow != null) {
+          return mPopupWindow.isShowing();
+        }
+        return false;
     }
 
     public void dismiss() {
         hideSoftKeyboard(mContext,edittext);
         if (mPopupWindow != null) {
             mPopupWindow.dismiss();
+            mPopupWindow=null;
         }
     }
 
