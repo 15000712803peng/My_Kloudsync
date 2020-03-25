@@ -30,7 +30,6 @@ public class UploadAudioPopupdate implements View.OnClickListener{
     private View view;
     private TextView recordsync,cancel;
     private EditText edittext;
-//    private CheckBox isPublic;
     private RoundProgressBar roundProgressBar;
     private SoundtrackBean soundtrackBean = new SoundtrackBean();
 

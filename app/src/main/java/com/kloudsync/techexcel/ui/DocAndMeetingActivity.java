@@ -574,7 +574,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             soundtrackRecordManager=null;
             SoundtrackRecordManager.instance=null;
         }
-
         if (wakeLock != null) {
             wakeLock.release();
         }

@@ -92,7 +92,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         }
     }
 
-   public static  SoundtrackRecordManager instance;
+    public  static  SoundtrackRecordManager instance;
 
     public static SoundtrackRecordManager getManager(Context context) {
         if (instance == null) {
@@ -119,13 +119,13 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
      * @param audiosyncll
      */
     public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, TextView timeshow, MeetingConfig meetingConfig) {
-        if(Tools.isOrientationPortrait((Activity) mContext)){
-            Log.e("henshupng","竖屏");
-            Tools.setPortrait((Activity) mContext);
-        }else{
-            Log.e("henshupng","横屏");
-            Tools.setLandscape((Activity) mContext);
-        }
+//        if(Tools.isOrientationPortrait((Activity) mContext)){
+//            Log.e("henshupng","竖屏");
+//            Tools.setPortrait((Activity) mContext);
+//        }else{
+//            Log.e("henshupng","横屏");
+//            Tools.setLandscape((Activity) mContext);
+//        }
 	    this.timeShow = timeshow;
 	    timeShow.setOnClickListener(this);
         this.audiosyncll=audiosyncll;
@@ -455,6 +455,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             }else{
                 stopRecordNoteAction(); //音响动作
             }
+            instance=null;
         }
     }
 
