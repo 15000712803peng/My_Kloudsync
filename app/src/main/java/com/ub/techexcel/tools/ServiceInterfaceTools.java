@@ -159,6 +159,7 @@ public class ServiceInterfaceTools {
     public static final int CREATESUBSYSTEM = 0x1159;
     public static final int GETSUBSYSMTEMLIST = 0x1160;
     public static final int GETLOGINUSERINFO = 0x1161;
+    public static final int UPDATETITLEANDVISIBILITY = 0x1162;
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
 
@@ -290,6 +291,38 @@ public class ServiceInterfaceTools {
                 JSONObject jsonObject1 = ConnectService.submitDataByJson4(url, jsonarray);
                 Log.e("userSettingChan", url + "  " + jsonarray.toString() + "   " + jsonObject1.toString());
                 try {
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = "";
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void UpdateTitleAndVisibility(final String url, final int code, final SoundtrackBean soundtrackBean,ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //{"SoundtrackID":38094,"Title":"","IsPublic":1}
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("SoundtrackID", soundtrackBean.getSoundtrackID());
+                    jsonObject.put("Title", soundtrackBean.getTitle());
+                    jsonObject.put("IsPublic", soundtrackBean.getIsPublic());
+                    JSONObject jsonObject1 = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("UpdateTitleAndVisibility", url + "  " + jsonObject.toString() + "   " + jsonObject1.toString());
                     if (jsonObject1.getInt("RetCode") == 0) {
                         Message msg3 = Message.obtain();
                         msg3.obj = "";

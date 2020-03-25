@@ -20,6 +20,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.help.UploadAudioPopupdate;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.kloudsync.activity.Document;
 import com.ub.service.audiorecord.AudioRecorder;
@@ -99,11 +100,9 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private LinearLayout audiosyncll;
     private boolean isrecordvoice;
-    private int soundtrackID;
-    private int fieldId;
-    private String fieldNewPath;
     private MeetingConfig meetingConfig;
 	private TextView timeShow;
+	private SoundtrackBean soundtrackBean;
 
 
     /**
@@ -125,9 +124,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         this.audiosyncll=audiosyncll;
         this.isrecordvoice=isrecordvoice;
         this.meetingConfig=meetingConfig;
-        soundtrackID = soundtrackBean.getSoundtrackID();
-        fieldId = soundtrackBean.getFileId();
-        fieldNewPath = soundtrackBean.getPath();
+        this.soundtrackBean=soundtrackBean;
         Document backgroudMusicInfo = soundtrackBean.getBackgroudMusicInfo();
         String url="";
         if (backgroudMusicInfo == null || backgroudMusicInfo.getAttachmentID().equals("0")) {
@@ -178,7 +175,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 	    displayLayout();
 
         EventSoundSync soundSync=new EventSoundSync();
-        soundSync.setSoundtrackID(soundtrackID);
+        soundSync.setSoundtrackID(soundtrackBean.getSoundtrackID());
         soundSync.setStatus(1);
         soundSync.setTime(tttime);
         EventBus.getDefault().post(soundSync);
@@ -317,9 +314,14 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         }
     }
 
-
-    private void stopAudioRecord(final int soundtrackID) {
+     UploadAudioPopupdate uploadAudioPopupdate=new UploadAudioPopupdate();
+    private void stopAudioRecord() {
         if (audioRecorder != null) {
+            if(uploadAudioPopupdate==null){
+               uploadAudioPopupdate=new UploadAudioPopupdate();
+            }
+            uploadAudioPopupdate.getPopwindow(mContext);
+            uploadAudioPopupdate.StartPop(soundtrackBean);
             audioRecorder.stopRecord(new RecordEndListener() {
                 @Override
                 public void endRecord(String fileName) {
@@ -327,8 +329,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                     File file = com.ub.service.audiorecord.FileUtils.getWavFile(fileName);
                     if (file != null) {
                         Log.e("syncing---", file.getAbsolutePath() + "   " + file.getName());
-//                        uploadAudioFile(file, soundtrackID, false, false);
-                        UploadAudioTool.getManager(mContext).uploadAudio(file,soundtrackID,fieldId,fieldNewPath,audiosyncll,meetingConfig,SoundtrackRecordManager.this);
+                        UploadAudioTool.getManager(mContext).uploadAudio(file,soundtrackBean,uploadAudioPopupdate,meetingConfig,SoundtrackRecordManager.this);
                     }
                 }
             });
@@ -358,7 +359,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                     File note=FileUtils.createNoteFile(name);
                     if(note!=null){
                         boolean is=FileUtils.writeNoteActonToFile(jsonArray.toString(),note);
-                        Log.e("notename",note.getAbsolutePath()+"  "+is+"  "+soundtrackID);
+                        Log.e("notename",note.getAbsolutePath()+"  "+is+"  "+soundtrackBean.getSoundtrackID());
                         if(is){
                             return  note;
                         }
@@ -369,7 +370,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                 @Override
                 public void accept(File note) throws Exception {
                     if(note!=null){
-                        UploadAudioNoteActionTool.getManager(mContext).uploadNoteActon(note,soundtrackID,audiosyncll,meetingConfig);
+                        UploadAudioNoteActionTool.getManager(mContext).uploadNoteActon(note,soundtrackBean.getSoundtrackID(),audiosyncll,meetingConfig);
                     }
                 }
             }).subscribe();
@@ -446,7 +447,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             closeAudioSync();
             StopMedia();
             if (isrecordvoice) {    // 完成录音
-                stopAudioRecord(soundtrackID);
+                stopAudioRecord();
             }else{
                 stopRecordNoteAction(); //音响动作
             }
@@ -455,11 +456,11 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private void closeAudioSync() {
         EventSoundSync soundSync=new EventSoundSync();
-        soundSync.setSoundtrackID(soundtrackID);
+        soundSync.setSoundtrackID(soundtrackBean.getSoundtrackID());
         soundSync.setStatus(0);
         soundSync.setTime(tttime);
         EventBus.getDefault().post(soundSync);
-        String url2 = AppConfig.URL_PUBLIC + "Soundtrack/EndSync?soundtrackID=" + soundtrackID + "&syncDuration=" + soundSync.getTime();
+        String url2 = AppConfig.URL_PUBLIC + "Soundtrack/EndSync?soundtrackID=" + soundtrackBean.getSoundtrackID() + "&syncDuration=" + soundSync.getTime();
         ServiceInterfaceTools.getinstance().endSync(url2, ServiceInterfaceTools.ENDSYNC, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
