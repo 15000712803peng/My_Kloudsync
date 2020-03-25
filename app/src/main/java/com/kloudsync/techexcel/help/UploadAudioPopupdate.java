@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +62,7 @@ public class UploadAudioPopupdate implements View.OnClickListener{
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
         mPopupWindow.setContentView(view);
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        mPopupWindow.setCanceledOnTouchOutside(false);
         WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
         if (Tools.isOrientationPortrait((Activity) mContext)) {
             View root = ((Activity) mContext).getWindow().getDecorView();
@@ -69,6 +71,7 @@ public class UploadAudioPopupdate implements View.OnClickListener{
             params.width = mContext.getResources().getDisplayMetrics().widthPixels * 1 / 2;
         }
         mPopupWindow.getWindow().setAttributes(params);
+
     }
 
 
