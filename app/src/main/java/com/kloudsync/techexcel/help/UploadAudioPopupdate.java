@@ -79,8 +79,8 @@ public class UploadAudioPopupdate implements View.OnClickListener{
             recordsync.setEnabled(false);
             if(soundtrackBean!=null){
                 String title=soundtrackBean.getTitle();
+                edittext.setText(title);
                 if(!TextUtils.isEmpty(title)){
-                    edittext.setText(title);
                     edittext.setSelection(title.length());
                 }
             }
