@@ -59,8 +59,15 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private Context mContext;
     private static Handler recordHandler;
+    private  UploadAudioPopupdate uploadAudioPopupdate=new UploadAudioPopupdate();
+
     private SoundtrackRecordManager(Context context) {
         this.mContext = context;
+        if(uploadAudioPopupdate==null){
+            uploadAudioPopupdate=new UploadAudioPopupdate();
+        }
+        uploadAudioPopupdate.getPopwindow(mContext);
+
         recordHandler=new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg) {
@@ -85,7 +92,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         }
     }
 
-    static volatile SoundtrackRecordManager instance;
+   public static  SoundtrackRecordManager instance;
 
     public static SoundtrackRecordManager getManager(Context context) {
         if (instance == null) {
@@ -314,13 +321,10 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         }
     }
 
-     UploadAudioPopupdate uploadAudioPopupdate=new UploadAudioPopupdate();
+
+
     private void stopAudioRecord() {
         if (audioRecorder != null) {
-            if(uploadAudioPopupdate==null){
-               uploadAudioPopupdate=new UploadAudioPopupdate();
-            }
-            uploadAudioPopupdate.getPopwindow(mContext);
             uploadAudioPopupdate.StartPop(soundtrackBean);
             audioRecorder.stopRecord(new RecordEndListener() {
                 @Override

@@ -37,16 +37,7 @@ public class UploadAudioPopupdate implements View.OnClickListener{
     public void getPopwindow(Context context) {
         this.mContext = context;
         width = mContext.getResources().getDisplayMetrics().widthPixels;
-        getPopupWindowInstance();
-    }
-
-    public void getPopupWindowInstance() {
-        if (null != mPopupWindow) {
-            mPopupWindow.cancel();
-            return;
-        } else {
-            initPopuptWindow();
-        }
+        initPopuptWindow();
     }
 
     public void initPopuptWindow() {
@@ -87,7 +78,11 @@ public class UploadAudioPopupdate implements View.OnClickListener{
                     edittext.setSelection(title.length());
                 }
             }
-            mPopupWindow.show();
+            try {
+                mPopupWindow.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
