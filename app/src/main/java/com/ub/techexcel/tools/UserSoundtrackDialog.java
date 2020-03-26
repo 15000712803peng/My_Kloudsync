@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.*;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
@@ -42,9 +42,7 @@ import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SoundtrackDetailData;
 import com.kloudsync.techexcel.config.AppConfig;
-import com.kloudsync.techexcel.dialog.ShareSyncDialog;
 import com.kloudsync.techexcel.dialog.ShareSyncInAppDialog;
-import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.kloudsync.techexcel.help.SoundtrackManager;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -197,7 +195,9 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
             case R.id.selectmore:
                 ll1.setVisibility(View.GONE);
                 ll2.setVisibility(View.VISIBLE);
-                getSoundtrack2(meetingConfig.getDocument().getAttachmentID()+"");
+	            if (meetingConfig.getDocument() != null) {
+		            getSoundtrack2(meetingConfig.getDocument().getAttachmentID() + "");
+	            }
                 break;
             case R.id.ok:
                 ll1.setVisibility(View.VISIBLE);
