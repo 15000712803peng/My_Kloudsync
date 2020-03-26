@@ -473,12 +473,14 @@
     <string name="mtANAudio">+    Add an audio</string>
     <string name="mtVoice">Enable voice</string>
     <string name="mtAddFile">+ Add a recorded voice file</string>
-    <string name="mtIsound">Input sound name here</string>
+    <string name="mtIsound">Input sound name here...</string>
     <string name="mtYxName">Name</string>
     <string name="mtRNVoice">Record new voice</string>
     <string name="mtSyncRecord">Sync</string>
     <string name="mtCancel">Cancel</string>
     <string name="mtRecordSync">Record &#038; Sync</string>
+    <string name="syncname">Sync Name</string>
+    <string name="hidden">Hidden</string>
 
 
     <!--yinxiangoperatorpopup界面-->

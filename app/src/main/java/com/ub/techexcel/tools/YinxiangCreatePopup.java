@@ -149,8 +149,8 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         edittext = (EditText) view.findViewById(R.id.edittext);
         String time = new SimpleDateFormat("yyyyMMdd_hh:mm").format(new Date());
         String name=AppConfig.UserName + "_" + time;
-        edittext.setText(name);
-        edittext.setSelection(name.length());
+//        edittext.setText(name);
+//        edittext.setSelection(name.length());
         voiceItemLayout = view.findViewById(R.id.layout_voice_item);
         checkBox = (CheckBox) view.findViewById(R.id.checkboxx);
         isPublic = (CheckBox) view.findViewById(R.id.isPublic);
@@ -314,9 +314,7 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                     jsonObject.put("Title", edittext.getText().toString());
                     jsonObject.put("EnableBackgroud", 1);
                     jsonObject.put("EnableSelectVoice", 1);
-//                    jsonObject.put("EnableRecordNewVoice", checkBox.isChecked() ? 1 : 0);
-                    jsonObject.put("EnableRecordNewVoice",
-                            1);
+                    jsonObject.put("EnableRecordNewVoice", checkBox.isChecked() ? 1 : 0);
                     jsonObject.put("SelectedAudioTitle", recordfavorite.getAttachmentID().equals("0") ? "" : recordfavorite.getTitle());
                     jsonObject.put("BackgroudMusicTitle", favorite.getAttachmentID().equals("0") ? "" : favorite.getTitle());
                     jsonObject.put("IsPublic", isPublic.isChecked()?1:0);
@@ -332,6 +330,7 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                         soundtrackBean.setAvatarUrl(jsonObject1.getString("AvatarUrl"));
                         soundtrackBean.setDuration(jsonObject1.getString("Duration"));
                         soundtrackBean.setCreatedDate(jsonObject1.getString("CreatedDate"));
+                        soundtrackBean.setIsPublic(jsonObject1.getInt("IsPublic"));
 
                         JSONObject pathinfo=jsonObject1.getJSONObject("PathInfo");
                         soundtrackBean.setFileId(pathinfo.getInt("FileID"));

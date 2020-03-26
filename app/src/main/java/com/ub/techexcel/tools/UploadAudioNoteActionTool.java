@@ -181,7 +181,6 @@ public class UploadAudioNoteActionTool {
         ObjectMetadata objectMetadata=new ObjectMetadata();
         objectMetadata.setContentType("application/json");
         request.setMetadata(objectMetadata);
-//        connection.setRequestProperty("Content-Type", "application/json");
         request.setPartSize(1 * 1024 * 1024);
         // 设置上传过程回调
         request.setProgressCallback(new OSSProgressCallback<ResumableUploadRequest>() {
