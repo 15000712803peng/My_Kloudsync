@@ -4142,7 +4142,6 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 }
                 break;
             case 9:
-                Log.e("check_share_screen", "data:" + data + "，uid:" + meetingConfig.getShareScreenUid());
                 if (data.has("videoMode")) {
                     String mode = data.getString("videoMode");
                     meetingConfig.setMode(Integer.parseInt(mode));
