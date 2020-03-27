@@ -782,8 +782,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="sensor"
-            />
+            android:screenOrientation="sensor" />
 
         <activity
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"

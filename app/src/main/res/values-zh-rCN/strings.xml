@@ -516,12 +516,14 @@
     <string name="mtANAudio">+     添加音频</string>
     <string name="mtVoice">开启声音</string>
     <string name="mtAddFile">+     添加一个声音文件</string>
-    <string name="mtIsound">请输入音想名称</string>
+    <string name="mtIsound">在这里输入音想名称...</string>
     <string name="mtYxName">名称</string>
     <string name="mtRNVoice">录制新的声音</string>
     <string name="mtSyncRecord">同步</string>
     <string name="mtCancel">退出</string>
     <string name="mtRecordSync">录制 &#038; 同步</string>
+    <string name="syncname">音想名称</string>
+    <string name="hidden">隐藏</string>
 
 
     <!--yinxiangoperatorpopup界面-->
@@ -897,6 +899,7 @@
     <string name="edit_pen_name">编辑笔名</string>
     <string name="please_enter_a_pen_name">请输入笔名</string>
     <string name="setup_failed">设置失败</string>
+    <string name="no_notes_currently">当前无笔记</string>
 
 
     <string name="contract_company">联系人 (公司)</string>

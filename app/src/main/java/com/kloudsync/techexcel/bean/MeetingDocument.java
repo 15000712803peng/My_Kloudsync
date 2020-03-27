@@ -39,33 +39,33 @@ public class MeetingDocument implements Serializable {
     private boolean isTemp;
     private int progress;
     private String tempDocPrompt;
-    private String LocalFileID;
-    private long NoteID;
-    private int documentItemID;
+	private String LocalFileID;
+	private long NoteID;
+	private int documentItemID;
 
-    public int getDocumentItemID() {
-        return documentItemID;
-    }
+	public int getDocumentItemID() {
+		return documentItemID;
+	}
 
-    public void setDocumentItemID(int documentItemID) {
-        this.documentItemID = documentItemID;
-    }
+	public void setDocumentItemID(int documentItemID) {
+		this.documentItemID = documentItemID;
+	}
 
-    public String getLocalFileID() {
-        return LocalFileID;
-    }
+	public String getLocalFileID() {
+		return LocalFileID;
+	}
 
-    public void setLocalFileID(String localFileID) {
-        LocalFileID = localFileID;
-    }
+	public void setLocalFileID(String localFileID) {
+		LocalFileID = localFileID;
+	}
 
-    public long getNoteID() {
-        return NoteID;
-    }
+	public long getNoteID() {
+		return NoteID;
+	}
 
-    public void setNoteID(long noteID) {
-        NoteID = noteID;
-    }
+	public void setNoteID(long noteID) {
+		NoteID = noteID;
+	}
 
     public String getTempDocPrompt() {
         return tempDocPrompt;

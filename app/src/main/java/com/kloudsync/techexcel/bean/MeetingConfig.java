@@ -9,7 +9,6 @@ import com.ub.techexcel.bean.EventNetworkFineChanged;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 

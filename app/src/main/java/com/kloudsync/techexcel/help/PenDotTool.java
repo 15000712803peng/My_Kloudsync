@@ -1,9 +1,12 @@
 package com.kloudsync.techexcel.help;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 
@@ -11,7 +14,11 @@ import com.google.common.collect.ArrayListMultimap;
 import com.kloudsync.techexcel.bean.Dots;
 import com.kloudsync.techexcel.ui.DrawView;
 import com.tqltech.tqlpencomm.Dot;
+import com.ub.techexcel.tools.Tools;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
@@ -53,6 +60,10 @@ public class PenDotTool {
 	private static int gSpeed = 30;                                 //笔迹回放速度
 	private static float gOffsetX = 0;                              //笔迹x偏移
 	private static float gOffsetY = 0;
+	private static int notchscreenWidth;        //刘海宽
+	private static int notchscreenHeight;       //刘海高
+	public static final int VIVO_NOTCH = 0x00000020;//是否有刘海
+	public static final int VIVO_FILLET = 0x00000008;//是否有圆角
 
 	private static boolean gbSetNormal = false;
 	private static boolean gbCover = false;
@@ -646,5 +657,195 @@ public class PenDotTool {
 		return mPenWidth;
 	}
 
+	public static int getStatusBarHeight(Context context) {
+		int statusBarHeight = 0;
+		int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+		if (resourceId > 0) {
+			statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
+		}
+		return statusBarHeight;
+	}
 
+	public static int getStatusBarHeightClass(Context context) {
+		Class<?> c = null;
+		Object obj = null;
+		Field field = null;
+		int x = 0;
+		try {
+			c = Class.forName("com.android.internal.R$dimen");
+			obj = c.newInstance();
+			field = c.getField("status_bar_height");
+			x = Integer.parseInt(field.get(obj).toString());
+			return context.getResources().getDimensionPixelSize(x);
+		} catch (Exception e1) {
+			Log.i(TAG, "get status bar height fail");
+			e1.printStackTrace();
+			return 75;
+		}
+
+	}
+
+	/**
+	 * 判断是否是刘海屏
+	 *
+	 * @return
+	 */
+	public static boolean hasNotchScreen(Activity activity) {
+		boolean isHW = hasNotchAtHuawei(activity);
+		boolean isOPPO = hasNotchAtOPPO(activity);
+		boolean isVIVO = hasNotchAtVivo(activity);
+		if (getInt("ro.miui.notch", activity) == 1
+				|| isHW
+				|| isOPPO
+				|| isVIVO) {
+			//TODO 各种品牌
+			Log.i(TAG, "hasNotchScreen: 刘海屏系统");
+			//华为
+			if (isHW) {
+				int[] huawei = getNotchSizeAtHuawei(activity);
+				notchscreenWidth = huawei[0];
+				notchscreenHeight = huawei[1];
+			} else if (isOPPO) {
+				notchscreenWidth = Tools.dip2px(activity, 100);
+				notchscreenHeight = Tools.dip2px(activity, 27);
+			} else if (isVIVO) {
+				notchscreenWidth = 324;
+				notchscreenHeight = 80;
+			} else {
+
+			}
+			//vivo不提供接口获取刘海尺寸，目前vivo的刘海宽为100dp,高为27dp。
+			//OPPO不提供接口获取刘海尺寸，目前其有刘海屏的机型尺寸规格都是统一的。不排除以后机型会有变化。
+			//其显示屏宽度为1080px，高度为2280px。刘海区域则都是宽度为324px, 高度为80px。
+			//小米的状态栏高度会略高于刘海屏的高度，因此可以通过获取状态栏的高度来间接避开刘海屏
+
+			Log.i(TAG, "hasNotchScreen:  width=" + notchscreenWidth + ",height=" + notchscreenHeight);
+			return true;
+		}
+		Log.i(TAG, "hasNotchScreen: 非刘海屏系统");
+		return false;
+	}
+
+	public static int getNotchscreenHeight() {
+		return notchscreenHeight;
+	}
+
+	/**
+	 * 小米刘海屏判断.
+	 *
+	 * @return 0 if it is not notch ; return 1 means notch * @throws IllegalArgumentException if the key exceeds 32 characters
+	 */
+	public static int getInt(String key, Activity activity) {
+		int result = 0;
+		if (isXiaomi()) {
+			try {
+				ClassLoader classLoader = activity.getClassLoader();
+				@SuppressWarnings("rawtypes")
+				Class SystemProperties = classLoader.loadClass("android.os.SystemProperties");
+				@SuppressWarnings("rawtypes")
+				Class[] paramTypes = new Class[2];
+				paramTypes[0] = String.class;
+				paramTypes[1] = int.class;
+				Method getInt = SystemProperties.getMethod("getInt", paramTypes);
+				//参数
+				Object[] params = new Object[2];
+				params[0] = new String(key);
+				params[1] = new Integer(0);
+				result = (Integer) getInt.invoke(SystemProperties, params);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+
+	// 是否是小米手机
+	public static boolean isXiaomi() {
+		return "Xiaomi".equals(Build.MANUFACTURER);
+	}
+
+	/**
+	 * 华为刘海屏判断
+	 *
+	 * @return
+	 */
+	public static boolean hasNotchAtHuawei(Context context) {
+		boolean ret = false;
+		try {
+			ClassLoader classLoader = context.getClassLoader();
+			Class HwNotchSizeUtil = classLoader.loadClass("com.huawei.android.util.HwNotchSizeUtil");
+			Method get = HwNotchSizeUtil.getMethod("hasNotchInScreen");
+			ret = (boolean) get.invoke(HwNotchSizeUtil);
+		} catch (ClassNotFoundException e) {
+			Log.e(TAG, "hasNotchAtHuawei ClassNotFoundException");
+		} catch (NoSuchMethodException e) {
+			Log.e(TAG, "hasNotchAtHuawei NoSuchMethodException");
+		} catch (Exception e) {
+			Log.e(TAG, "hasNotchAtHuawei Exception");
+		} finally {
+			return ret;
+		}
+	}
+
+	/**
+	 * VIVO刘海屏判断
+	 *
+	 * @return
+	 */
+	public static boolean hasNotchAtVivo(Context context) {
+		boolean ret = false;
+		try {
+			ClassLoader classLoader = context.getClassLoader();
+			Class FtFeature = classLoader.loadClass("android.util.FtFeature");
+			Method method = FtFeature.getMethod("isFeatureSupport", int.class);
+			ret = (boolean) method.invoke(FtFeature, VIVO_NOTCH);
+		} catch (ClassNotFoundException e) {
+			Log.e(TAG, "hasNotchAtVivo ClassNotFoundException");
+		} catch (NoSuchMethodException e) {
+			Log.e(TAG, "hasNotchAtVivo NoSuchMethodException");
+		} catch (Exception e) {
+			Log.e(TAG, "hasNotchAtVivo Exception");
+		} finally {
+			return ret;
+		}
+	}
+
+	/**
+	 * OPPO刘海屏判断
+	 *
+	 * @return
+	 */
+	public static boolean hasNotchAtOPPO(Context context) {
+		return context.getPackageManager().hasSystemFeature("com.oppo.feature.screen.heteromorphism");
+	}
+
+
+	//获取刘海尺寸：width、height
+	//int[0]值为刘海宽度 int[1]值为刘海高度
+	public static int[] getNotchSizeAtHuawei(Context context) {
+		int[] ret = new int[]{0, 0};
+		try {
+			ClassLoader cl = context.getClassLoader();
+			Class HwNotchSizeUtil = cl.loadClass("com.huawei.android.util.HwNotchSizeUtil");
+			Method get = HwNotchSizeUtil.getMethod("getNotchSize");
+			ret = (int[]) get.invoke(HwNotchSizeUtil);
+		} catch (ClassNotFoundException e) {
+			Log.e("Notch", "getNotchSizeAtHuawei ClassNotFoundException");
+		} catch (NoSuchMethodException e) {
+			Log.e("Notch", "getNotchSizeAtHuawei NoSuchMethodException");
+		} catch (Exception e) {
+			Log.e("Notch", "getNotchSizeAtHuawei Exception");
+		} finally {
+			return ret;
+		}
+	}
 }

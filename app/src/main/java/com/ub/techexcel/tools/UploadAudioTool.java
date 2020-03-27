@@ -34,10 +34,12 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.Popupdate;
 import com.kloudsync.techexcel.help.ThreadManager;
+import com.kloudsync.techexcel.help.UploadAudioPopupdate;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.service.audiorecord.RecordEndListener;
 import com.ub.techexcel.bean.LineItem;
+import com.ub.techexcel.bean.SoundtrackBean;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -63,38 +65,35 @@ public class UploadAudioTool {
         return instance;
     }
 
-    Popupdate puo;
+    private  UploadAudioPopupdate uploadAudioPopupdate;
     private int soundtrackID;
     private int fieldId;
     private String fieldNewPath;
     private MeetingConfig meetingConfig;
     private UploadAudioListener uploadAudioListener;
 
-    public void uploadAudio(File file, int soundtrackID, int fieldId, String fieldNewPath, final LinearLayout audiosyncll, MeetingConfig meetingConfig, UploadAudioListener uploadAudioListener){
-        this.soundtrackID=soundtrackID;
-        this.fieldId=fieldId;
-        this.fieldNewPath=fieldNewPath;
+    public void uploadAudio(File file, SoundtrackBean soundtrackBean, UploadAudioPopupdate uploadAudioPopupdate, MeetingConfig meetingConfig, UploadAudioListener uploadAudioListener){
+        this.soundtrackID=soundtrackBean.getSoundtrackID();
+        this.fieldId=soundtrackBean.getFileId();
+        this.fieldNewPath=soundtrackBean.getPath();
         this.meetingConfig=meetingConfig;
+        this.uploadAudioPopupdate=uploadAudioPopupdate;
         this.uploadAudioListener=uploadAudioListener;
-            final LineItem attachmentBean = new LineItem();
-            attachmentBean.setUrl(file.getAbsolutePath()); // 文件的路径
-            attachmentBean.setFileName(file.getName()); // 文件名
-
-            LoginGet lg = new LoginGet();
-            lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
-                @Override
-                public void getUD(Uploadao ud) {
-                    puo = new Popupdate();
-                    puo.getPopwindow(mContext, attachmentBean.getFileName());
-                    puo.StartPop(audiosyncll);
-                    if (1 == ud.getServiceProviderId()) {
-                        uploadWithTransferUtility(attachmentBean, ud);
-                    } else if (2 == ud.getServiceProviderId()) {
-                        initOSS(attachmentBean, ud);
-                    }
+        final LineItem attachmentBean = new LineItem();
+        attachmentBean.setUrl(file.getAbsolutePath()); // 文件的路径
+        attachmentBean.setFileName(file.getName()); // 文件名
+        LoginGet lg = new LoginGet();
+        lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
+            @Override
+            public void getUD(Uploadao ud) {
+                if (1 == ud.getServiceProviderId()) {
+                    uploadWithTransferUtility(attachmentBean, ud);
+                } else if (2 == ud.getServiceProviderId()) {
+                    initOSS(attachmentBean, ud);
                 }
-            });
-            lg.GetprepareUploading(mContext);
+            }
+        });
+        lg.GetprepareUploading(mContext);
     }
 
 
@@ -117,10 +116,11 @@ public class UploadAudioTool {
                 request.setGeneralProgressListener(new ProgressListener() {
                     @Override
                     public void progressChanged(final ProgressEvent progressEvent) {
+                        Log.e("syncing---", mfile.length()+"   "+progressEvent.getBytesTransferred());
                         ((Activity)mContext).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                puo.setProgress(mfile.length(), progressEvent.getBytesTransferred());
+                                uploadAudioPopupdate.setProgress(mfile.length(), progressEvent.getBytesTransferred());
                             }
                         });
                     }
@@ -131,7 +131,6 @@ public class UploadAudioTool {
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            puo.DissmissPop();
                             yinxiangUploadNewFile(ud);
                         }
                     });
@@ -198,7 +197,7 @@ public class UploadAudioTool {
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        puo.setProgress(totalSize, currentSize);
+                        uploadAudioPopupdate.setProgress(totalSize, currentSize);
                     }
                 });
             }
@@ -210,7 +209,6 @@ public class UploadAudioTool {
                 ((Activity)mContext). runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        puo.DissmissPop();
                         yinxiangUploadNewFile(ud);
                     }
                 });
@@ -218,12 +216,7 @@ public class UploadAudioTool {
 
             @Override
             public void onFailure(ResumableUploadRequest request, ClientException clientExcepion, ServiceException serviceException) {
-                ((Activity)mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        puo.DissmissPop();
-                    }
-                });
+
             }
         });
 
@@ -231,13 +224,14 @@ public class UploadAudioTool {
 
 
     private void yinxiangUploadNewFile(final Uploadao ud) {
+        uploadAudioPopupdate.setCanChangTitle();
         ServiceInterfaceTools.getinstance().yinxiangUploadNewFile(AppConfig.URL_PUBLIC + "Soundtrack/UploadNewFile", ServiceInterfaceTools.YINXIANGUPLOADNEWFILE,
                 meetingConfig.getLessionId()+"", meetingConfig.getDocument().getAttachmentID()+"", fileName, fieldId, soundtrackID, ud, new ServiceInterfaceListener() {
                     @Override
                     public void getServiceReturnData(Object object) {
                         uploadAudioListener.uploadAudioSuccess();
                         Log.e("henshupng","sensor");
-                        Tools.setSensor((Activity) mContext);
+//                        Tools.setSensor((Activity) mContext);
                         // 音想音频文件上传完了,如果没有调用这个方法,调用一下
                         ServiceInterfaceTools.getinstance().notifyUploaded(AppConfig.URL_LIVEDOC + "notifyUploaded", ServiceInterfaceTools.NOTIFYUPLOADED, ud, MD5Hash, new ServiceInterfaceListener() {
                             @Override

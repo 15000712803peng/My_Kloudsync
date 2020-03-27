@@ -1,16 +1,12 @@
 package com.kloudsync.techexcel.dialog;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -20,15 +16,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.MeetingConfig;
-import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.help.UploadAudioPopupdate;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.kloudsync.activity.Document;
 import com.ub.service.audiorecord.AudioRecorder;
@@ -57,7 +49,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -68,8 +59,15 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private Context mContext;
     private static Handler recordHandler;
+    private  UploadAudioPopupdate uploadAudioPopupdate=new UploadAudioPopupdate();
+
     private SoundtrackRecordManager(Context context) {
         this.mContext = context;
+        if(uploadAudioPopupdate==null){
+            uploadAudioPopupdate=new UploadAudioPopupdate();
+        }
+        uploadAudioPopupdate.getPopwindow(mContext);
+
         recordHandler=new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg) {
@@ -89,12 +87,12 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             case MESSAGE_PLAY_TIME_REFRESHED:
                 String time= (String) message.obj;
                 audiotime.setText(time);
-                timeShow.setText(time);
+	            timeShow.setText(time);
                 break;
         }
     }
 
-    static volatile SoundtrackRecordManager instance;
+    public  static  SoundtrackRecordManager instance;
 
     public static SoundtrackRecordManager getManager(Context context) {
         if (instance == null) {
@@ -109,11 +107,9 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private LinearLayout audiosyncll;
     private boolean isrecordvoice;
-    private int soundtrackID;
-    private int fieldId;
-    private String fieldNewPath;
     private MeetingConfig meetingConfig;
-    private TextView timeShow;
+	private TextView timeShow;
+	private SoundtrackBean soundtrackBean;
 
 
     /**
@@ -122,22 +118,20 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
      * @param soundtrackBean
      * @param audiosyncll
      */
-    public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll,TextView timeshow, MeetingConfig meetingConfig) {
-        if(Tools.isOrientationPortrait((Activity) mContext)){
-            Log.e("henshupng","竖屏");
-            Tools.setPortrait((Activity) mContext);
-        }else{
-            Log.e("henshupng","横屏");
-            Tools.setLandscape((Activity) mContext);
-        }
-        this.timeShow=timeshow;
-        timeShow.setOnClickListener(this);
+    public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, TextView timeshow, MeetingConfig meetingConfig) {
+//        if(Tools.isOrientationPortrait((Activity) mContext)){
+//            Log.e("henshupng","竖屏");
+//            Tools.setPortrait((Activity) mContext);
+//        }else{
+//            Log.e("henshupng","横屏");
+//            Tools.setLandscape((Activity) mContext);
+//        }
+	    this.timeShow = timeshow;
+	    timeShow.setOnClickListener(this);
         this.audiosyncll=audiosyncll;
         this.isrecordvoice=isrecordvoice;
         this.meetingConfig=meetingConfig;
-        soundtrackID = soundtrackBean.getSoundtrackID();
-        fieldId = soundtrackBean.getFileId();
-        fieldNewPath = soundtrackBean.getPath();
+        this.soundtrackBean=soundtrackBean;
         Document backgroudMusicInfo = soundtrackBean.getBackgroudMusicInfo();
         String url="";
         if (backgroudMusicInfo == null || backgroudMusicInfo.getAttachmentID().equals("0")) {
@@ -156,7 +150,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     private List<JSONObject> noteActionList=new ArrayList<>();
 
     public void recordNoteAction(NoteRecordType noteRecordType, JSONObject data){
-        if(audiosyncll!=null&&(audiosyncll.getVisibility()==View.VISIBLE||timeShow.getVisibility()==View.VISIBLE)){
+	    if (audiosyncll != null && (audiosyncll.getVisibility() == View.VISIBLE || timeShow.getVisibility() == View.VISIBLE)) {
             int acitontype=noteRecordType.getActiontype();
             try {
                 JSONObject jsonObject=new JSONObject();
@@ -180,15 +174,15 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private void  initPlayMusic(final boolean isrecordvoice, String url,String url2){
         Log.e("syncing---", isrecordvoice+"  "+url+"  "+url2);
-        if(isrecordvoice){
-            //启动录音程序
-            startAudioRecord();
-        }
-        //显示进度条
-        displayLayout();
+	    if (isrecordvoice) {
+		    //启动录音程序
+		    startAudioRecord();
+	    }
+	    //显示进度条
+	    displayLayout();
 
         EventSoundSync soundSync=new EventSoundSync();
-        soundSync.setSoundtrackID(soundtrackID);
+        soundSync.setSoundtrackID(soundtrackBean.getSoundtrackID());
         soundSync.setStatus(1);
         soundSync.setTime(tttime);
         EventBus.getDefault().post(soundSync);
@@ -246,7 +240,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private ImageView playstop,syncicon,close;
     private  TextView audiotime,isStatus;
-    private ImageView timeHidden;
+	private ImageView timeHidden;
     private SeekBar mSeekBar;
     private boolean isPause=false;
 
@@ -254,8 +248,8 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         noteActionList.clear();
         audiosyncll.setVisibility(View.VISIBLE);
         playstop = audiosyncll.findViewById(R.id.playstop);
-        timeHidden=audiosyncll.findViewById(R.id.timehidden);
-        timeHidden.setOnClickListener(this);
+	    timeHidden = audiosyncll.findViewById(R.id.timehidden);
+	    timeHidden.setOnClickListener(this);
         playstop.setOnClickListener(this);
         playstop.setImageResource(R.drawable.video_stop);
         syncicon =  audiosyncll.findViewById(R.id.syncicon);
@@ -328,8 +322,10 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
 
-    private void stopAudioRecord(final int soundtrackID) {
+
+    private void stopAudioRecord() {
         if (audioRecorder != null) {
+            uploadAudioPopupdate.StartPop(soundtrackBean);
             audioRecorder.stopRecord(new RecordEndListener() {
                 @Override
                 public void endRecord(String fileName) {
@@ -337,8 +333,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                     File file = com.ub.service.audiorecord.FileUtils.getWavFile(fileName);
                     if (file != null) {
                         Log.e("syncing---", file.getAbsolutePath() + "   " + file.getName());
-//                        uploadAudioFile(file, soundtrackID, false, false);
-                        UploadAudioTool.getManager(mContext).uploadAudio(file,soundtrackID,fieldId,fieldNewPath,audiosyncll,meetingConfig,SoundtrackRecordManager.this);
+                        UploadAudioTool.getManager(mContext).uploadAudio(file,soundtrackBean,uploadAudioPopupdate,meetingConfig,SoundtrackRecordManager.this);
                     }
                 }
             });
@@ -368,7 +363,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                     File note=FileUtils.createNoteFile(name);
                     if(note!=null){
                         boolean is=FileUtils.writeNoteActonToFile(jsonArray.toString(),note);
-                        Log.e("notename",note.getAbsolutePath()+"  "+is+"  "+soundtrackID);
+                        Log.e("notename",note.getAbsolutePath()+"  "+is+"  "+soundtrackBean.getSoundtrackID());
                         if(is){
                             return  note;
                         }
@@ -379,7 +374,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                 @Override
                 public void accept(File note) throws Exception {
                     if(note!=null){
-                        UploadAudioNoteActionTool.getManager(mContext).uploadNoteActon(note,soundtrackID,audiosyncll,meetingConfig);
+                        UploadAudioNoteActionTool.getManager(mContext).uploadNoteActon(note,soundtrackBean.getSoundtrackID(),audiosyncll,meetingConfig);
                     }
                 }
             }).subscribe();
@@ -417,14 +412,14 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             case R.id.close: //结束录音
                 release();
                 break;
-            case R.id.timehidden:
-                timeShow.setVisibility(View.VISIBLE);
-                audiosyncll.setVisibility(View.GONE);
-                break;
-            case R.id.timeshow:
-                timeShow.setVisibility(View.GONE);
-                audiosyncll.setVisibility(View.VISIBLE);
-                break;
+	        case R.id.timehidden:
+		        timeShow.setVisibility(View.VISIBLE);
+		        audiosyncll.setVisibility(View.GONE);
+		        break;
+	        case R.id.timeshow:
+		        timeShow.setVisibility(View.GONE);
+		        audiosyncll.setVisibility(View.VISIBLE);
+		        break;
         }
     }
 
@@ -456,20 +451,21 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             closeAudioSync();
             StopMedia();
             if (isrecordvoice) {    // 完成录音
-                stopAudioRecord(soundtrackID);
+                stopAudioRecord();
             }else{
                 stopRecordNoteAction(); //音响动作
             }
+            instance=null;
         }
     }
 
     private void closeAudioSync() {
         EventSoundSync soundSync=new EventSoundSync();
-        soundSync.setSoundtrackID(soundtrackID);
+        soundSync.setSoundtrackID(soundtrackBean.getSoundtrackID());
         soundSync.setStatus(0);
         soundSync.setTime(tttime);
         EventBus.getDefault().post(soundSync);
-        String url2 = AppConfig.URL_PUBLIC + "Soundtrack/EndSync?soundtrackID=" + soundtrackID + "&syncDuration=" + soundSync.getTime();
+        String url2 = AppConfig.URL_PUBLIC + "Soundtrack/EndSync?soundtrackID=" + soundtrackBean.getSoundtrackID() + "&syncDuration=" + soundSync.getTime();
         ServiceInterfaceTools.getinstance().endSync(url2, ServiceInterfaceTools.ENDSYNC, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
@@ -482,7 +478,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             tttime=0;
         }
         audiosyncll.setVisibility(View.GONE);
-        timeShow.setVisibility(View.GONE);
+	    timeShow.setVisibility(View.GONE);
     }
 
 
@@ -523,7 +519,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     public int  getCurrentTime() {
         return  tttime;
     }
-
 
 
 }

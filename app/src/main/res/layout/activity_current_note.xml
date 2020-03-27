@@ -19,8 +19,8 @@
         <ImageView
             android:id="@+id/iv_current_note_draw"
             android:layout_width="@dimen/dp_288"
+            android:scaleType="fitXY"
             android:layout_centerInParent="true"
-            android:background="@drawable/p0"
             android:layout_height="@dimen/dp_438" />
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

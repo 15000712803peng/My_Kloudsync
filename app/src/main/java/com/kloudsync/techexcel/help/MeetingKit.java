@@ -2,14 +2,11 @@ package com.kloudsync.techexcel.help;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
-
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -36,7 +33,6 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
@@ -55,7 +51,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-import static io.agora.rtc.Constants.CLIENT_ROLE_AUDIENCE;
 import static io.agora.rtc.Constants.CLIENT_ROLE_BROADCASTER;
 
 
@@ -400,7 +395,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                 if(meetingConfig != null){
                     meetingConfig.setNetWorkFine(true);
                 }
-            }else if(currentNetworkQuality == NetWorkQuality.QUALITY_VBAD || currentNetworkQuality == NetWorkQuality.QUALITY_VBAD ||
+            } else if (currentNetworkQuality == NetWorkQuality.QUALITY_VBAD || currentNetworkQuality == NetWorkQuality.QUALITY_VBAD ||
                     currentNetworkQuality == NetWorkQuality.QUALITY_DOWN){
                 if(meetingConfig != null){
                     meetingConfig.setNetWorkFine(false);
