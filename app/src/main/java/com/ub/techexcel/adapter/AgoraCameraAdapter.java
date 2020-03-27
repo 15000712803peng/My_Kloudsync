@@ -16,8 +16,6 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventShowFullAgora;
-import com.kloudsync.techexcel.bean.MeetingConfig;
-import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.view.CircleImageView;
 import com.ub.techexcel.bean.AgoraMember;
@@ -282,15 +280,18 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
 
     public void refreshAudioStatus(AgoraMember member) {
         int index = this.users.indexOf(member);
+
         if (index >= 0) {
             AgoraMember agoraMember = this.users.get(index);
 
             if (!(agoraMember.isMuteAudio() == member.isMuteAudio())) {
+	            Log.e("refreshAudioStatus", "member:" + member.isMuteAudio() + ",agoraMember:" + agoraMember.isMuteAudio());
                 agoraMember.setMuteAudio(member.isMuteAudio());
                 notifyItemChanged(index);
 
             } else {
-
+	            Log.e("refreshAudioStatus", "member:" + member.isMuteAudio() + ",agoraMember:" + agoraMember.isMuteAudio());
+	            Log.e("refreshAudioStatus", "have_show_un_mute:" + agoraMember.isHaveShowUnMuteAudioImage());
                 if (!agoraMember.isMuteAudio()) {
                     if (!agoraMember.isHaveShowUnMuteAudioImage()) {
                         notifyItemChanged(index);

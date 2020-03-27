@@ -816,7 +816,6 @@
         android:textColor="@color/white"
         android:visibility="gone" />
 
-
     <ImageView
         android:id="@+id/recordstatus"
         android:layout_width="15dp"
@@ -825,4 +824,7 @@
         android:scaleType="fitXY"
         android:src="@drawable/recordstart"
         android:visibility="gone" />
+
+    <include layout="@layout/soundtrack_play_controller" />
+
 </RelativeLayout>

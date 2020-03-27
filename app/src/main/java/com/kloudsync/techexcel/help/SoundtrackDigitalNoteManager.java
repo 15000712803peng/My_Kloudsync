@@ -1,21 +1,16 @@
 package com.kloudsync.techexcel.help;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.SurfaceView;
 import android.view.View;
-import android.webkit.WebSettings;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.bean.DigitalNoteEventInSoundtrack;
-import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.MediaPlayPage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.SupportDevice;
@@ -23,9 +18,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.DocumentModel;
-import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.SyncNoteEventsCache;
-import com.ub.techexcel.bean.WebAction;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -41,11 +34,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
-import Decoder.BASE64Encoder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -106,7 +97,6 @@ public class SoundtrackDigitalNoteManager {
         });
 
     }
-
 
     private void executeNoteEvents(long playTime) {
         int index = 0;
@@ -301,6 +291,9 @@ public class SoundtrackDigitalNoteManager {
     JSONObject currentPageData;
 
     public void handleNoteShowInMainWindow(final int noteId, final String lastStokeId) {
+	    if (noteId <= 0) {
+		    return;
+	    }
 
         Observable.just(noteId).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Integer>() {
             @Override
@@ -416,7 +409,9 @@ public class SoundtrackDigitalNoteManager {
 
 
     public void handleNoteShowInSmallWindow(final int noteId, final String lastStokeId) {
-
+	    if (noteId <= 0) {
+		    return;
+	    }
         Observable.just(noteId).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer integer) throws Exception {
@@ -631,26 +626,26 @@ public class SoundtrackDigitalNoteManager {
 
     public void init(Activity context) {
         this.context = context;
-        smallNoteWeb.setZOrderOnTop(false);
-        smallNoteWeb.getSettings().setJavaScriptEnabled(true);
-        smallNoteWeb.getSettings().setDomStorageEnabled(true);
-        smallNoteWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        smallNoteWeb.addJavascriptInterface(new SmallNoteJavascriptInterface(), "AnalyticsWebInterface");
+//        smallNoteWeb.setZOrderOnTop(false);
+//        smallNoteWeb.getSettings().setJavaScriptEnabled(true);
+//        smallNoteWeb.getSettings().setDomStorageEnabled(true);
+//        smallNoteWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+//        smallNoteWeb.addJavascriptInterface(new SmallNoteJavascriptInterface(), "AnalyticsWebInterface");
         int deviceType = DeviceManager.getDeviceType(context);
         String indexUrl = "file:///android_asset/index.html";
         if (deviceType == SupportDevice.BOOK) {
             indexUrl += "?devicetype=4";
         }
         final String url = indexUrl;
-        smallNoteWeb.load(url, null);
+//        smallNoteWeb.load(url, null);
         // --------------
 
-        mainNoteWeb.setZOrderOnTop(false);
-        mainNoteWeb.getSettings().setJavaScriptEnabled(true);
-        mainNoteWeb.getSettings().setDomStorageEnabled(true);
-        mainNoteWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        mainNoteWeb.addJavascriptInterface(new MainNoteJavascriptInterface(), "AnalyticsWebInterface");
-        mainNoteWeb.load(url, null);
+//        mainNoteWeb.setZOrderOnTop(false);
+//        mainNoteWeb.getSettings().setJavaScriptEnabled(true);
+//        mainNoteWeb.getSettings().setDomStorageEnabled(true);
+//        mainNoteWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+//        mainNoteWeb.addJavascriptInterface(new MainNoteJavascriptInterface(), "AnalyticsWebInterface");
+//        mainNoteWeb.load(url, null);
     }
 
 

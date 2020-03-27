@@ -123,6 +123,7 @@ import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.SetPresenterDialog;
 import com.kloudsync.techexcel.help.ShareDocumentDialog;
+import com.kloudsync.techexcel.help.SoundtrackPlayManager;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
@@ -294,6 +295,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private SharedPreferences sharedPreferences;
     private SurfaceView surfaceView;
     private MeetingSettingCache meetingSettingCache;
+	private SoundtrackPlayManager soundtrackPlayManager;
 
     @Override
     public void showErrorPage() {
@@ -569,6 +571,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (menuManager != null) {
             menuManager.release();
         }
+
         if (soundtrackRecordManager != null) {
             soundtrackRecordManager.release();
             soundtrackRecordManager=null;
@@ -1935,7 +1938,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
-        String userId = AppConfig.UserID;
+
+	    String userId = AppConfig.UserID;
         if (TextUtils.isEmpty(userId)) {
             userId = sharedPreferences.getString("UserID", "");
             AppConfig.UserID = userId;
@@ -3628,6 +3632,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     .show();
         } else {
             showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
+//            soundtrackPlayManager = new SoundtrackPlayManager(this,soundtrack.getSoundtrackDetail(),meetingConfig,soundtrackPlayController,web);
+//            soundtrackPlayManager.doPlay(menuIcon,web);
         }
     }
 
@@ -3994,13 +4000,15 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private SoundtrackPlayDialog soundtrackPlayDialog;
 
     private void showSoundtrackPlayDialog(SoundtrackDetail soundtrackDetail) {
-        if (soundtrackPlayDialog != null) {
+
+	    if (soundtrackPlayDialog != null) {
             if (soundtrackPlayDialog.isShowing()) {
                 soundtrackPlayDialog.dismiss();
                 soundtrackPlayDialog = null;
             }
         }
-        soundtrackPlayDialog = new SoundtrackPlayDialog(this, soundtrackDetail, meetingConfig);
+
+	    soundtrackPlayDialog = new SoundtrackPlayDialog(this, soundtrackDetail, meetingConfig);
         soundtrackPlayDialog.show();
     }
 
