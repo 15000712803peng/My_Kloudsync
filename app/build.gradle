@@ -58,8 +58,8 @@ android {
         applicationId "com.kloudsync.techexcel"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 116
-        versionName "11.0.6"
+        versionCode 117
+        versionName "11.0.7"
         flavorDimensions "versionCode"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -150,6 +150,8 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.3.0'
     implementation 'com.android.support:design:27.3.0'
     implementation 'com.android.support.constraint:constraint-layout:+'
+    implementation 'ywl.ywl5320:wlmedia:1.0.7'
+
     testCompile 'junit:junit:4.12'
     compile project(':IMKit')
     compile project(':librarypullrefresh')

@@ -635,26 +635,26 @@ public class SoundtrackDigitalNoteManager {
 
     public void init(Activity context) {
         this.context = context;
-        smallNoteWeb.setZOrderOnTop(false);
-        smallNoteWeb.getSettings().setJavaScriptEnabled(true);
-        smallNoteWeb.getSettings().setDomStorageEnabled(true);
-        smallNoteWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        smallNoteWeb.addJavascriptInterface(new SmallNoteJavascriptInterface(), "AnalyticsWebInterface");
+//        smallNoteWeb.setZOrderOnTop(false);
+//        smallNoteWeb.getSettings().setJavaScriptEnabled(true);
+//        smallNoteWeb.getSettings().setDomStorageEnabled(true);
+//        smallNoteWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+//        smallNoteWeb.addJavascriptInterface(new SmallNoteJavascriptInterface(), "AnalyticsWebInterface");
         int deviceType = DeviceManager.getDeviceType(context);
         String indexUrl = "file:///android_asset/index.html";
         if (deviceType == SupportDevice.BOOK) {
             indexUrl += "?devicetype=4";
         }
         final String url = indexUrl;
-        smallNoteWeb.load(url, null);
+//        smallNoteWeb.load(url, null);
         // --------------
 
-        mainNoteWeb.setZOrderOnTop(false);
-        mainNoteWeb.getSettings().setJavaScriptEnabled(true);
-        mainNoteWeb.getSettings().setDomStorageEnabled(true);
-        mainNoteWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        mainNoteWeb.addJavascriptInterface(new MainNoteJavascriptInterface(), "AnalyticsWebInterface");
-        mainNoteWeb.load(url, null);
+//        mainNoteWeb.setZOrderOnTop(false);
+//        mainNoteWeb.getSettings().setJavaScriptEnabled(true);
+//        mainNoteWeb.getSettings().setDomStorageEnabled(true);
+//        mainNoteWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+//        mainNoteWeb.addJavascriptInterface(new MainNoteJavascriptInterface(), "AnalyticsWebInterface");
+//        mainNoteWeb.load(url, null);
     }
 
 

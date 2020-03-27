@@ -57,6 +57,15 @@ public class MeetingConfig {
     private long currentNoteId;
     private boolean isInViewDigitalNote = true;
     private DocumentPage restoreDocument;
+    private boolean isPlayingSoundtrack;
+
+    public boolean isPlayingSoundtrack() {
+        return isPlayingSoundtrack;
+    }
+
+    public void setPlayingSoundtrack(boolean playingSoundtrack) {
+        isPlayingSoundtrack = playingSoundtrack;
+    }
 
     public boolean isInViewDigitalNote() {
         return isInViewDigitalNote;

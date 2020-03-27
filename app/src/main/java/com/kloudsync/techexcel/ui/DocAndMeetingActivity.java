@@ -125,6 +125,7 @@ import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.SetPresenterDialog;
 import com.kloudsync.techexcel.help.ShareDocumentDialog;
+import com.kloudsync.techexcel.help.SoundtrackPlayManager;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
@@ -297,6 +298,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private SharedPreferences sharedPreferences;
     private SurfaceView surfaceView;
     private MeetingSettingCache meetingSettingCache;
+    private SoundtrackPlayManager soundtrackPlayManager;
 
     @Override
     public void showErrorPage() {
@@ -3630,8 +3632,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     .setNegativeButton(getResources().getText(R.string.know_the), null)
                     .show();
         } else {
-
             showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
+//            soundtrackPlayManager = new SoundtrackPlayManager(this,soundtrack.getSoundtrackDetail(),meetingConfig,soundtrackPlayController,web);
+//            soundtrackPlayManager.doPlay(menuIcon,web);
         }
     }
 
