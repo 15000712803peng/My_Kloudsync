@@ -229,7 +229,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 			return;
 		}
 		if (audioPlayer != null) {
-			audioPlayer.start();
+			//audioPlayer.start();
+			audioPlayer.resume();//用于暂停过后的播放 这里不能调用start()
 		}
 	}
 

@@ -129,6 +129,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     private XWalkView mainNoteWeb;
     SmallNoteViewHelper smallNoteViewHelper;
 
+    private boolean mIsPause=false;//是否处于暂停
+
     public void setSoundtrackDetail(SoundtrackDetail soundtrackDetail) {
         this.soundtrackDetail = soundtrackDetail;
         totalTime = soundtrackDetail.getDuration();
@@ -179,9 +181,17 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                         restart();
                     }
                 } else {
-                    if (soundtrackAudioManager.isPlaying()) {
+//                    if (soundtrackAudioManager.isPlaying()) {
+//                        pause();
+//                    } else {
+//                        restart();
+//                    }
+
+                    if (!mIsPause) {
+                        mIsPause=true;
                         pause();
                     } else {
+                        mIsPause=false;
                         restart();
                     }
                 }
@@ -734,7 +744,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, soundtrackAudioManager.getPlayTime());
         isStarted = false;
 	    SoundtrackAudioManagerV2.getInstance(host).pause();
-        SoundtrackBackgroundMusicManager.getInstance(host).pause();
+        //SoundtrackBackgroundMusicManager.getInstance(host).pause();
         statusText.setText(R.string.paused);
         startPauseImage.setImageResource(R.drawable.video_play);
     }
@@ -767,7 +777,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     private void restart() {
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_RESTART, soundtrackAudioManager.getPlayTime());
 	    SoundtrackAudioManagerV2.getInstance(host).restart();
-        SoundtrackBackgroundMusicManager.getInstance(host).restart();
+        //SoundtrackBackgroundMusicManager.getInstance(host).restart();
         isStarted = true;
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);
