@@ -4,9 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -17,9 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +26,6 @@ import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.UserPreferenceData;
 import com.kloudsync.techexcel.config.AppConfig;
-
 import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.personal.CreateOrganizationActivityV2;
 import com.kloudsync.techexcel.response.NetworkResponse;
@@ -72,56 +66,56 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
     private SharedPreferences sharedPreferences;
     private TextView joinCompanyText;
 
-    private PopupWindow guidePopupWindow;
-    private View guideView;
-    private TextView tv_guide_title,tv_guide_content,tv_guide_about,tv_guide_previous,tv_guide_next;
-    private String title="";
-    private String content="";
-    private String about="";
-    private int guideStep=0;
+	private PopupWindow guidePopupWindow;
+	private View guideView;
+	private TextView tv_guide_title, tv_guide_content, tv_guide_about, tv_guide_previous, tv_guide_next;
+	private String title = "";
+	private String content = "";
+	private String about = "";
+	private int guideStep = 0;
 
-    private void initWelcomeGuidePop(){
-        View guideView = LayoutInflater.from(this).inflate(R.layout.pop_welcome_guide, null);
-        tv_guide_title = (TextView) guideView.findViewById(R.id.tv_guide_title);
-        tv_guide_content = (TextView) guideView.findViewById(R.id.tv_guide_content);
-        tv_guide_about = (TextView) guideView.findViewById(R.id.tv_guide_about);
-        tv_guide_previous = (TextView) guideView.findViewById(R.id.tv_guide_previous);
-        tv_guide_next = (TextView) guideView.findViewById(R.id.tv_guide_next);
-        guideView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        Display display = getWindowManager().getDefaultDisplay();
-        int width = display.getWidth();
-        guidePopupWindow = new PopupWindow(guideView,
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        guidePopupWindow.setBackgroundDrawable(new BitmapDrawable());
-        guideView.findViewById(R.id.tv_guide_next).setOnClickListener(this);
-        guideView.findViewById(R.id.tv_guide_previous).setOnClickListener(this);
-    }
+	private void initWelcomeGuidePop() {
+		View guideView = LayoutInflater.from(this).inflate(R.layout.pop_welcome_guide, null);
+		tv_guide_title = (TextView) guideView.findViewById(R.id.tv_guide_title);
+		tv_guide_content = (TextView) guideView.findViewById(R.id.tv_guide_content);
+		tv_guide_about = (TextView) guideView.findViewById(R.id.tv_guide_about);
+		tv_guide_previous = (TextView) guideView.findViewById(R.id.tv_guide_previous);
+		tv_guide_next = (TextView) guideView.findViewById(R.id.tv_guide_next);
+		guideView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+		Display display = getWindowManager().getDefaultDisplay();
+		int width = display.getWidth();
+		guidePopupWindow = new PopupWindow(guideView,
+				ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		guidePopupWindow.setBackgroundDrawable(new BitmapDrawable());
+		guideView.findViewById(R.id.tv_guide_next).setOnClickListener(this);
+		guideView.findViewById(R.id.tv_guide_previous).setOnClickListener(this);
+	}
 
-    private void showWelcomeGuidePop(View v){
-        final WindowManager.LayoutParams lp = WelcomeAndCreateActivity.this.getWindow().getAttributes();
-        lp.alpha = 0.5f;//代表透明程度，范围为0 - 1.0f
-        WelcomeAndCreateActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        WelcomeAndCreateActivity.this.getWindow().setAttributes(lp);
-        //点击在按钮的中上方弹出popupWindow
-        int btnWidth = v.getMeasuredWidth();
-        int btnHeight = v.getMeasuredHeight();
+	private void showWelcomeGuidePop(View v) {
+		final WindowManager.LayoutParams lp = WelcomeAndCreateActivity.this.getWindow().getAttributes();
+		lp.alpha = 0.5f;//代表透明程度，范围为0 - 1.0f
+		WelcomeAndCreateActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+		WelcomeAndCreateActivity.this.getWindow().setAttributes(lp);
+		//点击在按钮的中上方弹出popupWindow
+		int btnWidth = v.getMeasuredWidth();
+		int btnHeight = v.getMeasuredHeight();
 
-        int popWidth = guidePopupWindow.getContentView().getMeasuredWidth();
-        int popHeight = guidePopupWindow.getContentView().getMeasuredHeight();
+		int popWidth = guidePopupWindow.getContentView().getMeasuredWidth();
+		int popHeight = guidePopupWindow.getContentView().getMeasuredHeight();
 
-        final int xoff =  (int)((float)(btnWidth - popWidth)/2);//PopupWindow的x偏移值
-        final int yoff =   popHeight+btnHeight ; //因为相对于按钮的上方，所以该值为负值
-        guidePopupWindow.showAsDropDown(v,xoff,-yoff);
+		final int xoff = (int) ((float) (btnWidth - popWidth) / 2);//PopupWindow的x偏移值
+		final int yoff = popHeight + btnHeight; //因为相对于按钮的上方，所以该值为负值
+		guidePopupWindow.showAsDropDown(v, xoff, -yoff);
 
-        guidePopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                lp.alpha = 1.0f;
-                WelcomeAndCreateActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                WelcomeAndCreateActivity.this.getWindow().setAttributes(lp);
-            }
-        });
-    }
+		guidePopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+			@Override
+			public void onDismiss() {
+				lp.alpha = 1.0f;
+				WelcomeAndCreateActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+				WelcomeAndCreateActivity.this.getWindow().setAttributes(lp);
+			}
+		});
+	}
     @Override
     protected int setLayout() {
         return R.layout.activity_welcome_to_create;
@@ -142,13 +136,13 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
         backText = findViewById(R.id.txt_back);
         backText.setOnClickListener(this);
 
-        initWelcomeGuidePop();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                showWelcomeGuidePop(joinMeetingText);
-            }
-        },1000);
+	    initWelcomeGuidePop();
+	    new Handler().postDelayed(new Runnable() {
+		    @Override
+		    public void run() {
+			    showWelcomeGuidePop(joinMeetingText);
+		    }
+	    }, 1000);
     }
 
     @Override
@@ -172,12 +166,12 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
             case R.id.txt_join_company:
                 showJoinCompanyDialog();
                 break;
-            case R.id.tv_guide_next:
-                doGuideNext();
-                break;
-            case R.id.tv_guide_previous:
-                doGuidePrevious();
-                break;
+	        case R.id.tv_guide_next:
+		        doGuideNext();
+		        break;
+	        case R.id.tv_guide_previous:
+		        doGuidePrevious();
+		        break;
             default:
                 break;
         }
@@ -495,64 +489,64 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
         }
     }
 
-    private void setGuideStep(){
-        switch (guideStep){
-            case 0:
-                title="加入会议";
-                content="快速加入会议入口";
-                about="点击这里前往帮助中心，查看详细步骤》";
-                tv_guide_next.setVisibility(View.VISIBLE);
-                tv_guide_previous.setVisibility(View.INVISIBLE);
-                tv_guide_next.setText("下一步");
-                break;
-            case 1:
-                title="加入公司/机构";
-                content="点击后，输入公司邀请码，点击“加入”即可加入该公司/机构成为公司成员";
-                about="点击这里前往帮助中心，查看详细步骤》";
-                tv_guide_next.setVisibility(View.VISIBLE);
-                tv_guide_previous.setVisibility(View.VISIBLE);
-                tv_guide_previous.setText("上一步");
-                tv_guide_next.setText("下一步");
-                break;
-            case 2:
-                title="创建新的公司/机构";
-                content="创建属于自己的公司/机构";
-                about="点击这里前往帮助中心，查看详细步骤》";
-                tv_guide_next.setVisibility(View.VISIBLE);
-                tv_guide_previous.setVisibility(View.VISIBLE);
-                tv_guide_previous.setText("再看一次");
-                tv_guide_next.setText("知道了");
-                break;
-        }
-        tv_guide_about.setText(about);
-        tv_guide_content.setText(content);
-        tv_guide_title.setText(title);
-    }
+	private void setGuideStep() {
+		switch (guideStep) {
+			case 0:
+				title = "加入会议";
+				content = "快速加入会议入口";
+				about = "点击这里前往帮助中心，查看详细步骤》";
+				tv_guide_next.setVisibility(View.VISIBLE);
+				tv_guide_previous.setVisibility(View.INVISIBLE);
+				tv_guide_next.setText("下一步");
+				break;
+			case 1:
+				title = "加入公司/机构";
+				content = "点击后，输入公司邀请码，点击“加入”即可加入该公司/机构成为公司成员";
+				about = "点击这里前往帮助中心，查看详细步骤》";
+				tv_guide_next.setVisibility(View.VISIBLE);
+				tv_guide_previous.setVisibility(View.VISIBLE);
+				tv_guide_previous.setText("上一步");
+				tv_guide_next.setText("下一步");
+				break;
+			case 2:
+				title = "创建新的公司/机构";
+				content = "创建属于自己的公司/机构";
+				about = "点击这里前往帮助中心，查看详细步骤》";
+				tv_guide_next.setVisibility(View.VISIBLE);
+				tv_guide_previous.setVisibility(View.VISIBLE);
+				tv_guide_previous.setText("再看一次");
+				tv_guide_next.setText("知道了");
+				break;
+		}
+		tv_guide_about.setText(about);
+		tv_guide_content.setText(content);
+		tv_guide_title.setText(title);
+	}
 
-    private void doGuideNext(){
-        switch (guideStep){
-            case 0:
-                guidePopupWindow.dismiss();
-                showWelcomeGuidePop(joinCompanyText);
-                break;
-            case 1:
-                guidePopupWindow.dismiss();
-                showWelcomeGuidePop(createText);
-                break;
-            case 2:
-                guidePopupWindow.dismiss();
-                break;
-        }
-        if(guideStep<2){
-            guideStep+=1;
-            setGuideStep();
-        }
-    }
+	private void doGuideNext() {
+		switch (guideStep) {
+			case 0:
+				guidePopupWindow.dismiss();
+				showWelcomeGuidePop(joinCompanyText);
+				break;
+			case 1:
+				guidePopupWindow.dismiss();
+				showWelcomeGuidePop(createText);
+				break;
+			case 2:
+				guidePopupWindow.dismiss();
+				break;
+		}
+		if (guideStep < 2) {
+			guideStep += 1;
+			setGuideStep();
+		}
+	}
 
-    private void doGuidePrevious(){
-        guidePopupWindow.dismiss();
-        showWelcomeGuidePop(joinMeetingText);
-        guideStep=0;
-        setGuideStep();
-    }
+	private void doGuidePrevious() {
+		guidePopupWindow.dismiss();
+		showWelcomeGuidePop(joinMeetingText);
+		guideStep = 0;
+		setGuideStep();
+	}
 }

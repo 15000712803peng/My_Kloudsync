@@ -295,7 +295,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private SharedPreferences sharedPreferences;
     private SurfaceView surfaceView;
     private MeetingSettingCache meetingSettingCache;
-    private SoundtrackPlayManager soundtrackPlayManager;
+	private SoundtrackPlayManager soundtrackPlayManager;
 
     @Override
     public void showErrorPage() {
@@ -1939,7 +1939,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
 
-        String userId = AppConfig.UserID;
+	    String userId = AppConfig.UserID;
         if (TextUtils.isEmpty(userId)) {
             userId = sharedPreferences.getString("UserID", "");
             AppConfig.UserID = userId;
@@ -4001,14 +4001,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     private void showSoundtrackPlayDialog(SoundtrackDetail soundtrackDetail) {
 
-        if (soundtrackPlayDialog != null) {
+	    if (soundtrackPlayDialog != null) {
             if (soundtrackPlayDialog.isShowing()) {
                 soundtrackPlayDialog.dismiss();
                 soundtrackPlayDialog = null;
             }
         }
 
-        soundtrackPlayDialog = new SoundtrackPlayDialog(this, soundtrackDetail, meetingConfig);
+	    soundtrackPlayDialog = new SoundtrackPlayDialog(this, soundtrackDetail, meetingConfig);
         soundtrackPlayDialog.show();
     }
 

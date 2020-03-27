@@ -13,7 +13,6 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.SoundtrackAudioCache;
-import com.ub.techexcel.bean.SectionVO;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.FileUtils;
 
@@ -25,18 +24,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-
-import static android.media.MediaPlayer.SEEK_CLOSEST;
 
 
 public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
@@ -114,13 +106,13 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
                     audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
                     try {
-                        Log.e("check_prepare_soundtrack","url:" + audioData.getAttachmentUrl());
+                        Log.e("check_prepare_soundtrack", "url:" + audioData.getAttachmentUrl());
                         audioPlayer.prepare();
                     } catch (IllegalStateException e) {
-                        Log.e("check_prepare_soundtrack","IllegalStateException:" + e.getMessage());
+                        Log.e("check_prepare_soundtrack", "IllegalStateException:" + e.getMessage());
                         reinit(audioData);
                     }
-                    Log.e("check_prepare_soundtrack","player start");
+                    Log.e("check_prepare_soundtrack", "player start");
                     audioPlayer.start();
                     audioData.setPreparing(false);
                     audioData.setPrepared(true);
@@ -360,7 +352,7 @@ public class SoundtrackAudioManager implements MediaPlayer.OnPreparedListener, M
 
                             String _path = FileUtils.getBaseAudiosDir();
                             File dir = new File(_path);
-                            String name = mediaInfo.getItemID()+"_" + url.substring(url.lastIndexOf("/"), url.length());
+                            String name = mediaInfo.getItemID() + "_" + url.substring(url.lastIndexOf("/"), url.length());
                             File audioFile = new File(dir, name);
                             queryDocumentAndDownLoad(url, audioFile.getAbsolutePath());
 

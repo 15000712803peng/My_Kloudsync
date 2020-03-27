@@ -825,7 +825,6 @@
         android:src="@drawable/recordstart"
         android:visibility="gone" />
 
-    <include layout="@layout/soundtrack_play_controller"
-        />
+    <include layout="@layout/soundtrack_play_controller" />
 
 </RelativeLayout>

@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.dialog.loading.KloudLoadingView;
@@ -68,8 +67,8 @@ public abstract class BaseDocAndMeetingActivity extends FragmentActivity {
     @Bind(R.id.single_member_icon)
     ImageView singleMemberIcon;
 
-    @Bind(R.id.layout_soundtrack_controller)
-    RelativeLayout soundtrackPlayController;
+	@Bind(R.id.layout_soundtrack_controller)
+	RelativeLayout soundtrackPlayController;
 
     protected AgoraMember currentAgoraMember;
 
