@@ -4022,6 +4022,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             handleExit(false);
+            return true;
         }
         return super.onKeyDown(keyCode, event);
 

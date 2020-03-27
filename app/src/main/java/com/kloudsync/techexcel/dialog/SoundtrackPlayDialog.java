@@ -662,7 +662,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum" + pageNum + ",type" + type);
         currentPaegNum = pageNum;
-//        SoundtrackActionsManager.getInstance(host).setCurrentPage(Integer.parseInt(pageNum));
+//        SoundtrackActionsManager.getInstance(host).setCurrentPage(pageNum);
 	    if (meetingConfig.getDocument() == null) {
 		    return;
 	    }
