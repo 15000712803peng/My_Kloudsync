@@ -242,7 +242,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         if (audioPlayer != null) {
-            audioPlayer.seek(time);
+            audioPlayer.seek(time / 1000);
             Log.e("vedio_check", "seek_to,time:" + time);
         }
     }

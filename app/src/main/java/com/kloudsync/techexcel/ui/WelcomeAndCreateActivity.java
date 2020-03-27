@@ -31,7 +31,7 @@ import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.UserPreferenceData;
 import com.kloudsync.techexcel.config.AppConfig;
-import com.kloudsync.techexcel.dialog.GuidePopWindow;
+
 import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.personal.CreateOrganizationActivityV2;
 import com.kloudsync.techexcel.response.NetworkResponse;

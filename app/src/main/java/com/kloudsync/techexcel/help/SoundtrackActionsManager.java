@@ -383,6 +383,11 @@ public class SoundtrackActionsManager {
 
     private int currentPage = -1;
 
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
     public void doChangePageAction(WebAction action) {
         try {
             JSONObject data = new JSONObject(action.getData());
@@ -393,7 +398,13 @@ public class SoundtrackActionsManager {
 //                    return;
 //                }
                 isLoadingPage = true;
-                downLoadDocumentPageAndShow(page);
+                if(currentPage == page){
+
+                    //--
+                }else {
+                    downLoadDocumentPageAndShow(page);
+                }
+
 
             } else {
                 web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);

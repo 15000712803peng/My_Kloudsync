@@ -564,6 +564,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
     }
 
+
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showWebVedio(EventPlayWebVedio webVedio) {
         Log.e("showWebVedio", "showWebVedio");

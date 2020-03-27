@@ -37,7 +37,7 @@ import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
 import com.kloudsync.techexcel.help.SmallNoteViewHelper;
 import com.kloudsync.techexcel.help.SoundtrackActionsManager;
 
-import com.kloudsync.techexcel.help.SoundtrackAudioManagerV2;
+import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.SoundtrackBackgroundMusicManager;
 import com.kloudsync.techexcel.help.SoundtrackDigitalNoteManager;
 import com.kloudsync.techexcel.help.UserVedioManager;
@@ -81,7 +81,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     private SoundtrackDetail soundtrackDetail;
     //view
     private View view;
-    private LinearLayout centerLoaing;
+//    private LinearLayout centerLoaing;
     // play status
     private volatile long playTime;
     private volatile boolean isFinished;
@@ -98,7 +98,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     private static final int MESSAGE_PLAY_START = 3;
     private static final int MESSAGE_PLAY_FINISH = 4;
     SoundtrackActionsManager actionsManager;
-    SoundtrackAudioManagerV2 soundtrackAudioManager;
+    SoundtrackAudioManager soundtrackAudioManager;
     SoundtrackBackgroundMusicManager backgroundMusicManager;
     private MeetingConfig meetingConfig;
     private TextView playTimeText;
@@ -151,8 +151,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         LayoutInflater layoutInflater = LayoutInflater.from(host);
         webActionsCache = SyncWebActionsCache.getInstance(host);
         view = layoutInflater.inflate(R.layout.dialog_play_soundtrack, null);
-        dialog = new Dialog(host, R.style.my_dialog);
-        centerLoaing = view.findViewById(R.id.layout_center_loading);
+        dialog = new Dialog(host, R.style.dialog_soundtrack);
+//        centerLoaing = view.findViewById(R.id.layout_center_loading);
         smallNoteLayout = view.findViewById(R.id.layout_small_note);
         smallNoteWeb = view.findViewById(R.id.small_web_note);
         mainNoteWeb = view.findViewById(R.id.main_note_web);
@@ -173,6 +173,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         startPauseImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (soundtrackAudioManager.getMediaInfo() == null) {
                     if (isStarted) {
                         pause();
@@ -180,6 +181,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                         restart();
                     }
                 } else {
+                    Log.e("check_pause_and_start","is_playing:" + soundtrackAudioManager.isPlaying());
                     if (soundtrackAudioManager.isPlaying()) {
                         pause();
                     } else {
@@ -303,9 +305,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         Observable.just("delay_load_parentpage").delay(1000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                if (centerLoaing.getVisibility() == View.VISIBLE) {
-                    centerLoaing.setVisibility(View.GONE);
-                }
+//                if (centerLoaing.getVisibility() == View.VISIBLE) {
+//                    centerLoaing.setVisibility(View.GONE);
+//                }
                 DocumentPage documentPage = meetingConfig.getCurrentDocumentPage();
                 if (documentPage != null) {
                     web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
@@ -318,7 +320,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         EventBus.getDefault().register(this);
         downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, 0);
-        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+        soundtrackAudioManager = SoundtrackAudioManager.getInstance(host);
         soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
 
         backgroundMusicManager = SoundtrackBackgroundMusicManager.getInstance(host);
@@ -395,7 +397,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                     // 没有newinfo文件
                     isPlaying = true;
                 } else {
-                    isPlaying = SoundtrackAudioManagerV2.getInstance(host).isPlaying();
+                    isPlaying = SoundtrackAudioManager.getInstance(host).isPlaying();
                 }
 
 
@@ -415,7 +417,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
                 if (totalTime <= 0) {
                     if (soundtrackAudioManager.getMediaInfo() != null) {
-                        totalTime = SoundtrackAudioManagerV2.getInstance(host).getDuration();
+                        totalTime = SoundtrackAudioManager.getInstance(host).getDuration();
                     }
 
                 }
@@ -431,7 +433,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 //
 //                }
                 if (soundtrackAudioManager.getMediaInfo() != null) {
-                    playTime = SoundtrackAudioManagerV2.getInstance(host).getPlayTime();
+                    playTime = SoundtrackAudioManager.getInstance(host).getPlayTime();
                 } else {
                     playTime += 500;
                 }
@@ -492,7 +494,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 setTimeText();
                 break;
             case MESSAGE_HIDE_CENTER_LOADING:
-                centerLoaing.setVisibility(View.GONE);
+//                centerLoaing.setVisibility(View.GONE);
 
 
                 break;
@@ -507,9 +509,9 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     }
 
     private void setTimeText() {
-        if (centerLoaing.getVisibility() == View.VISIBLE) {
-            centerLoaing.setVisibility(View.GONE);
-        }
+//        if (centerLoaing.getVisibility() == View.VISIBLE) {
+//            centerLoaing.setVisibility(View.GONE);
+//        }
         if (onlyShowTimeText.getVisibility() != View.VISIBLE) {
             if (controllerLayout.getVisibility() != View.VISIBLE) {
                 controllerLayout.setVisibility(View.VISIBLE);
@@ -553,7 +555,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         isStarted = false;
         playTime = time;
         clearActionsBySeek();
-        SoundtrackAudioManagerV2.getInstance(host).seekTo(time);
+        SoundtrackAudioManager.getInstance(host).seekTo(time);
         SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {
@@ -646,6 +648,10 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum" + pageNum + ",type" + type);
         currentPaegNum = pageNum;
+
+        if (meetingConfig.getDocument() == null) {
+            return;
+        }
 //        SoundtrackActionsManager.getInstance(host).setCurrentPage(Integer.parseInt(pageNum));
         if (meetingConfig.getDocument().getDocumentPages() != null) {
             int size = meetingConfig.getDocument().getDocumentPages().size();
@@ -654,9 +660,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             }
         }
 
-        if (meetingConfig.getDocument() == null) {
-            return;
-        }
+
+        SoundtrackActionsManager.getInstance(host).setCurrentPage(pageNum);
 
         PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, pageNum + "",
                 meetingConfig.getDocument().getAttachmentID() + "", "0",
@@ -734,7 +739,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     private void pause() {
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, soundtrackAudioManager.getPlayTime());
         isStarted = false;
-        SoundtrackAudioManagerV2.getInstance(host).pause();
+        SoundtrackAudioManager.getInstance(host).pause();
         SoundtrackBackgroundMusicManager.getInstance(host).pause();
         statusText.setText(R.string.paused);
         startPauseImage.setImageResource(R.drawable.video_play);
@@ -767,7 +772,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
     private void restart() {
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_RESTART, soundtrackAudioManager.getPlayTime());
-        SoundtrackAudioManagerV2.getInstance(host).restart();
+        SoundtrackAudioManager.getInstance(host).restart();
         SoundtrackBackgroundMusicManager.getInstance(host).restart();
         isStarted = true;
         statusText.setText(R.string.playing);
