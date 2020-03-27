@@ -552,6 +552,13 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         isStarted = false;
         playTime = time;
         clearActionsBySeek();
+	    if (meetingConfig != null && meetingConfig.getDocument() != null && meetingConfig.getDocument().getDocumentPages() != null && (currentPaegNum <
+			    meetingConfig.getDocument().getDocumentPages().size() || currentPaegNum > 0)) {
+		    PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, currentPaegNum + "",
+				    /*meetingConfig.getDocument().getAttachmentID()*/0 + "", "0",
+				    soundtrackDetail.getSoundtrackID() + "");
+		    PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, currentPaegNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
+	    }
 	    SoundtrackAudioManagerV2.getInstance(host).seekTo(time);
         SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
@@ -646,15 +653,15 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum" + pageNum + ",type" + type);
         currentPaegNum = pageNum;
 //        SoundtrackActionsManager.getInstance(host).setCurrentPage(Integer.parseInt(pageNum));
+	    if (meetingConfig.getDocument() == null) {
+		    return;
+	    }
+
         if (meetingConfig.getDocument().getDocumentPages() != null) {
             int size = meetingConfig.getDocument().getDocumentPages().size();
             if (pageNum < 0 || pageNum > size) {
                 return;
             }
-        }
-
-	    if (meetingConfig.getDocument() == null) {
-            return;
         }
 
         PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, pageNum + "",
