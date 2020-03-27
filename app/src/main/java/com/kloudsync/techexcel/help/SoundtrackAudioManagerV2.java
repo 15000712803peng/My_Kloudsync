@@ -233,7 +233,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         if (audioPlayer != null) {
-            audioPlayer.start();
+            audioPlayer.resume();
         }
     }
 
