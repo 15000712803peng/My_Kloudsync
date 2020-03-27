@@ -153,7 +153,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         dialog = new Dialog(host, R.style.my_dialog);
         centerLoaing = view.findViewById(R.id.layout_center_loading);
         smallNoteLayout = view.findViewById(R.id.layout_small_note);
-        smallNoteWeb = view.findViewById(R.id.small_web_note);
+//        smallNoteWeb = view.findViewById(R.id.small_web_note);
         mainNoteWeb = view.findViewById(R.id.main_note_web);
         smallNoteWeb = view.findViewById(R.id.small_web_note);
         webVedioSurface = view.findViewById(R.id.web_vedio_surface);
@@ -647,7 +647,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         }
 
         PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, pageNum + "",
-                meetingConfig.getDocument().getAttachmentID() + "",  "0",
+		        /*meetingConfig.getDocument().getAttachmentID()*/0 + "", "0",
                 soundtrackDetail.getSoundtrackID() + "");
 
         PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig,pageNum+"",soundtrackDetail.getSoundtrackID() + "",playTime);
