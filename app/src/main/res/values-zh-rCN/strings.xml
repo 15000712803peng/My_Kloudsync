@@ -451,11 +451,11 @@
 
     <!--进入页面显示-->
     <string name="inAttendee">邀请参会者</string>
-    <string name="cbPage">新建白板</string>
-    <string name="shDocument">分享文档</string>
+    <string name="cbPage">创建空白页</string>
+    <string name="shDocument">上传文档</string>
     <string name="shYcan">作为主持人，你可以</string>
     <string name="shAcan">作为参会者，你可以</string>
-    <string name="miProgress">正在进行中的会议</string>
+    <string name="miProgress">会议正在进行中，</string>
     <string name="attendees">参会者</string>
 
     <!--右上侧按钮-->
