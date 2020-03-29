@@ -15,5 +15,11 @@
 /IMLib/build
 /librarypullrefresh/build
 /TvWidgitLib/build
+/.idea/encodings.xml
+/.idea/gradle.xml
+/.idea/vcs.xml
+/.idea/caches
+/.idea/modules.xml
+/.idea/misc.xml
 
 

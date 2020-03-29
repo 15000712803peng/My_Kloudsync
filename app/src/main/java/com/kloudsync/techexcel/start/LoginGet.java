@@ -1066,7 +1066,6 @@ public class LoginGet {
     public static String DecodeBase64Password(String passsword) {
         byte[] decodeBytes = Base64.decode(passsword, Base64.NO_WRAP);
         return new String(decodeBytes);
-
     }
 
     public static synchronized void newThreadLiveGetResult(final String URL, final int config) {
