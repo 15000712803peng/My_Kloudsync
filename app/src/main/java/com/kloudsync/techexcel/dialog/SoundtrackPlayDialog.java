@@ -563,7 +563,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         isStarted = false;
         playTime = time;
         clearActionsBySeek();
-	    SoundtrackAudioManager.getInstance(host).seekTo(time);
+        SoundtrackAudioManager.getInstance(host).seekTo(time);
         SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {

@@ -47,7 +47,8 @@ import com.kloudsync.techexcel.school.SelectSchoolActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.StringUtils;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
+
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.service.activity.MeetingPropertyActivity;
@@ -828,7 +829,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
             return;
         }
 
-        Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
+        Intent intent = new Intent(getActivity(), DocAndMeetingActivityV2.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //-----
         intent.putExtra("meeting_id", eventJoinMeeting.getMeetingId());

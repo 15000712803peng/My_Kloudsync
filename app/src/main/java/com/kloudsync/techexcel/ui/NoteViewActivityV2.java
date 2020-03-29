@@ -797,7 +797,8 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 		} else {
 			noteUsersLayout.setVisibility(View.VISIBLE);
 		}
-		NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig, noteContainer);
+		//TODO
+		// NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig, noteContainer);
 		notifyViewNote(note.getNote());
 	}
 
@@ -835,7 +836,8 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 		}
 		Log.e("followShowNote", "noteid:" + noteId);
 		hideEnterLoading();
-		NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menuIcon, noteContainer);
+		//TODO
+		// NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menuIcon, noteContainer);
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)

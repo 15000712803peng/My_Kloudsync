@@ -8,7 +8,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -33,8 +32,10 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -207,7 +208,7 @@ import retrofit2.Response;
  * Created by tonyan on 2019/11/19.
  */
 
-public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
+public class DocAndMeetingActivityV2 extends BaseWebActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
         BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener {
 
     public static MeetingConfig meetingConfig;
@@ -301,7 +302,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     RelativeLayout soundtrackPlayLayout;
 
     @Bind(R.id.sync_web)
-    XWalkView syncWeb;
+    WebView syncWeb;
 
     @Override
     public void showErrorPage() {
@@ -316,6 +317,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             finish();
             return;
         }
+
+        Log.e("DocAndMeetingActivityV2","on_create");
 
         meetingSettingCache = MeetingSettingCache.getInstance(this);
         writeNoteBlankPageImage();
@@ -350,7 +353,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 messageManager.sendMessage_JoinMeeting(meetingConfig);
 //                                MeetingKit.getInstance().startMeeting();
                             } else {
-                                MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                                MeetingKit.getInstance().prepareJoin(DocAndMeetingActivityV2.this, meetingConfig);
 
                             }
                         }
@@ -365,6 +368,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         menuManager.setBottomMenuOperationsListener(this);
         menuManager.setMenuIcon(menuIcon);
         initWeb();
+        soundtrackPlayManager = new SoundtrackPlayManager(this,meetingConfig,soundtrackPlayLayout);
         bottomFilePop = new PopBottomFile(this);
         gson = new Gson();
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
@@ -416,9 +420,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             public void onUserStart() {
                 if (type == 1) {
                     meetingKit = MeetingKit.getInstance();
-                    meetingKit.prepareStart(DocAndMeetingActivity.this, meetingConfig, meetingConfig.getLessionId() + "");
+                    meetingKit.prepareStart(DocAndMeetingActivityV2.this, meetingConfig, meetingConfig.getLessionId() + "");
                 } else {
-                    MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                    MeetingKit.getInstance().prepareJoin(DocAndMeetingActivityV2.this, meetingConfig);
                 }
             }
         });
@@ -513,14 +517,15 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         super.onResume();
     }
 
+    @SuppressLint("JavascriptInterface")
     private void initWeb() {
-        web.setZOrderOnTop(false);
+//        web.setZOrderOnTop(false);
         web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setDomStorageEnabled(true);
         web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         web.addJavascriptInterface(this, "AnalyticsWebInterface");
 
-        noteWeb.setZOrderOnTop(false);
+//        noteWeb.setZOrderOnTop(false);
         noteWeb.getSettings().setJavaScriptEnabled(true);
         noteWeb.getSettings().setDomStorageEnabled(true);
         noteWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -541,13 +546,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             indexUrl += "?devicetype=4";
         }
         final String url = indexUrl;
-        web.load(url, null);
-        web.load("javascript:ShowToolbar(" + false + ")", null);
-        web.load("javascript:Record()", null);
+        web.loadUrl(url, null);
+        web.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+        web.loadUrl("javascript:Record()", null);
 
-        noteWeb.load(url, null);
-        noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
-        noteWeb.load("javascript:Record()", null);
+        noteWeb.loadUrl(url, null);
+        noteWeb.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+        noteWeb.loadUrl("javascript:Record()", null);
     }
 
     private MeetingConfig getConfig() {
@@ -558,8 +563,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingConfig.setType(data.getIntExtra("meeting_type", MeetingType.DOC));
         meetingConfig.setMeetingId(data.getStringExtra("meeting_id"));
         meetingConfig.setLessionId(data.getIntExtra("lession_id", 0));
-	    int document_id = data.getIntExtra("document_id", 0);
-	    meetingConfig.setDocumentId(String.valueOf(document_id));
+        meetingConfig.setDocumentId(data.getStringExtra("document_id"));
         meetingConfig.setRole(data.getIntExtra("meeting_role", MeetingConfig.MeetingRole.HOST));
         meetingConfig.setUserToken(UserData.getUserToken(this));
         meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting", false));
@@ -595,7 +599,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         MeetingKit.getInstance().release();
         if (web != null) {
             web.removeAllViews();
-            web.onDestroy();
+            web.destroy();
             web = null;
         }
 
@@ -694,8 +698,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         notifyDocumentChanged();
         meetingDefaultDocument.setVisibility(View.GONE);
         web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        web.load("javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-        web.load("javascript:Record()", null);
+        web.loadUrl("javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+        web.loadUrl("javascript:Record()", null);
         if (bottomFilePop != null && bottomFilePop.isShowing()) {
             bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
             bottomFilePop.removeTempDoc();
@@ -753,16 +757,16 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 noteWeb.setVisibility(View.VISIBLE);
                 String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
                 Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + true + ")");
-                noteWeb.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + true + ")", null);
-                noteWeb.load("javascript:Record()", null);
+                noteWeb.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + true + ")", null);
+                noteWeb.loadUrl("javascript:Record()", null);
                 handleBluetoothNote(page.getNotePage().getPageUrl());
                 return;
             }
         }
 
         noteWeb.setVisibility(View.VISIBLE);
-        noteWeb.load("javascript:ShowPDF('" + page.getNotePage().getShowingPath() + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + true + ")", null);
-        noteWeb.load("javascript:Record()", null);
+        noteWeb.loadUrl("javascript:ShowPDF('" + page.getNotePage().getShowingPath() + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + true + ")", null);
+        noteWeb.loadUrl("javascript:Record()", null);
 
     }
 
@@ -847,8 +851,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 _data.put("ShowInCenter", false);
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
-                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+                noteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
+                RecordNoteActionManager.getManager(DocAndMeetingActivityV2.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override
@@ -864,7 +868,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                                 _data.put("LinesData", tempNoteData.getData());
                                 _data.put("ShowInCenter", true);
                                 _data.put("TriggerEvent", true);
-                                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                                noteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
                             }
                             newNoteDatas.remove(tempNoteData);
                         }
@@ -906,7 +910,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             noteUsersLayout.setVisibility(View.VISIBLE);
         }
         //TODO
-      //  NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig, noteContainer);
+        NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig, noteContainer);
         notifyViewNote(note.getNote());
     }
 
@@ -945,7 +949,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         Log.e("followShowNote", "noteid:" + noteId);
         hideEnterLoading();
         //TODO
-//        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menuIcon, noteContainer);
+        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menuIcon, noteContainer);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -998,11 +1002,11 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         String _frame = Tools.getFromBase64(socketMessage.getData().getString("data"));
                         if (noteLayout.getVisibility() == View.VISIBLE) {
                             if (noteWeb != null) {
-                                noteWeb.load("javascript:PlayActionByTxt('" + _frame + "','" + 1 + "')", null);
+                                noteWeb.loadUrl("javascript:PlayActionByTxt('" + _frame + "','" + 1 + "')", null);
                             }
                         } else {
                             if (web != null) {
-                                web.load("javascript:PlayActionByTxt('" + _frame + "','" + 1 + "')", null);
+                                web.loadUrl("javascript:PlayActionByTxt('" + _frame + "','" + 1 + "')", null);
                             }
                         }
 
@@ -1241,7 +1245,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     }
                 } else {
                     if (noteLayout.getVisibility() == View.VISIBLE) {
-                        noteWeb.load("javascript:ClearPath()", null);
+                        noteWeb.loadUrl("javascript:ClearPath()", null);
                         noteWeb.setVisibility(View.GONE);
                         noteLayout.setVisibility(View.GONE);
                     }
@@ -1252,18 +1256,18 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             if (!TextUtils.isEmpty(helloMessage.getCurrentPresenter()) && !TextUtils.isEmpty(AppConfig.UserID)) {
                 meetingConfig.justSetPresenterId(helloMessage.getCurrentPresenter());
                 if (helloMessage.getCurrentPresenter().equals(AppConfig.UserID)) {
-                    web.load("javascript:ShowToolbar(" + true + ")", null);
-                    web.load("javascript:Record()", null);
-                    noteWeb.load("javascript:ShowToolbar(" + true + ")", null);
-                    noteWeb.load("javascript:Record()", null);
+                    web.loadUrl("javascript:ShowToolbar(" + true + ")", null);
+                    web.loadUrl("javascript:Record()", null);
+                    noteWeb.loadUrl("javascript:ShowToolbar(" + true + ")", null);
+                    noteWeb.loadUrl("javascript:Record()", null);
                     Log.e("check_presenter", "ShowToolbar_in_hello");
 
                     //自己是presenter
                 } else {
-                    web.load("javascript:ShowToolbar(" + false + ")", null);
-                    web.load("javascript:StopRecord()", null);
-                    noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
-                    noteWeb.load("javascript:StopRecord()", null);
+                    web.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+                    web.loadUrl("javascript:StopRecord()", null);
+                    noteWeb.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+                    noteWeb.loadUrl("javascript:StopRecord()", null);
                     Log.e("check_presenter", "HideToolbar_in_hello");
                 }
             }
@@ -1337,7 +1341,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         clearLastMessage.put("type", 40);
 
         Log.e("doDrawDTNewBorder", "border_PlayActionByTxt:" + message);
-        noteWeb.load("javascript:PlayActionByTxt('" + message + "')", null);
+        noteWeb.loadUrl("javascript:PlayActionByTxt('" + message + "')", null);
     }
 
     @Subscribe
@@ -1353,7 +1357,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         if (!TextUtils.isEmpty(data)) {
             if (pageActions.getPageNumber() == meetingConfig.getPageNumber()) {
 //                Log.e("check_play_txt","PlayActionByArray:" + data);
-                web.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
+                web.loadUrl("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
             }
         }
     }
@@ -1364,7 +1368,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         String data = pageActions.getData();
         if (!TextUtils.isEmpty(data)) {
             if (noteLayout.getVisibility() == View.VISIBLE) {
-                noteWeb.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
+                noteWeb.loadUrl("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
             }
         }
     }
@@ -1387,7 +1391,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                             message.put("LinkProperty", new JSONObject(note.getLinkProperty()));
                         }
                         Log.e("check_play_txt", "notes_PlayActionByTxt:" + message);
-                        web.load("javascript:PlayActionByTxt('" + message + "')", null);
+                        web.loadUrl("javascript:PlayActionByTxt('" + message + "')", null);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -1570,7 +1574,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             noteData.put("LinkProperty", linkProperty);
             Log.e("drawNote", "note:" + noteData.toString());
             if (web != null) {
-                web.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+                web.loadUrl("javascript:PlayActionByTxt('" + noteData + "')", null);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1589,7 +1593,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             noteData.put("id", "BooXNote_" + linkId);
             Log.e("deleteTempNote", "note:" + noteData.toString());
             if (web != null) {
-                web.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+                web.loadUrl("javascript:PlayActionByTxt('" + noteData + "')", null);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1723,7 +1727,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 e.printStackTrace();
             }
             String key = "TwinkleBookNote";
-            web.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
+            web.loadUrl("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
 
         } else {
 
@@ -1999,10 +2003,10 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
         if (isPresenter()) {
             // show left right arrow
-            web.load("javascript:ShowToolbar(" + true + ")", null);
-            web.load("javascript:Record()", null);
-            noteWeb.load("javascript:ShowToolbar(" + true + ")", null);
-            noteWeb.load("javascript:Record()", null);
+            web.loadUrl("javascript:ShowToolbar(" + true + ")", null);
+            web.loadUrl("javascript:Record()", null);
+            noteWeb.loadUrl("javascript:ShowToolbar(" + true + ")", null);
+            noteWeb.loadUrl("javascript:Record()", null);
             String key = "ChangeMovePageButton";
             JSONObject _data = new JSONObject();
             JSONObject _left = new JSONObject();
@@ -2017,20 +2021,20 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
 
 
-            web.load("javascript:ShowToolbar(" + true + ")", null);
-            web.load("javascript:Record()", null);
-            web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-            noteWeb.load("javascript:ShowToolbar(" + true + ")", null);
-            noteWeb.load("javascript:Record()", null);
-            noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+            web.loadUrl("javascript:ShowToolbar(" + true + ")", null);
+            web.loadUrl("javascript:Record()", null);
+            web.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
+            noteWeb.loadUrl("javascript:ShowToolbar(" + true + ")", null);
+            noteWeb.loadUrl("javascript:Record()", null);
+            noteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
 
         } else {
 
             // show left right arrow
-            web.load("javascript:ShowToolbar(" + false + ")", null);
-            web.load("javascript:StopRecord()", null);
-            noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
-            noteWeb.load("javascript:StopRecord()", null);
+            web.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+            web.loadUrl("javascript:StopRecord()", null);
+            noteWeb.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+            noteWeb.loadUrl("javascript:StopRecord()", null);
             String key = "ChangeMovePageButton";
             JSONObject _data = new JSONObject();
             JSONObject _left = new JSONObject();
@@ -2044,13 +2048,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 e.printStackTrace();
             }
 
-            web.load("javascript:ShowToolbar(" + false + ")", null);
-            web.load("javascript:StopRecord()", null);
-            web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+            web.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+            web.loadUrl("javascript:StopRecord()", null);
+            web.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
 
-            noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
-            noteWeb.load("javascript:StopRecord()", null);
-            noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+            noteWeb.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+            noteWeb.loadUrl("javascript:StopRecord()", null);
+            noteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
         }
 
     }
@@ -2121,7 +2125,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             public void accept(DocumentPage page) throws Exception {
                 String key = "TwinkleBookNote";
                 Log.e("TwinkleBookNote", "delay");
-                web.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
+                web.loadUrl("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
             }
         }).subscribe();
 
@@ -2452,7 +2456,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             @Override
             public void run() {
                 Log.e("WebView_Load", "javascript:AfterDownloadFile('" + url + "', " + index + ")");
-                web.load("javascript:AfterDownloadFile('" + url + "', " + index + ")", null);
+                web.loadUrl("javascript:AfterDownloadFile('" + url + "', " + index + ")", null);
 
             }
         });
@@ -2477,18 +2481,18 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
 
     //-----  JavascriptInterface ----
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterLoadPageFunction() {
         Log.e("JavascriptInterface", "afterLoadPageFunction");
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void userSettingChangeFunction(final String option) {
         Log.e("JavascriptInterface", "userSettingChangeFunction,option:  " + option);
 
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public synchronized void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
         Log.e("JavascriptInterface", "preLoadFileFunction,url:  " + url + ", currentpageNum:" + currentpageNum + ",showLoading:" + showLoading);
         meetingConfig.setNotifyUrl(url);
@@ -2546,19 +2550,19 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     private boolean hasLoadedFile = false;
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterLoadFileFunction() {
         Log.e("JavascriptInterface", "afterLoadFileFunction");
         hasLoadedFile = true;
 
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void showErrorFunction(final String error) {
         Log.e("JavascriptInterface", "showErrorFunction,error:  " + error);
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
         meetingConfig.setPageNumber(pageNum);
@@ -2571,7 +2575,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         }
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void reflect(String result) {
         Log.e("JavascriptInterface", "reflect,result:  " + result);
         meetingConfig.setDocModifide(checkIfModifyDoc(result));
@@ -2690,7 +2694,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public synchronized void autoChangeFileFunction(int diff) {
         Log.e("JavascriptInterface", "autoChangeFileFunction,diff:  " + diff);
         if (documents.size() <= 1) {
@@ -2723,7 +2727,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     // 播放视频
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void videoPlayFunction(final int vid) {
         Log.e("JavascriptInterface", "videoPlayFunction,vid:  " + vid);
         if (meetingConfig.getType() == MeetingType.MEETING) {
@@ -2739,7 +2743,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private FavoriteVideoPopup selectVideoDialog;
 
     //打开
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void videoSelectFunction(String video) {
         Log.e("JavascriptInterface", "videoSelectFunction,id:  " + video);
         if (selectVideoDialog != null) {
@@ -2750,13 +2754,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     // 录制
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void audioSyncFunction(final int id, final int isRecording) {
         Log.e("JavascriptInterface", "audioSyncFunction,id:  " + id + ",isRecording:" + isRecording);
 
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public synchronized void callAppFunction(final String action, final String data) {
         Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
         if (TextUtils.isEmpty(action) || TextUtils.isEmpty(data)) {
@@ -2766,7 +2770,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         Observable.just(data).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                PageActionsAndNotesMgr.handleNoteActions(DocAndMeetingActivity.this, action, new JSONObject(data), meetingConfig);
+                PageActionsAndNotesMgr.handleNoteActions(DocAndMeetingActivityV2.this, action, new JSONObject(data), meetingConfig);
             }
         }).subscribe();
 
@@ -2845,7 +2849,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         openWarningInfo(1);
                     } else {
                         meetingKit = MeetingKit.getInstance();
-                        meetingKit.prepareStart(DocAndMeetingActivity.this, meetingConfig, meetingConfig.getLessionId() + "");
+                        meetingKit.prepareStart(DocAndMeetingActivityV2.this, meetingConfig, meetingConfig.getLessionId() + "");
                     }
                 }
             }
@@ -3374,7 +3378,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             e.printStackTrace();
         }
         Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
-        web.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
+        web.loadUrl("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(this);
         String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
         Log.e("upload_note", "link_property:" + meetingConfig.getCurrentLinkProperty());
@@ -3454,7 +3458,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            new CenterToast.Builder(DocAndMeetingActivity.this).
+                            new CenterToast.Builder(DocAndMeetingActivityV2.this).
                                     setSuccess(false).setMessage("operate failed").create().show();
                             bottomFilePop.removeTempDoc();
                         }
@@ -3489,7 +3493,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new CenterToast.Builder(DocAndMeetingActivity.this).
+                    new CenterToast.Builder(DocAndMeetingActivityV2.this).
                             setSuccess(true).setMessage("operate success").create().show();
                 }
             });
@@ -3510,7 +3514,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         boolean enable = response.body().getData().isEnableBind();
                         if (devices != null && devices.size() > 0) {
                             devicesListDialog = new DevicesListDialog();
-                            devicesListDialog.getPopwindow(DocAndMeetingActivity.this);
+                            devicesListDialog.getPopwindow(DocAndMeetingActivityV2.this);
                             devicesListDialog.setWebCamPopupListener(new DevicesListDialog.WebCamPopupListener() {
                                 @Override
                                 public void scanTv() {
@@ -3577,7 +3581,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = new Intent(DocAndMeetingActivity.this, MipcaActivityCapture.class);
+                    Intent intent = new Intent(DocAndMeetingActivityV2.this, MipcaActivityCapture.class);
                     intent.putExtra("isHorization", true);
                     intent.putExtra("type", 0);
                     startActivityForResult(intent, REQUEST_SCAN);
@@ -3585,7 +3589,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }, 500);
 
         } else {
-            Intent intent = new Intent(DocAndMeetingActivity.this, MipcaActivityCapture.class);
+            Intent intent = new Intent(DocAndMeetingActivityV2.this, MipcaActivityCapture.class);
             intent.putExtra("isHorization", true);
             intent.putExtra("type", 0);
             startActivityForResult(intent, REQUEST_SCAN);
@@ -3641,7 +3645,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     .setNegativeButton(getResources().getText(R.string.know_the), null)
                     .show();
         } else {
-            soundtrackPlayManager = new SoundtrackPlayManager(this,soundtrack.getSoundtrackDetail(),meetingConfig,soundtrackPlayLayout);
+            soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
             soundtrackPlayManager.doPlay();
 //            showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
 //            soundtrackPlayManager = new SoundtrackPlayManager(this,soundtrack.getSoundtrackDetail(),meetingConfig,soundtrackPlayController,web);
@@ -3655,7 +3659,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     public void closeViewNote(EventCloseNoteView closeNoteView) {
         currentNoteId = 0;
         noteWeb.setVisibility(View.GONE);
-        noteWeb.load("javascript:ClearPath()", null);
+        noteWeb.loadUrl("javascript:ClearPath()", null);
         newNoteDatas.clear();
         menuIcon.setVisibility(View.VISIBLE);
         notifyDocumentChanged();
@@ -3722,13 +3726,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             public void accept(JSONObject jsonObject) throws Exception {
                 if (jsonObject.has("RetCode")) {
                     if (jsonObject.getInt("RetCode") == 0) {
-                        new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(true).setMessage(getString(R.string.operate_success)).create().show();
+                        new CenterToast.Builder(DocAndMeetingActivityV2.this).setSuccess(true).setMessage(getString(R.string.operate_success)).create().show();
                     } else {
-                        new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
+                        new CenterToast.Builder(DocAndMeetingActivityV2.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
 
                     }
                 } else {
-                    new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
+                    new CenterToast.Builder(DocAndMeetingActivityV2.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
 
                 }
             }
@@ -3784,7 +3788,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     private void showCreateSyncDialog() {
         yinxiangCreatePopup = new YinxiangCreatePopup();
-        yinxiangCreatePopup.getPopwindow(DocAndMeetingActivity.this);
+        yinxiangCreatePopup.getPopwindow(DocAndMeetingActivityV2.this);
         yinxiangCreatePopup.setFavoritePoPListener(new YinxiangCreatePopup.FavoritePoPListener() {
             @Override
             public void addrecord(int ii) {
@@ -3806,7 +3810,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
             @Override
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
-                soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
+                soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivityV2.this);
                 soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll, timeshow, meetingConfig);
             }
         });
@@ -3875,7 +3879,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             if (noteLayout.getVisibility() == View.VISIBLE) {
                 if (noteWeb != null) {
                     // 笔记先于音想打开
-                    RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+                    RecordNoteActionManager.getManager(DocAndMeetingActivityV2.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
                 }
             } else {
                 if (mFloatingWindowNoteManager != null) {
@@ -3888,7 +3892,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             recordstatus.setVisibility(View.GONE);
             isSyncing = false;
             //清除最后一页上的数据
-            web.load("javascript:ClearPageAndAction()", null);
+            web.loadUrl("javascript:ClearPageAndAction()", null);
             PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
 //            JSONObject jsonObject=new JSONObject();
 //            try {
@@ -3997,7 +4001,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(DocAndMeetingActivity.this, "笔记在本地设备不存在", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DocAndMeetingActivityV2.this, "笔记在本地设备不存在", Toast.LENGTH_SHORT).show();
                     }
                 });
                 return;
@@ -4149,7 +4153,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
                 } else {
                     if (noteLayout.getVisibility() == View.VISIBLE) {
-                        noteWeb.load("javascript:ClearPath()", null);
+                        noteWeb.loadUrl("javascript:ClearPath()", null);
                         noteWeb.setVisibility(View.GONE);
                         noteLayout.setVisibility(View.GONE);
                     }
@@ -4239,23 +4243,23 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         soundTrack.setSoundtrackID(vid2);
                         requestSyncDetailAndPlay(soundTrack);
                     } else if (stat == 0) { //停止播放
-                        if (soundtrackPlayDialog != null) {
-                            soundtrackPlayDialog.followClose();
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followClose();
                         }
                     } else if (stat == 2) {  //暂停播放
-                        if (soundtrackPlayDialog != null) {
-                            soundtrackPlayDialog.followPause();
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followPause();
                         }
                     } else if (stat == 3) { // 继续播放
-                        if (soundtrackPlayDialog != null) {
-                            soundtrackPlayDialog.followRestart();
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followRestart();
                         }
                     } else if (stat == 4) {  // 追上进度
 //
                     } else if (stat == 5) {  // 拖动进度条
 //                    seekToTime(audioTime);
-                        if (soundtrackPlayDialog != null) {
-                            soundtrackPlayDialog.followSeekTo(audioTime);
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followSeekTo(audioTime);
                         }
                     }
                 }
@@ -4520,13 +4524,13 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     }
 
     public class NoteJavascriptInterface {
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void afterChangePageFunction(final int pageNum, int type) {
 //            Log.e("JavascriptInterface", "note_afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
             NoteViewManager.getInstance().getNotePageActionsToShow(meetingConfig);
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void reflect(String result) {
             Log.e("JavascriptInterface", "reflect,result:  " + result);
             Note note = NoteViewManager.getInstance().getNote();
@@ -4535,7 +4539,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             }
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public synchronized void callAppFunction(final String action, final String data) {
             Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
             if (TextUtils.isEmpty(action) || TextUtils.isEmpty(data)) {

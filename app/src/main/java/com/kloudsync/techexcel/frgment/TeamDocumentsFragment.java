@@ -55,6 +55,7 @@ import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.SpaceDeletePopup;
 import com.ub.kloudsync.activity.SwitchTeamActivity;
@@ -818,7 +819,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
 
     private void GoToVIew(Document lesson) {
         updateSocket();
-        Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
+        Intent intent = new Intent(getActivity(), DocAndMeetingActivityV2.class);
 //        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("userid", AppConfig.UserID);

@@ -150,6 +150,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         if (mediaInfo == null) {
             return;
         }
+        mediaInfo.setPrepared(false);
         Log.e("check_prepare_soundtrack","onPrepared");
         if (mediaInfo != null) {
             Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());

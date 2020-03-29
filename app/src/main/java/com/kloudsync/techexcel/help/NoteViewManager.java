@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -82,7 +83,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     private UserNotes user;
     private List<UserNotes> users;
     private MeetingConfig meetingConfig;
-    private XWalkView noteWeb;
+    private WebView noteWeb;
     private LinearLayout noteContainer;
 
     public void setMeetingConfig(MeetingConfig meetingConfig) {
@@ -108,7 +109,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         changeUser(user);
     }
 
-    public synchronized void setContent(final Context context, final View view, final Note note, XWalkView noteWeb, final MeetingConfig meetingConfig, LinearLayout noteContainer) {
+    public synchronized void setContent(final Context context, final View view, final Note note, WebView noteWeb, final MeetingConfig meetingConfig, LinearLayout noteContainer) {
 
         this.meetingConfig = meetingConfig;
         this.context = context;
@@ -633,7 +634,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
             _data.put("ShowInCenter", true);
             _data.put("TriggerEvent", true);
             if(noteWeb!=null){
-                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                noteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -652,7 +653,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     }
 
     private View homeView;
-    public void followShowNote(final Context context, final View view, XWalkView noteWeb, final int noteId, final MeetingConfig meetingConfig, ImageView menuIcon, LinearLayout noteContainer){
+    public void followShowNote(final Context context, final View view, WebView noteWeb, final int noteId, final MeetingConfig meetingConfig, ImageView menuIcon, LinearLayout noteContainer){
         this.meetingConfig = meetingConfig;
         this.context = context;
         homeView=view;
