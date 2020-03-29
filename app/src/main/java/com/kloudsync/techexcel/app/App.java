@@ -1,17 +1,26 @@
 package com.kloudsync.techexcel.app;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.ComponentCallbacks;
 import android.content.Context;
-import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.multidex.MultiDex;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.widget.Toast;
 
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferService;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.network.connectionclass.ConnectionClassManager;
+import com.facebook.network.connectionclass.ConnectionQuality;
+import com.kloudsync.techexcel.bean.AppName;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.message.ChangeItemMessage;
 import com.kloudsync.techexcel.dialog.message.CourseMessage;
@@ -19,6 +28,7 @@ import com.kloudsync.techexcel.dialog.message.CustomizeMessage;
 import com.kloudsync.techexcel.dialog.message.DemoContext;
 import com.kloudsync.techexcel.dialog.message.FriendMessage;
 import com.kloudsync.techexcel.dialog.message.GroupMessage;
+import com.kloudsync.techexcel.dialog.message.HelloFriendMessage;
 import com.kloudsync.techexcel.dialog.message.KnowledgeMessage;
 import com.kloudsync.techexcel.dialog.message.SendFileMessage;
 import com.kloudsync.techexcel.dialog.message.ShareMessage;
@@ -31,12 +41,15 @@ import com.kloudsync.techexcel.ui.MainActivity;
 import com.pgyersdk.Pgyer;
 import com.pgyersdk.PgyerActivityManager;
 import com.pgyersdk.crash.PgyCrashManager;
-import com.ub.service.activity.SocketService;
+import com.ub.service.activity.NetWorkChangReceiver;
+import com.ub.service.activity.WatchCourseActivity3;
 
 import org.xutils.x;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 import io.agora.openlive.model.WorkerThread;
@@ -44,21 +57,53 @@ import io.rong.imkit.RongIM;
 
 public class App extends Application {
     private CrashHandler mCrashHandler;
-    public App instance;
+	public static App mApplication;
     private ThreadManager threadMgr;
     private Handler mainHandler;
     private MainActivity mainActivityInstance;
+	public List<Activity> mList = new LinkedList<Activity>();
+
+    public static List<AppName> appNames;
+    public static List<AppName> appCNNames;
+    public static List<AppName> appENNames;
     @Override
     public void onCreate() {
         super.onCreate();
         threadMgr = ThreadManager.getManager();
         mainHandler = new Handler(Looper.getMainLooper());
-        instance = this;
+	    mApplication = this;
 //        startWBService();
         disableAPIDialog();
 //        getApplicationContext().startService(new Intent(getApplicationContext(), TransferService.class));
         asyncInit();
+        initBroadcastReceiver();
     }
+
+
+    private NetWorkChangReceiver netWorkChangReceiver;
+
+    private void initBroadcastReceiver() {
+        if (netWorkChangReceiver == null) {
+            netWorkChangReceiver = new NetWorkChangReceiver();
+        }
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(netWorkChangReceiver, filter);
+
+    }
+
+
+
+    @Override
+    public void onTerminate() {
+        unregisterReceiver(netWorkChangReceiver);
+        super.onTerminate();
+
+    }
+
+    public static Context getAppContext() {
+		return mApplication;
+	}
 
     public MainActivity getMainActivityInstance() {
         return mainActivityInstance;
@@ -194,6 +239,7 @@ public class App extends Application {
                 RongIM.registerMessageType(SpectatorMessage.class);
                 RongIM.registerMessageType(SendFileMessage.class);
                 RongIM.registerMessageType(ShareMessage.class);
+                RongIM.registerMessageType(HelloFriendMessage.class);
                 //RongIMClient.init(this);
                 DemoContext.getInstance().init(App.this);
                 //initWorkerThread();
@@ -222,7 +268,72 @@ public class App extends Application {
         }
     }
 
+	private static float mNoncompatDensity;
+	private static float mNoncompatScaledDensity;
 
+	/**
+	 * 设置屏幕自定义密度,需要在每个activity的setContentView之前调用一下
+	 *
+	 * @param activity
+	 * @param type     1表示以高为维度,0表示以宽为维度适配
+	 */
+	public static void setCustomDensity(Activity activity, int type) {
+		final DisplayMetrics appDisplayMetrics = mApplication.getResources().getDisplayMetrics();
+		if (mNoncompatDensity == 0) {
+			mNoncompatDensity = appDisplayMetrics.density;
+			mNoncompatScaledDensity = appDisplayMetrics.scaledDensity;
+			mApplication.registerComponentCallbacks(new ComponentCallbacks() {
+				@Override
+				public void onConfigurationChanged(Configuration newConfig) {
+					if (newConfig != null && newConfig.fontScale > 1) {
+						mNoncompatScaledDensity = mApplication.getResources().getDisplayMetrics().scaledDensity;
+					}
+				}
 
+				@Override
+				public void onLowMemory() {
+
+				}
+			});
+		}
+
+		final float targetDensity;
+		if (type == 1) {
+			targetDensity = appDisplayMetrics.heightPixels / 812.0f;
+		} else {
+			targetDensity = appDisplayMetrics.widthPixels / 375.0f;
+		}
+		final float targetScaledDensity = targetDensity * (mNoncompatScaledDensity / mNoncompatDensity);
+		final int targetDensityDpi = (int) (160 * targetDensity);
+
+		appDisplayMetrics.density = appDisplayMetrics.scaledDensity = targetDensity;
+		appDisplayMetrics.scaledDensity = targetScaledDensity;
+		appDisplayMetrics.densityDpi = targetDensityDpi;
+
+		DisplayMetrics activityDisplayMetrics = activity.getResources().getDisplayMetrics();
+		activityDisplayMetrics.density = activityDisplayMetrics.scaledDensity = targetDensity;
+		activityDisplayMetrics.scaledDensity = targetScaledDensity;
+		activityDisplayMetrics.densityDpi = targetDensityDpi;
+	}
+
+	public void addActivity(Activity activity) {
+		mList.add(activity);
+	}
+
+	public void removeActivity(Activity activity) {
+		mList.remove(activity);
+	}
+
+	public void exitActivity() {
+		try {
+			for (Activity activity : mList) {
+				if (activity != null) {
+					activity.finish();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 }

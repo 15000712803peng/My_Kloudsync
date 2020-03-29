@@ -20,7 +20,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,23 +28,19 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
-import com.kloudsync.techexcel.bean.Company;
-import com.kloudsync.techexcel.bean.InviteCompany;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.LoginResult;
 import com.kloudsync.techexcel.bean.RongCloudData;
 import com.kloudsync.techexcel.bean.SimpleCompanyData;
 import com.kloudsync.techexcel.bean.UserPreferenceData;
 import com.kloudsync.techexcel.config.AppConfig;
-import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.LoadingDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
-import com.kloudsync.techexcel.response.InvitationsResponse;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.tool.StringUtils;
+import com.kloudsync.techexcel.tool.ToastUtils;
 import com.kloudsync.techexcel.ui.InvitationsActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
-
 import com.kloudsync.techexcel.ui.WelcomeAndCreateActivity;
 import com.ub.service.activity.SocketService;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -69,7 +64,6 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
 import static com.kloudsync.techexcel.config.AppConfig.ClassRoomID;
-import static com.kloudsync.techexcel.config.AppConfig.conversationId;
 
 public class LoginActivity extends Activity implements OnClickListener {
 
@@ -113,7 +107,6 @@ public class LoginActivity extends Activity implements OnClickListener {
         instance = this;
         gson = new Gson();
         threadManager = ((App) getApplication()).getThreadMgr();
-//        checkPermission();
         initView();
         startWBService();
         EventBus.getDefault().register(this);
@@ -172,7 +165,8 @@ public class LoginActivity extends Activity implements OnClickListener {
                 if (TextUtils.isEmpty(message)) {
                     message = getResources().getString(R.string.operate_failure);
                 }
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                String msgTitle = getString(R.string.login_failed);
+                ToastUtils.showInCenter(LoginActivity.this, msgTitle, message);
 //                new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage("登录失败").create().show();
             }
         }
@@ -313,25 +307,18 @@ public class LoginActivity extends Activity implements OnClickListener {
     private void login() {
         telephone = et_telephone.getText().toString().trim();
         if (TextUtils.isEmpty(telephone)) {
-            Toast.makeText(getApplicationContext(), "please input phone number", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.please_input_phone_number), Toast.LENGTH_SHORT).show();
             return;
         }
 
         password = et_password.getText().toString().trim();
         if (TextUtils.isEmpty(password)) {
-            Toast.makeText(getApplicationContext(), "please input password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.please_input_password), Toast.LENGTH_SHORT).show();
             return;
         }
-//        editor.putString("telephone", telephone);
-//        editor.putString("password", com.kloudsync.techexcel.start.LoginGet.getBase64Password(password));
-//        editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
-//        editor.commit();
-//        telephone = tv_cphone.getText().toString() + telephone;
         if (StringUtils.isPhoneNumber(telephone)) {
             telephone = "+86" + telephone;
         }
-//        com.kloudsync.techexcel.start.LoginGet.LoginRequest(LoginActivity.this, telephone, password, 1,
-//                sharedPreferences, editor, threadManager);
         processLogin(telephone, password, et_telephone.getText().toString().trim());
 
     }
@@ -538,6 +525,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         editor.putString("UserID", AppConfig.UserID);
         editor.putString("UserToken", AppConfig.UserToken);
         editor.putString("Name", AppConfig.UserName);
+        editor.putString("MeetingId",ClassRoomID);
         editor.commit();
     }
 
@@ -590,14 +578,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     public void onResume() {
         super.onResume();
-//	    MobclickAgent.onPageStart("LoginActivity");
-//	    MobclickAgent.onResume(this);       //统计时长
     }
 
     public void onPause() {
         super.onPause();
-//        MobclickAgent.onPageEnd("LoginActivity");
-//	    MobclickAgent.onPause(this);
     }
 
     private void goToInvitationsActivity(List<SimpleCompanyData> companies) {
@@ -622,7 +606,6 @@ public class LoginActivity extends Activity implements OnClickListener {
         intent.putExtra("from", 1);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-//        finish();
     }
 
     private void checkPermission() {

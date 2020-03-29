@@ -10,9 +10,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,6 +34,8 @@ import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.ub.techexcel.adapter.NewMeetingContactAdapter;
+import com.ub.techexcel.tools.JoinMeetingPopup;
+import com.ub.techexcel.tools.SelectMeetingDurationDialog;
 
 import org.feezu.liuli.timeselector.TimeSelector;
 import org.json.JSONArray;
@@ -42,14 +49,14 @@ import java.util.List;
 /**
  * Created by wang on 2017/6/19.
  */
-public class NewMeetingActivity extends Activity implements View.OnClickListener {
+public class NewMeetingActivity extends Activity implements View.OnClickListener,SelectMeetingDurationDialog.OnDurationSelectedLinstener{
 
     private ImageView cancel;
-    private TextView submit;
+    private Button submit;
     private EditText meetingname;
-    private TextView meetingstartdate, tv_p_start;
-    private TextView meetingenddate, tv_p_end;
-    private TextView meetingduration, tv_p_schedule, tv_p_schedule_size;
+    private TextView meetingstartdate;
+    private TextView meetingenddate;
+    private TextView meetingduration, tv_p_schedule_size;
 
     private RelativeLayout as_rl_contact, startdaterl, enddaterl;
     private TextView invitecontact;
@@ -59,6 +66,9 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
     private int schoolId;
     private List<Customer> customerList = new ArrayList<>();
     private SimpleDraweeView as_img_contact_one, as_img_contact_two, as_img_contact_three;
+    private ImageView durationArrowImage;
+    private CheckBox checkbox;
+    private LinearLayout inputmeetingsecret;
 
 
     @Override
@@ -70,16 +80,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
 
     }
 
-/*    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void post(List<Customer> ll) {
-        if (ll != null && ll.size() > 0) {
-            customerList.clear();
-            customerList.addAll(ll);
-            //newMeetingContactAdapter = new NewMeetingContactAdapter(this, customerList);
-            //mRecyclerView.setAdapter(newMeetingContactAdapter);
-
-        }
-    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -90,7 +90,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             /*newMeetingContactAdapter = new NewMeetingContactAdapter(this, customerList);
             mRecyclerView.setAdapter(newMeetingContactAdapter);*/
             if (customerList.size() >= 3) {
-                tv_p_schedule.setVisibility(View.GONE);
                 as_img_contact_one.setVisibility(View.VISIBLE);
                 as_img_contact_two.setVisibility(View.VISIBLE);
                 as_img_contact_three.setVisibility(View.VISIBLE);
@@ -100,7 +99,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 as_img_contact_two.setImageURI(Uri.parse(customerList.get(1).getUrl()));
                 as_img_contact_three.setImageURI(Uri.parse(customerList.get(2).getUrl()));
             } else if (customerList.size() >= 2) {
-                tv_p_schedule.setVisibility(View.GONE);
                 as_img_contact_one.setVisibility(View.VISIBLE);
                 as_img_contact_two.setVisibility(View.VISIBLE);
                 tv_p_schedule_size.setVisibility(View.VISIBLE);
@@ -109,7 +107,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 as_img_contact_two.setImageURI(Uri.parse(customerList.get(1).getUrl()));
                 as_img_contact_three.setVisibility(View.GONE);
             } else if (customerList.size() >= 1) {
-                tv_p_schedule.setVisibility(View.GONE);
                 as_img_contact_one.setVisibility(View.VISIBLE);
                 tv_p_schedule_size.setVisibility(View.VISIBLE);
                 tv_p_schedule_size.setText(customerList.size() + "total");
@@ -117,11 +114,18 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 as_img_contact_two.setVisibility(View.GONE);
                 as_img_contact_three.setVisibility(View.GONE);
             } else {
-                tv_p_schedule.setVisibility(View.VISIBLE);
                 as_img_contact_one.setVisibility(View.GONE);
                 as_img_contact_two.setVisibility(View.GONE);
                 as_img_contact_three.setVisibility(View.GONE);
                 tv_p_schedule_size.setVisibility(View.GONE);
+            }
+            int nameLength = meetingname.getText().toString().trim().length();
+            int startDateLength = meetingstartdate.getText().toString().trim().length();
+            int endDateLength = meetingenddate.toString().trim().length();
+            if (nameLength>0&&startDateLength>0&&endDateLength>0){
+                submit.setEnabled(true);
+            }else {
+                submit.setEnabled(false);
             }
 
         }
@@ -136,28 +140,41 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
     }
 
     private void initView() {
-        tv_p_schedule = (TextView) findViewById(R.id.tv_p_schedule);
         cancel = (ImageView) findViewById(R.id.cancel);
         cancel.setOnClickListener(this);
-        submit = (TextView) findViewById(R.id.submit);
+        submit = findViewById(R.id.submit);
+        submit.setEnabled(false);
         submit.setOnClickListener(this);
+        durationArrowImage = findViewById(R.id.image_duration_arrow);
+        inputmeetingsecret = findViewById(R.id.inputmeetingsecret);
+        checkbox = findViewById(R.id.checkbox);
+        checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    inputmeetingsecret.setVisibility(View.VISIBLE);
+                }else{
+                    inputmeetingsecret.setVisibility(View.GONE);
+                }
+            }
+        });
+        durationArrowImage.setOnClickListener(this);
         meetingname = (EditText) findViewById(R.id.meetingname);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm:ss");
         String time = simpleDateFormat.format(new Date());
         //meetingname.setText(AppConfig.UserName + time);
         //meetingname.setSelection((AppConfig.UserName + time).length());
         meetingduration = (TextView) findViewById(R.id.meetingduration);
+        meetingduration.setOnClickListener(this);
         tv_p_schedule_size = (TextView) findViewById(R.id.tv_p_schedule_size);
 
         as_rl_contact = (RelativeLayout) findViewById(R.id.as_rl_contact);
         as_rl_contact.setOnClickListener(this);
         meetingstartdate = (TextView) findViewById(R.id.meetingstartdate);
-        tv_p_start = (TextView) findViewById(R.id.tv_p_start);
         startdaterl = (RelativeLayout) findViewById(R.id.startdaterl);
 
         enddaterl = (RelativeLayout) findViewById(R.id.enddaterl);
         meetingenddate = (TextView) findViewById(R.id.meetingenddate);
-        tv_p_end = (TextView) findViewById(R.id.tv_p_end);
 
         startdaterl.setOnClickListener(this);
         enddaterl.setOnClickListener(this);
@@ -174,7 +191,29 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 MODE_PRIVATE);
         schoolId = sharedPreferences.getInt("SchoolID", -1);
 
+        meetingname.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                int nameLength = meetingname.getText().toString().trim().length();
+                int startDateLength = meetingstartdate.getText().toString().trim().length();
+                int endDateLength = meetingenddate.toString().trim().length();
+                if (nameLength>0&&startDateLength>0&&endDateLength>0){
+                    submit.setEnabled(true);
+                }else {
+                    submit.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
 
@@ -201,6 +240,10 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             case R.id.submit:
                 submit();
                 break;
+            case R.id.image_duration_arrow:
+            case R.id.meetingduration:
+                showJoinMeetingDialog();
+                break;
         }
     }
 
@@ -226,7 +269,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 try {
                     endsecond = formatter.parse(time).getTime();
                     if (endsecond != 0) {
-                        tv_p_end.setVisibility(View.GONE);
                         meetingenddate.setVisibility(View.VISIBLE);
                         if (endsecond > startsecond) {
                             meetingenddate.setText(time);
@@ -239,16 +281,21 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                             Log.e("laoyu", "天" + days + "小时" + hour + "分" + min);
                             meetingduration.setText(days + "天" + hour + "时" + min + "分");
                         } else {
-                            tv_p_end.setVisibility(View.VISIBLE);
                             meetingenddate.setVisibility(View.GONE);
                             Toast.makeText(NewMeetingActivity.this, "结束时间不能大于开始时间!", Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        tv_p_end.setVisibility(View.VISIBLE);
                         meetingenddate.setVisibility(View.GONE);
                     }
 
-
+                    int nameLength = meetingname.getText().toString().trim().length();
+                    int startDateLength = meetingstartdate.getText().toString().trim().length();
+                    int endDateLength = meetingenddate.toString().trim().length();
+                    if (nameLength>0&&startDateLength>0&&endDateLength>0){
+                        submit.setEnabled(true);
+                    }else {
+                        submit.setEnabled(false);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -283,9 +330,9 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             @Override
             public void handle(String time) {
                 try {
+
                     startsecond = formatter.parse(time).getTime();
                     if (startsecond != 0) {
-                        tv_p_start.setVisibility(View.GONE);
                         meetingstartdate.setVisibility(View.VISIBLE);
                         if (endsecond != 0) {
                             if (endsecond > startsecond) {
@@ -296,7 +343,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                             long seconds = duration % 86400000 % 3600000 % 60000 / 1000;   //以秒为单位取整
                             meetingduration.setText(hour+"小时");*/
                             } else {
-                                tv_p_start.setVisibility(View.VISIBLE);
                                 meetingstartdate.setVisibility(View.GONE);
                                 Toast.makeText(NewMeetingActivity.this, "结束时间不能大于开始时间!", Toast.LENGTH_LONG).show();
                             }
@@ -304,10 +350,16 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                             meetingstartdate.setText(time);
                         }
                     } else {
-                        tv_p_start.setVisibility(View.VISIBLE);
                         meetingstartdate.setVisibility(View.GONE);
                     }
-
+                    int nameLength = meetingname.getText().toString().trim().length();
+                    int startDateLength = meetingstartdate.getText().toString().trim().length();
+                    int endDateLength = meetingenddate.toString().trim().length();
+                    if (nameLength>0&&startDateLength>0&&endDateLength>0){
+                        submit.setEnabled(true);
+                    }else {
+                        submit.setEnabled(false);
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -338,10 +390,17 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             Toast.makeText(this, getResources().getString(R.string.schnames), Toast.LENGTH_LONG).show();
             return;
         }
-        if (startsecond == 0 || endsecond == 0) {
+        if (startsecond == 0) {
             Toast.makeText(this, getResources().getString(R.string.schdate), Toast.LENGTH_LONG).show();
             return;
         }
+
+        if(durationData == null){
+            Toast.makeText(this, getResources().getString(R.string.schduration), Toast.LENGTH_LONG).show();
+            return;
+        }
+        Log.e("check_time","startsecond:" + startsecond + "time:"+ durationData.time);
+        endsecond = startsecond + durationData.time;
 
         new ApiTask(new Runnable() {
             @Override
@@ -396,5 +455,28 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
         } else {
             return super.onKeyDown(keyCode, event);
         }
+    }
+
+    SelectMeetingDurationDialog durationDialog;
+
+    private void showJoinMeetingDialog() {
+        if (durationDialog != null) {
+            if (durationDialog.isShowing()) {
+                durationDialog.dismiss();
+            }
+            durationDialog = null;
+        }
+
+        durationDialog = new SelectMeetingDurationDialog(this);
+        durationDialog.setOnDurationSelectedLinstener(this);
+        durationDialog.show();
+    }
+
+    SelectMeetingDurationDialog.DurationData durationData;
+
+    @Override
+    public void onDuratonSelected(SelectMeetingDurationDialog.DurationData duration) {
+        this.durationData= duration;
+        meetingduration.setText(duration.duration);
     }
 }

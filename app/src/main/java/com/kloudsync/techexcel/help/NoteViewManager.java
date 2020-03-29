@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.help;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,21 +19,20 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventCloseNoteView;
+import com.kloudsync.techexcel.bean.EventFloatingNote;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNoteErrorShowDocument;
 import com.kloudsync.techexcel.bean.EventShowNotePage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
-import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
-import com.kloudsync.techexcel.bean.SupportDevice;
 import com.kloudsync.techexcel.bean.UserNotes;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
-import com.kloudsync.techexcel.tool.NoteImageCache;
 import com.kloudsync.techexcel.view.spinner.NiceSpinner;
 import com.kloudsync.techexcel.view.spinner.OnSpinnerItemSelectedListener;
 import com.kloudsync.techexcel.view.spinner.UserNoteTextFormatter;
@@ -41,6 +41,7 @@ import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
+import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -63,8 +64,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.kloudsync.techexcel.help.PageActionsAndNotesMgr.parseNote;
-
 /**
  * Created by tonyan on 2019/12/5.
  */
@@ -75,6 +74,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     private Context context;
     //------
     private ImageView backImage;
+    private ImageView openFloatingNote;
     private NiceSpinner usersSpinner;
     private RecyclerView noteList;
     private NoteAdapter noteAdapter;
@@ -83,6 +83,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
     private List<UserNotes> users;
     private MeetingConfig meetingConfig;
     private XWalkView noteWeb;
+    private LinearLayout noteContainer;
 
     public void setMeetingConfig(MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
@@ -96,22 +97,28 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         if(this.user == null){
             return;
         }
+
         UserNotes user = users.get(position);
         Log.e("onItemSelected","position:" + position + ",user:" + user);
         if (user.getUserId().equals(this.user.getUserId())) {
             Log.e("onItemSelected", "the same");
             return;
         }
+
         changeUser(user);
     }
 
-    public synchronized void setContent(Context context, final View view, Note note, XWalkView noteWeb,MeetingConfig meetingConfig) {
+    public synchronized void setContent(final Context context, final View view, final Note note, XWalkView noteWeb, final MeetingConfig meetingConfig, LinearLayout noteContainer) {
+
         this.meetingConfig = meetingConfig;
         this.context = context;
+        homeView=view;
         noteList = view.findViewById(R.id.list_note);
         backImage = view.findViewById(R.id.image_back);
+        openFloatingNote = view.findViewById(R.id.openfloatingnote);
         this.noteWeb = noteWeb;
         noteWeb.setVisibility(View.VISIBLE);
+//        adjustOritation(context,noteContainer);
         backImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,6 +126,20 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
                 EventBus.getDefault().post(new EventCloseNoteView());
                 close();
                 instance = null;
+                RecordNoteActionManager.getManager(context).sendCloseHomePageActon(note.getNoteID(),false,meetingConfig);
+            }
+        });
+        openFloatingNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                view.setVisibility(View.GONE);
+                EventBus.getDefault().post(new EventCloseNoteView());
+                close();
+                instance = null;
+                // 切到浮窗
+                EventFloatingNote eventFloatingNote=new EventFloatingNote();
+                eventFloatingNote.setNoteId(note.getNoteID());
+                EventBus.getDefault().post(eventFloatingNote);
             }
         });
         pageCache = DocumentPageCache.getInstance(context);
@@ -127,6 +148,7 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         usersSpinner.setOnSpinnerItemSelectedListener(this);
         this.note = note;
         initWeb();
+
         downLoadNotePageAndShow(note);
         if(meetingConfig.getDocument() == null){
             view.setVisibility(View.GONE);
@@ -134,6 +156,8 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }
         process(AppConfig.UserID, meetingConfig);
         view.setVisibility(View.VISIBLE);
+
+//	    EverPenManger.getInstance((Activity) context).getBleManager().ReqOfflineDataTransfer(true);
     }
 
     private void close(){
@@ -337,14 +361,14 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }
 
         @Override
-        public NoteAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(context).inflate(R.layout.note_item_v2, parent, false);
-            NoteAdapter.Holder holder = new NoteAdapter.Holder(view);
+            Holder holder = new Holder(view);
             return holder;
         }
 
         @Override
-        public void onBindViewHolder(final NoteAdapter.Holder holder, final int position) {
+        public void onBindViewHolder(final Holder holder, final int position) {
             final NoteDetail noteDetail = list.get(position);
             holder.title.setText(noteDetail.getTitle());
             String date = noteDetail.getCreatedDate();
@@ -395,8 +419,6 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
             SimpleDraweeView img_url;
             TextView date;
             LinearLayout container;
-
-
             public Holder(View itemView) {
                 super(itemView);
                 container = itemView.findViewById(R.id.container);
@@ -410,6 +432,13 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
 
     private void downLoadNotePageAndShow(Note note) {
         if(note == null || note.getDocumentPages() == null || note.getDocumentPages().size() <= 0){
+            if(!TextUtils.isEmpty(note.getLocalFileID()) && note.getLocalFileID().contains(".")){
+                EventShowNotePage eventShowNotePage = new EventShowNotePage();
+                eventShowNotePage.setNoteId(note.getNoteID());
+                eventShowNotePage.setAttachmendId(note.getAttachmentID());
+                eventShowNotePage.setNotePage(note.getDocumentPages().get(0));
+                EventBus.getDefault().post(eventShowNotePage);
+            }
             return;
         }
         Observable.just(note).observeOn(Schedulers.io()).doOnNext(new Consumer<Note>() {
@@ -572,12 +601,14 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
 
     }
 
+
     private void requestNoteToShow(final int noteId){
         Observable.just(noteId).observeOn(Schedulers.io()).map(new Function<Integer, EventNote>() {
             @Override
             public EventNote apply(Integer integer) throws Exception {
                 return MeetingServiceTools.getInstance().syncGetNoteByNoteId(noteId);
             }
+
         }).doOnNext(new Consumer<EventNote>() {
             @Override
             public void accept(EventNote note) throws Exception {
@@ -593,28 +624,69 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
         }).subscribe();
     }
 
-    public void followShowNote(Context context, final View view,XWalkView noteWeb,final int noteId,MeetingConfig meetingConfig,ImageView menuIcon){
+
+    public void followPaintLine(String noteData){
+        String key = "ShowDotPanData";
+        try {
+            JSONObject _data = new JSONObject();
+            _data.put("LinesData", Tools.getFromBase64(noteData));
+            _data.put("ShowInCenter", true);
+            _data.put("TriggerEvent", true);
+            if(noteWeb!=null){
+                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void closeNoteWeb(){
+        if(homeView!=null){
+            homeView.setVisibility(View.GONE);
+        }
+        close();
+        instance = null;
+        if(note!=null){
+            RecordNoteActionManager.getManager(context).sendCloseHomePageActon(note.getNoteID(),false,meetingConfig);
+        }
+    }
+
+    private View homeView;
+    public void followShowNote(final Context context, final View view, XWalkView noteWeb, final int noteId, final MeetingConfig meetingConfig, ImageView menuIcon, LinearLayout noteContainer){
         this.meetingConfig = meetingConfig;
         this.context = context;
+        homeView=view;
         noteList = view.findViewById(R.id.list_note);
         backImage = view.findViewById(R.id.image_back);
+        openFloatingNote = view.findViewById(R.id.openfloatingnote);
         this.noteWeb = noteWeb;
+//        adjustOritation(context,noteContainer);
 //        noteWeb.setVisibility(View.VISIBLE);
         backImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeNoteWeb();
+            }
+        });
+        openFloatingNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 view.setVisibility(View.GONE);
                 close();
                 instance = null;
+                // 切到浮窗
+                EventFloatingNote eventFloatingNote=new EventFloatingNote();
+                eventFloatingNote.setNoteId(note.getNoteID());
+                EventBus.getDefault().post(eventFloatingNote);
             }
         });
+
         pageCache = DocumentPageCache.getInstance(context);
         noteList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         usersSpinner = view.findViewById(R.id.spinner_users);
         usersSpinner.setOnSpinnerItemSelectedListener(this);
         initWeb();
         requestNoteToShow(noteId);
-
         if(meetingConfig.getType() == MeetingType.MEETING){
 
         }else {
@@ -630,6 +702,37 @@ public class NoteViewManager implements OnSpinnerItemSelectedListener {
 
     public void getNotePageActionsToShow(MeetingConfig meetingConfig){
         PageActionsAndNotesMgr.requestActionsForNotePage(meetingConfig,note);
+    }
+
+    private void adjustOritation(Context activity,LinearLayout noteContainer){
+        this.noteContainer = noteContainer;
+        LinearLayout.LayoutParams webParams = (LinearLayout.LayoutParams) noteWeb.getLayoutParams();
+        LinearLayout userLayout = noteContainer.findViewById(R.id.layout_note_users);
+        if(Tools.isOrientationPortrait((Activity) activity)){
+            noteContainer.setOrientation(LinearLayout.VERTICAL);
+            ViewGroup.LayoutParams p = userLayout.getLayoutParams();
+            p.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            p.height = Tools.dip2px(activity,280);
+            userLayout.setLayoutParams(p);
+            webParams.height = 0;
+            webParams.weight = 1;
+            webParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            noteWeb.setLayoutParams(webParams);
+            noteContainer.removeAllViews();
+            noteContainer.addView(noteWeb);
+            noteContainer.addView(userLayout);
+
+        }else {
+            noteContainer.setOrientation(LinearLayout.HORIZONTAL);
+            ViewGroup.LayoutParams p = userLayout.getLayoutParams();
+            p.height = LinearLayout.LayoutParams.MATCH_PARENT;
+            p.width = Tools.dip2px(activity,230);
+            userLayout.setLayoutParams(p);
+            webParams.width = 0;
+            webParams.weight = 1;
+            webParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
+            noteWeb.setLayoutParams(webParams);
+        }
     }
 
 

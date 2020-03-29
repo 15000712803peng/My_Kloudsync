@@ -22,8 +22,26 @@ public class AgoraMember implements Comparable<AgoraMember>,Serializable {
     private int userId;
     private String iconUrl;
     private boolean fromSmall;
-    private int isMember = 0;
+    private int isMember = 1;
     private boolean tempHide;
+    private boolean isSurfaceShowing;
+    private boolean haveShowUnMuteAudioImage;
+
+    public boolean isHaveShowUnMuteAudioImage() {
+        return haveShowUnMuteAudioImage;
+    }
+
+    public void setHaveShowUnMuteAudioImage(boolean haveShowUnMuteAudioImage) {
+        this.haveShowUnMuteAudioImage = haveShowUnMuteAudioImage;
+    }
+
+    public boolean isSurfaceShowing() {
+        return isSurfaceShowing;
+    }
+
+    public void setSurfaceShowing(boolean surfaceShowing) {
+        isSurfaceShowing = surfaceShowing;
+    }
 
     public boolean isTempHide() {
         return tempHide;

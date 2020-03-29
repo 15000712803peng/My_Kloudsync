@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,6 +41,7 @@ public class MeetingSettingDialog implements View.OnClickListener{
 
     private LinearLayout tabTitlesLayout;
     private LinearLayout recordingLayout;
+    private CheckBox isOpenRecord;
 
     public boolean isStartMeeting() {
         return isStartMeeting;
@@ -50,8 +52,8 @@ public class MeetingSettingDialog implements View.OnClickListener{
     }
 
     public interface OnUserOptionsListener{
-        void onUserStart();
-        void onUserJoin();
+        void onUserStart(boolean isrecord);
+        void onUserJoin(boolean isrecord);
     }
 
     private OnUserOptionsListener onUserOptionsListener;
@@ -84,6 +86,7 @@ public class MeetingSettingDialog implements View.OnClickListener{
         closeText.setOnClickListener(this);
         tabTitlesLayout = view.findViewById(R.id.layout_tab_titles);
         recordingLayout = view.findViewById(R.id.layout_recording);
+        isOpenRecord = view.findViewById(R.id.isOpenRecord);
         microText = view.findViewById(R.id.txt_micro);
         cameraImage = view.findViewById(R.id.image_camera);
         cameraImage.setOnClickListener(this);
@@ -164,14 +167,13 @@ public class MeetingSettingDialog implements View.OnClickListener{
             case R.id.txt_start:
                 if(isStartMeeting){
                     if(onUserOptionsListener != null){
-                        onUserOptionsListener.onUserStart();
+                        onUserOptionsListener.onUserStart(isOpenRecord.isChecked());
                     }
                 }else {
                     if(onUserOptionsListener != null){
-                        onUserOptionsListener.onUserJoin();
+                        onUserOptionsListener.onUserJoin(isOpenRecord.isChecked());
                     }
                 }
-
                 dismiss();
                 break;
             case R.id.image_micro:

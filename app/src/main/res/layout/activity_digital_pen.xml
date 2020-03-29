@@ -11,44 +11,72 @@
         android:layout_marginLeft="18dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="支持以下笔源配对"
+        android:text="@string/support_pairing"
         android:textColor="#ff999999"
         android:textSize="14sp"
         />
 
     <LinearLayout
+        android:id="@+id/lly_digital_impression"
         android:padding="15dp"
         android:layout_marginRight="18dp"
         android:layout_marginLeft="18dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/rc_white_bg_shape"
         android:orientation="horizontal"
+        android:background="@drawable/rc_white_bg_shape"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <RelativeLayout
-            android:background="@drawable/blue_circle_v2"
-            android:layout_width="42dp"
-            android:layout_height="42dp">
-            <ImageView
-                android:padding="2dp"
-                android:src="@drawable/icon_pen_white"
-                android:layout_centerInParent="true"
-                android:layout_width="20dp"
-                android:layout_height="20dp" />
-        </RelativeLayout>
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/rly_digital_pen_img"
+                android:background="@drawable/blue_circle_v2"
+                android:layout_width="42dp"
+                android:layout_centerVertical="true"
+                android:layout_height="42dp">
+
+                <ImageView
+                    android:padding="2dp"
+                    android:src="@drawable/icon_pen_white"
+                    android:layout_centerInParent="true"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp" />
+            </RelativeLayout>
 
         <TextView
+            android:id="@+id/tv_digital_pen_impression"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/rly_digital_pen_img"
             android:layout_marginLeft="8dp"
-            android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="印象电子笔"
+            android:text="@string/impression_electronic_pen"
             android:textColor="#ff333333"
             android:textSize="15sp"
             />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_digital_similar_pen_source"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/dp_5"
+            android:layout_gravity="center_vertical"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:text="@string/similar_pen_source"
+            android:textSize="@dimen/sp_13"
+            android:textColor="@color/c5"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/lly_digital_you_dao_yun"
         android:padding="15dp"
         android:layout_marginRight="18dp"
         android:layout_marginLeft="18dp"
@@ -57,27 +85,52 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <RelativeLayout
-            android:background="@drawable/green_circle"
-            android:layout_width="42dp"
-            android:layout_height="42dp">
-            <ImageView
-                android:padding="2dp"
-                android:src="@drawable/icon_pen_white"
-                android:layout_centerInParent="true"
-                android:layout_width="20dp"
-                android:layout_height="20dp" />
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/rly_digital_pen_img2"
+                android:background="@drawable/green_circle"
+                android:layout_width="42dp"
+                android:layout_centerVertical="true"
+                android:layout_height="42dp">
+
+                <ImageView
+                    android:padding="2dp"
+                    android:src="@drawable/icon_pen_white"
+                    android:layout_centerInParent="true"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_toRightOf="@id/rly_digital_pen_img2"
+                android:id="@+id/tv_digital_pen_you_dao_yun"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cloud_electronic_pen"
+                android:textColor="#ff333333"
+                android:textSize="15sp" />
         </RelativeLayout>
 
         <TextView
-            android:layout_marginLeft="8dp"
+            android:id="@+id/tv_digital_similar_pen_source2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:layout_marginLeft="@dimen/dp_5"
             android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="有道云电子笔"
-            android:textColor="#ff333333"
-            android:textSize="15sp"
-            />
+            android:layout_alignParentRight="true"
+            android:text="@string/similar_pen_source2"
+            android:textSize="@dimen/sp_13"
+            android:textColor="@color/c5"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 

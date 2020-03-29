@@ -51,7 +51,7 @@ public class WebCamPopup implements View.OnClickListener {
     }
 
     public void setDefault(int i) {
-//        Toast.makeText(mContext,i+"",Toast.LENGTH_LONG).show();
+//        Toast.makeText(mActivity,i+"",Toast.LENGTH_LONG).show();
         switch (i) {
             case 0:
                 tv1.setEnabled(true);

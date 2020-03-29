@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
     <string name="app_name">Kloud</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
@@ -56,6 +57,7 @@
     <string name="Customer">用户</string>
     <string name="Health_Consultant">好友</string>
     <string name="Phone">电话</string>
+    <string name="Main_Phone">主号码</string>
     <string name="Address">地址</string>
     <string name="See_Info">查看资料</string>
     <string name="Fouce_point">关注点：</string>
@@ -105,19 +107,24 @@
     <string name="Edit_Send">编辑并发送</string>
     <string name="Send_Link">发送链接</string>
 
-
+    <string name="please_input_phone_number">请输入手机号</string>
+    <string name="please_input_password">请输入密码</string>
     <string name="Login">登录</string>
+    <string name="login_failed">登录失败</string>
     <string name="Input_Telephone">请输入您的手机号码</string>
     <string name="Input_Password">密码，6--16个字符，字母区分大小写</string>
+
+    <string name="Input_new_Password">请输入新密码</string>
 
     <string name="Apply_To_Join">申请加入</string>
     <string name="Forget_Password">忘记密码</string>
     <string name="Login_Bottom">用户许可协议|隐私条款</string>
+    <string name="user_license_agreement">用户许可协议</string>
 
-    <string name="Reset_Password">重置密码</string>
+    <string name="Reset_Password">修改密码</string>
     <string name="Send_CheckCode">发送验证码</string>
     <string name="Resend_CheckCode">重新发送</string>
-    <string name="Ensure_Reset">确认重置</string>
+    <string name="confirm_reset">确认重置</string>
 
     <string name="Sign_Up_Close">暂未开发注册请登录我们的网站www.youbao99.com,进入“健康顾问入口”提交资料，我们将第一时间进行资料审核</string>
 
@@ -244,7 +251,7 @@
     <string name="Female">女</string>
     <string name="Purchased_Courses">已购买课程</string>
     <string name="Gender">性别</string>
-    <string name="Detail_birth">Date of birth</string>
+    <string name="Detail_birth">出生日期</string>
 
 
     <string name="Head">头像</string>
@@ -333,12 +340,17 @@
 
 
     <string name="Team">当前团队</string>
+    <string name="current_project">当前项目</string>
+    <string name="current_project_folder">当前项目中的文件夹</string>
+    <string name="Current_doc">当前项目的文档</string>
     <string name="Space">当前团队的空间</string>
     <string name="Create_Space">新建空间</string>
+    <string name="create_folder">新建文件夹</string>
     <string name="Current_file">当前团队的文件</string>
     <string name="Swtich_team">切换团队</string>
     <string name="Swtich_space">切换空间</string>
     <string name="Create_team">创建新的团队</string>
+    <string name="create_project">创建新的团队</string>
     <string name="autosync">自动同步允许将内容显示在您的电视设备上</string>
     <string name="tvappname">TV APP 名称</string>
     <string name="tvapplogintime">登录时间</string>
@@ -393,6 +405,8 @@
     <string name="sure_password">确认密码</string>
     <string name="input_again">请再次输入新密码</string>
     <string name="OK">完成</string>
+    <string name="companywebsite">网址</string>
+    <string name="loge">机构徽标</string>
     <string name="coursenotify">通知</string>
 
     <string name="opencourse">打开课程</string>
@@ -414,14 +428,18 @@
     <string name="ongoninglesson">正在进行中的课程</string>
 
     <!--安排会议-->
-    <string name="schStart">开始日期:</string>
-    <string name="schName">姓名:</string>
-    <string name="schEnd">结束日期:</string>
-    <string name="schDuration">时长:</string>
+    <string name="schStart">开始日期</string>
+    <string name="start_time">开始时间</string>
+    <string name="schName">会议主题</string>
+    <string name="schEnd">结束日期</string>
+    <string name="end_time">结束时间</string>
+    <string name="schDuration">时长</string>
     <string name="schInvite">邀请参加者</string>
     <string name="schMeeting">安排会议</string>
     <string name="schnames">请输入会议名称</string>
     <string name="schdate">请输入时间</string>
+    <string name="schduration">请选择时长</string>
+    <string name="invite_attendee">邀请参会者</string>
     <!--进入弹窗-->
     <string name="satOptions">选择音频工具选项</string>
     <string name="satSystem">系统</string>
@@ -433,11 +451,11 @@
 
     <!--进入页面显示-->
     <string name="inAttendee">邀请参会者</string>
-    <string name="cbPage">新建白板</string>
-    <string name="shDocument">分享文档</string>
+    <string name="cbPage">创建空白页</string>
+    <string name="shDocument">上传文档</string>
     <string name="shYcan">作为主持人，你可以</string>
     <string name="shAcan">作为参会者，你可以</string>
-    <string name="miProgress">正在进行中的会议</string>
+    <string name="miProgress">会议正在进行中，</string>
     <string name="attendees">参会者</string>
 
     <!--右上侧按钮-->
@@ -498,12 +516,14 @@
     <string name="mtANAudio">+     添加音频</string>
     <string name="mtVoice">开启声音</string>
     <string name="mtAddFile">+     添加一个声音文件</string>
-    <string name="mtIsound">请输入音想名称</string>
+    <string name="mtIsound">在这里输入音想名称...</string>
     <string name="mtYxName">名称</string>
     <string name="mtRNVoice">录制新的声音</string>
     <string name="mtSyncRecord">同步</string>
     <string name="mtCancel">退出</string>
     <string name="mtRecordSync">录制 &#038; 同步</string>
+    <string name="syncname">音想名称</string>
+    <string name="hidden">隐藏</string>
 
 
     <!--yinxiangoperatorpopup界面-->
@@ -537,10 +557,12 @@
     <string name="pi_fname">第一姓名</string>
     <string name="pi_mname">中间名字</string>
     <string name="pi_lname">最后名字</string>
+    <string name="pi_name">姓名</string>
     <string name="pi_pfname">请输入第一姓名</string>
     <string name="pi_pmname">请输入中间名字</string>
     <string name="pi_plname">请输入最后名字</string>
-    <string name="change_name">修改名字</string>
+    <string name="change_name">设置姓名</string>
+    <string name="change_cancel">取消</string>
     <string name="change_phone">修改主要号码</string>
     <string name="change_sphone">修改副号码</string>
 
@@ -622,6 +644,8 @@
     <string name="onetomany">一对多</string>
     <string name="selectstudents">选择学生</string>
     <string name="selectcoursee">选择课程</string>
+    <string name="ispublic">公开</string>
+    <string name="uploadaudiosuccess">上传文件成功</string>
 
     <string name="upcoming">即将开始</string>
     <string name="pastdue">已过期</string>
@@ -648,6 +672,7 @@
     <string name="as_setting">公司/机构设置</string>
     <string name="as_logo">图标</string>
     <string name="as_name">名字</string>
+    <string name="as_info_name">姓名</string>
     <string name="as_address">网址</string>
     <string name="as_email">邮箱</string>
     <string name="as_sync">开启音想房间</string>
@@ -656,6 +681,7 @@
     <string name="as_contact_list">联系人列表</string>
     <string name="as_add_admin">新增管理员</string>
     <string name="as_save">提交</string>
+    <string name="as_info_save">保存</string>
 
     <string name="acceptcompanytitle">以下公司邀请您加入</string>
     <string name="acceptcompanypropet">现在点击加入</string>
@@ -667,7 +693,7 @@
     <string name="opencompanycode">启动公司邀请码</string>
     <string name="companycode">公司邀请码</string>
     <!-- 俊瑞  张 -->
-    <string name="personInfo">个人资料</string>
+    <string name="personInfo">资料设置</string>
     <string name="right">右加号</string>
     <string name="save">保存</string>
     <string name="head">头像</string>
@@ -744,16 +770,22 @@
     <string name="addspaceadmin">增加空间管理员</string>
     <string name="addnewmember">邀请新成员</string>
 
-    <string name="Mobile_phone">手机号/用户名</string>
-    <string name="Password_hint">密码(6-20)</string>
+    <string name="Mobile_phone">手机号/用户名</string>、
+    <string name="Mobile_phone2">手机号</string>
+    <string name="Password_hint">密码</string>
+    <string name="register_means_you_agree_to">注册表示您同意\t\t</string>
+    <string name="kloud_sync_terms"> KloudSync的条款</string>
+    <string name="password_rules"> 8-14位密码,必须包含字母,数字,符号中两种</string>
     <string name="Sign_up">注册</string>
+    <string name="registration_failed">注册失败</string>
     <string name="area_code">+86</string>
     <string name="Name_info">姓名</string>
     <string name="Vertification_Code">验证码</string>
     <string name="Send_code">发送验证码</string>
     <string name="reset_pwd">重置密码</string>
+    <string name="please_input_verify_code">请输入验证码</string>
     <string name="create_and_switch">创建和切换</string>
-    <string name="create_organization">创建新公司/机构</string>
+    <string name="create_organization">创建组织</string>
     <string name="input_organization_name">输入公司/机构名字</string>
     <string name="name_upper">名字</string>
     <string name="create_success">创建成功</string>
@@ -808,7 +840,115 @@
     <string name="invite_now">立即邀请</string>
     <string name="no_register_prompt">还没有创建账号?</string>
 
+    <string name="welcome_to_kloud">欢迎开到可达</string>
+
+    <!--QWX-->
+    <string name="enable_auto_sync_of_display_for_all_my_devices">启用自动同步显示\n我的所有设备</string>
+    <string name="list_of_devices">设备列表</string>
+    <string name="last_active">最后登录</string>
+    <string name="allow_to_speak">允许发言</string>
+    <string name="close_speech">关闭发言</string>
+    <string name="put_your_hand_down">把手放下</string>
+    <string name="become_a_presenter">成为主讲人</string>
+    <string name="set_as_host">设置为主持人</string>
+    <string name="set_as_participant">设置为参会者</string>
+    <string name="set_as_talkable_participant">设置为可讲话参会者</string>
+    <string name="password_reset">密码已重置</string>
+    <string name="base_enter">确定</string>
+    <string name="base_cancel">取消</string>
+    <!--文档-->
+    <string name="please_input_new_folder_name">请输入新建文件夹名称</string>
+    <string name="name_cannot_be_empty">名称不能为空</string>
+    <string name="know_the">知道了</string>
+    <string name="sound_is_still_preparing_and_cannot_do_this">音想还在准备中,不能这样做!</string>
+    <!--聊天-->
+    <!--会议-->
+    <!--音想-->
+    <!--我-->
+    <string name="stay_tuned">敬请期待</string>
+    <string name="enter_pairing">进入配对</string>
+    <string name="current_pen_status">当前笔的状态</string>
+    <string name="similar_pen_source">印象笔记类似笔源</string>
+    <string name="similar_pen_source2">有道云类似笔源</string>
+    <string name="enter_pairing_tips_text">长按电子笔2-3秒</string>
+    <string name="enter_pairing_tips_text2">绿灯长亮，进入配对状态</string>
+    <string name="enter_pairing_tips_text3">提示：橙灯闪烁表示电量不足，需充电</string>
+    <string name="please_make_sure_the_electronic_pen">请确保电子笔：1.电源开启；2.靠近手机；3.未连接其他手机</string>
+    <string name="battery_remaining">电池剩余</string>
+    <string name="storage_remaining">存储剩余</string>
+    <string name="writing_length">书写长度</string>
+    <string name="seeting">设置</string>
+    <string name="penName">笔名 :</string>
+    <string name="firmware_upgrade">固件升级</string>
+    <string name="use_guide">使用指南</string>
+    <string name="switch_the_current_pen_source">切换当前笔源</string>
+    <string name="switch_electronic_pen">切换电子笔</string>
+    <string name="delete_electronic_pen">删除电子笔</string>
+    <string name="add_new_electronic_pen">添加新的电子笔</string>
+    <string name="please_grant_relevant_permissions">请授予相关权限</string>
+    <string name="the_device_does_not_support_Bluetooth">设备不支持蓝牙</string>
+    <string name="device_does_not_support_ble">设备不支持BLE</string>
+    <string name="start_scanning">开始扫描</string>
+    <string name="is_scanning">正在扫描...</string>
+    <string name="the_connected">已连接</string>
+    <string name="not_connected">未连接</string>
+    <string name="scanning">扫描中</string>
+    <string name="go_to_my_notes">前往我的笔记</string>
+    <string name="connected">连接</string>
+    <string name="connecting">连接中...</string>
+    <string name="edit_pen_name">编辑笔名</string>
+    <string name="please_enter_a_pen_name">请输入笔名</string>
+    <string name="setup_failed">设置失败</string>
+    <string name="no_notes_currently">当前无笔记</string>
 
 
+    <string name="contract_company">联系人 (公司)</string>
+    <string name="contract_all">联系人(所有)</string>
+    <string name="no_contract">还没有添加联系人</string>
+    <string name="show_current_contract">显示当前公司联系人</string>
+    <string name="show_all_contract">显示所有联系人</string>
+    <string name="no_meetings_available">没有可选会议</string>
+    <string name="support_pairing">支持以下笔源配对</string>
+    <string name="impression_electronic_pen">印象电子笔</string>
+    <string name="cloud_electronic_pen">有道云电子笔</string>
+    <string name="add_company_contacts">从公司联系人中添加</string>
+    <string name="add_new_contacts">添加新的联系人</string>
+    <string name="create_new_company_label_info">企业,first team,first space 创建成功，邀请您的团队成员加入吧，邀请寻找如果是设为admin,可以将被邀请的团队对应设置为企业的admin用户，admin用户可以管理企业所有的team和space</string>
+    <string name="hello_friend_summary">打招呼</string>
+    <string name="meeting_id_change">修改会议ID</string>
+
+    <string name="share_kloudsync">分享KloudSync</string>
+    <string name="copy_link">复制链接</string>
+    <string name="wechat">微信</string>
+    <string name="moment">朋友圈</string>
+    <string name="scan_to_download_app">扫描二维码，下载APP</string>
+    <string name="login_name_tip">手机号登录请输入完整号码：如 +16267807552</string>
+
+    <string name="join_compnay">加入一个公司/机构</string>
+    <string name="input_invite_code">请输入公司/机构邀请码</string>
+    <string name="_join">加入</string>
+    <string name="hint_input_invite_code">输入邀请码</string>
+    <string name="Create">创建</string>
+    <string name="scan_tv">扫描电视设备</string>
+    <string name="_meeting_id">会议ID:</string>
+    <string name="kick_off_from_meeting">请他离开会议</string>
+    <string name="tips">提示</string>
+
+    <string name="my_contact">我的联系人</string>
+
+    <string-array name="time_duration">
+        <item>15分钟</item>
+        <item>30分钟</item>
+        <item>45分钟</item>
+        <item>60分钟</item>
+        <item>90分钟(1.5小时)</item>
+        <item>120分钟(2小时)</item>
+        <item>180分钟(3小时)</item>
+        <item>240分钟(4小时)</item>
+        <item>300分钟(5小时)</item>
+        <item>360分钟(6小时)</item>
+        <item>420分钟(7小时)</item>
+        <item>480分钟(8小时)</item>
+    </string-array>
 
 </resources>

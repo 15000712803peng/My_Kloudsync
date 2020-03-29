@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.personal;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -142,6 +143,9 @@ public class LanguageActivity extends Activity {
 			MainActivity.RESUME = true;
 		}
 		RefreshLanguage();
+//		Intent intent = new Intent();
+//		intent.setAction("com.kloudsync.techexcel.appname");
+//		sendBroadcast(intent);
 		FinishActivity();
 
 	}

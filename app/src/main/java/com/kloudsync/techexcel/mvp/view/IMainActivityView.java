@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.mvp.view;
 
-import android.content.Context;
+import com.tqltech.tqlpencomm.Dot;
+import com.tqltech.tqlpencomm.PenCommAgent;
 
 /**
  * Created by tonyan on 2019/10/29.
@@ -8,7 +9,15 @@ import android.content.Context;
 
 public interface IMainActivityView extends KloudView{
 
-     void initBottomTabs();
+	void getBleManager(PenCommAgent bleManager);
 
-     void showWxAddDocumentDialog(String wxPath);
+	void onConnected();
+
+	void onDisconnected();
+
+	void onConnectFailed();
+
+	void onReceiveDot(Dot dot);
+
+	void onReceiveOfflineStrokes(Dot dot);
 }

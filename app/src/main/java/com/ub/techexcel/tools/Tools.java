@@ -1,10 +1,13 @@
 package com.ub.techexcel.tools;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AppOpsManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -274,7 +277,6 @@ public class Tools {
     }
 
 
-
     public static void getChatroomHistoryMessage(String roomId, RongIMClient.ResultCallback<List<Message>> callback) {
         RongIM.getInstance().getLatestMessages(Conversation.ConversationType.CHATROOM, roomId, 10, callback);
     }
@@ -286,6 +288,31 @@ public class Tools {
      */
     public static void sendMessage(final Context context, final MessageContent msg, String mGroupId, String userid) {
         io.rong.imlib.model.Message myMessage = io.rong.imlib.model.Message.obtain(mGroupId, Conversation.ConversationType.GROUP, msg);
+        myMessage.setExtra(userid);
+        RongIM.getInstance()
+                .sendMessage(myMessage, null, null, new IRongCallback.ISendMessageCallback() {
+                    @Override
+                    public void onAttached(io.rong.imlib.model.Message message) {
+                        Log.e("send message", "onAttached");
+                    }
+
+                    @Override
+                    public void onSuccess(io.rong.imlib.model.Message message) {
+                        Log.e("send message", "onSuccess");
+                        EventBus.getDefault().post(message);
+                    }
+
+                    @Override
+                    public void onError(io.rong.imlib.model.Message message, RongIMClient.ErrorCode errorCode) {
+
+                        Log.e("send message", "onError:" + errorCode + ",message:" + message);
+
+                    }
+                });
+    }
+
+    public static void sendMessageToMember(final Context context, final MessageContent msg, String mGroupId, String userid) {
+        io.rong.imlib.model.Message myMessage = io.rong.imlib.model.Message.obtain(mGroupId, Conversation.ConversationType.PRIVATE, msg);
         myMessage.setExtra(userid);
         RongIM.getInstance()
                 .sendMessage(myMessage, null, null, new IRongCallback.ISendMessageCallback() {
@@ -401,6 +428,24 @@ public class Tools {
             }
         }
         return false;
+    }
+
+    public static boolean isOrientationPortrait(Activity activity) {
+
+        return activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+    }
+
+
+    public static void  setPortrait(Activity activity) {
+           activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//竖屏
+    }
+
+    public static  void setLandscape(Activity activity){
+          activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);//横屏
+    }
+
+    public static  void setSensor(Activity activity){
+          activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);//物理的感应器来决
     }
 
 

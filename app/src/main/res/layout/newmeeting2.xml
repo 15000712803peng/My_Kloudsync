@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:fresco="http://schemas.android.com/apk/res-auto"
-    android:background="@color/schedule_bg"
+    android:background="@color/colorBGf9"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/dp_44"
         android:background="@color/white">
 
         <TextView
@@ -17,274 +17,223 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/schMeeting"
-            android:textColor="@color/black"/>
+            android:textColor="@color/colorFont33"
+            android:textSize="@dimen/sp_15" />
 
         <RelativeLayout
             android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/cancel"
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:padding="15dp"
-                android:src="@drawable/arrow_back2" />
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
+                android:layout_centerInParent="true"
+                android:src="@drawable/back_icon" />
         </RelativeLayout>
     </RelativeLayout>
 
-<!--    <RelativeLayout
-        android:id="@+id/schedulecoursetype"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp">
+    <!--    <RelativeLayout
+            android:id="@+id/schedulecoursetype"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:singleLine="true"
-            android:text="Schedule a meeting"
-            android:textColor="@color/c5"
-            android:textSize="16sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:singleLine="true"
+                android:text="Schedule a meeting"
+                android:textColor="@color/c5"
+                android:textSize="16sp" />
 
 
-    </RelativeLayout>-->
-
-    <TextView
-        android:layout_marginTop="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/divider_line" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/schedule_line" />
+        </RelativeLayout>-->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
-        android:background="@color/white">
+        style="@style/ScheduleMeetingSettingLayoutStyle"
+        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:gravity="center_vertical"
-            android:textColor="@color/schedule"
+            style="@style/ScheduleMeetingSettingNameStyle"
             android:orientation="horizontal"
             android:text="@string/schName" />
 
         <EditText
             android:id="@+id/meetingname"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:background="@color/white"
-            android:textColor="@color/schedule_select"
-            android:textSize="16sp" />
+            android:textColor="@color/colorFont33"
+            android:textSize="@dimen/sp_14" />
     </LinearLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/schedule_line" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/schedule_line" />
+
     <RelativeLayout
         android:id="@+id/startdaterl"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/white">
+        style="@style/ScheduleMeetingSettingLayoutStyle">
 
         <TextView
             android:id="@+id/tv_cn_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:text="@string/schStart"
-            android:textColor="@color/schedule"/>
-
-        <TextView
-            android:id="@+id/tv_p_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:text="Pleases select start date"
-            android:layout_toLeftOf="@id/as_start"
-            android:textColor="@color/pi_bg_change_phone"/>
-
-        <TextView
-            android:id="@+id/meetingstartdate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:text="12 total"
-            android:visibility="gone"
-            android:layout_toLeftOf="@+id/as_start"
-            android:textColor="@color/schedule_select"/>
-
-        <ImageView
-            android:id="@+id/as_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
-            android:src="@drawable/arrow2" />
-
-    </RelativeLayout>
-
-
-  <!--  <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/schedule_line" />
-    <LinearLayout
-        android:id="@+id/startdatell"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center_vertical"
-        android:background="@color/white"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:textColor="@color/schedule"
+            style="@style/ScheduleMeetingSettingNameStyle"
             android:text="@string/schStart" />
 
         <TextView
             android:id="@+id/meetingstartdate"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/white"
-            android:gravity="center_vertical"
-            android:textColor="@color/c5"
-            android:textSize="16sp" />
-    </LinearLayout>-->
+            android:layout_toLeftOf="@+id/as_start"
+            style="@style/ScheduleMeetingSettingDataStyle" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginLeft="10dp"
-        android:background="@color/schedule_line" />
+        <ImageView
+            android:id="@+id/as_start"
+            style="@style/ScheduleMeetingArrowIconStyle" />
+
+    </RelativeLayout>
+
+
+    <!--  <TextView
+          android:layout_width="match_parent"
+          android:layout_height="0.5dp"
+          android:layout_marginTop="10dp"
+          android:background="@color/schedule_line" />
+      <LinearLayout
+          android:id="@+id/startdatell"
+          android:layout_width="match_parent"
+          android:layout_height="50dp"
+          android:gravity="@dimen/dp_25"
+          android:background="@color/white"
+          android:orientation="horizontal">
+
+          <TextView
+              android:layout_width="100dp"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="10dp"
+              android:textColor="@color/schedule"
+              android:text="@string/schStart" />
+
+          <TextView
+              android:id="@+id/meetingstartdate"
+              android:layout_width="match_parent"
+              android:layout_height="50dp"
+              android:background="@color/white"
+              android:gravity="center_vertical"
+              android:textColor="@color/c5"
+              android:textSize="16sp" />
+      </LinearLayout>-->
+
+
     <RelativeLayout
+        android:visibility="gone"
         android:id="@+id/enddaterl"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/white">
+        style="@style/ScheduleMeetingSettingLayoutStyle">
 
         <TextView
             android:id="@+id/tv_cn_end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:text="@string/schEnd"
-            android:textColor="@color/schedule"/>
+            style="@style/ScheduleMeetingSettingNameStyle"
+            android:text="@string/schEnd" />
 
-        <TextView
-            android:id="@+id/tv_p_end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:text="Pleases select end date"
-            android:layout_toLeftOf="@id/as_end"
-            android:textColor="@color/pi_bg_change_phone"/>
 
         <TextView
             android:id="@+id/meetingenddate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:text="12 total"
-            android:visibility="gone"
+            style="@style/ScheduleMeetingSettingDataStyle"
             android:layout_toLeftOf="@+id/as_end"
-            android:textColor="@color/schedule_select"/>
+             />
 
         <ImageView
             android:id="@+id/as_end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
-            android:src="@drawable/arrow2" />
+            style="@style/ScheduleMeetingArrowIconStyle" />
 
     </RelativeLayout>
-<!--    <LinearLayout
-        android:id="@+id/starttimell"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:textColor="@color/schedule"
-            android:text="@string/schEnd" />
-
-        <TextView
-            android:id="@+id/meetingstarttime"
+    <!--    <LinearLayout
+            android:id="@+id/starttimell"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/white"
             android:gravity="center_vertical"
-            android:textColor="@color/c5"
-            android:textSize="16sp" />
-    </LinearLayout>-->
+            android:orientation="horizontal">
 
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/schedule"
+                android:text="@string/schEnd" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/schedule_line" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/schedule_line" />
+            <TextView
+                android:id="@+id/meetingstarttime"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:textColor="@color/c5"
+                android:textSize="16sp" />
+        </LinearLayout>-->
+
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/white"
+        style="@style/ScheduleMeetingSettingLayoutStyle"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:textColor="@color/schedule"
+            style="@style/ScheduleMeetingSettingNameStyle"
             android:text="@string/schDuration" />
 
         <TextView
             android:id="@+id/meetingduration"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:background="@color/white"
-            android:textColor="@color/schedule_select"
-            android:textSize="16sp" />
+            android:layout_marginRight="@dimen/dp_35"
+            android:gravity="center_vertical|right"
+            android:textColor="@color/colorFont99"
+            android:textSize="@dimen/sp_14" />
+
+        <ImageView
+            android:id="@+id/image_duration_arrow"
+            style="@style/ScheduleMeetingArrowIconStyle" />
     </LinearLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/schedule_line" />
+
+    <RelativeLayout
+        android:visibility="gone"
+        style="@style/ScheduleMeetingSettingLayoutStyle"
+        >
+
+        <TextView
+            style="@style/ScheduleMeetingSettingNameStyle"
+            android:text="启用会议密码" />
+
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/inputmeetingsecret"
+        android:visibility="gone"
+        style="@style/ScheduleMeetingSettingLayoutStyle"
+        android:gravity="center_vertical"
+        android:layout_marginTop="0dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/ScheduleMeetingSettingNameStyle"
+            android:text="会议密码" />
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:hint="请输入会议密码"
+            android:layout_marginRight="@dimen/dp_35"
+            android:textColor="@color/colorFont99"
+            android:textSize="@dimen/sp_14" />
+
+
+    </LinearLayout>
 
     <!--<LinearLayout
         android:layout_width="match_parent"
@@ -311,46 +260,16 @@
         android:layout_width="match_parent"
         android:background="@color/white"
         android:layout_height="100dp"></android.support.v7.widget.RecyclerView>-->
-    <TextView
-        android:id="@+id/invitecontact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="10dp"
-        android:gravity="center"
-        android:padding="5dp"
-        android:textColor="@color/pi_bg_change_phone"
-        android:text="@string/schInvite" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/schedule_line" />
 
     <RelativeLayout
         android:id="@+id/as_rl_contact"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/white">
+        style="@style/ScheduleMeetingSettingLayoutStyle">
 
         <TextView
             android:id="@+id/tv_cn_account"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:text="Attendee"
-            android:textColor="@color/schedule"/>
+            style="@style/ScheduleMeetingSettingNameStyle"
+            android:text="@string/invite_attendee" />
 
-        <TextView
-            android:id="@+id/tv_p_schedule"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:text="Pleases select attendees"
-            android:layout_toLeftOf="@id/as_contact"
-            android:textColor="@color/pi_bg_change_phone"/>
 
         <TextView
             android:id="@+id/tv_p_schedule_size"
@@ -358,10 +277,9 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:text="12 total"
-            android:visibility="gone"
             android:layout_toLeftOf="@+id/as_contact"
-            android:textColor="@color/schedule_select"/>
+            android:textColor="@color/schedule_select"
+            />
 
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/as_img_contact_one"
@@ -370,15 +288,16 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="5dp"
             android:layout_toLeftOf="@+id/tv_p_schedule_size"
-            android:visibility="gone"
             android:contentDescription="@string/head"
             android:scaleType="center"
+            android:visibility="gone"
             fresco:fadeDuration="500"
             fresco:failureImage="@drawable/hello"
             fresco:failureImageScaleType="centerInside"
             fresco:placeholderImage="@drawable/hello"
             fresco:placeholderImageScaleType="fitCenter"
             fresco:roundAsCircle="true" />
+
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/as_img_contact_two"
             android:layout_width="35dp"
@@ -387,14 +306,15 @@
             android:layout_marginRight="30dp"
             android:layout_toLeftOf="@+id/tv_p_schedule_size"
             android:contentDescription="@string/head"
-            android:visibility="gone"
             android:scaleType="center"
+            android:visibility="gone"
             fresco:fadeDuration="500"
             fresco:failureImage="@drawable/hello"
             fresco:failureImageScaleType="centerInside"
             fresco:placeholderImage="@drawable/hello"
             fresco:placeholderImageScaleType="fitCenter"
             fresco:roundAsCircle="true" />
+
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/as_img_contact_three"
             android:layout_width="35dp"
@@ -402,41 +322,543 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="50dp"
             android:layout_toLeftOf="@+id/tv_p_schedule_size"
-            android:visibility="gone"
             android:contentDescription="@string/head"
             android:scaleType="center"
+            android:visibility="gone"
             fresco:fadeDuration="500"
             fresco:failureImage="@drawable/hello"
             fresco:failureImageScaleType="centerInside"
             fresco:placeholderImage="@drawable/hello"
             fresco:placeholderImageScaleType="fitCenter"
             fresco:roundAsCircle="true" />
+
         <ImageView
             android:id="@+id/as_contact"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
-            android:src="@drawable/arrow2" />
+            style="@style/ScheduleMeetingArrowIconStyle"/>
 
     </RelativeLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/schedule_line" />
-    <TextView
+
+
+    <Button
         android:id="@+id/submit"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="@dimen/dp_45"
+        android:layout_gravity="bottom"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="40dp"
-        android:background="@color/skyblue"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_marginRight="@dimen/dp_15"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/dp_95"
+        android:background="@drawable/selector_blue_gray_all_radius_21"
+        android:text="@string/rc_cs_submit"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_17" />
+
+</LinearLayout><!--
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBGf9"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:id="@+id/rly_meeting_title"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/dp_44"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/schMeeting"
+            android:textColor="@color/black" />
+
+        <RelativeLayout
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true">
+
+            <ImageView
+                android:id="@+id/cancel"
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
+                android:layout_centerInParent="true"
+                android:src="@drawable/back_icon" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    &lt;!&ndash;    <RelativeLayout
+            android:id="@+id/schedulecoursetype"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:singleLine="true"
+                android:text="Schedule a meeting"
+                android:textColor="@color/c5"
+                android:textSize="16sp" />
+
+
+        </RelativeLayout>&ndash;&gt;
+    <LinearLayout
+        android:id="@+id/lly_meeting_name"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_55"
+        android:layout_below="@id/rly_meeting_title"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dp_18"
+        android:paddingRight="@dimen/dp_16">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dp_15"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:text="@string/schName"
+            android:textColor="@color/colorFont33"
+            android:textSize="@dimen/sp_16" />
+
+        <EditText
+            android:id="@+id/meetingname"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:textColor="@color/colorFont33"
+            android:textSize="@dimen/sp_14" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lly_meeting_start_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lly_meeting_name"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/dp_18"
+        android:paddingRight="@dimen/dp_16">
+
+        <RelativeLayout
+            android:id="@+id/rly_meeting_start_date"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_55">
+
+            <TextView
+                android:id="@+id/tv_cn_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/schStart"
+                android:textColor="@color/colorFont33"
+                android:textSize="@dimen/sp_16" />
+
+            <TextView
+                android:id="@+id/tv_p_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/dp_10"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_toLeftOf="@id/as_start"
+                android:textColor="@color/color3d78fa" />
+
+            <ImageView
+                android:id="@+id/as_start"
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/right_arrow" />
+
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_1"
+            android:background="@color/colorBGf7" />
+
+        <RelativeLayout
+            android:id="@+id/rly_meeting_start_time"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_55">
+
+            <TextView
+                android:id="@+id/tv_meeting_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/start_time"
+                android:textColor="@color/colorFont33"
+                android:textSize="@dimen/sp_16" />
+
+            <TextView
+                android:id="@+id/tv_meeting_select_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/dp_10"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_toLeftOf="@id/iv_meeting_arrow"
+                android:textColor="@color/color3d78fa" />
+
+            <ImageView
+                android:id="@+id/iv_meeting_arrow"
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/right_arrow" />
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+    &lt;!&ndash;  <TextView
+          android:layout_width="match_parent"
+          android:layout_height="0.5dp"
+          android:layout_marginTop="10dp"
+          android:background="@color/schedule_line" />
+      <LinearLayout
+          android:id="@+id/startdatell"
+          android:layout_width="match_parent"
+          android:layout_height="50dp"
+          android:gravity="center_vertical"
+          android:background="@color/white"
+          android:orientation="horizontal">
+
+          <TextView
+              android:layout_width="100dp"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="10dp"
+              android:textColor="@color/schedule"
+              android:text="@string/schStart" />
+
+          <TextView
+              android:id="@+id/meetingstartdate"
+              android:layout_width="match_parent"
+              android:layout_height="50dp"
+              android:background="@color/white"
+              android:gravity="center_vertical"
+              android:textColor="@color/c5"
+              android:textSize="16sp" />
+      </LinearLayout>&ndash;&gt;
+
+
+    <LinearLayout
+        android:id="@+id/lly_meeting_end_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lly_meeting_start_date"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:paddingLeft="@dimen/dp_18"
+        android:paddingRight="@dimen/dp_16">
+
+
+
+        <RelativeLayout
+            android:id="@+id/rly_meeting_end_date"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_55"
+            >
+
+            <TextView
+                android:id="@+id/tv_cn_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/schEnd"
+                android:textColor="@color/colorFont33"
+                android:textSize="@dimen/sp_16" />
+
+            <TextView
+                android:id="@+id/tv_p_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/dp_10"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_toLeftOf="@id/as_end"
+                android:textColor="@color/color3d78fa" />
+
+
+            <ImageView
+                android:id="@+id/as_end"
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/right_arrow" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_1"
+            android:background="@color/colorBGf7" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_55"
+            android:id="@+id/rly_meeting_end_time">
+
+            <TextView
+                android:id="@+id/tv_meeting_end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/end_time"
+                android:textColor="@color/colorFont33"
+                android:textSize="@dimen/sp_16" />
+
+            <TextView
+                android:id="@+id/tv_meeting_select_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_marginRight="@dimen/dp_10"
+                android:layout_toLeftOf="@id/iv_meeting_arrow2"
+                android:textColor="@color/color3d78fa" />
+
+
+            <ImageView
+                android:id="@+id/iv_meeting_arrow2"
+                android:layout_width="@dimen/dp_25"
+                android:layout_height="@dimen/dp_25"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/right_arrow" />
+
+        </RelativeLayout>
+    </LinearLayout>
+    &lt;!&ndash;    <LinearLayout
+            android:id="@+id/starttimell"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/schedule"
+                android:text="@string/schEnd" />
+
+            <TextView
+                android:id="@+id/meetingstarttime"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:textColor="@color/c5"
+                android:textSize="16sp" />
+        </LinearLayout>&ndash;&gt;
+
+
+    <LinearLayout
+        android:id="@+id/lly_meeting_time"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_55"
+        android:paddingLeft="@dimen/dp_18"
+        android:background="@color/white"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_below="@id/lly_meeting_end_date"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/schDuration"
+            android:textColor="@color/colorFont99"
+            android:textSize="@dimen/sp_16" />
+
+        <TextView
+            android:id="@+id/meetingduration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginRight="@dimen/dp_51"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:textColor="@color/colorFont99"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    &lt;!&ndash;<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="30dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+    <TextView
+        android:id="@+id/invitecontact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/inviteuserleft2"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/schInvite" />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycleview"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_height="100dp"></android.support.v7.widget.RecyclerView>&ndash;&gt;
+
+    <RelativeLayout
+        android:id="@+id/as_rl_contact"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/dp_11"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_18"
+        android:layout_below="@id/lly_meeting_time"
+        android:background="@color/white">
+
+        <RelativeLayout
+            android:id="@+id/rly_meeting_invite"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginBottom="@dimen/dp_16"
+            android:layout_marginRight="@dimen/dp_18"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_cn_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/invite_attendee"
+                android:textColor="@color/colorFont33"
+                android:textSize="@dimen/sp_16" />
+
+            &lt;!&ndash;<TextView
+                android:id="@+id/tv_p_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toLeftOf="@id/as_contact"
+                android:text="Pleases select attendees"
+                android:textColor="@color/pi_bg_change_phone"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_p_schedule_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toLeftOf="@+id/as_contact"
+                android:text="12 total"
+                android:textColor="@color/schedule_select"
+                android:visibility="gone" />
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/as_img_contact_one"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@+id/tv_p_schedule_size"
+                android:contentDescription="@string/head"
+                android:scaleType="center"
+                android:visibility="gone"
+                fresco:fadeDuration="500"
+                fresco:failureImage="@drawable/hello"
+                fresco:failureImageScaleType="centerInside"
+                fresco:placeholderImage="@drawable/hello"
+                fresco:placeholderImageScaleType="fitCenter"
+                fresco:roundAsCircle="true" />
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/as_img_contact_two"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="30dp"
+                android:layout_toLeftOf="@+id/tv_p_schedule_size"
+                android:contentDescription="@string/head"
+                android:scaleType="center"
+                android:visibility="gone"
+                fresco:fadeDuration="500"
+                fresco:failureImage="@drawable/hello"
+                fresco:failureImageScaleType="centerInside"
+                fresco:placeholderImage="@drawable/hello"
+                fresco:placeholderImageScaleType="fitCenter"
+                fresco:roundAsCircle="true" />
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/as_img_contact_three"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="50dp"
+                android:layout_toLeftOf="@+id/tv_p_schedule_size"
+                android:contentDescription="@string/head"
+                android:scaleType="center"
+                android:visibility="gone"
+                fresco:fadeDuration="500"
+                fresco:failureImage="@drawable/hello"
+                fresco:failureImageScaleType="centerInside"
+                fresco:placeholderImage="@drawable/hello"
+                fresco:placeholderImageScaleType="fitCenter"
+                fresco:roundAsCircle="true" />&ndash;&gt;
+
+            <ImageView
+                android:id="@+id/as_contact"
+                android:layout_width="@dimen/dp_19"
+                android:layout_height="@dimen/dp_19"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/schedule_meeting_add_icon" />
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_meeting_invite_person"
+            android:layout_width="match_parent"
+            android:layout_below="@id/rly_meeting_invite"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_20"/>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_45"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_marginRight="@dimen/dp_15"
+        android:layout_marginBottom="@dimen/dp_25"
+        android:background="@drawable/shape_blue_all_radius_21"
         android:gravity="center"
         android:text="@string/rc_cs_submit"
         android:textColor="@color/white"
-        android:textSize="18sp" />
+        android:textSize="@dimen/sp_17"
+        fresco:layout_constraintBottom_toBottomOf="parent" />
 
-</LinearLayout>
+</RelativeLayout>-->

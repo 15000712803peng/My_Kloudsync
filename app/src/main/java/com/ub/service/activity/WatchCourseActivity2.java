@@ -89,6 +89,7 @@ import com.amazonaws.event.ProgressListener;
 import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
 import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.facebook.network.connectionclass.ConnectionClassManager;
 import com.facebook.network.connectionclass.ConnectionQuality;
 import com.google.gson.Gson;
@@ -405,6 +406,11 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     private RelativeLayout filedownprogress;
     private ProgressBar fileprogress;
     private TextView progressbartv;
+
+    @Override
+    public void play(Record record) {
+
+    }
 
 
     private static class MyHandler extends Handler {
@@ -1062,6 +1068,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
         }
+
         WindowManager wm = (WindowManager)
                 getSystemService(WINDOW_SERVICE);
         EventBus.getDefault().register(this);
@@ -7225,6 +7232,7 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
                 s3.setRegion(com.amazonaws.regions.Region.getRegion(ud.getRegionName()));
                 com.amazonaws.services.s3.model.PutObjectRequest request = new com.amazonaws.services.s3.model.PutObjectRequest(ud.getBucketName(), MD5Hash, mfile);
                 TransferManager tm = new TransferManager(s3);
+                request.setCannedAcl(CannedAccessControlList.PublicRead);
                 request.setGeneralProgressListener(new ProgressListener() {
                     @Override
                     public void progressChanged(final ProgressEvent progressEvent) {
@@ -8549,6 +8557,11 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
         });
     }
 
+    @Override
+    public void onNetworkQuality(int uid, int txQuality, int rxQuality) {
+
+    }
+
     private void switchToDefaultVideoView() {
         icon_back.setVisibility(View.GONE);
         toggle.setVisibility(View.VISIBLE);
@@ -9136,23 +9149,23 @@ public class WatchCourseActivity2 extends BaseActivity implements View.OnClickLi
     }
 
     //---- play meeting record
-    RecordPlayDialog recordPlayDialog;
-
-    @Override
-    public void play(Record record) {
-        FileUtils.createRecordingFilesDir(this);
-        Log.e("WatchCourseActivity2", "play_record:" + record);
-        boolean play = true;
-        if (play) {
-            play = false;
-            if (recordPlayDialog != null) {
-                recordPlayDialog.dismiss();
-            }
-            recordPlayDialog = new RecordPlayDialog(this, record);
-            recordPlayDialog.show(showpdfurl,currentAttachmentPage,currentAttachmentId);
-        }
-
-    }
+//    RecordPlayDialog recordPlayDialog;
+//
+//    @Override
+//    public void play(Record record) {
+//        FileUtils.createRecordingFilesDir(this);
+//        Log.e("WatchCourseActivity2", "play_record:" + record);
+//        boolean play = true;
+//        if (play) {
+//            play = false;
+//            if (recordPlayDialog != null) {
+//                recordPlayDialog.dismiss();
+//            }
+//            recordPlayDialog = new RecordPlayDialog(this, record);
+//            recordPlayDialog.show(showpdfurl,currentAttachmentPage,currentAttachmentId);
+//        }
+//
+//    }
 
     private void getRecordingItem(final Record record) {
 

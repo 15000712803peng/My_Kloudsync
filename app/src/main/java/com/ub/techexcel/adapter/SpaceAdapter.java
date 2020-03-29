@@ -92,7 +92,7 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
                     holder.documetname.setText(TextTool.setSearchColor(Color.parseColor("#72AEFF"), item.getName(), keyword));
                 }
             } else {
-                holder.tv_sort.setText(item.getName().substring(0, 1).toUpperCase());
+//                holder.tv_sort.setText(item.getName().substring(0, 1).toUpperCase());
             }
         } else {
             holder.tv_sort.setText("");
@@ -102,27 +102,26 @@ public class SpaceAdapter extends RecyclerView.Adapter<SpaceAdapter.RecycleHolde
 
         if (isSyncRoom) {
 
-
-
 //            holder.attachmentcount.setText(item.getSyncRoomCount() + " " + context.getString(R.string.syncroom));
             holder.attachmentcount.setText(item.getSyncRoomCount() + " " + CustomSyncRoomTool.getInstance(context).getCustomyinxiang());
 
 
 //            holder.attachmentcount.setText(item.getSyncRoomCount() == 0 ? "" : item.getSyncRoomCount() + " SyncRooms");
-//            if (item.getSyncRoomCount() == 0) {
-//                holder.attachmentcount.setVisibility(View.GONE);
-//            } else {
-//                holder.attachmentcount.setVisibility(View.VISIBLE);
-//            }
+            if (item.getSyncRoomCount() == 0) {
+                holder.attachmentcount.setVisibility(View.GONE);
+            } else {
+                holder.attachmentcount.setVisibility(View.VISIBLE);
+            }
         } else {
+
             holder.attachmentcount.setText(item.getAttachmentCount() + " " + context.getString(R.string.documents));
 //            holder.attachmentcount.setText(item.getAttachmentCount() == 0 ? "" : item.getAttachmentCount() + " documents");
 //
-//            if (item.getAttachmentCount() == 0) {
-//                holder.attachmentcount.setVisibility(View.GONE);
-//            } else {
-//                holder.attachmentcount.setVisibility(View.VISIBLE);
-//            }
+            if (item.getAttachmentCount() == 0) {
+                holder.attachmentcount.setVisibility(View.GONE);
+            } else {
+                holder.attachmentcount.setVisibility(View.VISIBLE);
+            }
         }
 
 

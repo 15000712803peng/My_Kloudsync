@@ -1,11 +1,9 @@
 package com.kloudsync.techexcel.frgment;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -15,31 +13,23 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
-
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
-import com.kloudsync.techexcel.help.PopShareKloudSync;
 import com.kloudsync.techexcel.help.PopShareMeeting;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.start.LoginGet;
-import com.ub.kloudsync.activity.Document;
+import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.ub.service.activity.MeetingPropertyActivity;
-import com.ub.service.activity.MeetingShareActivity;
 import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.techexcel.adapter.ServiceAdapter2;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.service.ConnectService;
 import com.ub.techexcel.tools.MeetingMoreOperationPopup;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -47,13 +37,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-
 /**
  * Created by tonyan on 2019/11/9.
  */
@@ -120,6 +108,7 @@ public class MeetingFragment extends MyFragment {
     }
 
     private List<ServiceBean> requestMeetings() {
+
         String url = "";
         if (keyWord == null || keyWord.equals("")) {
             url = AppConfig.URL_PUBLIC
@@ -199,7 +188,7 @@ public class MeetingFragment extends MyFragment {
                         public void view() {
 //                            Toast.makeText(getActivity(),type+"",Toast.LENGTH_LONG).show();
                             if (type == 3 || type == 2) {
-                                Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+                                Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                                 intent.putExtra("userid", bean.getUserId());
                                 intent.putExtra("meetingId", bean.getId() + "");
                                 intent.putExtra("teacherid", bean.getTeacherId());
@@ -210,9 +199,19 @@ public class MeetingFragment extends MyFragment {
                                 intent.putExtra("filemeetingId", bean.getId() + "");
                                 intent.putExtra("isFinished", true);
                                 intent.putExtra("yinxiangmode", 1);
+                                // --------
+                                intent.putExtra("meeting_id", bean.getId() + "");
+                                intent.putExtra("meeting_type", MeetingType.MEETING);
+                                intent.putExtra("meeting_role", bean.getRoleinlesson());
+                                try {
+                                    intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
+
+                                }catch (Exception e){
+
+                                }
                                 startActivity(intent);
                             } else {
-                                Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+                                Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                                 intent.putExtra("userid", bean.getUserId());
                                 intent.putExtra("meetingId", bean.getId() + "");
                                 intent.putExtra("teacherid", bean.getTeacherId());
@@ -221,8 +220,22 @@ public class MeetingFragment extends MyFragment {
                                 intent.putExtra("isStartCourse", true);
                                 intent.putExtra("isPrepare", true);
                                 intent.putExtra("yinxiangmode", 1);
+
+                                // --------
+                                intent.putExtra("meeting_id", bean.getId() + "");
+                                intent.putExtra("meeting_type", MeetingType.MEETING);
+                                intent.putExtra("meeting_role", bean.getRoleinlesson());
+                                try {
+                                    intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
+
+                                }catch (Exception e){
+
+                                }
                                 startActivity(intent);
                             }
+
+
+
                         }
 
                         @Override
@@ -258,6 +271,7 @@ public class MeetingFragment extends MyFragment {
 
                         @Override
                         public void open() {
+
                         }
 
                         @Override
@@ -266,7 +280,6 @@ public class MeetingFragment extends MyFragment {
                             intent.putExtra("servicebean", bean);
                             getActivity().startActivity(intent);
                         }
-
                     });
                     meetingMoreOperationPopup.StartPop(meetingList, bean, type);
                 }

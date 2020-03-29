@@ -1,7 +1,7 @@
 package com.kloudsync.techexcel.frgment;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,23 +12,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,17 +33,22 @@ import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
+import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
-import com.kloudsync.techexcel.help.ShowMyMeetingIdDialog;
-import com.kloudsync.techexcel.help.SpaceMemberOperationDialog;
+import com.kloudsync.techexcel.help.KloudPerssionManger;
+import com.kloudsync.techexcel.help.StartMeetingDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.school.SelectSchoolActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.tool.StringUtils;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
+import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.service.activity.MeetingPropertyActivity;
 import com.ub.service.activity.MeetingSearchResultsActivity;
@@ -63,9 +65,6 @@ import com.ub.techexcel.tools.EventSchoolPopup;
 import com.ub.techexcel.tools.JoinMeetingPopup;
 import com.ub.techexcel.tools.MeetingMoreOperationPopup;
 import com.ub.techexcel.tools.MenuEventPopup;
-import com.ub.techexcel.tools.ServiceInterfaceListener;
-import com.ub.techexcel.tools.ServiceInterfaceTools;
-import com.ub.techexcel.tools.ServiceTool;
 import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -76,20 +75,19 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.content.Context.MODE_PRIVATE;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
+
+
 public class ServiceFragment extends MyFragment implements View.OnClickListener {
     private boolean isPrepared = false;
-
     private ServiceAdapter2 serviceAdapter1;
     private ListView serviceListView1;
     private ServiceAdapter2 serviceAdapter2;
@@ -126,6 +124,9 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     private RelativeLayout search_layout;
     private ImageView switchCompanyImage;
 
+    private TextView tv_schedule_meeting,tv_start_meeting;
+    private SharedPreferences sharedPreferences;
+
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -149,7 +150,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
                                 @Override
                                 public void view() {
-                                    Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+                                    Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                                     intent.putExtra("userid", bean.getUserId());
                                     intent.putExtra("meetingId", bean.getId() + "");
                                     intent.putExtra("teacherid", bean.getTeacherId());
@@ -158,6 +159,18 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                                     intent.putExtra("isStartCourse", true);
                                     intent.putExtra("isPrepare", true);
                                     intent.putExtra("yinxiangmode", 1);
+
+                                    // --------
+                                    intent.putExtra("meeting_id", bean.getId() + "");
+                                    intent.putExtra("meeting_type", 2);
+                                    intent.putExtra("meeting_role", bean.getRoleinlesson());
+                                    try {
+                                        intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
+
+                                    } catch (Exception e) {
+
+                                    }
+
                                     startActivity(intent);
                                 }
 
@@ -205,7 +218,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
                                 @Override
                                 public void view() {
-                                    Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+                                    Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                                     intent.putExtra("userid", bean.getUserId());
                                     intent.putExtra("meetingId", bean.getId() + "");
                                     intent.putExtra("teacherid", bean.getTeacherId());
@@ -216,6 +229,17 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                                     intent.putExtra("filemeetingId", bean.getId() + "");
                                     intent.putExtra("isFinished", true);
                                     intent.putExtra("yinxiangmode", 1);
+
+                                    // --------
+                                    intent.putExtra("meeting_id", bean.getId() + "");
+                                    intent.putExtra("meeting_type", 2);
+                                    intent.putExtra("meeting_role", bean.getRoleinlesson());
+                                    try {
+                                        intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
+
+                                    } catch (Exception e) {
+
+                                    }
                                     startActivity(intent);
                                 }
 
@@ -383,6 +407,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
+        sharedPreferences = getActivity().getSharedPreferences(AppConfig.LOGININFO,
+                MODE_PRIVATE);
     }
 
 
@@ -429,6 +455,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
     @Override
     protected void lazyLoad() {
+        setBindViewText();
         if (isPrepared && isVisible) {
 
         }
@@ -438,6 +465,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     @Override
     public void onResume() {
         super.onResume();
+        setBindViewText();
+
         if (AppConfig.newlesson) {  //新建课程刷新
             AppConfig.newlesson = false;
         }
@@ -472,13 +501,15 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         lp.leftMargin = width / 4;
         inprogressunderline.setLayoutParams(lp);
 
+        tv_start_meeting = (TextView) view.findViewById(R.id.tv_start_meeting);
+        tv_schedule_meeting = (TextView) view.findViewById(R.id.tv_schedule_meeting);
+
         upcoming = (TextView) view.findViewById(R.id.upcoming);
         upcoming.setOnClickListener(this);
         pastdue = (TextView) view.findViewById(R.id.pastdue);
         pastdue.setOnClickListener(this);
         finished = (TextView) view.findViewById(R.id.finished);
         finished.setOnClickListener(this);
-
 
         changeschool = (ImageView) view.findViewById(R.id.changeschool);
         changeschool.setOnClickListener(this);
@@ -595,8 +626,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
     }
 
-    private ShowMyMeetingIdDialog showMyMeetingIdDialog;
-    private JoinMeetingPopup joinMeetingPopup;
+    private StartMeetingDialog startMeetingDialog;
+    private JoinMeetingPopup joinMeetingDialog;
 
     @Override
     public void onClick(View view) {
@@ -648,41 +679,12 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 startActivity(searchIntnt);
                 break;
             case R.id.lin_myroom:
-                if (showMyMeetingIdDialog == null) {
-                    showMyMeetingIdDialog = new ShowMyMeetingIdDialog(getActivity(), AppConfig.ClassRoomID.replaceAll("-", ""));
-                    showMyMeetingIdDialog.setOptionsLinstener(new ShowMyMeetingIdDialog.InviteOptionsLinstener() {
-                        @Override
-                        public void enter() {
-                            if (!Tools.isFastClick()) {
-                                if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
-                                    Toast.makeText(getActivity(), "你加入的课堂不存在!", Toast.LENGTH_LONG).show();
-                                } else {
-//                                    getClassRoomLessonID(AppConfig.ClassRoomID);
-                                    doStartMeeting(AppConfig.ClassRoomID);
-                                }
-                            }
-                        }
-                    });
-                }
-                showMyMeetingIdDialog.show();
+
+                startMeetingBeforeCheckPession();
                 break;
-            case R.id.lin_join: // join meeting
-                if (joinMeetingPopup == null) {
-                    joinMeetingPopup = new JoinMeetingPopup();
-                    joinMeetingPopup.getPopwindow(getActivity());
-                    joinMeetingPopup.setFavoritePoPListener(new JoinMeetingPopup.FavoritePoPListener() {
-                        @Override
-                        public void dismiss() {
-
-                        }
-
-                        @Override
-                        public void open() {
-
-                        }
-                    });
-                }
-                joinMeetingPopup.StartPop(lin_schedule);
+            case R.id.lin_join:
+                // join meeting
+                joinMeetingBeforeCheckPession();
                 break;
             case R.id.lin_schedule:
                 Intent schintent = new Intent(getActivity(), NewMeetingActivity.class);
@@ -820,7 +822,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void joinMeeting(EventJoinMeeting eventJoinMeeting) {
-        Log.e("check_event_join_meeting","eventJoinMeeting:" + eventJoinMeeting);
+        Log.e("check_event_join_meeting", "eventJoinMeeting:" + eventJoinMeeting);
         if (eventJoinMeeting.getLessionId() <= 0) {
             Toast.makeText(getActivity(), "加入的meeting不存在或没有开始", Toast.LENGTH_SHORT).show();
             return;
@@ -833,8 +835,190 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         intent.putExtra("meeting_type", 0);
         intent.putExtra("lession_id", eventJoinMeeting.getLessionId());
         intent.putExtra("meeting_role", eventJoinMeeting.getRole());
-//        intent.putExtra("meeting_role", 3);
+        //intent.putExtra("meeting_role", 3);
         intent.putExtra("from_meeting", true);
         startActivity(intent);
+    }
+
+    private void joinMeetingBeforeCheckPession() {
+        if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
+            showJoinMeetingDialog();
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING);
+        }
+    }
+
+    private void startMeetingBeforeCheckPession() {
+        if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
+            showStartMeetingDialog();
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING);
+        }
+    }
+
+    private void showJoinMeetingDialog() {
+        if (joinMeetingDialog != null) {
+            if (joinMeetingDialog.isShowing()) {
+                joinMeetingDialog.dismiss();
+            }
+            joinMeetingDialog = null;
+        }
+
+        joinMeetingDialog = new JoinMeetingPopup();
+        joinMeetingDialog.getPopwindow(getActivity());
+        joinMeetingDialog.setFavoritePoPListener(new JoinMeetingPopup.FavoritePoPListener() {
+            @Override
+            public void dismiss() {
+
+            }
+
+            @Override
+            public void open() {
+
+            }
+        });
+        joinMeetingDialog.show();
+    }
+
+    private void showStartMeetingDialog() {
+        if (startMeetingDialog != null) {
+            if (startMeetingDialog.isShowing()) {
+                startMeetingDialog.dismiss();
+                startMeetingDialog = null;
+            }
+        }
+        if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
+            AppConfig.ClassRoomID = sharedPreferences.getString("MeetingId", "");
+        }
+        if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
+            Toast.makeText(getActivity(), "你还没有设置会议ID!", Toast.LENGTH_LONG).show();
+
+            return;
+        }
+        startMeetingDialog = new StartMeetingDialog(getActivity(), AppConfig.ClassRoomID.replaceAll("-", ""));
+        startMeetingDialog.setOptionsLinstener(new StartMeetingDialog.InviteOptionsLinstener() {
+            @Override
+            public void enter() {
+                if (!Tools.isFastClick()) {
+                    if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
+                        Toast.makeText(getActivity(), "你加入的课堂不存在!", Toast.LENGTH_LONG).show();
+                    } else {
+//                                    getClassRoomLessonID(AppConfig.ClassRoomID);
+                        doStartMeeting(AppConfig.ClassRoomID);
+                    }
+                }
+            }
+        });
+        startMeetingDialog.show();
+    }
+
+
+    @Subscribe
+    public void eventJoinMeetingAfterPerssionGranted(EventCameraAndStoragePermissionForJoinMeetingGranted joinMeetingGranted) {
+        showJoinMeetingDialog();
+    }
+
+    @Subscribe
+    public void eventStartMeetingAfterPerssionGranted(EventCameraAndStoragePermissionForStartMeetingGranted startMeetingGranted) {
+        showStartMeetingDialog();
+    }
+
+    private void UpdateClassRoomID(final String classRoomId) {
+
+        String regex = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{3,12}$";
+
+        if(TextUtils.isEmpty(classRoomId)){
+            Toast.makeText(getActivity(),"会议id不能是空",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if((classRoomId.length() < 3)){
+            Toast.makeText(getActivity(),"会议id的长度需要大于等于3",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(!StringUtils.hasChar(classRoomId)){
+            Toast.makeText(getActivity(),"会议id至少包含一个字母",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject js = new JSONObject();
+                    js.put("classroomID", classRoomId);
+                    JSONObject jsonObject = com.ub.techexcel.service.ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/UpdateClassRoomID?classRoomID=" + classRoomId, js);
+                    Log.e("getClassRoomLessonID2", jsonObject.toString()); //{"RetCode":0,"ErrorMessage":null,"DetailMessage":null,"RetData":2477}
+                    int retCode = jsonObject.getInt("RetCode");
+                    Message msg = Message.obtain();
+                    msg.what = 0x1006;
+                    msg.obj = retCode;
+                    handler.sendMessage(msg);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+
+    }
+
+    private void getRoomID() {
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = com.ub.techexcel.service.ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomID");
+                    Log.e("getClassRoomLessonID2", jsonObject.toString()); //{"RetCode":0,"ErrorMessage":null,"DetailMessage":null,"RetData":2477}
+                    int retCode = jsonObject.getInt("RetCode");
+                    switch (retCode) {
+                        case 0:
+                            String retdate = jsonObject.getString("RetData");
+                            Message msg = Message.obtain();
+                            msg.what = 0x1007;
+                            msg.obj = retdate;
+                            handler.sendMessage(msg);
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
+    private String getBindViewText(int fileId){
+        String appBindName="";
+        int language = sharedPreferences.getInt("language",1);
+        if(language==1&&App.appENNames!=null){
+            for(int i=0;i<App.appENNames.size();i++){
+                if(fileId==App.appENNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
+                    appBindName=App.appENNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }else if(language==2&&App.appCNNames!=null){
+            for(int i=0;i<App.appCNNames.size();i++){
+                if(fileId==App.appCNNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
+                    appBindName=App.appCNNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }
+        return appBindName;
+    }
+    private void setBindViewText(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String startMeet=getBindViewText(1014);
+                tv_start_meeting.setText(TextUtils.isEmpty(startMeet)? getString(R.string.MyKlassroom):startMeet);
+                String scheduleMeet=getBindViewText(1013);
+                tv_schedule_meeting.setText(TextUtils.isEmpty(scheduleMeet)? getString(R.string.schMeeting):scheduleMeet);
+            }
+        },500);
     }
 }

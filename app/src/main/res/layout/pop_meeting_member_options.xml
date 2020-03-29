@@ -9,33 +9,68 @@
     app:arrowLocation="top"
     app:arrowPosition="130dp"
     app:arrowWidth="16dp"
-
     app:bubbleColor="@color/divider_line">
-    <View
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="22dp"/>
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="22dp"/>
 
-    <TextView
-        android:id="@+id/txt_setting_presenter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:paddingLeft="6dp"
-        android:textColor="#999999"
-        android:layout_marginBottom="10dp"
-        android:text="设置为主持人"
-        android:textSize="14sp" />
+            <TextView
+                android:id="@+id/txt_setting_presenter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:paddingLeft="6dp"
+                android:textColor="#999999"
+                android:layout_marginBottom="10dp"
+                android:text="@string/set_as_host"
+                android:textSize="14sp" />
 
-    <TextView
-        android:id="@+id/txt_setting_auditor"
-        android:layout_marginBottom="14dp"
-        android:textColor="#999999"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:gravity="center_vertical"
-        android:paddingLeft="6dp"
-        android:text="设置为旁听者"
-        android:textSize="14sp" />
+            <TextView
+                android:id="@+id/txt_setting_auditor"
+                android:layout_marginBottom="14dp"
+                android:textColor="#999999"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:gravity="center_vertical"
+                android:paddingLeft="6dp"
+                android:text="@string/set_as_participant"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/txt_setting_speak_member"
+                android:layout_marginBottom="14dp"
+                android:textColor="#999999"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:gravity="center_vertical"
+                android:paddingLeft="6dp"
+                android:text="@string/set_as_talkable_participant"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/txt_kick_off"
+                android:layout_marginBottom="14dp"
+                android:textColor="#999999"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:gravity="center_vertical"
+                android:paddingLeft="6dp"
+                android:text="@string/kick_off_from_meeting"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </ScrollView>
+
+
+
 
 </com.kloudsync.techexcel.view.BubbleLinearLayout>

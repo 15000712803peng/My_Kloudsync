@@ -29,7 +29,7 @@
             android:layout_marginTop="25dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="没有可选会议"
+            android:text="@string/no_meetings_available"
             android:textColor="#ffa2a2a2"
             android:textSize="14sp"
             />

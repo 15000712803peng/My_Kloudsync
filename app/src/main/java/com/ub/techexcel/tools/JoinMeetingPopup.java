@@ -9,7 +9,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -115,11 +117,32 @@ public class JoinMeetingPopup implements View.OnClickListener {
         WindowManager.LayoutParams lp = mPopupWindow.getWindow().getAttributes();
         lp.width = mContext.getResources().getDisplayMetrics().widthPixels;
         mPopupWindow.getWindow().setAttributes(lp);
+        roomet.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String meetingId = roomet.getText().toString().trim();
+                if(!TextUtils.isEmpty(meetingId)){
+                    joinroom2.setBackgroundResource(R.drawable.do_join_bg);
+                }else {
+                    joinroom2.setBackgroundResource(R.drawable.join_bg);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
     }
 
     @SuppressLint("NewApi")
-    public void StartPop(View v) {
+    public void show() {
         defaultMeetingRoom = mContext.getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE).getString("join_meeting_room","");
         if(!TextUtils.isEmpty(defaultMeetingRoom)){
@@ -154,7 +177,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
             @Override
             public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
                 JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomLessonID?classRoomID=" + meetingRoom);
-                Log.e("GetClassRoomLessonID","meetingRoom:" + meetingRoom + ",result:" + result);
+                Log.e("do_join",AppConfig.URL_PUBLIC + "Lesson/GetClassRoomLessonID?classRoomID=" + meetingRoom + ",result:" + result);
                 if(result.has("RetCode")){
                     int retCode = result.getInt("RetCode");
                     if(retCode == 0){
@@ -171,9 +194,15 @@ public class JoinMeetingPopup implements View.OnClickListener {
             public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
                 if(joinMeeting.getLessionId() <= 0){
                     JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomTeacherID?classroomID=" + meetingRoom);
-                    Log.e("GetClassRoomTeacherID","meetingRoom:" + meetingRoom + ",result:" + result);
-                    int hostId = result.getInt("RetData");
-                    eventJoinMeeting.setHostId(hostId);
+                    Log.e("do_join",AppConfig.URL_PUBLIC + "Lesson/GetClassRoomTeacherID?classroomID=" + meetingRoom + ",result:" + result);
+                    if(result.has("RetCode")){
+                        int retCode = result.getInt("RetCode");
+                        if(retCode == 0){
+                            int hostId = result.getInt("RetData");
+                            eventJoinMeeting.setHostId(hostId);
+                        }
+                    }
+
                 }
             }
         }).doOnNext(new Consumer<EventJoinMeeting>() {
@@ -182,7 +211,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                 if(eventJoinMeeting.getHostId() > 0){
 //                    EventBus.getDefault().post(eventJoinMeeting);
                     JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/UpcomingLessonList?teacherID=" + eventJoinMeeting.getHostId());
-                    Log.e("UpcomingLessonList","hostID:" + eventJoinMeeting.getHostId() + ",result:" + result);
+                    Log.e("do_join",AppConfig.URL_PUBLIC + "Lesson/UpcomingLessonList?teacherID=" + eventJoinMeeting.getHostId() + ",result:" + result);
 
                     int retCode = result.getInt("RetCode");
                     if(retCode == 0){
@@ -229,7 +258,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         roomid = roomid.toUpperCase();
                         mContext.getSharedPreferences(AppConfig.LOGININFO,
                                 MODE_PRIVATE).edit().putString("join_meeting_room",roomid).commit();
-//                        mContext.startService()
+//                        mActivity.startService()
                         startWBService();
                         doJoin(roomid);
                     } else {

@@ -21,6 +21,11 @@ public class BottomMenuManager implements View.OnClickListener {
     PopBottomMenu bottomMenuPop;
     PopBottomMenu.BottomMenuOperationsListener bottomMenuOperationsListener;
     private MeetingConfig meetingConfig;
+    private boolean isShowMeetingRecordPlay;
+
+    public void setShowMeetingRecordPlay(boolean showMeetingRecordPlay) {
+        isShowMeetingRecordPlay = showMeetingRecordPlay;
+    }
 
     public void setBottomMenuOperationsListener(PopBottomMenu.BottomMenuOperationsListener bottomMenuOperationsListener) {
         this.bottomMenuOperationsListener = bottomMenuOperationsListener;

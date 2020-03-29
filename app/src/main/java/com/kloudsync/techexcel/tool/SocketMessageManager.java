@@ -6,23 +6,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 
-import com.kloudsync.techexcel.R;
+import com.google.gson.Gson;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.bean.MeetingType;
-import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.VedioData;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.bean.Note;
-import com.ub.techexcel.tools.ServiceInterfaceListener;
-import com.ub.techexcel.tools.ServiceInterfaceTools;
-import com.ub.techexcel.tools.SpliteSocket;
+import com.ub.techexcel.bean.SendWebScoketNoteBean;
 import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -53,6 +49,7 @@ public class SocketMessageManager {
     public static final String MESSAGE_AGORA_STATUS_CHANGE = "AGORA_STATUS_CHANGE";
     public static final String MESSAGE_MEMBER_LIST_CHANGE = "MEMBER_LIST_CHANGE";
     public static final String MESSAGE_NOTE_DATA = "NOTE_DATA";
+    public static final String MESSAGE_OPEN_OR_CLOSE_NOTE = "OPEN_OR_CLOSE_NOTE";
     public static final String MESSAGE_NOTE_CHANGE = "NOTE_CHANGE";
     public static final String MESSAGE_NOTE_P1_CREATEAD = "NOTE_ITEM_4_P1_CREATED";
     public static final String MESSAGE_HELLO = "HELLO";
@@ -164,6 +161,10 @@ public class SocketMessageManager {
      */
     public void sendMessage_UpdateAttchment(MeetingConfig meetingConfig) {
         JSONObject message = new JSONObject();
+        if(meetingConfig.getDocument() == null){
+            return;
+        }
+
         try {
             message.put("sessionId", AppConfig.UserToken);
             if (meetingConfig.getType() == MeetingType.MEETING) {
@@ -295,6 +296,7 @@ public class SocketMessageManager {
             message.put("meetingId", config.getMeetingId());
             message.put("lessonId", config.getLessionId());
             message.put("status", 1);
+            Log.e("startRecording",message.toString());
 //                    message.put("followToLeave", 1);
             doSendMessage(message.toString());
         } catch (JSONException e) {
@@ -344,6 +346,7 @@ public class SocketMessageManager {
             message.put("microphoneStatus", member.isMuteAudio() ? 3 : 2);
             message.put("cameraStatus", member.isMuteVideo() ? 3 : 2);
             message.put("screenStatus", 0);
+            message.put("client","android");
             doSendMessage(message.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -351,7 +354,42 @@ public class SocketMessageManager {
 
     }
 
-    public void  sendMessage_audio_sync(MeetingConfig config, EventSoundSync eventSoundSync){
+    public void sendMessage_AgoraStatusChange(MeetingConfig config, boolean isMicroOn ,boolean isCameraOn) {
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "AGORA_STATUS_CHANGE");
+            message.put("sessionId", config.getUserToken());
+            message.put("agoraStatus", 1);
+            message.put("microphoneStatus", isMicroOn? 2 : 3);
+            message.put("cameraStatus", isCameraOn ? 2 : 3);
+            message.put("screenStatus", 0);
+            message.put("client","android");
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void sendMessage_recording_AgoraStatusChange(MeetingConfig config,boolean isMicroOn ,boolean isCameraOn) {
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "AGORA_STATUS_CHANGE");
+            message.put("sessionId", config.getUserToken());
+            message.put("agoraStatus", 1);
+            message.put("microphoneStatus", isMicroOn? 2 : 3);
+            message.put("cameraStatus", isCameraOn ? 2 : 3);
+            message.put("screenStatus", 0);
+
+            Log.e("startRecording",""+message.toString());
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public void sendMessage_audio_sync(MeetingConfig config, EventSoundSync eventSoundSync) {
         try {
             JSONObject message = new JSONObject();
             message.put("action", "AUDIO_SYNC");
@@ -362,10 +400,25 @@ public class SocketMessageManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
-
+    public void sendMessage_Soundtrack_Playing_Status(String soundtrackId, int status, long time) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("actionType", 23);
+            message.put("soundtrackId", soundtrackId);
+            message.put("stat", status); //1 开始播放  0 停止播放  2暂停播放 3继续播放
+            if (status == 4 || status == 5) {
+                //   4每隔1秒发播放进度
+                //   5 进度条拖动停止通知播放进度
+                message.put("time", time);
+            }
+            Log.e("sendMessage_Soundtrack_Playing_Status", message.toString());
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void sendMessage_InviteToMeeting(MeetingConfig config, String users) {
         try {
@@ -410,7 +463,7 @@ public class SocketMessageManager {
         }
     }
 
-    public void sendMessage_MuteStatus(int stat){
+    public void sendMessage_MuteStatus(int stat) {
         JSONObject message = new JSONObject();
         try {
             message.put("stat", stat);
@@ -422,6 +475,37 @@ public class SocketMessageManager {
         }
     }
 
+    public void sendMessage_KickMember(MeetingConfig meetingConfig,MeetingMember member){
+        JSONObject message = new JSONObject();
+        try {
+            message.put("actionType", 30);
+            message.put("meetingId", meetingConfig.getMeetingId());
+            message.put("userId", member.getUserId());
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 1, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", ""),member.getUserId()+""));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessage_myNoteData(String pageIdentiﬁer, int noteId, SendWebScoketNoteBean sendWebNoteData) {
+        String dataStr = Tools.getBase64(new Gson().toJson(sendWebNoteData));
+        Log.e("SocketMessageManage", "sendMessage_myNoteData_dataStr = " + dataStr);
+        doSendMessage(wrapperSendMessage(AppConfig.UserToken, pageIdentiﬁer, noteId, dataStr));
+    }
+
+    public void sendMessage_openOrCloseNote(String address, int noteId, String uuid) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("action", "OPEN_OR_CLOSE_NOTE");
+            message.put("sessionId", AppConfig.UserToken);
+            message.put("noteId", noteId);
+            message.put("address", address);
+            message.put("strokeId", uuid);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        doSendMessage(message.toString());
+    }
 
     private WebSocketClient getClient() {
         socketClient = AppConfig.webSocketClient;
@@ -429,15 +513,22 @@ public class SocketMessageManager {
     }
 
     private void doSendMessage(String message) {
+        JSONObject finalMessage = null;
+        try {
+            finalMessage = new JSONObject(message);
+            finalMessage.put("client","android");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         if (getClient() != null) {
             try {
-                getClient().send(message);
-                Log.e("doSendMessage", "send:" + message);
+                getClient().send(finalMessage.toString());
+                Log.e("doSendMessage", "send:" + finalMessage);
             } catch (Exception exception) {
                 Log.e("doSendMessage", "send_exception:" + exception.getMessage());
             }
         } else {
-            sendMessageAgain(message);
+            sendMessageAgain(finalMessage.toString());
             Log.e("doSendMessage", "send_exception,client_is_null");
         }
     }
@@ -446,7 +537,7 @@ public class SocketMessageManager {
         Observable.just("send_again").delay(1000, TimeUnit.MILLISECONDS).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                if(getClient() != null){
+                if (getClient() != null) {
                     try {
                         getClient().send(message);
                     } catch (Exception exception) {
@@ -470,6 +561,37 @@ public class SocketMessageManager {
             e.printStackTrace();
         }
 
+        return message.toString();
+
+    }
+
+    private String wrapperSendMessage(String sessionId, String pageIdentiﬁer, int noteId, String data) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("action", "NOTE_DATA");
+            message.put("sessionId", sessionId);
+            message.put("pageIdentiﬁer", pageIdentiﬁer);
+            message.put("noteId", noteId);
+            message.put("data", data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return message.toString();
+
+    }
+
+    private String wrapperSendMessage(String sessionId, int type, String data,String userList) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("action", "SEND_MESSAGE");
+            message.put("sessionId", sessionId);
+            message.put("type", type);
+            message.put("userList", userList);
+            message.put("data", data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return message.toString();
 
     }

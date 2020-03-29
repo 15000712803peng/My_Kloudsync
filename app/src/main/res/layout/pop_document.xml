@@ -57,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:drawablePadding="5dp"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/sp_17"
                     android:gravity="center"
                     android:layout_marginLeft="8dp"
                     android:text="@string/share"
@@ -82,13 +82,13 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="18dp"
-                    android:src="@drawable/move" />
+                    android:src="@drawable/doc_ppw_move_icon" />
 
                 <TextView
                     android:id="@+id/tv_move"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/sp_17"
                     android:drawablePadding="5dp"
                     android:layout_gravity="center_vertical"
                     android:gravity="center"
@@ -116,7 +116,7 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="18dp"
-                    android:src="@drawable/rename" />
+                    android:src="@drawable/doc_ppw_rename_icon" />
 
                 <TextView
                     android:id="@+id/tv_edit"
@@ -124,7 +124,7 @@
                     android:layout_height="wrap_content"
                     android:drawablePadding="5dp"
                     android:gravity="center"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/sp_17"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="8dp"
                     android:text="@string/rename"
@@ -161,9 +161,9 @@
                     android:layout_gravity="center_vertical"
                     android:gravity="center"
                     android:layout_marginLeft="8dp"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/sp_17"
                     android:text="@string/Delete"
-                    android:textColor="@color/red2" />
+                    android:textColor="@color/colorFont33" />
             </LinearLayout>
         </LinearLayout>
 

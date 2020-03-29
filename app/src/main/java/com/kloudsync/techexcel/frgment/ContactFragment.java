@@ -31,7 +31,9 @@ import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.ContactAdapter;
 import com.kloudsync.techexcel.adapter.FriendContactAdapter;
+import com.kloudsync.techexcel.bean.ContactDetailData;
 import com.kloudsync.techexcel.bean.EventFilterContact;
+import com.kloudsync.techexcel.bean.EventRefreshContact;
 import com.kloudsync.techexcel.bean.EventSearchContact;
 import com.kloudsync.techexcel.bean.FriendContact;
 import com.kloudsync.techexcel.bean.MeetingMember;
@@ -48,6 +50,7 @@ import com.kloudsync.techexcel.help.SideBar;
 import com.kloudsync.techexcel.help.SideBar.OnTouchingLetterChangedListener;
 import com.kloudsync.techexcel.help.SideBarSortHelp;
 import com.kloudsync.techexcel.info.Customer;
+import com.kloudsync.techexcel.pc.ui.ContactDetailActivity;
 import com.kloudsync.techexcel.search.ui.ContactSearchActivity;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.view.ClearEditText;
@@ -120,6 +123,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
             if (null != parent) {
                 parent.removeView(view);
             }
+
         } else {
             view = inflater.inflate(R.layout.contact_fragment, container, false);
             initView();
@@ -153,8 +157,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
         list.setAdapter(cAdapter);
         list.setOnItemClickListener(new MyOnitem());
         filterImage.setOnClickListener(this);
-        showContactByType(sharedPreferences.getInt("contact_type",1));
-
+        showContactByType(sharedPreferences.getInt("contact_type",0));
     }
 
     private View initHeader() {
@@ -191,6 +194,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
                 sum++;
             }
         }
+
         tv_ns.setText(sum + "");
         tv_ns.setVisibility(sum == 0 ? View.GONE : View.VISIBLE);
     }
@@ -263,31 +267,34 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
-
             if(adapter == null){
                 return;
             }
+
             if(adapter.getItem(position) instanceof FriendContact){
-                FriendContact friendContact = (FriendContact) adapter.getItem(position);
-                AppConfig.Name = friendContact.getUserName();
-                RongIM.getInstance().startPrivateChat(getActivity(),
-                        friendContact.getRongCloudId()+"", friendContact.getUserName());
+                final FriendContact friendContact = (FriendContact) adapter.getItem(position);
+//                AppConfig.Name = friendContact.getUserName();
+//                RongIM.getInstance().startPrivateChat(getActivity(),
+//                        friendContact.getRongCloudId()+"", friendContact.getUserName());
+                Observable.just("Request_Detail").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
+                    @Override
+                    public JSONObject apply(String s) throws Exception {
+                        return ServiceInterfaceTools.getinstance().syncGetContactDetail(AppConfig.SchoolID+"",friendContact.getUserId()+"");
+                    }
+                }).doOnNext(new Consumer<JSONObject>() {
+                    @Override
+                    public void accept(JSONObject jsonObject) throws Exception {
+                        if(jsonObject.has("code")){
+                            Intent intent = new Intent(getActivity(), ContactDetailActivity.class);
+                            intent.putExtra("contact_detail",jsonObject.getJSONObject("data").toString());
+                            intent.putExtra("friend_contact",new Gson().toJson(friendContact));
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    }
+                }).subscribe();
             }
-
-//            Customer cus = isCustomer ? cuslist.get(position - 1) : sclist
-//                    .get(position - 1);
-//            if (cus.isTeam()) {
-//            } else {
-//                if (cus.isEnableChat()) {
-//                    AppConfig.Name = cus.getName();
-//                    AppConfig.isUpdateDialogue = true;
-//                    RongIM.getInstance().startPrivateChat(getActivity(),
-//                            cus.getUBAOUserID(), cus.getName());
-//                }
-//            }
-
         }
-
     }
 
     protected class myOnClick implements OnClickListener {
@@ -467,7 +474,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
         Observable.just(type).observeOn(Schedulers.io()).map(new Function<Integer, List<SameLetterFriends>>() {
             @Override
             public List<SameLetterFriends> apply(Integer integer) throws Exception {
-                JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetFriendList(schoolId, type);
+                JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetFriendList(schoolId, 0);
                 if (jsonObject.has("code")) {
                     if (jsonObject.getInt("code") == 0) {
                         sharedPreferences.edit().putInt("contact_type",type).commit();
@@ -483,6 +490,7 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
                         }
                     }
                 }
+
                 return letterFriendsList;
             }
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<List<SameLetterFriends>>() {
@@ -494,13 +502,13 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
                 }else {
                     noContactText.setVisibility(View.GONE);
                 }
-                if(type == 0){
-                    filterImage.setImageResource(R.drawable.icon_filter);
-                    contactTitle.setText("联系人(公司)");
-                }else if(type == 1){
-                    filterImage.setImageResource(R.drawable.filter_red);
-                    contactTitle.setText("联系人(所有)");
-                }
+//                if(type == 0){
+//                    filterImage.setImageResource(R.drawable.icon_filter);
+//                    contactTitle.setText(getString(R.string.contract_company));
+//                }else if(type == 1){
+//                    filterImage.setImageResource(R.drawable.filter_red);
+//                    contactTitle.setText(getString(R.string.contract_all));
+//                }
 
                 adapter = new FriendContactAdapter(getActivity(), sameLetterFriends);
                 Log.e("check_contact", "set_adapter:" + sameLetterFriends.size());
@@ -530,6 +538,12 @@ public class ContactFragment extends Fragment implements ContactHelpInterface, O
 
         filterContactPop = new PopFilterContact(getActivity());
         filterContactPop.showAtBottom(view,sharedPreferences.getInt("contact_type",1));
+    }
+
+    @Subscribe
+    public void eventRefreshContact(EventRefreshContact eventRefreshContact){
+        showContactByType(sharedPreferences.getInt("contact_type",1));
+
     }
 
 }

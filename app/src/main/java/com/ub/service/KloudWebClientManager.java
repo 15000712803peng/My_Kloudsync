@@ -4,9 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
-
 import com.kloudsync.techexcel.tool.Md5Tool;
+import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 
 import org.json.JSONException;
@@ -76,7 +77,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
 
     private synchronized void reconnect() {
         if (this.uri != null) {
-            Log.e("KloundWebClientManager", "reconnect");
+	        Log.e("KloundWebClientManager", "reconnect");
             AppConfig.UserToken = context.getSharedPreferences(AppConfig.LOGININFO,
                     Context.MODE_PRIVATE).getString("UserToken", null);
             try {
@@ -102,52 +103,61 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
         }
     }
 
+
+
     @Override
     public synchronized void onReconnect() {
-        reconnect();
+	    reconnect();
+    }
+
+    private boolean isStartMeetingRecord = true;
+
+    public void startMeetingRecord(boolean b) {
+        isStartMeetingRecord = b;
     }
 
     class HeartBeatTask extends TimerTask {
         @Override
         public void run() {
 
-            Log.e("KloundWebClientManager", "send heart beat,thread:" + Thread.currentThread());
+	        Log.e("KloundWebClientManager", "send heart beat,thread:" + Thread.currentThread() + ",kloudWebClient:" + kloudWebClient);
             JSONObject heartBeatMessage = new JSONObject();
             try {
                 heartBeatMessage.put("action", "HELLO");
                 heartBeatMessage.put("sessionId", AppConfig.UserToken);
                 heartBeatMessage.put("changeNumber", 0);
 
-//                if (AppConfig.IsInMeeting) {
-//                    heartBeatMessage.put("status", AppConfig.status);
-//                    heartBeatMessage.put("currentLine", AppConfig.currentLine);
-//                    heartBeatMessage.put("currentMode", AppConfig.currentMode);
-//                    heartBeatMessage.put("currentPageNumber", AppConfig.currentPageNumber);
-//                    heartBeatMessage.put("currentItemId", AppConfig.currentDocId);
-//                }
                 MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
-                if (meetingConfig != null && meetingConfig.isInRealMeeting()) {
+	            Log.e("KloundWebClientManager", "meetingConfig:" + meetingConfig + "1");
+
+	            if (meetingConfig != null && meetingConfig.getType() == MeetingType.MEETING && meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER || meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
                     heartBeatMessage.put("status", "0");
                     heartBeatMessage.put("currentLine", 0);
                     heartBeatMessage.put("currentMode", "0");
-                    heartBeatMessage.put("currentPageNumber", meetingConfig.getPageNumber());
                     if (meetingConfig.getDocument() != null) {
                         heartBeatMessage.put("currentItemId", meetingConfig.getDocument().getItemID());
                     }
-
+                    heartBeatMessage.put("currentPageNumber", meetingConfig.getPageNumber());
+                    heartBeatMessage.put("agoraStatus", 1);
+                    heartBeatMessage.put("microphoneStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isMicroOn() ? 2 : 3);
+                    heartBeatMessage.put("cameraStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isCameraOn() ? 2 : 3);
+                    heartBeatMessage.put("screenStatus", 0);
                 }
+
+	            Log.e("KloundWebClientManager", "send heart beat message:" + heartBeatMessage.toString());
+
                 if (kloudWebClient != null) {
                     kloudWebClient.send(heartBeatMessage.toString());
-                    Log.e("KloundWebClientManager", "send heart beat message:" + heartBeatMessage.toString());
                 }
+
                 heartBeatStarted = true;
             } catch (JSONException e) {
+	            Log.e("KloundWebClientManager", "send heart beat message,exception:" + e);
+
                 e.printStackTrace();
             } catch (Exception e) {
 
-
             }
-
         }
     }
 
@@ -165,7 +175,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
     }
 
     public void release() {
-        if(instance != null){
+        if (instance != null) {
             if (heartBeatTimer != null && heartBeatTask != null) {
                 heartBeatStarted = false;
                 heartBeatTask.cancel();

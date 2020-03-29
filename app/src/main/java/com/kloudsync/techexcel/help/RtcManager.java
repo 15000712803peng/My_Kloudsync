@@ -65,6 +65,7 @@ public class RtcManager{
     }
 
     public void joinRtcChannle(String meetingId){
+
         worker().joinChannel(meetingId.toUpperCase(), Integer.parseInt(AppConfig.UserID));
     }
 

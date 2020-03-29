@@ -1,6 +1,7 @@
 package com.ub.techexcel.tools;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.Gravity;
@@ -13,7 +14,6 @@ import android.widget.PopupWindow;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.tool.PopupWindowUtil;
-import com.ub.techexcel.bean.SoundtrackBean;
 
 /**
  * Created by wang on 2017/9/18.
@@ -95,13 +95,24 @@ public class PopSoundtrackOperations implements View.OnClickListener {
     public void show(View v, SoundTrack soundTrack) {
         this.soundTrack = soundTrack;
         if (mPopupWindow != null) {
-            int windowPos[] = PopupWindowUtil.calculatePopWindowPos(v, view , 50);
-            int height = mContext.getResources().getDisplayMetrics().heightPixels;
-
-            Log.e("duang", height + ":" + windowPos[1]);
-            int xOff = 20; // 可以自己调整偏移
-            windowPos[0] -= xOff;
-            mPopupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+            int topLength=50;
+            if(Tools.isOrientationPortrait((Activity) mContext)){
+                topLength=1230;
+                int windowPos[] = PopupWindowUtil.calculatePopWindowPos2(v, view , topLength);
+                int height = mContext.getResources().getDisplayMetrics().heightPixels;
+                Log.e("duang", height + ":" + windowPos[1]+"  "+windowPos[0]);
+                int xOff = 20; // 可以自己调整偏移
+                windowPos[0] -= xOff;
+                mPopupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+            }else{
+                topLength=50;
+                int windowPos[] = PopupWindowUtil.calculatePopWindowPos(v, view , topLength);
+                int height = mContext.getResources().getDisplayMetrics().heightPixels;
+                Log.e("duang", height + ":" + windowPos[1]+"  "+windowPos[0]);
+                int xOff = 20; // 可以自己调整偏移
+                windowPos[0] -= xOff;
+                mPopupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+            }
         }
     }
 
@@ -136,7 +147,6 @@ public class PopSoundtrackOperations implements View.OnClickListener {
                     soundtrackOperationListener.playSoundTrack(soundTrack);
                 }
                 break;
-
             case R.id.sharemore:
                 dismiss();
                 if(soundtrackOperationListener != null){

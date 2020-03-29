@@ -64,7 +64,7 @@ public class ExitDialog extends Dialog implements DialogInterface.OnDismissListe
     public void show() {
         super.show();
         if(meetingConfig.getType() == MeetingType.MEETING){
-            saveAndLeaveText.setVisibility(View.GONE);
+            saveAndLeaveText.setVisibility(View.VISIBLE);
         }else {
             saveAndLeaveText.setVisibility(View.VISIBLE);
         }
@@ -114,6 +114,7 @@ public class ExitDialog extends Dialog implements DialogInterface.OnDismissListe
         DisplayMetrics d = context.getResources().getDisplayMetrics();
         lp.width = (int) (d.widthPixels * 0.8);
         dialogWindow.setAttributes(lp);
+
     }
 
 

@@ -283,6 +283,7 @@ public class BindTvCapture extends MipcaActivityCapture implements Callback, Tex
         if (jsonobject == null) {
             return;
         }
+
         new ApiTask(new Runnable() {
             @Override
             public void run() {

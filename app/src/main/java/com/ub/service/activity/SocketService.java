@@ -13,6 +13,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventOpenNote;
+import com.kloudsync.techexcel.bean.EventOpenOrCloseBluethoothNote;
 import com.kloudsync.techexcel.bean.FollowInfo;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.plugin.SingleCallActivity2;
@@ -23,14 +25,12 @@ import com.ub.techexcel.bean.NotifyBean;
 import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
-import org.java_websocket.client.WebSocketClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Timer;
 
 import io.rong.callkit.RongCallAction;
 import io.rong.callkit.RongVoIPIntent;
@@ -77,6 +77,7 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             //数字是随便写的“40”，
@@ -317,6 +318,23 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }else if(actionString.equals("OPEN_OR_CLOSE_NOTE")){
+
+            String d = getRetCodeByReturnData2("retData", msg);
+            try {
+                JSONObject data = new JSONObject(d);
+                EventOpenOrCloseBluethoothNote note = new EventOpenOrCloseBluethoothNote();
+                if(data.has("noteId")){
+                    note.setNoteId(data.getLong("noteId") +"");
+                }
+                if(data.has("status")){
+                    note.setStatus(data.getInt("status"));
+                }
+                EventBus.getDefault().post(note);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
 
 
@@ -351,8 +369,6 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
             }
             EventBus.getDefault().post(info);
         }
-
-
 
 
         Intent intent = new Intent();

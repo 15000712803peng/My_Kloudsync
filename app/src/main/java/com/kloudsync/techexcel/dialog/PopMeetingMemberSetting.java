@@ -12,8 +12,12 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventKickOffMember;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
+import com.kloudsync.techexcel.config.AppConfig;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by tonyan on 2019/12/20.
@@ -24,12 +28,13 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
     private Context context;
 
     private MeetingMember meetingMember;
-    private TextView setPresenter,setAuditor;
+    private TextView setPresenter,setAuditor,setSpeakMember,kickOffMember;
     private MeetingConfig meetingConfig;
 
     public interface OnMemberSettingChanged{
         void setPresenter(MeetingMember meetingMember);
         void setAuditor(MeetingMember meetingMember);
+        void setSpeakMember(MeetingMember meetingMember);
     }
 
     private OnMemberSettingChanged onMemberSettingChanged;
@@ -49,6 +54,10 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
         View view = inflater.inflate(R.layout.pop_meeting_member_options, null);
         setPresenter = view.findViewById(R.id.txt_setting_presenter);
         setAuditor = view.findViewById(R.id.txt_setting_auditor);
+        setSpeakMember = view.findViewById(R.id.txt_setting_speak_member);
+        kickOffMember = view.findViewById(R.id.txt_kick_off);
+        kickOffMember.setOnClickListener(this);
+        setSpeakMember.setOnClickListener(this);
         setPresenter.setOnClickListener(this);
         setAuditor.setOnClickListener(this);
         setContentView(view);
@@ -74,6 +83,18 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
         if(meetingMember.getPresenter() == 1 || meetingMember.getRole() == 2){
             setAuditor.setVisibility(View.GONE);
         }
+        if(meetingConfig.getMeetingHostId().equals(meetingMember.getUserId()+"")){
+            // 操作的成员是HOST
+            kickOffMember.setVisibility(View.GONE);
+        }else {
+            // 不是HOST，如果自己是HOST
+            if(AppConfig.UserID.equals(meetingConfig.getMeetingHostId())){
+                kickOffMember.setVisibility(View.VISIBLE);
+            }else {
+                kickOffMember.setVisibility(View.GONE);
+            }
+        }
+
         showAsDropDown(view, -context.getResources().getDimensionPixelOffset(R.dimen.meeting_members_setting_width) + context.getResources().getDimensionPixelOffset(R.dimen.pop_setting_left_margin), 10);
     }
 
@@ -82,15 +103,30 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.txt_setting_presenter:
+            case R.id.txt_setting_presenter://设置为主持人
                 if(meetingMember != null && onMemberSettingChanged != null){
                     onMemberSettingChanged.setPresenter(meetingMember);
                 }
                 dismiss();
                 break;
-            case R.id.txt_setting_auditor:
+            case R.id.txt_setting_auditor://设置为参会者
                 if(meetingMember != null && onMemberSettingChanged != null){
                     onMemberSettingChanged.setAuditor(meetingMember);
+                }
+                dismiss();
+                break;
+            case R.id.txt_setting_speak_member://设置为可讲话参会者
+                if(meetingMember != null && onMemberSettingChanged != null){
+                    onMemberSettingChanged.setSpeakMember(meetingMember);
+                }
+                dismiss();
+                break;
+            case R.id.txt_kick_off:
+                if(meetingMember != null){
+                    Log.e("check_post_kick_off","post_4");
+                    EventKickOffMember kickOffMember = new EventKickOffMember();
+                    kickOffMember.setMeetingMember(meetingMember);
+                    EventBus.getDefault().post(kickOffMember);
                 }
                 dismiss();
                 break;

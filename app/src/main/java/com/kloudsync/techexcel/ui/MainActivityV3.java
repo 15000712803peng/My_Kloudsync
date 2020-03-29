@@ -40,6 +40,7 @@ import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.UploadFileDialog;
 import com.kloudsync.techexcel.dialog.message.CustomizeMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.FriendMessageItemProvider;
+import com.kloudsync.techexcel.dialog.message.HelloFriendMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.GroupMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.KnowledgeMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.SendFileMessageItemProvider;
@@ -228,7 +229,6 @@ public class MainActivityV3 extends FragmentActivity implements AddWxDocDialog.O
             addWxDocDialog.setSavedListener(this);
             addWxDocDialog.show();
         }
-
     }
 
     private void requestRongCloudOnlineStatus() {
@@ -509,6 +509,7 @@ public class MainActivityV3 extends FragmentActivity implements AddWxDocDialog.O
                 RongIM.registerMessageTemplate(new SendFileMessageItemProvider());
 //				RongIM.registerMessageTemplate(new CourseMessageItemProvider());
                 RongIM.registerMessageTemplate(new ShareMessageItemProvider());
+                RongIM.registerMessageTemplate(new HelloFriendMessageItemProvider());
 
 //                initDatas();
                 flag_dialog = true;

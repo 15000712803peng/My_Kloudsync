@@ -78,6 +78,7 @@ public abstract class BaseDocAndMeetingActivity extends FragmentActivity {
         EventBus.getDefault().register(this);
         showEnterLoading();
         initData();
+//        Toast.makeText(this,"on_create",Toast.LENGTH_SHORT).show();
         singleFullScreenImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,13 +151,10 @@ public abstract class BaseDocAndMeetingActivity extends FragmentActivity {
             singleMemberIcon.setVisibility(View.VISIBLE);
             singleVedioStatusImage.setImageResource(R.drawable.icon_command_webcam_disable);
 
-
         } else {
             singleMemberIcon.setVisibility(View.GONE);
             singleVedioStatusImage.setImageResource(R.drawable.icon_command_webcam_enable);
         }
-
-
     }
 
     protected final void stripSurfaceView(SurfaceView view) {

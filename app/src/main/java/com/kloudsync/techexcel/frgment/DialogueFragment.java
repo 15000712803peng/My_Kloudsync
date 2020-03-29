@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,16 +59,25 @@ import com.ub.service.activity.SelectCourseActivity;
 import com.ub.service.activity.SelectUserActivity;
 import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.techexcel.database.CustomerDao;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import io.rong.imkit.RongIM;
 import io.rong.imkit.fragment.ConversationListFragment;
 import io.rong.imlib.RongIMClient;
@@ -86,30 +96,22 @@ public class DialogueFragment extends Fragment {
     private ImageView img_add;
     private ImageView img_notice;
     private ViewPager main_viewpager;
-    //    private LinearLayout lin_search, lin_edit;
     private LinearLayout lin_myroom, lin_join, lin_schedule;
 
     private LinearLayout lin_none, lin_dialogue;
     private TextView tv_startdialogue;
-    //    private TextView tv_cancel;
-    private TextView tv_diatitle, tv_top_session, tv_remove;
     private TextView tv_ns;
-    private TextView tv_title;
-
     private ClearEditText et_search;
     BroadcastReceiver broadcastReceiver;
     private DemoFragmentPagerAdapter mDemoFragmentPagerAdapter;
-    private Fragment mConversationFragment = null;
     private String token = "LCuYg9Cds4RQB7yS+b8nJwHY8MlAjQf10nKLvC5zk6pMO6dfl9RoZ25B3oq+lbkyozCkup6m611eJcXgtBhBdg==";
-    private String SelectId;
-    private ConversationType Select_c;
     private List<Friend> userIdList;
     private boolean isFirst = true;
     private boolean isFragmentVisible = true;
     private boolean isToTop = true;
     private InputMethodManager inputManager;
 
-    List<Conversation> list;
+    List<Conversation> list = new ArrayList<>();
 
     public PopupWindow mPopupWindow;
 
@@ -147,14 +149,6 @@ public class DialogueFragment extends Fragment {
         }
         GetDMInfo();
         GetCourseBroad();
-//        if (null != view) {
-//            ViewGroup parent = (ViewGroup) view.getParent();
-//            if (null != parent) {
-//                parent.removeView(view);
-//            }
-//        } else {
-//
-//        }
         isFirst = false;
 
         return view;
@@ -176,7 +170,6 @@ public class DialogueFragment extends Fragment {
         tv_startdialogue = (TextView) view.findViewById(R.id.tv_startdialogue);
 //        tv_cancel = (TextView) view.findViewById(R.id.tv_cancel);
         tv_ns = (TextView) view.findViewById(R.id.tv_ns);
-        tv_title = (TextView) view.findViewById(R.id.tv_title);
         et_search = (ClearEditText) view.findViewById(R.id.et_search);
         main_viewpager = (ViewPager) view.findViewById(R.id.main_viewpager);
 //        img_notice = (ImageView) view.findViewById(R.id.img_notice);
@@ -229,14 +222,14 @@ public class DialogueFragment extends Fragment {
             @Override
             public void getMember(ArrayList<Customer> list) {
                 // TODO Auto-generated method stub
-//                clist.addAll(list);
-//                for (Customer c : clist) {
-//                    if (c.getUserID().equals(AppConfig.UserID)) {
-//                        customer = c;
-//                        break;
-//                    }
-//                }
-//                loginget.CustomerDetailRequest(getActivity(), AppConfig.UserID);
+                clist.addAll(list);
+                for (Customer c : clist) {
+                    if (c.getUserID().equals(AppConfig.UserID)) {
+                        customer = c;
+                        break;
+                    }
+                }
+                loginget.CustomerDetailRequest(getActivity(), AppConfig.UserID);
             }
 
             @Override
@@ -377,8 +370,8 @@ public class DialogueFragment extends Fragment {
         userIdList.add(new Friend("-1", "UBAO小博士",
                 "http://ub.servicewise.net.cn/SWiseWeb/UBAODoctor.png?" + new Random().nextInt(100)));
 
-        GetDialogueList();
-        SetMyDialogList();
+        getDialogueList();
+        setMyDialogList();
         getPopupWindowInstance();
 
         /**
@@ -389,97 +382,148 @@ public class DialogueFragment extends Fragment {
         initFunction();
     }
 
-    private void SetMyDialogList() {
-        SetUserProvider();
+    private void setMyDialogList() {
+        setUserProvider();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mDemoFragmentPagerAdapter = new DemoFragmentPagerAdapter(getActivity().getSupportFragmentManager());
-                Log.e("SetMyDialogList","set adapter");
+                Log.e("SetMyDialogList", "set adapter");
                 main_viewpager.setAdapter(mDemoFragmentPagerAdapter);
             }
-        },100);
+        }, 100);
 
 
     }
 
-
-    private void SetUserProvider() {
-        RongIM.setUserInfoProvider(new RongIM.UserInfoProvider() {
-            @Override
-            public UserInfo getUserInfo(String userId) {
-                Log.e("DialogueFragment", "getUserInfo called");
-                for (Friend i : userIdList) {
-                    if (i.getUserId().equals(userId)) {
-                        return new UserInfo(i.getUserId(), i.getUserName(), Uri.parse(i
-                                .getPortraitUri()));
+    private void setUserProvider() {
+        if (list != null && list.size() > 0) {
+            Log.e("check_dialog_list", "list_size:" + list.size());
+            Observable.just("load_user_list").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
+                @Override
+                public JSONObject apply(String s) throws Exception {
+                    String ids = "";
+                    for (Conversation conversation : list) {
+                        ids += conversation.getTargetId() +",";
                     }
-                }
-                for (int j = 0; j < clist.size(); j++) {
-                    Customer cus = clist.get(j);
-                    if (cus.getUBAOUserID().equals(userId)) {
-                        Uri uri = null;
-                        if (cus.getUrl() != null) {
-                            uri = Uri.parse(cus.getUrl());
-                        }
-                        return new UserInfo(cus.getUBAOUserID(), cus
-                                .getName(), uri);
+                    if(ids.endsWith(",")){
+                        ids = ids.substring(0,ids.length() - 1);
                     }
+                    return ServiceInterfaceTools.getinstance().syncGetUserListBasicInfoByRongCloud(ids);
                 }
-//                if (userId.equals(customer.get())) {
-//                    Uri uri = null;
-//                    if (customer.getUrl() != null) {
-//                        uri = Uri.parse(customer.getUrl());
-//                    }
-//                    return new UserInfo(customer.getUBAOUserID(), customer
-//                            .getName(), uri);
-//                }
-                if (userId.equals(AppConfig.DEVICE_ID + AppConfig.RongUserID)) {
-                    Uri uri = null;
-                    return new UserInfo(AppConfig.DEVICE_ID + AppConfig.RongUserID, AppConfig.RobotName, uri);
-                }
-
-                for (int j = 0; j < customers.size(); j++) {
-                    Customer cus = customers.get(j);
-                    if (cus.getUBAOUserID().equals(userId)) {
-                        if (cus.getUBAOUserID() != null) {
-                            Uri uri = null;
-                            if (cus.getUrl() != null) {
-                                uri = Uri.parse(cus.getUrl());
+            }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
+                @Override
+                public void accept(JSONObject jsonObject) throws Exception {
+                    if (jsonObject.has("RetCode")) {
+                        if (jsonObject.getInt("RetCode") == 0) {
+                            JSONArray array = jsonObject.getJSONArray("RetData");
+                            if(array != null && array.length() > 0){
+                                for (Conversation conversation : list) {
+                                    for(int i = 0 ; i < array.length();++i){
+                                        final JSONObject obj = array.getJSONObject(i);
+                                        final String cloudId = obj.getLong("RongCloudID") +"";
+                                        Log.e("check_provider","cloudId:" + cloudId + ",targetId:" + conversation.getTargetId());
+                                        if(cloudId.equals(conversation.getTargetId())){
+                                            Log.e("check_provider","set_provider");
+                                            String avatarUlr = obj.getString("AvatarUrl");
+                                            if(TextUtils.isEmpty(avatarUlr)){
+                                                avatarUlr = "";
+                                            }
+                                            RongIM.getInstance().refreshUserInfoCache(new UserInfo(cloudId,obj.getString("UserName"),Uri.parse(avatarUlr)));
+                                            break;
+                                        }
+                                    }
+                                }
                             }
 
-                            return new UserInfo(cus.getUBAOUserID(), cus
-                                    .getName(), uri);
+
+                        }
+
+                    }
+
+
+                }
+            }).subscribe();
+
+
+//            RongIM.setUserInfoProvider(new RongIM.UserInfoProvider() {
+//                @Override
+//                public UserInfo getUserInfo(String userId) {
+//                    Log.e("DialogueFragment", "getUserInfo called");
+//                    for (Friend i : userIdList) {
+//                        if (i.getUserId().equals(userId)) {
+//                            return new UserInfo(i.getUserId(), i.getUserName(), Uri.parse(i
+//                                    .getPortraitUri()));
+//                        }
+//                    }
+//                    for (int j = 0; j < clist.size(); j++) {
+//                        Customer cus = clist.get(j);
+//                        if (cus.getUBAOUserID().equals(userId)) {
+//                            Uri uri = null;
+//                            if (cus.getUrl() != null) {
+//                                uri = Uri.parse(cus.getUrl());
+//                            }
+//                            return new UserInfo(cus.getUBAOUserID(), cus
+//                                    .getName(), uri);
+//                        }
+//                    }
+////                if (userId.equals(customer.get())) {
+////                    Uri uri = null;
+////                    if (customer.getUrl() != null) {
+////                        uri = Uri.parse(customer.getUrl());
+////                    }
+////                    return new UserInfo(customer.getUBAOUserID(), customer
+////                            .getName(), uri);
+////                }
+//                    if (userId.equals(AppConfig.DEVICE_ID + AppConfig.RongUserID)) {
+//                        Uri uri = null;
+//                        return new UserInfo(AppConfig.DEVICE_ID + AppConfig.RongUserID, AppConfig.RobotName, uri);
+//                    }
+//
+//                    for (int j = 0; j < customers.size(); j++) {
+//                        Customer cus = customers.get(j);
+//                        if (cus.getUBAOUserID().equals(userId)) {
+//                            if (cus.getUBAOUserID() != null) {
+//                                Uri uri = null;
+//                                if (cus.getUrl() != null) {
+//                                    uri = Uri.parse(cus.getUrl());
+//                                }
+//
+//                                return new UserInfo(cus.getUBAOUserID(), cus
+//                                        .getName(), uri);
+//                            }
+//                        }
+//                    }
+//                    return null;
+//                }
+//
+//            }, true);
+
+            RongIM.setGroupInfoProvider(new RongIM.GroupInfoProvider() {
+
+                @Override
+                public Group getGroupInfo(String groupId) {
+                    for (int i = 0; i < gi_list.size(); i++) {
+                        GroupInfo gi = gi_list.get(i);
+                        if (gi.getGroupID().equals(groupId)) {
+                            String name = gi.getGroupName();
+                            if (null == name || name.length() < 1
+                                    || name.equals("null")) {
+                                name = gi.getGroupTempName();
+                            }
+
+                            Log.e("aaaaaa",
+                                    gi.getGroupID() + ":" + gi.getGroupName() + ":"
+                                            + gi.getGroupTempName() + ":" + name);
+                            return new Group(gi.getGroupID(), name + "", null);
                         }
                     }
+                    return null;
                 }
-                return null;
-            }
+            }, true);
 
-        }, true);
 
-        RongIM.setGroupInfoProvider(new RongIM.GroupInfoProvider() {
-
-            @Override
-            public Group getGroupInfo(String groupId) {
-                for (int i = 0; i < gi_list.size(); i++) {
-                    GroupInfo gi = gi_list.get(i);
-                    if (gi.getGroupID().equals(groupId)) {
-                        String name = gi.getGroupName();
-                        if (null == name || name.length() < 1
-                                || name.equals("null")) {
-                            name = gi.getGroupTempName();
-                        }
-                        Log.e("aaaaaa",
-                                gi.getGroupID() + ":" + gi.getGroupName() + ":"
-                                        + gi.getGroupTempName() + ":" + name);
-                        return new Group(gi.getGroupID(), name + "", null);
-                    }
-                }
-                return null;
-            }
-        }, true);
-
+        }
 
     }
 
@@ -499,11 +543,13 @@ public class DialogueFragment extends Fragment {
     }
 
 
-    private void GetDialogueList() {
+    private void getDialogueList() {
 //        VisibleGoneDialogue();
         list = RongIMClient.getInstance().getConversationList();
 
         if (list != null && list.size() > 0) {
+            Log.e("check_dialog_list", "list_size:" + list.size());
+
             customers = new ArrayList<Customer>();
             for (int i = 0; i < list.size(); i++) {
                 Conversation cc = list.get(i);
@@ -627,7 +673,7 @@ public class DialogueFragment extends Fragment {
 
     private void VisibleGoneDialogue() {
         list = RongIMClient.getInstance().getConversationList();
-        Log.e("Check_Thread","Thread:" + Thread.currentThread());
+        Log.e("Check_Thread", "Thread:" + Thread.currentThread());
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -857,7 +903,7 @@ public class DialogueFragment extends Fragment {
             public void getFriends(ArrayList<Customer> cus_list) {
                 // TODO Auto-generated method stub
                 customers.addAll(cus_list);
-                SetMyDialogList();
+                setMyDialogList();
             }
         });
         loginget.FriendsRequest(getActivity(), targetID);
@@ -1141,7 +1187,7 @@ public class DialogueFragment extends Fragment {
                     mPopupWindow.dismiss();
                     break;
                         /*case lin_addfriend:
-				CreateNewUM(2);
+                                CreateNewUM(2);
 				mPopupWindow.dismiss();
 				break;*/
 
@@ -1187,8 +1233,8 @@ public class DialogueFragment extends Fragment {
 //            }
 
             ConversationListFragment listFragment = new ConversationListFragment();
-	                        /*listFragment.setAdapter(new ConversationListAdapterEx(RongContext
-	                				.getInstance()));*/
+                                /*listFragment.setAdapter(new ConversationListAdapterEx(RongContext
+                                                        .getInstance()));*/
             Uri uri = Uri.parse("rong://" + getActivity().getApplicationInfo().packageName).buildUpon()
                     .appendPath("conversationlist")
                     .appendQueryParameter(ConversationType.PRIVATE.getName(), "false") //设置私聊会话是否聚合显示
@@ -1240,7 +1286,7 @@ public class DialogueFragment extends Fragment {
             initView();
             GetGroupInfo(AppConfig.UPDATEGROUP.getId());
         }
-			/*if(AppConfig.isDeletFRIEND){
+                        /*if(AppConfig.isDeletFRIEND){
 				RongIMClient.getInstance().removeConversation(ConversationType.PRIVATE, AppConfig.DELETEFRIEND_ID, new ResultCallback<Boolean>() {
 
 					@Override
@@ -1284,6 +1330,10 @@ public class DialogueFragment extends Fragment {
     public void goToSearch(EventSearchChat eventSearchChat) {
         Intent intent = new Intent(getActivity(), ChatSearchActivity.class);
         Bundle bundle = new Bundle();
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
         if (clist != null && clist.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 Conversation cc = list.get(i);

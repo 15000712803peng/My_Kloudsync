@@ -24,7 +24,6 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     private PopupWindow bottomMenuWindow;
     //--
     private ImageView menuIcon;
-
     private RelativeLayout menuClose;
     private RelativeLayout menuFile;
     private RelativeLayout menuStartMeeting;
@@ -35,8 +34,16 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     private RelativeLayout menuSync;
     private RelativeLayout menuSetting;
     private RelativeLayout menuShare;
+    private RelativeLayout menuPlayMeetingRecord;
+
     //----
     private MeetingConfig meetingConfig;
+    private boolean isShowMeetingRecordPlay;
+
+
+    public void setShowMeetingRecordPlay(boolean showMeetingRecordPlay) {
+        isShowMeetingRecordPlay = showMeetingRecordPlay;
+    }
 
     @Override
     public void onClick(View v) {
@@ -95,9 +102,18 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
 
             case R.id.bottom_menu_chat:
                 hide();
-                if(bottomMenuOperationsListener != null){
+                if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuChatClicked();
                 }
+                break;
+
+            case R.id.bottom_menu_play_meeting_record:
+                hide();
+                if (bottomMenuOperationsListener != null) {
+                    bottomMenuOperationsListener.menuPlayMeetingRecordClicked();
+                }
+                break;
+            default:
                 break;
         }
     }
@@ -116,9 +132,12 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
         void menuScanTvClicked();
 
         void menuMeetingMembersClicked();
+
         void menuChatClicked();
 
         void menuSyncClicked();
+
+        void menuPlayMeetingRecordClicked();
 
     }
 
@@ -164,6 +183,8 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
         menuSetting.setOnClickListener(this);
         menuShare = popupWindow.findViewById(R.id.bottom_menu_share);
         menuShare.setOnClickListener(this);
+        menuPlayMeetingRecord = popupWindow.findViewById(R.id.bottom_menu_play_meeting_record);
+        menuPlayMeetingRecord.setOnClickListener(this);
         width = (int) (mContext.getResources().getDisplayMetrics().widthPixels);
         bottomMenuWindow = new PopupWindow(popupWindow, LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, false);
@@ -179,6 +200,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     }
 
     private void initMenu(int meetingType) {
+
         switch (meetingType) {
             case MeetingType.DOC:
                 menuFile.setVisibility(View.VISIBLE);
@@ -202,10 +224,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 menuStartMeeting.setVisibility(View.GONE);
                 menuShare.setVisibility(View.GONE);
                 menuClose.setVisibility(View.GONE);
+                menuSetting.setVisibility(View.GONE);
                 //------
                 menuMember.setVisibility(View.VISIBLE);
                 menuChat.setVisibility(View.VISIBLE);
-                menuSetting.setVisibility(View.VISIBLE);
+
                 break;
             case MeetingType.SYNCBOOK:
                 break;
@@ -218,6 +241,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     public void show(ImageView menu, PopBottomMenu.BottomMenuOperationsListener bottomMenuOperationsListener) {
         this.menuIcon = menu;
         this.bottomMenuOperationsListener = bottomMenuOperationsListener;
+        if (isShowMeetingRecordPlay) {
+            menuPlayMeetingRecord.setVisibility(View.VISIBLE);
+        } else {
+            menuPlayMeetingRecord.setVisibility(View.GONE);
+        }
         bottomMenuWindow.showAtLocation(menu, Gravity.BOTTOM | Gravity.LEFT,
                 width - mContext.getResources().getDimensionPixelSize(R.dimen.fab_margin),
                 mContext.getResources().getDimensionPixelSize(R.dimen.menu_bottom_margin));

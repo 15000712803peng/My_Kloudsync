@@ -25,15 +25,21 @@ import com.amazonaws.event.ProgressListener;
 import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
 import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.AccessControlList;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.Popupdate;
 import com.kloudsync.techexcel.help.ThreadManager;
+import com.kloudsync.techexcel.help.UploadAudioPopupdate;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.ub.service.audiorecord.RecordEndListener;
 import com.ub.techexcel.bean.LineItem;
+import com.ub.techexcel.bean.SoundtrackBean;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -59,38 +65,36 @@ public class UploadAudioTool {
         return instance;
     }
 
-    Popupdate puo;
+    private  UploadAudioPopupdate uploadAudioPopupdate;
     private int soundtrackID;
     private int fieldId;
     private String fieldNewPath;
-private MeetingConfig meetingConfig;
+    private MeetingConfig meetingConfig;
+    private UploadAudioListener uploadAudioListener;
 
-    public void uploadAudio(File file, int soundtrackID, int fieldId, String fieldNewPath, final LinearLayout audiosyncll, MeetingConfig meetingConfig){
-        this.soundtrackID=soundtrackID;
-        this.fieldId=fieldId;
-        this.fieldNewPath=fieldNewPath;
+    public void uploadAudio(File file, SoundtrackBean soundtrackBean, UploadAudioPopupdate uploadAudioPopupdate, MeetingConfig meetingConfig, UploadAudioListener uploadAudioListener){
+        this.soundtrackID=soundtrackBean.getSoundtrackID();
+        this.fieldId=soundtrackBean.getFileId();
+        this.fieldNewPath=soundtrackBean.getPath();
         this.meetingConfig=meetingConfig;
-            final LineItem attachmentBean = new LineItem();
-            attachmentBean.setUrl(file.getAbsolutePath()); // 文件的路径
-            attachmentBean.setFileName(file.getName()); // 文件名
-
-            LoginGet lg = new LoginGet();
-            lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
-                @Override
-                public void getUD(Uploadao ud) {
-                    puo = new Popupdate();
-                    puo.getPopwindow(mContext, attachmentBean.getFileName());
-                    puo.StartPop(audiosyncll);
-                    if (1 == ud.getServiceProviderId()) {
-                        uploadWithTransferUtility(attachmentBean, ud);
-                    } else if (2 == ud.getServiceProviderId()) {
-                        initOSS(attachmentBean, ud);
-                    }
+        this.uploadAudioPopupdate=uploadAudioPopupdate;
+        this.uploadAudioListener=uploadAudioListener;
+        final LineItem attachmentBean = new LineItem();
+        attachmentBean.setUrl(file.getAbsolutePath()); // 文件的路径
+        attachmentBean.setFileName(file.getName()); // 文件名
+        LoginGet lg = new LoginGet();
+        lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
+            @Override
+            public void getUD(Uploadao ud) {
+                if (1 == ud.getServiceProviderId()) {
+                    uploadWithTransferUtility(attachmentBean, ud);
+                } else if (2 == ud.getServiceProviderId()) {
+                    initOSS(attachmentBean, ud);
                 }
-            });
-            lg.GetprepareUploading(mContext);
+            }
+        });
+        lg.GetprepareUploading(mContext);
     }
-
 
 
     public void uploadWithTransferUtility(final LineItem attachmentBean, final Uploadao ud) {
@@ -108,13 +112,15 @@ private MeetingConfig meetingConfig;
                 s3.setRegion(com.amazonaws.regions.Region.getRegion(ud.getRegionName()));
                 com.amazonaws.services.s3.model.PutObjectRequest request = new com.amazonaws.services.s3.model.PutObjectRequest(ud.getBucketName(), MD5Hash, mfile);
                 TransferManager tm = new TransferManager(s3);
+                request.setCannedAcl(CannedAccessControlList.PublicRead);
                 request.setGeneralProgressListener(new ProgressListener() {
                     @Override
                     public void progressChanged(final ProgressEvent progressEvent) {
+                        Log.e("syncing---", mfile.length()+"   "+progressEvent.getBytesTransferred());
                         ((Activity)mContext).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                puo.setProgress(mfile.length(), progressEvent.getBytesTransferred());
+                                uploadAudioPopupdate.setProgress(mfile.length(), progressEvent.getBytesTransferred());
                             }
                         });
                     }
@@ -125,7 +131,6 @@ private MeetingConfig meetingConfig;
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            puo.DissmissPop();
                             yinxiangUploadNewFile(ud);
                         }
                     });
@@ -170,9 +175,7 @@ private MeetingConfig meetingConfig;
         String path = attachmentBean.getUrl();
         mfile = new File(path);
         fileName = mfile.getName();
-
         MD5Hash = fieldNewPath + "/" + fileName;
-
         Log.e("syncing---", fileName + "   " + MD5Hash);
         String recordDirectory = Environment.getExternalStorageDirectory().getAbsolutePath() + "/oss_record/";
         File recordDir = new File(recordDirectory);
@@ -194,7 +197,7 @@ private MeetingConfig meetingConfig;
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        puo.setProgress(totalSize, currentSize);
+                        uploadAudioPopupdate.setProgress(totalSize, currentSize);
                     }
                 });
             }
@@ -206,7 +209,6 @@ private MeetingConfig meetingConfig;
                 ((Activity)mContext). runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        puo.DissmissPop();
                         yinxiangUploadNewFile(ud);
                     }
                 });
@@ -214,12 +216,7 @@ private MeetingConfig meetingConfig;
 
             @Override
             public void onFailure(ResumableUploadRequest request, ClientException clientExcepion, ServiceException serviceException) {
-                ((Activity)mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        puo.DissmissPop();
-                    }
-                });
+
             }
         });
 
@@ -227,11 +224,14 @@ private MeetingConfig meetingConfig;
 
 
     private void yinxiangUploadNewFile(final Uploadao ud) {
+        uploadAudioPopupdate.setCanChangTitle();
         ServiceInterfaceTools.getinstance().yinxiangUploadNewFile(AppConfig.URL_PUBLIC + "Soundtrack/UploadNewFile", ServiceInterfaceTools.YINXIANGUPLOADNEWFILE,
                 meetingConfig.getLessionId()+"", meetingConfig.getDocument().getAttachmentID()+"", fileName, fieldId, soundtrackID, ud, new ServiceInterfaceListener() {
                     @Override
                     public void getServiceReturnData(Object object) {
-                        Toast.makeText(mContext, "upload file success", Toast.LENGTH_LONG).show();
+                        uploadAudioListener.uploadAudioSuccess();
+                        Log.e("henshupng","sensor");
+//                        Tools.setSensor((Activity) mContext);
                         // 音想音频文件上传完了,如果没有调用这个方法,调用一下
                         ServiceInterfaceTools.getinstance().notifyUploaded(AppConfig.URL_LIVEDOC + "notifyUploaded", ServiceInterfaceTools.NOTIFYUPLOADED, ud, MD5Hash, new ServiceInterfaceListener() {
                             @Override

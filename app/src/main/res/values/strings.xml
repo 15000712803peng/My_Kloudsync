@@ -54,6 +54,8 @@
     <string name="Customer">Customer</string>
     <string name="Health_Consultant">好友</string>
     <string name="Phone">Phone</string>
+    <string name="Main_Phone">Phone</string>
+    <string name="UserName">UserName</string>
     <string name="Address">Address</string>
     <string name="See_Info">See Info</string>
     <string name="Fouce_point">Fouce_point：</string>
@@ -111,11 +113,12 @@
     <string name="Apply_To_Join">Apply To Join</string>
     <string name="Forget_Password">Forget Password</string>
     <string name="Login_Bottom">User License Agreement | Privacy Policy</string>
+    <string name="user_license_agreement">User License Agreement</string>
 
     <string name="Reset_Password">Reset Password</string>
     <string name="Send_CheckCode">Send code</string>
     <string name="Resend_CheckCode">Resend CheckCode</string>
-    <string name="Ensure_Reset">Ensure Reset</string>
+    <string name="confirm_reset">Confirm reset</string>
 
     <string name="Sign_Up_Close">暂未开发注册请登录我们的网站www.youbao99.com,进入“健康顾问入口”提交资料，我们将第一时间进行资料审核</string>
 
@@ -245,6 +248,7 @@
     <string name="Female">Female</string>
     <string name="Purchased_Courses">Purchased Courses</string>
     <string name="Gender">Gender</string>
+    <string name="Detail_birth">Date of birth</string>
 
     <string name="Head">Head</string>
     <string name="Password">Password</string>
@@ -331,18 +335,24 @@
 
     <string name="About">About</string>
     <string name="HelpCenter">Help center</string>
-    <string name="ShareKS">Share KloudSync</string>
+    <string name="ShareKS">Share Kloud</string>
 
     <string name="Submit">Submit</string>
+    <string name="Create">Create</string>
 
 
     <string name="Team">Current Team</string>
+    <string name="current_project">Current Project</string>
     <string name="Space">Spaces of Current Team</string>
+    <string name="current_project_folder">Folders in the current project</string>
     <string name="Create_Space">Create New Space</string>
+    <string name="create_folder">Create folder</string>
     <string name="Current_file">Documents of Current Team</string>
+    <string name="Current_doc">Documentation for the current project</string>
     <string name="Swtich_team">Switch Team</string>
     <string name="Swtich_space">Switch Space</string>
     <string name="Create_team">Create New Team</string>
+    <string name="create_project">Create New Project</string>
     <string name="autosync">AutoSync enables content be displayed on your TV devices</string>
     <string name="tvappname">TV APP Name</string>
     <string name="tvapplogintime">Login Time</string>
@@ -379,14 +389,18 @@
 
 
     <!--安排会议-->
-    <string name="schStart">Start date:</string>
-    <string name="schName">Name:</string>
-    <string name="schEnd">End date:</string>
-    <string name="schDuration">Duration:</string>
+    <string name="schStart">Start date</string>
+    <string name="start_time">Start time</string>
+    <string name="schName">Meeting theme</string>
+    <string name="schEnd">End date</string>
+    <string name="end_time">End time</string>
+    <string name="schDuration">Duration</string>
     <string name="schInvite">Invite attendees</string>
     <string name="schMeeting">Schedule Meeting</string>
     <string name="schnames">please select name</string>
     <string name="schdate">please select date</string>
+    <string name="schduration">please select duration</string>
+    <string name="invite_attendee">Invite attendee</string>
     <!--进入弹出窗口-->
     <string name="satOptions">Select Audio Tool Options</string>
     <string name="satSystem">System</string>
@@ -398,10 +412,10 @@
     <!--进入页面显示-->
     <string name="inAttendee">Invite attendee</string>
     <string name="cbPage">Create blank page</string>
-    <string name="shDocument">Share  document</string>
+    <string name="shDocument">Upload  document</string>
     <string name="shYcan">As host,you can</string>
     <string name="shAcan">As attendee,you can</string>
-    <string name="miProgress">MEETING IN PROGRESS</string>
+    <string name="miProgress">meeting in progress,</string>
     <!--右上侧按钮-->
     <string name="mtMore">More</string>
     <string name="saTv">Scan a TV</string>
@@ -459,12 +473,14 @@
     <string name="mtANAudio">+    Add an audio</string>
     <string name="mtVoice">Enable voice</string>
     <string name="mtAddFile">+ Add a recorded voice file</string>
-    <string name="mtIsound">Input sound name here</string>
+    <string name="mtIsound">Input sound name here...</string>
     <string name="mtYxName">Name</string>
     <string name="mtRNVoice">Record new voice</string>
     <string name="mtSyncRecord">Sync</string>
     <string name="mtCancel">Cancel</string>
     <string name="mtRecordSync">Record &#038; Sync</string>
+    <string name="syncname">Sync Name</string>
+    <string name="hidden">Hidden</string>
 
 
     <!--yinxiangoperatorpopup界面-->
@@ -498,11 +514,13 @@
     <string name="pi_fname">First name</string>
     <string name="pi_mname">Middle Name</string>
     <string name="pi_lname">Last name</string>
+    <string name="pi_name">Name</string>
 
     <string name="pi_pfname">Please input First Name</string>
     <string name="pi_pmname">Please input Middle Name</string>
     <string name="pi_plname">Please input Last Name</string>
     <string name="change_name">Change name</string>
+    <string name="change_cancel">Cancel</string>
     <string name="change_phone">Change Primary phone</string>
     <string name="change_sphone">Change Secondary phone</string>
 
@@ -571,6 +589,8 @@ Please input the cell phone number to add the contact
     <string name="sure_password">Confirm</string>
     <string name="input_again">Please input the new password</string>
     <string name="OK">OK</string>
+    <string name="companywebsite">Website</string>
+    <string name="loge">loge</string>
     <string name="All_set">All set</string>
     <string name="coursenotify">Notifications</string>
     <string name="opencourse">Open Course</string>
@@ -631,6 +651,8 @@ Please input the cell phone number to add the contact
     <string name="onetomany">One to Many</string>
     <string name="selectstudents">Select Student</string>
     <string name="selectcoursee">Select Course</string>
+    <string name="ispublic">IsPublic</string>
+    <string name="uploadaudiosuccess">upload file success</string>
 
 
     <!-- 迪凯 余 -->
@@ -648,12 +670,15 @@ Please input the cell phone number to add the contact
     <string name="pc_pomprt">此功能尚未开发完成，敬请期待！</string>
 
     <string name="pc_sorganization">Select Organization</string>
+    <string name="pc_sorganization_change">Select Organization</string>
 
 
     <!--account setting 界面-->
     <string name="as_setting">Company setting</string>
+    <string name="as_info_setting">Company setting</string>
     <string name="as_logo">Logo</string>
     <string name="as_name">Name</string>
+    <string name="as_info_name">Name</string>
     <string name="as_address">Web address</string>
     <string name="as_email">Email</string>
     <string name="as_admin">Admin user list</string>
@@ -662,6 +687,7 @@ Please input the cell phone number to add the contact
     <string name="as_contact_list">Contact list</string>
     <string name="as_add_admin">Add admin user</string>
     <string name="as_save">Save</string>
+    <string name="as_info_save">Save</string>
     <string name="acceptcompanytitle">The following company had invited you</string>
     <string name="acceptcompanypropet">click to join now</string>
     <string name="acceptcompanyskip">Skip</string>
@@ -692,7 +718,7 @@ Please input the cell phone number to add the contact
     <string name="height">height(cm)</string>
     <string name="user">user</string>
     <string name="New_chat">New chat</string>
-    <string name="edit">edit</string>
+    <string name="edit">Edit</string>
     <string name="editdescription">editdescription</string>
     <string name="cancel">cancel</string>
     <string name="invite">Invite</string>
@@ -756,20 +782,27 @@ Please input the cell phone number to add the contact
     <string name="addmemberfromcomcomtact">add member from company contact</string>
 
 
-
-
     <string name="KloudSync">Kloud</string>
 
     <string name="Mobile_phone">Mobile phone /User name</string>
-    <string name="Password_hint">Password (6-20 Characters)</string>
+    <string name="Mobile_phone2">Mobile phone</string>
+    <string name="Password_hint">Password</string>
     <string name="Name_info">Name</string>
     <string name="area_code">+86</string>
 
+    <string name="register_means_you_agree_to">Register means you agree to\t\t</string>
+    <string name="kloud_sync_terms">Kloud’s terms</string>
+    <string name="password_rules">8-14 digit password, must contain two kinds of letters, numbers and symbols</string>
     <string name="Sign_up">Sign Up</string>
+    <string name="registration_failed">Registration failed</string>
     <string name="Send_code">Send code</string>
     <string name="Vertification_Code">Verify Code</string>
+    <string name="please_input_phone_number">Please input phone number</string>
+    <string name="please_input_password">Please input password</string>
     <string name="Login">Login</string>
+    <string name="login_failed">Login failed</string>
     <string name="reset_pwd">Reset password</string>
+    <string name="please_input_verify_code">Please input verify code</string>
     <string name="create_and_switch">Create and Switch</string>
     <string name="create_organization">Create New Company</string>
     <string name="input_organization_name">Input company name</string>
@@ -778,11 +811,13 @@ Please input the cell phone number to add the contact
     <string name="create_Fail">Create fail</string>
     <string name="Send">Send</string>
     <string name="meeting_id">Meeting ID</string>
+    <string name="meeting_id_change">Modify meeting ID</string>
     <string name="input_new_meeing_id">input new meeting id</string>
     <string name="modify_meeting_id">modify your meeting ID</string>
     <string name="about">about</string>
     <string name="privacy_statement">Privacy Statement</string>
     <string name="create_new_sync">Create New Sync</string>
+    <string name="select_more_sync">+ Select Mode Sound</string>
     <string name="sync">Sync</string>
     <string name="invite_new">invite new</string>
     <string name="request_to_be_my_contact">Request to be my contact</string>
@@ -816,8 +851,131 @@ Please input the cell phone number to add the contact
 
     <string name="no_register_prompt">Don’t have an account?</string>
 
+    <string name="welcome_to_kloud">Welcome to kloud</string>
+
+    <!--  QWX  -->
+    <string name="enable_auto_sync_of_display_for_all_my_devices">Enable Auto Sync of Display \nfor All My Devices</string>
+    <string name="list_of_devices">List of Devices</string>
+    <string name="last_active">Last Active</string>
+    <string name="allow_to_speak">Allow to speak</string>
+    <string name="close_speech">Close speech</string>
+    <string name="put_your_hand_down">Put your hand down</string>
+    <string name="become_a_presenter">Become a presenter</string>
+    <string name="set_as_host">Set as host</string>
+    <string name="set_as_participant">Set as participant</string>
+    <string name="set_as_talkable_participant">Set as talkable participant</string>
+    <string name="password_reset">Password reset</string>
+    <string name="base_enter">OK</string>
+    <string name="base_cancel">Cancel</string>
+    <!--文档-->
+    <string name="please_input_new_folder_name">Please input new folder name</string>
+    <string name="name_cannot_be_empty">Name cannot be empty</string>
+    <string name="know_the">Know the</string>
+    <string name="sound_is_still_preparing_and_cannot_do_this">Sound is still preparing and do this!</string>
+    <!--聊天-->
+    <!--会议-->
+    <string name="kick_off_from_meeting">kick off from meeting</string>
+    <!--音想-->
+    <!--我-->
+    <string name="stay_tuned">Stay tuned</string>
+    <string name="enter_pairing">Enter pairing</string>
+    <string name="current_pen_status">Current pen status</string>
+    <string name="similar_pen_source">Evernote-like pen source</string>
+    <string name="similar_pen_source2">Youdao is similar to pen source</string>
+    <string name="enter_pairing_tips_text">Press and hold the electronic pen for 2-3 seconds</string>
+    <string name="enter_pairing_tips_text2">Steady green light, entering pairing state</string>
+    <string name="enter_pairing_tips_text3">Tip: The orange light flashes to indicate that the battery is low and needs to be charged</string>
+    <string name="please_make_sure_the_electronic_pen">Please make sure the electronic pen: 1. the power is on; 2. close to the phone; 3. no other phone is connected</string>
+    <string name="battery_remaining">Battery remaining</string>
+    <string name="storage_remaining">Storage remaining</string>
+    <string name="writing_length">Writing length</string>
+    <string name="seeting">Seeting</string>
+    <string name="penName">Pen name :</string>
+    <string name="firmware_upgrade">Firmware upgrade</string>
+    <string name="use_guide">Use guide</string>
+    <string name="switch_the_current_pen_source">Switch the current pen source</string>
+    <string name="switch_electronic_pen">Switch electronic pen</string>
+    <string name="delete_electronic_pen">Delete electronic pen</string>
+    <string name="add_new_electronic_pen">Add a new electronic pen</string>
+    <string name="please_grant_relevant_permissions">Please grant relevant permissions</string>
+    <string name="the_device_does_not_support_Bluetooth">The device does not support Bluetooth</string>
+    <string name="device_does_not_support_ble">Device does not support BLE</string>
+    <string name="start_scanning">Start scanning</string>
+    <string name="is_scanning">Is scanning...</string>
+    <string name="the_connected">The connected</string>
+    <string name="not_connected">Not connected</string>
+    <string name="scanning">Scanning</string>
+    <string name="go_to_my_notes">Go to my notes</string>
+    <string name="connected">Connected</string>
+    <string name="connecting">Connecting...</string>
+    <string name="edit_pen_name">Edit pen name</string>
+    <string name="please_enter_a_pen_name">Please enter a pen name</string>
+    <string name="setup_failed">Setup failed</string>
+    <string name="no_notes_currently">No notes currently</string>
 
 
+    <string name="prompt_is_my_personal_contact">该用户已存在我的"个人联系人中"\n点击对话与对方聊天</string>
+    <string name="prompt_is_in_same_company">该用户为当前公司联系人\n点击"申请聊天"等待对方接受</string>
+    <string name="prompt_is_in_other_company">该用户为其它公司联系人\n点击确定成为我的联系人</string>
+
+    <string name="contract_company">Contact (Company)</string>
+    <string name="contract_all">Contact (All)</string>
+    <string name="no_contract">No contacts have been added yet</string>
+    <string name="show_current_contract">Show current company contacts</string>
+    <string name="show_all_contract">Show all contracts</string>
+    <string name="no_meetings_available">No meetings available</string>
+    <string name="support_pairing">The following pen source pairing is supported</string>
+    <string name="impression_electronic_pen">Impression electronic pen</string>
+    <string name="cloud_electronic_pen">Youdao cloud electronic pen</string>
+    <string name="add_company_contacts">Add from company contacts</string>
+    <string name="add_new_contacts">Add new contact</string>
+    <string name="create_new_company_label_info">The enterprise, first team and first space are successfully created.Invite your team members to join.If the invitation is set to admin, the invited team can be set to the enterprises admin user.The admin user can manage all the enterprises teams and spaces</string>
+    <string name="hello_friend_summary">say hello</string>
+    <string name="join_compnay">join a company/organization</string>
+    <string name="input_invite_code">input company/organization invite code</string>
+    <string name="_join">Join</string>
+    <string name="hint_input_invite_code">Input invite vode</string>
+    <string name="scan_tv">Scanning TV devices</string>
+    <string name="_meeting_id">Meeting id:</string>
+    <string name="tips">tips</string>
+    <string name="share_kloudsync">Share Kloud</string>
+    <string name="copy_link">Copy Link</string>
+    <string name="wechat">Wechat</string>
+    <string name="moment">Moment</string>
+    <string name="scan_to_download_app">Scan QR code to download app</string>
+    <string name="login_name_tip">Phone # format as +16267807552</string>
+
+    <string name="my_contact">My contact</string>
+
+    <string-array name="time_duration">
+        <item>15mininutes</item>
+        <item>30mins</item>
+        <item>45mins</item>
+        <item>60mins</item>
+        <item>90mins(1.5H)</item>
+        <item>120mins(2H)</item>
+        <item>180mins(3H)</item>
+        <item>240mins(4H)</item>
+        <item>300mins(5H)</item>
+        <item>360mins(6H)</item>
+        <item>420mins(7H)</item>
+        <item>480mins(8H)</item>
+    </string-array>
+
+    <integer-array name="time_millsecends">
+        <item>15</item>
+        <item>30</item>
+        <item>45</item>
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+        <item>180</item>
+        <item>240</item>
+        <item>300</item>
+        <item>360</item>
+        <item>420</item>
+        <item>480</item>
+    </integer-array>
 
 
 </resources>

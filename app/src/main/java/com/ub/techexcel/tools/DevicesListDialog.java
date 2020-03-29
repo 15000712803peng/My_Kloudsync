@@ -1,11 +1,13 @@
 package com.ub.techexcel.tools;
-
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,16 +17,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.adapter.TvDeviceAdapter;
 import com.kloudsync.techexcel.adapter.TvDeviceAdapterV3;
 import com.kloudsync.techexcel.bean.TvDevice;
+import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.view.UISwitchButton;
-
 import java.util.List;
-
-
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE;
 public class DevicesListDialog implements View.OnClickListener {
 
     public Context mContext;
@@ -38,7 +37,7 @@ public class DevicesListDialog implements View.OnClickListener {
     private TextView noDeviceText;
     private UISwitchButton isChangeStatus;
     private LinearLayout nodataprompt;
-    private RelativeLayout hah1,hah3;
+    private RelativeLayout hah1, hah3;
     private TextView hah2;
 
     public void getPopwindow(Context context) {
@@ -71,19 +70,33 @@ public class DevicesListDialog implements View.OnClickListener {
         isChangeStatus = (UISwitchButton) view.findViewById(R.id.switch_sync);
         nodataprompt = view.findViewById(R.id.nodataprompt);
         hah1 = view.findViewById(R.id.hah1);
-        hah2= view.findViewById(R.id.hah2);
+        hah2 = view.findViewById(R.id.hah2);
         hah3 = view.findViewById(R.id.hah3);
         ImageView back = (ImageView) view.findViewById(R.id.back);
         back.setOnClickListener(this);
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
         mPopupWindow.setContentView(view);
-        mPopupWindow.getWindow().setGravity(Gravity.RIGHT);
+
         View root = ((Activity) mContext).getWindow().getDecorView();
         WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
-        params.height = root.getMeasuredHeight();
+        if (Tools.isOrientationPortrait((Activity) mContext)) {
+            //竖屏
+            Log.e("check_oritation","oritation:portrait");
+            mPopupWindow.getWindow().setWindowAnimations(R.style.PopupAnimation5);
+            mPopupWindow.getWindow().setGravity(Gravity.BOTTOM);
+            params.width = mContext.getResources().getDisplayMetrics().widthPixels;
+            params.height = Tools.dip2px(mContext, 420);
+
+        } else {
+            Log.e("check_oritation","oritation:landscape");
+            mPopupWindow.getWindow().setGravity(Gravity.RIGHT);
+            params.height = root.getMeasuredHeight();
+            params.width = Tools.dip2px(mContext,350);
+            mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            mPopupWindow.getWindow().setWindowAnimations(R.style.anination3);
+        }
         mPopupWindow.getWindow().setAttributes(params);
-        mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        mPopupWindow.getWindow().setWindowAnimations(R.style.anination3);
+
     }
 
 
@@ -151,6 +164,16 @@ public class DevicesListDialog implements View.OnClickListener {
 
     private WebCamPopupListener webCamPopupListener;
 
+    private String[] permissions = new String[]{Manifest.permission.CAMERA};
+    private void startRequestPermission(){
+        if (KloudPerssionManger.isPermissionCameraGranted(mContext) &&KloudPerssionManger.isPermissionReadExternalStorageGranted(mContext)
+                && KloudPerssionManger.isPermissionExternalStorageGranted(mContext)) {
+            webCamPopupListener.scanTv();
+        }else {
+            ActivityCompat.requestPermissions((Activity) mContext, permissions, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE);
+        }
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -159,7 +182,7 @@ public class DevicesListDialog implements View.OnClickListener {
                 mPopupWindow.dismiss();
                 break;
             case R.id.scantv:
-                webCamPopupListener.scanTv();
+                startRequestPermission();
                 break;
             default:
                 break;

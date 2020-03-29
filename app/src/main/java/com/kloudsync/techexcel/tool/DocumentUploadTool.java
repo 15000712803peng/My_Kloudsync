@@ -24,6 +24,7 @@ import com.amazonaws.event.ProgressListener;
 import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
 import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.kloudsync.techexcel.adapter.FavoriteAdapter;
 import com.kloudsync.techexcel.bean.NoteId;
@@ -277,7 +278,7 @@ public class DocumentUploadTool {
                 PutObjectRequest request = new PutObjectRequest(ud.getBucketName(), MD5Hash, mfile);
 
                 TransferManager tm = new TransferManager(s3);
-
+                request.setCannedAcl(CannedAccessControlList.PublicRead);
                 request.setGeneralProgressListener(new ProgressListener() {
                     @Override
                     public void progressChanged(final ProgressEvent progressEvent) {
@@ -326,7 +327,6 @@ public class DocumentUploadTool {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
-
                 BasicSessionCredentials sessionCredentials = new BasicSessionCredentials(
                         ud.getAccessKeyId(),
                         ud.getAccessKeySecret(),
@@ -337,6 +337,7 @@ public class DocumentUploadTool {
                 PutObjectRequest request = new PutObjectRequest(ud.getBucketName(), MD5Hash, mfile);
 
                 TransferManager tm = new TransferManager(s3);
+                request.setCannedAcl(CannedAccessControlList.PublicRead);
                 request.setGeneralProgressListener(new ProgressListener() {
                     @Override
                     public void progressChanged(final ProgressEvent progressEvent) {
@@ -391,7 +392,7 @@ public class DocumentUploadTool {
 
         TransferUtility transferUtility =
                 TransferUtility.builder()
-                        .context(mContext)
+                        .context(mActivity)
                         .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
                         .s3Client(s3)
                         .build();
@@ -506,7 +507,6 @@ public class DocumentUploadTool {
         if (!recordDir.exists()) {
             recordDir.mkdirs();
         }
-
         // 创建断点上传请求，参数中给出断点记录文件的保存位置，需是一个文件夹的绝对路径
         ResumableUploadRequest request = new ResumableUploadRequest(ud.getBucketName(),
                 MD5Hash, path, recordDirectory);
@@ -538,7 +538,6 @@ public class DocumentUploadTool {
                 ((Activity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
                         startConverting(ud, attachmentBean);
                     }
                 });
@@ -759,7 +758,7 @@ public class DocumentUploadTool {
                             @Override
                             public void getServiceReturnData(Object object) {
                                 Log.e("hhh", "FavoriteAttachment/UploadNewFile");
-//                                Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
+//                                Toast.makeText(mActivity, "upload success", Toast.LENGTH_LONG).show();
 //                                updateGetListener.Update();
                                 if (uploadDetailLinstener != null) {
                                     uploadDetailLinstener.uploadFinished(object);
@@ -874,7 +873,7 @@ public class DocumentUploadTool {
                             @Override
                             public void getServiceReturnData(Object object) {
                                 Log.e("hhh", "FavoriteAttachment/UploadNewFile");
-//                                Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
+//                                Toast.makeText(mActivity, "upload success", Toast.LENGTH_LONG).show();
 //                                updateGetListener.Update();
                                 if (uploadDetailLinstener != null) {
                                     uploadDetailLinstener.uploadFinished(object);

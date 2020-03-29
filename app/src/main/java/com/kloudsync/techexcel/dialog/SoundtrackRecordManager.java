@@ -1,16 +1,12 @@
 package com.kloudsync.techexcel.dialog;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -21,33 +17,59 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
+import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.help.UploadAudioPopupdate;
+import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.tool.GZipUtil;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.kloudsync.activity.Document;
 import com.ub.service.audiorecord.AudioRecorder;
+import com.ub.service.audiorecord.FileUtils;
 import com.ub.service.audiorecord.RecordEndListener;
 import com.ub.techexcel.bean.SoundtrackBean;
+import com.ub.techexcel.tools.ServiceInterfaceListener;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
+import com.ub.techexcel.tools.Tools;
+import com.ub.techexcel.tools.UploadAudioListener;
+import com.ub.techexcel.tools.UploadAudioNoteActionTool;
 import com.ub.techexcel.tools.UploadAudioTool;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 
-public class SoundtrackRecordManager implements View.OnClickListener {
+public class SoundtrackRecordManager implements View.OnClickListener,UploadAudioListener{
 
     private Context mContext;
     private static Handler recordHandler;
+    private  UploadAudioPopupdate uploadAudioPopupdate=new UploadAudioPopupdate();
+
     private SoundtrackRecordManager(Context context) {
         this.mContext = context;
+        if(uploadAudioPopupdate==null){
+            uploadAudioPopupdate=new UploadAudioPopupdate();
+        }
+        uploadAudioPopupdate.getPopwindow(mContext);
+
         recordHandler=new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg) {
@@ -67,13 +89,12 @@ public class SoundtrackRecordManager implements View.OnClickListener {
             case MESSAGE_PLAY_TIME_REFRESHED:
                 String time= (String) message.obj;
                 audiotime.setText(time);
-//              timeShow.setText(time);
+	            timeShow.setText(time);
                 break;
         }
-
     }
 
-    static volatile SoundtrackRecordManager instance;
+    public  static  SoundtrackRecordManager instance;
 
     public static SoundtrackRecordManager getManager(Context context) {
         if (instance == null) {
@@ -88,24 +109,31 @@ public class SoundtrackRecordManager implements View.OnClickListener {
 
     private LinearLayout audiosyncll;
     private boolean isrecordvoice;
-    private int soundtrackID;
-    private int fieldId;
-    private String fieldNewPath;
     private MeetingConfig meetingConfig;
+	private TextView timeShow;
+	private SoundtrackBean soundtrackBean;
+
 
     /**
      *
-     * @param isrecordvoice 是否開啟錄製音頻  目前一直為true
+     * @param isrecordvoice 是否录制声音
      * @param soundtrackBean
      * @param audiosyncll
      */
-    public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, MeetingConfig meetingConfig) {
+    public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, TextView timeshow, MeetingConfig meetingConfig) {
+//        if(Tools.isOrientationPortrait((Activity) mContext)){
+//            Log.e("henshupng","竖屏");
+//            Tools.setPortrait((Activity) mContext);
+//        }else{
+//            Log.e("henshupng","横屏");
+//            Tools.setLandscape((Activity) mContext);
+//        }
+	    this.timeShow = timeshow;
+	    timeShow.setOnClickListener(this);
         this.audiosyncll=audiosyncll;
         this.isrecordvoice=isrecordvoice;
         this.meetingConfig=meetingConfig;
-        soundtrackID = soundtrackBean.getSoundtrackID();
-        fieldId = soundtrackBean.getFileId();
-        fieldNewPath = soundtrackBean.getPath();
+        this.soundtrackBean=soundtrackBean;
         Document backgroudMusicInfo = soundtrackBean.getBackgroudMusicInfo();
         String url="";
         if (backgroudMusicInfo == null || backgroudMusicInfo.getAttachmentID().equals("0")) {
@@ -119,19 +147,105 @@ public class SoundtrackRecordManager implements View.OnClickListener {
             url1= soundtrackBean.getSelectedAudioInfo().getFileDownloadURL();
         }
         initPlayMusic(isrecordvoice,url,url1);
+    }
+
+    private List<JSONObject> noteActionList=new ArrayList<>();
+
+    /**
+     * 记录笔记动作
+     * @param noteRecordType
+     * @param data
+     */
+    public void recordNoteAction(NoteRecordType noteRecordType, JSONObject data){
+	    if (audiosyncll != null && (audiosyncll.getVisibility() == View.VISIBLE || timeShow.getVisibility() == View.VISIBLE)) {
+            int acitontype=noteRecordType.getActiontype();
+            try {
+                JSONObject jsonObject=new JSONObject();
+                jsonObject.put("actionType",acitontype);
+                jsonObject.put("time",tttime);
+//                jsonObject.put("page",meetingConfig.getPageNumber());
+                jsonObject.put("page",1);
+                jsonObject.put("data",data);
+                Log.e("notename",jsonObject.toString());
+                noteActionList.add(jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private List<JSONObject> documentActionList=new ArrayList<>();
+    /**
+     * 记录文档上动作
+     */
+    public void  recordDocumentAction(String action){
+        try {
+            JSONObject actionjson=new JSONObject(action);
+            documentActionList.add(actionjson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void  recordDocumentAction2(String action){
+
+        try {
+            JSONArray jsonArray=new JSONArray("[{\"type\":2,\"page\":1,\"time\":1},{\"type\":32,\"page\":1,\"CW\":1872,\"CH\":2422,\"VW\":1882,\"VH\":503,\"ST\":0,\"SL\":0,\"time\":2}," +
+                    "{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1877,26]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":154}," +
+                    "{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1816,17]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":192}," +
+                    "{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1751,9]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":224}," +
+                    "{\"type\":22,\"page\":1,\"CW\":1872,\"CH\":2422,\"VW\":1882,\"VH\":553,\"id\":\"bd149d3b-7808-4432-0b6a-48e6c5b2c62f\",\"w\":\"3\",\"color\":\"#458df3\",\"d\":[[1713,19]],\"tar\":\"\"," +
+                    "\"time\":608},{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1711,30]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":655},{\"type\":21,\"page\"" +
+                    ":1,\"CW\":1872,\"CH\":2422,\"VW\":1882,\"VH\":553,\"id\":\"bd149d3b-7808-4432-0b6a-48e6c5b2c62f\",\"d\":\"M1713,19 L1712,21 L1712,23 L1712,25 L1712,26 L1711,27 L1711,30 L1711," +
+                    "31 L1711,33 L1711,36 L1711,38 L1710,40 L1710,41 L1710,42\",\"w\":\"3\",\"color\":\"#458df3\",\"save\":1,\"tar\":\"\",\"time\":902}," +
+                    "{\"type\":35,\"poz\":[1710,42],\"bd\":0,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":902},{\"type\":34,\"show\":0,\"page\":1,\"time\":1094}]");
+            action=jsonArray.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.e("sync---原始数据",action);
+        try {
+            String  compressdata=GZipUtil.compress(action);
+            Log.e("sync---GZIP压缩",compressdata);
+            String base64 = LoginGet.getBase64Password(compressdata);
+            Log.e("sync---Base64编码",base64);
+
+            String baseee=LoginGet.DecodeBase64Password(base64);
+            Log.e("sync---Base64解码码",baseee);
+            String  uncompressdata=GZipUtil.unCompress(baseee);
+            Log.e("sync---GZIP解压",uncompressdata);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
+
+
+
+
 
     private MediaPlayer mediaPlayer;
     private MediaPlayer mediaPlayer2;
 
     private void  initPlayMusic(final boolean isrecordvoice, String url,String url2){
         Log.e("syncing---", isrecordvoice+"  "+url+"  "+url2);
-        if(isrecordvoice){
-            startSync();  //开始录音
-        }
-        //显示进度条
-        displayLayout();
+	    if (isrecordvoice) {
+		    //启动录音程序
+		    startAudioRecord();
+	    }
+	    //显示进度条
+	    displayLayout();
+        initAction();
+
+        EventSoundSync soundSync=new EventSoundSync();
+        soundSync.setSoundtrackID(soundtrackBean.getSoundtrackID());
+        soundSync.setStatus(1);
+        soundSync.setTime(tttime);
+        EventBus.getDefault().post(soundSync);
+
         if(!TextUtils.isEmpty(url)) {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
@@ -181,24 +295,19 @@ public class SoundtrackRecordManager implements View.OnClickListener {
     }
 
 
-    private void  startSync(){
-        EventSoundSync soundSync=new EventSoundSync();
-        soundSync.setSoundtrackID(soundtrackID);
-        soundSync.setStatus(1);
-        soundSync.setTime(tttime);
-        EventBus.getDefault().post(soundSync);
-        //启动录音程序
-        startAudioRecord();
-    }
+
 
     private ImageView playstop,syncicon,close;
     private  TextView audiotime,isStatus;
+	private ImageView timeHidden;
     private SeekBar mSeekBar;
     private boolean isPause=false;
 
     public void displayLayout() {
         audiosyncll.setVisibility(View.VISIBLE);
         playstop = audiosyncll.findViewById(R.id.playstop);
+	    timeHidden = audiosyncll.findViewById(R.id.timehidden);
+	    timeHidden.setOnClickListener(this);
         playstop.setOnClickListener(this);
         playstop.setImageResource(R.drawable.video_stop);
         syncicon =  audiosyncll.findViewById(R.id.syncicon);
@@ -216,6 +325,20 @@ public class SoundtrackRecordManager implements View.OnClickListener {
             syncicon.setVisibility(View.GONE);
         }
         refreshRecord();
+    }
+
+    private  void initAction(){
+        noteActionList.clear();
+        documentActionList.clear();
+        try {
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("type",2);
+            jsonObject.put("page",meetingConfig.getPageNumber());
+            jsonObject.put("time",1);
+            documentActionList.add(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private int tttime=0;
@@ -255,11 +378,6 @@ public class SoundtrackRecordManager implements View.OnClickListener {
     private AudioRecorder audioRecorder;
 
     private void startAudioRecord() {
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.RECORD_AUDIO)
-                == PackageManager.PERMISSION_GRANTED) {
-        } else {
-            ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
-        }
         if (audioRecorder != null) {
             audioRecorder.canel();  //取消录音
         }
@@ -277,8 +395,10 @@ public class SoundtrackRecordManager implements View.OnClickListener {
     }
 
 
-    private void stopAudioRecord(final int soundtrackID) {
+
+    private void stopAudioRecord() {
         if (audioRecorder != null) {
+            uploadAudioPopupdate.StartPop(soundtrackBean);
             audioRecorder.stopRecord(new RecordEndListener() {
                 @Override
                 public void endRecord(String fileName) {
@@ -286,12 +406,74 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                     File file = com.ub.service.audiorecord.FileUtils.getWavFile(fileName);
                     if (file != null) {
                         Log.e("syncing---", file.getAbsolutePath() + "   " + file.getName());
-//                        uploadAudioFile(file, soundtrackID, false, false);
-                        UploadAudioTool.getManager(mContext).uploadAudio(file,soundtrackID,fieldId,fieldNewPath,audiosyncll,meetingConfig);
+                        UploadAudioTool.getManager(mContext).uploadAudio(file,soundtrackBean,uploadAudioPopupdate,meetingConfig,SoundtrackRecordManager.this);
                     }
                 }
             });
-            audioRecorder = null;
+        }
+    }
+
+    @Override
+    public void uploadAudioSuccess() {
+        stopRecordNoteAction();
+    }
+
+    @Override
+    public void uploadAudioFail() {
+
+    }
+
+    private void stopRecordNoteAction(){
+        stopRecordDocumentAction();
+        if(noteActionList.size()>0){
+            final JSONArray jsonArray=new JSONArray();
+            for (int i = 0; i < noteActionList.size(); i++) {
+                jsonArray.put(noteActionList.get(i));
+            }
+            String noteactionname=  new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+            Observable.just(noteactionname).observeOn(Schedulers.io()).map(new Function<String, File>() {
+                @Override
+                public File apply(String name) throws Exception {
+                    File note=FileUtils.createNoteFile(name);
+                    if(note!=null){
+                        boolean is=FileUtils.writeNoteActonToFile(jsonArray.toString(),note);
+                        Log.e("notename",note.getAbsolutePath()+"  "+is+"  "+soundtrackBean.getSoundtrackID());
+                        if(is){
+                            return  note;
+                        }
+                    }
+                    return null;
+                }
+            }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<File>() {
+                @Override
+                public void accept(File note) throws Exception {
+                    if(note!=null){
+                        UploadAudioNoteActionTool.getManager(mContext).uploadNoteActon(note,soundtrackBean.getSoundtrackID(),audiosyncll,meetingConfig);
+                    }
+                }
+            }).subscribe();
+        }
+    }
+
+
+
+    private void stopRecordDocumentAction(){
+        if(documentActionList.size()>0){
+            try {
+                final JSONArray jsonArray=new JSONArray();
+                for (int i = 0; i < noteActionList.size(); i++) {
+                    jsonArray.put(noteActionList.get(i));
+                }
+                String documnraction=jsonArray.toString();
+                String gzipData=GZipUtil.compress(documnraction);
+                String base64Data=LoginGet.getBase64Password(gzipData);
+
+                Log.e("syncing---docu",base64Data);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -324,29 +506,67 @@ public class SoundtrackRecordManager implements View.OnClickListener {
                 }
                 break;
             case R.id.close: //结束录音
-                closeAudioSync();
-                StopMedia();
-                if (isrecordvoice) {    // 完成录音
-                    stopAudioRecord(soundtrackID);
-                }
+                release();
                 break;
+	        case R.id.timehidden:
+		        timeShow.setVisibility(View.VISIBLE);
+		        audiosyncll.setVisibility(View.GONE);
+		        break;
+	        case R.id.timeshow:
+		        timeShow.setVisibility(View.GONE);
+		        audiosyncll.setVisibility(View.VISIBLE);
+		        break;
         }
+    }
 
+
+    public void resume(){
+        if (isPause) {
+            isPause=false;
+            resumeMedia();
+        }
+        if (isrecordvoice) {
+            pauseOrStartAudioRecord();
+        }
+    }
+
+
+    public void pause(){
+        if(!isPause){
+            isPause=true;
+            pauseMedia();
+        }
+        if (isrecordvoice) {
+            pauseOrStartAudioRecord();
+        }
     }
 
 
     public void release(){
-
+        if(audiosyncll!=null&&audiosyncll.getVisibility()==View.VISIBLE){
+            closeAudioSync();
+            StopMedia();
+            if (isrecordvoice) {    // 完成录音
+                stopAudioRecord();
+            }else{
+                stopRecordNoteAction(); //音响动作
+            }
+            instance=null;
+        }
     }
 
     private void closeAudioSync() {
-
         EventSoundSync soundSync=new EventSoundSync();
-        soundSync.setSoundtrackID(soundtrackID);
+        soundSync.setSoundtrackID(soundtrackBean.getSoundtrackID());
         soundSync.setStatus(0);
         soundSync.setTime(tttime);
         EventBus.getDefault().post(soundSync);
-
+        String url2 = AppConfig.URL_PUBLIC + "Soundtrack/EndSync?soundtrackID=" + soundtrackBean.getSoundtrackID() + "&syncDuration=" + soundSync.getTime();
+        ServiceInterfaceTools.getinstance().endSync(url2, ServiceInterfaceTools.ENDSYNC, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+            }
+        });
         if (audioplaytimer != null) {
             audioplaytimer.cancel();
             audioplaytimer = null;
@@ -354,9 +574,7 @@ public class SoundtrackRecordManager implements View.OnClickListener {
             tttime=0;
         }
         audiosyncll.setVisibility(View.GONE);
-//        timeShow.setVisibility(View.GONE);
-//        getPageObjectsAfterChange(currentAttachmentPage);
-
+	    timeShow.setVisibility(View.GONE);
     }
 
 
@@ -397,4 +615,6 @@ public class SoundtrackRecordManager implements View.OnClickListener {
     public int  getCurrentTime() {
         return  tttime;
     }
+
+
 }

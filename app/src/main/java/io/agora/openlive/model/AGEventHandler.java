@@ -22,6 +22,7 @@ public interface AGEventHandler {
 
     void onAudioVolumeIndication(IRtcEngineEventHandler.AudioVolumeInfo[] speakers, int totalVolume);
 
+    void onNetworkQuality(int uid, int txQuality, int rxQuality);
 }
 
 

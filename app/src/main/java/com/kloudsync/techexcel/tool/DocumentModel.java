@@ -38,6 +38,7 @@ public class DocumentModel {
                 if (response == null) {
 
                 } else {
+
                     try {
                         JSONObject retData = response.getJSONObject("RetData");
                         Log.e("asyncGetDocumentDetail", "ret data:" + retData);
@@ -105,6 +106,7 @@ public class DocumentModel {
             keyJson.put("Key", newPath);
             jsonObject.put("Key", keyJson);
             JSONObject returnjson = ConnectService.submitDataByJsonLive(url, jsonObject);
+            Log.e("syncQueryDocumentInDoc","url:" + url +",params:" + jsonObject + ",returnjson:" + returnjson);
             return returnjson;
         } catch (Exception e) {
             e.printStackTrace();

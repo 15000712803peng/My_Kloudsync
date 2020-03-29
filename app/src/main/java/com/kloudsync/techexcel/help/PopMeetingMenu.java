@@ -84,6 +84,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                     operationsListener.menuLeaveClicked();
                 }
                 hide();
+
                 break;
             case R.id.meeting_mic_enabel: {
                 if(meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE){
@@ -100,6 +101,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
             }
 
             break;
+
             case R.id.meeting_voice: {
                 int voiceStatus = getSettingCache(host).getMeetingSetting().getVoiceStatus();
                 Log.e("PopMeetingMenu", "voice_status:" + voiceStatus);
