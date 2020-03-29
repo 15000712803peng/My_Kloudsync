@@ -396,12 +396,12 @@ public class SoundtrackActionsManager {
 //                    return;
 //                }
                 isLoadingPage = true;
-                if(currentPage == page){
+                /*if(currentPage == page){
 
                     //--
-                }else {
+                }else {*/
                     downLoadDocumentPageAndShow(page);
-                }
+//                }
 
 
             } else {
