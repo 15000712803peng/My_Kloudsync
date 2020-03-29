@@ -106,6 +106,7 @@ import com.kloudsync.techexcel.dialog.MeetingRecordManager;
 import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
+import com.kloudsync.techexcel.dialog.SoundtrackPlayManager;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
@@ -123,7 +124,6 @@ import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.SetPresenterDialog;
 import com.kloudsync.techexcel.help.ShareDocumentDialog;
-import com.kloudsync.techexcel.help.SoundtrackPlayManager;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
@@ -295,7 +295,9 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
     private SharedPreferences sharedPreferences;
     private SurfaceView surfaceView;
     private MeetingSettingCache meetingSettingCache;
-	private SoundtrackPlayManager soundtrackPlayManager;
+
+    @Bind(R.id.layout_soundtrack_play)
+    RelativeLayout soundtrackPlayLayout;
 
     @Override
     public void showErrorPage() {
@@ -574,8 +576,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
         if (soundtrackRecordManager != null) {
             soundtrackRecordManager.release();
-            soundtrackRecordManager=null;
-            SoundtrackRecordManager.instance=null;
+            soundtrackRecordManager = null;
+            SoundtrackRecordManager.instance = null;
         }
         if (wakeLock != null) {
             wakeLock.release();
@@ -1939,7 +1941,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
 
-	    String userId = AppConfig.UserID;
+        String userId = AppConfig.UserID;
         if (TextUtils.isEmpty(userId)) {
             userId = sharedPreferences.getString("UserID", "");
             AppConfig.UserID = userId;
@@ -3631,11 +3633,15 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     .setNegativeButton(getResources().getText(R.string.know_the), null)
                     .show();
         } else {
-            showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
+            soundtrackPlayManager = new SoundtrackPlayManager(this,soundtrack.getSoundtrackDetail(),meetingConfig,soundtrackPlayLayout);
+            soundtrackPlayManager.doPlay();
+//            showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
 //            soundtrackPlayManager = new SoundtrackPlayManager(this,soundtrack.getSoundtrackDetail(),meetingConfig,soundtrackPlayController,web);
 //            soundtrackPlayManager.doPlay(menuIcon,web);
         }
     }
+
+    SoundtrackPlayManager soundtrackPlayManager;
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void closeViewNote(EventCloseNoteView closeNoteView) {
@@ -4001,14 +4007,14 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
 
     private void showSoundtrackPlayDialog(SoundtrackDetail soundtrackDetail) {
 
-	    if (soundtrackPlayDialog != null) {
+        if (soundtrackPlayDialog != null) {
             if (soundtrackPlayDialog.isShowing()) {
                 soundtrackPlayDialog.dismiss();
                 soundtrackPlayDialog = null;
             }
         }
 
-	    soundtrackPlayDialog = new SoundtrackPlayDialog(this, soundtrackDetail, meetingConfig);
+        soundtrackPlayDialog = new SoundtrackPlayDialog(this, soundtrackDetail, meetingConfig);
         soundtrackPlayDialog.show();
     }
 

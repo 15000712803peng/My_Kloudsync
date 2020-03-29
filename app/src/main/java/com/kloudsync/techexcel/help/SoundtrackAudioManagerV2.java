@@ -169,8 +169,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     }
 
-
-
     public boolean isPlaying() {
         if (mediaInfo == null) {
             return false;

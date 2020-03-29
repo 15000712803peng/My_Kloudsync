@@ -67,9 +67,6 @@ public abstract class BaseDocAndMeetingActivity extends FragmentActivity {
     @Bind(R.id.single_member_icon)
     ImageView singleMemberIcon;
 
-	@Bind(R.id.layout_soundtrack_controller)
-	RelativeLayout soundtrackPlayController;
-
     protected AgoraMember currentAgoraMember;
 
     @Override
