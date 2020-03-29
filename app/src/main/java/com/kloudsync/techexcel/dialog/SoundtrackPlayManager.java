@@ -386,6 +386,12 @@ public class SoundtrackPlayManager implements View.OnClickListener, Dialog.OnDis
 
                 Log.e("check_play", "mediaInfo,isPlaying:" + isPlaying + ",playing_time:" + playTime + ",total_time:" + totalTime);
 
+                if (playTime >= totalTime) {
+                    playTime = totalTime;
+                    playHandler.obtainMessage(MESSAGE_PLAY_FINISH).sendToTarget();
+                    break;
+                }
+
                 if (!isStarted || !isPlaying) {
                     try {
                         Thread.sleep(1000);
@@ -402,11 +408,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, Dialog.OnDis
 
                 }
 
-                if (playTime >= totalTime) {
-                    playTime = totalTime;
-                    playHandler.obtainMessage(MESSAGE_PLAY_FINISH).sendToTarget();
-                    break;
-                }
+
 //                Log.e("RecordPlayDialog","is finish:" + isFinished);
                 Log.e("SoundtrackActionsManager", "playTime:" + playTime + ",isplaying:");
 //                synchronized (SoundtrackPlayDialog.this) {
