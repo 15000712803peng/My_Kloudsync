@@ -8,11 +8,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -445,7 +443,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, Dialog.OnDis
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             Log.e("check_dialog", "time_task_post_execute");
-
+            close();
         }
     }
 
@@ -531,6 +529,13 @@ public class SoundtrackPlayManager implements View.OnClickListener, Dialog.OnDis
         isStarted = false;
         playTime = time;
         clearActionsBySeek();
+        if (meetingConfig != null && meetingConfig.getDocument() != null && meetingConfig.getDocument().getDocumentPages() != null && (currentPaegNum <
+                meetingConfig.getDocument().getDocumentPages().size() || currentPaegNum > 0)) {
+            PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, currentPaegNum + "",
+                    /*meetingConfig.getDocument().getAttachmentID()*/0 + "", "0",
+                    soundtrackDetail.getSoundtrackID() + "");
+            PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, currentPaegNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
+        }
 	    SoundtrackAudioManager.getInstance(host).seekTo(time);
         SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
