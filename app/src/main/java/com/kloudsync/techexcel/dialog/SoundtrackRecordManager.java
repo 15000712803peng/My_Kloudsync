@@ -21,6 +21,8 @@ import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.UploadAudioPopupdate;
+import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.tool.GZipUtil;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.kloudsync.activity.Document;
 import com.ub.service.audiorecord.AudioRecorder;
@@ -149,6 +151,11 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private List<JSONObject> noteActionList=new ArrayList<>();
 
+    /**
+     * 记录笔记动作
+     * @param noteRecordType
+     * @param data
+     */
     public void recordNoteAction(NoteRecordType noteRecordType, JSONObject data){
 	    if (audiosyncll != null && (audiosyncll.getVisibility() == View.VISIBLE || timeShow.getVisibility() == View.VISIBLE)) {
             int acitontype=noteRecordType.getActiontype();
@@ -168,6 +175,57 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
 
+    private List<JSONObject> documentActionList=new ArrayList<>();
+    /**
+     * 记录文档上动作
+     */
+    public void  recordDocumentAction(String action){
+        try {
+            JSONObject actionjson=new JSONObject(action);
+            documentActionList.add(actionjson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void  recordDocumentAction2(String action){
+
+        try {
+            JSONArray jsonArray=new JSONArray("[{\"type\":2,\"page\":1,\"time\":1},{\"type\":32,\"page\":1,\"CW\":1872,\"CH\":2422,\"VW\":1882,\"VH\":503,\"ST\":0,\"SL\":0,\"time\":2}," +
+                    "{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1877,26]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":154}," +
+                    "{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1816,17]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":192}," +
+                    "{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1751,9]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":224}," +
+                    "{\"type\":22,\"page\":1,\"CW\":1872,\"CH\":2422,\"VW\":1882,\"VH\":553,\"id\":\"bd149d3b-7808-4432-0b6a-48e6c5b2c62f\",\"w\":\"3\",\"color\":\"#458df3\",\"d\":[[1713,19]],\"tar\":\"\"," +
+                    "\"time\":608},{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1711,30]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":655},{\"type\":21,\"page\"" +
+                    ":1,\"CW\":1872,\"CH\":2422,\"VW\":1882,\"VH\":553,\"id\":\"bd149d3b-7808-4432-0b6a-48e6c5b2c62f\",\"d\":\"M1713,19 L1712,21 L1712,23 L1712,25 L1712,26 L1711,27 L1711,30 L1711," +
+                    "31 L1711,33 L1711,36 L1711,38 L1710,40 L1710,41 L1710,42\",\"w\":\"3\",\"color\":\"#458df3\",\"save\":1,\"tar\":\"\",\"time\":902}," +
+                    "{\"type\":35,\"poz\":[1710,42],\"bd\":0,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":902},{\"type\":34,\"show\":0,\"page\":1,\"time\":1094}]");
+            action=jsonArray.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.e("sync---原始数据",action);
+        try {
+            String  compressdata=GZipUtil.compress(action);
+            Log.e("sync---GZIP压缩",compressdata);
+            String base64 = LoginGet.getBase64Password(compressdata);
+            Log.e("sync---Base64编码",base64);
+
+            String baseee=LoginGet.DecodeBase64Password(base64);
+            Log.e("sync---Base64解码码",baseee);
+            String  uncompressdata=GZipUtil.unCompress(baseee);
+            Log.e("sync---GZIP解压",uncompressdata);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
 
     private MediaPlayer mediaPlayer;
     private MediaPlayer mediaPlayer2;
@@ -180,6 +238,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 	    }
 	    //显示进度条
 	    displayLayout();
+        initAction();
 
         EventSoundSync soundSync=new EventSoundSync();
         soundSync.setSoundtrackID(soundtrackBean.getSoundtrackID());
@@ -245,7 +304,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     private boolean isPause=false;
 
     public void displayLayout() {
-        noteActionList.clear();
         audiosyncll.setVisibility(View.VISIBLE);
         playstop = audiosyncll.findViewById(R.id.playstop);
 	    timeHidden = audiosyncll.findViewById(R.id.timehidden);
@@ -267,6 +325,20 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             syncicon.setVisibility(View.GONE);
         }
         refreshRecord();
+    }
+
+    private  void initAction(){
+        noteActionList.clear();
+        documentActionList.clear();
+        try {
+            JSONObject jsonObject=new JSONObject();
+            jsonObject.put("type",2);
+            jsonObject.put("page",meetingConfig.getPageNumber());
+            jsonObject.put("time",1);
+            documentActionList.add(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private int tttime=0;
@@ -351,6 +423,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
     private void stopRecordNoteAction(){
+        stopRecordDocumentAction();
         if(noteActionList.size()>0){
             final JSONArray jsonArray=new JSONArray();
             for (int i = 0; i < noteActionList.size(); i++) {
@@ -378,6 +451,28 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                     }
                 }
             }).subscribe();
+        }
+    }
+
+
+
+    private void stopRecordDocumentAction(){
+        if(documentActionList.size()>0){
+            try {
+                final JSONArray jsonArray=new JSONArray();
+                for (int i = 0; i < noteActionList.size(); i++) {
+                    jsonArray.put(noteActionList.get(i));
+                }
+                String documnraction=jsonArray.toString();
+                String gzipData=GZipUtil.compress(documnraction);
+                String base64Data=LoginGet.getBase64Password(gzipData);
+
+                Log.e("syncing---docu",base64Data);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

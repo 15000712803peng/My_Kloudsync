@@ -1053,9 +1053,8 @@ public class LoginGet {
 
     @SuppressLint("NewApi")
     public static String getBase64Password(String passsword) {
-        String enToStr = Base64.encodeToString(passsword.getBytes(), Base64.DEFAULT);
+        String enToStr = Base64.encodeToString(passsword.getBytes(), Base64.NO_WRAP);
         return enToStr;
-
     }
 
     /**
@@ -1065,7 +1064,7 @@ public class LoginGet {
      * @return
      */
     public static String DecodeBase64Password(String passsword) {
-        byte[] decodeBytes = Base64.decode(passsword, Base64.DEFAULT);
+        byte[] decodeBytes = Base64.decode(passsword, Base64.NO_WRAP);
         return new String(decodeBytes);
 
     }
