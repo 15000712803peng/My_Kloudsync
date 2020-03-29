@@ -461,19 +461,17 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         if(documentActionList.size()>0){
             try {
                 final JSONArray jsonArray=new JSONArray();
-                for (int i = 0; i < noteActionList.size(); i++) {
-                    jsonArray.put(noteActionList.get(i));
+                for (int i = 0; i < documentActionList.size(); i++) {
+                    jsonArray.put(documentActionList.get(i));
                 }
                 String documnraction=jsonArray.toString();
+                Log.e("syncing---docu",documnraction);
                 String gzipData=GZipUtil.compress(documnraction);
                 String base64Data=LoginGet.getBase64Password(gzipData);
-
                 Log.e("syncing---docu",base64Data);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
     }
 
