@@ -412,10 +412,10 @@
     <!--进入页面显示-->
     <string name="inAttendee">Invite attendee</string>
     <string name="cbPage">Create blank page</string>
-    <string name="shDocument">Share  document</string>
+    <string name="shDocument">Upload  document</string>
     <string name="shYcan">As host,you can</string>
     <string name="shAcan">As attendee,you can</string>
-    <string name="miProgress">MEETING IN PROGRESS</string>
+    <string name="miProgress">meeting in progress,</string>
     <!--右上侧按钮-->
     <string name="mtMore">More</string>
     <string name="saTv">Scan a TV</string>

@@ -717,8 +717,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, Dialog.OnDis
     private void pause() {
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, soundtrackAudioManager.getPlayTime());
         isStarted = false;
-	    SoundtrackAudioManager.getInstance(host).pause();
-        //SoundtrackBackgroundMusicManager.getInstance(host).pause();
+	    SoundtrackAudioManagerV2.getInstance(host).pause();
+        SoundtrackBackgroundMusicManager.getInstance(host).pause();
         statusText.setText(R.string.paused);
         startPauseImage.setImageResource(R.drawable.video_play);
     }
