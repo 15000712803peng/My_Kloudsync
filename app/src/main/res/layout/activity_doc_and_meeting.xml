@@ -631,12 +631,9 @@
 
 
 
+    <include layout="@layout/layout_play_soundtrack" />
 
-
-
-
-
-
+    
     <ImageView
         android:id="@+id/menu"
         android:layout_width="36dp"
@@ -825,6 +822,6 @@
         android:src="@drawable/recordstart"
         android:visibility="gone" />
 
-    <include layout="@layout/layout_play_soundtrack" />
+
 
 </RelativeLayout>
