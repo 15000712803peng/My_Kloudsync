@@ -77,7 +77,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
 
     private synchronized void reconnect() {
         if (this.uri != null) {
-	        Log.e("KloundWebClientManager", "reconnect");
+            Log.e("KloundWebClientManager", "reconnect");
             AppConfig.UserToken = context.getSharedPreferences(AppConfig.LOGININFO,
                     Context.MODE_PRIVATE).getString("UserToken", null);
             try {
@@ -104,10 +104,9 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
     }
 
 
-
     @Override
     public synchronized void onReconnect() {
-	    reconnect();
+        reconnect();
     }
 
     private boolean isStartMeetingRecord = true;
@@ -120,7 +119,8 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
         @Override
         public void run() {
 
-	        Log.e("KloundWebClientManager", "send heart beat,thread:" + Thread.currentThread() + ",kloudWebClient:" + kloudWebClient);
+            Log.e("KloundWebClientManager", "send heart beat,thread:" + Thread.currentThread() + ",kloudWebClient:" + kloudWebClient);
+            heartBeatStarted = true;
             JSONObject heartBeatMessage = new JSONObject();
             try {
                 heartBeatMessage.put("action", "HELLO");
@@ -128,9 +128,10 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                 heartBeatMessage.put("changeNumber", 0);
 
                 MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
-	            Log.e("KloundWebClientManager", "meetingConfig:" + meetingConfig + "1");
+                Log.e("KloundWebClientManager", "meetingConfig:" + meetingConfig + "1");
 
-	            if (meetingConfig != null && meetingConfig.getType() == MeetingType.MEETING && meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER || meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
+                if (meetingConfig != null && (meetingConfig.getType() == MeetingType.MEETING && meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER
+                        || meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST)) {
                     heartBeatMessage.put("status", "0");
                     heartBeatMessage.put("currentLine", 0);
                     heartBeatMessage.put("currentMode", "0");
@@ -144,15 +145,15 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                     heartBeatMessage.put("screenStatus", 0);
                 }
 
-	            Log.e("KloundWebClientManager", "send heart beat message:" + heartBeatMessage.toString());
+                Log.e("KloundWebClientManager", "send heart beat message:" + heartBeatMessage.toString());
 
                 if (kloudWebClient != null) {
                     kloudWebClient.send(heartBeatMessage.toString());
                 }
 
-                heartBeatStarted = true;
+
             } catch (JSONException e) {
-	            Log.e("KloundWebClientManager", "send heart beat message,exception:" + e);
+                Log.e("KloundWebClientManager", "send heart beat message,exception:" + e);
 
                 e.printStackTrace();
             } catch (Exception e) {

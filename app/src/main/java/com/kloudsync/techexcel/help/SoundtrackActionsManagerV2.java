@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
@@ -53,9 +54,9 @@ import io.reactivex.schedulers.Schedulers;
  * Created by tonyan on 2019/11/21.
  */
 
-public class SoundtrackActionsManager {
+public class SoundtrackActionsManagerV2 {
 
-    private static SoundtrackActionsManager instance;
+    private static SoundtrackActionsManagerV2 instance;
     private volatile long playTime;
     private Activity context;
     private List<WebAction> webActions = new ArrayList<>();
@@ -64,7 +65,7 @@ public class SoundtrackActionsManager {
     private List<MediaPlayPage> mediaPlayPages = new ArrayList<>();
     private int recordId;
     private volatile long totalTime = 0;
-    private XWalkView web;
+    private WebView web;
     private SurfaceView surfaceView;
     private WebVedioManager webVedioManager;
     private String downloadUrlPre = "";
@@ -72,13 +73,13 @@ public class SoundtrackActionsManager {
     private MeetingConfig meetingConfig;
     private RelativeLayout webVedioPlayLayout;
     private SyncWebActionsCache webActionsCache;
-	private DocumentPage currentDocumentPage;
+    private DocumentPage currentDocumentPage;
 
     public void setUserVedioManager(UserVedioManager userVedioManager) {
         this.userVedioManager = userVedioManager;
     }
 
-    public void setWeb(XWalkView web, MeetingConfig meetingConfig) {
+    public void setWeb(WebView web, MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
         this.web = web;
     }
@@ -100,7 +101,7 @@ public class SoundtrackActionsManager {
     }
 
     //
-    private SoundtrackActionsManager(Activity context) {
+    private SoundtrackActionsManagerV2(Activity context) {
         this.context = context;
         pageCache = DocumentPageCache.getInstance(context);
         webVedioManager = WebVedioManager.getInstance(context);
@@ -108,11 +109,11 @@ public class SoundtrackActionsManager {
         gson = new Gson();
     }
 
-    public static SoundtrackActionsManager getInstance(Activity context) {
+    public static SoundtrackActionsManagerV2 getInstance(Activity context) {
         if (instance == null) {
-            synchronized (SoundtrackActionsManager.class) {
+            synchronized (SoundtrackActionsManagerV2.class) {
                 if (instance == null) {
-                    instance = new SoundtrackActionsManager(context);
+                    instance = new SoundtrackActionsManagerV2(context);
                 }
             }
         }
@@ -363,12 +364,13 @@ public class SoundtrackActionsManager {
 //            Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
             if (data.getInt("type") == 2) {
                 isLoadingPage = true;
-                downLoadDocumentPageAndShow(data.getInt("page"));
+                int page = data.getInt("page");
+                downLoadDocumentPageAndShow(page);
 
             } else {
-	            Log.e("doExecuteAction", "action," + action.getData() + ",playtime:" + playTime);
-                web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                web.load("javascript:Record()", null);
+                Log.e("doExecuteAction", "action," + action.getData() + ",playtime:" + playTime);
+                web.loadUrl("javascript:PlayActionByTxt('" + action.getData() + "')", null);
+                web.loadUrl("javascript:Record()", null);
             }
 //                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
 
@@ -392,21 +394,19 @@ public class SoundtrackActionsManager {
             Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
             if (data.getInt("type") == 2) {
                 int page = data.getInt("page");
-//                if(currentPage == page){
-//                    return;
-//                }
                 isLoadingPage = true;
+                Log.e("chage_page","currentPage:" + currentPage + ",page:" + page);
                 /*if(currentPage == page){
 
                     //--
                 }else {*/
-                    downLoadDocumentPageAndShow(page);
+                downLoadDocumentPageAndShow(page);
 //                }
 
 
             } else {
-                web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                web.load("javascript:Record()", null);
+                web.loadUrl("javascript:PlayActionByTxt('" + action.getData() + "')", null);
+                web.loadUrl("javascript:Record()", null);
             }
 //                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
 
@@ -653,13 +653,13 @@ public class SoundtrackActionsManager {
 
     public void release() {
         currentPage = -1;
-        if (web != null) {
-            web.removeAllViews();
-            web.onDestroy();
-            web = null;
-        }
+//        if (web != null) {
+//            web.removeAllViews();
+//            web.destroy();
+//            web = null;
+//        }
         webActions.clear();
-	    currentPartWebActions = null;
+        currentPartWebActions = null;
         mediaPlayPages.clear();
         requests.clear();
         if (webVedioManager != null) {
@@ -669,9 +669,7 @@ public class SoundtrackActionsManager {
     }
 
     private void downLoadDocumentPageAndShow(final int pageNumber) {
-        if(meetingConfig == null || meetingConfig.getDocument() == null){
-            return;
-        }
+
         Observable.just(meetingConfig.getDocument()).observeOn(Schedulers.io()).map(new Function<MeetingDocument, Object>() {
             @Override
             public Object apply(MeetingDocument document) throws Exception {
@@ -686,13 +684,13 @@ public class SoundtrackActionsManager {
         Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
             @Override
             public void accept(DocumentPage page) throws Exception {
-	            if (web == null) {
+                if (web == null) {
                     return;
                 }
-	            Log.e("showCurrentPage", "page:" + documentPage);
-	            web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-                web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-                web.load("javascript:Record()", null);
+                Log.e("showCurrentPage", "page:" + documentPage);
+                web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+                web.loadUrl("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                web.loadUrl("javascript:Record()", null);
             }
         }).subscribe();
 
