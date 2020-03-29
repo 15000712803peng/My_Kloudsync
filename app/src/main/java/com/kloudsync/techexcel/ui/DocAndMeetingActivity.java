@@ -558,7 +558,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         meetingConfig.setType(data.getIntExtra("meeting_type", MeetingType.DOC));
         meetingConfig.setMeetingId(data.getStringExtra("meeting_id"));
         meetingConfig.setLessionId(data.getIntExtra("lession_id", 0));
-        meetingConfig.setDocumentId(data.getStringExtra("document_id"));
+	    int document_id = data.getIntExtra("document_id", 0);
+	    meetingConfig.setDocumentId(String.valueOf(document_id));
         meetingConfig.setRole(data.getIntExtra("meeting_role", MeetingConfig.MeetingRole.HOST));
         meetingConfig.setUserToken(UserData.getUserToken(this));
         meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting", false));
