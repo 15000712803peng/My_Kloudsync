@@ -38,7 +38,6 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
 import com.kloudsync.techexcel.help.SmallNoteViewHelper;
-import com.kloudsync.techexcel.help.SoundtrackActionsManager;
 import com.kloudsync.techexcel.help.SoundtrackActionsManagerV2;
 import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.SoundtrackAudioManagerV2;
@@ -52,6 +51,7 @@ import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.tool.SyncWebActionsCache;
 import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.WebAction;
+import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
 
@@ -315,6 +315,14 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     public void doPlay() {
+        if(meetingConfig.getDocument() == null){
+            return;
+        }
+        web.setVisibility(View.INVISIBLE);
+        seekBar.setProgress(0);
+//        String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
+//        web.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
+//        web.loadUrl("javascript:Record()", null);
         soundtrackPlayLayout.setVisibility(View.VISIBLE);
         mainNoteWeb.setVisibility(View.GONE);
         downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
@@ -398,7 +406,10 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
                 if (playTime >= totalTime) {
                     playTime = totalTime;
-                    playHandler.obtainMessage(MESSAGE_PLAY_FINISH).sendToTarget();
+                    if(playHandler != null){
+                        playHandler.obtainMessage(MESSAGE_PLAY_FINISH).sendToTarget();
+                    }
+
                     break;
                 }
 
@@ -550,8 +561,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 for (WebAction action : webActions) {
                     if (action.getTime() >= time) {
                         Log.e("check_page_time", "seek_time:" + time + ",action_time:" + action.getTime());
-                        SoundtrackActionsManager.getInstance(host).doChangePageAction(action);
-                        SoundtrackActionsManager.getInstance(host).setCurrentPartWebActions(null);
+                        SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(action);
+                        SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
                         break;
                     }
                 }
@@ -601,9 +612,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
     @JavascriptInterface
     public void afterLoadFileFunction() {
-        SoundtrackActionsManager.getInstance(host).setLoadingPage(false);
+        SoundtrackActionsManagerV2.getInstance(host).setLoadingPage(false);
         if (isSeek) {
-            SoundtrackActionsManager.getInstance(host).setCurrentPartWebActions(null);
+            SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
             isSeek = false;
         }
         host.runOnUiThread(new Runnable() {
@@ -635,6 +646,14 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum" + pageNum + ",type" + type);
         currentPaegNum = pageNum;
+        if(web.getVisibility() != View.VISIBLE){
+            Observable.just("set_visiable").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                @Override
+                public void accept(String s) throws Exception {
+                    web.setVisibility(View.VISIBLE);
+                }
+            });
+        }
         SoundtrackActionsManagerV2.getInstance(host).setCurrentPage(pageNum);
         if (meetingConfig.getDocument().getDocumentPages() != null) {
             int size = meetingConfig.getDocument().getDocumentPages().size();
