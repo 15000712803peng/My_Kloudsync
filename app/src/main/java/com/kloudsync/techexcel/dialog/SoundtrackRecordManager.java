@@ -336,6 +336,17 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             jsonObject.put("page",meetingConfig.getPageNumber());
             jsonObject.put("time",1);
             documentActionList.add(jsonObject);
+            documentActionList.add(jsonObject);
+            documentActionList.add(jsonObject);
+            documentActionList.add(jsonObject);
+            documentActionList.add(jsonObject);
+            documentActionList.add(jsonObject);
+            documentActionList.add(jsonObject);
+            documentActionList.add(jsonObject);
+            documentActionList.add(jsonObject);
+            documentActionList.add(jsonObject);
+            documentActionList.add(jsonObject);
+            documentActionList.add(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -456,19 +467,39 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
 
+    private final int SUB_SIZE=10;
 
     private void stopRecordDocumentAction(){
         if(documentActionList.size()>0){
             try {
-                final JSONArray jsonArray=new JSONArray();
-                for (int i = 0; i < documentActionList.size(); i++) {
-                    jsonArray.put(documentActionList.get(i));
+                int listSize=documentActionList.size();
+                int totleburst = listSize % SUB_SIZE== 0 ? listSize / SUB_SIZE: listSize / SUB_SIZE + 1;
+                Log.e("syncing---docu分片","总共"+totleburst+"片");
+                List<List<JSONObject>> subAryList = new ArrayList<>();
+                for (int i = 0; i < totleburst; i++) {
+                    int index = i * SUB_SIZE;
+                    List<JSONObject> list = new ArrayList<>();
+                    int j = 0;
+                    while (j < SUB_SIZE && index < listSize) {
+                        list.add(documentActionList.get(index++));
+                        j++;
+                    }
+                    subAryList.add(list);
                 }
-                String documnraction=jsonArray.toString();
-                Log.e("syncing---docu",documnraction);
-                String gzipData=GZipUtil.compress(documnraction);
-                String base64Data=LoginGet.getBase64Password(gzipData);
-                Log.e("syncing---docu",base64Data);
+
+                for (int i = 0; i < subAryList.size(); i++) {
+                    List<JSONObject> subdata=subAryList.get(i);
+                    final JSONArray jsonArray=new JSONArray();
+                    for (int j = 0; j < subdata.size(); j++) {
+                        jsonArray.put(subdata.get(j));
+                    }
+                    String documnraction=jsonArray.toString();
+                    Log.e("syncing---docu",documnraction);
+                    String gzipData=GZipUtil.compress(documnraction);
+                    String base64Data=LoginGet.getBase64Password(gzipData);
+                    Log.e("syncing---docu",base64Data);
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
