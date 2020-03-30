@@ -549,6 +549,13 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         isStarted = false;
         playTime = time;
         clearActionsBySeek();
+        if (meetingConfig != null && meetingConfig.getDocument() != null && meetingConfig.getDocument().getDocumentPages() != null && (currentPaegNum <
+                meetingConfig.getDocument().getDocumentPages().size() || currentPaegNum > 0)) {
+            PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, currentPaegNum + "",
+                    /*meetingConfig.getDocument().getAttachmentID()*/0 + "", "0",
+                    soundtrackDetail.getSoundtrackID() + "");
+            PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, currentPaegNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
+        }
         SoundtrackAudioManager.getInstance(host).seekTo(time);
         SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
@@ -556,11 +563,11 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             @Override
             public void accept(List<WebAction> webActions) throws Exception {
                 for (WebAction action : webActions) {
-                    if (action.getTime() >= time) {
+                    if (action.getTime() <= time) {
                         Log.e("check_page_time", "seek_time:" + time + ",action_time:" + action.getTime());
                         SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(action);
                         SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
-                        break;
+//                        break;
                     }
                 }
             }
@@ -775,6 +782,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
+        pageActions.clear();
         release();
     }
 
@@ -864,16 +872,16 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if (actions != null && actions.size() > 0) {
             for (WebAction action : actions) {
                 if (!TextUtils.isEmpty(action.getData()))
-                    try {
+                    /*try {
                         JSONObject data = new JSONObject(action.getData());
-                        if (data.getInt("type") == 2) {
+                        if (data.getInt("type") == 2) {*/
                             if (!pageActions.contains(action)) {
                                 pageActions.add(action);
                             }
-                        }
+                        /*}
                     } catch (JSONException e) {
                         e.printStackTrace();
-                    }
+                    }*/
             }
         }
         Log.e("check_page_actions", "page_actions_size:" + pageActions.size());

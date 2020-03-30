@@ -404,8 +404,14 @@ public class SoundtrackActionsManagerV2 {
 
 
             } else {
-                web.loadUrl("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                web.loadUrl("javascript:Record()", null);
+                Observable.just(action).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<WebAction>() {
+                    @Override
+                    public void accept(WebAction webAction) throws Exception {
+                        web.loadUrl("javascript:PlayActionByTxt('" + webAction.getData() + "')", null);
+                        web.loadUrl("javascript:Record()", null);
+                    }
+                }).subscribe();
+
             }
 //                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
 
