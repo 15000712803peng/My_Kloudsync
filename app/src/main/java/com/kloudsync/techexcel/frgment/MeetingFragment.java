@@ -22,7 +22,6 @@ import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.ub.service.activity.MeetingPropertyActivity;
-import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.techexcel.adapter.ServiceAdapter2;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.service.ConnectService;
@@ -254,7 +253,7 @@ public class MeetingFragment extends MyFragment {
 
                         @Override
                         public void startMeeting() {
-                            Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+                            Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                             intent.putExtra("userid", bean.getUserId());
                             intent.putExtra("meetingId", bean.getId() + "");
                             intent.putExtra("filemeetingId", bean.getId() + "");

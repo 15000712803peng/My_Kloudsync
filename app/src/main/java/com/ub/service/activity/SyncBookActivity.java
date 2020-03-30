@@ -46,7 +46,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
+import android.webkit.WebView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -122,6 +124,8 @@ import com.kloudsync.techexcel.tool.DocumentUploadUtil;
 import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.Md5Tool;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
+import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.util.PreferencesCookieStore;
 import com.mining.app.zxing.MipcaActivityCapture;
@@ -185,9 +189,6 @@ import org.java_websocket.client.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkPreferences;
-import org.xwalk.core.XWalkView;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -229,7 +230,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
     public PopupWindow mPopupWindow2;
     public PopupWindow mPopupWindow4;
-    private XWalkView wv_show;
+    private WebView wv_show;
     private CustomVideoView videoView;
     private VideoGestureRelativeLayout videoGestureRelativeLayout;
     private ShowChangeLayout showChangeLayout;
@@ -401,7 +402,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                                                 } else {
                                                     activity3.currentAttachmentPage = pagenumber;
                                                     String changpage = "{\"type\":2,\"page\":" + activity3.currentAttachmentPage + "}";
-                                                    activity3.wv_show.load("javascript:PlayActionByTxt('" + changpage + "','" + 1 + "')", null);
+                                                    activity3.wv_show.loadUrl("javascript:PlayActionByTxt('" + changpage + "','" + 1 + "')", null);
                                                 }
                                             } else {
                                                 for (int i = 0; i < activity3.documentList.size(); i++) {
@@ -425,7 +426,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                                                 e.printStackTrace();
                                             }
                                             if (type != 34) {
-                                                activity3.wv_show.load("javascript:PlayActionByTxt('" + m + "','" + 1 + "')", null);
+                                                activity3.wv_show.loadUrl("javascript:PlayActionByTxt('" + m + "','" + 1 + "')", null);
                                                 activity3.zoomInfo = null;
                                             }
                                         }
@@ -444,7 +445,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                         break;
                     case 0x5001:
                         final String m3 = (String) msg.obj;
-                        activity3.wv_show.load("javascript:PlayActionByTxt('" + m3 + "','" + 1 + "')", null);
+                        activity3.wv_show.loadUrl("javascript:PlayActionByTxt('" + m3 + "','" + 1 + "')", null);
                         activity3.zoomInfo = null;
                         break;
                     case AppConfig.SUCCESS:
@@ -484,11 +485,11 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                             @Override
                             public void run() {
                                 if (activity3.currentPresenterId.equals(AppConfig.UserID)) {
-                                    activity3.wv_show.load("javascript:ShowToolbar(" + true + ")", null);
-                                    activity3.wv_show.load("javascript:Record()", null);
+                                    activity3.wv_show.loadUrl("javascript:ShowToolbar(" + true + ")", null);
+                                    activity3.wv_show.loadUrl("javascript:Record()", null);
                                 } else {
-                                    activity3.wv_show.load("javascript:ShowToolbar(" + false + ")", null);
-                                    activity3.wv_show.load("javascript:StopRecord()", null);
+                                    activity3.wv_show.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+                                    activity3.wv_show.loadUrl("javascript:StopRecord()", null);
                                 }
                             }
                         });
@@ -513,7 +514,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                             public void run() {
                                 if (activity3.wv_show != null) {
                                     if (!TextUtil.isEmpty(ddd)) {
-                                        activity3.wv_show.load("javascript:PlayActionByArray(" + ddd + "," + 0 + ")", null);
+                                        activity3.wv_show.loadUrl("javascript:PlayActionByArray(" + ddd + "," + 0 + ")", null);
                                     }
                                 }
                             }
@@ -539,8 +540,8 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                     case 0x6115: //copy file finish
                         String s = (String) msg.obj;
                         if (activity3.wv_show != null) {
-                            activity3.wv_show.load(s, null);
-                            activity3.wv_show.load("javascript:Record()", null);
+                            activity3.wv_show.loadUrl(s, null);
+                            activity3.wv_show.loadUrl("javascript:Record()", null);
                             activity3.userSetting();
                         }
                         break;
@@ -715,7 +716,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         handler = new MyHandler(this);
         syncbookInstance = true;
 
-        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+//        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
 
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK, "TEST");
@@ -861,7 +862,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
         if (wv_show != null) {
             wv_show.resumeTimers();
-            wv_show.onShow();
+//            wv_show.onShow();
         }
 
         super.onResume();
@@ -1453,7 +1454,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void getServiceReturnData(Object object) {
                 ServiceBean bean = (ServiceBean) object;
-                Intent intent = new Intent(SyncBookActivity.this, WatchCourseActivity2.class);
+                Intent intent = new Intent(SyncBookActivity.this, MeetingViewActivity.class);
                 intent.putExtra("userid", bean.getUserId());
                 intent.putExtra("meetingId", bean.getId() + "");
                 intent.putExtra("teacherid", bean.getTeacherId());
@@ -1589,7 +1590,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
         if (DeviceManager.getDeviceType(this) == SupportDevice.BOOK) {
 //            Toast.makeText(this, "book", Toast.LENGTH_LONG).show();
-            wv_show = (XWalkView) findViewById(R.id.wv_show);
+            wv_show = (WebView) findViewById(R.id.wv_show);
 //            EpdController.setWebViewContrastOptimize(wv_show, true);
             EpdController.setScreenHandWritingPenState(wv_show, 1);
             touchHelper = TouchHelper.create(wv_show, callback);
@@ -1606,14 +1607,14 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
         } else {
 //            Toast.makeText(this, "app", Toast.LENGTH_LONG).show();
-            wv_show = (XWalkView) findViewById(R.id.wv_show);
-            wv_show.setZOrderOnTop(false);
+            wv_show = (WebView) findViewById(R.id.wv_show);
+//            wv_show.setZOrderOnTop(false);
             wv_show.getSettings().setDomStorageEnabled(true);
             wv_show.addJavascriptInterface(SyncBookActivity.this, "AnalyticsWebInterface");
-            XWalkPreferences.setValue("enable-javascript", true);
-            XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
-            XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
-            XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
+//            XWalkPreferences.setValue("enable-javascript", true);
+//            XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+//            XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
+//            XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
         }
 
 
@@ -2188,7 +2189,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                             isChangePageNumber = true;
                             currentAttachmentPage = pagenumber;
                             String changpage = "{\"type\":2,\"page\":" + currentAttachmentPage + "}";
-                            wv_show.load("javascript:PlayActionByTxt('" + changpage + "','" + 0 + "')", null);
+                            wv_show.loadUrl("javascript:PlayActionByTxt('" + changpage + "','" + 0 + "')", null);
                         }
                     });
                 }
@@ -2278,7 +2279,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                wv_show.load("javascript:ClearPageAndAction()", null);
+                wv_show.loadUrl("javascript:ClearPageAndAction()", null);
             }
         });
     }
@@ -2379,7 +2380,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     /**
      * 加载PDF
      */
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterLoadPageFunction() {
         crpage = (int) Float.parseFloat(currentAttachmentPage);
         Log.e("JavascriptInterface", "afterLoadPageFunction,url  " + targetUrl + "        " + crpage + "      newpath  " + newPath);
@@ -2391,7 +2392,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         });
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void userSettingChangeFunction(final String opt) {
         Log.e("userSettingChan", opt.toString() + "   ");
         runOnUiThread(new Runnable() {
@@ -2435,7 +2436,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                wv_show.load("javascript:SetUserSeting(" + jsonArray + ")", null);
+                                wv_show.loadUrl("javascript:SetUserSeting(" + jsonArray + ")", null);
                             }
                         }, 200);
                     }
@@ -2617,8 +2618,8 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    wv_show.load("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ")", null);
-                    wv_show.load("javascript:Record()", null);
+                    wv_show.loadUrl("javascript:ShowPDF('" + showpdfurl + "', " + page + ",0,'" + currentAttachmentId + "'," + isDisplayInCenter + ")", null);
+                    wv_show.loadUrl("javascript:Record()", null);
                     userSetting();
                 }
             });
@@ -2684,7 +2685,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
     private RelativeLayout preparedownprogress;
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public synchronized  void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
         Log.e("webview-preLoadFile", url + "     currentpageNum   " + currentpageNum + "   showLoading    " + showLoading);
         runOnUiThread(new Runnable() {
@@ -2797,7 +2798,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void showErrorFunction(final String error) {
         runOnUiThread(new Runnable() {
             @Override
@@ -2825,7 +2826,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void run() {
                 if (!TextUtils.isEmpty(url) && wv_show != null) {
-                    wv_show.load("javascript:AfterDownloadFile('" + url + "', " + currentpageNum + ")", null);
+                    wv_show.loadUrl("javascript:AfterDownloadFile('" + url + "', " + currentpageNum + ")", null);
                 }
             }
         });
@@ -2835,7 +2836,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     /**
      * 获取每一页上的 Action
      */
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterChangePageFunction(final String pageNum, int type) {
         refreshTouchHelper();
         Log.e("webview-afterChangePage", pageNum + "  " + type);
@@ -2853,10 +2854,10 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                     public void run() {
                         if (wv_show != null) {
                             if (!TextUtil.isEmpty(ddd)) {
-                                wv_show.load("javascript:PlayActionByArray(" + ddd + "," + 0 + ")", null);
+                                wv_show.loadUrl("javascript:PlayActionByArray(" + ddd + "," + 0 + ")", null);
                             }
                             if (isPlaying2) {
-                                wv_show.load("javascript:ClearPageAndAction()", null);
+                                wv_show.loadUrl("javascript:ClearPageAndAction()", null);
                             }
                         }
                     }
@@ -2945,7 +2946,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         runOnUiThread(new Runnable() {
             @Override
             public void run() {  //  清空当前页的线
-                wv_show.load("javascript:ClearPageAndAction()", null);
+                wv_show.loadUrl("javascript:ClearPageAndAction()", null);
             }
         });
         new ApiTask(new Runnable() {
@@ -3037,7 +3038,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         return client;
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void reflect(String result) {
         Log.e("webview-reflect", result);
         if (isSync) {
@@ -3075,7 +3076,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     /**
      * pdf 加载完成
      */
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterLoadFileFunction() {
         Log.e("JavascriptInterface", "afterLoadFileFunction ");
         scrollOutline();
@@ -3083,7 +3084,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void run() {
                 Log.e("webview-afterLoadFile", "afterLoadFileFunction");
-                wv_show.load("javascript:CheckZoom()", null);
+                wv_show.loadUrl("javascript:CheckZoom()", null);
                 if (!TextUtils.isEmpty(zoomInfo)) {
                     Message msg3 = Message.obtain();
                     msg3.obj = zoomInfo;
@@ -3092,12 +3093,12 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 }
                 if (currentPresenterId.equals(AppConfig.UserID)) {
                     Log.e("---------", currentPresenterId.equals(AppConfig.UserID) + "  dd  " + (wv_show == null));
-                    wv_show.load("javascript:ShowToolbar(" + true + ")", null);
-                    wv_show.load("javascript:Record()", null);
+                    wv_show.loadUrl("javascript:ShowToolbar(" + true + ")", null);
+                    wv_show.loadUrl("javascript:Record()", null);
                 } else {
                     Log.e("---------", currentPresenterId.equals(AppConfig.UserID) + "  dd  " + (wv_show == null));
-                    wv_show.load("javascript:ShowToolbar(" + false + ")", null);
-                    wv_show.load("javascript:StopRecord()", null);
+                    wv_show.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+                    wv_show.loadUrl("javascript:StopRecord()", null);
                 }
 
                 isWebViewLoadFinish = true;
@@ -3112,7 +3113,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
      *
      * @param diff
      */
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void autoChangeFileFunction(final int diff) {
         refreshTouchHelper();
         if (closenote.getVisibility() == View.VISIBLE) {
@@ -3214,7 +3215,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
 
     // 播放视频
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void videoPlayFunction(final int vid) {
         Log.e("videoPlayFunction", vid + " videoPlayFunction");
         runOnUiThread(new Runnable() {
@@ -3226,7 +3227,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     }
 
     //打开
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void videoSelectFunction(String s) {
         runOnUiThread(new Runnable() {
             @Override
@@ -3240,7 +3241,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     }
 
     // 录制
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void audioSyncFunction(final int id, final int isRecording) {
         runOnUiThread(new Runnable() {
             @Override
@@ -3442,7 +3443,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
             @Override
             public void cancel() {
-                wv_show.load("javascript:VideoTagAfterSelect(" + null + ")", null);
+                wv_show.loadUrl("javascript:VideoTagAfterSelect(" + null + ")", null);
             }
 
             @Override
@@ -3450,12 +3451,12 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 if (type == 2) {  //video
                     if (currentPosition >= 0) {
                         JSONObject jsonObject = favoritePopup.getData().get(currentPosition).getJsonObject();
-                        wv_show.load("javascript:VideoTagAfterSelect(" + jsonObject + ")", null);
+                        wv_show.loadUrl("javascript:VideoTagAfterSelect(" + jsonObject + ")", null);
                     }
                 } else if (type == 3) {  // audio
                     if (currentPosition >= 0) {
                         JSONObject jsonObject = favoritePopup.getData().get(currentPosition).getJsonObject();
-                        wv_show.load("javascript:VideoTagAfterSelect(" + jsonObject + ")", null);
+                        wv_show.loadUrl("javascript:VideoTagAfterSelect(" + jsonObject + ")", null);
                     }
                 }
 
@@ -3558,7 +3559,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                 openOutlinePopup();
                 syncroomll.setVisibility(View.GONE);
                 menu.setImageResource(R.drawable.icon_menu);
-                wv_show.load("javascript:CheckZoom()", null);
+                wv_show.loadUrl("javascript:CheckZoom()", null);
                 break;
             case R.id.syncdisplaynote:
                 openNotePopup();
@@ -3940,7 +3941,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
 
 
     private void gotoMeeting(String lessonId) {
-        final Intent intent = new Intent(SyncBookActivity.this, WatchCourseActivity3.class);
+        final Intent intent = new Intent(SyncBookActivity.this, DocAndMeetingActivityV2.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", lessonId);
@@ -5790,7 +5791,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
 
         if (wv_show != null) {
-            wv_show.onActivityResult(requestCode, resultCode, data);
+//            wv_show.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -6357,7 +6358,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
         if (wv_show != null) {
             wv_show.removeAllViews();
-            wv_show.onDestroy();
+            wv_show.destroy();
             wv_show = null;
         }
         if (isRegistered) {
@@ -6383,14 +6384,14 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         ConnectionClassManager.getInstance().remove(connectionChangedListener);
         if (wv_show != null) {
             wv_show.pauseTimers();
-            wv_show.onHide();
+//            wv_show.onHide();
         }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         if (wv_show != null) {
-            wv_show.onNewIntent(intent);
+//            wv_show.onNewIntent(intent);
         }
     }
 
@@ -6427,8 +6428,8 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                     @Override
                     public void run() {
                         String changePageAction = "{\"type\":2,\"page\":" + currentAttachmentPage + "}";
-                        wv_show.load("javascript:PlayActionByTxt('" + changePageAction + "','" + 1 + "')", null);
-                        wv_show.load("javascript:Record()", null);
+                        wv_show.loadUrl("javascript:PlayActionByTxt('" + changePageAction + "','" + 1 + "')", null);
+                        wv_show.loadUrl("javascript:Record()", null);
                         notifyMyAction(changePageAction);
 
                     }
@@ -6456,8 +6457,8 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                     @Override
                     public void run() {
                         String changePageAction = "{\"type\":2,\"page\":" + currentAttachmentPage + "}";
-                        wv_show.load("javascript:PlayActionByTxt('" + changePageAction + "','" + 1 + "')", null);
-                        wv_show.load("javascript:Record()", null);
+                        wv_show.loadUrl("javascript:PlayActionByTxt('" + changePageAction + "','" + 1 + "')", null);
+                        wv_show.loadUrl("javascript:Record()", null);
                         notifyMyAction(changePageAction);
 
                     }
@@ -6504,8 +6505,8 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    wv_show.load("javascript:PlayActionByTxt('" + scrollJson.toString() + "','" + 1 + "')", null);
-                    wv_show.load("javascript:Record()", null);
+                    wv_show.loadUrl("javascript:PlayActionByTxt('" + scrollJson.toString() + "','" + 1 + "')", null);
+                    wv_show.loadUrl("javascript:Record()", null);
                     notifyMyAction(scrollJson.toString());
 
                 }
@@ -6576,7 +6577,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
                     return;
                 }
                 findViewById(R.id.defaultpagehaha).setVisibility(View.GONE);
-                wv_show.load(url, null);
+                wv_show.loadUrl(url, null);
             }
         });
     }
@@ -6610,7 +6611,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             e.printStackTrace();
         }
         Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
-        wv_show.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
+        wv_show.loadUrl("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(SyncBookActivity.this);
         String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
         noteManager.exportPdfAndUpload(SyncBookActivity.this, note, exportPath, currentAttachmentId, currentAttachmentPage, spaceId, lessonId, currentLinkProperty.toString());
@@ -6808,7 +6809,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
     NoteDetail currentNote;
     JSONObject currentLinkProperty = new JSONObject();
     private String toolName;
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void callAppFunction(String action, final String data) {
         Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
         JSONObject datas = null;
@@ -6983,7 +6984,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             noteData.put("id", "BooXNote_" + linkId);
             Log.e("noteeeedelete", "note:" + noteData.toString());
             if (wv_show != null) {
-                wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+                wv_show.loadUrl("javascript:PlayActionByTxt('" + noteData + "')", null);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -6999,7 +7000,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             noteData.put("LinkProperty", linkProperty);
             Log.e("noteeeeadd", "note:" + noteData.toString());
             if (wv_show != null) {
-                wv_show.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+                wv_show.loadUrl("javascript:PlayActionByTxt('" + noteData + "')", null);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -7014,7 +7015,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             clearnote.put("ClearOther", clearother);
             String key = "ClearBookNote";
             Log.e("ClearBookNote", clearnote.toString() + "");
-            wv_show.load("javascript:FromApp('" + key + "'," + clearnote + ")", null);
+            wv_show.loadUrl("javascript:FromApp('" + key + "'," + clearnote + ")", null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -7029,7 +7030,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         }
         String key = "TwinkleBookNote";
         Log.e("TwinkleBookNote", linkId + "");
-        wv_show.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
+        wv_show.loadUrl("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
     }
 
     private void displayNoteByLinkId(int linkId) {

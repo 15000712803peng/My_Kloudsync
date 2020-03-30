@@ -31,9 +31,8 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
 import com.ub.service.activity.SocketService;
-import com.ub.service.activity.WatchCourseActivity2;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.UpcomingLesson;
 
 import org.greenrobot.eventbus.EventBus;
@@ -430,7 +429,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                     if (lessionid == -1) {     //看看老师是否正在上课
                         getUpcomingLessonList(teacherid + "");
                     } else {
-                        Intent ii = new Intent(mContext, WatchCourseActivity3.class);
+                        Intent ii = new Intent(mContext, DocAndMeetingActivityV2.class);
                         ii.putExtra("meetingId", roomid + "");
                         ii.putExtra("identity", 1);  // 学生
                         ii.putExtra("ishavedefaultpage", true);
@@ -447,7 +446,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         }
                     }
                     if (null == lesson) {  // 进去等待
-                        Intent ii = new Intent(mContext, WatchCourseActivity3.class);
+                        Intent ii = new Intent(mContext, DocAndMeetingActivityV2.class);
                         ii.putExtra("meetingId", roomid + "");
                         ii.putExtra("identity", 1);  // 学生
                         ii.putExtra("lessionId", lessionid + "");
@@ -457,7 +456,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         mContext.startActivity(ii);
                     } else {
                         if (lesson.getIsInClassroom() == 1) {
-                            Intent ii = new Intent(mContext, WatchCourseActivity3.class);
+                            Intent ii = new Intent(mContext, DocAndMeetingActivityV2.class);
                             ii.putExtra("meetingId", roomid + "");
                             ii.putExtra("identity", 1);  // 学生
                             ii.putExtra("ishavedefaultpage", true);
@@ -466,7 +465,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                             ii.putExtra("teacherid", teacherid + "");
                             mContext.startActivity(ii);
                         } else {
-                            Intent ii = new Intent(mContext, WatchCourseActivity2.class);
+                            Intent ii = new Intent(mContext, DocAndMeetingActivityV2.class);
                             ii.putExtra("meetingId", lesson.getLessonID() + "");
                             ii.putExtra("identity", 1);  // 学生
                             ii.putExtra("lessionId", lessionid + "");

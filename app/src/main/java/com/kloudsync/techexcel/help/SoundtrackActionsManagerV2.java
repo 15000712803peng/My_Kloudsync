@@ -32,8 +32,6 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkView;
-
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

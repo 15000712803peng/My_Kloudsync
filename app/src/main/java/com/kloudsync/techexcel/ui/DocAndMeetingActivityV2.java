@@ -175,9 +175,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkPreferences;
-import org.xwalk.core.XWalkView;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -531,10 +528,10 @@ public class DocAndMeetingActivityV2 extends BaseWebActivity implements PopBotto
         noteWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         noteWeb.addJavascriptInterface(new NoteJavascriptInterface(), "AnalyticsWebInterface");
 
-        XWalkPreferences.setValue("enable-javascript", true);
-        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
-        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
-        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
+//        XWalkPreferences.setValue("enable-javascript", true);
+//        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+//        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
+//        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
         loadWebIndex();
 
     }

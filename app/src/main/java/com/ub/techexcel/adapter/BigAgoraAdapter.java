@@ -17,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.ub.service.activity.WatchCourseActivity2;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.AgoraBean;
 import com.kloudsync.techexcel.R;
 
@@ -127,39 +125,39 @@ public class BigAgoraAdapter extends RecyclerView.Adapter<BigAgoraAdapter.ViewHo
                             mListener.isEnlarge(agoraBean);
                         }
                     });
-                    if (WatchCourseActivity2.watch2instance) {
-                        if (agoraBean.isMuteAudio()) {
-                            audioIv.setImageResource(R.drawable.icon_command_mic_disable);
-                        } else {
-                            audioIv.setImageResource(R.drawable.icon_command_mic_enabel);
-                        }
-                        if (agoraBean.isMuteVideo()) {
-                            videoIv.setImageResource(R.drawable.icon_command_webcam_disable);
-                        } else {
-                            videoIv.setImageResource(R.drawable.icon_command_webcam_enable);
-                        }
-                        if (WatchCourseActivity2.mViewType == 1) {  //当前处于放大模式
-                            enlargeIv.setImageResource(R.drawable.icon_fullscreen);
-                        } else if (WatchCourseActivity2.mViewType == 2) {  //当前处于 全屏 模式
-                            enlargeIv.setImageResource(R.drawable.icon_restore);
-                        }
-                    } else if (WatchCourseActivity3.watch3instance) {
-                        if (agoraBean.isMuteAudio()) {
-                            audioIv.setImageResource(R.drawable.icon_command_mic_disable);
-                        } else {
-                            audioIv.setImageResource(R.drawable.icon_command_mic_enabel);
-                        }
-                        if (agoraBean.isMuteVideo()) {
-                            videoIv.setImageResource(R.drawable.icon_command_webcam_disable);
-                        } else {
-                            videoIv.setImageResource(R.drawable.icon_command_webcam_enable);
-                        }
-                        if (WatchCourseActivity3.mViewType == 1) {  //当前处于放大模式
-                            enlargeIv.setImageResource(R.drawable.icon_fullscreen);
-                        } else if (WatchCourseActivity3.mViewType == 2) {  //当前处于 全屏 模式
-                            enlargeIv.setImageResource(R.drawable.icon_restore);
-                        }
-                    }
+//                    if (WatchCourseActivity2.watch2instance) {
+//                        if (agoraBean.isMuteAudio()) {
+//                            audioIv.setImageResource(R.drawable.icon_command_mic_disable);
+//                        } else {
+//                            audioIv.setImageResource(R.drawable.icon_command_mic_enabel);
+//                        }
+//                        if (agoraBean.isMuteVideo()) {
+//                            videoIv.setImageResource(R.drawable.icon_command_webcam_disable);
+//                        } else {
+//                            videoIv.setImageResource(R.drawable.icon_command_webcam_enable);
+//                        }
+//                        if (WatchCourseActivity2.mViewType == 1) {  //当前处于放大模式
+//                            enlargeIv.setImageResource(R.drawable.icon_fullscreen);
+//                        } else if (WatchCourseActivity2.mViewType == 2) {  //当前处于 全屏 模式
+//                            enlargeIv.setImageResource(R.drawable.icon_restore);
+//                        }
+//                    } else if (WatchCourseActivity3.watch3instance) {
+//                        if (agoraBean.isMuteAudio()) {
+//                            audioIv.setImageResource(R.drawable.icon_command_mic_disable);
+//                        } else {
+//                            audioIv.setImageResource(R.drawable.icon_command_mic_enabel);
+//                        }
+//                        if (agoraBean.isMuteVideo()) {
+//                            videoIv.setImageResource(R.drawable.icon_command_webcam_disable);
+//                        } else {
+//                            videoIv.setImageResource(R.drawable.icon_command_webcam_enable);
+//                        }
+//                        if (WatchCourseActivity3.mViewType == 1) {  //当前处于放大模式
+//                            enlargeIv.setImageResource(R.drawable.icon_fullscreen);
+//                        } else if (WatchCourseActivity3.mViewType == 2) {  //当前处于 全屏 模式
+//                            enlargeIv.setImageResource(R.drawable.icon_restore);
+//                        }
+//                    }
                     ViewGroup parent = (ViewGroup) relativeLayout.getParent();
                     if (parent != null) {
                         parent.removeView(relativeLayout);

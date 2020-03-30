@@ -1,5 +1,6 @@
 package com.ub.service.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -8,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -29,9 +32,6 @@ import com.ub.techexcel.tools.Tools;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkPreferences;
-import org.xwalk.core.XWalkView;
-
 import java.io.File;
 import java.net.URL;
 
@@ -55,7 +55,7 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 	 */
 	private MeetingConfig meetingConfig;
 	private ImageView backImage;
-	private XWalkView floatwebview;
+	private WebView floatwebview;
 	private TextView title;
 	private ImageView changefloatingnote;
 	LayoutInflater inflater;
@@ -104,19 +104,20 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 		initWeb();
 	}
 
+	@SuppressLint("JavascriptInterface")
 	private void initWeb() {
-		floatwebview.setZOrderOnTop(true);
+//		floatwebview.setZOrderOnTop(true);
 		floatwebview.getSettings().setJavaScriptEnabled(true);
 		floatwebview.getSettings().setDomStorageEnabled(true);
 		floatwebview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 		floatwebview.addJavascriptInterface(new FloatNoteJavascriptInterface(), "AnalyticsWebInterface");
-		XWalkPreferences.setValue("enable-javascript", true);
-		XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
-		XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
-		XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
+//		XWalkPreferences.setValue("enable-javascript", true);
+//		XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+//		XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
+//		XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
 		Log.e("floatingnote", "加载浮窗");
 		String indexUrl = "file:///android_asset/index.html";
-		floatwebview.load(indexUrl, null);
+		floatwebview.loadUrl(indexUrl, null);
 	}
 
 
@@ -213,7 +214,7 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 		if (isShowing()) {
 			mView.setVisibility(View.GONE);
 			floatwebview.setVisibility(View.GONE);
-			floatwebview.load("javascript:ClearPath()", null);
+			floatwebview.loadUrl("javascript:ClearPath()", null);
 		}
 	}
 
@@ -234,7 +235,7 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 				String lastModifiedDate = currentNote.getLastModifiedDate();
 				String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
 				Log.e("floatingnote", localNoteBlankPage);
-				floatwebview.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + 1 + ",''," + currentNote.getAttachmentID() + "," + true + ")", null);
+				floatwebview.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + 1 + ",''," + currentNote.getAttachmentID() + "," + true + ")", null);
 				String key = "ChangeMovePageButton";
 				JSONObject _data = new JSONObject();
 				JSONObject _left = new JSONObject();
@@ -247,9 +248,9 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				floatwebview.load("javascript:ShowToolbar(" + false + ")", null);
-				floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-				floatwebview.load("javascript:Record()", null);
+				floatwebview.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+				floatwebview.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
+				floatwebview.loadUrl("javascript:Record()", null);
 				handleBluetoothNote(currentNote, lastModifiedDate);
 			}
 		});
@@ -269,7 +270,7 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 					_data.put("LinesData", Tools.getFromBase64(noteData));
 					_data.put("ShowInCenter", true);
 					_data.put("TriggerEvent", true);
-					floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+					floatwebview.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
 					lastjsonObject = new JSONObject(Tools.getFromBase64(noteData));
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -365,7 +366,7 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 				_data.put("ShowInCenter", false);
 				_data.put("TriggerEvent", false);
 				Log.e("floatingnote", "ShowDotPanData");
-				floatwebview.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+				floatwebview.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
 				if (oldNoteId == 0) {
 					RecordNoteActionManager.getManager(mContext).sendDisplayPopupActions(note.getNoteID(), lastjsonObject);
 				} else {
@@ -379,18 +380,18 @@ public class FloatingWindowNoteManager implements View.OnClickListener, OnTouchL
 
 	public class FloatNoteJavascriptInterface {
 
-		@org.xwalk.core.JavascriptInterface
+		@JavascriptInterface
 		public void afterLoadPageFunction() {
 
 		}
 
 
-		@org.xwalk.core.JavascriptInterface
+		@JavascriptInterface
 		public void afterChangePageFunction(final int pageNum, int type) {
 
 		}
 
-		@org.xwalk.core.JavascriptInterface
+		@JavascriptInterface
 		public void reflect(String result) {
 			Log.e("JavascriptInterface", "reflect,result:  " + result);
 		}

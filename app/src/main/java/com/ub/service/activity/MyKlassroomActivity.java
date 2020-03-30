@@ -20,6 +20,8 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
+import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.ub.techexcel.adapter.UpcomeingAdapter;
 import com.ub.techexcel.bean.CourseLesson;
 import com.ub.techexcel.bean.UpcomingLesson;
@@ -59,7 +61,7 @@ public class MyKlassroomActivity extends Activity implements View.OnClickListene
                     if (lessionid == -1) {
                         addInstantLesson(AppConfig.ClassRoomID);
                     } else {
-                        Intent intent = new Intent(MyKlassroomActivity.this, WatchCourseActivity3.class);
+                        Intent intent = new Intent(MyKlassroomActivity.this, DocAndMeetingActivityV2.class);
                         intent.putExtra("meetingId", AppConfig.ClassRoomID + "");
                         intent.putExtra("identity", 2);
                         intent.putExtra("lessionId", lessionid + "");
@@ -74,7 +76,7 @@ public class MyKlassroomActivity extends Activity implements View.OnClickListene
                 case 0x1002:  //  addInstantLesson
                     Log.e("getClassRoomLessonID", "加入课程成功");
                     int lessionid2 = (int) msg.obj;  // 新建分配的lessionid
-                    Intent intent = new Intent(MyKlassroomActivity.this, WatchCourseActivity3.class);
+                    Intent intent = new Intent(MyKlassroomActivity.this, DocAndMeetingActivityV2.class);
                     intent.putExtra("meetingId", AppConfig.ClassRoomID + "");
                     intent.putExtra("identity", 2);
                     intent.putExtra("ishavedefaultpage",true);
@@ -90,7 +92,7 @@ public class MyKlassroomActivity extends Activity implements View.OnClickListene
                     upcomeingAdapter.setStartMeetingListenering(new UpcomeingAdapter.StartMeetingListenering() {
                         @Override
                         public void viewOldCourse(int position) {
-                            Intent intent = new Intent(MyKlassroomActivity.this, WatchCourseActivity2.class);
+                            Intent intent = new Intent(MyKlassroomActivity.this, MeetingViewActivity.class);
                             intent.putExtra("userid", upcomingLessonList.get(position).getStudentID());
                             intent.putExtra("meetingId", upcomingLessonList.get(position).getLessonID() + "");
                             intent.putExtra("teacherid", upcomingLessonList.get(position).getTeacherID());
@@ -104,7 +106,7 @@ public class MyKlassroomActivity extends Activity implements View.OnClickListene
                     break;
                 case 0x1105:  //start lesson
                     int lessonid = (int) msg.obj;
-                    Intent lessonintent = new Intent(MyKlassroomActivity.this, WatchCourseActivity3.class);
+                    Intent lessonintent = new Intent(MyKlassroomActivity.this, DocAndMeetingActivityV2.class);
                     lessonintent.putExtra("meetingId", AppConfig.ClassRoomID + "");
                     lessonintent.putExtra("identity", 2);
                     lessonintent.putExtra("lessionId", lessonid + "");

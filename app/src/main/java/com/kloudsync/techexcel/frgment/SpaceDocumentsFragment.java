@@ -93,6 +93,7 @@ import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.Md5Tool;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.SpaceDeletePopup;
 import com.ub.kloudsync.activity.SpacePropertyActivity;
@@ -102,7 +103,6 @@ import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.SocketService;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
 import com.ub.techexcel.bean.EventViewDocPermissionGranted;
 import com.ub.techexcel.bean.LineItem;
@@ -201,7 +201,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
     };
 
     private void GoToVIew() {
-        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
+        Intent intent = new Intent(getActivity(), DocAndMeetingActivityV2.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", bean.getId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);

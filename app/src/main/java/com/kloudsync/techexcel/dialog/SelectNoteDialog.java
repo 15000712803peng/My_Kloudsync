@@ -19,7 +19,6 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.kloudsync.activity.Document;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.NewMeetingContactAdapter;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.Note;

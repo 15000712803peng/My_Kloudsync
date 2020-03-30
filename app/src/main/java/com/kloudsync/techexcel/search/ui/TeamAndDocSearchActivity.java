@@ -38,10 +38,10 @@ import com.kloudsync.techexcel.search.view.VTeamAndDocSearch;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.SpaceDocumentsActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
 import com.ub.techexcel.adapter.SpaceAdapter;
 import com.ub.techexcel.service.ConnectService;
@@ -532,7 +532,7 @@ public class TeamAndDocSearchActivity extends BaseActivity implements SpaceAdapt
     };
 
     private void goToCourse(Document document) {
-        Intent intent = new Intent(this, WatchCourseActivity3.class);
+        Intent intent = new Intent(this, DocAndMeetingActivityV2.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", document.getLessonId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);

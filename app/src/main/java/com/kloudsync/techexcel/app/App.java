@@ -42,10 +42,7 @@ import com.pgyersdk.Pgyer;
 import com.pgyersdk.PgyerActivityManager;
 import com.pgyersdk.crash.PgyCrashManager;
 import com.ub.service.activity.NetWorkChangReceiver;
-import com.ub.service.activity.WatchCourseActivity3;
-
 import org.xutils.x;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.LinkedList;

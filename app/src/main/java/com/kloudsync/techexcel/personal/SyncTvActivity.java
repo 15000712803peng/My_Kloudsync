@@ -25,8 +25,8 @@ import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.response.BindTvStatusResponse;
 import com.kloudsync.techexcel.response.DevicesResponse;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
 import com.mining.app.zxing.BindTvCapture;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class SyncTvActivity extends Activity implements View.OnClickListener, Co
 	};
 
 	private void GoToVIew(String result) {
-		Intent intent = new Intent(SyncTvActivity.this, WatchCourseActivity3.class);
+		Intent intent = new Intent(SyncTvActivity.this, DocAndMeetingActivityV2.class);
 		intent.putExtra("userid", AppConfig.UserID);
 		intent.putExtra("meetingId", result);
 		intent.putExtra("teacherid", AppConfig.UserID);

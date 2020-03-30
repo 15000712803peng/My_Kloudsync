@@ -67,7 +67,8 @@ import com.kloudsync.techexcel.tool.DocumentUploadTool;
 import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.Md5Tool;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
-import com.ub.service.activity.WatchCourseActivity3;
+
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.ServiceBean;
@@ -152,7 +153,7 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
     };
 
     private void GoToVIew() {
-        Intent intent = new Intent(SpaceDocumentsActivity.this, WatchCourseActivity3.class);
+        Intent intent = new Intent(SpaceDocumentsActivity.this, DocAndMeetingActivityV2.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", bean.getId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);
@@ -168,7 +169,7 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
     }
 
     private void GoToVIew(Document lesson) {
-        Intent intent = new Intent(SpaceDocumentsActivity.this, WatchCourseActivity3.class);
+        Intent intent = new Intent(SpaceDocumentsActivity.this, DocAndMeetingActivityV2.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", lesson.getLessonId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);

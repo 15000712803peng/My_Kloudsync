@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
@@ -26,7 +28,6 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkView;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,8 +54,8 @@ public class SoundtrackDigitalNoteManager {
     private CopyOnWriteArrayList<DigitalNoteEventInSoundtrack> noteEvents = new CopyOnWriteArrayList<>();
     private volatile long totalTime = 0;
     private RelativeLayout smallNoteLayout;
-    private XWalkView smallNoteWeb;
-    private XWalkView mainNoteWeb;
+    private WebView smallNoteWeb;
+    private WebView mainNoteWeb;
     private MeetingConfig meetingConfig;
     private SyncNoteEventsCache noteEventsCache;
 
@@ -142,8 +143,8 @@ public class SoundtrackDigitalNoteManager {
     }
 
     public void initViews(MeetingConfig meetingConfig, RelativeLayout smallNoteLayout,
-                          XWalkView smallNoteWeb,
-                          XWalkView mainNoteWeb) {
+                          WebView smallNoteWeb,
+                          WebView mainNoteWeb) {
         this.meetingConfig = meetingConfig;
         this.smallNoteLayout = smallNoteLayout;
         this.smallNoteWeb = smallNoteWeb;
@@ -377,7 +378,7 @@ public class SoundtrackDigitalNoteManager {
                     @Override
                     public void accept(String s) throws Exception {
 //                        smallNoteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                        mainNoteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                        mainNoteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
 //                        handleNoteShowLine("397837A1-D305-4688-9DA5-ACF09374CDD0");
                     }
                 });
@@ -494,7 +495,7 @@ public class SoundtrackDigitalNoteManager {
                     @Override
                     public void accept(String s) throws Exception {
 //                        mainNoteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                        smallNoteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                        smallNoteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
 //                        handleNoteShowLine("397837A1-D305-4688-9DA5-ACF09374CDD0");
                     }
                 });
@@ -540,8 +541,8 @@ public class SoundtrackDigitalNoteManager {
                     Observable.just("delay_load").delay(5000, TimeUnit.MICROSECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                         @Override
                         public void accept(String s) throws Exception {
-                            mainNoteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-                            smallNoteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                            mainNoteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
+                            smallNoteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
 
 
                         }
@@ -570,7 +571,7 @@ public class SoundtrackDigitalNoteManager {
         }
     }
 
-    private void doDrawDTNewBorder(int x, int y, int width, int height, JSONObject info, XWalkView noteWeb) throws JSONException {
+    private void doDrawDTNewBorder(int x, int y, int width, int height, JSONObject info, WebView noteWeb) throws JSONException {
         JSONObject message = new JSONObject();
         message.put("type", 40);
         message.put("CW", 678);
@@ -583,15 +584,15 @@ public class SoundtrackDigitalNoteManager {
         clearLastMessage.put("type", 40);
 
         Log.e("doDrawDTNewBorder", "border_PlayActionByTxt:" + message);
-        noteWeb.load("javascript:PlayActionByTxt('" + message + "')", null);
+        noteWeb.loadUrl("javascript:PlayActionByTxt('" + message + "')", null);
     }
 
     private void showMainPageNoteWeb() {
         smallNoteWeb.setVisibility(View.GONE);
         smallNoteLayout.setVisibility(View.GONE);
         mainNoteWeb.setVisibility(View.VISIBLE);
-        mainNoteWeb.load("javascript:ClearPath()", null);
-        smallNoteWeb.load("javascript:ClearPath()", null);
+        mainNoteWeb.loadUrl("javascript:ClearPath()", null);
+        smallNoteWeb.loadUrl("javascript:ClearPath()", null);
     }
 
     private void switchMainPageNoteWeb() {
@@ -620,8 +621,8 @@ public class SoundtrackDigitalNoteManager {
         smallNoteWeb.setVisibility(View.VISIBLE);
         smallNoteLayout.setVisibility(View.VISIBLE);
         mainNoteWeb.setVisibility(View.GONE);
-        smallNoteWeb.load("javascript:ClearPath()", null);
-        mainNoteWeb.load("javascript:ClearPath()", null);
+        smallNoteWeb.loadUrl("javascript:ClearPath()", null);
+        mainNoteWeb.loadUrl("javascript:ClearPath()", null);
     }
 
     public void init(Activity context) {
@@ -650,18 +651,18 @@ public class SoundtrackDigitalNoteManager {
 
 
     public class SmallNoteJavascriptInterface {
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void afterChangePageFunction(final int pageNum, int type) {
 //            Log.e("JavascriptInterface", "note_afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void reflect(String result) {
             Log.e("JavascriptInterface", "reflect,result:  " + result);
 
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public synchronized void callAppFunction(final String action, final String data) {
             Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
             if (TextUtils.isEmpty(action) || TextUtils.isEmpty(data)) {
@@ -669,7 +670,7 @@ public class SoundtrackDigitalNoteManager {
             }
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void afterLoadPageFunction() {
             Log.e("JavascriptInterface", "afterLoadPageFunction");
             Observable.just("init").delay(1000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
@@ -683,18 +684,18 @@ public class SoundtrackDigitalNoteManager {
     }
 
     public class MainNoteJavascriptInterface {
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void afterChangePageFunction(final int pageNum, int type) {
 //            Log.e("JavascriptInterface", "note_afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void reflect(String result) {
             Log.e("JavascriptInterface", "reflect,result:  " + result);
 
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public synchronized void callAppFunction(final String action, final String data) {
             Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
             if (TextUtils.isEmpty(action) || TextUtils.isEmpty(data)) {
@@ -702,7 +703,7 @@ public class SoundtrackDigitalNoteManager {
             }
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void afterLoadPageFunction() {
             Log.e("JavascriptInterface", "afterLoadPageFunction");
             Observable.just("init").delay(1000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
@@ -718,8 +719,8 @@ public class SoundtrackDigitalNoteManager {
     private void initSmallAfterPageLoad() {
         String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
         Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")");
-        smallNoteWeb.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
-        smallNoteWeb.load("javascript:Record()", null);
+        smallNoteWeb.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
+        smallNoteWeb.loadUrl("javascript:Record()", null);
         String key = "ChangeMovePageButton";
         JSONObject _data = new JSONObject();
         JSONObject _left = new JSONObject();
@@ -733,17 +734,17 @@ public class SoundtrackDigitalNoteManager {
             e.printStackTrace();
         }
 
-        smallNoteWeb.load("javascript:ShowToolbar(" + false + ")", null);
-        smallNoteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-        smallNoteWeb.load("javascript:Record()", null);
+        smallNoteWeb.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+        smallNoteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
+        smallNoteWeb.loadUrl("javascript:Record()", null);
     }
 
 
     private void initMainAfterPageLoad() {
         String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
         Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")");
-        mainNoteWeb.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
-        mainNoteWeb.load("javascript:Record()", null);
+        mainNoteWeb.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
+        mainNoteWeb.loadUrl("javascript:Record()", null);
         String key = "ChangeMovePageButton";
         JSONObject _data = new JSONObject();
         JSONObject _left = new JSONObject();
@@ -757,9 +758,9 @@ public class SoundtrackDigitalNoteManager {
             e.printStackTrace();
         }
 
-        mainNoteWeb.load("javascript:ShowToolbar(" + false + ")", null);
-        mainNoteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-        mainNoteWeb.load("javascript:Record()", null);
+        mainNoteWeb.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+        mainNoteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
+        mainNoteWeb.loadUrl("javascript:Record()", null);
     }
 
     private JSONObject fetchExitedNotesData(JSONObject pageData, String lastStokeId) throws JSONException {

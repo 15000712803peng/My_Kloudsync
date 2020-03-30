@@ -16,6 +16,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -52,10 +54,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.JavascriptInterface;
-import org.xwalk.core.XWalkPreferences;
-import org.xwalk.core.XWalkView;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,7 +112,7 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     RecordActionsManager actionsManager;
     RecordShareVedioManager recordShareVedioManager;
     UserVedioManager userVedioManager;
-    XWalkView web;
+    WebView web;
 
     TextView statusText;
     ImageView startPauseImage;
@@ -299,8 +297,8 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 }
                 DocumentPage documentPage = meetingConfig.getCurrentDocumentPage();
                 if (documentPage != null) {
-                    web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-                    web.load("javascript:Record()", null);
+                    web.loadUrl("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                    web.loadUrl("javascript:Record()", null);
                 }
             }
         });
@@ -317,8 +315,8 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                     }
                     DocumentPage documentPage = meetingConfig.getCurrentDocumentPage();
                     if (documentPage != null) {
-                        web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-                        web.load("javascript:Record()", null);
+                        web.loadUrl("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                        web.loadUrl("javascript:Record()", null);
                     }
                 }
             });
@@ -676,14 +674,14 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
     }
 
     private void initWeb() {
-        web.setZOrderOnTop(false);
+//        web.setZOrderOnTop(false);
         web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setDomStorageEnabled(true);
         web.addJavascriptInterface(this, "AnalyticsWebInterface");
-        XWalkPreferences.setValue("enable-javascript", true);
-        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
-        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
-        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
+//        XWalkPreferences.setValue("enable-javascript", true);
+//        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+//        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
+//        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
         loadWebIndex();
     }
 
@@ -700,15 +698,15 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
                 if (web == null) {
                     return;
                 }
-                web.load(url, null);
-                web.load("javascript:ShowToolbar(" + false + ")", null);
-                web.load("javascript:Record()", null);
+                web.loadUrl(url, null);
+                web.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+                web.loadUrl("javascript:Record()", null);
 
             }
         });
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
         if (actionsManager != null) {
 //            actionsManager.preloadFile(url, currentpageNum);
@@ -728,8 +726,8 @@ public class RecordPlayDialog implements View.OnClickListener, HeaderRecyclerAda
         host.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                web.load("javascript:ShowToolbar(" + false + ")", null);
-                web.load("javascript:Record()", null);
+                web.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+                web.loadUrl("javascript:Record()", null);
 
             }
         });

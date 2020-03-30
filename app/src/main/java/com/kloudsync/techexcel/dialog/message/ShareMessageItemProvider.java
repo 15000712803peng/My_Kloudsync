@@ -20,9 +20,10 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
 import com.kloudsync.techexcel.ui.MainActivity;
 import com.ub.kloudsync.activity.Document;
-import com.ub.service.activity.WatchCourseActivity3;
+
 import com.ub.techexcel.service.ConnectService;
 
 import org.json.JSONException;
@@ -162,7 +163,7 @@ public class ShareMessageItemProvider extends IContainerItemProvider.MessageProv
     private void GoToVIew(Document document) {
         Log.e("biang", (null == mContext) + "");
         if(!(null == mContext)) {
-            Intent intent = new Intent(mContext, WatchCourseActivity3.class);
+            Intent intent = new Intent(mContext, DocAndMeetingActivityV2.class);
             intent.putExtra("userid", AppConfig.UserID);
             intent.putExtra("meetingId", document.getLessonId() + "," + AppConfig.UserID);
             intent.putExtra("isTeamspace", true);

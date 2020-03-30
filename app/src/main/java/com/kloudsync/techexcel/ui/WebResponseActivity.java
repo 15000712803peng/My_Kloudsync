@@ -15,7 +15,6 @@ import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.BookNote;
 import com.kloudsync.techexcel.tool.QueryLocalNoteTool;
-import com.ub.service.activity.WatchCourseActivity3;
 
 /**
  * Created by tonyan on 2019/11/1.

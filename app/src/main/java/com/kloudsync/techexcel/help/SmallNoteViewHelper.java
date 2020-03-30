@@ -3,7 +3,9 @@ package com.kloudsync.techexcel.help;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
@@ -17,8 +19,6 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkView;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,12 +45,12 @@ public class SmallNoteViewHelper {
     public static final int EVENT_NOTE_SHOW_SWITCH_TO_SMALL_WINDOW = 307;
     public static final int EVENT_NOTE_SHOW_IN_MIAI_WINDOW = 308;
 
-    private XWalkView smallNoteView;
+    private WebView smallNoteView;
     private RelativeLayout noteCotainer;
     private MeetingConfig meetingConfig;
     private Context context;
 
-    public SmallNoteViewHelper(RelativeLayout noteCotainer, XWalkView smallNoteView, MeetingConfig meetingConfig) {
+    public SmallNoteViewHelper(RelativeLayout noteCotainer, WebView smallNoteView, MeetingConfig meetingConfig) {
         this.noteCotainer = noteCotainer;
         this.smallNoteView = smallNoteView;
         this.meetingConfig = meetingConfig;
@@ -58,7 +58,7 @@ public class SmallNoteViewHelper {
 
     public void init(Context context) {
         this.context = context;
-        smallNoteView.setZOrderOnTop(false);
+//        smallNoteView.setZOrderOnTop(false);
         smallNoteView.getSettings().setJavaScriptEnabled(true);
         smallNoteView.getSettings().setDomStorageEnabled(true);
         smallNoteView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -69,14 +69,14 @@ public class SmallNoteViewHelper {
             indexUrl += "?devicetype=4";
         }
         final String url = indexUrl;
-        smallNoteView.load(url, null);
+        smallNoteView.loadUrl(url, null);
     }
 
     private void initAfterPageLoad() {
         String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
         Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")");
-        smallNoteView.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-        smallNoteView.load("javascript:Record()", null);
+        smallNoteView.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+        smallNoteView.loadUrl("javascript:Record()", null);
         String key = "ChangeMovePageButton";
         JSONObject _data = new JSONObject();
         JSONObject _left = new JSONObject();
@@ -90,25 +90,25 @@ public class SmallNoteViewHelper {
             e.printStackTrace();
         }
 
-        smallNoteView.load("javascript:ShowToolbar(" + false + ")", null);
-        smallNoteView.load("javascript:FromApp('" + key + "'," + _data + ")", null);
-        smallNoteView.load("javascript:Record()", null);
+        smallNoteView.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+        smallNoteView.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
+        smallNoteView.loadUrl("javascript:Record()", null);
         doProcess();
     }
 
     public class NoteJavascriptInterface {
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void afterChangePageFunction(final int pageNum, int type) {
 //            Log.e("JavascriptInterface", "note_afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void reflect(String result) {
             Log.e("JavascriptInterface", "reflect,result:  " + result);
 
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public synchronized void callAppFunction(final String action, final String data) {
             Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
             if (TextUtils.isEmpty(action) || TextUtils.isEmpty(data)) {
@@ -116,7 +116,7 @@ public class SmallNoteViewHelper {
             }
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void afterLoadPageFunction() {
             Log.e("JavascriptInterface", "afterLoadPageFunction");
             Observable.just("init").delay(1000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {

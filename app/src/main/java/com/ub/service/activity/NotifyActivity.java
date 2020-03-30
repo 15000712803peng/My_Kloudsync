@@ -30,6 +30,8 @@ import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
+import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.ub.techexcel.adapter.NotifyAdapter;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.ServiceBean;
@@ -73,7 +75,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
                     notifyAdapter.setOnModifyCourseListener(new NotifyAdapter.OnModifyCourseListener() {
                         @Override
                         public void join(int position) {
-                            Intent intent = new Intent(NotifyActivity.this, WatchCourseActivity2.class);
+                            Intent intent = new Intent(NotifyActivity.this, MeetingViewActivity.class);
                             intent.putExtra("userid", mList.get(position).getUserId());
                             intent.putExtra("meetingId", mList.get(position).getId() + "");
                             intent.putExtra("teacherid", mList.get(position).getTeacherId());
@@ -115,7 +117,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
                     if (lessionid == -1) {     //看看老师是否正在上课
                         getUpcomingLessonList(teacherid + "");
                     } else {
-                        Intent ii = new Intent(NotifyActivity.this, WatchCourseActivity3.class);
+                        Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
                         ii.putExtra("meetingId", roomid + "");
                         ii.putExtra("identity", 1);  // 学生
                         ii.putExtra("ishavedefaultpage",true);
@@ -133,7 +135,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
                         }
                     }
                     if (null == lesson) {  // 进去等待
-                        Intent ii = new Intent(NotifyActivity.this, WatchCourseActivity3.class);
+                        Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
                         ii.putExtra("meetingId", roomid + "");
                         ii.putExtra("identity", 1);  // 学生
                         ii.putExtra("lessionId", lessionid + "");
@@ -144,7 +146,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
                         finish();
                     } else {
                         if (lesson.getIsInClassroom() == 1) {
-                            Intent ii = new Intent(NotifyActivity.this, WatchCourseActivity3.class);
+                            Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
                             ii.putExtra("meetingId", roomid + "");
                             ii.putExtra("identity", 1);  // 学生
                             ii.putExtra("ishavedefaultpage",true);
@@ -154,7 +156,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
                             startActivity(ii);
                             finish();
                         } else {
-                            Intent ii = new Intent(NotifyActivity.this, WatchCourseActivity2.class);
+                            Intent ii = new Intent(NotifyActivity.this, MeetingViewActivity.class);
                             ii.putExtra("meetingId", lesson.getLessonID() + "");
                             ii.putExtra("identity", 1);  // 学生
                             ii.putExtra("lessionId", lessionid + "");
@@ -188,7 +190,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
             @Override
             public void onClick(View view) {
                 if (lesson.getIsInClassroom() == 1) {
-                    Intent ii = new Intent(NotifyActivity.this, WatchCourseActivity3.class);
+                    Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
                     ii.putExtra("meetingId", roomid + "");
                     ii.putExtra("identity", 1);  // 学生
                     ii.putExtra("lessionId", lessionid + "");
@@ -197,7 +199,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
                     startActivity(ii);
                     finish();
                 } else {
-                    Intent ii = new Intent(NotifyActivity.this, WatchCourseActivity2.class);
+                    Intent ii = new Intent(NotifyActivity.this, MeetingViewActivity.class);
                     ii.putExtra("meetingId", lesson.getLessonID() + "");
                     ii.putExtra("identity", 1);  // 学生
                     ii.putExtra("lessionId", lessionid + "");
@@ -215,7 +217,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
             public void onClick(View view) {
                 joinasPopup.dismiss();
                 Log.e("notifity", roomid + "    " + lessionid + "   " + teacherid + "   ");
-                Intent ii = new Intent(NotifyActivity.this, WatchCourseActivity3.class);
+                Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
                 ii.putExtra("meetingId", roomid + "");
                 ii.putExtra("identity", 1);  // 学生
                 ii.putExtra("lessionId", lessionid + "");
@@ -230,7 +232,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
         joinrel2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent ii = new Intent(NotifyActivity.this, WatchCourseActivity3.class);
+                Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
                 ii.putExtra("meetingId", roomid + "");
                 ii.putExtra("identity", 1);  // 学生
                 ii.putExtra("lessionId", lessionid + "");
@@ -240,6 +242,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
                 finish();
             }
         });
+
         TextView cancel = (TextView) view.findViewById(R.id.cancel);
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override

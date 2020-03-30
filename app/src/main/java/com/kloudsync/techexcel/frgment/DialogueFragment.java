@@ -50,6 +50,7 @@ import com.kloudsync.techexcel.start.LoginGet.GroupGetListener;
 import com.kloudsync.techexcel.start.LoginGet.LoginGetListener;
 import com.kloudsync.techexcel.tool.EditHelp;
 import com.kloudsync.techexcel.ui.MainActivity;
+import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.kloudsync.techexcel.view.ClearEditText;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.friends.activity.AddFriendsActivity;
@@ -57,7 +58,6 @@ import com.ub.service.activity.MyKlassroomActivity;
 import com.ub.service.activity.NotifyActivity;
 import com.ub.service.activity.SelectCourseActivity;
 import com.ub.service.activity.SelectUserActivity;
-import com.ub.service.activity.WatchCourseActivity2;
 import com.ub.techexcel.database.CustomerDao;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -828,7 +828,7 @@ public class DialogueFragment extends Fragment {
     }
 
     private void SpectatorJoin(SpectatorMessage sm) {
-        Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+        Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
         intent.putExtra("isPresenter", sm.getCurrent_presenter().equals("1") ? true : false);
         intent.putExtra("dataArray", (Serializable) sm.getCollection_dataArray());
         intent.putExtra("url", sm.getAuditor_attachmentUrl());
@@ -838,7 +838,7 @@ public class DialogueFragment extends Fragment {
     }
 
     private void StartWatchCourse(CourseMessage cc) {
-        Intent intent = new Intent(getActivity(), WatchCourseActivity2.class);
+        Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
         intent.putExtra("url", cc.getAttachmentUrl());
         intent.putExtra("meetingId", cc.getMeetingId());
         intent.putExtra("CustomerRongCloudID", cc.getRongCloudUserID());

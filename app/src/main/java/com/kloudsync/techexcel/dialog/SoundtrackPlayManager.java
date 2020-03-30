@@ -60,9 +60,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkPreferences;
-import org.xwalk.core.XWalkView;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -594,10 +591,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setDomStorageEnabled(true);
         web.addJavascriptInterface(this, "AnalyticsWebInterface");
-        XWalkPreferences.setValue("enable-javascript", true);
-        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
-        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
-        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
         loadWebIndex();
     }
 
@@ -633,7 +626,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public void afterLoadPageFunction() {
         isStarted = true;
     }
-
 
     @JavascriptInterface
     public void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
@@ -749,9 +741,10 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     public void followPause() {
-        if (soundtrackAudioManager.isPlaying()) {
-            pause();
-        }
+//        if (soundtrackAudioManager.isPlaying()) {
+//
+//        }
+        pause();
     }
 
     public void followRestart() {

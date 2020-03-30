@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
@@ -31,7 +32,6 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkView;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -64,7 +64,7 @@ public class SoundtrackActionsManager {
     private List<MediaPlayPage> mediaPlayPages = new ArrayList<>();
     private int recordId;
     private volatile long totalTime = 0;
-    private XWalkView web;
+    private WebView web;
     private SurfaceView surfaceView;
     private WebVedioManager webVedioManager;
     private String downloadUrlPre = "";
@@ -78,7 +78,7 @@ public class SoundtrackActionsManager {
         this.userVedioManager = userVedioManager;
     }
 
-    public void setWeb(XWalkView web, MeetingConfig meetingConfig) {
+    public void setWeb(WebView web, MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
         this.web = web;
     }
@@ -367,8 +367,8 @@ public class SoundtrackActionsManager {
 
             } else {
 	            Log.e("doExecuteAction", "action," + action.getData() + ",playtime:" + playTime);
-                web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                web.load("javascript:Record()", null);
+                web.loadUrl("javascript:PlayActionByTxt('" + action.getData() + "')", null);
+                web.loadUrl("javascript:Record()", null);
             }
 //                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
 
@@ -405,8 +405,8 @@ public class SoundtrackActionsManager {
 
 
             } else {
-                web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                web.load("javascript:Record()", null);
+                web.loadUrl("javascript:PlayActionByTxt('" + action.getData() + "')", null);
+                web.loadUrl("javascript:Record()", null);
             }
 //                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
 
@@ -653,13 +653,13 @@ public class SoundtrackActionsManager {
 
     public void release() {
         currentPage = -1;
-        if (web != null) {
-            web.removeAllViews();
-            web.onDestroy();
-            web = null;
-        }
+//        if (web != null) {
+//            web.removeAllViews();
+//            web.destroy();
+//            web = null;
+//        }
         webActions.clear();
-	    currentPartWebActions = null;
+        currentPartWebActions = null;
         mediaPlayPages.clear();
         requests.clear();
         if (webVedioManager != null) {
@@ -691,8 +691,8 @@ public class SoundtrackActionsManager {
                 }
 	            Log.e("showCurrentPage", "page:" + documentPage);
 	            web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-                web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-                web.load("javascript:Record()", null);
+                web.loadUrl("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                web.loadUrl("javascript:Record()", null);
             }
         }).subscribe();
 

@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -56,9 +58,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkPreferences;
-import org.xwalk.core.XWalkView;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -120,14 +119,14 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     private long totalTime;
     //
     UserVedioManager userVedioManager;
-    XWalkView web;
+    WebView web;
     TextView statusText;
     private TextView onlyShowTimeText;
     private ImageView hideControllerImage;
     //------
     private RelativeLayout smallNoteLayout;
-    private XWalkView smallNoteWeb;
-    private XWalkView mainNoteWeb;
+    private WebView smallNoteWeb;
+    private WebView mainNoteWeb;
     SmallNoteViewHelper smallNoteViewHelper;
 
     private boolean mIsPause=false;//是否处于暂停
@@ -318,8 +317,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
                 }
                 DocumentPage documentPage = meetingConfig.getCurrentDocumentPage();
                 if (documentPage != null) {
-                    web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-                    web.load("javascript:Record()", null);
+                    web.loadUrl("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                    web.loadUrl("javascript:Record()", null);
                 }
             }
         });
@@ -595,19 +594,19 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     }
 
     private void clearActionsBySeek() {
-        web.load("javascript:ClearPageAndAction()", null);
-        web.load("javascript:Record()", null);
+        web.loadUrl("javascript:ClearPageAndAction()", null);
+        web.loadUrl("javascript:Record()", null);
     }
 
     private void initWeb() {
-        web.setZOrderOnTop(false);
+//        web.setZOrderOnTop(false);
         web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setDomStorageEnabled(true);
         web.addJavascriptInterface(this, "AnalyticsWebInterface");
-        XWalkPreferences.setValue("enable-javascript", true);
-        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
-        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
-        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
+//        XWalkPreferences.setValue("enable-javascript", true);
+//        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+//        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
+//        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
         loadWebIndex();
     }
 
@@ -617,10 +616,10 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         if (deviceType == SupportDevice.BOOK) {
             indexUrl += "?devicetype=4";
         }
-        web.load(indexUrl, null);
+        web.loadUrl(indexUrl, null);
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterLoadFileFunction() {
         SoundtrackActionsManager.getInstance(host).setLoadingPage(false);
         if (isSeek) {
@@ -630,8 +629,8 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         host.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                web.load("javascript:ShowToolbar(" + false + ")", null);
-                web.load("javascript:Record()", null);
+                web.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+                web.loadUrl("javascript:Record()", null);
                 DocumentPage documentPage = meetingConfig.getCurrentDocumentPage();
 
             }
@@ -639,20 +638,20 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
 
     }
 
-	@org.xwalk.core.JavascriptInterface
+	@JavascriptInterface
 	public void afterLoadPageFunction() {
 		isStarted = true;
 	}
 
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
         Log.e("JavascriptInterface", "preLoadFileFunctiona," + url + "     currentpageNum   " + currentpageNum + "   showLoading    " + showLoading);
     }
 
     int currentPaegNum;
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum" + pageNum + ",type" + type);
         currentPaegNum = pageNum;
@@ -701,7 +700,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
             if (pageActions.getPageNumber() == currentPaegNum) {
                 Log.e("check_play_txt", "PlayActionByArray:" + data);
                 if (web != null) {
-                    web.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
+                    web.loadUrl("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
 
                 }
             }

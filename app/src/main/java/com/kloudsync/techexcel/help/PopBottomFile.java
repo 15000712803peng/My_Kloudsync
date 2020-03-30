@@ -26,8 +26,6 @@ import android.widget.Toast;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
 import com.kloudsync.techexcel.bean.MeetingDocument;
-import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 
 import org.greenrobot.eventbus.EventBus;

@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.ui.MainActivity;
-import com.ub.service.activity.KeyActivity;
 import com.ub.techexcel.tools.Tools;
 
 import io.rong.imkit.model.ProviderTag;

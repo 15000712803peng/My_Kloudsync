@@ -45,6 +45,7 @@ import com.kloudsync.techexcel.tool.DocumentUploadUtil;
 import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.Md5Tool;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.HttpHandler;
@@ -53,7 +54,6 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.ub.kloudsync.activity.Document;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.tools.FileUtils;
@@ -205,7 +205,7 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
     }
 
     private void GoToVIew(Document lesson) {
-        Intent intent = new Intent(this, WatchCourseActivity3.class);
+        Intent intent = new Intent(this, DocAndMeetingActivityV2.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", lesson.getLessonId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);

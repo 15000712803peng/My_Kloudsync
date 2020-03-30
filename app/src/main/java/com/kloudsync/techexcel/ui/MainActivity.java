@@ -108,7 +108,6 @@ import com.ub.service.KloudWebClientManager;
 import com.ub.service.activity.SocketService;
 import com.ub.service.activity.SyncBookActivity;
 import com.ub.service.activity.SyncRoomActivity;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.EventViewDocPermissionGranted;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.FileUtils;
@@ -883,7 +882,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     public void onResume() {
         super.onResume();
-        WatchCourseActivity3.watch3instance = false;
+//        WatchCourseActivity3.watch3instance = false;
         SyncRoomActivity.syncroomInstance = false;
         SyncBookActivity.syncbookInstance = false;
         if (RESUME) {
@@ -1439,9 +1438,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         Log.e("handleBindJoinMeeting", "info:" + followInfo);
 
         // -- 1:如果在会议里面
-        if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
-            return;
-        }
+//        if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
+//            return;
+//        }
 
         // -- 2:如果在document,syncroom ,或者 syncbook里面
 //        if((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
@@ -1484,9 +1483,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         Log.e("handleEnableTvFollow", "info:" + followInfo);
 
         // -- 1:如果在会议里面
-        if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
-            return;
-        }
+//        if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
+//            return;
+//        }
 
         // -- 2:如果在document,syncroom ,或者 syncbook里面
 //        if((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
@@ -1519,9 +1518,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 if (hasOwner) {
                     // 开启了同步
                     // 1: 如果正在会议里面，不用做额外处理
-                    if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
-                        return;
-                    }
+//                    if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
+//                        return;
+//                    }
 
                     if (messageJson.has("tvOwnerMeetingId")) {
                         followInfo.setMeetingId(messageJson.getString("tvOwnerMeetingId"));
@@ -1538,44 +1537,44 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     }
 
                     // -- 2:如果在document,syncroom ,或者 syncbook里面
-                    Log.e("check_instance", "watch3instance:" + WatchCourseActivity3.watch3instance + "--syncroomInstance:" + SyncRoomActivity.syncroomInstance + "--syncbookInstance:" + SyncBookActivity.syncbookInstance);
-                    if ((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
-                            SyncBookActivity.syncbookInstance) {
-                        String _meetingId = "";
-                        if (WatchCourseActivity3.watch3instance) {
-                            _meetingId = WatchCourseActivity3.meetingId;
-                            Log.e("----", "one,meeting_id:" + _meetingId);
-                        }
-                        if (SyncBookActivity.syncbookInstance) {
-                            _meetingId = SyncBookActivity.meetingId;
-                            Log.e("----", "two,meeting_id:" + _meetingId);
-                        }
-                        if (SyncRoomActivity.syncroomInstance) {
-                            _meetingId = SyncRoomActivity.meetingId;
-                            Log.e("----", "three,meeting_id:" + _meetingId);
-                        }
-
-                        if (messageJson.has("tvBindUserId")) {
-                            String bindUserId = messageJson.getString("tvBindUserId");
-                            if (!TextUtils.isEmpty(bindUserId)) {
-                                if (TextUtils.isEmpty(followInfo.getMeetingId())) {
-                                    // 心跳中没有会议了
-//                                    sendLeaveMeetingMessage();
-                                    return;
-                                }
-                            }
-                        }
-
-                        if (!_meetingId.equals(messageJson.getString("tvOwnerMeetingId"))) {
-                            Log.e("----", "four,tvOwnerMeetingId:" + messageJson.getString("tvOwnerMeetingId"));
-                            sendLeaveMeetingMessage();
-                            followUser(followInfo.getMeetingId(), followInfo.getLessionId(), followInfo.getType());
-                        }
-                        return;
-                    }
+//                    Log.e("check_instance", "watch3instance:" + WatchCourseActivity3.watch3instance + "--syncroomInstance:" + SyncRoomActivity.syncroomInstance + "--syncbookInstance:" + SyncBookActivity.syncbookInstance);
+//                    if ((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
+//                            SyncBookActivity.syncbookInstance) {
+//                        String _meetingId = "";
+//                        if (WatchCourseActivity3.watch3instance) {
+//                            _meetingId = WatchCourseActivity3.meetingId;
+//                            Log.e("----", "one,meeting_id:" + _meetingId);
+//                        }
+//                        if (SyncBookActivity.syncbookInstance) {
+//                            _meetingId = SyncBookActivity.meetingId;
+//                            Log.e("----", "two,meeting_id:" + _meetingId);
+//                        }
+//                        if (SyncRoomActivity.syncroomInstance) {
+//                            _meetingId = SyncRoomActivity.meetingId;
+//                            Log.e("----", "three,meeting_id:" + _meetingId);
+//                        }
+//
+//                        if (messageJson.has("tvBindUserId")) {
+//                            String bindUserId = messageJson.getString("tvBindUserId");
+//                            if (!TextUtils.isEmpty(bindUserId)) {
+//                                if (TextUtils.isEmpty(followInfo.getMeetingId())) {
+//                                    // 心跳中没有会议了
+////                                    sendLeaveMeetingMessage();
+//                                    return;
+//                                }
+//                            }
+//                        }
+//
+//                        if (!_meetingId.equals(messageJson.getString("tvOwnerMeetingId"))) {
+//                            Log.e("----", "four,tvOwnerMeetingId:" + messageJson.getString("tvOwnerMeetingId"));
+//                            sendLeaveMeetingMessage();
+//                            followUser(followInfo.getMeetingId(), followInfo.getLessionId(), followInfo.getType());
+//                        }
+//                        return;
+//                    }
 
                     // -- 没有在任何..
-                    if (!WatchCourseActivity3.watch3instance && !SyncRoomActivity.syncroomInstance ||
+                    if (!SyncRoomActivity.syncroomInstance ||
                             !SyncBookActivity.syncbookInstance)
                         if (messageJson.has("tvOwnerMeetingId")) {
                             followUser(followInfo.getMeetingId(), followInfo.getLessionId(), followInfo.getType());
@@ -1628,7 +1627,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             return;
         }
         if (type == 1 || type == 2) {
-            Intent intent = (type == 2) ? new Intent(this, WatchCourseActivity3.class) :
+            Intent intent = (type == 2) ? new Intent(this, DocAndMeetingActivityV2.class) :
                     new Intent(this, SyncRoomActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra("userid", AppConfig.UserID);
@@ -1644,7 +1643,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             intent.putExtra("type", type);
             startActivity(intent);
         } else if (type == 0) {
-            Intent intent = new Intent(this, WatchCourseActivity3.class);
+            Intent intent = new Intent(this, DocAndMeetingActivityV2.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra("userid", AppConfig.UserID);
             intent.putExtra("meetingId", meetingId);
@@ -1688,7 +1687,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Subscribe
     public void doc(EventDoc doc) {
         Log.e("event_bus", "set doc:" + true);
-        WatchCourseActivity3.watch3instance = true;
+//        WatchCourseActivity3.watch3instance = true;
     }
 
     @Subscribe

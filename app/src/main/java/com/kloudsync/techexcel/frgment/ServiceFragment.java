@@ -58,8 +58,6 @@ import com.ub.service.activity.MyKlassroomActivity;
 import com.ub.service.activity.NewMeetingActivity;
 import com.ub.service.activity.NewPublicLessonActivity;
 import com.ub.service.activity.SelectCourseActivity;
-import com.ub.service.activity.WatchCourseActivity2;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.ServiceAdapter2;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.tools.EventSchoolPopup;
@@ -289,7 +287,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                     break;
                 case 0x1104:  //加入会议室
                     ServiceBean serviceBean = (ServiceBean) msg.obj;
-                    Intent intent3 = new Intent(getActivity(), WatchCourseActivity2.class);
+                    Intent intent3 = new Intent(getActivity(), DocAndMeetingActivityV2.class);
                     intent3.putExtra("isHtml", serviceBean.getLineItems().get(0).isHtml5());
                     intent3.putExtra("url", serviceBean.getLineItems().get(0).getUrl());
                     intent3.putExtra("CustomerRongCloudID", serviceBean.getCustomerRongCloudId());
@@ -313,7 +311,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                     if (lessionid == -1) {
                         addInstantLesson(AppConfig.ClassRoomID);
                     } else {
-                        Intent intent2 = new Intent(getActivity(), WatchCourseActivity3.class);
+                        Intent intent2 = new Intent(getActivity(), DocAndMeetingActivityV2.class);
                         intent2.putExtra("meetingId", AppConfig.ClassRoomID + "");
                         intent2.putExtra("identity", 2);
                         intent2.putExtra("lessionId", lessionid + "");
@@ -328,7 +326,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 case 0x1002:  // addInstantLesson
                     Log.e("getClassRoomLessonID", "加入课程成功");
                     int lessionid2 = (int) msg.obj;
-                    Intent intent5 = new Intent(getActivity(), WatchCourseActivity3.class);
+                    Intent intent5 = new Intent(getActivity(), DocAndMeetingActivityV2.class);
                     intent5.putExtra("meetingId", AppConfig.ClassRoomID + "");
                     intent5.putExtra("identity", 2);
                     intent5.putExtra("ishavedefaultpage", true);

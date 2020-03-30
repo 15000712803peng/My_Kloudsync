@@ -22,6 +22,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.widget.Toast;
@@ -126,8 +127,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkPreferences;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -338,16 +337,16 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     }
 
     private void initWeb() {
-        web.setZOrderOnTop(false);
+//        web.setZOrderOnTop(false);
         web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setDomStorageEnabled(true);
         web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         web.addJavascriptInterface(this, "AnalyticsWebInterface");
-
-        XWalkPreferences.setValue("enable-javascript", true);
-        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
-        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
-        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
+//
+//        XWalkPreferences.setValue("enable-javascript", true);
+//        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+//        XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
+//        XWalkPreferences.setValue(XWalkPreferences.SUPPORT_MULTIPLE_WINDOWS, true);
         loadWebIndex();
 
     }
@@ -359,13 +358,13 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             indexUrl += "?devicetype=4";
         }
         final String url = indexUrl;
-        web.load(url, null);
-        web.load("javascript:ShowToolbar(" + false + ")", null);
-        web.load("javascript:Record()", null);
+        web.loadUrl(url, null);
+        web.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+        web.loadUrl("javascript:Record()", null);
 
-        noteWeb.load(url, null);
-        noteWeb.load("javascript:ShowToolbar(" + false + ")", null);
-        noteWeb.load("javascript:Record()", null);
+        noteWeb.loadUrl(url, null);
+        noteWeb.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+        noteWeb.loadUrl("javascript:Record()", null);
     }
 
     private MeetingConfig getConfig() {
@@ -403,7 +402,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         MeetingKit.getInstance().release();
         if (web != null) {
             web.removeAllViews();
-            web.onDestroy();
+            web.destroy();
             web = null;
         }
 
@@ -466,8 +465,8 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         //notify change file
         notifyDocumentChanged();
         web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        web.load("javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-        web.load("javascript:Record()", null);
+        web.loadUrl("javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+        web.loadUrl("javascript:Record()", null);
         if (bottomFilePop != null && bottomFilePop.isShowing()) {
             bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
             bottomFilePop.removeTempDoc();
@@ -520,16 +519,16 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                 noteWeb.setVisibility(View.VISIBLE);
                 String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
                 Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")");
-                noteWeb.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
-                noteWeb.load("javascript:Record()", null);
+                noteWeb.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
+                noteWeb.loadUrl("javascript:Record()", null);
                 handleBluetoothNote(page.getNotePage().getPageUrl());
                 return;
             }
         }
 
         noteWeb.setVisibility(View.VISIBLE);
-        noteWeb.load("javascript:ShowPDF('" + page.getNotePage().getShowingPath() + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
-        noteWeb.load("javascript:Record()", null);
+        noteWeb.loadUrl("javascript:ShowPDF('" + page.getNotePage().getShowingPath() + "'," + (page.getNotePage().getPageNumber()) + ",''," + page.getAttachmendId() + "," + false + ")", null);
+        noteWeb.loadUrl("javascript:Record()", null);
 
     }
 
@@ -564,7 +563,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                 _data.put("ShowInCenter", false);
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
-                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                noteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override
@@ -580,7 +579,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                                 _data.put("LinesData", tempNoteData.getData());
                                 _data.put("ShowInCenter", true);
                                 _data.put("TriggerEvent", true);
-                                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                                noteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
                             }
                             newNoteDatas.remove(tempNoteData);
                         }
@@ -712,11 +711,11 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                         String _frame = Tools.getFromBase64(socketMessage.getData().getString("data"));
                         if (noteLayout.getVisibility() == View.VISIBLE) {
                             if (noteWeb != null) {
-                                noteWeb.load("javascript:PlayActionByTxt('" + _frame + "','" + 1 + "')", null);
+                                noteWeb.loadUrl("javascript:PlayActionByTxt('" + _frame + "','" + 1 + "')", null);
                             }
                         } else {
                             if (web != null) {
-                                web.load("javascript:PlayActionByTxt('" + _frame + "','" + 1 + "')", null);
+                                web.loadUrl("javascript:PlayActionByTxt('" + _frame + "','" + 1 + "')", null);
                             }
                         }
 
@@ -804,7 +803,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                                 _data.put("LinesData", Tools.getFromBase64(noteData));
                                 _data.put("ShowInCenter", true);
                                 _data.put("TriggerEvent", true);
-                                noteWeb.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                                noteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
                             }
                         }
                     } catch (JSONException e) {
@@ -888,7 +887,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         clearLastMessage.put("type", 40);
 
         Log.e("doDrawDTNewBorder", "border_PlayActionByTxt:" + message);
-        noteWeb.load("javascript:PlayActionByTxt('" + message + "')", null);
+        noteWeb.loadUrl("javascript:PlayActionByTxt('" + message + "')", null);
     }
 
     @Subscribe
@@ -904,7 +903,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         if (!TextUtils.isEmpty(data)) {
             if (pageActions.getPageNumber() == meetingConfig.getPageNumber()) {
 	            Log.e("check_play_txt", "PlayActionByArray:" + data);
-                web.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
+                web.loadUrl("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
             }
         }
     }
@@ -915,7 +914,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         String data = pageActions.getData();
         if (!TextUtils.isEmpty(data)) {
             if (noteLayout.getVisibility() == View.VISIBLE) {
-                noteWeb.load("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
+                noteWeb.loadUrl("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
             }
         }
     }
@@ -938,7 +937,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                                 message.put("LinkProperty", new JSONObject(note.getLinkProperty()));
                             }
                             Log.e("check_play_txt", "notes_PlayActionByTxt:" + message);
-                            web.load("javascript:PlayActionByTxt('" + message + "')", null);
+                            web.loadUrl("javascript:PlayActionByTxt('" + message + "')", null);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -981,7 +980,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             noteData.put("LinkProperty", linkProperty);
             Log.e("drawNote", "note:" + noteData.toString());
             if (web != null) {
-                web.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+                web.loadUrl("javascript:PlayActionByTxt('" + noteData + "')", null);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1001,7 +1000,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             noteData.put("id", "BooXNote_" + linkId);
             Log.e("deleteTempNote", "note:" + noteData.toString());
             if (web != null) {
-                web.load("javascript:PlayActionByTxt('" + noteData + "')", null);
+                web.loadUrl("javascript:PlayActionByTxt('" + noteData + "')", null);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1030,7 +1029,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
                 e.printStackTrace();
             }
             String key = "TwinkleBookNote";
-            web.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
+            web.loadUrl("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
 
         } else {
 
@@ -1139,7 +1138,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             public void accept(DocumentPage page) throws Exception {
                 String key = "TwinkleBookNote";
                 Log.e("TwinkleBookNote", "delay");
-                web.load("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
+                web.loadUrl("javascript:FromApp('" + key + "'," + jsonObject + ")", null);
             }
         }).subscribe();
 
@@ -1472,7 +1471,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             @Override
             public void run() {
                 Log.e("WebView_Load", "javascript:AfterDownloadFile('" + url + "', " + index + ")");
-                web.load("javascript:AfterDownloadFile('" + url + "', " + index + ")", null);
+                web.loadUrl("javascript:AfterDownloadFile('" + url + "', " + index + ")", null);
 
             }
         });
@@ -1497,18 +1496,18 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
 
     //-----  JavascriptInterface ----
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterLoadPageFunction() {
         Log.e("JavascriptInterface", "afterLoadPageFunction");
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void userSettingChangeFunction(final String option) {
         Log.e("JavascriptInterface", "userSettingChangeFunction,option:  " + option);
 
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public synchronized void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
         Log.e("JavascriptInterface", "preLoadFileFunction,url:  " + url + ", currentpageNum:" + currentpageNum + ",showLoading:" + showLoading);
         meetingConfig.setNotifyUrl(url);
@@ -1566,20 +1565,20 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
     private boolean hasLoadedFile = false;
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterLoadFileFunction() {
         Log.e("JavascriptInterface", "afterLoadFileFunction");
         hasLoadedFile = true;
 
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void showErrorFunction(final String error) {
         Log.e("JavascriptInterface", "showErrorFunction,error:  " + error);
 
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
         meetingConfig.setPageNumber(pageNum);
@@ -1589,7 +1588,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         }
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void reflect(String result) {
         Log.e("JavascriptInterface", "reflect,result:  " + result);
         meetingConfig.setDocModifide(checkIfModifyDoc(result));
@@ -1708,7 +1707,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public synchronized void autoChangeFileFunction(int diff) {
         Log.e("JavascriptInterface", "autoChangeFileFunction,diff:  " + diff);
         if (documents.size() <= 1) {
@@ -1741,7 +1740,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     }
 
     // 播放视频
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void videoPlayFunction(final int vid) {
         Log.e("JavascriptInterface", "videoPlayFunction,vid:  " + vid);
         if (meetingConfig.getType() == MeetingType.MEETING) {
@@ -1757,7 +1756,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     private FavoriteVideoPopup selectVideoDialog;
 
     //打开
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void videoSelectFunction(String video) {
         Log.e("JavascriptInterface", "videoSelectFunction,id:  " + video);
         if (selectVideoDialog != null) {
@@ -1768,13 +1767,13 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     }
 
     // 录制
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void audioSyncFunction(final int id, final int isRecording) {
         Log.e("JavascriptInterface", "audioSyncFunction,id:  " + id + ",isRecording:" + isRecording);
 
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public synchronized void callAppFunction(final String action, final String data) {
         Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
         if (TextUtils.isEmpty(action) || TextUtils.isEmpty(data)) {
@@ -2184,7 +2183,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             e.printStackTrace();
         }
         Log.e("AfterEditBookNote", "jsonObject:" + jsonObject);
-        web.load("javascript:AfterEditBookNote(" + jsonObject + ")", null);
+        web.loadUrl("javascript:AfterEditBookNote(" + jsonObject + ")", null);
         noteManager = LocalNoteManager.getMgr(this);
         String exportPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Kloudsyn" + File.separator + "Kloud_" + note.documentId + ".pdf";
         Log.e("upload_note", "link_property:" + meetingConfig.getCurrentLinkProperty());
@@ -2441,7 +2440,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     public void closeViewNote(EventCloseNoteView closeNoteView) {
         currentNoteId = 0;
         noteWeb.setVisibility(View.GONE);
-        noteWeb.load("javascript:ClearPath()", null);
+        noteWeb.loadUrl("javascript:ClearPath()", null);
         newNoteDatas.clear();
         menu.setVisibility(View.VISIBLE);
         notifyDocumentChanged();
@@ -2627,7 +2626,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
                 } else {
                     if (noteLayout.getVisibility() == View.VISIBLE) {
-                        noteWeb.load("javascript:ClearPath()", null);
+                        noteWeb.loadUrl("javascript:ClearPath()", null);
                         noteWeb.setVisibility(View.GONE);
                         noteLayout.setVisibility(View.GONE);
                     }
@@ -2801,13 +2800,13 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
 
     public class NoteJavascriptInterface {
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void afterChangePageFunction(final int pageNum, int type) {
 //            Log.e("JavascriptInterface", "note_afterChangePageFunction,pageNum:  " + pageNum + ", type:" + type);
             NoteViewManager.getInstance().getNotePageActionsToShow(meetingConfig);
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public void reflect(String result) {
             Log.e("JavascriptInterface", "reflect,result:  " + result);
             Note note = NoteViewManager.getInstance().getNote();
@@ -2816,7 +2815,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
             }
         }
 
-        @org.xwalk.core.JavascriptInterface
+        @JavascriptInterface
         public synchronized void callAppFunction(final String action, final String data) {
             Log.e("JavascriptInterface", "callAppFunction,action:  " + action + ",data:" + data);
             if (TextUtils.isEmpty(action) || TextUtils.isEmpty(data)) {

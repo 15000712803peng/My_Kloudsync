@@ -264,21 +264,21 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
             try {
                 final JSONObject jsonObject = new JSONObject(Tools.getFromBase64(d));
                 if (jsonObject.getInt("actionType") == 1 || jsonObject.getInt("actionType") == 3) { // 旧的课程 邀请学生上课
-                    if ((!WatchCourseActivity2.watch2instance) && (!WatchCourseActivity3.watch3instance)) {
+//                    if ((!WatchCourseActivity2.watch2instance) && (!WatchCourseActivity3.watch3instance)) {
                         Intent intent = new Intent(SocketService.this, AlertDialogActivity.class);
                         intent.putExtra("jsonObject", jsonObject.toString());
                         intent.putExtra("isNewCourse", 0);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
-                    }
+//                    }
                 } else if (jsonObject.getInt("actionType") == 10) { // 新的课程
-                    if ((!WatchCourseActivity2.watch2instance) && (!WatchCourseActivity3.watch3instance)) {
+//                    if ((!WatchCourseActivity2.watch2instance) && (!WatchCourseActivity3.watch3instance)) {
                         Intent intent = new Intent(SocketService.this, AlertDialogActivity.class);
                         intent.putExtra("jsonObject", jsonObject.toString());
                         intent.putExtra("isNewCourse", 1);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
-                    }
+//                    }
                 } else if (jsonObject.getInt("actionType") == 4) { //语音
                     Customer cus = new Customer();
                     cus.setUserID(jsonObject.getString("sourceUserId"));
@@ -318,6 +318,7 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
         }else if(actionString.equals("OPEN_OR_CLOSE_NOTE")){
 
             String d = getRetCodeByReturnData2("retData", msg);

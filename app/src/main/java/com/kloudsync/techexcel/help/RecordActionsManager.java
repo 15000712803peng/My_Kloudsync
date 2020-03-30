@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
@@ -41,8 +42,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkView;
-
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -73,7 +72,7 @@ public class RecordActionsManager {
     private List<MediaPlayPage> mediaPlayPages = new ArrayList<>();
     private int recordId;
     private volatile long totalTime = 0;
-    private XWalkView web;
+    private WebView web;
     private SurfaceView surfaceView;
     private WebVedioManager webVedioManager;
     private String downloadUrlPre = "";
@@ -86,7 +85,7 @@ public class RecordActionsManager {
         this.userVedioManager = userVedioManager;
     }
 
-    public void setWeb(XWalkView web, MeetingConfig meetingConfig) {
+    public void setWeb(WebView web, MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
         this.web = web;
     }
@@ -417,8 +416,8 @@ public class RecordActionsManager {
                     isLoadingPage = true;
                     downLoadDocumentPageAndShow(data.getInt("page"));
                 } else {
-                    web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                    web.load("javascript:Record()", null);
+                    web.loadUrl("javascript:PlayActionByTxt('" + action.getData() + "')", null);
+                    web.loadUrl("javascript:Record()", null);
                 }
             }
 
@@ -445,8 +444,8 @@ public class RecordActionsManager {
                 downLoadDocumentPageAndShow(page);
                 currentPage = page;
             } else {
-                web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                web.load("javascript:Record()", null);
+                web.loadUrl("javascript:PlayActionByTxt('" + action.getData() + "')", null);
+                web.loadUrl("javascript:Record()", null);
             }
 //                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
 
@@ -616,7 +615,7 @@ public class RecordActionsManager {
         currentPage = -1;
         if (web != null) {
             web.removeAllViews();
-            web.onDestroy();
+            web.destroy();
             web = null;
         }
         webActions.clear();
@@ -652,8 +651,8 @@ public class RecordActionsManager {
                     return;
                 }
                 web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-                web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-                web.load("javascript:Record()", null);
+                web.loadUrl("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                web.loadUrl("javascript:Record()", null);
             }
         }).subscribe();
 
@@ -913,8 +912,8 @@ public class RecordActionsManager {
                     public void accept(DocumentPage documentPage) throws Exception {
                         String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
                         Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")");
-                        web.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-                        web.load("javascript:Record()", null);
+                        web.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                        web.loadUrl("javascript:Record()", null);
                         handleBluetoothNote(documentPage.getPageUrl());
                     }
                 });
@@ -930,8 +929,8 @@ public class RecordActionsManager {
                     return;
                 }
                 web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-                web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-                web.load("javascript:Record()", null);
+                web.loadUrl("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                web.loadUrl("javascript:Record()", null);
             }
 
         }).subscribe();
@@ -968,7 +967,7 @@ public class RecordActionsManager {
                 _data.put("ShowInCenter", false);
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
-                web.load("javascript:FromApp('" + key + "'," + _data + ")", null);
+                web.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
             }
         }).subscribe();
     }
