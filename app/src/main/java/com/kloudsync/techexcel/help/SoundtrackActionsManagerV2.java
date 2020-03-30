@@ -360,13 +360,11 @@ public class SoundtrackActionsManagerV2 {
         try {
             JSONObject data = new JSONObject(action.getData());
 //            Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
-            if (data.getInt("type") == 2) {
-                isLoadingPage = true;
                 int page = data.getInt("page");
-                if (currentPage != page) {
-                    Log.e("chage_page", "currentPage:" + currentPage + ",page:" + page);
-                    downLoadDocumentPageAndShow(page);
-                }
+            if (data.getInt("type") == 2 && currentPage != page) {
+                isLoadingPage = true;
+                Log.e("chage_page","currentPage:" + currentPage + ",page:" + page);
+                downLoadDocumentPageAndShow(page);
 
             } else {
                 Log.e("doExecuteAction", "action," + action.getData() + ",playtime:" + playTime);
@@ -393,8 +391,8 @@ public class SoundtrackActionsManagerV2 {
         try {
             JSONObject data = new JSONObject(action.getData());
             Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
-            if (data.getInt("type") == 2) {
                 int page = data.getInt("page");
+            if (data.getInt("type") == 2 && currentPage != page) {
                 isLoadingPage = true;
                 Log.e("chage_page","currentPage:" + currentPage + ",page:" + page);
                 /*if(currentPage == page){
