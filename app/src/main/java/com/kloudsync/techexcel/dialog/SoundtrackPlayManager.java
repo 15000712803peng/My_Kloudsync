@@ -169,7 +169,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         totalTime = soundtrackDetail.getDuration();
         initManager(view);
         //TODO
-        //  SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
+          SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
     }
 
     public SoundtrackPlayManager(Activity host, MeetingConfig meetingConfig, RelativeLayout view) {
@@ -179,7 +179,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         this.soundtrackPlayLayout = view;
         initManager(view);
         //TODO
-        //  SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
+          SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
     }
 
     public void init(Activity host, MeetingConfig meetingConfig, RelativeLayout view) {
@@ -188,7 +188,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         this.soundtrackPlayLayout = view;
         initManager(view);
         //TODO
-//       SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
+       SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
     }
 
     public void initManager(RelativeLayout view) {
@@ -551,15 +551,24 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         SoundtrackAudioManagerV2.getInstance(host).seekTo(time);
         SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
+        Collections.sort(mNoteActionList);
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {
             @Override
             public void accept(List<WebAction> webActions) throws Exception {
                 for (WebAction action : webActions) {
-                    if (action.getTime() <= time) {
+                    if (action.getTime() >= time) {
                         Log.e("check_page_time", "seek_time:" + time + ",action_time:" + action.getTime());
                         SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(action);
                         SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
-//                        break;
+                        break;
+                    }
+                }
+
+                for (WebAction action : mNoteActionList) {
+                    if (action.getTime() <= time) {
+                        Log.e("check_action_time", "seek_time:" + time + ",action_time:" + action.getTime());
+                        SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(action);
+                        SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
                     }
                 }
             }
@@ -775,6 +784,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             EventBus.getDefault().unregister(this);
         }
         pageActions.clear();
+        mNoteActionList.clear();
         release();
     }
 
@@ -855,6 +865,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     private List<WebAction> pageActions = new ArrayList<>();
+    private List<WebAction> mNoteActionList = new ArrayList<>();
 
     private void fetchPageActions(PartWebActions webActions) {
         if (webActions == null) {
@@ -864,16 +875,20 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if (actions != null && actions.size() > 0) {
             for (WebAction action : actions) {
                 if (!TextUtils.isEmpty(action.getData()))
-                    /*try {
+                    try {
                         JSONObject data = new JSONObject(action.getData());
-                        if (data.getInt("type") == 2) {*/
+                        if (data.getInt("type") == 2) {
                             if (!pageActions.contains(action)) {
                                 pageActions.add(action);
                             }
-                        /*}
+                        }else {
+                            if (!mNoteActionList.contains(action)) {
+                                mNoteActionList.add(action);
+                            }
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
-                    }*/
+                    }
             }
         }
         Log.e("check_page_actions", "page_actions_size:" + pageActions.size());

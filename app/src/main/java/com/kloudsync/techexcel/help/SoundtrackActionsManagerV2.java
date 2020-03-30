@@ -363,8 +363,10 @@ public class SoundtrackActionsManagerV2 {
             if (data.getInt("type") == 2) {
                 isLoadingPage = true;
                 int page = data.getInt("page");
-                Log.e("chage_page","currentPage:" + currentPage + ",page:" + page);
-                downLoadDocumentPageAndShow(page);
+                if (currentPage != page) {
+                    Log.e("chage_page", "currentPage:" + currentPage + ",page:" + page);
+                    downLoadDocumentPageAndShow(page);
+                }
 
             } else {
                 Log.e("doExecuteAction", "action," + action.getData() + ",playtime:" + playTime);
