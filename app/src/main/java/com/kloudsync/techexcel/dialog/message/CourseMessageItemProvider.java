@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
 
 import io.rong.imkit.model.ProviderTag;
@@ -54,7 +54,7 @@ public class CourseMessageItemProvider extends IContainerItemProvider.MessagePro
 	@Override
 	public void onItemClick(View arg0, int arg1, CourseMessage cc,
 			UIMessage arg3) {
-		Intent intent=new Intent(arg0.getContext(), DocAndMeetingActivityV2.class);
+		Intent intent=new Intent(arg0.getContext(), DocAndMeetingActivity.class);
 		intent.putExtra("url", cc.getAttachmentUrl());
 		intent.putExtra("meetingId", cc.getMeetingId());
 		intent.putExtra("CustomerRongCloudID",cc.getRongCloudUserID());

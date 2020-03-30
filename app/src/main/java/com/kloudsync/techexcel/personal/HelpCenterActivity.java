@@ -22,7 +22,7 @@ import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.search.HelpDocumentSearchActivity;
 import com.kloudsync.techexcel.start.LoginGet;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.bean.LineItem;
 
 import org.json.JSONException;
@@ -68,7 +68,7 @@ public class HelpCenterActivity extends Activity implements View.OnClickListener
     };
 
     private void GoToVIew(String result) {
-        Intent intent = new Intent(HelpCenterActivity.this, DocAndMeetingActivityV2.class);
+        Intent intent = new Intent(HelpCenterActivity.this, DocAndMeetingActivity.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", result);
         intent.putExtra("teacherid", AppConfig.UserID);

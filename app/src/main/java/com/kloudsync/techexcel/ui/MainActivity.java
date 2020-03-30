@@ -1627,7 +1627,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             return;
         }
         if (type == 1 || type == 2) {
-            Intent intent = (type == 2) ? new Intent(this, DocAndMeetingActivityV2.class) :
+            Intent intent = (type == 2) ? new Intent(this, DocAndMeetingActivity.class) :
                     new Intent(this, SyncRoomActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra("userid", AppConfig.UserID);
@@ -1643,7 +1643,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             intent.putExtra("type", type);
             startActivity(intent);
         } else if (type == 0) {
-            Intent intent = new Intent(this, DocAndMeetingActivityV2.class);
+            Intent intent = new Intent(this, DocAndMeetingActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra("userid", AppConfig.UserID);
             intent.putExtra("meetingId", meetingId);

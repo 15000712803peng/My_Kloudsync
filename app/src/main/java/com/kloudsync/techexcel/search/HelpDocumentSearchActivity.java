@@ -31,7 +31,7 @@ import com.kloudsync.techexcel.response.NResponse;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.search.view.VDocumentSearch;
 import com.kloudsync.techexcel.start.LoginGet;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.kloudsync.activity.Document;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -116,7 +116,7 @@ public class HelpDocumentSearchActivity extends BaseActivity implements VDocumen
     }
 
     private void goToViewDocument(String result) {
-        Intent intent = new Intent(this, DocAndMeetingActivityV2.class);
+        Intent intent = new Intent(this, DocAndMeetingActivity.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", result);
         intent.putExtra("teacherid", AppConfig.UserID);

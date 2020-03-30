@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -56,16 +55,13 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.bean.EventRefreshSpaceFragment;
 import com.kloudsync.techexcel.bean.EventSyncSucc;
 import com.kloudsync.techexcel.bean.EventViewDocInSpacePermissionGranted;
 import com.kloudsync.techexcel.bean.RoleInTeam;
-import com.kloudsync.techexcel.bean.Team;
 import com.kloudsync.techexcel.bean.params.EventCamera;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.UploadFileDialog;
-import com.kloudsync.techexcel.docment.AddDocumentActivity;
 import com.kloudsync.techexcel.docment.EditSpaceActivity;
 import com.kloudsync.techexcel.docment.FavoriteDocumentsActivity;
 import com.kloudsync.techexcel.docment.MoveDocumentActivity;
@@ -93,7 +89,6 @@ import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.Md5Tool;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.SpaceDeletePopup;
 import com.ub.kloudsync.activity.SpacePropertyActivity;
@@ -104,7 +99,6 @@ import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.SocketService;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
-import com.ub.techexcel.bean.EventViewDocPermissionGranted;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.tools.FileUtils;
@@ -128,10 +122,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.content.Context.MODE_PRIVATE;
-import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE;
-import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE;
 
 public class SpaceDocumentsFragment extends Fragment implements View.OnClickListener, DocChooseDialog.SelectedOptionListener, DocumentUploadTool.DocUploadDetailLinstener {
@@ -201,7 +192,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
     };
 
     private void GoToVIew() {
-        Intent intent = new Intent(getActivity(), DocAndMeetingActivityV2.class);
+        Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", bean.getId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);

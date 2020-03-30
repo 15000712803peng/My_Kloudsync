@@ -30,7 +30,6 @@ import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.test.TouchUtils;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
@@ -119,7 +118,7 @@ import com.kloudsync.techexcel.tool.DocumentUploadUtil;
 import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.Md5Tool;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.util.PreferencesCookieStore;
@@ -169,7 +168,6 @@ import com.ub.techexcel.tools.SyncRoomPropertyPopup;
 import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.TvDevicesListPopup;
 import com.ub.techexcel.tools.VideoPopup;
-import com.ub.techexcel.tools.XWalkViewTouchListener;
 import com.ub.techexcel.tools.YinxiangCreatePopup;
 import com.ub.techexcel.tools.YinxiangEditPopup;
 import com.ub.techexcel.tools.YinxiangPopup;
@@ -3812,7 +3810,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 
 
     private void gotoMeeting(String lessonId) {
-        final Intent intent = new Intent(SyncRoomActivity.this, DocAndMeetingActivityV2.class);
+        final Intent intent = new Intent(SyncRoomActivity.this, DocAndMeetingActivity.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", lessonId);
         intent.putExtra("isTeamspace", false);

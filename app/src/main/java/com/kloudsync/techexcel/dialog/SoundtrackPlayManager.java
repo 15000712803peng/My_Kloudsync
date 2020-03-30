@@ -141,14 +141,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         totalTime = soundtrackDetail.getDuration();
         width = (int) (host.getResources().getDisplayMetrics().widthPixels);
         heigth = (int) (host.getResources().getDisplayMetrics().heightPixels);
-//        dialog.setContentView(view);
-//        dialog.setOnDismissListener(this);
-//        dialog.getWindow().setGravity(Gravity.CENTER);
-//        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-//        lp.width = width;
-//        lp.height = heigth;
-//        dialog.getWindow().setAttributes(lp);
         playTimeTask = new PlayTimeTask();
         playHandler = new Handler() {
             @Override
@@ -556,7 +548,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                     soundtrackDetail.getSoundtrackID() + "");
             PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, currentPaegNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
         }
-        SoundtrackAudioManager.getInstance(host).seekTo(time);
+        SoundtrackAudioManagerV2.getInstance(host).seekTo(time);
         SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {

@@ -8,7 +8,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -206,7 +205,7 @@ import retrofit2.Response;
  * Created by tonyan on 2019/11/19.
  */
 
-public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
+public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
         BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener {
 
     public static MeetingConfig meetingConfig;
@@ -316,6 +315,8 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             return;
         }
 
+        Log.e("DocAndMeetingActivity","on_create");
+
         meetingSettingCache = MeetingSettingCache.getInstance(this);
         writeNoteBlankPageImage();
         initViews();
@@ -364,6 +365,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         menuManager.setBottomMenuOperationsListener(this);
         menuManager.setMenuIcon(menuIcon);
         initWeb();
+        soundtrackPlayManager = new SoundtrackPlayManager(this,meetingConfig,soundtrackPlayLayout);
         bottomFilePop = new PopBottomFile(this);
         gson = new Gson();
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
@@ -512,6 +514,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         super.onResume();
     }
 
+    @SuppressLint("JavascriptInterface")
     private void initWeb() {
 //        web.setZOrderOnTop(false);
         web.getSettings().setJavaScriptEnabled(true);
@@ -904,7 +907,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
             noteUsersLayout.setVisibility(View.VISIBLE);
         }
         //TODO
-      //  NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig, noteContainer);
+        NoteViewManager.getInstance().setContent(this, noteLayout, _note, noteWeb, meetingConfig, noteContainer);
         notifyViewNote(note.getNote());
     }
 
@@ -943,7 +946,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
         Log.e("followShowNote", "noteid:" + noteId);
         hideEnterLoading();
         //TODO
-//        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menuIcon, noteContainer);
+        NoteViewManager.getInstance().followShowNote(this, noteLayout, noteWeb, noteId, meetingConfig, menuIcon, noteContainer);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -3639,7 +3642,7 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                     .setNegativeButton(getResources().getText(R.string.know_the), null)
                     .show();
         } else {
-            soundtrackPlayManager = new SoundtrackPlayManager(this,soundtrack.getSoundtrackDetail(),meetingConfig,soundtrackPlayLayout);
+            soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
             soundtrackPlayManager.doPlay();
 //            showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
 //            soundtrackPlayManager = new SoundtrackPlayManager(this,soundtrack.getSoundtrackDetail(),meetingConfig,soundtrackPlayController,web);
@@ -4237,23 +4240,23 @@ public class DocAndMeetingActivity extends BaseDocAndMeetingActivity implements 
                         soundTrack.setSoundtrackID(vid2);
                         requestSyncDetailAndPlay(soundTrack);
                     } else if (stat == 0) { //停止播放
-                        if (soundtrackPlayDialog != null) {
-                            soundtrackPlayDialog.followClose();
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followClose();
                         }
                     } else if (stat == 2) {  //暂停播放
-                        if (soundtrackPlayDialog != null) {
-                            soundtrackPlayDialog.followPause();
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followPause();
                         }
                     } else if (stat == 3) { // 继续播放
-                        if (soundtrackPlayDialog != null) {
-                            soundtrackPlayDialog.followRestart();
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followRestart();
                         }
                     } else if (stat == 4) {  // 追上进度
 //
                     } else if (stat == 5) {  // 拖动进度条
 //                    seekToTime(audioTime);
-                        if (soundtrackPlayDialog != null) {
-                            soundtrackPlayDialog.followSeekTo(audioTime);
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followSeekTo(audioTime);
                         }
                     }
                 }

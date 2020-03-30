@@ -2,10 +2,8 @@ package com.ub.techexcel.tools;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
@@ -16,22 +14,19 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventJoinMeeting;
-import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.service.ConnectService;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.service.activity.SocketService;
 import com.ub.techexcel.bean.UpcomingLesson;
 
@@ -429,7 +424,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                     if (lessionid == -1) {     //看看老师是否正在上课
                         getUpcomingLessonList(teacherid + "");
                     } else {
-                        Intent ii = new Intent(mContext, DocAndMeetingActivityV2.class);
+                        Intent ii = new Intent(mContext, DocAndMeetingActivity.class);
                         ii.putExtra("meetingId", roomid + "");
                         ii.putExtra("identity", 1);  // 学生
                         ii.putExtra("ishavedefaultpage", true);
@@ -446,7 +441,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         }
                     }
                     if (null == lesson) {  // 进去等待
-                        Intent ii = new Intent(mContext, DocAndMeetingActivityV2.class);
+                        Intent ii = new Intent(mContext, DocAndMeetingActivity.class);
                         ii.putExtra("meetingId", roomid + "");
                         ii.putExtra("identity", 1);  // 学生
                         ii.putExtra("lessionId", lessionid + "");
@@ -456,7 +451,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         mContext.startActivity(ii);
                     } else {
                         if (lesson.getIsInClassroom() == 1) {
-                            Intent ii = new Intent(mContext, DocAndMeetingActivityV2.class);
+                            Intent ii = new Intent(mContext, DocAndMeetingActivity.class);
                             ii.putExtra("meetingId", roomid + "");
                             ii.putExtra("identity", 1);  // 学生
                             ii.putExtra("ishavedefaultpage", true);
@@ -465,7 +460,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                             ii.putExtra("teacherid", teacherid + "");
                             mContext.startActivity(ii);
                         } else {
-                            Intent ii = new Intent(mContext, DocAndMeetingActivityV2.class);
+                            Intent ii = new Intent(mContext, DocAndMeetingActivity.class);
                             ii.putExtra("meetingId", lesson.getLessonID() + "");
                             ii.putExtra("identity", 1);  // 学生
                             ii.putExtra("lessionId", lessionid + "");

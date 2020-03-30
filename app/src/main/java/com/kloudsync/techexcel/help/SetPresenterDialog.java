@@ -3,28 +3,16 @@ package com.kloudsync.techexcel.help;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
-import com.kloudsync.techexcel.config.AppConfig;
-import com.kloudsync.techexcel.tool.MeetingSettingCache;
-import com.kloudsync.techexcel.tool.SocketMessageManager;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
-
-import org.greenrobot.eventbus.EventBus;
 
 public class SetPresenterDialog implements DialogInterface.OnDismissListener, OnClickListener {
 

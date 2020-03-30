@@ -30,7 +30,7 @@ import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.service.ConnectService;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.ub.techexcel.adapter.NotifyAdapter;
 import com.ub.techexcel.bean.LineItem;
@@ -117,7 +117,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
                     if (lessionid == -1) {     //看看老师是否正在上课
                         getUpcomingLessonList(teacherid + "");
                     } else {
-                        Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
+                        Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivity.class);
                         ii.putExtra("meetingId", roomid + "");
                         ii.putExtra("identity", 1);  // 学生
                         ii.putExtra("ishavedefaultpage",true);
@@ -135,7 +135,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
                         }
                     }
                     if (null == lesson) {  // 进去等待
-                        Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
+                        Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivity.class);
                         ii.putExtra("meetingId", roomid + "");
                         ii.putExtra("identity", 1);  // 学生
                         ii.putExtra("lessionId", lessionid + "");
@@ -146,7 +146,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
                         finish();
                     } else {
                         if (lesson.getIsInClassroom() == 1) {
-                            Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
+                            Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivity.class);
                             ii.putExtra("meetingId", roomid + "");
                             ii.putExtra("identity", 1);  // 学生
                             ii.putExtra("ishavedefaultpage",true);
@@ -190,7 +190,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
             @Override
             public void onClick(View view) {
                 if (lesson.getIsInClassroom() == 1) {
-                    Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
+                    Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivity.class);
                     ii.putExtra("meetingId", roomid + "");
                     ii.putExtra("identity", 1);  // 学生
                     ii.putExtra("lessionId", lessionid + "");
@@ -217,7 +217,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
             public void onClick(View view) {
                 joinasPopup.dismiss();
                 Log.e("notifity", roomid + "    " + lessionid + "   " + teacherid + "   ");
-                Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
+                Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivity.class);
                 ii.putExtra("meetingId", roomid + "");
                 ii.putExtra("identity", 1);  // 学生
                 ii.putExtra("lessionId", lessionid + "");
@@ -232,7 +232,7 @@ public class NotifyActivity extends Activity implements View.OnClickListener {
         joinrel2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivityV2.class);
+                Intent ii = new Intent(NotifyActivity.this, DocAndMeetingActivity.class);
                 ii.putExtra("meetingId", roomid + "");
                 ii.putExtra("identity", 1);  // 学生
                 ii.putExtra("lessionId", lessionid + "");

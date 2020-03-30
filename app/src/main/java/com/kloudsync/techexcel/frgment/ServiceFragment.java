@@ -48,7 +48,7 @@ import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.StringUtils;
 
-import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.mining.app.zxing.MipcaActivityCapture;
 import com.ub.service.activity.MeetingPropertyActivity;
@@ -287,7 +287,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                     break;
                 case 0x1104:  //加入会议室
                     ServiceBean serviceBean = (ServiceBean) msg.obj;
-                    Intent intent3 = new Intent(getActivity(), DocAndMeetingActivityV2.class);
+                    Intent intent3 = new Intent(getActivity(), DocAndMeetingActivity.class);
                     intent3.putExtra("isHtml", serviceBean.getLineItems().get(0).isHtml5());
                     intent3.putExtra("url", serviceBean.getLineItems().get(0).getUrl());
                     intent3.putExtra("CustomerRongCloudID", serviceBean.getCustomerRongCloudId());
@@ -311,7 +311,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                     if (lessionid == -1) {
                         addInstantLesson(AppConfig.ClassRoomID);
                     } else {
-                        Intent intent2 = new Intent(getActivity(), DocAndMeetingActivityV2.class);
+                        Intent intent2 = new Intent(getActivity(), DocAndMeetingActivity.class);
                         intent2.putExtra("meetingId", AppConfig.ClassRoomID + "");
                         intent2.putExtra("identity", 2);
                         intent2.putExtra("lessionId", lessionid + "");
@@ -326,7 +326,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 case 0x1002:  // addInstantLesson
                     Log.e("getClassRoomLessonID", "加入课程成功");
                     int lessionid2 = (int) msg.obj;
-                    Intent intent5 = new Intent(getActivity(), DocAndMeetingActivityV2.class);
+                    Intent intent5 = new Intent(getActivity(), DocAndMeetingActivity.class);
                     intent5.putExtra("meetingId", AppConfig.ClassRoomID + "");
                     intent5.putExtra("identity", 2);
                     intent5.putExtra("ishavedefaultpage", true);
@@ -827,7 +827,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
             return;
         }
 
-        Intent intent = new Intent(getActivity(), DocAndMeetingActivityV2.class);
+        Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //-----
         intent.putExtra("meeting_id", eventJoinMeeting.getMeetingId());

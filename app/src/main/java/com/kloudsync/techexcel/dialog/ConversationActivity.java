@@ -30,7 +30,7 @@ import com.kloudsync.techexcel.info.GroupInfo;
 import com.kloudsync.techexcel.info.Knowledge;
 import com.kloudsync.techexcel.info.RobotInfo;
 import com.kloudsync.techexcel.start.LoginGet;
-import com.kloudsync.techexcel.ui.DocAndMeetingActivityV2;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.service.ConnectService;
 
@@ -164,7 +164,7 @@ public class ConversationActivity extends FragmentActivity {
     };
 
     private void GoToVIew() {
-        Intent intent = new Intent(ConversationActivity.this, DocAndMeetingActivityV2.class);
+        Intent intent = new Intent(ConversationActivity.this, DocAndMeetingActivity.class);
         intent.putExtra("userid", bean.getUserId());
         intent.putExtra("meetingId", bean.getId() + "");
         intent.putExtra("teacherid", bean.getTeacherId());
