@@ -10,7 +10,6 @@
     >
 
     <WebView
-        android:background="@color/orange"
         android:id="@+id/sync_web"
         android:layout_marginBottom="4dp"
         android:layout_marginTop="4dp"
