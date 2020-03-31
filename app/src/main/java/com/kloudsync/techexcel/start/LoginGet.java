@@ -144,10 +144,10 @@ public class LoginGet {
                     if (result != null) {
                         mJsonCustomer(result);
                     } else {
-                        Toast.makeText(
-                                mContext,
-                                mContext.getResources().getString(R.string.No_Data),
-                                Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(
+//                                mContext,
+//                                mContext.getResources().getString(R.string.No_Data),
+//                                Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case AppConfig.SchoolContact:

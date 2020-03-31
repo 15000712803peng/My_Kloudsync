@@ -20,6 +20,8 @@ import com.ywl5320.wlmedia.enums.WlPlayModel;
 import com.ywl5320.wlmedia.listener.WlOnCompleteListener;
 import com.ywl5320.wlmedia.listener.WlOnErrorListener;
 import com.ywl5320.wlmedia.listener.WlOnPreparedListener;
+import com.ywl5320.wlmedia.listener.WlOnTimeInfoListener;
+import com.ywl5320.wlmedia.util.WlTimeUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -35,6 +37,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import com.ywl5320.wlmedia.listener.WlOnTimeInfoListener;
+import com.ywl5320.wlmedia.util.WlTimeUtil;
 
 
 public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompleteListener, WlOnErrorListener {
@@ -44,6 +48,13 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     private volatile long playTime;
     private Context context;
     private SoundtrackMediaInfo mediaInfo;
+    /**播放总长*/
+    private int duration=-1;
+    /**播放seek拖动进度*/
+    private double progress=0;
+    /**是否处于用户拖动状态*/
+    private boolean mIsSeekStatus=false;
+
 
     private SoundtrackAudioManagerV2(Context context) {
         this.context = context;
@@ -64,6 +75,18 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     public void setSoundtrackAudio(SoundtrackMediaInfo mediaInfo) {
         Log.e("check_play", "mediaInfo:" + mediaInfo);
         this.mediaInfo = mediaInfo;
+        if (mediaInfo == null || this.mediaInfo.isPreparing()) {
+            return;
+        }
+        this.mediaInfo.setPreparing(true);
+        predownSoundtrackAudio(context, mediaInfo.getAttachmentUrl());
+        prepareAudioAndPlay(mediaInfo);
+    }
+
+    public void setSoundtrackAudioPlayAtTime(SoundtrackMediaInfo mediaInfo,long time) {
+        Log.e("check_play", "mediaInfo:" + mediaInfo);
+        this.mediaInfo = mediaInfo;
+        mediaInfo.setTime(time);
         if (mediaInfo == null || this.mediaInfo.isPreparing()) {
             return;
         }
@@ -98,8 +121,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                     if (audioCache.containFile(audioData.getAttachmentUrl())) {
                         File file = new File(audioCache.getAudioPath(audioData.getAttachmentUrl()));
                         if (file.exists()) {
-//                            audioPlayer.setDataSource(file.getAbsolutePath());
-                            audioPlayer.setSource(audioData.getAttachmentUrl());
+                            audioPlayer.setSource(file.getAbsolutePath());
+//                            audioPlayer.setSource(audioData.getAttachmentUrl());
                         } else {
                             audioPlayer.setSource(audioData.getAttachmentUrl());
                         }
@@ -110,6 +133,21 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
 //                    audioPlayer.setDataSource(context, Uri.parse(URLDecoder.decode(audioData.getAttachmentUrl(),"UTF-8")));
                     audioPlayer.setPlayModel(WlPlayModel.PLAYMODEL_ONLY_AUDIO);
+
+                    audioPlayer.setOnTimeInfoListener(new WlOnTimeInfoListener() {
+                        @Override
+                        public void onTimeInfo(double currentTime) {
+                            if(duration==-1){
+                                duration=(int)audioPlayer.getDuration();
+                                if(onAudioInfoCallBack!=null)
+                                    onAudioInfoCallBack.onDurationCall(duration);
+                            }
+                            if(onAudioInfoCallBack!=null){
+                                onAudioInfoCallBack.onCurrentTimeCall((int)currentTime);
+                                onAudioInfoCallBack.onShowTimeCall(WlTimeUtil.secdsToDateFormat((int) currentTime) + "/" + WlTimeUtil.secdsToDateFormat((int) duration));
+                            }
+                        }
+                    });
 
                     try {
                         Log.e("check_prepare_soundtrack","url:" + audioData.getAttachmentUrl());
@@ -129,6 +167,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         });
 
     }
+
 
     private void reinit(SoundtrackMediaInfo mediaInfo) {
 
@@ -154,14 +193,23 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         Log.e("check_prepare_soundtrack","onPrepared");
         if (mediaInfo != null) {
             Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());
+            audioPlayer.seek(progress);
             audioPlayer.start();
+            if(mediaInfo.getTime() > 0){
+                audioPlayer.seek(mediaInfo.getTime() / 1000);
+            }else {
+                audioPlayer.start();
+            }
+
+
 
         }
     }
 
     @Override
     public void onComplete() {
-        EventBus.getDefault().post(new EventCloseSoundtrack());
+        if(!mIsSeekStatus)
+            EventBus.getDefault().post(new EventCloseSoundtrack());
     }
 
 
@@ -241,7 +289,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         if (audioPlayer != null) {
-            audioPlayer.seek(time / 1000);
+            audioPlayer.seek(time);
+            //audioPlayer.seek(time / 1000);
             Log.e("vedio_check", "seek_to,time:" + time);
         }
     }
@@ -385,6 +434,39 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return null;
         }
         return null;
+    }
+
+    /**停止播放*/
+    public void stop() {
+        mIsSeekStatus=true;
+        if (mediaInfo == null) {
+            return;
+        }
+        if (audioPlayer != null) {
+            audioPlayer.stop();
+        }
+    }
+
+    public void stopToPrepared(double progress){
+        mIsSeekStatus=false;
+        this.progress=progress;
+        if (mediaInfo == null) {
+            return;
+        }
+        if (audioPlayer != null) {
+            audioPlayer.prepared();
+        }
+    }
+
+    /**将音响播放时长回调出去*/
+    public OnAudioInfoCallBack onAudioInfoCallBack;
+    public void setOnAudioInfoCallBack(OnAudioInfoCallBack onAudioInfoCallBack){
+        this.onAudioInfoCallBack=onAudioInfoCallBack;
+    }
+    public interface OnAudioInfoCallBack{
+        void onDurationCall(int duration);
+        void onCurrentTimeCall(int currentTime);
+        void onShowTimeCall(String time);
     }
 
 }

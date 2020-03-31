@@ -777,7 +777,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
     private void restart() {
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_RESTART, soundtrackAudioManager.getPlayTime());
 	    SoundtrackAudioManager.getInstance(host).restart();
-        //SoundtrackBackgroundMusicManager.getInstance(host).restart();
+        SoundtrackBackgroundMusicManager.getInstance(host).restart();
         isStarted = true;
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);
