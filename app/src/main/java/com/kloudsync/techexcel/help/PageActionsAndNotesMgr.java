@@ -13,6 +13,7 @@ import com.kloudsync.techexcel.bean.EventPageNotes;
 import com.kloudsync.techexcel.bean.EventPageNotesForSoundtrack;
 import com.kloudsync.techexcel.bean.EventSelectNote;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.NoteSelectedDialog;
@@ -54,17 +55,20 @@ public class PageActionsAndNotesMgr {
 			}
 		}).subscribe();
 
-		Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageNotes>() {
-			@Override
-			public EventPageNotes apply(MeetingConfig config) throws Exception {
-				return MeetingServiceTools.getInstance().syncGetPageNotes(config);
-			}
-		}).doOnNext(new Consumer<EventPageNotes>() {
-			@Override
-			public void accept(EventPageNotes eventPageNotes) throws Exception {
-				EventBus.getDefault().post(eventPageNotes);
-			}
-		}).subscribe();
+		if(config.getType() != MeetingType.MEETING){
+                    Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageNotes>() {
+                        @Override
+                        public EventPageNotes apply(MeetingConfig config) throws Exception {
+                            return MeetingServiceTools.getInstance().syncGetPageNotes(config);
+                        }
+                    }).doOnNext(new Consumer<EventPageNotes>() {
+                        @Override
+                        public void accept(EventPageNotes eventPageNotes) throws Exception {
+                            EventBus.getDefault().post(eventPageNotes);
+                        }
+                    }).subscribe();
+                }
+
 
 	}
 

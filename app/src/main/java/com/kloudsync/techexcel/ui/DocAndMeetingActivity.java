@@ -4279,7 +4279,37 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
     }
 
+
+
     private void requestSyncDetailAndPlay(final SoundTrack soundTrack) {
+        Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
+            @Override
+            public SoundtrackDetailData apply(SoundTrack soundtrack) throws Exception {
+                SoundtrackDetailData soundtrackDetailData = new SoundtrackDetailData();
+                JSONObject response = ServiceInterfaceTools.getinstance().syncGetSoundtrackDetail(soundTrack);
+                if (response.has("RetCode")) {
+                    if (response.getInt("RetCode") == 0) {
+                        SoundtrackDetail soundtrackDetail = new Gson().fromJson(response.getJSONObject("RetData").toString(), SoundtrackDetail.class);
+                        soundtrackDetailData.setSoundtrackDetail(soundtrackDetail);
+                    }
+                }
+                return soundtrackDetailData;
+            }
+
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                if (soundtrackDetailData.getSoundtrackDetail() != null) {
+                    EventPlaySoundtrack soundtrack = new EventPlaySoundtrack();
+                    soundtrack.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
+                    playSoundtrack(soundtrack);
+                }
+            }
+        }).subscribe();
+    }
+
+
+    private void requestSyncDetailAndPause(final SoundTrack soundTrack) {
         Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
             @Override
             public SoundtrackDetailData apply(SoundTrack soundtrack) throws Exception {
@@ -4420,6 +4450,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                                getMeetingMembers(users);
 //                            }
 //                        }
+                        if(dataJson.has("playAudioData")){
+                            String audioData = dataJson.getString("playAudioData");
+                            if(!TextUtils.isEmpty(audioData)){
+                                Log.e("audioData","audioData:" + audioData);
+                                handleSoundtrackWhenJoinMeeting(audioData);
+                            }
+                        }
 
                         if (AppConfig.UserID.equals(joinMeetingMessage.getUserId())) {
                             // 说明是自己加入了会议返回的JOIN_MEETING的消息
@@ -4453,6 +4490,68 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 e.printStackTrace();
             }
         }
+    }
+
+    private void handleSoundtrackWhenJoinMeeting(String playAudioData){
+//        {"actionType":23,"soundtrackId":38065,"time":131086,"stat":2}
+        try {
+            JSONObject data = new JSONObject(Tools.getFromBase64(playAudioData));
+            Log.e("audioData","data:" + data);
+            if (data.has("stat")) {
+                final int stat = data.getInt("stat");
+                final String soundtrackID = data.getString("soundtrackId");
+                int audioTime = 0;
+                if (stat == 4) {
+                    audioTime = data.getInt("time");
+                }
+                Log.e("mediaplayer-----", stat + ":   " + soundtrackID);
+                if (stat == 1) {  //开始播放
+                    int vid2 = 0;
+                    if (!TextUtils.isEmpty(soundtrackID)) {
+                        vid2 = Integer.parseInt(soundtrackID);
+                    }
+                    SoundTrack soundTrack = new SoundTrack();
+                    soundTrack.setSoundtrackID(vid2);
+                    requestSyncDetailAndPlay(soundTrack);
+                } else if (stat == 0) { //停止播放
+                    if (soundtrackPlayManager != null) {
+                        soundtrackPlayManager.followClose();
+                    }
+                } else if (stat == 2) {  //暂停播放
+                    if (soundtrackPlayManager != null) {
+//                        soundtrackPlayManager.followPause();
+                        int vid2 = 0;
+                        if (!TextUtils.isEmpty(soundtrackID)) {
+                            vid2 = Integer.parseInt(soundtrackID);
+                        }
+                        SoundTrack soundTrack = new SoundTrack();
+                        soundTrack.setSoundtrackID(vid2);
+                        requestSyncDetailAndPause(soundTrack);
+                    }
+                } else if (stat == 3) { // 继续播放
+                    if (soundtrackPlayManager != null) {
+                        soundtrackPlayManager.followRestart();
+                    }
+                } else if (stat == 4) {  // 追上进度
+                    int vid2 = 0;
+                    if (!TextUtils.isEmpty(soundtrackID)) {
+                        vid2 = Integer.parseInt(soundtrackID);
+                    }
+                    SoundTrack soundTrack = new SoundTrack();
+                    soundTrack.setSoundtrackID(vid2);
+                    requestSyncDetailAndPause(soundTrack);
+//
+                } else if (stat == 5) {  // 拖动进度条
+//                    seekToTime(audioTime);
+                    if (soundtrackPlayManager != null) {
+                        soundtrackPlayManager.followSeekTo(audioTime);
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void delayRefreshAgoraList() {

@@ -98,8 +98,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                     if (audioCache.containFile(audioData.getAttachmentUrl())) {
                         File file = new File(audioCache.getAudioPath(audioData.getAttachmentUrl()));
                         if (file.exists()) {
-//                            audioPlayer.setDataSource(file.getAbsolutePath());
-                            audioPlayer.setSource(audioData.getAttachmentUrl());
+                            audioPlayer.setSource(file.getAbsolutePath());
+//                            audioPlayer.setSource(audioData.getAttachmentUrl());
                         } else {
                             audioPlayer.setSource(audioData.getAttachmentUrl());
                         }

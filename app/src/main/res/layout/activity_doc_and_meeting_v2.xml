@@ -269,6 +269,8 @@
 
     </RelativeLayout>
 
+
+
     <RelativeLayout
         android:orientation="horizontal"
         android:background="@color/white"
@@ -354,6 +356,7 @@
 
     </RelativeLayout>
 
+    <include layout="@layout/layout_play_soundtrack" />
 
 
     <RelativeLayout
@@ -555,9 +558,6 @@
 
     </RelativeLayout>
 
-
-
-
     <LinearLayout
         android:id="@+id/floatnoteview"
         android:visibility="gone"
@@ -629,7 +629,7 @@
 
 
 
-    <include layout="@layout/layout_play_soundtrack" />
+
 
 
     <ImageView

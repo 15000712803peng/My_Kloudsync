@@ -21,8 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"></WebView>
 
-
-
     <RelativeLayout
         android:visibility="gone"
         android:background="@color/black"
@@ -152,14 +150,31 @@
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/timeshowarrow" />
 
-                <TextView
-                    android:gravity="center_vertical"
-                    android:id="@+id/txt_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+
+                <RelativeLayout
                     android:layout_marginLeft="10dp"
-                    android:text="Playing"
-                    android:textColor="@color/white" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_centerInParent="true"
+                        android:visibility="invisible"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txt_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/playing"
+                        android:textColor="@color/white" />
+
+                    <ProgressBar
+                        android:id="@+id/sondtrack_load_bar"
+                        android:layout_centerInParent="true"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:indeterminateBehavior="repeat"
+                        android:indeterminateDrawable="@drawable/dialog_loading"
+                        android:indeterminateOnly="true" />
+                </RelativeLayout>
+
             </LinearLayout>
 
             <View
