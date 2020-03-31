@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -138,6 +139,26 @@ public class UploadAudioPopupdate implements View.OnClickListener{
         int pb = (int) (current * 100 / total);
         roundProgressBar.setProgress(pb);
     }
+
+    public void setProgress1(long total, long current) {
+        if (!mPopupWindow.isShowing()) {
+            return;
+        }
+        int pb = (int) (current * 50 / total);
+        roundProgressBar.setProgress(pb);
+        Log.e("syncing---docu","进度值  "+pb);
+    }
+
+
+    public void setProgress2(long total, long current) {
+        if (!mPopupWindow.isShowing()) {
+            return;
+        }
+        int pb = (int) (current * 50 / total);
+        roundProgressBar.setProgress(50+pb);
+        Log.e("syncing---docu","进度值  "+(50+pb));
+    }
+
 
 
     public void setCanChangTitle() {

@@ -1,6 +1,5 @@
 package com.kloudsync.techexcel.dialog;
 
-import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -28,10 +27,10 @@ import com.ub.kloudsync.activity.Document;
 import com.ub.service.audiorecord.AudioRecorder;
 import com.ub.service.audiorecord.FileUtils;
 import com.ub.service.audiorecord.RecordEndListener;
+import com.ub.techexcel.bean.DocumentAction;
 import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
-import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.UploadAudioListener;
 import com.ub.techexcel.tools.UploadAudioNoteActionTool;
 import com.ub.techexcel.tools.UploadAudioTool;
@@ -69,7 +68,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             uploadAudioPopupdate=new UploadAudioPopupdate();
         }
         uploadAudioPopupdate.getPopwindow(mContext);
-
         recordHandler=new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg) {
@@ -336,17 +334,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             jsonObject.put("page",meetingConfig.getPageNumber());
             jsonObject.put("time",1);
             documentActionList.add(jsonObject);
-            documentActionList.add(jsonObject);
-            documentActionList.add(jsonObject);
-            documentActionList.add(jsonObject);
-            documentActionList.add(jsonObject);
-            documentActionList.add(jsonObject);
-            documentActionList.add(jsonObject);
-            documentActionList.add(jsonObject);
-            documentActionList.add(jsonObject);
-            documentActionList.add(jsonObject);
-            documentActionList.add(jsonObject);
-            documentActionList.add(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -409,7 +396,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     private void stopAudioRecord() {
         if (audioRecorder != null) {
-            uploadAudioPopupdate.StartPop(soundtrackBean);
             audioRecorder.stopRecord(new RecordEndListener() {
                 @Override
                 public void endRecord(String fileName) {
@@ -435,7 +421,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
     private void stopRecordNoteAction(){
-        stopRecordDocumentAction();
+        uploadAudioPopupdate.setCanChangTitle();
         if(noteActionList.size()>0){
             final JSONArray jsonArray=new JSONArray();
             for (int i = 0; i < noteActionList.size(); i++) {
@@ -467,44 +453,57 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
 
-    private final int SUB_SIZE=10;
+
+    private List<DocumentAction> uploaddocumentActionsList=new ArrayList<>();
 
     private void stopRecordDocumentAction(){
+        uploadAudioPopupdate.StartPop(soundtrackBean);
         if(documentActionList.size()>0){
             try {
-                int listSize=documentActionList.size();
-                int totleburst = listSize % SUB_SIZE== 0 ? listSize / SUB_SIZE: listSize / SUB_SIZE + 1;
-                Log.e("syncing---docu分片","总共"+totleburst+"片");
-                List<List<JSONObject>> subAryList = new ArrayList<>();
-                for (int i = 0; i < totleburst; i++) {
-                    int index = i * SUB_SIZE;
-                    List<JSONObject> list = new ArrayList<>();
-                    int j = 0;
-                    while (j < SUB_SIZE && index < listSize) {
-                        list.add(documentActionList.get(index++));
-                        j++;
-                    }
-                    subAryList.add(list);
+                final List<List<JSONObject>> subAryList = GZipUtil.fetchList(documentActionList);
+                Log.e("syncing---docu","分片大小  "+subAryList.size());
+                uploaddocumentActionsList=GZipUtil.getDocumentactionList(subAryList,soundtrackBean);
+                if(uploaddocumentActionsList.size()>0){
+                    executeUploadDocument(uploaddocumentActionsList.get(0));
                 }
-
-                for (int i = 0; i < subAryList.size(); i++) {
-                    List<JSONObject> subdata=subAryList.get(i);
-                    final JSONArray jsonArray=new JSONArray();
-                    for (int j = 0; j < subdata.size(); j++) {
-                        jsonArray.put(subdata.get(j));
-                    }
-                    String documnraction=jsonArray.toString();
-                    Log.e("syncing---docu",documnraction);
-                    String gzipData=GZipUtil.compress(documnraction);
-                    String base64Data=LoginGet.getBase64Password(gzipData);
-                    Log.e("syncing---docu",base64Data);
-                }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
+
+
+    private void  executeUploadDocument(final DocumentAction documentAction){
+//        String url="https://testapi.peertime.cn/MeetingServer/sync_action/upload_all_actions";
+        String url=AppConfig.URL_MEETING_BASE+"sync_action/upload_all_actions";
+        ServiceInterfaceTools.getinstance().uploadAllactions(url, ServiceInterfaceTools.UPLOADALLACTIONS, documentAction, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                if(isrecordvoice){
+                    uploadAudioPopupdate.setProgress1(documentAction.getTotal(), documentAction.getIndex());
+                }else{
+                    uploadAudioPopupdate.setProgress(documentAction.getTotal(), documentAction.getIndex());
+                }
+                if(documentAction.getIndex()==documentActionList.size()){ //  上传文档动作成功
+                    if (isrecordvoice) {    // 完成录音
+                        Log.e("syncing---docu","开始上传录音");
+                        stopAudioRecord();
+                    }else{
+                        Log.e("syncing---docu","笔记动作");
+                        stopRecordNoteAction(); //笔记动作
+                    }
+                }else{
+                   DocumentAction nextdocumentAction=uploaddocumentActionsList.get(documentAction.getIndex());
+                    executeUploadDocument(nextdocumentAction);
+                }
+
+            }
+        });
+    }
+
+
+
 
     private void pauseOrStartAudioRecord() {
         if (audioRecorder != null) {
@@ -575,11 +574,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         if(audiosyncll!=null&&audiosyncll.getVisibility()==View.VISIBLE){
             closeAudioSync();
             StopMedia();
-            if (isrecordvoice) {    // 完成录音
-                stopAudioRecord();
-            }else{
-                stopRecordNoteAction(); //音响动作
-            }
+            stopRecordDocumentAction();
             instance=null;
         }
     }
@@ -594,6 +589,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         ServiceInterfaceTools.getinstance().endSync(url2, ServiceInterfaceTools.ENDSYNC, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
+
             }
         });
         if (audioplaytimer != null) {

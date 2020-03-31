@@ -330,6 +330,7 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                         soundtrackBean.setAvatarUrl(jsonObject1.getString("AvatarUrl"));
                         soundtrackBean.setDuration(jsonObject1.getString("Duration"));
                         soundtrackBean.setCreatedDate(jsonObject1.getString("CreatedDate"));
+                        soundtrackBean.setAttachmentId(jsonObject1.getInt("AttachmentID"));
                         soundtrackBean.setIsPublic(jsonObject1.getInt("IsPublic"));
 
                         JSONObject pathinfo=jsonObject1.getJSONObject("PathInfo");

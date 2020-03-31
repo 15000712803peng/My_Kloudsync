@@ -308,7 +308,7 @@ public class YinxiangEditPopup implements View.OnClickListener {
             public void run() {
                 try {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("AttachmentID", Integer.parseInt(soundtrackBean.getAttachmentId()));
+                    jsonObject.put("AttachmentID", soundtrackBean.getAttachmentId());
                     jsonObject.put("SoundtrackID", soundtrackBean.getSoundtrackID());
                     if (selectedFavorite == null) {
                         selectedFavorite = new Document();

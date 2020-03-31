@@ -120,7 +120,7 @@ public class UploadAudioTool {
                         ((Activity)mContext).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                uploadAudioPopupdate.setProgress(mfile.length(), progressEvent.getBytesTransferred());
+                                uploadAudioPopupdate.setProgress2(mfile.length(), progressEvent.getBytesTransferred());
                             }
                         });
                     }
@@ -197,7 +197,7 @@ public class UploadAudioTool {
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        uploadAudioPopupdate.setProgress(totalSize, currentSize);
+                        uploadAudioPopupdate.setProgress2(totalSize, currentSize);
                     }
                 });
             }
@@ -224,7 +224,7 @@ public class UploadAudioTool {
 
 
     private void yinxiangUploadNewFile(final Uploadao ud) {
-        uploadAudioPopupdate.setCanChangTitle();
+
         ServiceInterfaceTools.getinstance().yinxiangUploadNewFile(AppConfig.URL_PUBLIC + "Soundtrack/UploadNewFile", ServiceInterfaceTools.YINXIANGUPLOADNEWFILE,
                 meetingConfig.getLessionId()+"", meetingConfig.getDocument().getAttachmentID()+"", fileName, fieldId, soundtrackID, ud, new ServiceInterfaceListener() {
                     @Override
