@@ -552,7 +552,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         SoundtrackAudioManagerV2.getInstance(host).seekTo(time);
         SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
-        Collections.sort(mNoteActionList);
+//        Collections.sort(mNoteActionList);
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {
             @Override
             public void accept(List<WebAction> webActions) throws Exception {
@@ -560,18 +560,17 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                     if (action.getTime() >= time) {
                         Log.e("check_page_time", "seek_time:" + time + ",action_time:" + action.getTime());
                         SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(action);
-                        SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
                         break;
                     }
                 }
-
-                for (WebAction action : mNoteActionList) {
+                SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
+              /*  for (WebAction action : mNoteActionList) {
                     if (action.getTime() <= time) {
                         Log.e("check_action_time", "seek_time:" + time + ",action_time:" + action.getTime());
                         SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(action);
                         SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
                     }
-                }
+                }*/
             }
         }).doOnNext(new Consumer<List<WebAction>>() {
             @Override
@@ -785,7 +784,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             EventBus.getDefault().unregister(this);
         }
         pageActions.clear();
-        mNoteActionList.clear();
+//        mNoteActionList.clear();
         release();
     }
 
@@ -866,7 +865,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     private List<WebAction> pageActions = new ArrayList<>();
-    private List<WebAction> mNoteActionList = new ArrayList<>();
+//    private List<WebAction> mNoteActionList = new ArrayList<>();
 
     private void fetchPageActions(PartWebActions webActions) {
         if (webActions == null) {
@@ -882,11 +881,11 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                             if (!pageActions.contains(action)) {
                                 pageActions.add(action);
                             }
-                        }else {
+                        }/*else {
                             if (!mNoteActionList.contains(action)) {
                                 mNoteActionList.add(action);
                             }
-                        }
+                        }*/
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
