@@ -353,6 +353,23 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
         soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
 
+        soundtrackAudioManager.setOnAudioInfoCallBack(new SoundtrackAudioManagerV2.OnAudioInfoCallBack() {
+            @Override
+            public void onDurationCall(int duration) {
+                seekBar.setMax(duration);
+            }
+
+            @Override
+            public void onCurrentTimeCall(int currentTime) {
+                seekBar.setProgress(currentTime);
+            }
+
+            @Override
+            public void onShowTimeCall(String time) {
+                playTimeText.setText(time);
+            }
+        });
+
         backgroundMusicManager = SoundtrackBackgroundMusicManager.getInstance(host);
         backgroundMusicManager.setSoundtrackAudio(soundtrackDetail.getBackgroudMusicInfo());
 
@@ -542,9 +559,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
         final String time = new SimpleDateFormat("mm:ss").format(playTime);
         final String _time = new SimpleDateFormat("mm:ss").format(totalTime);
-        playTimeText.setText(time + "/" + _time);
-        seekBar.setMax((int) (totalTime / 10));
-        seekBar.setProgress((int) (playTime / 10));
+        //playTimeText.setText(time + "/" + _time);
+        //seekBar.setMax((int) (totalTime / 10));
+        //seekBar.setProgress((int) (playTime / 10));
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);
         onlyShowTimeText.setText(time);
@@ -555,12 +572,17 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 //        playTime = seekBar.getProgress() * 100;
 //        refreshTimeText();
+        if(fromUser){
+            statusText.setText(R.string.paused);
+            startPauseImage.setImageResource(R.drawable.video_play);
+            soundtrackAudioManager.stop();
+        }
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         Log.e("seek_bar", "start_tracking");
-//        pause();
+        //pause();
 
     }
 
@@ -568,13 +590,13 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public void onStopTrackingTouch(SeekBar seekBar) {
         isSeek = true;
         Log.e("seek_bar", "stop_tracking");
-//        seekTo(seekBar.getProgress() * 10);
+//        pause();
+//        final int time = seekBar.getProgress() * 10;
         if(!hasPermisson()){
             return;
         }
-        pause();
-        final int time = seekBar.getProgress() * 10;
-        seekTo2(time);
+        soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
+        seekTo2(seekBar.getProgress());
     }
 
     private void seekTo2(final int time) {
@@ -588,7 +610,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                     soundtrackDetail.getSoundtrackID() + "");
             PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, currentPaegNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
         }
-        SoundtrackAudioManagerV2.getInstance(host).seekTo(time);
+        //SoundtrackAudioManager.getInstance(host).seekTo(time);
         SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {
@@ -614,7 +636,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                         restart();
                     }
                 });
-
             }
         }).subscribe();
     }
@@ -974,5 +995,4 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
         return null;
     }
-
 }
