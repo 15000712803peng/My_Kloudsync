@@ -34,6 +34,7 @@ import com.kloudsync.techexcel.dialog.message.SendFileMessage;
 import com.kloudsync.techexcel.dialog.message.ShareMessage;
 import com.kloudsync.techexcel.dialog.message.SpectatorMessage;
 import com.kloudsync.techexcel.dialog.message.SystemMessage;
+import com.kloudsync.techexcel.help.CrashCatch;
 import com.kloudsync.techexcel.help.CrashHandler;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.start.StartUbao;
@@ -53,7 +54,7 @@ import io.agora.openlive.model.WorkerThread;
 import io.rong.imkit.RongIM;
 
 public class App extends Application {
-    private CrashHandler mCrashHandler;
+    //private CrashHandler mCrashHandler;
 	public static App mApplication;
     private ThreadManager threadMgr;
     private Handler mainHandler;
@@ -74,6 +75,12 @@ public class App extends Application {
 //        getApplicationContext().startService(new Intent(getApplicationContext(), TransferService.class));
         asyncInit();
         initBroadcastReceiver();
+        CrashCatch.init(new CrashCatch.CrashHandler() {
+            @Override
+            public void handlerException(Thread t, Throwable e) {
+                System.out.println(e.getLocalizedMessage());
+            }
+        });
     }
 
 
@@ -199,10 +206,10 @@ public class App extends Application {
 
             x.Ext.init(App.this);
             Fresco.initialize(App.this);
-            mCrashHandler = CrashHandler.getInstance();
+            //mCrashHandler = CrashHandler.getInstance();
             PgyerActivityManager.set(App.this);
             Pgyer.setAppId("c3ae43cb28a2922fd1145252c3138ad4");
-            mCrashHandler.init(App.this);
+            //mCrashHandler.init(App.this);
             PgyCrashManager.register(App.this);
             mainHandler.post(new Runnable() {
                 @Override

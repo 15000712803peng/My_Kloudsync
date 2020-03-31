@@ -44,6 +44,13 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     private volatile long playTime;
     private Context context;
     private SoundtrackMediaInfo mediaInfo;
+    /**播放总长*/
+    private int duration=-1;
+    /**播放seek拖动进度*/
+    private double progress=0;
+    /**是否处于用户拖动状态*/
+    private boolean mIsSeekStatus=false;
+
 
     private SoundtrackAudioManagerV2(Context context) {
         this.context = context;
@@ -123,6 +130,21 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 //                    audioPlayer.setDataSource(context, Uri.parse(URLDecoder.decode(audioData.getAttachmentUrl(),"UTF-8")));
                     audioPlayer.setPlayModel(WlPlayModel.PLAYMODEL_ONLY_AUDIO);
 
+                    audioPlayer.setOnTimeInfoListener(new WlOnTimeInfoListener() {
+                        @Override
+                        public void onTimeInfo(double currentTime) {
+                            if(duration==-1){
+                                duration=(int)audioPlayer.getDuration();
+                                if(onAudioInfoCallBack!=null)
+                                    onAudioInfoCallBack.onDurationCall(duration);
+                            }
+                            if(onAudioInfoCallBack!=null){
+                                onAudioInfoCallBack.onCurrentTimeCall((int)currentTime);
+                                onAudioInfoCallBack.onShowTimeCall(WlTimeUtil.secdsToDateFormat((int) currentTime) + "/" + WlTimeUtil.secdsToDateFormat((int) duration));
+                            }
+                        }
+                    });
+
                     try {
                         Log.e("check_prepare_soundtrack","url:" + audioData.getAttachmentUrl());
                         audioPlayer.prepared();
@@ -167,6 +189,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         Log.e("check_prepare_soundtrack","onPrepared");
         if (mediaInfo != null) {
             Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());
+            audioPlayer.seek(progress);
+            audioPlayer.start();
             if(mediaInfo.getTime() > 0){
                 audioPlayer.seek(mediaInfo.getTime() / 1000);
             }else {

@@ -2798,6 +2798,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     messageManager.sendMessage_LeaveMeeting(meetingConfig);
                 }
                 PageActionsAndNotesMgr.requestActionsSaved(meetingConfig);
+                soundtrackPlayManager.followClose();
                 finish();
             }
 
@@ -2806,6 +2807,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 if (exitDialog.isEndMeeting() && meetingConfig.isInRealMeeting()) {
                     messageManager.sendMessage_EndMeeting(meetingConfig);
                 }
+                soundtrackPlayManager.followClose();
                 finish();
             }
         });
@@ -3639,7 +3641,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     .show();
         } else {
             soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
-            soundtrackPlayManager.doPlay();
+            soundtrackPlayManager.doPlay();//播放音响dialog
 //            showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
 //            soundtrackPlayManager = new SoundtrackPlayManager(this,soundtrack.getSoundtrackDetail(),meetingConfig,soundtrackPlayController,web);
 //            soundtrackPlayManager.doPlay(menuIcon,web);
