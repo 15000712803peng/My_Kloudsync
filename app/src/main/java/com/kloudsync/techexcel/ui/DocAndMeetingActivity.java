@@ -560,7 +560,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         meetingConfig.setType(data.getIntExtra("meeting_type", MeetingType.DOC));
         meetingConfig.setMeetingId(data.getStringExtra("meeting_id"));
         meetingConfig.setLessionId(data.getIntExtra("lession_id", 0));
-        meetingConfig.setDocumentId(data.getStringExtra("document_id"));
+        int document_id = data.getIntExtra("document_id", 0);
+        meetingConfig.setDocumentId(String.valueOf(document_id));
         meetingConfig.setRole(data.getIntExtra("meeting_role", MeetingConfig.MeetingRole.HOST));
         meetingConfig.setUserToken(UserData.getUserToken(this));
         meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting", false));
@@ -2610,17 +2611,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (meetingConfig.getType() != MeetingType.MEETING) {
             if (isSyncing) {
                 if (!TextUtils.isEmpty(actions)) {
-                    Log.e("syncing---", SoundtrackRecordManager.getManager(this).getCurrentTime() + "");
-                    try {
-                        JSONObject jsonObject = new JSONObject(actions);
-                        jsonObject.put("time", SoundtrackRecordManager.getManager(this).getCurrentTime());
-                        actions = jsonObject.toString();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    SoundtrackRecordManager.getManager(this).recordDocumentAction(actions);
                 }
-            }
-            messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
+            }else{
+                   messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
+               }
+
         } else {
             Log.e("notifyMyWebActions", "role:" + meetingConfig.getRole());
             if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())) {
@@ -3869,9 +3865,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (eventSoundSync.getStatus() == 1) { //开始录制
             isSyncing = true;
             getJspPagenumber();
-            messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
+//            messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
             recordstatus.setVisibility(View.VISIBLE);
-
             //判断笔记是否打开
             if (noteLayout.getVisibility() == View.VISIBLE) {
                 if (noteWeb != null) {

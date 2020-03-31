@@ -13,7 +13,7 @@ public class SoundtrackBean implements Serializable {
     private String userName;
     private String avatarUrl;
     private String duration;
-    private String attachmentId;
+    private int attachmentId;
 
     private boolean isCheck = false;
     private boolean isHidden = false;
@@ -104,11 +104,11 @@ public class SoundtrackBean implements Serializable {
         this.createdDate = createdDate;
     }
 
-    public String getAttachmentId() {
+    public int getAttachmentId() {
         return attachmentId;
     }
 
-    public void setAttachmentId(String attachmentId) {
+    public void setAttachmentId(int attachmentId) {
         this.attachmentId = attachmentId;
     }
 

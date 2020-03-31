@@ -60,6 +60,7 @@ import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.techexcel.bean.AudioActionBean;
 import com.ub.techexcel.bean.ChannelVO;
+import com.ub.techexcel.bean.DocumentAction;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.NewBookPagesBean;
 import com.ub.techexcel.bean.Note;
@@ -160,6 +161,7 @@ public class ServiceInterfaceTools {
     public static final int GETSUBSYSMTEMLIST = 0x1160;
     public static final int GETLOGINUSERINFO = 0x1161;
     public static final int UPDATETITLEANDVISIBILITY = 0x1162;
+    public static final int UPLOADALLACTIONS = 0x1163;
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
 
@@ -309,6 +311,62 @@ public class ServiceInterfaceTools {
         }).start();
     }
 
+
+
+    public void uploadAllactions(final String url, final int code, final DocumentAction documentAction, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("attachmentId", documentAction.getAttachmentId());
+                    jsonObject.put("syncId", documentAction.getSyncId());
+                    jsonObject.put("zippedActionData", documentAction.getZippedActionData());
+                    jsonObject.put("index", documentAction.getIndex());
+                    jsonObject.put("total", documentAction.getTotal());
+                    JSONObject jsonObject1 = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("uploadAllactions", url + "   \n  " + jsonObject.toString() + "   \n  " + jsonObject1.toString());
+                    if (jsonObject1.getInt("code") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = "";
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+
+    public int uploadAllactions2(final String url, final DocumentAction documentAction) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("attachmentId", documentAction.getAttachmentId());
+                jsonObject.put("syncId", documentAction.getSyncId());
+                jsonObject.put("zippedActionData", documentAction.getZippedActionData());
+                jsonObject.put("index", documentAction.getIndex());
+                jsonObject.put("total", documentAction.getTotal());
+                JSONObject jsonObject1 = ConnectService.submitDataByJson(url, jsonObject);
+                Log.e("uploadAllactions", url + "   \n  " + jsonObject.toString() + "   \n  " + jsonObject1.toString());
+                if (jsonObject1.getInt("code") == 0) {
+                      return 0;
+                } else {
+                      return 1;
+                }
+            } catch (Exception e) {
+                    e.printStackTrace();
+            }
+            return 0;
+    }
 
     public void UpdateTitleAndVisibility(final String url, final int code, final SoundtrackBean soundtrackBean,ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
@@ -603,7 +661,7 @@ public class ServiceInterfaceTools {
                         SoundtrackBean soundtrackBean1 = new SoundtrackBean();
                         soundtrackBean1.setSoundtrackID(retdata.getInt("SoundtrackID"));
                         soundtrackBean1.setTitle(retdata.getString("Title"));
-                        soundtrackBean1.setAttachmentId(retdata.getString("AttachmentID"));
+                        soundtrackBean1.setAttachmentId(retdata.getInt("AttachmentID"));
                         soundtrackBean1.setCreatedDate(retdata.getString("CreatedDate"));
                         soundtrackBean1.setBackgroudMusicAttachmentID(retdata.getInt("BackgroudMusicAttachmentID"));
                         soundtrackBean1.setNewAudioAttachmentID(retdata.getInt("NewAudioAttachmentID"));
