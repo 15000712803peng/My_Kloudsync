@@ -20,6 +20,8 @@ import com.ywl5320.wlmedia.enums.WlPlayModel;
 import com.ywl5320.wlmedia.listener.WlOnCompleteListener;
 import com.ywl5320.wlmedia.listener.WlOnErrorListener;
 import com.ywl5320.wlmedia.listener.WlOnPreparedListener;
+import com.ywl5320.wlmedia.listener.WlOnTimeInfoListener;
+import com.ywl5320.wlmedia.util.WlTimeUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -35,6 +37,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import com.ywl5320.wlmedia.listener.WlOnTimeInfoListener;
+import com.ywl5320.wlmedia.util.WlTimeUtil;
 
 
 public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompleteListener, WlOnErrorListener {
@@ -204,7 +208,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     @Override
     public void onComplete() {
-        EventBus.getDefault().post(new EventCloseSoundtrack());
+        if(!mIsSeekStatus)
+            EventBus.getDefault().post(new EventCloseSoundtrack());
     }
 
 
@@ -284,7 +289,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         if (audioPlayer != null) {
-            audioPlayer.seek(time / 1000);
+            audioPlayer.seek(time);
+            //audioPlayer.seek(time / 1000);
             Log.e("vedio_check", "seek_to,time:" + time);
         }
     }
@@ -428,6 +434,39 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return null;
         }
         return null;
+    }
+
+    /**停止播放*/
+    public void stop() {
+        mIsSeekStatus=true;
+        if (mediaInfo == null) {
+            return;
+        }
+        if (audioPlayer != null) {
+            audioPlayer.stop();
+        }
+    }
+
+    public void stopToPrepared(double progress){
+        mIsSeekStatus=false;
+        this.progress=progress;
+        if (mediaInfo == null) {
+            return;
+        }
+        if (audioPlayer != null) {
+            audioPlayer.prepared();
+        }
+    }
+
+    /**将音响播放时长回调出去*/
+    public OnAudioInfoCallBack onAudioInfoCallBack;
+    public void setOnAudioInfoCallBack(OnAudioInfoCallBack onAudioInfoCallBack){
+        this.onAudioInfoCallBack=onAudioInfoCallBack;
+    }
+    public interface OnAudioInfoCallBack{
+        void onDurationCall(int duration);
+        void onCurrentTimeCall(int currentTime);
+        void onShowTimeCall(String time);
     }
 
 }
