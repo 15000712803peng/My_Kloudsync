@@ -2613,8 +2613,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 if (!TextUtils.isEmpty(actions)) {
                     SoundtrackRecordManager.getManager(this).recordDocumentAction(actions);
                 }
-            }
-            messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
+            }else{
+                   messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
+               }
+
         } else {
             Log.e("notifyMyWebActions", "role:" + meetingConfig.getRole());
             if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())) {
