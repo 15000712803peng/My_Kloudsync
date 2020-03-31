@@ -2611,14 +2611,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (meetingConfig.getType() != MeetingType.MEETING) {
             if (isSyncing) {
                 if (!TextUtils.isEmpty(actions)) {
-                    Log.e("syncing---", SoundtrackRecordManager.getManager(this).getCurrentTime() + "");
-                    try {
-                        JSONObject jsonObject = new JSONObject(actions);
-                        jsonObject.put("time", SoundtrackRecordManager.getManager(this).getCurrentTime());
-                        actions = jsonObject.toString();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    SoundtrackRecordManager.getManager(this).recordDocumentAction(actions);
                 }
             }
             messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
@@ -3870,9 +3863,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (eventSoundSync.getStatus() == 1) { //开始录制
             isSyncing = true;
             getJspPagenumber();
-            messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
+//            messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
             recordstatus.setVisibility(View.VISIBLE);
-
             //判断笔记是否打开
             if (noteLayout.getVisibility() == View.VISIBLE) {
                 if (noteWeb != null) {
