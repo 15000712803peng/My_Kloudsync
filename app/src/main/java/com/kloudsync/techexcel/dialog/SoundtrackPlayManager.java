@@ -402,6 +402,73 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
     }
 
+    public void doPlayAtTime() {
+        if(meetingConfig.getDocument() == null){
+            return;
+        }
+        web.setVisibility(View.INVISIBLE);
+        seekBar.setProgress(0);
+        loadingBar.setVisibility(View.VISIBLE);
+        statusText.setVisibility(View.INVISIBLE);
+//        String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
+//        web.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
+//        web.loadUrl("javascript:Record()", null);
+        soundtrackPlayLayout.setVisibility(View.VISIBLE);
+        mainNoteWeb.setVisibility(View.GONE);
+        downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
+        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, 0);
+        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+        soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
+
+        backgroundMusicManager = SoundtrackBackgroundMusicManager.getInstance(host);
+        backgroundMusicManager.setSoundtrackAudio(soundtrackDetail.getBackgroudMusicInfo());
+
+        Observable.just("preload").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                syncDownloadFirst(soundtrackDetail.getSoundtrackID());
+                Log.e("check_play_step", "step_one:preload");
+            }
+        }).map(new Function<String, String>() {
+            @Override
+            public String apply(String s) throws Exception {
+//                https://peertime.oss-cn-shanghai.aliyuncs.com/NoteControlAction/37014/channel_1.json
+                final String centerPart = "NoteControlAction" + File.separator + soundtrackDetail.getSoundtrackID();
+                JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+                        centerPart);
+                String url = "";
+                if (queryDocumentResult != null) {
+                    Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+
+                    if (uploadao != null) {
+                        if (1 == uploadao.getServiceProviderId()) {
+                            url = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
+                                    + "/channel_1.json";
+                        } else if (2 == uploadao.getServiceProviderId()) {
+                            url = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/channel_1.json";
+                        }
+                        Log.e("check_transform_url", "url:" + url);
+                    }
+                }
+                return url;
+            }
+        }).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String url) throws Exception {
+                if (!TextUtils.isEmpty(url)) {
+                    SoundtrackDigitalNoteManager.getInstance(host).doProcess(url);
+                }
+            }
+        }).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.e("check_play_step", "step_two:task_execute");
+                new PlayTimeTask().execute();
+            }
+        }).subscribe();
+
+    }
+
 
     class PlayTimeTask extends AsyncTask<Void, Void, Void> {
 

@@ -72,6 +72,18 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         prepareAudioAndPlay(mediaInfo);
     }
 
+    public void setSoundtrackAudioPlayAtTime(SoundtrackMediaInfo mediaInfo,long time) {
+        Log.e("check_play", "mediaInfo:" + mediaInfo);
+        this.mediaInfo = mediaInfo;
+        mediaInfo.setTime(time);
+        if (mediaInfo == null || this.mediaInfo.isPreparing()) {
+            return;
+        }
+        this.mediaInfo.setPreparing(true);
+        predownSoundtrackAudio(context, mediaInfo.getAttachmentUrl());
+        prepareAudioAndPlay(mediaInfo);
+    }
+
     public SoundtrackMediaInfo getMediaInfo() {
         return mediaInfo;
     }
@@ -130,6 +142,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     }
 
+
     private void reinit(SoundtrackMediaInfo mediaInfo) {
 
         audioPlayer = null;
@@ -154,7 +167,13 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         Log.e("check_prepare_soundtrack","onPrepared");
         if (mediaInfo != null) {
             Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());
-            audioPlayer.start();
+            if(mediaInfo.getTime() > 0){
+                audioPlayer.seek(mediaInfo.getTime() / 1000);
+            }else {
+                audioPlayer.start();
+            }
+
+
 
         }
     }

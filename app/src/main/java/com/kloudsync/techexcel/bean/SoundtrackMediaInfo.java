@@ -28,6 +28,15 @@ public class SoundtrackMediaInfo {
     private boolean isPreparing;
     private boolean isPrepared;
     private boolean isPlaying;
+    private long time;
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
 
     public boolean isPlaying() {
         return isPlaying;
