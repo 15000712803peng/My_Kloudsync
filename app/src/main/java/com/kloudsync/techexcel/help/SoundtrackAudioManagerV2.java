@@ -196,7 +196,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         if (mediaInfo == null) {
             return 0;
         }
-        return (long) audioPlayer.getDuration();
+        return (long) audioPlayer.getDuration() * 1000;
     }
 
 
@@ -215,7 +215,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         if (mediaInfo == null) {
             return 0;
         }
-        return (long) audioPlayer.getNowClock();
+        return (long) audioPlayer.getDuration() * 1000;
     }
 
     public void pause() {

@@ -169,7 +169,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         totalTime = soundtrackDetail.getDuration();
         initManager(view);
         //TODO
-          SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
+//          SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
     }
 
     public SoundtrackPlayManager(Activity host, MeetingConfig meetingConfig, RelativeLayout view) {
@@ -179,7 +179,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         this.soundtrackPlayLayout = view;
         initManager(view);
         //TODO
-          SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
+//          SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
     }
 
     public void init(Activity host, MeetingConfig meetingConfig, RelativeLayout view) {
@@ -188,7 +188,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         this.soundtrackPlayLayout = view;
         initManager(view);
         //TODO
-       SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
+//         SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
     }
 
     public void initManager(RelativeLayout view) {
@@ -307,6 +307,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if(meetingConfig.getDocument() == null){
             return;
         }
+        SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
         web.setVisibility(View.INVISIBLE);
         seekBar.setProgress(0);
 //        String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
