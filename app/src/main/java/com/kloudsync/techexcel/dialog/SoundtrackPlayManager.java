@@ -682,7 +682,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         seekTo2(seekBar.getProgress());
     }
 
-    private void followSeek(int currentProgress){
+    public void followSeek(int currentProgress){
         seekBar.setProgress(currentProgress);
         soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
         seekTo2(seekBar.getProgress());
