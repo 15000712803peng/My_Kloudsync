@@ -466,6 +466,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     /**用于拖拽后的播放*/
     public void stopToPrepared(double progress){
         mIsSeekStatus=false;
+        mIsPauseStatus=false;
         this.progress=progress;
         if (mediaInfo == null) {
             return;
