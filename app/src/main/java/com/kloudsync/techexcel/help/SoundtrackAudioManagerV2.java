@@ -87,6 +87,17 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         prepareAudioAndPlay(mediaInfo);
     }
 
+    public void setSoundtrackAudioToPause(SoundtrackMediaInfo mediaInfo,long time) {
+        Log.e("check_do_pause", "setSoundtrackAudioToPause:" + mediaInfo);
+        this.mediaInfo = mediaInfo;
+        if (mediaInfo == null || this.mediaInfo.isPreparing()) {
+            return;
+        }
+        this.mediaInfo.setPreparing(true);
+        predownSoundtrackAudio(context, mediaInfo.getAttachmentUrl());
+        prepareAudioAndPause(mediaInfo,time);
+    }
+
     public void setSoundtrackAudioPlayAtTime(SoundtrackMediaInfo mediaInfo,long time) {
         Log.e("check_play", "mediaInfo:" + mediaInfo);
         this.mediaInfo = mediaInfo;
@@ -172,6 +183,78 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     }
 
+    public void prepareAudioAndPause(final SoundtrackMediaInfo audioData, final long time) {
+
+        Observable.just("play").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                audioPlayer = new WlMedia();
+                Log.e("check_do_pause", "prepareAudioAndPause:" + time);
+                try {
+                    try {
+                        if (audioPlayer.isPlay()) {
+                            return;
+                        }
+                    } catch (IllegalStateException exception) {
+
+                    }
+                    audioPlayer.setOnPreparedListener(SoundtrackAudioManagerV2.this);
+                    audioPlayer.setOnCompleteListener(SoundtrackAudioManagerV2.this);
+                    audioPlayer.setOnErrorListener(SoundtrackAudioManagerV2.this);
+                    Uri uri = null;
+                    if (audioCache.containFile(audioData.getAttachmentUrl())) {
+                        File file = new File(audioCache.getAudioPath(audioData.getAttachmentUrl()));
+                        if (file.exists()) {
+                            audioPlayer.setSource(file.getAbsolutePath());
+//                            audioPlayer.setSource(audioData.getAttachmentUrl());
+                        } else {
+                            audioPlayer.setSource(audioData.getAttachmentUrl());
+                        }
+
+                    } else {
+                        audioPlayer.setSource(audioData.getAttachmentUrl());
+                    }
+
+//                    audioPlayer.setDataSource(context, Uri.parse(URLDecoder.decode(audioData.getAttachmentUrl(),"UTF-8")));
+                    audioPlayer.setPlayModel(WlPlayModel.PLAYMODEL_ONLY_AUDIO);
+
+                    audioPlayer.setOnTimeInfoListener(new WlOnTimeInfoListener() {
+                        @Override
+                        public void onTimeInfo(double currentTime) {
+                            Log.e("check_do_pause","currentTime:" + currentTime);
+                            if(duration==-1){
+                                duration=(int)audioPlayer.getDuration();
+                                if(onAudioInfoCallBack!=null)
+                                    onAudioInfoCallBack.onDurationCall(duration);
+                            }
+                            if(onAudioInfoCallBack!=null){
+                                onAudioInfoCallBack.onCurrentTimeCall((int)currentTime);
+                                onAudioInfoCallBack.onShowTimeCall(WlTimeUtil.secdsToDateFormat((int) currentTime) + "/" + WlTimeUtil.secdsToDateFormat((int) duration));
+                            }
+                        }
+                    });
+
+                    try {
+                        Log.e("check_prepared_and_play","stopToPause");
+//                        audioPlayer.prepared();
+                        stopToPause(time / 1000);
+                    } catch (IllegalStateException e) {
+                        Log.e("check_prepared_and_play","IllegalStateException:" + e.getMessage());
+                        reinit(audioData);
+                    }
+
+                    audioData.setPreparing(false);
+                    audioData.setPrepared(true);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    audioData.setPreparing(false);
+                }
+            }
+        });
+
+    }
+
 
     private void reinit(SoundtrackMediaInfo mediaInfo) {
 
@@ -206,7 +289,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                     audioPlayer.start();
                     isPlaying = true;
                 }
-                Log.e("check_prepared_and_play","start");
+                Log.e("check_prepared_and_play","start:progress" + progress);
             }
 
 

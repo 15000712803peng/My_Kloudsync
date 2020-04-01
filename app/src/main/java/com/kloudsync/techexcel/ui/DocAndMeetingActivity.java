@@ -4342,7 +4342,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
 
-    private void requestSyncDetailAndPause(final SoundTrack soundTrack) {
+    private void requestSyncDetailAndPause(final SoundTrack soundTrack, final long time) {
         Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
             @Override
             public SoundtrackDetailData apply(SoundTrack soundtrack) throws Exception {
@@ -4365,7 +4365,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     soundtrack.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
 //                    playSoundtrack(soundtrack);
                     if (soundtrackPlayManager != null) {
-                        soundtrackPlayManager.followPause();
+                        Log.e("check_do_pause","doPause");
+                        soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
+                        soundtrackPlayManager.doPause(time);
                     }
                 }
             }
@@ -4534,7 +4536,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //        {"actionType":23,"soundtrackId":38065,"time":131086,"stat":2}
         try {
             JSONObject data = new JSONObject(Tools.getFromBase64(playAudioData));
-            Log.e("audioData","data:" + data);
+            Log.e("check_do_pause","data:" + data);
             if (data.has("stat")) {
                 final int stat = data.getInt("stat");
                 final String soundtrackID = data.getString("soundtrackId");
@@ -4566,7 +4568,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         long time = data.getLong("time");
                         SoundTrack soundTrack = new SoundTrack();
                         soundTrack.setSoundtrackID(vid2);
-                        requestSyncDetailAndPause(soundTrack);
+                        requestSyncDetailAndPause(soundTrack,time);
                     }
                 } else if (stat == 3) { // 继续播放
                     if (soundtrackPlayManager != null) {
@@ -4579,7 +4581,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     }
                     SoundTrack soundTrack = new SoundTrack();
                     soundTrack.setSoundtrackID(vid2);
-                    requestSyncDetailAndPause(soundTrack);
+//                    requestSyncDetailAndPause(soundTrack);
 //
                 } else if (stat == 5) {  // 拖动进度条
 //                    seekToTime(audioTime);
