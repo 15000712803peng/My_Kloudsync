@@ -4148,8 +4148,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         Log.e("fitFullCameraList", "span:" + currentSpanCount);
     }
 
+    private boolean mIsPlayedSoundtrackAudio;//是否播放过主持人正在播放的音想
     // ----handle_message
-
     private void handleMessageSendMessage(JSONObject data) throws JSONException {
         if (!data.has("actionType")) {
             return;
@@ -4254,9 +4254,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     final int stat = data.getInt("stat");
                     final String soundtrackID = data.getString("soundtrackId");
                     int audioTime = 0;
-                    if (stat == 4) {
+                  /*  if (stat == 4) {
                         audioTime = data.getInt("time");
-                    }
+                    }*/
                     Log.e("mediaplayer-----", stat + ":   " + soundtrackID);
                     if (stat == 1) {  //开始播放
                         int vid2 = 0;
@@ -4266,20 +4266,53 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         SoundTrack soundTrack = new SoundTrack();
                         soundTrack.setSoundtrackID(vid2);
                         requestSyncDetailAndPlay(soundTrack);
+                        mIsPlayedSoundtrackAudio = true;
                     } else if (stat == 0) { //停止播放
                         if (soundtrackPlayManager != null) {
                             soundtrackPlayManager.followClose();
                         }
                     } else if (stat == 2) {  //暂停播放
+                        //TODO 因为在handleSoundtrackWhenJoinMeeting这个方法中都做了初始化播放的操作这个方法只要按正常走就可以了,不过逻辑需要完善
+                       /* int vid2 = 0;
+                        if (!TextUtils.isEmpty(soundtrackID)) {
+                            vid2 = Integer.parseInt(soundtrackID);
+                        }
+                        SoundTrack soundTrack = new SoundTrack();
+                        soundTrack.setSoundtrackID(vid2);
+                        requestSyncDetailAndPause(soundTrack);*/
                         if (soundtrackPlayManager != null) {
                             soundtrackPlayManager.followPause();
                         }
                     } else if (stat == 3) { // 继续播放
-                        if (soundtrackPlayManager != null) {
-                            soundtrackPlayManager.followRestart();
-                        }
+                      /*  if (!mIsPlayedSoundtrackAudio) {
+                            int vid2 = 0;
+                            if (!TextUtils.isEmpty(soundtrackID)) {
+                                vid2 = Integer.parseInt(soundtrackID);
+                            }
+                            SoundTrack soundTrack = new SoundTrack();
+                            soundTrack.setSoundtrackID(vid2);
+                            requestSyncDetailAndPlay(soundTrack);
+                            mIsPlayedSoundtrackAudio = true;
+                        }else {*/
+                            if (soundtrackPlayManager != null) {
+                                soundtrackPlayManager.followRestart();
+                            }
+//                        }
                     } else if (stat == 4) {  // 追上进度
-//
+                        /*audioTime = data.getInt("time");
+                        if (!mIsPlayedSoundtrackAudio) {
+                            int vid2 = 0;
+                            if (!TextUtils.isEmpty(soundtrackID)) {
+                                vid2 = Integer.parseInt(soundtrackID);
+                            }
+                            SoundTrack soundTrack = new SoundTrack();
+                            soundTrack.setSoundtrackID(vid2);
+                            requestSyncDetailAndPlay(soundTrack);
+                            mIsPlayedSoundtrackAudio = true;
+                        }*/
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followSeek(audioTime/1000);
+                        }
                     } else if (stat == 5) {  // 拖动进度条
 //                    seekToTime(audioTime);
                         if (soundtrackPlayManager != null) {
@@ -4360,6 +4393,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     soundtrack.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
 //                    playSoundtrack(soundtrack);
                     if (soundtrackPlayManager != null) {
+                        soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
                         soundtrackPlayManager.followPause();
                     }
                 }
@@ -4546,13 +4580,25 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     SoundTrack soundTrack = new SoundTrack();
                     soundTrack.setSoundtrackID(vid2);
                     requestSyncDetailAndPlay(soundTrack);
+                    mIsPlayedSoundtrackAudio = true;
                 } else if (stat == 0) { //停止播放
                     if (soundtrackPlayManager != null) {
                         soundtrackPlayManager.followClose();
                     }
                 } else if (stat == 2) {  //暂停播放
-                    if (soundtrackPlayManager != null) {
-//                        soundtrackPlayManager.followPause();
+//                    if (!mIsPlayedSoundtrackAudio) {
+                        int vid2 = 0;
+                        if (!TextUtils.isEmpty(soundtrackID)) {
+                            vid2 = Integer.parseInt(soundtrackID);
+                        }
+                        SoundTrack soundTrack = new SoundTrack();
+                        soundTrack.setSoundtrackID(vid2);
+                        requestSyncDetailAndPlay(soundTrack);
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followPause();
+                        }
+                        mIsPlayedSoundtrackAudio = true;
+                    /*}else {
                         int vid2 = 0;
                         if (!TextUtils.isEmpty(soundtrackID)) {
                             vid2 = Integer.parseInt(soundtrackID);
@@ -4560,25 +4606,55 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         SoundTrack soundTrack = new SoundTrack();
                         soundTrack.setSoundtrackID(vid2);
                         requestSyncDetailAndPause(soundTrack);
-                    }
+                    }*/
+
                 } else if (stat == 3) { // 继续播放
+//                    if (!mIsPlayedSoundtrackAudio) {
+                            int vid2 = 0;
+                            if (!TextUtils.isEmpty(soundtrackID)) {
+                                vid2 = Integer.parseInt(soundtrackID);
+                            }
+                            SoundTrack soundTrack = new SoundTrack();
+                            soundTrack.setSoundtrackID(vid2);
+                            requestSyncDetailAndPlay(soundTrack);
+                            mIsPlayedSoundtrackAudio = true;
+                            //需要在这加上soundtrackPlayManager.followSeek(audioTime/1000);
+                        /*}else {
                     if (soundtrackPlayManager != null) {
                         soundtrackPlayManager.followRestart();
                     }
+                        }*/
                 } else if (stat == 4) {  // 追上进度
+                    audioTime = data.getInt("time");
+//                    if (!mIsPlayedSoundtrackAudio) {
+                        int vid2 = 0;
+                        if (!TextUtils.isEmpty(soundtrackID)) {
+                            vid2 = Integer.parseInt(soundtrackID);
+                        }
+                        SoundTrack soundTrack = new SoundTrack();
+                        soundTrack.setSoundtrackID(vid2);
+                        requestSyncDetailAndPlay(soundTrack);
+                        mIsPlayedSoundtrackAudio = true;
+//                    }
+                    if (soundtrackPlayManager != null) {
+                        soundtrackPlayManager.followSeek(audioTime/1000);
+                    }
+//
+                } else if (stat == 5) {  // 拖动进度条
+                    audioTime = data.getInt("time");
+//                    if (!mIsPlayedSoundtrackAudio) {
                     int vid2 = 0;
                     if (!TextUtils.isEmpty(soundtrackID)) {
                         vid2 = Integer.parseInt(soundtrackID);
                     }
                     SoundTrack soundTrack = new SoundTrack();
                     soundTrack.setSoundtrackID(vid2);
-                    requestSyncDetailAndPause(soundTrack);
-//
-                } else if (stat == 5) {  // 拖动进度条
-//                    seekToTime(audioTime);
+                    requestSyncDetailAndPlay(soundTrack);
+                    mIsPlayedSoundtrackAudio = true;
+//                    }
                     if (soundtrackPlayManager != null) {
-//                        soundtrackPlayManager.followSeekTo(audioTime);
-                           soundtrackPlayManager.followSeek(audioTime/1000);
+                        soundtrackPlayManager.followSeek(audioTime/1000);
+                        soundtrackPlayManager.followPause();
                     }
                 }
             }

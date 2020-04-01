@@ -276,6 +276,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         });
         setControllerLayoutWithByOritation();
         initWeb();
+        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
 
     }
 
@@ -347,7 +348,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
         loadingBar.setVisibility(View.VISIBLE);
         statusText.setVisibility(View.INVISIBLE);
-        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+//        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
         soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
 
 //        String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
