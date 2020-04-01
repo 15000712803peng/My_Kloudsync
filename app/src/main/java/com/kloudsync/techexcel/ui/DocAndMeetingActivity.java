@@ -4284,6 +4284,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                    seekToTime(audioTime);
                         if (soundtrackPlayManager != null) {
                             soundtrackPlayManager.followSeekTo(audioTime);
+//                            soundtrackPlayManager.followSeek(audioTime);
                         }
                     }
                 }
@@ -4357,7 +4358,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 if (soundtrackDetailData.getSoundtrackDetail() != null) {
                     EventPlaySoundtrack soundtrack = new EventPlaySoundtrack();
                     soundtrack.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
-                    playSoundtrack(soundtrack);
+//                    playSoundtrack(soundtrack);
+                    if (soundtrackPlayManager != null) {
+                        soundtrackPlayManager.followPause();
+                    }
                 }
             }
         }).subscribe();
