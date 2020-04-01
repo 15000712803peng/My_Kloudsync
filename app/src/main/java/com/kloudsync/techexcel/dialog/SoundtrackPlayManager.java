@@ -216,6 +216,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         seekBar = view.findViewById(R.id.seek_bar);
         controllerLayout = view.findViewById(R.id.layout_soundtrack_controller);
         seekBar.setOnSeekBarChangeListener(this);
+        changeSeekbarStatusByRole();
         startPauseImage = view.findViewById(R.id.image_play_pause);
         startPauseImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -311,7 +312,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
         controllerLayout.setLayoutParams(params);
     }
-
 
     @Override
     public void onClick(View view) {
@@ -679,7 +679,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             return;
         }
 
-        soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
+
         seekTo2(seekBar.getProgress());
     }
 
@@ -703,8 +703,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, currentPaegNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
         }
 //        SoundtrackAudioManager.getInstance(host).seekTo(time);
+        soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
      //   followSeek()
-//        SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
+        SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
 //        Collections.sort(mNoteActionList);
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {
@@ -899,6 +900,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     private void pause() {
+        if(soundtrackAudioManager == null){
+            soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+        }
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, soundtrackAudioManager.getPlayTime());
         isStarted = false;
         SoundtrackAudioManagerV2.getInstance(host).pause();
@@ -982,7 +986,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 Log.e("check_download", "cache:" + cacheUrl);
                 webActionsCache.cacheActions(partWebActions);
                 Log.e("SoundtrackActionsManager", "step_four:request_success_and_cache:web_actions_size:" + partWebActions.getWebActions().size());
-//
             }
         }
     }
@@ -1081,7 +1084,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
             return true;
         }
-
         return false;
     }
 
@@ -1102,5 +1104,24 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             return null;
         }
         return null;
+    }
+
+    public void changeSeekbarStatusByRole(){
+        if(seekBar != null){
+            if(isPresenter()){
+                seekBar.setEnabled(true);
+                seekBar.setClickable(true);
+            }else {
+                seekBar.setEnabled(false);
+                seekBar.setClickable(false);
+            }
+        }
+    }
+
+    /**在指定的时间暂停*/
+    public void pauseAtSpeciedTiem(long s){
+        long time=s/1000;
+        int current=(int)time;
+        soundtrackAudioManager.stopToPause(current);
     }
 }

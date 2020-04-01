@@ -3302,6 +3302,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
             return;
         }
+
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         String mFilePath = FileUtils.getBaseDir();
         // 文件名
@@ -3698,6 +3699,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void presenterChanged(EventPresnterChanged presnterChanged) {
         handleWebUISetting();
+        if(soundtrackPlayManager != null){
+            soundtrackPlayManager.changeSeekbarStatusByRole();
+        }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -4571,6 +4576,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 if (stat == 4) {
                     audioTime = data.getInt("time");
                 }
+
                 Log.e("mediaplayer-----", stat + ":   " + soundtrackID);
                 if (stat == 1) {  //开始播放
                     int vid2 = 0;
@@ -4603,6 +4609,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         if (!TextUtils.isEmpty(soundtrackID)) {
                             vid2 = Integer.parseInt(soundtrackID);
                         }
+                        long time = data.getLong("time");
                         SoundTrack soundTrack = new SoundTrack();
                         soundTrack.setSoundtrackID(vid2);
                         requestSyncDetailAndPause(soundTrack);
