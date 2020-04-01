@@ -3302,6 +3302,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             Toast.makeText(getApplicationContext(), "相机不可用", Toast.LENGTH_SHORT).show();
             return;
         }
+
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         String mFilePath = FileUtils.getBaseDir();
         // 文件名
