@@ -678,7 +678,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             return;
         }
 
-        soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
+
         seekTo2(seekBar.getProgress());
     }
 
@@ -702,6 +702,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, currentPaegNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
         }
 //        SoundtrackAudioManager.getInstance(host).seekTo(time);
+        soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
      //   followSeek()
         SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
@@ -984,7 +985,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 Log.e("check_download", "cache:" + cacheUrl);
                 webActionsCache.cacheActions(partWebActions);
                 Log.e("SoundtrackActionsManager", "step_four:request_success_and_cache:web_actions_size:" + partWebActions.getWebActions().size());
-//
             }
         }
     }
@@ -1083,7 +1083,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
             return true;
         }
-
         return false;
     }
 
@@ -1116,5 +1115,12 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 seekBar.setClickable(false);
             }
         }
+    }
+
+    /**在指定的时间暂停*/
+    private void pauseAtSpeciedTiem(long s){
+        long time=s/1000;
+        int current=(int)time;
+        soundtrackAudioManager.stopToPause(current);
     }
 }

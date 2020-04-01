@@ -54,6 +54,9 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     private double progress=0;
     /**是否处于用户拖动状态*/
     private boolean mIsSeekStatus=false;
+    /**是否需要暂停*/
+    private boolean mIsPauseStatus=false;
+
     private boolean isPlaying;
 
 
@@ -199,8 +202,10 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                 isPlaying = true;
             }else {
                 audioPlayer.seek(progress);
-                audioPlayer.start();
-                isPlaying = true;
+                if(!mIsPauseStatus){
+                    audioPlayer.start();
+                    isPlaying = true;
+                }
                 Log.e("check_prepared_and_play","start");
             }
 
@@ -457,8 +462,22 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         }
     }
 
+
+    /**用于拖拽后的播放*/
     public void stopToPrepared(double progress){
         mIsSeekStatus=false;
+        this.progress=progress;
+        if (mediaInfo == null) {
+            return;
+        }
+        if (audioPlayer != null) {
+            audioPlayer.prepared();
+        }
+    }
+
+    /**用于指定时间暂停*/
+    public void stopToPause(double progress){
+        mIsPauseStatus=true;
         this.progress=progress;
         if (mediaInfo == null) {
             return;
