@@ -4537,6 +4537,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 if (stat == 4) {
                     audioTime = data.getInt("time");
                 }
+
                 Log.e("mediaplayer-----", stat + ":   " + soundtrackID);
                 if (stat == 1) {  //开始播放
                     int vid2 = 0;
