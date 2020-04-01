@@ -1118,7 +1118,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     /**在指定的时间暂停*/
-    private void pauseAtSpeciedTiem(long s){
+    public void pauseAtSpeciedTiem(long s){
         long time=s/1000;
         int current=(int)time;
         soundtrackAudioManager.stopToPause(current);
