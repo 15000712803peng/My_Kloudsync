@@ -3698,6 +3698,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void presenterChanged(EventPresnterChanged presnterChanged) {
         handleWebUISetting();
+        if(soundtrackPlayManager != null){
+            soundtrackPlayManager.changeSeekbarStatusByRole();
+        }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

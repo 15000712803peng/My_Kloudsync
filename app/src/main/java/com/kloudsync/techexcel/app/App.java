@@ -75,12 +75,12 @@ public class App extends Application {
 //        getApplicationContext().startService(new Intent(getApplicationContext(), TransferService.class));
         asyncInit();
         initBroadcastReceiver();
-        CrashCatch.init(new CrashCatch.CrashHandler() {
-            @Override
-            public void handlerException(Thread t, Throwable e) {
-                System.out.println(e.getLocalizedMessage());
-            }
-        });
+//        CrashCatch.init(new CrashCatch.CrashHandler() {
+//            @Override
+//            public void handlerException(Thread t, Throwable e) {
+//                System.out.println(e.getLocalizedMessage());
+//            }
+//        });
     }
 
 

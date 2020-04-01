@@ -216,6 +216,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         seekBar = view.findViewById(R.id.seek_bar);
         controllerLayout = view.findViewById(R.id.layout_soundtrack_controller);
         seekBar.setOnSeekBarChangeListener(this);
+        changeSeekbarStatusByRole();
         startPauseImage = view.findViewById(R.id.image_play_pause);
         startPauseImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,7 +311,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
         controllerLayout.setLayoutParams(params);
     }
-
 
     @Override
     public void onClick(View view) {
@@ -898,6 +898,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     private void pause() {
+        if(soundtrackAudioManager == null){
+            soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+        }
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, soundtrackAudioManager.getPlayTime());
         isStarted = false;
         SoundtrackAudioManagerV2.getInstance(host).pause();
@@ -1101,5 +1104,17 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             return null;
         }
         return null;
+    }
+
+    public void changeSeekbarStatusByRole(){
+        if(seekBar != null){
+            if(isPresenter()){
+                seekBar.setEnabled(true);
+                seekBar.setClickable(true);
+            }else {
+                seekBar.setEnabled(false);
+                seekBar.setClickable(false);
+            }
+        }
     }
 }
