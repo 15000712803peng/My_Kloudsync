@@ -61,6 +61,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -220,8 +221,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             @Override
             public void onClick(View v) {
                 boolean hasPermission = hasPermisson();
-                Log.e("check_permission","have_permission:" + hasPermission);
-                if(!hasPermisson()){
+                Log.e("check_permission", "have_permission:" + hasPermission);
+                if (!hasPermisson()) {
                     return;
                 }
                 if (soundtrackAudioManager.getMediaInfo() == null) {
@@ -253,7 +254,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         closeVedioImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!hasPermisson()){
+                if (!hasPermisson()) {
                     return;
                 }
                 notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_STOP, 0);
@@ -267,7 +268,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         closeDialogImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(hasPermisson()){
+                if (hasPermisson()) {
                     close();
                 }
 
@@ -278,18 +279,18 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
     }
 
-    private boolean hasPermisson(){
-        Log.e("check_permisson","meeting_config:" + meetingConfig);
-        if(meetingConfig != null && meetingConfig.getType() == MeetingType.MEETING){
-            Log.e("check_permisson","meeting_type:" + meetingConfig.getType());
-            if(!TextUtils.isEmpty(meetingConfig.getPresenterId())){
-                Log.e("check_permisson","presenter_id:" + meetingConfig.getPresenterId());
-                if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+    private boolean hasPermisson() {
+        Log.e("check_permisson", "meeting_config:" + meetingConfig);
+        if (meetingConfig != null && meetingConfig.getType() == MeetingType.MEETING) {
+            Log.e("check_permisson", "meeting_type:" + meetingConfig.getType());
+            if (!TextUtils.isEmpty(meetingConfig.getPresenterId())) {
+                Log.e("check_permisson", "presenter_id:" + meetingConfig.getPresenterId());
+                if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
                     return true;
-                }else {
+                } else {
                     return false;
                 }
-            }else {
+            } else {
                 return false;
             }
         }
@@ -336,11 +337,11 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     public void doPlay() {
-        if(meetingConfig.getDocument() == null){
+        if (meetingConfig.getDocument() == null) {
             return;
         }
-	    SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
-	    web.setVisibility(View.INVISIBLE);
+        SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
+        web.setVisibility(View.INVISIBLE);
         seekBar.setProgress(0);
         loadingBar.setVisibility(View.VISIBLE);
         statusText.setVisibility(View.INVISIBLE);
@@ -420,8 +421,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
     }
 
-    public void doPlayAtTime() {
-        if(meetingConfig.getDocument() == null){
+    public void doPlayAtTime(long time) {
+        if (meetingConfig.getDocument() == null) {
             return;
         }
         web.setVisibility(View.INVISIBLE);
@@ -436,7 +437,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, 0);
         soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
-        soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
+        soundtrackAudioManager.setSoundtrackAudioPlayAtTime(soundtrackDetail.getNewAudioInfo(), time);
 
         backgroundMusicManager = SoundtrackBackgroundMusicManager.getInstance(host);
         backgroundMusicManager.setSoundtrackAudio(soundtrackDetail.getBackgroudMusicInfo());
@@ -514,7 +515,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
                 if (playTime >= totalTime) {
                     playTime = totalTime;
-                    if(playHandler != null){
+                    if (playHandler != null) {
                         playHandler.obtainMessage(MESSAGE_PLAY_FINISH).sendToTarget();
                     }
 
@@ -622,7 +623,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 controllerLayout.setVisibility(View.VISIBLE);
             }
         }
-        if(loadingBar.getVisibility() == View.VISIBLE){
+        if (loadingBar.getVisibility() == View.VISIBLE) {
             loadingBar.setVisibility(View.INVISIBLE);
         }
         final String time = new SimpleDateFormat("mm:ss").format(playTime);
@@ -640,7 +641,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 //        playTime = seekBar.getProgress() * 100;
 //        refreshTimeText();
-        if(fromUser){
+        if (fromUser) {
             statusText.setText(R.string.paused);
             startPauseImage.setImageResource(R.drawable.video_play);
             soundtrackAudioManager.stop();
@@ -651,7 +652,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public void onStartTrackingTouch(SeekBar seekBar) {
         Log.e("seek_bar", "start_tracking");
         //pause();
-
     }
 
     @Override
@@ -660,11 +660,20 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         Log.e("seek_bar", "stop_tracking");
 //        pause();
 //        final int time = seekBar.getProgress() * 10;
-        if(!hasPermisson()){
+        if (!hasPermisson()) {
             return;
         }
+
         soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
         seekTo2(seekBar.getProgress());
+    }
+
+    private void followSeek(int currentProgress){
+        seekBar.setProgress(currentProgress);
+        soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
+        seekTo2(seekBar.getProgress());
+//        soundtrackAudioManager.stopToPrepared(currentProgress);
+//        seekTo2(seekBar.getProgress());
     }
 
     private void seekTo2(final int time) {
@@ -678,8 +687,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                     soundtrackDetail.getSoundtrackID() + "");
             PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, currentPaegNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
         }
-        //SoundtrackAudioManager.getInstance(host).seekTo(time);
-        SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
+//        SoundtrackAudioManager.getInstance(host).seekTo(time);
+     //   followSeek()
+//        SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
 //        Collections.sort(mNoteActionList);
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {
@@ -774,15 +784,15 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public void afterChangePageFunction(final int pageNum, int type) {
         Log.e("JavascriptInterface", "afterChangePageFunction,pageNum" + pageNum + ",type" + type);
         currentPaegNum = pageNum;
-        if(web.getVisibility() != View.VISIBLE){
+        if (web.getVisibility() != View.VISIBLE) {
             Observable.just("set_visiable").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                 @Override
                 public void accept(String s) throws Exception {
                     web.setVisibility(View.VISIBLE);
-                    if(loadingBar.getVisibility() == View.VISIBLE){
+                    if (loadingBar.getVisibility() == View.VISIBLE) {
                         loadingBar.setVisibility(View.INVISIBLE);
                     }
-                    if(statusText.getVisibility() != View.VISIBLE){
+                    if (statusText.getVisibility() != View.VISIBLE) {
                         statusText.setVisibility(View.VISIBLE);
                     }
                 }
@@ -903,7 +913,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     private void restart() {
-        if(soundtrackAudioManager == null){
+        if (soundtrackAudioManager == null) {
             soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
         }
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_RESTART, soundtrackAudioManager.getPlayTime());
@@ -915,17 +925,17 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     private void close() {
-        if(soundtrackPlayLayout.getVisibility() == View.VISIBLE){
+        if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
             soundtrackPlayLayout.setVisibility(View.GONE);
-            try{
+            try {
                 notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_STOP, soundtrackAudioManager.getPlayTime());
                 if (EventBus.getDefault().isRegistered(this)) {
                     EventBus.getDefault().unregister(this);
                 }
                 pageActions.clear();
-	            //        mNoteActionList.clear();
-	            release();
-            }catch (Exception e){
+                //        mNoteActionList.clear();
+                release();
+            } catch (Exception e) {
 
             }
         }
