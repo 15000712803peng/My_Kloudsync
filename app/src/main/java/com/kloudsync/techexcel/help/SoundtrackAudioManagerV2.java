@@ -260,7 +260,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             audioPlayer = null;
         }
         isPlaying = false;
-
         mediaInfo = null;
         instance = null;
     }

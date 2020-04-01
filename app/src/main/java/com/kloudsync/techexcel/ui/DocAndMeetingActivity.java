@@ -4477,13 +4477,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                                getMeetingMembers(users);
 //                            }
 //                        }
-                        if(dataJson.has("playAudioData")){
-                            String audioData = dataJson.getString("playAudioData");
-                            if(!TextUtils.isEmpty(audioData)){
-                                Log.e("audioData","audioData:" + audioData);
-                                handleSoundtrackWhenJoinMeeting(audioData);
-                            }
-                        }
+
 
                         if (AppConfig.UserID.equals(joinMeetingMessage.getUserId())) {
                             // 说明是自己加入了会议返回的JOIN_MEETING的消息
@@ -4498,6 +4492,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                                 MeetingKit.getInstance().disableAudioAndVideoStream();
                                 menuIcon.setVisibility(View.GONE);
                                 meetingMenuMemberImage.setVisibility(View.VISIBLE);
+                            }
+
+                            if(dataJson.has("playAudioData")){
+                                String audioData = dataJson.getString("playAudioData");
+                                if(!TextUtils.isEmpty(audioData)){
+                                    Log.e("audioData","audioData:" + audioData);
+                                    handleSoundtrackWhenJoinMeeting(audioData);
+                                }
                             }
 //                            delayRefreshAgoraList();
                         }

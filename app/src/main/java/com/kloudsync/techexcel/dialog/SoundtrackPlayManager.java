@@ -340,9 +340,11 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if (meetingConfig.getDocument() == null) {
             return;
         }
+        playTimeText.setText("00:00" + "/" + "00:00");
         SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
         web.setVisibility(View.INVISIBLE);
         seekBar.setProgress(0);
+
         loadingBar.setVisibility(View.VISIBLE);
         statusText.setVisibility(View.INVISIBLE);
         soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
@@ -638,7 +640,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
         final String time = new SimpleDateFormat("mm:ss").format(playTime);
         final String _time = new SimpleDateFormat("mm:ss").format(totalTime);
-        //playTimeText.setText(time + "/" + _time);
+        playTimeText.setText(time + "/" + _time);
         //seekBar.setMax((int) (totalTime / 10));
         //seekBar.setProgress((int) (playTime / 10));
         statusText.setText(R.string.playing);
@@ -937,6 +939,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     private void close() {
+
         if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
             soundtrackPlayLayout.setVisibility(View.GONE);
             try {
