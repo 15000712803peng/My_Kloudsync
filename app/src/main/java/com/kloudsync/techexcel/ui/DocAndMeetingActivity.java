@@ -4283,8 +4283,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     } else if (stat == 5) {  // 拖动进度条
 //                    seekToTime(audioTime);
                         if (soundtrackPlayManager != null) {
-                            soundtrackPlayManager.followSeekTo(audioTime);
-//                            soundtrackPlayManager.followSeek(audioTime);
+//                            soundtrackPlayManager.followSeekTo(audioTime);
+                            soundtrackPlayManager.followSeek(audioTime/1000);
                         }
                     }
                 }
@@ -4577,7 +4577,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 } else if (stat == 5) {  // 拖动进度条
 //                    seekToTime(audioTime);
                     if (soundtrackPlayManager != null) {
-                        soundtrackPlayManager.followSeekTo(audioTime);
+//                        soundtrackPlayManager.followSeekTo(audioTime);
+                           soundtrackPlayManager.followSeek(audioTime/1000);
                     }
                 }
             }
