@@ -264,7 +264,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             }
         });
 
-        closeDialogImage = view.findViewById(R.id.close);
+       /* closeDialogImage = view.findViewById(R.id.close);
         closeDialogImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -273,7 +273,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 }
 
             }
-        });
+        });*/
         setControllerLayoutWithByOritation();
         initWeb();
 
