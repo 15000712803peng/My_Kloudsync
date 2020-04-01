@@ -703,7 +703,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
 //        SoundtrackAudioManager.getInstance(host).seekTo(time);
      //   followSeek()
-//        SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
+        SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
 //        Collections.sort(mNoteActionList);
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {

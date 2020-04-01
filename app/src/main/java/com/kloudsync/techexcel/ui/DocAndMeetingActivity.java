@@ -4553,6 +4553,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         if (!TextUtils.isEmpty(soundtrackID)) {
                             vid2 = Integer.parseInt(soundtrackID);
                         }
+                        long time = data.getLong("time");
                         SoundTrack soundTrack = new SoundTrack();
                         soundTrack.setSoundtrackID(vid2);
                         requestSyncDetailAndPause(soundTrack);
