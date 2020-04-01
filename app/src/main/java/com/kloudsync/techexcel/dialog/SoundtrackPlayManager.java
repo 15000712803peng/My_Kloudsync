@@ -264,7 +264,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             }
         });
 
-       /* closeDialogImage = view.findViewById(R.id.close);
+        closeDialogImage = view.findViewById(R.id.soundtrack_close);
         closeDialogImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -273,7 +273,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 }
 
             }
-        });*/
+        });
         setControllerLayoutWithByOritation();
         initWeb();
 
@@ -345,6 +345,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         seekBar.setProgress(0);
         loadingBar.setVisibility(View.VISIBLE);
         statusText.setVisibility(View.INVISIBLE);
+        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+        soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
+
 //        String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
 //        web.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
 //        web.loadUrl("javascript:Record()", null);
@@ -352,8 +355,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         mainNoteWeb.setVisibility(View.GONE);
         downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, 0);
-        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
-        soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
+
 
         soundtrackAudioManager.setOnAudioInfoCallBack(new SoundtrackAudioManagerV2.OnAudioInfoCallBack() {
             @Override
@@ -364,6 +366,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             @Override
             public void onCurrentTimeCall(int currentTime) {
                 seekBar.setProgress(currentTime);
+                playTime = currentTime * 1000;
+
+                Log.e("check_prepared_and_play","play_time:" + playTime);
             }
 
             @Override
@@ -381,36 +386,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 syncDownloadFirst(soundtrackDetail.getSoundtrackID());
                 Log.e("check_play_step", "step_one:preload");
             }
-        }).map(new Function<String, String>() {
-            @Override
-            public String apply(String s) throws Exception {
-//                https://peertime.oss-cn-shanghai.aliyuncs.com/NoteControlAction/37014/channel_1.json
-                final String centerPart = "NoteControlAction" + File.separator + soundtrackDetail.getSoundtrackID();
-                JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
-                        centerPart);
-                String url = "";
-                if (queryDocumentResult != null) {
-                    Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
-
-                    if (uploadao != null) {
-                        if (1 == uploadao.getServiceProviderId()) {
-                            url = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
-                                    + "/channel_1.json";
-                        } else if (2 == uploadao.getServiceProviderId()) {
-                            url = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/channel_1.json";
-                        }
-                        Log.e("check_transform_url", "url:" + url);
-                    }
-                }
-                return url;
-            }
-        }).doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String url) throws Exception {
-                if (!TextUtils.isEmpty(url)) {
-                    SoundtrackDigitalNoteManager.getInstance(host).doProcess(url);
-                }
-            }
         }).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
@@ -418,6 +393,37 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 new PlayTimeTask().execute();
             }
         }).subscribe();
+//        .map(new Function<String, String>() {
+//            @Override
+//            public String apply(String s) throws Exception {
+////                https://peertime.oss-cn-shanghai.aliyuncs.com/NoteControlAction/37014/channel_1.json
+//                final String centerPart = "NoteControlAction" + File.separator + soundtrackDetail.getSoundtrackID();
+//                JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+//                        centerPart);
+//                String url = "";
+//                if (queryDocumentResult != null) {
+//                    Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+//
+//                    if (uploadao != null) {
+//                        if (1 == uploadao.getServiceProviderId()) {
+//                            url = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
+//                                    + "/channel_1.json";
+//                        } else if (2 == uploadao.getServiceProviderId()) {
+//                            url = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/channel_1.json";
+//                        }
+//                        Log.e("check_transform_url", "url:" + url);
+//                    }
+//                }
+//                return url;
+//            }
+//        }).doOnNext(new Consumer<String>() {
+//            @Override
+//            public void accept(String url) throws Exception {
+//                if (!TextUtils.isEmpty(url)) {
+//                    SoundtrackDigitalNoteManager.getInstance(host).doProcess(url);
+//                }
+//            }
+//        })
 
     }
 
@@ -509,6 +515,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                     isPlaying = true;
                 } else {
                     isPlaying = SoundtrackAudioManagerV2.getInstance(host).isPlaying();
+                    Log.e("check_prepared_and_play","isPlaying:" + isPlaying + ",play_time:" + playTime + ",total_time:" + totalTime + ",is_start:" + isStarted);
                 }
 
                 Log.e("SoundtrackPlayManager", "mediaInfo,isPlaying:" + isPlaying + ",playing_time:" + playTime + ",total_time:" + totalTime + ",is_started:" + isStarted);
@@ -626,6 +633,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if (loadingBar.getVisibility() == View.VISIBLE) {
             loadingBar.setVisibility(View.INVISIBLE);
         }
+        if (statusText.getVisibility() != View.VISIBLE) {
+            statusText.setVisibility(View.VISIBLE);
+        }
         final String time = new SimpleDateFormat("mm:ss").format(playTime);
         final String _time = new SimpleDateFormat("mm:ss").format(totalTime);
         //playTimeText.setText(time + "/" + _time);
@@ -652,7 +662,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public void onStartTrackingTouch(SeekBar seekBar) {
         Log.e("seek_bar", "start_tracking");
 
-        
+
         //pause();
     }
 
