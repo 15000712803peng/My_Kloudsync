@@ -54,6 +54,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     private double progress=0;
     /**是否处于用户拖动状态*/
     private boolean mIsSeekStatus=false;
+    private boolean isPlaying;
 
 
     private SoundtrackAudioManagerV2(Context context) {
@@ -113,7 +114,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                     } catch (IllegalStateException exception) {
 
                     }
-
                     audioPlayer.setOnPreparedListener(SoundtrackAudioManagerV2.this);
                     audioPlayer.setOnCompleteListener(SoundtrackAudioManagerV2.this);
                     audioPlayer.setOnErrorListener(SoundtrackAudioManagerV2.this);
@@ -150,9 +150,10 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                     });
 
                     try {
-                        Log.e("check_prepare_soundtrack","url:" + audioData.getAttachmentUrl());
+                        Log.e("check_prepared_and_play","prepared");
                         audioPlayer.prepared();
                     } catch (IllegalStateException e) {
+                        Log.e("check_prepared_and_play","IllegalStateException:" + e.getMessage());
                         reinit(audioData);
                     }
 
@@ -190,15 +191,17 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         mediaInfo.setPrepared(false);
-        Log.e("check_prepare_soundtrack","onPrepared");
         if (mediaInfo != null) {
-            Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());
-            audioPlayer.seek(progress);
-            audioPlayer.start();
             if(mediaInfo.getTime() > 0){
+                Log.e("check_prepared_and_play","seek_start");
                 audioPlayer.seek(mediaInfo.getTime() / 1000);
-            }else {
                 audioPlayer.start();
+                isPlaying = true;
+            }else {
+                audioPlayer.seek(progress);
+                audioPlayer.start();
+                isPlaying = true;
+                Log.e("check_prepared_and_play","start");
             }
 
 
@@ -219,17 +222,19 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     }
 
     public boolean isPlaying() {
-        if (mediaInfo == null) {
-            return false;
-        }
-        if (audioPlayer != null) {
-            return audioPlayer.isPlay();
-        }
-
-        return false;
+//        if (mediaInfo == null) {
+//            return false;
+//        }
+//
+//        if (audioPlayer != null) {
+//            return audioPlayer.isPlay();
+//        }
+        return isPlaying;
     }
 
+
     public long getPlayTime() {
+        Log.e("check_prepared_and_play","mediaInfo:" + mediaInfo + ",audioPlayer:" + audioPlayer);
         if (mediaInfo == null) {
             return 0;
         }
@@ -254,6 +259,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             audioPlayer.release();
             audioPlayer = null;
         }
+        isPlaying = false;
 
         mediaInfo = null;
         instance = null;
@@ -272,7 +278,9 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         }
         if (audioPlayer != null) {
             audioPlayer.pause();
+            isPlaying = false;
         }
+
     }
 
     public void restart() {
@@ -281,7 +289,9 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         }
         if (audioPlayer != null) {
             audioPlayer.resume();
+            isPlaying = true;
         }
+
     }
 
     public void seekTo(int time) {
@@ -290,6 +300,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         }
         if (audioPlayer != null) {
             audioPlayer.seek(time);
+            isPlaying = true;
             //audioPlayer.seek(time / 1000);
             Log.e("vedio_check", "seek_to,time:" + time);
         }

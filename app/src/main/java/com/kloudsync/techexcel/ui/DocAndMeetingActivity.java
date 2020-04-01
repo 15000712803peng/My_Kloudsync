@@ -39,6 +39,7 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -301,6 +302,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Bind(R.id.sync_web)
     WebView syncWeb;
 
+    @Bind(R.id.sondtrack_load_bar)
+    ProgressBar soundtrackLoadingBar;
+
     @Override
     public void showErrorPage() {
 
@@ -423,6 +427,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
             }
         });
+
         meetingWarningDialog.show(this, meetingConfig);
     }
 
@@ -599,6 +604,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             web.removeAllViews();
             web.destroy();
             web = null;
+        }
+
+        if(soundtrackPlayManager != null){
+            soundtrackPlayManager.followClose();
         }
 
         if (meetingConfig != null) {
@@ -994,8 +1003,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 if (socketMessage.getData() == null) {
                     return;
                 }
-                if (socketMessage.getData().has("data")) {
 
+                if (socketMessage.getData().has("data")) {
                     try {
                         String _frame = Tools.getFromBase64(socketMessage.getData().getString("data"));
                         if (noteLayout.getVisibility() == View.VISIBLE) {
@@ -1026,6 +1035,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         e.printStackTrace();
                     }
                 }
+
                 break;
             case SocketMessageManager.MESSAGE_MAKE_PRESENTER:
                 if (socketMessage.getData() == null) {
@@ -3640,6 +3650,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     .setNegativeButton(getResources().getText(R.string.know_the), null)
                     .show();
         } else {
+
             soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
             soundtrackPlayManager.doPlay();//播放音响dialog
 //            showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
@@ -3647,6 +3658,25 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //            soundtrackPlayManager.doPlay(menuIcon,web);
         }
     }
+
+    private void playSoundtrackAtTime(EventPlaySoundtrack soundtrack,long time) {
+        Log.e("check_play", "playSoundtrack");
+        SoundtrackMediaInfo newAudioInfo = soundtrack.getSoundtrackDetail().getNewAudioInfo();
+        SoundtrackMediaInfo backgroundAudioInfo = soundtrack.getSoundtrackDetail().getBackgroudMusicInfo();
+        if (newAudioInfo == null && backgroundAudioInfo == null) {
+            new AlertDialog.Builder(this, R.style.ThemeAlertDialog)
+                    .setMessage(getResources().getString(R.string.sound_is_still_preparing_and_cannot_do_this))
+                    .setNegativeButton(getResources().getText(R.string.know_the), null)
+                    .show();
+        } else {
+            soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
+            soundtrackPlayManager.doPlayAtTime(time);//播放音响dialog
+//            showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
+//            soundtrackPlayManager = new SoundtrackPlayManager(this,soundtrack.getSoundtrackDetail(),meetingConfig,soundtrackPlayController,web);
+//            soundtrackPlayManager.doPlay(menuIcon,web);
+        }
+    }
+
 
     SoundtrackPlayManager soundtrackPlayManager;
 
