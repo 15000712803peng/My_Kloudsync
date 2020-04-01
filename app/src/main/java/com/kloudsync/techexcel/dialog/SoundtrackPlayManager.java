@@ -651,6 +651,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         Log.e("seek_bar", "start_tracking");
+
+        
         //pause();
     }
 
