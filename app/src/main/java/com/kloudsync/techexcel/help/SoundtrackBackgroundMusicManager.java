@@ -114,7 +114,7 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
     @Override
     public void onCompletion(MediaPlayer mp) {
         mp.reset();
-        EventBus.getDefault().post(new EventCloseSoundtrack());
+//        EventBus.getDefault().post(new EventCloseSoundtrack());
     }
 
     @Override

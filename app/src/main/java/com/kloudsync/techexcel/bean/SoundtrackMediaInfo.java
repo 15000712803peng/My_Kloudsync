@@ -5,7 +5,9 @@ package com.kloudsync.techexcel.bean;
  */
 
 public class SoundtrackMediaInfo {
-
+    public static final int TYPE_PLAY = 1;
+    public static final int TYPE_PAUSE = 2;
+    public static final int TYPE_SEEK = 3;
     private int ItemID;
     private String Title;
     private String Description;
@@ -29,6 +31,15 @@ public class SoundtrackMediaInfo {
     private boolean isPrepared;
     private boolean isPlaying;
     private long time;
+    private int playType;
+
+    public int getPlayType() {
+        return playType;
+    }
+
+    public void setPlayType(int playType) {
+        this.playType = playType;
+    }
 
     public long getTime() {
         return time;

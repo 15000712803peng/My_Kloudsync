@@ -3642,7 +3642,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void playSoundtrack(EventPlaySoundtrack soundtrack) {
-        Log.e("check_play", "playSoundtrack");
+        Log.e("check_soundtrack_play", "playSoundtrack");
         SoundtrackMediaInfo newAudioInfo = soundtrack.getSoundtrackDetail().getNewAudioInfo();
         SoundtrackMediaInfo backgroundAudioInfo = soundtrack.getSoundtrackDetail().getBackgroudMusicInfo();
         if (newAudioInfo == null && backgroundAudioInfo == null) {
@@ -3654,9 +3654,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
             soundtrackPlayManager.doPlay();//播放音响dialog
-//            showSoundtrackPlayDialog(soundtrack.getSoundtrackDetail());
-//            soundtrackPlayManager = new SoundtrackPlayManager(this,soundtrack.getSoundtrackDetail(),meetingConfig,soundtrackPlayController,web);
-//            soundtrackPlayManager.doPlay(menuIcon,web);
         }
     }
 
