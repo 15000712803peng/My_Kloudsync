@@ -146,16 +146,16 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         width = (int) (host.getResources().getDisplayMetrics().widthPixels);
         heigth = (int) (host.getResources().getDisplayMetrics().heightPixels);
         playTimeTask = new PlayTimeTask();
-        playHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if (playHandler == null) {
-                    return;
-                }
-                handlePlayMessage(msg);
-                super.handleMessage(msg);
-            }
-        };
+//        playHandler = new Handler() {
+//            @Override
+//            public void handleMessage(Message msg) {
+//                if (playHandler == null) {
+//                    return;
+//                }
+//                handlePlayMessage(msg);
+//                super.handleMessage(msg);
+//            }
+//        };
         //----
         actionsManager = SoundtrackActionsManagerV2.getInstance(host);
         actionsManager.setWeb(web, meetingConfig);
@@ -381,7 +381,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 if (loadingBar.getVisibility() == View.VISIBLE) {
                     loadingBar.setVisibility(View.INVISIBLE);
                 }
-                playTimeText.setText(time);
+                setTimeText(time);
                 Log.e("OnAudioInfoCallBack", "onShowTimeCall:" + time);
             }
         });
@@ -480,7 +480,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             @Override
             public void onShowTimeCall(String time) {
                 Log.e("set_time_text", "time_call:" + time);
-                playTimeText.setText(time);
+
                 setTimeText(time);
             }
         });
@@ -701,6 +701,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     private void setTimeText(String time) {
+        playTimeText.setText(time);
         if (onlyShowTimeText.getVisibility() != View.VISIBLE) {
             if (controllerLayout.getVisibility() != View.VISIBLE) {
                 controllerLayout.setVisibility(View.VISIBLE);
@@ -801,19 +802,18 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                     }
                 }*/
             }
-        }).doOnNext(new Consumer<List<WebAction>>() {
-            @Override
-            public void accept(List<WebAction> webActions) throws Exception {
+        })/**.doOnNext(new Consumer<List<WebAction>>() {
+        @Override public void accept(List<WebAction> webActions) throws Exception {
 
-                Observable.just("restart").delay(2000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String s) throws Exception {
-                        isStarted = true;
-                        restart();
-                    }
-                });
-            }
-        }).subscribe();
+        Observable.just("restart").delay(2000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+        @Override public void accept(String s) throws Exception {
+        isStarted = true;
+        restart();
+        }
+        });
+        }
+        }) **/
+                .subscribe();
     }
 
     private void clearActionsBySeek() {

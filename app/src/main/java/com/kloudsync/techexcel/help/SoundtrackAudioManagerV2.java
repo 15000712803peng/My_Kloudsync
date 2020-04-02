@@ -366,6 +366,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         isPlaying = false;
         mediaInfo = null;
         instance = null;
+        progress = 0;
     }
 
     public long getDuration() {
