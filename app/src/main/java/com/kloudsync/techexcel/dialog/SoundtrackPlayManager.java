@@ -481,6 +481,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             public void onShowTimeCall(String time) {
                 Log.e("set_time_text", "time_call:" + time);
                 playTimeText.setText(time);
+                setTimeText(time);
             }
         });
 
@@ -684,7 +685,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     private void handlePlayMessage(Message message) {
         switch (message.what) {
             case MESSAGE_PLAY_TIME_REFRESHED:
-                setTimeText();
+//                setTimeText();
                 break;
             case MESSAGE_HIDE_CENTER_LOADING:
 
@@ -699,7 +700,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
     }
 
-    private void setTimeText() {
+    private void setTimeText(String time) {
         if (onlyShowTimeText.getVisibility() != View.VISIBLE) {
             if (controllerLayout.getVisibility() != View.VISIBLE) {
                 controllerLayout.setVisibility(View.VISIBLE);
@@ -712,8 +713,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             statusText.setVisibility(View.VISIBLE);
         }
 
-        final String time = new SimpleDateFormat("mm:ss").format(playTime);
-        final String _time = new SimpleDateFormat("mm:ss").format(totalTime);
+
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);
         onlyShowTimeText.setText(time);
