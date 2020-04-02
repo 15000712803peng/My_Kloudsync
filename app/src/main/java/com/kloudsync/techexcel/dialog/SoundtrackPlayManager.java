@@ -355,7 +355,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             @Override
             public void onDurationCall(int duration) {
                 seekBar.setMax(duration);
-                actionsManager.setTotalTime(duration * 1000);
+                totalTime = duration * 1000;
+                actionsManager.setTotalTime(totalTime);
                 Log.e("OnAudioInfoCallBack", "onDurationCall:" + duration);
             }
 
@@ -364,7 +365,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 seekBar.setProgress(currentTime);
                 playTime = currentTime * 1000;
                 actionsManager.setPlayTime(playTime);
-
+                if(playTime >= totalTime){
+                    EventBus.getDefault().post(new EventCloseSoundtrack());
+                }
                 Log.e("OnAudioInfoCallBack", "onCurrentTimeCall:" + currentTime);
             }
 
@@ -459,6 +462,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             @Override
             public void onDurationCall(int duration) {
                 seekBar.setMax(duration);
+                totalTime = duration * 1000;
                 actionsManager.setTotalTime(duration * 1000);
 
             }

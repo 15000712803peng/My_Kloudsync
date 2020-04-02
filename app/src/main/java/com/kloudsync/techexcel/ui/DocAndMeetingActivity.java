@@ -3651,7 +3651,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     .setNegativeButton(getResources().getText(R.string.know_the), null)
                     .show();
         } else {
-
             soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
             soundtrackPlayManager.doPlay();//播放音响dialog
         }

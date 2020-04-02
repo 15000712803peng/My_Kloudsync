@@ -151,6 +151,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
                 }
             }
+
             audioPlayer = new WlMedia();
             try {
                 try {
