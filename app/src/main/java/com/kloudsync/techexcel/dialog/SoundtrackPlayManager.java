@@ -766,7 +766,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
         statusText.setText(R.string.paused);
         startPauseImage.setImageResource(R.drawable.video_play);
-        soundtrackAudioManager.stop();
+        soundtrackAudioManager.pause();
         isStarted = false;
         playTime = time;
         clearActionsBySeek();
@@ -803,7 +803,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                     }
                 }*/
             }
-        }).doOnNext(new Consumer<List<WebAction>>() {
+        })/*.doOnNext(new Consumer<List<WebAction>>() {
             @Override
             public void accept(List<WebAction> webActions) throws Exception {
 
@@ -815,7 +815,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                     }
                 });
             }
-        }).subscribe();
+        })*/.subscribe();
     }
 
     private void clearActionsBySeek() {
