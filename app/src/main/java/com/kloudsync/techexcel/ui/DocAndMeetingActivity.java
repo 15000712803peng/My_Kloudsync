@@ -4259,9 +4259,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     final int stat = data.getInt("stat");
                     final String soundtrackID = data.getString("soundtrackId");
                     int audioTime = 0;
-                    if (stat == 4) {
+                    /*if (stat == 4) {
                         audioTime = data.getInt("time");
-                    }
+                    }*/
                     Log.e("mediaplayer-----", stat + ":   " + soundtrackID);
                     if (stat == 1) {  //开始播放
                         int vid2 = 0;
@@ -4290,6 +4290,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         audioTime = data.getInt("time");
                         if (soundtrackPlayManager != null) {
 //                            soundtrackPlayManager.followSeekTo(audioTime);
+                            audioTime = data.getInt("time");
                             soundtrackPlayManager.followSeek(audioTime/1000);
                         }
                     }

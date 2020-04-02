@@ -307,7 +307,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                 }
                 Log.e("check_prepared_and_play","start:progress" + progress + ",is_playing:" + isPlaying);
             }
-
+	        progress = 0;
         }
     }
 
