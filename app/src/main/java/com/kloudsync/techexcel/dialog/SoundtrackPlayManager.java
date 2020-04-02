@@ -138,8 +138,10 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     private RelativeLayout soundtrackPlayLayout;
 
     private boolean mIsPause = false;//是否处于暂停
+    private boolean haveSeeked = true;
 
     public void setSoundtrackDetail(SoundtrackDetail soundtrackDetail) {
+
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
@@ -331,7 +333,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     public void doPlay() {
-
         Log.e("check_soundtrack_play", "step_one:" + "do_play");
         if (meetingConfig.getDocument() == null) {
             return;
@@ -368,7 +369,18 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 if(playTime >= totalTime){
                     EventBus.getDefault().post(new EventCloseSoundtrack());
                 }
-                Log.e("OnAudioInfoCallBack", "onCurrentTimeCall:" + currentTime);
+                if(haveSeeked){
+                    haveSeeked = false;
+                    if(mIsPause){
+                        Observable.just("load_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                pause();
+                            }
+                        });
+                    }
+                }
+                Log.e("OnAudioInfoCallBack", "onCurrentTimeCall:" + currentTime + ": is_pause:" + mIsPause);
             }
 
             @Override
@@ -699,11 +711,13 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     private void setTimeText(String time) {
+
         if (onlyShowTimeText.getVisibility() != View.VISIBLE) {
             if (controllerLayout.getVisibility() != View.VISIBLE) {
                 controllerLayout.setVisibility(View.VISIBLE);
             }
         }
+
         if (loadingBar.getVisibility() == View.VISIBLE) {
             loadingBar.setVisibility(View.INVISIBLE);
         }
@@ -711,11 +725,17 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             statusText.setVisibility(View.VISIBLE);
         }
 
-
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);
         playTimeText.setText(time);
-        onlyShowTimeText.setText(time);
+        String _time  = time;
+        if(time.contains("/")){
+            String[] parts =  time.split("/");
+            if(parts != null && parts.length > 0){
+                _time = parts[0];
+            }
+        }
+        onlyShowTimeText.setText(_time);
     }
 
 
@@ -749,7 +769,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             if(isPresenter()){
                 notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_SEEK, seekBar.getProgress() * 1000);
             }
-
             seekTo2(seekBar.getProgress());
         }
 
@@ -762,7 +781,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     private void seekTo2(final int time) {
-
+        haveSeeked = true;
         statusText.setVisibility(View.INVISIBLE);
         loadingBar.setVisibility(View.VISIBLE);
         clearActionsBySeek();

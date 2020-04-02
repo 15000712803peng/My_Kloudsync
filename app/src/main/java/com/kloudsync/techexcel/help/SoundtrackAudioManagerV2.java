@@ -1,14 +1,9 @@
 package com.kloudsync.techexcel.help;
 
 import android.content.Context;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-
-import com.kloudsync.techexcel.bean.EventCloseSoundtrack;
-import com.kloudsync.techexcel.bean.SeekData;
 import com.kloudsync.techexcel.bean.SoundtrackMediaInfo;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Uploadao;
@@ -23,8 +18,6 @@ import com.ywl5320.wlmedia.listener.WlOnErrorListener;
 import com.ywl5320.wlmedia.listener.WlOnPreparedListener;
 import com.ywl5320.wlmedia.listener.WlOnTimeInfoListener;
 import com.ywl5320.wlmedia.util.WlTimeUtil;
-
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
