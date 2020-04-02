@@ -372,12 +372,13 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 seekBar.setProgress(currentTime);
                 playTime = currentTime * 1000;
                 actionsManager.setPlayTime(playTime);
+
                 Log.e("OnAudioInfoCallBack", "onCurrentTimeCall:" + currentTime);
             }
 
             @Override
             public void onShowTimeCall(String time) {
-                if(loadingBar.getVisibility() == View.VISIBLE){
+                if (loadingBar.getVisibility() == View.VISIBLE) {
                     loadingBar.setVisibility(View.INVISIBLE);
                 }
                 playTimeText.setText(time);
@@ -478,7 +479,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
             @Override
             public void onShowTimeCall(String time) {
-                Log.e("set_time_text","time_call:" + time);
+                Log.e("set_time_text", "time_call:" + time);
                 playTimeText.setText(time);
             }
         });
@@ -725,17 +726,13 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 //        refreshTimeText();
         _fromUser = fromUser;
         if (fromUser) {
-            statusText.setText(R.string.paused);
-            startPauseImage.setImageResource(R.drawable.video_play);
-            soundtrackAudioManager.stop();
+
         }
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         Log.e("seek_bar", "start_tracking");
-
-
         //pause();
     }
 
@@ -757,7 +754,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
     public void followSeek(int currentProgress) {
         seekBar.setProgress(currentProgress);
-        soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
+//        soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
         seekTo2(seekBar.getProgress());
 //        soundtrackAudioManager.stopToPrepared(currentProgress);
 //        seekTo2(seekBar.getProgress());
@@ -765,6 +762,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
     private void seekTo2(final int time) {
 
+        statusText.setText(R.string.paused);
+        startPauseImage.setImageResource(R.drawable.video_play);
+        soundtrackAudioManager.stop();
         isStarted = false;
         playTime = time;
         clearActionsBySeek();
@@ -776,7 +776,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, currentPaegNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
         }
 //        SoundtrackAudioManager.getInstance(host).seekTo(time);
-        soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
+        soundtrackAudioManager.seekToPlay(seekBar.getProgress());
         //   followSeek()
         SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
         Collections.sort(pageActions);
@@ -979,7 +979,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, soundtrackAudioManager.getPlayTime());
         isStarted = false;
-        if(soundtrackAudioManager != null){
+        if (soundtrackAudioManager != null) {
             soundtrackAudioManager.pause();
         }
         SoundtrackBackgroundMusicManager.getInstance(host).pause();
@@ -1012,10 +1012,10 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
         }
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_RESTART, soundtrackAudioManager.getPlayTime());
-        if(isNeedStart){
+        if (isNeedStart) {
             isNeedStart = false;
             soundtrackAudioManager.start();
-        }else {
+        } else {
             soundtrackAudioManager.restart();
         }
 
@@ -1215,7 +1215,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
     }
 
-    private  boolean isNeedStart;
+    private boolean isNeedStart;
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void eventSeek(SeekData seekData) {
