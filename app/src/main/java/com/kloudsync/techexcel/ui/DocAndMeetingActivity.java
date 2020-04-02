@@ -4489,7 +4489,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                            }
 //                        }
 
-
                         if (AppConfig.UserID.equals(joinMeetingMessage.getUserId())) {
                             // 说明是自己加入了会议返回的JOIN_MEETING的消息
                             Log.e("check_JOIN_MEETING", "my_self_join_in");
@@ -4506,10 +4505,16 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             }
 
                             if(dataJson.has("playAudioData")){
-                                String audioData = dataJson.getString("playAudioData");
+                                final String audioData = dataJson.getString("playAudioData");
                                 if(!TextUtils.isEmpty(audioData)){
                                     Log.e("audioData","audioData:" + audioData);
-                                    handleSoundtrackWhenJoinMeeting(audioData);
+                                    Observable.just("delay_load").delay(2000,TimeUnit.MILLISECONDS).subscribe(new Consumer<String>() {
+                                        @Override
+                                        public void accept(String s) throws Exception {
+                                            handleSoundtrackWhenJoinMeeting(audioData);
+                                        }
+                                    });
+
                                 }
                             }
 //                            delayRefreshAgoraList();
@@ -4574,6 +4579,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     if (soundtrackPlayManager != null) {
                         soundtrackPlayManager.followRestart();
                     }
+
                 } else if (stat == 4) {  // 追上进度
                     int vid2 = 0;
                     if (!TextUtils.isEmpty(soundtrackID)) {
@@ -4587,7 +4593,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                    seekToTime(audioTime);
                     if (soundtrackPlayManager != null) {
 //                        soundtrackPlayManager.followSeekTo(audioTime);
-                           soundtrackPlayManager.followSeek(audioTime/1000);
+//                           soundtrackPlayManager.followSeek(audioTime/1000);
                     }
                 }
             }

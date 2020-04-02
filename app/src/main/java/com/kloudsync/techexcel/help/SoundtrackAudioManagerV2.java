@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.kloudsync.techexcel.bean.EventCloseSoundtrack;
+import com.kloudsync.techexcel.bean.SeekData;
 import com.kloudsync.techexcel.bean.SoundtrackMediaInfo;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Uploadao;
@@ -59,6 +60,14 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     private boolean isPlaying;
 
+
+    public boolean ismIsPauseStatus() {
+        return mIsPauseStatus;
+    }
+
+    public void setmIsPauseStatus(boolean mIsPauseStatus) {
+        this.mIsPauseStatus = mIsPauseStatus;
+    }
 
     private SoundtrackAudioManagerV2(Context context) {
         this.context = context;
@@ -288,11 +297,16 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                 if(!mIsPauseStatus){
                     audioPlayer.start();
                     isPlaying = true;
+                }else {
+                    SeekData seekData = new SeekData();
+                    seekData.setProgress((int)progress);
+                    EventBus.getDefault().post(seekData);
+//                    audioPlayer.start();
+//                    audioPlayer.pause();
+
                 }
-                Log.e("check_prepared_and_play","start:progress" + progress);
+                Log.e("check_prepared_and_play","start:progress" + progress + ",is_playing:" + isPlaying);
             }
-
-
 
         }
     }
@@ -347,6 +361,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             audioPlayer.release();
             audioPlayer = null;
         }
+        mIsPauseStatus = false;
+        mIsSeekStatus = false;
         isPlaying = false;
         mediaInfo = null;
         instance = null;
@@ -376,6 +392,17 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         }
         if (audioPlayer != null) {
             audioPlayer.resume();
+            isPlaying = true;
+        }
+
+    }
+
+    public void start() {
+        if (mediaInfo == null) {
+            return;
+        }
+        if (audioPlayer != null) {
+            audioPlayer.start();
             isPlaying = true;
         }
 
@@ -457,7 +484,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         DownloadUtil.get().syncDownload(localPage.get(), savePath, new DownloadUtil.OnDownloadListener() {
             @Override
             public void onDownloadSuccess(int code) {
-
                 Log.e("safeDownloadFile", "onDownloadSuccess:" + localPage.get());
                 audioCache.cacheAudio(localPage.get(), savePath);
 
@@ -479,7 +505,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     }
 
     public void predownSoundtrackAudio(Context context, String url) {
-
         audioCache = SoundtrackAudioCache.getInstance(context);
         FileUtils.createAudioFilesDir(context);
 
