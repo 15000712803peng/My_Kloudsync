@@ -693,7 +693,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 //            EpdController.setWebViewContrastOptimize(wv_show, true);
             EpdController.setScreenHandWritingPenState(wv_show, 1);
             touchHelper = TouchHelper.create(wv_show, callback);
-            wv_show.getSettings().setDomStorageEnabled(true);
+//            wv_show.getSettings().setDomStorageEnabled(true);
             wv_show.addJavascriptInterface(SyncRoomActivity.this, "AnalyticsWebInterface");
             wv_show.getSettings().setJavaScriptEnabled(true);
             wv_show.post(new Runnable() {
@@ -708,7 +708,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 //            Toast.makeText(this, "app", Toast.LENGTH_LONG).show();
             wv_show = (WebView) findViewById(R.id.wv_show);
 //            wv_show.setZOrderOnTop(false);
-            wv_show.getSettings().setDomStorageEnabled(true);
+//            wv_show.getSettings().setDomStorageEnabled(true);
             wv_show.addJavascriptInterface(SyncRoomActivity.this, "AnalyticsWebInterface");
 //            XWalkPreferences.setValue("enable-javascript", true);
 //            XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
@@ -6334,6 +6334,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             audioRecorder.canel();  //取消录音
         }
         if (wv_show != null) {
+            wv_show.clearCache(true);
             wv_show.removeAllViews();
             wv_show.destroy();
             wv_show = null;
