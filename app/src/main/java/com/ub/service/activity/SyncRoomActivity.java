@@ -441,16 +441,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                         break;
                     case AppConfig.SUCCESS:
                         activity3.mProgressBar.setVisibility(View.GONE);
-                        activity3.getAllData((List<Customer>) msg.obj);
-                        for (int i = 0; i < activity3.documentList.size(); i++) {
-                            LineItem lineItem2 = activity3.documentList.get(i);
-                            if ((activity3.currentItemId).equals(lineItem2.getItemId())) {
-                                String url = lineItem2.getUrl();
-                                if ((url.equals(activity3.targetUrl))) {
-                                    return;
-                                }
-                            }
-                        }
                         activity3.getSyncRoomDetail();
                         break;
                     case 0x3102:
@@ -1114,8 +1104,8 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             changeNumber = jsonObject.getString("changeNumber");
             JSONObject retdata = jsonObject.getJSONObject("retData");
 
-            JSONArray jsonArray = retdata.getJSONArray("usersList");
-            List<Customer> joinlist = Tools.getUserListByJoinMeeting(jsonArray);
+//            JSONArray jsonArray = retdata.getJSONArray("usersList");
+//            List<Customer> joinlist = Tools.getUserListByJoinMeeting(jsonArray);
 
             if (retdata.has("type")) {
                 meetingType = retdata.getInt("type");
@@ -1169,7 +1159,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             }
 
             Message message1 = Message.obtain();
-            message1.obj = joinlist;
+//            message1.obj = joinlist;
             message1.what = AppConfig.SUCCESS;
             handler.sendMessage(message1);
 
