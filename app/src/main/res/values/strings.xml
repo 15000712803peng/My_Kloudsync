@@ -942,10 +942,10 @@ Please input the cell phone number to add the contact
     <string name="add_new_contacts">Add new contact</string>
     <string name="create_new_company_label_info">Invite team members to join together,team member is character could be admin or general member,admin can manage team and space with you together</string>
     <string name="hello_friend_summary">say hello</string>
-    <string name="join_compnay">join a company/organization</string>
-    <string name="input_invite_code">input company/organization invite code</string>
+    <string name="join_compnay">join a company</string>
+    <string name="input_invite_code">Please type in company invite code</string>
     <string name="_join">Join</string>
-    <string name="hint_input_invite_code">Input invite vode</string>
+    <string name="hint_input_invite_code">Please type in company invite code</string>
     <string name="scan_tv">Scanning TV devices</string>
     <string name="_meeting_id">Meeting id:</string>
     <string name="tips">tips</string>

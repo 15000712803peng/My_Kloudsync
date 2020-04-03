@@ -22,13 +22,13 @@
                 android:layout_height="wrap_content"></LinearLayout>
 
             <TextView
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="18dp"
-                android:textSize="14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="18dp"
+                android:layout_marginTop="20dp"
                 android:text="@string/join3"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
             <TextView
                 android:layout_marginLeft="18dp"
@@ -65,8 +65,8 @@
 
                 <TextView
                     android:id="@+id/joinroom2"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
+                    android:paddingLeft="22dp"
+                    android:paddingRight="22dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="18dp"
                     android:paddingTop="12dp"
@@ -74,7 +74,7 @@
                     android:background="@drawable/join_bg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/join2"
+                    android:text="@string/_join"
                     android:textColor="#ffffffff"
                     android:textSize="15sp"
                     />
