@@ -529,7 +529,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                           uploadAudioPopupdate.setProgress(documentAction.getTotal(), documentAction.getIndex());
                       }
                       if(documentAction.getIndex()==uploaddocumentActionsList.size()){ //  上传文档动作成功
-                          if (isrecordvoice) {    // 完成录音
+                          if (isrecordvoice) {   // 完成录音
                               Log.e("syncing---docu","开始上传录音");
                               stopAudioRecord();
                           }else{
@@ -537,7 +537,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                               stopRecordNoteAction(); //笔记动作
                           }
                       }else{
-                          Log.e("syncing---docu","开始上传下一个录音"+documentAction.getIndex());
+                          Log.e("syncing---docu","开始上传下一个音想动作"+documentAction.getIndex());
                           if(documentAction.getIndex()<uploaddocumentActionsList.size()){
                               DocumentAction nextdocumentAction=uploaddocumentActionsList.get(documentAction.getIndex());
                               executeUploadDocument(nextdocumentAction);

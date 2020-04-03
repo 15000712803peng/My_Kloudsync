@@ -135,7 +135,7 @@
                     <TextView
                         style="@style/PersonInfoTextContentStyle"
                         android:text="@string/optional"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -205,15 +205,30 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:textSize="12sp"
+                android:singleLine="true"
                 android:text="@string/open_company_code" />
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:layout_marginLeft="20dp"
+                android:layout_centerVertical="true"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/gantanhao"
+                    android:layout_height="15dp"/>
             <TextView
+                android:singleLine="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
                 android:textSize="12sp"
                 android:text="@string/user_company_code" />
-
+            </LinearLayout>
         </LinearLayout>
 
 
@@ -242,6 +257,7 @@
             android:layout_height="48dp"
             android:layout_marginLeft="5dp"
             android:paddingLeft="5dp"
+            android:singleLine="true"
             android:hint="@string/input_company_code"
             android:textSize="14sp"
            android:background="@color/white"

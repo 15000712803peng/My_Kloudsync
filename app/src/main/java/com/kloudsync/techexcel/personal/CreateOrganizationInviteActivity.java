@@ -50,6 +50,7 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
     List<PhoneItem> phoneItems = new ArrayList<>();
     LinearLayout inviteMoreLayout;
     private TextView inviteText;
+    private TextView txt_skip;
     private int firstSpaceId;
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -140,8 +141,10 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
         et_name = (EditText) findViewById(R.id.et_name);
         inviteText = (TextView) findViewById(R.id.txt_invite);
         inviteText.setOnClickListener(this);
+        txt_skip = (TextView) findViewById(R.id.txt_skip);
+        txt_skip.setOnClickListener(this);
         titleText = (TextView) findViewById(R.id.tv_title);
-        titleText.setText(R.string.create_organization);
+        titleText.setText(R.string.invite_new_new);
         phoneItemsParentLayout = findViewById(R.id.layout_phone_item_parent);
         backLayout.setOnClickListener(this);
         inviteMoreLayout = findViewById(R.id.layout_invite_more);
@@ -161,6 +164,9 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
                 break;
             case R.id.layout_open_contact:
                 contactsTool.getContact(this);
+                break;
+            case R.id.txt_skip:
+                goToMainActivity();
                 break;
             case R.id.txt_invite:
                 List<String> phoneNumbers = fetchInivtePhoneNumbers();

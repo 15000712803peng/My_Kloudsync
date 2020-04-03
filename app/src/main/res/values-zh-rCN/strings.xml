@@ -108,6 +108,7 @@
     <string name="Send_Link">发送链接</string>
 
     <string name="please_input_phone_number">请输入手机号</string>
+    <string name="please_input_invite_number">请输入邀请号码</string>
     <string name="please_input_password">请输入密码</string>
     <string name="Login">登录</string>
     <string name="login_failed">登录失败</string>
@@ -363,7 +364,9 @@
     <string name="Select_af">选空间</string>
 
     <string name="in_hint">邀请电话号码</string>
-    <string name="in_fp_contact">从通讯录邀人</string>
+    <string name="in_fp_contact">邀请通讯录联系人</string>
+    <string name="member">成员</string>
+
 
     <!--xfwang-->
 
@@ -406,7 +409,7 @@
     <string name="input_again">请再次输入新密码</string>
     <string name="OK">完成</string>
     <string name="companywebsite">网址</string>
-    <string name="loge">机构徽标</string>
+    <string name="loge">图标</string>
     <string name="coursenotify">通知</string>
 
     <string name="opencourse">打开课程</string>
@@ -785,14 +788,14 @@
     <string name="reset_pwd">重置密码</string>
     <string name="please_input_verify_code">请输入验证码</string>
     <string name="create_and_switch">创建和切换</string>
-    <string name="create_organization">创建公司/机构</string>
-    <string name="input_organization_name">输入公司/机构名字</string>
+    <string name="create_organization">创建公司</string>
+    <string name="input_organization_name">输入组织公司名字</string>
     <string name="optional">(选填)</string>
-    <string name="input_website">输入公司网址(选填)</string>
-    <string name="open_company_code">启动公司邀请码(建议使用英文数字组合)</string>
-    <string name="user_company_code">新用户可以输入邀请码加入</string>
+    <string name="input_website">请输入公司网址(选填)</string>
+    <string name="open_company_code">启动公司邀请码</string>
+    <string name="user_company_code">成员可以输入邀请码加入</string>
     <string name="input_company_code">请输入公司邀请码</string>
-    <string name="name_upper">名字</string>
+    <string name="name_upper">名称</string>
     <string name="create_success">创建成功</string>
     <string name="create_Fail">创建失败</string>
     <string name="Send">发送</string>
@@ -804,6 +807,9 @@
     <string name="create_new_sync">创建音想</string>
     <string name="sync">同步</string>
     <string name="invite_new">邀请</string>
+    <string name="invite_new_new">邀请</string>
+    <string name="invite_skip">跳过</string>
+    <string name="invite_more">+ 添加更多</string>
     <string name="request_to_be_my_contact">请求成为我的联系人</string>
     <string name="Invite_Now">立即邀请</string>
     <string name="qrcode">二维码</string>
@@ -918,7 +924,7 @@
     <string name="cloud_electronic_pen">有道云电子笔</string>
     <string name="add_company_contacts">从公司联系人中添加</string>
     <string name="add_new_contacts">添加新的联系人</string>
-    <string name="create_new_company_label_info">企业,first team,first space 创建成功，邀请您的团队成员加入吧，邀请寻找如果是设为admin,可以将被邀请的团队对应设置为企业的admin用户，admin用户可以管理企业所有的team和space</string>
+    <string name="create_new_company_label_info">邀请团队成员一起加入，团队成员身份可以为管理员或普通成员，管理员可以和您一起管理团队和空间</string>
     <string name="hello_friend_summary">打招呼</string>
     <string name="meeting_id_change">修改会议ID</string>
 
