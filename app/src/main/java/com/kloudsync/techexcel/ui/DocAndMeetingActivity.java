@@ -3722,8 +3722,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         soundtrackPlayManager.followClose();
                         return;
                     }
+
                     soundtrackPlayManager.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
-                    soundtrackPlayManager.doPlay();
+                    if(soundtrackDetailData.getSoundtrackDetail().getNewAudioInfo() != null){
+                        soundtrackPlayManager.doPlay();
+                    }else {
+                        soundtrackPlayManager.doPlayJustBackground();
+                    }
 
 
                 }else {
@@ -4437,12 +4442,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             @Override
             public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
                 if (soundtrackDetailData.getSoundtrackDetail() != null) {
-                    EventPlaySoundtrack soundtrack = new EventPlaySoundtrack();
-                    soundtrack.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
+
+                    soundtrackDetailData.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
 //                    playSoundtrack(soundtrack);
                     if (soundtrackPlayManager != null) {
                         Log.e("check_do_pause", "doPause");
-                        soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
+                        soundtrackPlayManager.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
                         soundtrackPlayManager.doPause(time);
                     }
                 }

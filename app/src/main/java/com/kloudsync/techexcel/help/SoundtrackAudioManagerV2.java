@@ -633,15 +633,11 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         if (mediaInfo == null) {
             return;
         }
-
         mediaInfo.setPlayType(SoundtrackMediaInfo.TYPE_SEEK);
-
         if (audioPlayer != null) {
 //            audioPlayer.prepared();
-            Log.e("check_soundtrack_seek","step_two,audioPlayer.seek(progress)");
             audioPlayer.seek(progress);
             audioPlayer.prepared();
-            Log.e("check_soundtrack_seek","step_three,audioPlayer.prepared()");
         }
     }
 
