@@ -154,6 +154,7 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
     @SuppressLint("NewApi")
     public void show(MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
+
         SoundtrackManager.getInstance().requestSoundtrackList(meetingConfig, this);
 
         if (meetingConfig.getType() == MeetingType.MEETING) {
@@ -312,7 +313,11 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
 
     @Override
     public void playSoundTrack(SoundTrack soundTrack) {
-        requestDetailAndPlay(soundTrack);
+        EventPlaySoundtrack playSoundtrack = new EventPlaySoundtrack();
+        playSoundtrack.setSoundTrack(soundTrack);
+        EventBus.getDefault().post(playSoundtrack);
+        dismiss();
+//        requestDetailAndPlay(soundTrack);
     }
 
     @Override
@@ -541,34 +546,7 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
 
     }
 
-    private void requestDetailAndPlay(final SoundTrack soundTrack) {
 
-        Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
-            @Override
-            public SoundtrackDetailData apply(SoundTrack soundtrack) throws Exception {
-                SoundtrackDetailData soundtrackDetailData = new SoundtrackDetailData();
-                JSONObject response = ServiceInterfaceTools.getinstance().syncGetSoundtrackDetail(soundTrack);
-                if(response.has("RetCode")){
-                    if(response.getInt("RetCode") == 0){
-                        SoundtrackDetail soundtrackDetail = new Gson().fromJson(response.getJSONObject("RetData").toString(),SoundtrackDetail.class);
-                        soundtrackDetailData.setSoundtrackDetail(soundtrackDetail);
-
-                    }
-                }
-                return soundtrackDetailData;
-            }
-        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<SoundtrackDetailData>() {
-            @Override
-            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
-                if(soundtrackDetailData.getSoundtrackDetail() != null){
-                    EventPlaySoundtrack soundtrack = new EventPlaySoundtrack();
-                    soundtrack.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
-                    EventBus.getDefault().post(soundtrack);
-                    dismiss();
-                }
-            }
-        }).subscribe();
-    }
 
     private String getBindViewText(int fileId){
         String appBindName="";

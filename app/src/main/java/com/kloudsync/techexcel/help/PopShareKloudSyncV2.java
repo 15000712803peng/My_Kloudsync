@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.Handler;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.Gravity;
@@ -18,7 +17,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,20 +40,17 @@ import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.tencent.mm.sdk.openapi.WXWebpageObject;
 import com.ub.kloudsync.activity.Document;
 import com.ub.techexcel.bean.LineItem;
+import com.ub.techexcel.bean.SoundtrackBean;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.rong.imageloader.utils.L;
-
-public class PopShareKloudSync {
+public class PopShareKloudSyncV2 {
     public Context mContext;
-    private Document document;
-    int Syncid;
-    boolean record;
-    private String linshiUrl = "https://www.pgyer.com/Dck1";
+
     private static PopShareKloudSyncDismissListener popShareKloudSyncDismissListener;
+    private SoundtrackBean soundtrack;
 
     public interface PopShareKloudSyncDismissListener {
         void CopyLink();
@@ -73,10 +68,9 @@ public class PopShareKloudSync {
         this.popShareKloudSyncDismissListener = popShareKloudSyncDismissListener;
     }
 
-    public void getPopwindow(Context context, Document document, int Syncid) {
+    public void getPopwindow(Context context, SoundtrackBean soundtrack) {
         this.mContext = context;
-        this.document = document;
-        this.Syncid = Syncid;
+        this.soundtrack = soundtrack;
         getPopupWindowInstance();
         mPopupWindow.getWindow().setWindowAnimations(R.style.PopupAnimation5);
     }
@@ -85,9 +79,6 @@ public class PopShareKloudSync {
         lin_qrcode.setVisibility(View.VISIBLE);
     }
 
-    public void IsReCord() {
-        record = true;
-    }
 
     public Dialog mPopupWindow;
 
@@ -122,11 +113,7 @@ public class PopShareKloudSync {
         lin_all.add(lin_copy);
         lin_all.add(lin_wechat);
         lin_all.add(lin_moment);
-        if (document.isMe()) {
-            lin_Scan.setVisibility(View.GONE);
-        } else {
-            lin_all.add(lin_Scan);
-        }
+        lin_Scan.setVisibility(View.GONE);
         mPopupWindow = new Dialog(mContext, R.style.bottom_dialog);
         mPopupWindow.setContentView(popupWindow);
         mPopupWindow.getWindow().setGravity(Gravity.BOTTOM);
@@ -139,12 +126,6 @@ public class PopShareKloudSync {
         lin_Scan.setOnClickListener(new MyOnClick());
         closeImage.setOnClickListener(new MyOnClick());
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                EnterAnim();
-//            }
-//        }, 300);
 
     }
 
@@ -191,18 +172,18 @@ public class PopShareKloudSync {
                     if (popShareKloudSyncDismissListener != null) {
                         popShareKloudSyncDismissListener.Wechat();
                     }
-                    getUrl(document, Syncid, true);
+                    getUrl(soundtrack, true);
                     mPopupWindow.dismiss();
                     break;
                 case R.id.lin_moment:
                     if (popShareKloudSyncDismissListener != null) {
                         popShareKloudSyncDismissListener.Moment();
                     }
-                    getUrl(document, Syncid, false);
+                    getUrl(soundtrack, false);
                     mPopupWindow.dismiss();
                     break;
                 case R.id.lin_Scan:
-                    goToShare(document, Syncid);
+//                    goToShare(document, Syncid);
                     break;
 
                 case R.id.cancel:
@@ -234,16 +215,7 @@ public class PopShareKloudSync {
     private ClipboardManager mClipboard = null;
 
     private void copyLink() {
-        String url = AppConfig.SHARE_DOCUMENT + document.getItemID();
-        if (Syncid > 0) {
-            url = AppConfig.SHARE_SYNC + Syncid;
-        }
-        if (record && Syncid > 0) {
-            url = AppConfig.SHARE_RECORD + Syncid;
-        }
-        if (document.isMe()) {
-            url = linshiUrl;
-        }
+        String url = AppConfig.SHARE_SYNC + soundtrack.getSoundtrackID();
         if (null == mClipboard) {
             mClipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
         }
@@ -252,7 +224,9 @@ public class PopShareKloudSync {
         Toast.makeText(mContext, "Copy link success!", Toast.LENGTH_LONG).show();
     }
 
-    private void getUrl(final Document document, final int id, final boolean st) {
+
+
+    private void getUrl(SoundtrackBean soundtrack, final boolean st) {
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         final LruCache<String, Bitmap> lruCache = new LruCache<String, Bitmap>(
                 20);
@@ -268,138 +242,29 @@ public class PopShareKloudSync {
             }
         };
 
-        if (document.isMe()) {
-            weiXinShare(document, null, id, st);
-        } else {
-            ImageLoader imageLoader = new ImageLoader(requestQueue, imageCache);
-//            String url = document.getSourceFileUrl();
-            String url = document.getAttachmentUrl();
-            Log.e("url", url + "      " + document.getAttachmentUrl());
-            if (url.contains("<") && url.contains(">")) {
-//                url = url.substring(0, url.lastIndexOf("<")) + "1_thumbnail" + url.substring(url.lastIndexOf("."), url.length());
-                url = url.substring(0, url.lastIndexOf("<")) + "1" + url.substring(url.lastIndexOf("."), url.length());
-            } else {
-                url = url.substring(0, url.lastIndexOf(".")) + "_1" + url.substring(url.lastIndexOf("."), url.length());
-//                url = url.substring(0, url.lastIndexOf(".")) + "_1_thumbnail" + url.substring(url.lastIndexOf("."), url.length());
-            }
-            Log.e("url", url + "      ");
-//        final long s1 = System.currentTimeMillis();
-            imageLoader.get(url, new ImageLoader.ImageListener() {
+        weiXinShare(soundtrack, null,st);
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    // TODO Auto-generated method stub
-                    Log.e("error", error + "");
-                    weiXinShare(document, null, id, st);
-
-                }
-
-                @Override
-                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                    // TODO Auto-generated method stub
-                    if (response.getBitmap() != null) {
-//                    long s2 = System.currentTimeMillis();
-//                    Log.e("duang", response.getBitmap().getByteCount() + " : " + s1 + " : " + s2 + "  :   " + (s2 - s1));
-                        weiXinShare(document, response.getBitmap(), id, st);
-                    }
-                }
-
-            });
-        }
-    }
-
-
-    private void getUrl(final LineItem document, final int id, final boolean st) {
-        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
-        final LruCache<String, Bitmap> lruCache = new LruCache<String, Bitmap>(
-                20);
-        ImageCache imageCache = new ImageCache() {
-            @Override
-            public void putBitmap(String key, Bitmap value) {
-                lruCache.put(key, value);
-            }
-
-            @Override
-            public Bitmap getBitmap(String key) {
-                return lruCache.get(key);
-            }
-        };
-
-
-        if (document.isMe()) {
-            weiXinShare(document, null, id, st);
-        } else {
-            ImageLoader imageLoader = new ImageLoader(requestQueue, imageCache);
-//            String url = document.getSourceFileUrl();
-            String url = document.getUrl();
-            Log.e("url", url + "      " + document.getUrl());
-            if (url.contains("<") && url.contains(">")) {
-//                url = url.substring(0, url.lastIndexOf("<")) + "1_thumbnail" + url.substring(url.lastIndexOf("."), url.length());
-                url = url.substring(0, url.lastIndexOf("<")) + "1" + url.substring(url.lastIndexOf("."), url.length());
-            } else {
-                url = url.substring(0, url.lastIndexOf(".")) + "_1" + url.substring(url.lastIndexOf("."), url.length());
-//                url = url.substring(0, url.lastIndexOf(".")) + "_1_thumbnail" + url.substring(url.lastIndexOf("."), url.length());
-            }
-            Log.e("url", url + "      ");
-//        final long s1 = System.currentTimeMillis();
-            imageLoader.get(url, new ImageLoader.ImageListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    // TODO Auto-generated method stub
-                    Log.e("error", error + "");
-                    weiXinShare(document, null, id, st);
-
-                }
-
-                @Override
-                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                    // TODO Auto-generated method stub
-                    if (response.getBitmap() != null) {
-//                    long s2 = System.currentTimeMillis();
-//                    Log.e("duang", response.getBitmap().getByteCount() + " : " + s1 + " : " + s2 + "  :   " + (s2 - s1));
-                        weiXinShare(document, response.getBitmap(), id, st);
-                    }
-                }
-
-            });
-        }
     }
 
 
     /**
      * 分享到微信
      *
-     * @param document
      * @param b
-     * @param id
      * @param st       true：对话 false:朋友圈
      */
-    private void weiXinShare(Document document, Bitmap b, int id, final boolean st) {
+    private void weiXinShare(SoundtrackBean soundtrack, Bitmap b ,final boolean st) {
 
         if (isWXAppInstalledAndSupported(WeiXinApi.getInstance().GetApi())) {
 
-            String url = AppConfig.SHARE_DOCUMENT + document.getItemID();
-            if (id > 0) {
-                url = AppConfig.SHARE_SYNC + id;
-            }
+            String url = AppConfig.SHARE_SYNC + soundtrack.getSoundtrackID();
 
-            if (record && id > 0) {
-                url = AppConfig.SHARE_RECORD + id;
-            }
-            if (document.isMe()) {
-                url = linshiUrl;
-            }
 
             WXWebpageObject webpage = new WXWebpageObject();
             webpage.webpageUrl = url;
             final WXMediaMessage msg = new WXMediaMessage(webpage);
-            msg.title = document.getTitle();
-            if (document.isMe()) {
-                msg.description = "我分享了【KloudSync】，快来看看吧";
-            } else {
-                msg.description = "请点击此框跳转至" + url;
-            }
+            msg.title = soundtrack.getTitle();
+            msg.description = "请点击此框跳转至" + url;
 
             Bitmap thumb = b;
             Log.e("hahaha", url + "  " + (null == thumb));
@@ -433,61 +298,6 @@ public class PopShareKloudSync {
                     Toast.LENGTH_LONG).show();
         }
     }
-
-    private void weiXinShare(LineItem document, Bitmap b, int id, final boolean st) {
-        String url = AppConfig.SHARE_DOCUMENT + document.getItemId();
-        if (id > 0) {
-            url = AppConfig.SHARE_SYNC + id;
-        }
-
-        if (record && id > 0) {
-            url = AppConfig.SHARE_RECORD + id;
-        }
-        if (document.isMe()) {
-            url = linshiUrl;
-        }
-        if (isWXAppInstalledAndSupported(WeiXinApi.getInstance().GetApi())) {
-            WXWebpageObject webpage = new WXWebpageObject();
-            webpage.webpageUrl = url;
-            final WXMediaMessage msg = new WXMediaMessage(webpage);
-            msg.title = document.getFileName();
-            if (document.isMe()) {
-                msg.description = "我分享了【KloudSync】，快来看看吧";
-            } else {
-                msg.description = "请点击此框跳转至" + url;
-            }
-
-            Bitmap thumb = b;
-            Log.e("hahaha", url + "  " + (null == thumb));
-            if (null == thumb) {
-                thumb = BitmapFactory.decodeResource(mContext.getResources(),
-                        R.drawable.logo);
-            }
-            Log.e("hahaha", url + "  " + (null == thumb));
-
-//            msg.thumbData = Util.bmpToByteArray(thumb, true);
-
-            final Bitmap finalThumb = thumb;
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    msg.thumbData = bmpToByteArray(finalThumb, true);
-                    SendMessageToWX.Req req = new SendMessageToWX.Req();
-                    req.transaction = buildTransaction("webpage");
-                    req.message = msg;
-                    req.scene = st ? SendMessageToWX.Req.WXSceneSession : SendMessageToWX.Req.WXSceneTimeline;
-
-                    WeiXinApi.getInstance().GetApi().sendReq(req);
-                }
-            }).start();
-
-
-        } else {
-            Toast.makeText(mContext, "微信客户端未安装，请确认",
-                    Toast.LENGTH_LONG).show();
-        }
-    }
-
 
 
     public static byte[] bmpToByteArray( Bitmap bmp, final boolean needRecycle) {

@@ -332,22 +332,28 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
     }
 
-    public void doPlay() {
-        Log.e("check_soundtrack_play", "step_one:" + "do_play");
-        if (meetingConfig.getDocument() == null) {
-            return;
-        }
+    public void init(){
+        soundtrackPlayLayout.setVisibility(View.VISIBLE);
         playTimeText.setText("00:00" + "/" + "00:00");
         SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
         web.setVisibility(View.INVISIBLE);
         seekBar.setProgress(0);
         loadingBar.setVisibility(View.VISIBLE);
         statusText.setVisibility(View.INVISIBLE);
+    }
+
+    public void doPlay() {
+        Log.e("check_soundtrack_play", "step_one:" + "do_play");
+        if (meetingConfig.getDocument() == null) {
+            return;
+        }
 //        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+        if (soundtrackDetail == null || soundtrackDetail.getNewAudioInfo() == null) {
+            return;
+        }
         SoundtrackMediaInfo mediaInfo = soundtrackDetail.getNewAudioInfo();
         mediaInfo.setPlayType(SoundtrackMediaInfo.TYPE_PLAY);
         soundtrackAudioManager.setSoundtrackAudio(mediaInfo);
-
         soundtrackPlayLayout.setVisibility(View.VISIBLE);
         mainNoteWeb.setVisibility(View.GONE);
         downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
@@ -366,12 +372,12 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 seekBar.setProgress(currentTime);
                 playTime = currentTime * 1000;
                 actionsManager.setPlayTime(playTime);
-                if(playTime >= totalTime){
+                if (playTime >= totalTime) {
                     EventBus.getDefault().post(new EventCloseSoundtrack());
                 }
-                if(haveSeeked){
+                if (haveSeeked) {
                     haveSeeked = false;
-                    if(mIsPause){
+                    if (mIsPause) {
                         Observable.just("load_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                             @Override
                             public void accept(String s) throws Exception {
@@ -728,10 +734,10 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);
         playTimeText.setText(time);
-        String _time  = time;
-        if(time.contains("/")){
-            String[] parts =  time.split("/");
-            if(parts != null && parts.length > 0){
+        String _time = time;
+        if (time.contains("/")) {
+            String[] parts = time.split("/");
+            if (parts != null && parts.length > 0) {
                 _time = parts[0];
             }
         }
@@ -766,7 +772,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
 
         if (_fromUser) {
-            if(isPresenter()){
+            if (isPresenter()) {
                 notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_SEEK, seekBar.getProgress() * 1000);
             }
             seekTo2(seekBar.getProgress());
