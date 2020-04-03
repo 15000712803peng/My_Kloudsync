@@ -590,7 +590,7 @@ Please input the cell phone number to add the contact
     <string name="input_again">Please input the new password</string>
     <string name="OK">OK</string>
     <string name="companywebsite">Website</string>
-    <string name="loge">loge</string>
+    <string name="loge">logo</string>
     <string name="All_set">All set</string>
     <string name="coursenotify">Notifications</string>
     <string name="opencourse">Open Course</string>
@@ -804,8 +804,13 @@ Please input the cell phone number to add the contact
     <string name="reset_pwd">Reset password</string>
     <string name="please_input_verify_code">Please input verify code</string>
     <string name="create_and_switch">Create and Switch</string>
-    <string name="create_organization">Create New Company</string>
+    <string name="create_organization">Create Company</string>
     <string name="input_organization_name">Input company name</string>
+    <string name="optional">(Optional)</string>
+    <string name="input_website">Please type in website(Optional)</string>
+    <string name="open_company_code">Enable company invitation code</string>
+    <string name="user_company_code">New users can join company via invitation code</string>
+    <string name="input_company_code">Please enter the invitation code</string>
     <string name="name_upper">Name</string>
     <string name="create_success">Create success</string>
     <string name="create_Fail">Create fail</string>
