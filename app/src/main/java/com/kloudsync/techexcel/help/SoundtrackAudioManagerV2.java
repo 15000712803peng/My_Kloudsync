@@ -1,8 +1,6 @@
 package com.kloudsync.techexcel.help;
 
 import android.content.Context;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -29,7 +27,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -38,8 +35,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import com.ywl5320.wlmedia.listener.WlOnTimeInfoListener;
-import com.ywl5320.wlmedia.util.WlTimeUtil;
 
 
 public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompleteListener, WlOnErrorListener {
@@ -96,7 +91,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         prepareAudioAndPlay(mediaInfo);
     }
 
-    public void setSoundtrackAudioToPause(SoundtrackMediaInfo mediaInfo,long time) {
+    public void setSoundtrackAudioToPause(SoundtrackMediaInfo mediaInfo,double time) {
         Log.e("check_do_pause", "setSoundtrackAudioToPause:" + mediaInfo);
         this.mediaInfo = mediaInfo;
         if (mediaInfo == null || this.mediaInfo.isPreparing()) {
@@ -192,7 +187,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     }
 
-    public void prepareAudioAndPause(final SoundtrackMediaInfo audioData, final long time) {
+    public void prepareAudioAndPause(final SoundtrackMediaInfo audioData, final double time) {
 
         Observable.just("play").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
             @Override
@@ -244,9 +239,9 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                     });
 
                     try {
-                        Log.e("check_prepared_and_play","stopToPause");
+                        Log.e("check_prepared_and_play","seekToPause");
 //                        audioPlayer.prepared();
-                        stopToPause(time / 1000);
+                        seekToPause(time);
                     } catch (IllegalStateException e) {
                         Log.e("check_prepared_and_play","IllegalStateException:" + e.getMessage());
                         reinit(audioData);
@@ -300,6 +295,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                 }else {
                     SeekData seekData = new SeekData();
                     seekData.setProgress((int)progress);
+                    int duration = (int)audioPlayer.getDuration();
+                    seekData.setDuration(duration);
                     EventBus.getDefault().post(seekData);
 //                    audioPlayer.start();
 //                    audioPlayer.pause();
@@ -586,7 +583,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     }
 
     /**用于指定时间暂停*/
-    public void stopToPause(double progress){
+    public void seekToPause(double progress){
+        mIsSeekStatus = false;
         mIsPauseStatus=true;
         this.progress=progress;
         if (mediaInfo == null) {

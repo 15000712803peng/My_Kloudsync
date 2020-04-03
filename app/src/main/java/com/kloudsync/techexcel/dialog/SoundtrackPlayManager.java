@@ -2,18 +2,14 @@ package com.kloudsync.techexcel.dialog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.ImageView;
@@ -41,7 +37,6 @@ import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
 import com.kloudsync.techexcel.help.SmallNoteViewHelper;
 import com.kloudsync.techexcel.help.SoundtrackActionsManagerV2;
-import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.SoundtrackAudioManagerV2;
 import com.kloudsync.techexcel.help.SoundtrackBackgroundMusicManager;
 import com.kloudsync.techexcel.help.SoundtrackDigitalNoteManager;
@@ -53,9 +48,9 @@ import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.tool.SyncWebActionsCache;
 import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.WebAction;
-import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
+import com.ywl5320.wlmedia.util.WlTimeUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -64,7 +59,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -78,74 +72,74 @@ import io.reactivex.schedulers.Schedulers;
 
 
 public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
-    public Activity host;
-    public int width;
-    public int heigth;
-    private SoundtrackDetail soundtrackDetail;
-    //view
+	public Activity host;
+	public int width;
+	public int heigth;
+	private SoundtrackDetail soundtrackDetail;
+	//view
 
-    // play status
-    private volatile long playTime;
-    private volatile boolean isFinished;
-    private volatile boolean isStarted;
-    private long maxProgress;
-    private volatile long currentProgress;
-    private volatile boolean isSeek;
-    // data
-    private static Handler playHandler;
-    private PlayTimeTask playTimeTask;
-    // message
-    private static final int MESSAGE_PLAY_TIME_REFRESHED = 1;
-    private static final int MESSAGE_HIDE_CENTER_LOADING = 2;
-    private static final int MESSAGE_PLAY_START = 3;
-    private static final int MESSAGE_PLAY_FINISH = 4;
-    SoundtrackActionsManagerV2 actionsManager;
-    SoundtrackAudioManagerV2 soundtrackAudioManager;
-    SoundtrackBackgroundMusicManager backgroundMusicManager;
-    private MeetingConfig meetingConfig;
-    private TextView playTimeText;
-    private SeekBar seekBar;
-    private RelativeLayout webVedioLayout;
-    private SurfaceView webVedioSurface;
-    private ImageView closeVedioImage;
-    private ImageView closeDialogImage;
-    private ImageView startPauseImage;
-    private LinearLayout controllerLayout;
-    private SyncWebActionsCache webActionsCache;
-    private static final int TYPE_SOUNDTRACK_STOP = 0;
-    private static final int TYPE_SOUNDTRACK_PLAY = 1;
-    private static final int TYPE_SOUNDTRACK_PAUSE = 2;
-    private static final int TYPE_SOUNDTRACK_RESTART = 3;
-    //
-    String totalTimeStr = "00:00";
-    String timeStr = "00:00/00:00";
-    private long totalTime;
-    //
-    UserVedioManager userVedioManager;
-    WebView web;
-    TextView statusText;
-    private TextView onlyShowTimeText;
-    private ImageView hideControllerImage;
-    //------
-    private RelativeLayout smallNoteLayout;
-    private WebView smallNoteWeb;
-    private WebView mainNoteWeb;
-    private ProgressBar loadingBar;
+	// play status
+	private volatile long playTime;
+	private volatile boolean isFinished;
+	private volatile boolean isStarted;
+	private long maxProgress;
+	private volatile long currentProgress;
+	private volatile boolean isSeek;
+	// data
+	private static Handler playHandler;
+	private PlayTimeTask playTimeTask;
+	// message
+	private static final int MESSAGE_PLAY_TIME_REFRESHED = 1;
+	private static final int MESSAGE_HIDE_CENTER_LOADING = 2;
+	private static final int MESSAGE_PLAY_START = 3;
+	private static final int MESSAGE_PLAY_FINISH = 4;
+	SoundtrackActionsManagerV2 actionsManager;
+	SoundtrackAudioManagerV2 soundtrackAudioManager;
+	SoundtrackBackgroundMusicManager backgroundMusicManager;
+	private MeetingConfig meetingConfig;
+	private TextView playTimeText;
+	private SeekBar seekBar;
+	private RelativeLayout webVedioLayout;
+	private SurfaceView webVedioSurface;
+	private ImageView closeVedioImage;
+	private ImageView closeDialogImage;
+	private ImageView startPauseImage;
+	private LinearLayout controllerLayout;
+	private SyncWebActionsCache webActionsCache;
+	private static final int TYPE_SOUNDTRACK_STOP = 0;
+	private static final int TYPE_SOUNDTRACK_PLAY = 1;
+	private static final int TYPE_SOUNDTRACK_PAUSE = 2;
+	private static final int TYPE_SOUNDTRACK_RESTART = 3;
+	//
+	String totalTimeStr = "00:00";
+	String timeStr = "00:00/00:00";
+	private long totalTime;
+	//
+	UserVedioManager userVedioManager;
+	WebView web;
+	TextView statusText;
+	private TextView onlyShowTimeText;
+	private ImageView hideControllerImage;
+	//------
+	private RelativeLayout smallNoteLayout;
+	private WebView smallNoteWeb;
+	private WebView mainNoteWeb;
+	private ProgressBar loadingBar;
 
-    SmallNoteViewHelper smallNoteViewHelper;
-    private RelativeLayout soundtrackPlayLayout;
+	SmallNoteViewHelper smallNoteViewHelper;
+	private RelativeLayout soundtrackPlayLayout;
 
-    private boolean mIsPause = false;//是否处于暂停
+	private boolean mIsPause = false;//是否处于暂停
 
-    public void setSoundtrackDetail(SoundtrackDetail soundtrackDetail) {
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this);
-        }
-        this.soundtrackDetail = soundtrackDetail;
-        totalTime = soundtrackDetail.getDuration();
-        width = (int) (host.getResources().getDisplayMetrics().widthPixels);
-        heigth = (int) (host.getResources().getDisplayMetrics().heightPixels);
-        playTimeTask = new PlayTimeTask();
+	public void setSoundtrackDetail(SoundtrackDetail soundtrackDetail) {
+		if (!EventBus.getDefault().isRegistered(this)) {
+			EventBus.getDefault().register(this);
+		}
+		this.soundtrackDetail = soundtrackDetail;
+		totalTime = soundtrackDetail.getDuration();
+		width = (int) (host.getResources().getDisplayMetrics().widthPixels);
+		heigth = (int) (host.getResources().getDisplayMetrics().heightPixels);
+		playTimeTask = new PlayTimeTask();
 //        playHandler = new Handler() {
 //            @Override
 //            public void handleMessage(Message msg) {
@@ -156,253 +150,253 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 //                super.handleMessage(msg);
 //            }
 //        };
-        //----
-        actionsManager = SoundtrackActionsManagerV2.getInstance(host);
-        actionsManager.setWeb(web, meetingConfig);
-        actionsManager.setUserVedioManager(userVedioManager);
-        actionsManager.setSurfaceView(webVedioSurface);
-        actionsManager.setRecordId(soundtrackDetail.getSoundtrackID());
-    }
+		//----
+		actionsManager = SoundtrackActionsManagerV2.getInstance(host);
+		actionsManager.setWeb(web, meetingConfig);
+		actionsManager.setUserVedioManager(userVedioManager);
+		actionsManager.setSurfaceView(webVedioSurface);
+		actionsManager.setRecordId(soundtrackDetail.getSoundtrackID());
+	}
 
-    public SoundtrackPlayManager(Activity host, SoundtrackDetail soundtrackDetail, MeetingConfig meetingConfig, RelativeLayout view) {
-        this.meetingConfig = meetingConfig;
-        Log.e("check_dialog", "new_dialog");
-        this.host = host;
-        this.soundtrackPlayLayout = view;
-        this.soundtrackDetail = soundtrackDetail;
-        totalTime = soundtrackDetail.getDuration();
-        initManager(view);
-        //TODO
-        //  SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
-    }
+	public SoundtrackPlayManager(Activity host, SoundtrackDetail soundtrackDetail, MeetingConfig meetingConfig, RelativeLayout view) {
+		this.meetingConfig = meetingConfig;
+		Log.e("check_dialog", "new_dialog");
+		this.host = host;
+		this.soundtrackPlayLayout = view;
+		this.soundtrackDetail = soundtrackDetail;
+		totalTime = soundtrackDetail.getDuration();
+		initManager(view);
+		//TODO
+		//  SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
+	}
 
-    public SoundtrackPlayManager(Activity host, MeetingConfig meetingConfig, RelativeLayout view) {
-        this.meetingConfig = meetingConfig;
-        Log.e("check_dialog", "new_dialog");
-        this.host = host;
-        this.soundtrackPlayLayout = view;
-        initManager(view);
-        //TODO
-        //  SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
-    }
+	public SoundtrackPlayManager(Activity host, MeetingConfig meetingConfig, RelativeLayout view) {
+		this.meetingConfig = meetingConfig;
+		Log.e("check_dialog", "new_dialog");
+		this.host = host;
+		this.soundtrackPlayLayout = view;
+		initManager(view);
+		//TODO
+		//  SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
+	}
 
-    public void init(Activity host, MeetingConfig meetingConfig, RelativeLayout view) {
-        this.meetingConfig = meetingConfig;
-        this.host = host;
-        this.soundtrackPlayLayout = view;
-        initManager(view);
-        //TODO
+	public void init(Activity host, MeetingConfig meetingConfig, RelativeLayout view) {
+		this.meetingConfig = meetingConfig;
+		this.host = host;
+		this.soundtrackPlayLayout = view;
+		initManager(view);
+		//TODO
 //       SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
-    }
+	}
 
-    private static boolean _fromUser;
+	private static boolean mFromUser;
 
-    public void initManager(RelativeLayout view) {
-        LayoutInflater layoutInflater = LayoutInflater.from(host);
-        webActionsCache = SyncWebActionsCache.getInstance(host);
+	public void initManager(RelativeLayout view) {
+		LayoutInflater layoutInflater = LayoutInflater.from(host);
+		webActionsCache = SyncWebActionsCache.getInstance(host);
 //        view = layoutInflater.inflate(R.layout.dialog_play_soundtrack, null);
 //        dialog = new Dialog(host, R.style.my_dialog);
-        smallNoteLayout = view.findViewById(R.id.layout_small_note);
+		smallNoteLayout = view.findViewById(R.id.layout_small_note);
 //        smallNoteWeb = view.findViewById(R.id.small_web_note);
-        mainNoteWeb = view.findViewById(R.id.main_note_web);
-        smallNoteWeb = view.findViewById(R.id.small_web_note);
-        webVedioSurface = view.findViewById(R.id.web_vedio_surface);
-        web = view.findViewById(R.id.sync_web);
-        loadingBar = view.findViewById(R.id.sondtrack_load_bar);
-        statusText = view.findViewById(R.id.txt_status);
-        onlyShowTimeText = view.findViewById(R.id.txt_only_show_time);
-        onlyShowTimeText.setOnClickListener(this);
-        hideControllerImage = view.findViewById(R.id.txt_hidden);
-        hideControllerImage.setOnClickListener(this);
-        webVedioLayout = view.findViewById(R.id.layout_web_vedio);
-        playTimeText = view.findViewById(R.id.txt_play_time);
-        seekBar = view.findViewById(R.id.seek_bar);
-        controllerLayout = view.findViewById(R.id.layout_soundtrack_controller);
-        seekBar.setOnSeekBarChangeListener(this);
-        changeSeekbarStatusByRole();
-        startPauseImage = view.findViewById(R.id.image_play_pause);
-        startPauseImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean hasPermission = hasPermisson();
-                Log.e("check_permission", "have_permission:" + hasPermission);
-                if (!hasPermisson()) {
-                    return;
-                }
-                if (soundtrackAudioManager.getMediaInfo() == null) {
-                    if (isStarted) {
-                        pause();
-                    } else {
-                        restart();
-                    }
-                } else {
+		mainNoteWeb = view.findViewById(R.id.main_note_web);
+		smallNoteWeb = view.findViewById(R.id.small_web_note);
+		webVedioSurface = view.findViewById(R.id.web_vedio_surface);
+		web = view.findViewById(R.id.sync_web);
+		loadingBar = view.findViewById(R.id.sondtrack_load_bar);
+		statusText = view.findViewById(R.id.txt_status);
+		onlyShowTimeText = view.findViewById(R.id.txt_only_show_time);
+		onlyShowTimeText.setOnClickListener(this);
+		hideControllerImage = view.findViewById(R.id.txt_hidden);
+		hideControllerImage.setOnClickListener(this);
+		webVedioLayout = view.findViewById(R.id.layout_web_vedio);
+		playTimeText = view.findViewById(R.id.txt_play_time);
+		seekBar = view.findViewById(R.id.seek_bar);
+		controllerLayout = view.findViewById(R.id.layout_soundtrack_controller);
+		seekBar.setOnSeekBarChangeListener(this);
+		changeSeekbarStatusByRole();
+		startPauseImage = view.findViewById(R.id.image_play_pause);
+		startPauseImage.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				boolean hasPermission = hasPermisson();
+				Log.e("check_permission", "have_permission:" + hasPermission);
+				if (!hasPermisson()) {
+					return;
+				}
+				if (soundtrackAudioManager.getMediaInfo() == null) {
+					if (isStarted) {
+						pause();
+					} else {
+						restart();
+					}
+				} else {
 //                    if (soundtrackAudioManager.isPlaying()) {
 //                        pause();
 //                    } else {
 //                        restart();
 //                    }
-                    if (!mIsPause) {
-                        mIsPause = true;
-                        pause();
-                    } else {
-                        mIsPause = false;
-                        restart();
-                    }
-                }
+					if (!mIsPause) {
+						mIsPause = true;
+						pause();
+					} else {
+						mIsPause = false;
+						restart();
+					}
+				}
 
-            }
-        });
+			}
+		});
 
-        closeVedioImage = view.findViewById(R.id.image_close_veido);
-        closeVedioImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!hasPermisson()) {
-                    return;
-                }
-                notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_STOP, 0);
-                WebVedioManager.getInstance(host).closeVedio();
-                webVedioLayout.setVisibility(View.GONE);
+		closeVedioImage = view.findViewById(R.id.image_close_veido);
+		closeVedioImage.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (!hasPermisson()) {
+					return;
+				}
+				notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_STOP, 0);
+				WebVedioManager.getInstance(host).closeVedio();
+				webVedioLayout.setVisibility(View.GONE);
 
-            }
-        });
+			}
+		});
 
-        closeDialogImage = view.findViewById(R.id.soundtrack_close);
-        closeDialogImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (hasPermisson()) {
-                    close();
-                }
+		closeDialogImage = view.findViewById(R.id.soundtrack_close);
+		closeDialogImage.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (hasPermisson()) {
+					close();
+				}
 
-            }
-        });
-        setControllerLayoutWithByOritation();
-        initWeb();
-        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+			}
+		});
+		setControllerLayoutWithByOritation();
+		initWeb();
+		soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
 
-    }
+	}
 
-    private boolean hasPermisson() {
-        Log.e("check_permisson", "meeting_config:" + meetingConfig);
-        if (meetingConfig != null && meetingConfig.getType() == MeetingType.MEETING) {
-            Log.e("check_permisson", "meeting_type:" + meetingConfig.getType());
-            if (!TextUtils.isEmpty(meetingConfig.getPresenterId())) {
-                Log.e("check_permisson", "presenter_id:" + meetingConfig.getPresenterId());
-                if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
+	private boolean hasPermisson() {
+		Log.e("check_permisson", "meeting_config:" + meetingConfig);
+		if (meetingConfig != null && meetingConfig.getType() == MeetingType.MEETING) {
+			Log.e("check_permisson", "meeting_type:" + meetingConfig.getType());
+			if (!TextUtils.isEmpty(meetingConfig.getPresenterId())) {
+				Log.e("check_permisson", "presenter_id:" + meetingConfig.getPresenterId());
+				if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    private void setControllerLayoutWithByOritation() {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) controllerLayout.getLayoutParams();
-        if (Tools.isOrientationPortrait(host)) {
-            //竖屏
-            params.width = Tools.dip2px(host, 330);
-            params.bottomMargin = Tools.dip2px(host, 20);
+	private void setControllerLayoutWithByOritation() {
+		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) controllerLayout.getLayoutParams();
+		if (Tools.isOrientationPortrait(host)) {
+			//竖屏
+			params.width = Tools.dip2px(host, 330);
+			params.bottomMargin = Tools.dip2px(host, 20);
 
-            Log.e("check_set_oritation", "width:" + Tools.dip2px(host, 360));
-        } else {
-            params.width = Tools.dip2px(host, 420);
-        }
-        controllerLayout.setLayoutParams(params);
-    }
+			Log.e("check_set_oritation", "width:" + Tools.dip2px(host, 360));
+		} else {
+			params.width = Tools.dip2px(host, 420);
+		}
+		controllerLayout.setLayoutParams(params);
+	}
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
+	@Override
+	public void onClick(View view) {
+		switch (view.getId()) {
 
-            case R.id.cancel:
+			case R.id.cancel:
 
-                break;
-            case R.id.txt_only_show_time:
-                if (onlyShowTimeText.getVisibility() == View.VISIBLE) {
-                    onlyShowTimeText.setVisibility(View.GONE);
-                    controllerLayout.setVisibility(View.VISIBLE);
-                }
-                break;
-            case R.id.txt_hidden:
-                onlyShowTimeText.setVisibility(View.VISIBLE);
-                controllerLayout.setVisibility(View.GONE);
-                break;
+				break;
+			case R.id.txt_only_show_time:
+				if (onlyShowTimeText.getVisibility() == View.VISIBLE) {
+					onlyShowTimeText.setVisibility(View.GONE);
+					controllerLayout.setVisibility(View.VISIBLE);
+				}
+				break;
+			case R.id.txt_hidden:
+				onlyShowTimeText.setVisibility(View.VISIBLE);
+				controllerLayout.setVisibility(View.GONE);
+				break;
 
-            default:
-                break;
+			default:
+				break;
 
-        }
-    }
+		}
+	}
 
-    public void doPlay() {
-        if (meetingConfig.getDocument() == null) {
-            return;
-        }
-        playTimeText.setText("00:00" + "/" + "00:00");
-        SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
-        web.setVisibility(View.INVISIBLE);
-        seekBar.setProgress(0);
-        loadingBar.setVisibility(View.VISIBLE);
-        statusText.setVisibility(View.INVISIBLE);
+	public void doPlay() {
+		if (meetingConfig.getDocument() == null) {
+			return;
+		}
+		playTimeText.setText("00:00" + "/" + "00:00");
+		SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
+		web.setVisibility(View.INVISIBLE);
+		seekBar.setProgress(0);
+		loadingBar.setVisibility(View.VISIBLE);
+		statusText.setVisibility(View.INVISIBLE);
 //        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
-        soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
+		soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
 
 //        String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
 //        web.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
 //        web.loadUrl("javascript:Record()", null);
-        soundtrackPlayLayout.setVisibility(View.VISIBLE);
-        mainNoteWeb.setVisibility(View.GONE);
-        downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
-        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, 0);
-        soundtrackAudioManager.setOnAudioInfoCallBack(new SoundtrackAudioManagerV2.OnAudioInfoCallBack() {
-            @Override
-            public void onDurationCall(int duration) {
-                seekBar.setMax(duration);
-                actionsManager.setTotalTime(duration * 1000);
-                Log.e("OnAudioInfoCallBack", "onDurationCall:" + duration);
-            }
+		soundtrackPlayLayout.setVisibility(View.VISIBLE);
+		mainNoteWeb.setVisibility(View.GONE);
+		downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
+		notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, 0);
+		soundtrackAudioManager.setOnAudioInfoCallBack(new SoundtrackAudioManagerV2.OnAudioInfoCallBack() {
+			@Override
+			public void onDurationCall(int duration) {
+				seekBar.setMax(duration);
+				actionsManager.setTotalTime(duration * 1000);
+				Log.e("OnAudioInfoCallBack", "onDurationCall:" + duration);
+			}
 
-            @Override
-            public void onCurrentTimeCall(int currentTime) {
-                seekBar.setProgress(currentTime);
-                playTime = currentTime * 1000;
-                actionsManager.setPlayTime(playTime);
+			@Override
+			public void onCurrentTimeCall(int currentTime) {
+				seekBar.setProgress(currentTime);
+				playTime = currentTime * 1000;
+				actionsManager.setPlayTime(playTime);
 
-                Log.e("OnAudioInfoCallBack", "onCurrentTimeCall:" + currentTime);
-            }
+				Log.e("OnAudioInfoCallBack", "onCurrentTimeCall:" + currentTime);
+			}
 
-            @Override
-            public void onShowTimeCall(String time) {
-                if (loadingBar.getVisibility() == View.VISIBLE) {
-                    loadingBar.setVisibility(View.INVISIBLE);
-                }
+			@Override
+			public void onShowTimeCall(String time) {
+				if (loadingBar.getVisibility() == View.VISIBLE) {
+					loadingBar.setVisibility(View.INVISIBLE);
+				}
 //                playTimeText.setText(time);
-                setTimeText(time);
-                Log.e("OnAudioInfoCallBack", "onShowTimeCall:" + time);
-            }
-        });
+				setTimeText(time, true);
+				Log.e("OnAudioInfoCallBack", "onShowTimeCall:" + time);
+			}
+		});
 
-        backgroundMusicManager = SoundtrackBackgroundMusicManager.getInstance(host);
-        backgroundMusicManager.setSoundtrackAudio(soundtrackDetail.getBackgroudMusicInfo());
+		backgroundMusicManager = SoundtrackBackgroundMusicManager.getInstance(host);
+		backgroundMusicManager.setSoundtrackAudio(soundtrackDetail.getBackgroudMusicInfo());
 
-        Observable.just("preload").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                syncDownloadFirst(soundtrackDetail.getSoundtrackID());
-                Log.e("check_play_step", "step_one:preload");
-            }
-        }).doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                Log.e("check_play_step", "step_two:task_execute");
+		Observable.just("preload").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+			@Override
+			public void accept(String s) throws Exception {
+				syncDownloadFirst(soundtrackDetail.getSoundtrackID());
+				Log.e("check_play_step", "step_one:preload");
+			}
+		}).doOnNext(new Consumer<String>() {
+			@Override
+			public void accept(String s) throws Exception {
+				Log.e("check_play_step", "step_two:task_execute");
 //                new PlayTimeTask().execute();
-            }
-        }).subscribe();
+			}
+		}).subscribe();
 //        .map(new Function<String, String>() {
 //            @Override
 //            public String apply(String s) throws Exception {
@@ -435,366 +429,369 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 //            }
 //        })
 
-    }
+	}
 
 
-    public void doPause(long time) {
-        Log.e("check_do_pause", "getDocument：" + meetingConfig.getDocument());
+	public void doPause(double time) {
+		Log.e("check_do_pause", "getDocument：" + meetingConfig.getDocument());
 
-        if (meetingConfig.getDocument() == null) {
-            return;
-        }
+		if (meetingConfig.getDocument() == null) {
+			return;
+		}
 
-        playTimeText.setText("00:00" + "/" + "00:00");
-        SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
-        web.setVisibility(View.INVISIBLE);
-        seekBar.setProgress(0);
+		playTimeText.setText("00:00" + "/" + "00:00");
+		SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
+		web.setVisibility(View.INVISIBLE);
+		seekBar.setProgress(0);
 
-        loadingBar.setVisibility(View.VISIBLE);
-        statusText.setVisibility(View.INVISIBLE);
-        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
-        Log.e("check_do_pause", "setSoundtrackAudioToPause");
-        soundtrackAudioManager.setSoundtrackAudioToPause(soundtrackDetail.getNewAudioInfo(), time);
+		loadingBar.setVisibility(View.VISIBLE);
+		statusText.setVisibility(View.INVISIBLE);
+		soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+		Log.e("check_do_pause", "setSoundtrackAudioToPause");
+		soundtrackAudioManager.setSoundtrackAudioToPause(soundtrackDetail.getNewAudioInfo(), time);
 //        String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
 //        web.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
 //        web.loadUrl("javascript:Record()", null);
-        soundtrackPlayLayout.setVisibility(View.VISIBLE);
-        mainNoteWeb.setVisibility(View.GONE);
-        downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
-        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, time);
-        soundtrackAudioManager.setOnAudioInfoCallBack(new SoundtrackAudioManagerV2.OnAudioInfoCallBack() {
-            @Override
-            public void onDurationCall(int duration) {
-                seekBar.setMax(duration);
-                actionsManager.setTotalTime(duration * 1000);
+		soundtrackPlayLayout.setVisibility(View.VISIBLE);
+		mainNoteWeb.setVisibility(View.GONE);
+		downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
+//        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, (long) time);
+		soundtrackAudioManager.setOnAudioInfoCallBack(new SoundtrackAudioManagerV2.OnAudioInfoCallBack() {
+			@Override
+			public void onDurationCall(int duration) {
+				seekBar.setMax(duration);
+				actionsManager.setTotalTime(duration * 1000);
 
-            }
+			}
 
-            @Override
-            public void onCurrentTimeCall(int currentTime) {
-                seekBar.setProgress(currentTime);
-                playTime = currentTime * 1000;
-                actionsManager.setPlayTime(playTime);
-                Log.e("check_prepared_and_play", "play_time:" + playTime);
-            }
+			@Override
+			public void onCurrentTimeCall(int currentTime) {
+				seekBar.setProgress(currentTime);
+				playTime = currentTime * 1000;
+				actionsManager.setPlayTime(playTime);
+				Log.e("check_prepared_and_play", "play_time:" + playTime);
+			}
 
-            @Override
-            public void onShowTimeCall(String time) {
-                Log.e("set_time_text", "time_call:" + time);
+			@Override
+			public void onShowTimeCall(String time) {
+				Log.e("set_time_text", "time_call:" + time);
 //                playTimeText.setText(time);
-                setTimeText(time);
-            }
-        });
+				setTimeText(time, true);
+			}
+		});
 
 //        backgroundMusicManager = SoundtrackBackgroundMusicManager.getInstance(host);
 //        backgroundMusicManager.setSoundtrackAudio(soundtrackDetail.getBackgroudMusicInfo());
 
-        Observable.just("preload").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                syncDownloadFirst(soundtrackDetail.getSoundtrackID());
-                Log.e("check_play_step", "step_one:preload");
-            }
-        }).doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                Log.e("check_play_step", "step_two:task_execute");
+		Observable.just("preload").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+			@Override
+			public void accept(String s) throws Exception {
+				syncDownloadFirst(soundtrackDetail.getSoundtrackID());
+				Log.e("check_play_step", "step_one:preload");
+			}
+		}).doOnNext(new Consumer<String>() {
+			@Override
+			public void accept(String s) throws Exception {
+				Log.e("check_play_step", "step_two:task_execute");
 //                new PlayTimeTask().execute();
-            }
-        }).subscribe();
-    }
+			}
+		}).subscribe();
+	}
 
-    public void doPlayAtTime(long time) {
-        if (meetingConfig.getDocument() == null) {
-            return;
-        }
-        web.setVisibility(View.INVISIBLE);
-        seekBar.setProgress(0);
-        loadingBar.setVisibility(View.VISIBLE);
-        statusText.setVisibility(View.INVISIBLE);
+	public void doPlayAtTime(long time) {
+		if (meetingConfig.getDocument() == null) {
+			return;
+		}
+		web.setVisibility(View.INVISIBLE);
+		seekBar.setProgress(0);
+		loadingBar.setVisibility(View.VISIBLE);
+		statusText.setVisibility(View.INVISIBLE);
 //        String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
 //        web.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
 //        web.loadUrl("javascript:Record()", null);
-        soundtrackPlayLayout.setVisibility(View.VISIBLE);
-        mainNoteWeb.setVisibility(View.GONE);
-        downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
-        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, 0);
-        soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
-        soundtrackAudioManager.setSoundtrackAudioPlayAtTime(soundtrackDetail.getNewAudioInfo(), time);
+		soundtrackPlayLayout.setVisibility(View.VISIBLE);
+		mainNoteWeb.setVisibility(View.GONE);
+		downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
+		notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, 0);
+		soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+		soundtrackAudioManager.setSoundtrackAudioPlayAtTime(soundtrackDetail.getNewAudioInfo(), time);
 
-        backgroundMusicManager = SoundtrackBackgroundMusicManager.getInstance(host);
-        backgroundMusicManager.setSoundtrackAudio(soundtrackDetail.getBackgroudMusicInfo());
+		backgroundMusicManager = SoundtrackBackgroundMusicManager.getInstance(host);
+		backgroundMusicManager.setSoundtrackAudio(soundtrackDetail.getBackgroudMusicInfo());
 
-        Observable.just("preload").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                syncDownloadFirst(soundtrackDetail.getSoundtrackID());
-                Log.e("check_play_step", "step_one:preload");
-            }
-        }).map(new Function<String, String>() {
-            @Override
-            public String apply(String s) throws Exception {
+		Observable.just("preload").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+			@Override
+			public void accept(String s) throws Exception {
+				syncDownloadFirst(soundtrackDetail.getSoundtrackID());
+				Log.e("check_play_step", "step_one:preload");
+			}
+		}).map(new Function<String, String>() {
+			@Override
+			public String apply(String s) throws Exception {
 //                https://peertime.oss-cn-shanghai.aliyuncs.com/NoteControlAction/37014/channel_1.json
-                final String centerPart = "NoteControlAction" + File.separator + soundtrackDetail.getSoundtrackID();
-                JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
-                        centerPart);
-                String url = "";
-                if (queryDocumentResult != null) {
-                    Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+				final String centerPart = "NoteControlAction" + File.separator + soundtrackDetail.getSoundtrackID();
+				JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+						centerPart);
+				String url = "";
+				if (queryDocumentResult != null) {
+					Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
 
-                    if (uploadao != null) {
-                        if (1 == uploadao.getServiceProviderId()) {
-                            url = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
-                                    + "/channel_1.json";
-                        } else if (2 == uploadao.getServiceProviderId()) {
-                            url = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/channel_1.json";
-                        }
-                        Log.e("check_transform_url", "url:" + url);
-                    }
-                }
-                return url;
-            }
-        }).doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String url) throws Exception {
-                if (!TextUtils.isEmpty(url)) {
-                    SoundtrackDigitalNoteManager.getInstance(host).doProcess(url);
-                }
-            }
-        }).doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                Log.e("check_play_step", "step_two:task_execute");
-                new PlayTimeTask().execute();
-            }
-        }).subscribe();
+					if (uploadao != null) {
+						if (1 == uploadao.getServiceProviderId()) {
+							url = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
+									+ "/channel_1.json";
+						} else if (2 == uploadao.getServiceProviderId()) {
+							url = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/channel_1.json";
+						}
+						Log.e("check_transform_url", "url:" + url);
+					}
+				}
+				return url;
+			}
+		}).doOnNext(new Consumer<String>() {
+			@Override
+			public void accept(String url) throws Exception {
+				if (!TextUtils.isEmpty(url)) {
+					SoundtrackDigitalNoteManager.getInstance(host).doProcess(url);
+				}
+			}
+		}).doOnNext(new Consumer<String>() {
+			@Override
+			public void accept(String s) throws Exception {
+				Log.e("check_play_step", "step_two:task_execute");
+				new PlayTimeTask().execute();
+			}
+		}).subscribe();
 
-    }
+	}
 
 
-    class PlayTimeTask extends AsyncTask<Void, Void, Void> {
+	class PlayTimeTask extends AsyncTask<Void, Void, Void> {
 
-        @Override
-        protected void onPreExecute() {
-            playTime = 0;
-            isFinished = false;
-            isStarted = true;
-            super.onPreExecute();
-        }
+		@Override
+		protected void onPreExecute() {
+			playTime = 0;
+			isFinished = false;
+			isStarted = true;
+			super.onPreExecute();
+		}
 
-        @Override
-        protected Void doInBackground(Void... voids) {
-            // 播放完成或者手动关闭dialog isFinished = true;
-            while (!isFinished) {
-                boolean isPlaying = false;
-                if (soundtrackAudioManager.getMediaInfo() == null) {
-                    // 没有newinfo文件
-                    isPlaying = true;
-                } else {
-                    isPlaying = soundtrackAudioManager.isPlaying();
-                    Log.e("check_prepared_and_play", "isPlaying:" + isPlaying + ",play_time:" + playTime + ",total_time:" + totalTime + ",is_start:" + isStarted);
-                }
+		@Override
+		protected Void doInBackground(Void... voids) {
+			// 播放完成或者手动关闭dialog isFinished = true;
+			while (!isFinished) {
+				boolean isPlaying = false;
+				if (soundtrackAudioManager.getMediaInfo() == null) {
+					// 没有newinfo文件
+					isPlaying = true;
+				} else {
+					isPlaying = soundtrackAudioManager.isPlaying();
+					Log.e("check_prepared_and_play", "isPlaying:" + isPlaying + ",play_time:" + playTime + ",total_time:" + totalTime + ",is_start:" + isStarted);
+				}
 
-                Log.e("SoundtrackPlayManager", "mediaInfo,isPlaying:" + isPlaying + ",playing_time:" + playTime + ",total_time:" + totalTime + ",is_started:" + isStarted);
+				Log.e("SoundtrackPlayManager", "mediaInfo,isPlaying:" + isPlaying + ",playing_time:" + playTime + ",total_time:" + totalTime + ",is_started:" + isStarted);
 
-                if (playTime >= totalTime) {
-                    playTime = totalTime;
-                    if (playHandler != null) {
-                        playHandler.obtainMessage(MESSAGE_PLAY_FINISH).sendToTarget();
-                    }
+				if (playTime >= totalTime) {
+					playTime = totalTime;
+					if (playHandler != null) {
+						playHandler.obtainMessage(MESSAGE_PLAY_FINISH).sendToTarget();
+					}
 
-                    break;
-                }
+					break;
+				}
 
-                if (!isStarted || !isPlaying) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    continue;
-                }
+				if (!isStarted || !isPlaying) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					continue;
+				}
 
-                if (totalTime <= 0) {
-                    if (soundtrackAudioManager.getMediaInfo() != null) {
-                        totalTime = SoundtrackAudioManagerV2.getInstance(host).getDuration();
-                    }
+				if (totalTime <= 0) {
+					if (soundtrackAudioManager.getMediaInfo() != null) {
+						totalTime = SoundtrackAudioManagerV2.getInstance(host).getDuration();
+					}
 
-                }
+				}
 
 //                Log.e("RecordPlayDialog","is finish:" + isFinished);
-                Log.e("SoundtrackPlayManager", "playTime:" + playTime + ",isplaying:");
+				Log.e("SoundtrackPlayManager", "playTime:" + playTime + ",isplaying:");
 //                synchronized (SoundtrackPlayDialog.this) {
 //
 //                }
-                if (soundtrackAudioManager.getMediaInfo() != null) {
-                    playTime = SoundtrackAudioManagerV2.getInstance(host).getPlayTime();
-                } else {
-                    playTime += 500;
-                }
+				if (soundtrackAudioManager.getMediaInfo() != null) {
+					playTime = SoundtrackAudioManagerV2.getInstance(host).getPlayTime();
+				} else {
+					playTime += 500;
+				}
 
-                actionsManager.setTotalTime(totalTime);
+				actionsManager.setTotalTime(totalTime);
 
-                if (SoundtrackDigitalNoteManager.getInstance(host).getNoteEvents().size() > 0) {
-                    SoundtrackDigitalNoteManager.getInstance(host).setPlayTime(playTime);
-                }
+				if (SoundtrackDigitalNoteManager.getInstance(host).getNoteEvents().size() > 0) {
+					SoundtrackDigitalNoteManager.getInstance(host).setPlayTime(playTime);
+				}
 //                    playTime = soundtrackAudioManager.getPlayTime();
-                if (playHandler != null) {
-                    playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
-                }
+				if (playHandler != null) {
+					playHandler.obtainMessage(MESSAGE_PLAY_TIME_REFRESHED).sendToTarget();
+				}
 
-                try {
-                    Thread.sleep(500);
+				try {
+					Thread.sleep(500);
 //                        playTime += 200;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 
-            return null;
-        }
+			return null;
+		}
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            Log.e("check_dialog", "time_task_post_execute");
+		@Override
+		protected void onPostExecute(Void aVoid) {
+			super.onPostExecute(aVoid);
+			Log.e("check_dialog", "time_task_post_execute");
 
-        }
-    }
+		}
+	}
 
-    private void release() {
-        isFinished = true;
-        isStarted = false;
-        playHandler = null;
-        seekBar.setProgress(0);
-        if (userVedioManager != null) {
-            userVedioManager.release();
-        }
-        if (soundtrackAudioManager != null) {
-            soundtrackAudioManager.release();
-        }
-        if (actionsManager != null) {
-            actionsManager.release();
-        }
-        if (backgroundMusicManager != null) {
-            backgroundMusicManager.release();
-        }
+	private void release() {
+		isFinished = true;
+		isStarted = false;
+		playHandler = null;
+		seekBar.setProgress(0);
+		if (userVedioManager != null) {
+			userVedioManager.release();
+		}
+		if (soundtrackAudioManager != null) {
+			soundtrackAudioManager.release();
+		}
+		if (actionsManager != null) {
+			actionsManager.release();
+		}
+		if (backgroundMusicManager != null) {
+			backgroundMusicManager.release();
+		}
 
-        SoundtrackDigitalNoteManager.getInstance(host).release();
-    }
+		SoundtrackDigitalNoteManager.getInstance(host).release();
+	}
 
-    private void handlePlayMessage(Message message) {
-        switch (message.what) {
-            case MESSAGE_PLAY_TIME_REFRESHED:
+	private void handlePlayMessage(Message message) {
+		switch (message.what) {
+			case MESSAGE_PLAY_TIME_REFRESHED:
 //                setTimeText();
-                break;
-            case MESSAGE_HIDE_CENTER_LOADING:
+				break;
+			case MESSAGE_HIDE_CENTER_LOADING:
 
-                break;
-            case MESSAGE_PLAY_START:
-                isStarted = true;
-                break;
+				break;
+			case MESSAGE_PLAY_START:
+				isStarted = true;
+				break;
 
-            case MESSAGE_PLAY_FINISH:
-                close();
-                break;
-        }
-    }
+			case MESSAGE_PLAY_FINISH:
+				close();
+				break;
+		}
+	}
 
-    private void setTimeText(String time) {
-        if (onlyShowTimeText.getVisibility() != View.VISIBLE) {
-            if (controllerLayout.getVisibility() != View.VISIBLE) {
-                controllerLayout.setVisibility(View.VISIBLE);
-            }
-        }
-        if (loadingBar.getVisibility() == View.VISIBLE) {
-            loadingBar.setVisibility(View.INVISIBLE);
-        }
-        if (statusText.getVisibility() != View.VISIBLE) {
-            statusText.setVisibility(View.VISIBLE);
-        }
+	private void setTimeText(String time, boolean currentPlayStates) {
+		if (onlyShowTimeText.getVisibility() != View.VISIBLE) {
+			if (controllerLayout.getVisibility() != View.VISIBLE) {
+				controllerLayout.setVisibility(View.VISIBLE);
+			}
+		}
+		if (loadingBar.getVisibility() == View.VISIBLE) {
+			loadingBar.setVisibility(View.INVISIBLE);
+		}
+		if (statusText.getVisibility() != View.VISIBLE) {
+			statusText.setVisibility(View.VISIBLE);
+		}
+
+		if (currentPlayStates) {
+			statusText.setText(R.string.playing);
+			startPauseImage.setImageResource(R.drawable.video_stop);
+		} else {
+			statusText.setText(R.string.paused);
+			startPauseImage.setImageResource(R.drawable.video_play);
+		}
+		playTimeText.setText(time);
+		onlyShowTimeText.setText(time);
+	}
 
 
-        statusText.setText(R.string.playing);
-        startPauseImage.setImageResource(R.drawable.video_stop);
-        playTimeText.setText(time);
-        onlyShowTimeText.setText(time);
-    }
-
-
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 //        playTime = seekBar.getProgress() * 100;
 //        refreshTimeText();
-        _fromUser = fromUser;
-        if (fromUser) {
+		mFromUser = fromUser;
+	}
 
-        }
-    }
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+		Log.e("seek_bar", "start_tracking");
+		//pause();
+	}
 
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-        Log.e("seek_bar", "start_tracking");
-        //pause();
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        isSeek = true;
-        Log.e("seek_bar", "stop_tracking");
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+		isSeek = true;
+		Log.e("seek_bar", "stop_tracking");
 //        pause();
 //        final int time = seekBar.getProgress() * 10;
-        if (!hasPermisson()) {
-            return;
-        }
+		if (!hasPermisson()) {
+			return;
+		}
 
-        if (_fromUser) {
-            seekTo2(seekBar.getProgress());
-        }
+		if (mFromUser) {
+			seekTo2(seekBar.getProgress());
+		}
+		mFromUser = false;
+	}
 
-    }
+	public void followSeek(int currentProgress) {
+		seekBar.setProgress(currentProgress);
+		seekTo2(currentProgress);
+	}
 
-    public void followSeek(int currentProgress) {
-        seekBar.setProgress(currentProgress);
-//        soundtrackAudioManager.stopToPrepared(seekBar.getProgress());
-        seekTo2(seekBar.getProgress());
-//        soundtrackAudioManager.stopToPrepared(currentProgress);
-//        seekTo2(seekBar.getProgress());
-    }
-
-    private void seekTo2(final int time) {
-
-        statusText.setText(R.string.paused);
-        startPauseImage.setImageResource(R.drawable.video_play);
-        soundtrackAudioManager.pause();
-        isStarted = false;
-        playTime = time;
-        clearActionsBySeek();
-        if (meetingConfig != null && meetingConfig.getDocument() != null && meetingConfig.getDocument().getDocumentPages() != null && (currentPaegNum <
-                meetingConfig.getDocument().getDocumentPages().size() || currentPaegNum > 0)) {
-            PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, currentPaegNum + "",
-                    /*meetingConfig.getDocument().getAttachmentID()*/0 + "", "0",
-                    soundtrackDetail.getSoundtrackID() + "");
-            PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, currentPaegNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
-        }
+	private void seekTo2(final int time) {
+		statusText.setText(R.string.paused);
+		startPauseImage.setImageResource(R.drawable.video_play);
+		soundtrackAudioManager.pause();
+		isStarted = false;
+		playTime = time;
+		clearActionsBySeek();
+		if (meetingConfig != null && meetingConfig.getDocument() != null && meetingConfig.getDocument().getDocumentPages() != null && (currentPaegNum <
+				meetingConfig.getDocument().getDocumentPages().size() || currentPaegNum > 0)) {
+			PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, currentPaegNum + "",
+					/*meetingConfig.getDocument().getAttachmentID()*/0 + "", "0",
+					soundtrackDetail.getSoundtrackID() + "");
+			PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, currentPaegNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
+		}
 //        SoundtrackAudioManager.getInstance(host).seekTo(time);
-        soundtrackAudioManager.seekToPlay(seekBar.getProgress());
-        //   followSeek()
-        SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
-        Collections.sort(pageActions);
+		if (soundtrackAudioManager != null) {
+			if (mFromUser) {
+				soundtrackAudioManager.seekToPlay(time);
+			} else {
+				soundtrackAudioManager.seekToPause(time);
+			}
+		}
+		//   followSeek()
+		SoundtrackBackgroundMusicManager.getInstance(host).seekTo(time);
+		Collections.sort(pageActions);
 //        Collections.sort(mNoteActionList);
-        Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {
-            @Override
-            public void accept(List<WebAction> webActions) throws Exception {
-                for (WebAction action : webActions) {
-                    if (action.getTime() >= time) {
-                        Log.e("check_page_time", "seek_time:" + time + ",action_time:" + action.getTime());
-                        SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(action);
-                        break;
-                    }
-                }
+		Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {
+			@Override
+			public void accept(List<WebAction> webActions) throws Exception {
+				for (WebAction action : webActions) {
+					if (action.getTime() >= time) {
+						Log.e("check_page_time", "seek_time:" + time + ",action_time:" + action.getTime());
+						SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(action);
+						break;
+					}
+				}
 
-                SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
+				SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
               /*  for (WebAction action : mNoteActionList) {
                     if (action.getTime() <= time) {
                         Log.e("check_action_time", "seek_time:" + time + ",action_time:" + action.getTime());
@@ -802,8 +799,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                         SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
                     }
                 }*/
-            }
-        })/*.doOnNext(new Consumer<List<WebAction>>() {
+			}
+		})/*.doOnNext(new Consumer<List<WebAction>>() {
             @Override
             public void accept(List<WebAction> webActions) throws Exception {
 
@@ -816,416 +813,402 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 });
             }
         })*/.subscribe();
-    }
+	}
 
-    private void clearActionsBySeek() {
-        web.loadUrl("javascript:ClearPageAndAction()", null);
-        web.loadUrl("javascript:Record()", null);
-    }
+	private void clearActionsBySeek() {
+		web.loadUrl("javascript:ClearPageAndAction()", null);
+		web.loadUrl("javascript:Record()", null);
+	}
 
-    @SuppressLint("JavascriptInterface")
-    private void initWeb() {
-        //  web.setZOrderOnTop(false);
-        web.getSettings().setJavaScriptEnabled(true);
-        web.getSettings().setDomStorageEnabled(true);
-        web.addJavascriptInterface(this, "AnalyticsWebInterface");
-        loadWebIndex();
-    }
+	@SuppressLint("JavascriptInterface")
+	private void initWeb() {
+		//  web.setZOrderOnTop(false);
+		web.getSettings().setJavaScriptEnabled(true);
+		web.getSettings().setDomStorageEnabled(true);
+		web.addJavascriptInterface(this, "AnalyticsWebInterface");
+		loadWebIndex();
+	}
 
-    private void loadWebIndex() {
-        int deviceType = DeviceManager.getDeviceType(host);
-        String indexUrl = "file:///android_asset/index.html";
-        if (deviceType == SupportDevice.BOOK) {
-            indexUrl += "?devicetype=4";
-        }
-        web.loadUrl(indexUrl, null);
-    }
+	private void loadWebIndex() {
+		int deviceType = DeviceManager.getDeviceType(host);
+		String indexUrl = "file:///android_asset/index.html";
+		if (deviceType == SupportDevice.BOOK) {
+			indexUrl += "?devicetype=4";
+		}
+		web.loadUrl(indexUrl, null);
+	}
 
-    @JavascriptInterface
-    public void afterLoadFileFunction() {
-        SoundtrackActionsManagerV2.getInstance(host).setLoadingPage(false);
-        if (isSeek) {
-            SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
-            isSeek = false;
-        }
-        host.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                web.loadUrl("javascript:ShowToolbar(" + false + ")", null);
-                web.loadUrl("javascript:Record()", null);
-                DocumentPage documentPage = meetingConfig.getCurrentDocumentPage();
+	@JavascriptInterface
+	public void afterLoadFileFunction() {
+		SoundtrackActionsManagerV2.getInstance(host).setLoadingPage(false);
+		if (isSeek) {
+			SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
+			isSeek = false;
+		}
+		host.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				web.loadUrl("javascript:ShowToolbar(" + false + ")", null);
+				web.loadUrl("javascript:Record()", null);
+				DocumentPage documentPage = meetingConfig.getCurrentDocumentPage();
 
-            }
-        });
+			}
+		});
 
-    }
+	}
 
-    @JavascriptInterface
-    public void afterLoadPageFunction() {
-        isStarted = true;
-    }
+	@JavascriptInterface
+	public void afterLoadPageFunction() {
+		isStarted = true;
+	}
 
-    @JavascriptInterface
-    public void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
-        Log.e("JavascriptInterface", "preLoadFileFunctiona," + url + "     currentpageNum   " + currentpageNum + "   showLoading    " + showLoading);
-    }
+	@JavascriptInterface
+	public void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
+		Log.e("JavascriptInterface", "preLoadFileFunctiona," + url + "     currentpageNum   " + currentpageNum + "   showLoading    " + showLoading);
+	}
 
-    int currentPaegNum;
+	int currentPaegNum;
 
-    @JavascriptInterface
-    public void afterChangePageFunction(final int pageNum, int type) {
-        Log.e("JavascriptInterface", "afterChangePageFunction,pageNum" + pageNum + ",type" + type);
-        currentPaegNum = pageNum;
-        if (web.getVisibility() != View.VISIBLE) {
-            Observable.just("set_visiable").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-                @Override
-                public void accept(String s) throws Exception {
-                    web.setVisibility(View.VISIBLE);
-                    if (loadingBar.getVisibility() == View.VISIBLE) {
-                        loadingBar.setVisibility(View.INVISIBLE);
-                    }
-                    if (statusText.getVisibility() != View.VISIBLE) {
-                        statusText.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        }
-        SoundtrackActionsManagerV2.getInstance(host).setCurrentPage(pageNum);
-        if (meetingConfig.getDocument().getDocumentPages() != null) {
-            int size = meetingConfig.getDocument().getDocumentPages().size();
-            if (pageNum < 0 || pageNum > size) {
-                return;
-            }
-        }
+	@JavascriptInterface
+	public void afterChangePageFunction(final int pageNum, int type) {
+		Log.e("JavascriptInterface", "afterChangePageFunction,pageNum" + pageNum + ",type" + type);
+		currentPaegNum = pageNum;
+		if (web.getVisibility() != View.VISIBLE) {
+			Observable.just("set_visiable").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+				@Override
+				public void accept(String s) throws Exception {
+					web.setVisibility(View.VISIBLE);
+					if (loadingBar.getVisibility() == View.VISIBLE) {
+						loadingBar.setVisibility(View.INVISIBLE);
+					}
+					if (statusText.getVisibility() != View.VISIBLE) {
+						statusText.setVisibility(View.VISIBLE);
+					}
+				}
+			});
+		}
+		SoundtrackActionsManagerV2.getInstance(host).setCurrentPage(pageNum);
+		if (meetingConfig.getDocument().getDocumentPages() != null) {
+			int size = meetingConfig.getDocument().getDocumentPages().size();
+			if (pageNum < 0 || pageNum > size) {
+				return;
+			}
+		}
 
-        if (meetingConfig.getDocument() == null) {
-            return;
-        }
+		if (meetingConfig.getDocument() == null) {
+			return;
+		}
 
-        PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, pageNum + "",
-                        /*meetingConfig.getDocument().getAttachmentID()*/0 + "", "0",
-                soundtrackDetail.getSoundtrackID() + "");
+		PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrack(meetingConfig, pageNum + "",
+				/*meetingConfig.getDocument().getAttachmentID()*/0 + "", "0",
+				soundtrackDetail.getSoundtrackID() + "");
 
-        PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, pageNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
+		PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, pageNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
 
 
-    }
+	}
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void showWebVedio(EventPlayWebVedio webVedio) {
-        Log.e("showWebVedio", "showWebVedio");
-        pause();
-        webVedioLayout.setVisibility(View.VISIBLE);
-        WebVedioManager.getInstance(host).execute(webVedio.getWebVedio(), playTime);
-    }
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void showWebVedio(EventPlayWebVedio webVedio) {
+		Log.e("showWebVedio", "showWebVedio");
+		pause();
+		webVedioLayout.setVisibility(View.VISIBLE);
+		WebVedioManager.getInstance(host).execute(webVedio.getWebVedio(), playTime);
+	}
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void closeWebView(EventCloseWebView webVedio) {
-        Log.e("showWebVedio", "showWebVedio");
-        webVedioLayout.setVisibility(View.GONE);
-        restart();
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void closeWebView(EventCloseWebView webVedio) {
+		Log.e("showWebVedio", "showWebVedio");
+		webVedioLayout.setVisibility(View.GONE);
+		restart();
 //        WebVedioManager.getInstance(host).closeVedio();
-    }
+	}
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receivePageActions(EventPageActionsForSoundtrack pageActions) {
-        String data = pageActions.getData();
-        Log.e("receivePageActions", "pageActions:" + pageActions);
-        if (!TextUtils.isEmpty(data)) {
-            if (pageActions.getPageNumber() == currentPaegNum) {
-                Log.e("check_play_txt", "PlayActionByArray:" + data);
-                if (web != null) {
-                    web.loadUrl("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void receivePageActions(EventPageActionsForSoundtrack pageActions) {
+		String data = pageActions.getData();
+		Log.e("receivePageActions", "pageActions:" + pageActions);
+		if (!TextUtils.isEmpty(data)) {
+			if (pageActions.getPageNumber() == currentPaegNum) {
+				Log.e("check_play_txt", "PlayActionByArray:" + data);
+				if (web != null) {
+					web.loadUrl("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
 
-                }
-            }
-        }
-    }
+				}
+			}
+		}
+	}
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receivePageNotes(EventPageNotesForSoundtrack pageNotes) {
-        Log.e("receivePageNotes", "page_notes:" + pageNotes);
-        List<NoteDetail> notes = pageNotes.getNotes();
-        if (notes != null && notes.size() > 0) {
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void receivePageNotes(EventPageNotesForSoundtrack pageNotes) {
+		Log.e("receivePageNotes", "page_notes:" + pageNotes);
+		List<NoteDetail> notes = pageNotes.getNotes();
+		if (notes != null && notes.size() > 0) {
 
-            for (NoteDetail note : notes) {
+			for (NoteDetail note : notes) {
 
-                try {
-                    JSONObject message = new JSONObject();
-                    message.put("type", 38);
-                    message.put("LinkID", note.getLinkID());
-                    message.put("IsOther", false);
-                    if (!TextUtils.isEmpty(note.getLinkProperty())) {
-                        message.put("LinkProperty", new JSONObject(note.getLinkProperty()));
-                    }
-                    Log.e("check_play_txt", "notes_PlayActionByTxt:" + message);
-                    if (web != null) {
+				try {
+					JSONObject message = new JSONObject();
+					message.put("type", 38);
+					message.put("LinkID", note.getLinkID());
+					message.put("IsOther", false);
+					if (!TextUtils.isEmpty(note.getLinkProperty())) {
+						message.put("LinkProperty", new JSONObject(note.getLinkProperty()));
+					}
+					Log.e("check_play_txt", "notes_PlayActionByTxt:" + message);
+					if (web != null) {
 
-                    }
+					}
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void closeSoundtrackDialog(EventCloseSoundtrack closeSoundtrack) {
-        close();
-    }
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void closeSoundtrackDialog(EventCloseSoundtrack closeSoundtrack) {
+		close();
+	}
 
-    private void pause() {
-        if (soundtrackAudioManager == null) {
-            soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
-        }
-        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, soundtrackAudioManager.getPlayTime());
-        isStarted = false;
-        if (soundtrackAudioManager != null) {
-            soundtrackAudioManager.pause();
-        }
-        SoundtrackBackgroundMusicManager.getInstance(host).pause();
-        statusText.setText(R.string.paused);
-        startPauseImage.setImageResource(R.drawable.video_play);
-    }
+	private void pause() {
+		if (soundtrackAudioManager == null) {
+			soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+		}
+		notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, soundtrackAudioManager.getPlayTime());
+		isStarted = false;
+		if (soundtrackAudioManager != null) {
+			soundtrackAudioManager.pause();
+		}
+		SoundtrackBackgroundMusicManager.getInstance(host).pause();
+		statusText.setText(R.string.paused);
+		startPauseImage.setImageResource(R.drawable.video_play);
+	}
 
-    public void followPause() {
+	public void followPause() {
 //        if (soundtrackAudioManager.isPlaying()) {
 //
 //        }
-        pause();
-    }
+		pause();
+	}
 
-    public void followRestart() {
-        restart();
+	public void followRestart() {
+		restart();
 
-    }
+	}
 
-    public void followClose() {
-        close();
-    }
+	public void followClose() {
+		close();
+	}
 
-    public void followSeekTo(int audioTime) {
-        seekTo2(audioTime);
-    }
+	private void restart() {
+		if (soundtrackAudioManager == null) {
+			soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
+		}
+		notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_RESTART, soundtrackAudioManager.getPlayTime());
+		if (isNeedStart) {
+			isNeedStart = false;
+			soundtrackAudioManager.start();
+		} else {
+			soundtrackAudioManager.restart();
+		}
 
-    private void restart() {
-        if (soundtrackAudioManager == null) {
-            soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
-        }
-        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_RESTART, soundtrackAudioManager.getPlayTime());
-        if (isNeedStart) {
-            isNeedStart = false;
-            soundtrackAudioManager.start();
-        } else {
-            soundtrackAudioManager.restart();
-        }
+		//SoundtrackBackgroundMusicManager.getInstance(host).restart();
+		isStarted = true;
+		statusText.setText(R.string.playing);
+		startPauseImage.setImageResource(R.drawable.video_stop);
+	}
 
-        //SoundtrackBackgroundMusicManager.getInstance(host).restart();
-        isStarted = true;
-        statusText.setText(R.string.playing);
-        startPauseImage.setImageResource(R.drawable.video_stop);
-    }
+	private void close() {
 
-    private void close() {
+		if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
+			soundtrackPlayLayout.setVisibility(View.GONE);
+			try {
+				notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_STOP, soundtrackAudioManager.getPlayTime());
+				if (EventBus.getDefault().isRegistered(this)) {
+					EventBus.getDefault().unregister(this);
+				}
+				pageActions.clear();
+				//        mNoteActionList.clear();
+				release();
+			} catch (Exception e) {
 
-        if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
-            soundtrackPlayLayout.setVisibility(View.GONE);
-            try {
-                notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_STOP, soundtrackAudioManager.getPlayTime());
-                if (EventBus.getDefault().isRegistered(this)) {
-                    EventBus.getDefault().unregister(this);
-                }
-                pageActions.clear();
-                //        mNoteActionList.clear();
-                release();
-            } catch (Exception e) {
+			}
+		}
 
-            }
-        }
+	}
 
-    }
+	private void seekTo(int time) {
+		actionsManager.seekTo(time);
+	}
 
-    private void seekTo(int time) {
-        actionsManager.seekTo(time);
-    }
+	private void syncDownloadFirst(int recordId) {
+		final String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + 0 + "&endTime=" + 20000;
+		final String cacheUrl = url + "__time__separator__" + 0 + "__" + 20000 + "__" + recordId;
+		boolean isContain = webActionsCache.containPartWebActions(cacheUrl);
+		if (!isContain) {
+			List<WebAction> actions = ServiceInterfaceTools.getinstance().syncGetRecordActions(url);
+			Log.e("check_download", "download_response:" + actions);
+			if (actions != null) {
+				PartWebActions partWebActions = new PartWebActions();
+				partWebActions.setStartTime(0);
+				partWebActions.setEndTime(20000);
+				partWebActions.setUrl(cacheUrl);
+				if (actions.size() > 0) {
+					partWebActions.setWebActions(actions);
+				} else {
+					partWebActions.setWebActions(new ArrayList<WebAction>());
+				}
+				Log.e("check_download", "cache:" + cacheUrl);
+				webActionsCache.cacheActions(partWebActions);
+				Log.e("SoundtrackActionsManager", "step_four:request_success_and_cache:web_actions_size:" + partWebActions.getWebActions().size());
+			}
+		}
+	}
 
-    private void syncDownloadFirst(int recordId) {
-        final String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + 0 + "&endTime=" + 20000;
-        final String cacheUrl = url + "__time__separator__" + 0 + "__" + 20000 + "__" + recordId;
-        boolean isContain = webActionsCache.containPartWebActions(cacheUrl);
-        if (!isContain) {
-            List<WebAction> actions = ServiceInterfaceTools.getinstance().syncGetRecordActions(url);
-            Log.e("check_download", "download_response:" + actions);
-            if (actions != null) {
-                PartWebActions partWebActions = new PartWebActions();
-                partWebActions.setStartTime(0);
-                partWebActions.setEndTime(20000);
-                partWebActions.setUrl(cacheUrl);
-                if (actions.size() > 0) {
-                    partWebActions.setWebActions(actions);
-                } else {
-                    partWebActions.setWebActions(new ArrayList<WebAction>());
-                }
-                Log.e("check_download", "cache:" + cacheUrl);
-                webActionsCache.cacheActions(partWebActions);
-                Log.e("SoundtrackActionsManager", "step_four:request_success_and_cache:web_actions_size:" + partWebActions.getWebActions().size());
-            }
-        }
-    }
+	private void syncDownloadNoteControl(String noteid) {
 
-    private void syncDownloadNoteControl(String noteid) {
+	}
 
-    }
+	private void downloadActions(long totalTime, final int recordId) {
 
-    private void downloadActions(long totalTime, final int recordId) {
+		int secends = (int) (totalTime / 1000) + 1;
+		int partSize = secends / 20 + 1;
+		Integer[] parts = new Integer[partSize];
+		for (int i = 0; i < parts.length; ++i) {
+			parts[i] = i;
+		}
 
-        int secends = (int) (totalTime / 1000) + 1;
-        int partSize = secends / 20 + 1;
-        Integer[] parts = new Integer[partSize];
-        for (int i = 0; i < parts.length; ++i) {
-            parts[i] = i;
-        }
-
-        Observable.fromArray(parts).delay(3000, TimeUnit.MILLISECONDS).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer index) throws Exception {
-                long startTime = index * 20000;
-                long endTime = (index + 1) * 20000;
-                final String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + startTime + "&endTime=" + endTime;
-                final String cacheUrl = url + "__time__separator__" + startTime + "__" + endTime + "__" + recordId;
-                boolean isContain = webActionsCache.containPartWebActions(cacheUrl);
-                if (!isContain) {
-                    List<WebAction> actions = ServiceInterfaceTools.getinstance().syncGetRecordActions(url);
-                    Log.e("check_download", "download_response:" + actions);
-                    if (actions != null) {
-                        PartWebActions partWebActions = new PartWebActions();
-                        partWebActions.setStartTime(startTime);
-                        partWebActions.setEndTime(endTime);
-                        partWebActions.setUrl(cacheUrl);
-                        if (actions.size() > 0) {
-                            partWebActions.setWebActions(actions);
-                        } else {
-                            partWebActions.setWebActions(new ArrayList<WebAction>());
-                        }
-                        Log.e("check_download", "cache:" + cacheUrl);
-                        webActionsCache.cacheActions(partWebActions);
-                        Log.e("SoundtrackActionsManager", "step_four:request_success_and_cache:web_actions_size:" + partWebActions.getWebActions().size());
+		Observable.fromArray(parts).delay(3000, TimeUnit.MILLISECONDS).observeOn(Schedulers.io()).doOnNext(new Consumer<Integer>() {
+			@Override
+			public void accept(Integer index) throws Exception {
+				long startTime = index * 20000;
+				long endTime = (index + 1) * 20000;
+				final String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + recordId + "&startTime=" + startTime + "&endTime=" + endTime;
+				final String cacheUrl = url + "__time__separator__" + startTime + "__" + endTime + "__" + recordId;
+				boolean isContain = webActionsCache.containPartWebActions(cacheUrl);
+				if (!isContain) {
+					List<WebAction> actions = ServiceInterfaceTools.getinstance().syncGetRecordActions(url);
+					Log.e("check_download", "download_response:" + actions);
+					if (actions != null) {
+						PartWebActions partWebActions = new PartWebActions();
+						partWebActions.setStartTime(startTime);
+						partWebActions.setEndTime(endTime);
+						partWebActions.setUrl(cacheUrl);
+						if (actions.size() > 0) {
+							partWebActions.setWebActions(actions);
+						} else {
+							partWebActions.setWebActions(new ArrayList<WebAction>());
+						}
+						Log.e("check_download", "cache:" + cacheUrl);
+						webActionsCache.cacheActions(partWebActions);
+						Log.e("SoundtrackActionsManager", "step_four:request_success_and_cache:web_actions_size:" + partWebActions.getWebActions().size());
 //
-                    }
-                }
-                fetchPageActions(webActionsCache.getPartWebActions(cacheUrl));
-                Log.e("check_part", "url:" + url);
-            }
-        }).subscribe();
+					}
+				}
+				fetchPageActions(webActionsCache.getPartWebActions(cacheUrl));
+				Log.e("check_part", "url:" + url);
+			}
+		}).subscribe();
 //        Log.e("check_part","part_size:" + partSize +", total_time:" + totalTime);
-    }
+	}
 
-    private List<WebAction> pageActions = new ArrayList<>();
+	private List<WebAction> pageActions = new ArrayList<>();
 //    private List<WebAction> mNoteActionList = new ArrayList<>();
 
-    private void fetchPageActions(PartWebActions webActions) {
-        if (webActions == null) {
-            return;
-        }
-        List<WebAction> actions = webActions.getWebActions();
-        if (actions != null && actions.size() > 0) {
-            for (WebAction action : actions) {
-                if (!TextUtils.isEmpty(action.getData()))
-                    try {
-                        JSONObject data = new JSONObject(action.getData());
-                        if (data.getInt("type") == 2) {
-                            if (!pageActions.contains(action)) {
-                                pageActions.add(action);
-                            }
-                        }/*else {
+	private void fetchPageActions(PartWebActions webActions) {
+		if (webActions == null) {
+			return;
+		}
+		List<WebAction> actions = webActions.getWebActions();
+		if (actions != null && actions.size() > 0) {
+			for (WebAction action : actions) {
+				if (!TextUtils.isEmpty(action.getData()))
+					try {
+						JSONObject data = new JSONObject(action.getData());
+						if (data.getInt("type") == 2) {
+							if (!pageActions.contains(action)) {
+								pageActions.add(action);
+							}
+						}/*else {
                             if (!mNoteActionList.contains(action)) {
                                 mNoteActionList.add(action);
                             }
                         }*/
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-            }
-        }
-        Log.e("check_page_actions", "page_actions_size:" + pageActions.size());
-    }
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+			}
+		}
+		Log.e("check_page_actions", "page_actions_size:" + pageActions.size());
+	}
 
-    private void notifySoundtrackPlayStatus(SoundtrackDetail soundtrackDetail, int status, long time) {
-        if (soundtrackDetail == null) {
-            return;
-        }
-        if (meetingConfig.getType() != MeetingType.MEETING) {
-            // 不是会议
-        } else {
-            if (isPresenter()) {
-                SocketMessageManager.getManager(host).sendMessage_Soundtrack_Playing_Status(soundtrackDetail.getSoundtrackID() + "", status, time);
-            }
-        }
-    }
+	private void notifySoundtrackPlayStatus(SoundtrackDetail soundtrackDetail, int status, long time) {
+		if (soundtrackDetail == null) {
+			return;
+		}
+		if (meetingConfig.getType() != MeetingType.MEETING) {
+			// 不是会议
+		} else {
+			if (isPresenter()) {
+				SocketMessageManager.getManager(host).sendMessage_Soundtrack_Playing_Status(soundtrackDetail.getSoundtrackID() + "", status, time);
+			}
+		}
+	}
 
-    private boolean isPresenter() {
-        if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-            return true;
-        }
-        return false;
-    }
+	private boolean isPresenter() {
+		if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+			return true;
+		}
+		return false;
+	}
 
-    private Uploadao parseQueryResponse(final String jsonstring) {
-        try {
-            JSONObject returnjson = new JSONObject(jsonstring);
-            if (returnjson.getBoolean("Success")) {
-                JSONObject data = returnjson.getJSONObject("Data");
+	private Uploadao parseQueryResponse(final String jsonstring) {
+		try {
+			JSONObject returnjson = new JSONObject(jsonstring);
+			if (returnjson.getBoolean("Success")) {
+				JSONObject data = returnjson.getJSONObject("Data");
 
-                JSONObject bucket = data.getJSONObject("Bucket");
-                Uploadao uploadao = new Uploadao();
-                uploadao.setServiceProviderId(bucket.getInt("ServiceProviderId"));
-                uploadao.setRegionName(bucket.getString("RegionName"));
-                uploadao.setBucketName(bucket.getString("BucketName"));
-                return uploadao;
-            }
-        } catch (JSONException e) {
-            return null;
-        }
-        return null;
-    }
+				JSONObject bucket = data.getJSONObject("Bucket");
+				Uploadao uploadao = new Uploadao();
+				uploadao.setServiceProviderId(bucket.getInt("ServiceProviderId"));
+				uploadao.setRegionName(bucket.getString("RegionName"));
+				uploadao.setBucketName(bucket.getString("BucketName"));
+				return uploadao;
+			}
+		} catch (JSONException e) {
+			return null;
+		}
+		return null;
+	}
 
-    public void changeSeekbarStatusByRole() {
+	public void changeSeekbarStatusByRole() {
 
-        if (meetingConfig != null && meetingConfig.getType() != MeetingType.MEETING) {
-            return;
-        }
-        if (seekBar != null) {
-            if (isPresenter()) {
-                seekBar.setEnabled(true);
-                seekBar.setClickable(true);
-            } else {
-                seekBar.setEnabled(false);
-                seekBar.setClickable(false);
-            }
-        }
-    }
+		if (meetingConfig != null && meetingConfig.getType() != MeetingType.MEETING) {
+			return;
+		}
+		if (seekBar != null) {
+			if (isPresenter()) {
+				seekBar.setEnabled(true);
+				seekBar.setClickable(true);
+			} else {
+				seekBar.setEnabled(false);
+				seekBar.setClickable(false);
+			}
+		}
+	}
 
-    /**
-     * 在指定的时间暂停
-     */
-    public void pauseAtSpecificTime(long s) {
-        long time = s / 1000;
-        int current = (int) time;
-        if (soundtrackAudioManager != null) {
-            soundtrackAudioManager.stopToPause(current);
-        }
-    }
+	private boolean isNeedStart;
 
-    private boolean isNeedStart;
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void eventSeek(SeekData seekData) {
-        statusText.setText(R.string.paused);
-        mIsPause = true;
-        if (seekBar != null) {
-            seekBar.setProgress(seekData.getProgress());
-            isNeedStart = true;
-        }
-    }
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void eventSeek(SeekData seekData) {
+		mIsPause = true;
+		if (seekBar != null) {
+			seekBar.setProgress(seekData.getProgress());
+			isNeedStart = true;
+			String time = WlTimeUtil.secdsToDateFormat(seekData.getProgress()) + "/" + WlTimeUtil.secdsToDateFormat(seekData.getDuration());
+			setTimeText(time, false);
+		}
+	}
 }
