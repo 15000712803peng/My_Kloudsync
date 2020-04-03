@@ -336,7 +336,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         soundtrackPlayLayout.setVisibility(View.VISIBLE);
         playTimeText.setText("00:00" + "/" + "00:00");
         SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
-        web.setVisibility(View.INVISIBLE);
+        web.setVisibility(View.GONE);
+        mainNoteWeb.setVisibility(View.GONE);
         seekBar.setProgress(0);
         loadingBar.setVisibility(View.VISIBLE);
         statusText.setVisibility(View.INVISIBLE);
@@ -355,7 +356,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         mediaInfo.setPlayType(SoundtrackMediaInfo.TYPE_PLAY);
         soundtrackAudioManager.setSoundtrackAudio(mediaInfo);
         soundtrackPlayLayout.setVisibility(View.VISIBLE);
-        mainNoteWeb.setVisibility(View.GONE);
+
         downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, 0);
         soundtrackAudioManager.setOnAudioInfoCallBack(new SoundtrackAudioManagerV2.OnAudioInfoCallBack() {

@@ -182,6 +182,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -3665,6 +3666,47 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
                 return soundtrackDetailData;
             }
+        }).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
+                if(soundtrackDetail != null &&  soundtrackDetail.getNewAudioInfo()!= null){
+                   SoundtrackMediaInfo mediaInfo =  soundtrackDetail.getNewAudioInfo();
+                    if(!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())){
+                        Log.e("checkUrlForDifferentRegion","attachmenturl:" + mediaInfo.getAttachmentUrl());
+                        String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
+                        mediaInfo.setAttachmentUrl(newUrl);
+
+                    }
+                }
+            }
+        }).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
+                if(soundtrackDetail != null &&  soundtrackDetail.getBackgroudMusicInfo()!= null){
+                    SoundtrackMediaInfo mediaInfo =  soundtrackDetail.getBackgroudMusicInfo();
+                    if(!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())){
+                        Log.e("checkUrlForDifferentRegion","attachmenturl:" + mediaInfo.getAttachmentUrl());
+                        String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
+                        mediaInfo.setAttachmentUrl(newUrl);
+
+                    }
+                }
+            }
+        }).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
+                if(soundtrackDetail != null &&  soundtrackDetail.getSelectedAudioInfo() != null){
+                    SoundtrackMediaInfo mediaInfo =  soundtrackDetail.getSelectedAudioInfo();
+                    if(!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())){
+                        Log.e("checkUrlForDifferentRegion","attachmenturl:" + mediaInfo.getAttachmentUrl());
+                        String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
+                        mediaInfo.setAttachmentUrl(newUrl);
+                    }
+                }
+            }
         }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<SoundtrackDetailData>() {
             @Override
             public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
@@ -4820,6 +4862,47 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         } else {
             startService(service);
         }
+    }
+
+    private String checkUrlForDifferentRegion(String url) throws MalformedURLException {
+        String newUrl = url;
+        URL _url = new URL(url);
+
+        String path = _url.getPath();
+        if (!TextUtils.isEmpty(path)) {
+            if (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+
+            int index = path.lastIndexOf("/");
+            if (index >= 0 && index < path.length()) {
+                String centerPart = path.substring(0, index);
+                String fileName = path.substring(index + 1, path.length());
+                Log.e("check_transform_url", "centerPart:" + centerPart + ",fileName:" + fileName);
+                if (!TextUtils.isEmpty(centerPart)) {
+                    JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+                            centerPart);
+                    if (queryDocumentResult != null) {
+                        Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+                        String part = "";
+                        if (uploadao != null) {
+                            if (1 == uploadao.getServiceProviderId()) {
+                                part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
+                                        + "/" + fileName;
+                            } else if (2 == uploadao.getServiceProviderId()) {
+                                part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/" + fileName;
+                            }
+                            newUrl = part;
+                            Log.e("check_transform_url", "url:" + url);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        Log.e("checkUrlForDifferentRegion","new_url:" + newUrl);
+        return newUrl;
     }
 
 }
