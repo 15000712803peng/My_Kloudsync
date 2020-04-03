@@ -7,6 +7,7 @@ package com.kloudsync.techexcel.bean;
 public class SeekData {
 
     private int progress;
+    private int duration;
 
     public int getProgress() {
         return progress;
@@ -14,5 +15,13 @@ public class SeekData {
 
     public void setProgress(int progress) {
         this.progress = progress;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 }
