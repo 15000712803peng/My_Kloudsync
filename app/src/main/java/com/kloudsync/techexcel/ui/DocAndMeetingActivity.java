@@ -3647,8 +3647,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     public void playSoundtrack(EventPlaySoundtrack soundtrack) {
         Log.e("check_soundtrack_play", "playSoundtrack");
         soundtrackPlayManager.init();
-        requestDetailAndPlay(soundtrack.getSoundTrack());
-
+        if(soundtrack.getSoundTrack()!=null){
+            requestDetailAndPlay(soundtrack.getSoundTrack());
+        }
     }
 
     private void requestDetailAndPlay(final SoundTrack soundTrack) {
