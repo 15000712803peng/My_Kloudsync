@@ -175,7 +175,7 @@
                     android:layout_marginRight="12dp"
                     android:textSize="@dimen/sp_14"
                     android:text="@string/Send_code"
-                    android:textColor="@color/blue1" />
+                    android:textColor="#3D78FB" />
             </RelativeLayout>
         </com.kloudsync.techexcel.ui.MaskViewGroup>
 
@@ -338,7 +338,7 @@
                 android:layout_below="@+id/tv_sign_up"
                 android:layout_centerHorizontal="true"
                 android:text="@string/kloud_sync_terms"
-                android:textColor="#007BFF"
+                android:textColor="#3D78FB"
                 android:textSize="@dimen/sp_14" />
         </LinearLayout>
     </RelativeLayout>

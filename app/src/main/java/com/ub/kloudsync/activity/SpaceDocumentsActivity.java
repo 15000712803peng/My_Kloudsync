@@ -72,6 +72,7 @@ import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.ServiceBean;
+import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -340,7 +341,7 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
                             }
 
                             @Override
-                            public void share(int s, Document teamSpaceBeanFile) {
+                            public void share(int s, Document teamSpaceBeanFile, SoundtrackBean soundtrackBean) {
                                 ShareKloudSync(teamSpaceBeanFile, s);
 
                             }

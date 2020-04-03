@@ -44,6 +44,7 @@ import com.kloudsync.techexcel.help.PopDeleteDocument;
 import com.kloudsync.techexcel.help.PopDocument;
 import com.kloudsync.techexcel.help.PopEditDocument;
 import com.kloudsync.techexcel.help.PopShareKloudSync;
+import com.kloudsync.techexcel.help.PopShareKloudSyncV2;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserInfoHelper;
 import com.kloudsync.techexcel.info.Customer;
@@ -68,6 +69,7 @@ import com.ub.techexcel.adapter.HomeDocumentAdapter;
 import com.ub.techexcel.adapter.SpaceAdapter;
 import com.ub.techexcel.bean.EventViewDocPermissionGranted;
 import com.ub.techexcel.bean.ServiceBean;
+import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.service.ConnectService;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -298,8 +300,11 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                             }
 
                             @Override
-                            public void share(int position, Document document) {
+                            public void share(int position, Document document, SoundtrackBean soundtrackBean) {
                                 shareDocumentDialog(document, position);
+                                final PopShareKloudSyncV2 psk = new PopShareKloudSyncV2();
+                                psk.getPopwindow(getActivity(), soundtrackBean);
+                                psk.startPop();
                             }
 
                             @Override

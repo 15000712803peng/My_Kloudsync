@@ -78,7 +78,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
 
         void onRealItem(Document document, View view);
 
-        void share(int s, Document document);
+        void share(int s, Document document,SoundtrackBean soundtrackBean);
 
         void open();
 
@@ -137,6 +137,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
                 }
             }
         });
+
         holder.morepopup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,12 +146,14 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
                 }
             }
         });
+
         String createData = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Long.parseLong(item.getCreatedDate()));
         holder.createdata.setText("" + createData);
         holder.listView.setVisibility(View.GONE);
         if (!TextUtils.isEmpty(item.getCreatedByName())) {
             holder.documentOwner.setText(item.getCreatedByName());
         }
+
         int syncCount = item.getSyncCount();
         holder.tv_num_value.setText(item.getSyncCount() + "");
         setDocumentIcon(item.getTitle(),holder.documentIcon);
@@ -297,7 +300,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
                     documentYinXiangPopup.setFavoritePoPListener(new DocumentYinXiangPopup.FavoritePoPListener() {
                         @Override
                         public void share() {
-                            onItemLectureListener.share(soundtrackBean.getSoundtrackID(), document);
+                            onItemLectureListener.share(soundtrackBean.getSoundtrackID(), document,soundtrackBean);
                         }
 
                         @Override

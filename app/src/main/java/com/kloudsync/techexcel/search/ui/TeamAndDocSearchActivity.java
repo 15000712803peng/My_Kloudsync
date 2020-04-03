@@ -44,6 +44,7 @@ import com.ub.kloudsync.activity.SpaceDocumentsActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
 import com.ub.techexcel.adapter.SpaceAdapter;
+import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.service.ConnectService;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
@@ -218,7 +219,7 @@ public class TeamAndDocSearchActivity extends BaseActivity implements SpaceAdapt
             }
 
             @Override
-            public void share(int s, Document teamSpaceBeanFile) {
+            public void share(int s, Document teamSpaceBeanFile, SoundtrackBean soundtrackBean) {
 
             }
 

@@ -131,6 +131,7 @@ import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.start.LoginActivity;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
@@ -176,10 +177,12 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -319,7 +322,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             return;
         }
 
-        Log.e("DocAndMeetingActivity","on_create");
+        Log.e("DocAndMeetingActivity", "on_create");
 
         meetingSettingCache = MeetingSettingCache.getInstance(this);
         writeNoteBlankPageImage();
@@ -369,7 +372,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         menuManager.setBottomMenuOperationsListener(this);
         menuManager.setMenuIcon(menuIcon);
         initWeb();
-        soundtrackPlayManager = new SoundtrackPlayManager(this,meetingConfig,soundtrackPlayLayout);
+        soundtrackPlayManager = new SoundtrackPlayManager(this, meetingConfig, soundtrackPlayLayout);
         bottomFilePop = new PopBottomFile(this);
         gson = new Gson();
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
@@ -606,7 +609,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             web = null;
         }
 
-        if(soundtrackPlayManager != null){
+        if (soundtrackPlayManager != null) {
             soundtrackPlayManager.followClose();
         }
 
@@ -2623,9 +2626,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 if (!TextUtils.isEmpty(actions)) {
                     SoundtrackRecordManager.getManager(this).recordDocumentAction(actions);
                 }
-            }else{
-                   messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
-               }
+            } else {
+                messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
+            }
 
         } else {
             Log.e("notifyMyWebActions", "role:" + meetingConfig.getRole());
@@ -3643,20 +3646,102 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void playSoundtrack(EventPlaySoundtrack soundtrack) {
         Log.e("check_soundtrack_play", "playSoundtrack");
-        SoundtrackMediaInfo newAudioInfo = soundtrack.getSoundtrackDetail().getNewAudioInfo();
-        SoundtrackMediaInfo backgroundAudioInfo = soundtrack.getSoundtrackDetail().getBackgroudMusicInfo();
-        if (newAudioInfo == null && backgroundAudioInfo == null) {
-            new AlertDialog.Builder(this, R.style.ThemeAlertDialog)
-                    .setMessage(getResources().getString(R.string.sound_is_still_preparing_and_cannot_do_this))
-                    .setNegativeButton(getResources().getText(R.string.know_the), null)
-                    .show();
-        } else {
-            soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
-            soundtrackPlayManager.doPlay();//播放音响dialog
+        soundtrackPlayManager.init();
+        if(soundtrack.getSoundTrack()!=null){
+            requestDetailAndPlay(soundtrack.getSoundTrack());
         }
     }
 
-    private void playSoundtrackAtTime(EventPlaySoundtrack soundtrack,long time) {
+    private void requestDetailAndPlay(final SoundTrack soundTrack) {
+
+        Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
+            @Override
+            public SoundtrackDetailData apply(SoundTrack soundtrack) throws Exception {
+                SoundtrackDetailData soundtrackDetailData = new SoundtrackDetailData();
+                JSONObject response = ServiceInterfaceTools.getinstance().syncGetSoundtrackDetail(soundTrack);
+                if (response.has("RetCode")) {
+                    if (response.getInt("RetCode") == 0) {
+                        SoundtrackDetail soundtrackDetail = new Gson().fromJson(response.getJSONObject("RetData").toString(), SoundtrackDetail.class);
+                        soundtrackDetailData.setSoundtrackDetail(soundtrackDetail);
+                    }
+                }
+                return soundtrackDetailData;
+            }
+        }).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
+                if(soundtrackDetail != null &&  soundtrackDetail.getNewAudioInfo()!= null){
+                   SoundtrackMediaInfo mediaInfo =  soundtrackDetail.getNewAudioInfo();
+                    if(!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())){
+                        Log.e("checkUrlForDifferentRegion","attachmenturl:" + mediaInfo.getAttachmentUrl());
+                        String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
+                        mediaInfo.setAttachmentUrl(newUrl);
+
+                    }
+                }
+            }
+        }).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
+                if(soundtrackDetail != null &&  soundtrackDetail.getBackgroudMusicInfo()!= null){
+                    SoundtrackMediaInfo mediaInfo =  soundtrackDetail.getBackgroudMusicInfo();
+                    if(!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())){
+                        Log.e("checkUrlForDifferentRegion","attachmenturl:" + mediaInfo.getAttachmentUrl());
+                        String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
+                        mediaInfo.setAttachmentUrl(newUrl);
+
+                    }
+                }
+            }
+        }).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
+                if(soundtrackDetail != null &&  soundtrackDetail.getSelectedAudioInfo() != null){
+                    SoundtrackMediaInfo mediaInfo =  soundtrackDetail.getSelectedAudioInfo();
+                    if(!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())){
+                        Log.e("checkUrlForDifferentRegion","attachmenturl:" + mediaInfo.getAttachmentUrl());
+                        String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
+                        mediaInfo.setAttachmentUrl(newUrl);
+                    }
+                }
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                if (soundtrackDetailData.getSoundtrackDetail() != null) {
+                    SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
+                    SoundtrackMediaInfo newAudioInfo = soundtrackDetail.getNewAudioInfo();
+                    SoundtrackMediaInfo backgroundAudioInfo = soundtrackDetail.getBackgroudMusicInfo();
+                    if (newAudioInfo == null && backgroundAudioInfo == null) {
+                        new AlertDialog.Builder(DocAndMeetingActivity.this, R.style.ThemeAlertDialog)
+                                .setMessage(getResources().getString(R.string.sound_is_still_preparing_and_cannot_do_this))
+                                .setNegativeButton(getResources().getText(R.string.know_the), null)
+                                .show();
+                        soundtrackPlayManager.followClose();
+                        return;
+                    }
+
+                    soundtrackPlayManager.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
+                    if(soundtrackDetailData.getSoundtrackDetail().getNewAudioInfo() != null){
+                        soundtrackPlayManager.doPlay();
+                    }else {
+                        soundtrackPlayManager.doPlayJustBackground();
+                    }
+
+
+                }else {
+                    ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
+                    soundtrackPlayManager.followClose();
+
+                }
+            }
+        }).subscribe();
+    }
+
+    private void playSoundtrackAtTime(EventPlaySoundtrack soundtrack, long time) {
         Log.e("check_play", "playSoundtrack");
         SoundtrackMediaInfo newAudioInfo = soundtrack.getSoundtrackDetail().getNewAudioInfo();
         SoundtrackMediaInfo backgroundAudioInfo = soundtrack.getSoundtrackDetail().getBackgroudMusicInfo();
@@ -3695,7 +3780,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void presenterChanged(EventPresnterChanged presnterChanged) {
         handleWebUISetting();
-        if(soundtrackPlayManager != null){
+        if (soundtrackPlayManager != null) {
             soundtrackPlayManager.changeSeekbarStatusByRole();
         }
 
@@ -4287,7 +4372,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         if (soundtrackPlayManager != null) {
 //                            soundtrackPlayManager.followSeekTo(audioTime);
                             audioTime = data.getInt("time");
-                            soundtrackPlayManager.followSeek(audioTime/1000);
+                            soundtrackPlayManager.followSeek(audioTime / 1000);
                         }
                     }
                 }
@@ -4309,7 +4394,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 break;
         }
     }
-
 
 
     private void requestSyncDetailAndPlay(final SoundTrack soundTrack) {
@@ -4359,12 +4443,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             @Override
             public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
                 if (soundtrackDetailData.getSoundtrackDetail() != null) {
-                    EventPlaySoundtrack soundtrack = new EventPlaySoundtrack();
-                    soundtrack.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
+
+                    soundtrackDetailData.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
 //                    playSoundtrack(soundtrack);
                     if (soundtrackPlayManager != null) {
-                        Log.e("check_do_pause","doPause");
-                        soundtrackPlayManager.setSoundtrackDetail(soundtrack.getSoundtrackDetail());
+                        Log.e("check_do_pause", "doPause");
+                        soundtrackPlayManager.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
                         soundtrackPlayManager.doPause(time);
                     }
                 }
@@ -4502,11 +4586,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                                 meetingMenuMemberImage.setVisibility(View.VISIBLE);
                             }
 
-                            if(dataJson.has("playAudioData")){
+                            if (dataJson.has("playAudioData")) {
                                 final String audioData = dataJson.getString("playAudioData");
-                                if(!TextUtils.isEmpty(audioData)){
-                                    Log.e("audioData","audioData:" + audioData);
-                                    Observable.just("delay_load").delay(2000,TimeUnit.MILLISECONDS).subscribe(new Consumer<String>() {
+                                if (!TextUtils.isEmpty(audioData)) {
+                                    Log.e("audioData", "audioData:" + audioData);
+                                    Observable.just("delay_load").delay(2000, TimeUnit.MILLISECONDS).subscribe(new Consumer<String>() {
                                         @Override
                                         public void accept(String s) throws Exception {
                                             handleSoundtrackWhenJoinMeeting(audioData);
@@ -4535,11 +4619,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
     }
 
-    private void handleSoundtrackWhenJoinMeeting(String playAudioData){
+    private void handleSoundtrackWhenJoinMeeting(String playAudioData) {
 //        {"actionType":23,"soundtrackId":38065,"time":131086,"stat":2}
         try {
             JSONObject data = new JSONObject(Tools.getFromBase64(playAudioData));
-            Log.e("check_do_pause","data:" + data);
+            Log.e("check_do_pause", "data:" + data);
             if (data.has("stat")) {
                 final int stat = data.getInt("stat");
                 final String soundtrackID = data.getString("soundtrackId");
@@ -4571,7 +4655,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         long time = data.getLong("time");
                         SoundTrack soundTrack = new SoundTrack();
                         soundTrack.setSoundtrackID(vid2);
-                        requestSyncDetailAndPause(soundTrack,time);
+                        requestSyncDetailAndPause(soundTrack, time);
                     }
                 } else if (stat == 3) { // 继续播放
                     if (soundtrackPlayManager != null) {
@@ -4784,6 +4868,47 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         } else {
             startService(service);
         }
+    }
+
+    private String checkUrlForDifferentRegion(String url) throws MalformedURLException {
+        String newUrl = url;
+        URL _url = new URL(url);
+
+        String path = _url.getPath();
+        if (!TextUtils.isEmpty(path)) {
+            if (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+
+            int index = path.lastIndexOf("/");
+            if (index >= 0 && index < path.length()) {
+                String centerPart = path.substring(0, index);
+                String fileName = path.substring(index + 1, path.length());
+                Log.e("check_transform_url", "centerPart:" + centerPart + ",fileName:" + fileName);
+                if (!TextUtils.isEmpty(centerPart)) {
+                    JSONObject queryDocumentResult = DocumentModel.syncQueryDocumentInDoc(AppConfig.URL_LIVEDOC + "queryDocument",
+                            centerPart);
+                    if (queryDocumentResult != null) {
+                        Uploadao uploadao = parseQueryResponse(queryDocumentResult.toString());
+                        String part = "";
+                        if (uploadao != null) {
+                            if (1 == uploadao.getServiceProviderId()) {
+                                part = "https://s3." + uploadao.getRegionName() + ".amazonaws.com/" + uploadao.getBucketName() + "/" + centerPart
+                                        + "/" + fileName;
+                            } else if (2 == uploadao.getServiceProviderId()) {
+                                part = "https://" + uploadao.getBucketName() + "." + uploadao.getRegionName() + "." + "aliyuncs.com" + "/" + centerPart + "/" + fileName;
+                            }
+                            newUrl = part;
+                            Log.e("check_transform_url", "url:" + url);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        Log.e("checkUrlForDifferentRegion","new_url:" + newUrl);
+        return newUrl;
     }
 
 }
