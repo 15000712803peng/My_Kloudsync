@@ -185,7 +185,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
         codeEdit = (EditText) findViewById(R.id.et_checkcode);
         AppConfig.COUNTRY_CODE = 86;
         tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
-        mTitleBarTitle.setText(getResources().getString(R.string.Sign_up));
+        mTitleBarTitle.setText(getResources().getString(R.string.create_account));
         mTitleBarTitle.setTextColor(getResources().getColor(R.color.colorFont34));
         setEditChangeInput();
         mBack.setOnClickListener(this);
