@@ -526,13 +526,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private void initWeb() {
 //        web.setZOrderOnTop(false);
         web.getSettings().setJavaScriptEnabled(true);
-        web.getSettings().setDomStorageEnabled(true);
+//        web.getSettings().setDomStorageEnabled(true);
         web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         web.addJavascriptInterface(this, "AnalyticsWebInterface");
 
 //        noteWeb.setZOrderOnTop(false);
         noteWeb.getSettings().setJavaScriptEnabled(true);
-        noteWeb.getSettings().setDomStorageEnabled(true);
+//        noteWeb.getSettings().setDomStorageEnabled(true);
         noteWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         noteWeb.addJavascriptInterface(new NoteJavascriptInterface(), "AnalyticsWebInterface");
 
@@ -605,6 +605,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         MeetingKit.getInstance().release();
         if (web != null) {
             web.removeAllViews();
+            web.clearCache(true);
             web.destroy();
             web = null;
         }
