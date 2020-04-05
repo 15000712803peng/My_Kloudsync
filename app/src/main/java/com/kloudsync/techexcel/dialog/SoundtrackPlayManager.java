@@ -624,6 +624,11 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if(currentTime >= totalTime){
             close();
         }
+        if(backgroundMusicManager != null){
+            if(!backgroundMusicManager.isPlaying()){
+                backgroundMusicManager.restart();
+            }
+        }
     }
 
 

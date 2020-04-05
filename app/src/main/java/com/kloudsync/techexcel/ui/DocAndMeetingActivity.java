@@ -3686,11 +3686,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         soundtrackPlayManager.followClose();
         soundtrackPlayManager.initLoading(menuIcon);
         if(soundtrack.getSoundTrack()!=null){
-            requestDetailAndPlay(soundtrack.getSoundTrack());
+            requestDetailAndPlay(soundtrack.getSoundTrack(),0);
         }
     }
 
-    private void requestDetailAndPlay(final SoundTrack soundTrack) {
+    private void requestDetailAndPlay(final SoundTrack soundTrack,final long time) {
 
         Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
             @Override
@@ -3788,7 +3788,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
                         soundtrackPlayManager.followClose();
                     }else {
-                        soundtrackPlayManager.doPlay(soundtrackMediaInfo,0);
+                        soundtrackPlayManager.doPlay(soundtrackMediaInfo,time);
                     }
 
 
@@ -4817,6 +4817,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         }
                         SoundTrack soundTrack = new SoundTrack();
                         soundTrack.setSoundtrackID(vid2);
+                        long time = data.getLong("time");
+                        if(soundtrackPlayManager != null){
+                            soundtrackPlayManager.followClose();
+                            soundtrackPlayManager.initLoading(menuIcon);
+                            requestDetailAndPlay(soundTrack,time);
+                        }
 //                    requestSyncDetailAndPause(soundTrack);
 //
                     } else if (stat == 5) {  // 拖动进度条
