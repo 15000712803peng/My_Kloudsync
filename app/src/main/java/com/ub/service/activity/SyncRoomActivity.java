@@ -710,7 +710,8 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             wv_show = (WebView) findViewById(R.id.wv_show);
 //            wv_show.setZOrderOnTop(false);
 //            wv_show.getSettings().setDomStorageEnabled(true);
-            wv_show.addJavascriptInterface(SyncRoomActivity.this, "AnalyticsWebInterface");
+	        wv_show.getSettings().setJavaScriptEnabled(true);
+	        wv_show.addJavascriptInterface(this, "AnalyticsWebInterface");
 //            XWalkPreferences.setValue("enable-javascript", true);
 //            XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
 //            XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
@@ -997,7 +998,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             uploadFile(attachmentBean);
         }
         if (wv_show != null) {
-            wv_show.resumeTimers();
+//            wv_show.resumeTimers();
 //            wv_show.onShow();
         }
 
@@ -3589,7 +3590,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.syncdisplayquit:
                 closeCourse(1);
-                finish();
+//                finish();
                 break;
             case R.id.leavell:
                 closeCourse(0);
@@ -6365,7 +6366,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         super.onPause();
         ConnectionClassManager.getInstance().remove(connectionChangedListener);
         if (wv_show != null) {
-            wv_show.pauseTimers();
+//            wv_show.pauseTimers();
 //            wv_show.onHide();
         }
     }

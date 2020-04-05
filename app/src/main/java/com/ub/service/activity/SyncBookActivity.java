@@ -188,6 +188,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -860,7 +861,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             uploadFile(attachmentBean);
         }
         if (wv_show != null) {
-            wv_show.resumeTimers();
+//            wv_show.resumeTimers();
 //            wv_show.onShow();
         }
 
@@ -6356,6 +6357,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
             audioRecorder.canel();  //取消录音
         }
         if (wv_show != null) {
+	        wv_show.clearCache(true);
             wv_show.removeAllViews();
             wv_show.destroy();
             wv_show = null;
@@ -6382,7 +6384,7 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         super.onPause();
         ConnectionClassManager.getInstance().remove(connectionChangedListener);
         if (wv_show != null) {
-            wv_show.pauseTimers();
+//            wv_show.pauseTimers();
 //            wv_show.onHide();
         }
     }
