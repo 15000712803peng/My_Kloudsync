@@ -424,7 +424,7 @@ public class PerfectData2Activity extends Activity {
         }
         // 系统相机返回
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-        	/*path = FileUtils.getPath(this, data.getData());
+        	/*path = FileUtilsType.getPath(this, data.getData());
         	pathname = path.substring(path.lastIndexOf("/") + 1);*/
 
             new DateFormat();

@@ -78,7 +78,7 @@
 //import com.tencent.mm.sdk.openapi.WXAPIFactory;
 //import com.ub.kloudsync.activity.TeamSpaceBean;
 //import com.ub.service.activity.SocketService;
-//import com.ub.techexcel.tools.FileUtils;
+//import com.ub.techexcel.tools.FileUtilsType;
 //import com.ub.techexcel.tools.ServiceInterfaceTools;
 //import com.umeng.analytics.MobclickAgent;
 //
@@ -822,7 +822,7 @@
 //
 //
 //    private void KillFile() {
-//        FileUtils fileUtils = new FileUtils(getApplicationContext());
+//        FileUtilsType fileUtils = new FileUtilsType(getApplicationContext());
 //        fileUtils.deleteFile();
 //        fileUtils.deleteFile2();
 //    }
