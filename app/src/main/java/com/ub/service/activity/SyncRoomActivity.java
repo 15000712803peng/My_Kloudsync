@@ -6338,7 +6338,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             wv_show.clearCache(true);
             wv_show.removeAllViews();
             wv_show.destroy();
-            wv_show.clearCache(true);
             wv_show = null;
         }
         if(DeviceManager.getDeviceType(this)==SupportDevice.BOOK){
