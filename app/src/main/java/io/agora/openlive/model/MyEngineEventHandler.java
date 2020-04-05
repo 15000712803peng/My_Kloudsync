@@ -105,7 +105,7 @@ public class MyEngineEventHandler {
 
         /**
          * 远端音频状态发生改变回调
-         *
+         *当前SDK版本未回调该方法还是使用的onUserMuteAudio()
          * @param uid
          * @param state
          * @param reason
