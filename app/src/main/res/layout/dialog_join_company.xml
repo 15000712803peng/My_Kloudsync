@@ -32,13 +32,12 @@
                 android:textColor="@color/black" />
 
             <TextView
-                android:layout_marginLeft="18dp"
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="18dp"
                 android:layout_marginTop="8dp"
-                android:textColor="#999999"
                 android:text="@string/input_invite_code"
+                android:textColor="#999999"
                 android:textSize="12sp" />
 
 

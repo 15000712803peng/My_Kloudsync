@@ -501,7 +501,7 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
 				break;
 			case 1:
 				title = "加入公司/机构";
-				content = "点击后，输入公司邀请码，点击“加入”即可加入该公司/机构成为公司成员";
+				content = "点击后，输入公司邀请码，点击“加入”即可成为该公司/机构成员";
 				about = "点击这里前往帮助中心，查看详细步骤》";
 				tv_guide_next.setVisibility(View.VISIBLE);
 				tv_guide_previous.setVisibility(View.VISIBLE);

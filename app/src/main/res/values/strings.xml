@@ -787,7 +787,7 @@ Please input the cell phone number to add the contact
 
     <string name="Mobile_phone">Mobile phone /User name</string>
     <string name="Mobile_phone2">Mobile phone</string>
-    <string name="Password_hint">Password</string>
+    <string name="Password_hint">Please input a Password</string>
     <string name="Name_info">Name</string>
     <string name="area_code">+86</string>
 
@@ -795,9 +795,10 @@ Please input the cell phone number to add the contact
     <string name="kloud_sync_terms">Kloud’s terms</string>
     <string name="password_rules">8-14 digit password, must contain two kinds of letters, numbers and symbols</string>
     <string name="Sign_up">Sign Up</string>
+    <string name="create_account">Create Account</string>
     <string name="registration_failed">Registration failed</string>
     <string name="Send_code">Send code</string>
-    <string name="Vertification_Code">Verify Code</string>
+    <string name="Vertification_Code">Verification Code</string>
     <string name="please_input_phone_number">Please input phone number</string>
     <string name="please_input_invite_number">Please input phone number</string>
     <string name="please_input_password">Please input password</string>
@@ -941,10 +942,10 @@ Please input the cell phone number to add the contact
     <string name="add_new_contacts">Add new contact</string>
     <string name="create_new_company_label_info">Invite team members to join together,team member is character could be admin or general member,admin can manage team and space with you together</string>
     <string name="hello_friend_summary">say hello</string>
-    <string name="join_compnay">join a company/organization</string>
-    <string name="input_invite_code">input company/organization invite code</string>
+    <string name="join_compnay">join a company</string>
+    <string name="input_invite_code">Please type in company invite code</string>
     <string name="_join">Join</string>
-    <string name="hint_input_invite_code">Input invite vode</string>
+    <string name="hint_input_invite_code">Please type in company invite code</string>
     <string name="scan_tv">Scanning TV devices</string>
     <string name="_meeting_id">Meeting id:</string>
     <string name="tips">tips</string>

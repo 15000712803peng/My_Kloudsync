@@ -182,6 +182,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -441,16 +442,6 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                         break;
                     case AppConfig.SUCCESS:
                         activity3.mProgressBar.setVisibility(View.GONE);
-                        activity3.getAllData((List<Customer>) msg.obj);
-                        for (int i = 0; i < activity3.documentList.size(); i++) {
-                            LineItem lineItem2 = activity3.documentList.get(i);
-                            if ((activity3.currentItemId).equals(lineItem2.getItemId())) {
-                                String url = lineItem2.getUrl();
-                                if ((url.equals(activity3.targetUrl))) {
-                                    return;
-                                }
-                            }
-                        }
                         activity3.getSyncRoomDetail();
                         break;
                     case 0x3102:
@@ -703,7 +694,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 //            EpdController.setWebViewContrastOptimize(wv_show, true);
             EpdController.setScreenHandWritingPenState(wv_show, 1);
             touchHelper = TouchHelper.create(wv_show, callback);
-            wv_show.getSettings().setDomStorageEnabled(true);
+//            wv_show.getSettings().setDomStorageEnabled(true);
             wv_show.addJavascriptInterface(SyncRoomActivity.this, "AnalyticsWebInterface");
             wv_show.getSettings().setJavaScriptEnabled(true);
             wv_show.post(new Runnable() {
@@ -718,7 +709,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
 //            Toast.makeText(this, "app", Toast.LENGTH_LONG).show();
             wv_show = (WebView) findViewById(R.id.wv_show);
 //            wv_show.setZOrderOnTop(false);
-            wv_show.getSettings().setDomStorageEnabled(true);
+//            wv_show.getSettings().setDomStorageEnabled(true);
             wv_show.addJavascriptInterface(SyncRoomActivity.this, "AnalyticsWebInterface");
 //            XWalkPreferences.setValue("enable-javascript", true);
 //            XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
@@ -1114,8 +1105,8 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             changeNumber = jsonObject.getString("changeNumber");
             JSONObject retdata = jsonObject.getJSONObject("retData");
 
-            JSONArray jsonArray = retdata.getJSONArray("usersList");
-            List<Customer> joinlist = Tools.getUserListByJoinMeeting(jsonArray);
+//            JSONArray jsonArray = retdata.getJSONArray("usersList");
+//            List<Customer> joinlist = Tools.getUserListByJoinMeeting(jsonArray);
 
             if (retdata.has("type")) {
                 meetingType = retdata.getInt("type");
@@ -1169,7 +1160,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             }
 
             Message message1 = Message.obtain();
-            message1.obj = joinlist;
+//            message1.obj = joinlist;
             message1.what = AppConfig.SUCCESS;
             handler.sendMessage(message1);
 
@@ -6344,6 +6335,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             audioRecorder.canel();  //取消录音
         }
         if (wv_show != null) {
+            wv_show.clearCache(true);
             wv_show.removeAllViews();
             wv_show.destroy();
             wv_show = null;
