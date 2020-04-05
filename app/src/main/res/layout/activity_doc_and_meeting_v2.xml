@@ -920,6 +920,8 @@
 
     <LinearLayout
         android:id="@+id/audiosyncll"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_width="360dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

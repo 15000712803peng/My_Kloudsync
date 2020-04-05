@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
@@ -18,6 +19,8 @@ public class FilePickerActivity extends AppCompatActivity implements View.OnClic
     private TextView tv_size,tv_confirm;
     private Fragment commonFileFragment,allFileFragment;
     private boolean isConfirm = false;
+    TextView titleText;
+    private RelativeLayout backLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +41,10 @@ public class FilePickerActivity extends AppCompatActivity implements View.OnClic
         btn_all = (Button) findViewById(R.id.btn_all);
         tv_size = (TextView) findViewById(R.id.tv_size);
         tv_confirm = (TextView) findViewById(R.id.tv_confirm);
+        backLayout = findViewById(R.id.layout_back);
+        titleText = findViewById(R.id.tv_title);
+        titleText.setText("选择一个文件");
+        backLayout.setOnClickListener(this);
     }
 
     private void setFragment(int type) {
@@ -94,6 +101,9 @@ public class FilePickerActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_confirm:
                 isConfirm = true;
                 setResult(RESULT_OK);
+                finish();
+                break;
+            case R.id.layout_back:
                 finish();
                 break;
         }
