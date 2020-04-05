@@ -44,6 +44,8 @@ public class MyEngineEventHandler {
             }
         }
 
+
+
         @Override
         public void onFirstLocalVideoFrame(int width, int height, int elapsed) {
             log.debug("onFirstLocalVideoFrame " + width + " " + height + " " + elapsed);
@@ -67,6 +69,7 @@ public class MyEngineEventHandler {
                 handler.onUserOffline(uid, reason);
             }
         }
+
 
         @Override
         public void onUserMuteVideo(int uid, boolean muted) {

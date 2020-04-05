@@ -625,9 +625,17 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             close();
         }
         if(backgroundMusicManager != null){
-            if(!backgroundMusicManager.isPlaying()){
-                backgroundMusicManager.restart();
+            if(backgroundMusicManager.getMediaInfo() != null){
+                if(!backgroundMusicManager.getMediaInfo().isPrepared()){
+                    return;
+                }
+
+                if(!backgroundMusicManager.isPlaying()){
+                    backgroundMusicManager.restart();
+                }
             }
+            Log.e("check_background_play","isPlaying:" + backgroundMusicManager.isPlaying());
+
         }
     }
 
@@ -1190,11 +1198,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
     public boolean isLoading(){
-
         if(soundtrackAudioManager != null){
             return soundtrackAudioManager.isLoading();
         }
-
         return isSeeking;
     }
 

@@ -23,6 +23,7 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
     private Context context;
     private SoundtrackMediaInfo mediaInfo;
 
+
     private SoundtrackBackgroundMusicManager(Context context) {
         this.context = context;
     }
@@ -41,12 +42,13 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
     private SoundtrackAudioManagerV2 soundtrackAudioManager;
 
     public void setSoundtrackAudio(SoundtrackMediaInfo mediaInfo,SoundtrackAudioManagerV2 soundtrackAudioManager) {
-        Log.e("check_play","mediaInfo:" + mediaInfo);
-        this.mediaInfo = mediaInfo;
-        this.soundtrackAudioManager = soundtrackAudioManager;
         if(mediaInfo == null){
             return;
         }
+        Log.e("check_background_play","background_mediaInfo:" + mediaInfo);
+        this.mediaInfo = mediaInfo;
+        this.soundtrackAudioManager = soundtrackAudioManager;
+
         prepareAudioAndPlay(mediaInfo);
     }
 
@@ -55,6 +57,7 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
     }
 
     public void prepareAudioAndPlay(SoundtrackMediaInfo audioData) {
+        Log.e("check_background_play","prepareAudioAndPlay");
         try {
             audioPlayer = new MediaPlayer();
             try {
@@ -67,19 +70,19 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
             audioPlayer.setOnPreparedListener(this);
             audioPlayer.setOnCompletionListener(this);
             audioPlayer.setOnErrorListener(this);
-            Log.e("check_play","set_data_source:" + audioData.getAttachmentUrl());
-            audioPlayer.reset();
-            audioPlayer.setDataSource(context, Uri.parse(URLDecoder.decode(audioData.getAttachmentUrl(),"UTF-8")));
+            Log.e("check_background_play","set_data_source:" + audioData.getAttachmentUrl());
+            audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
             audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
+                mediaInfo.setPrepared(false);
                 audioPlayer.prepareAsync();
             }catch (IllegalStateException e){
-                Log.e("check_play","IllegalStateException," + e.getMessage());
+                Log.e("check_background_play","IllegalStateException," + e.getMessage());
                 reinit(audioData);
             }
 
         } catch (IOException e) {
-            Log.e("check_play","IOException," + e.getMessage());
+            Log.e("check_background_play","IOException," + e.getMessage());
             e.printStackTrace();
             audioData.setPreparing(false);
         }
@@ -106,13 +109,16 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        Log.e("check_play","onPrepared");
+        Log.e("check_background_play","onPrepared");
         if (mediaInfo != null) {
+            mediaInfo.setPrepared(true);
             Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());
             mp.start();
             if(soundtrackAudioManager != null){
                 if(!soundtrackAudioManager.isPlaying()){
                     mp.pause();
+                    Log.e("check_background_play","paused");
+
                 }
             }
 
@@ -190,6 +196,7 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
     }
 
     public void restart(){
+        Log.e("check_background_play","restart");
         if(this.mediaInfo == null){
             return;
         }
