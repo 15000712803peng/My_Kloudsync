@@ -963,4 +963,6 @@
         <item>480分钟(8小时)</item>
     </string-array>
 
+    <string name="no_soundtrack">没有音想数据</string>
+
 </resources>

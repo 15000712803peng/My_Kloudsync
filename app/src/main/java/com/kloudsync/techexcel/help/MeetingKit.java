@@ -467,7 +467,8 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         Log.e("check_agora_status", "onRemoteVideoStats:" + "RemoteVideoStats:" + stats.uid + "," + stats.rxStreamType);
     }
 
-    public void postShareScreenDelay(final int uid) {
+
+	public void postShareScreenDelay(final int uid) {
 //        if(meetingConfig.getMode() != 3){
 //            return;
 //        }

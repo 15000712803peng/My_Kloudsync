@@ -549,8 +549,9 @@
                     <ImageView
 
                         android:id="@+id/image_play_pause"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:padding="2dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
                         android:src="@drawable/video_stop" />
@@ -558,8 +559,9 @@
                     <ImageView
 
                         android:id="@+id/soundtrack_close"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:padding="2dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="22dp"
                         android:src="@drawable/audiostop" />
@@ -738,10 +740,7 @@
                 android:layout_width="38dp"
                 android:layout_height="38dp" />
 
-
         </RelativeLayout>
-
-
 
 
 
@@ -921,6 +920,8 @@
 
     <LinearLayout
         android:id="@+id/audiosyncll"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_width="360dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

@@ -997,4 +997,6 @@ Please input the cell phone number to add the contact
     <string name="file_select_res">确定%s</string>
     <string name="file_select_max">最多选择%d个文件</string>
 
+    <string name="no_soundtrack">no soundtrack data</string>
+
 </resources>

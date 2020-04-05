@@ -34,7 +34,8 @@ public class HelloMessage {
     private String tvOwnerMeetingLessonId;
     private int tvOwnerMeetingType;
 
-    public long getCurrentItemId() {
+
+	public long getCurrentItemId() {
         return currentItemId;
     }
 
