@@ -108,6 +108,7 @@ import com.kloudsync.techexcel.dialog.MeetingRecordManager;
 import com.kloudsync.techexcel.dialog.RecordNoteActionManager;
 import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
+import com.kloudsync.techexcel.dialog.SoundtrackPlayManager;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.help.AddDocumentTool;
@@ -115,7 +116,6 @@ import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.AudiencePromptDialog;
 import com.kloudsync.techexcel.help.BottomMenuManager;
 import com.kloudsync.techexcel.help.ChatManager;
-import com.kloudsync.techexcel.dialog.SoundtrackPlayManager;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.DocVedioManager;
 import com.kloudsync.techexcel.help.MeetingKit;
@@ -131,7 +131,6 @@ import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
-import com.kloudsync.techexcel.start.LoginActivity;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
@@ -617,7 +616,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             meetingConfig.reset();
         }
         meetingConfig = null;
-
     }
 
     private synchronized void getMeetingMembers(JSONArray users) {
