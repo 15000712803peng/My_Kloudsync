@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 
+import java.util.ArrayList;
+
 
 public class FilePickerActivity extends AppCompatActivity implements View.OnClickListener,OnUpdateDataListener {
     private Button btn_common,btn_all;
@@ -45,6 +47,7 @@ public class FilePickerActivity extends AppCompatActivity implements View.OnClic
         titleText = findViewById(R.id.tv_title);
         titleText.setText("选择一个文件");
         backLayout.setOnClickListener(this);
+        PickerManager.getInstance().files=new ArrayList<>();
     }
 
     private void setFragment(int type) {
