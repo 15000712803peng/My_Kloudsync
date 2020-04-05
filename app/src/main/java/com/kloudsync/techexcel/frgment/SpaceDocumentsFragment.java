@@ -66,6 +66,9 @@ import com.kloudsync.techexcel.docment.EditSpaceActivity;
 import com.kloudsync.techexcel.docment.FavoriteDocumentsActivity;
 import com.kloudsync.techexcel.docment.MoveDocumentActivity;
 import com.kloudsync.techexcel.docment.RenameActivity;
+import com.kloudsync.techexcel.filepicker.FileEntity;
+import com.kloudsync.techexcel.filepicker.FilePickerActivity;
+import com.kloudsync.techexcel.filepicker.PickerManager;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DialogDeleteDocument;
@@ -704,11 +707,12 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
                 getTeamItem();
                 EventBus.getDefault().post(new TeamSpaceBean());
             } else if (requestCode == REQUEST_SELECTED_FILE) {
-                    if (Build.VERSION.SDK_INT >= 19) {
-                        handleImageOkKitKat(data);
-                    } else {
-                        handleImageBeforeKitKat(data);
-                    }
+                List<FileEntity>  fff = PickerManager.getInstance().files;
+                for (int i = 0; i < fff.size(); i++) {
+                    FileEntity fileEntity=fff.get(0);
+                    Log.e("buildversion",fileEntity.getPath()+"");
+                    uploadFile(fileEntity.getPath());
+                }
             } else if (requestCode == REQUEST_SELECTED_CAMERA) {
                 if (cameraFile != null && cameraFile.exists()) {
                     Log.e("onActivityResult", "camera_file:" + cameraFile);
@@ -1398,12 +1402,14 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         startActivityForResult(intent, REQUEST_SELECT_DOC);
     }
 
+
+
+
     @Override
     public void selectFromFiles() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("image/*");
-        startActivityForResult(intent, REQUEST_SELECTED_FILE);
+
+        Intent intent = new Intent(getActivity(), FilePickerActivity.class);
+        startActivityForResult(intent,REQUEST_SELECTED_FILE);
     }
 
     /**

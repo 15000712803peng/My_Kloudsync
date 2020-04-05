@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -114,24 +115,34 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     /**
      *
+     * //        if(Tools.isOrientationPortrait((Activity) mContext)){
+     * //            Log.e("henshupng","竖屏");
+     * //            Tools.setPortrait((Activity) mContext);
+     * //        }else{
+     * //            Log.e("henshupng","横屏");
+     * //            Tools.setLandscape((Activity) mContext);
+     * //        }
      * @param isrecordvoice 是否录制声音
      * @param soundtrackBean
      * @param audiosyncll
      */
     public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, TextView timeshow, MeetingConfig meetingConfig) {
-//        if(Tools.isOrientationPortrait((Activity) mContext)){
-//            Log.e("henshupng","竖屏");
-//            Tools.setPortrait((Activity) mContext);
-//        }else{
-//            Log.e("henshupng","横屏");
-//            Tools.setLandscape((Activity) mContext);
-//        }
+        this.audiosyncll=audiosyncll;
 	    this.timeShow = timeshow;
 	    timeShow.setOnClickListener(this);
-        this.audiosyncll=audiosyncll;
         this.isrecordvoice=isrecordvoice;
         this.meetingConfig=meetingConfig;
         this.soundtrackBean=soundtrackBean;
+        //显示进度条
+        displayLayout();
+        initAction();
+        // 通知笔画开始录制
+        EventSoundSync soundSync=new EventSoundSync();
+        soundSync.setSoundtrackID(soundtrackBean.getSoundtrackID());
+        soundSync.setStatus(1);
+        soundSync.setTime(tttime);
+        EventBus.getDefault().post(soundSync);
+
         Document backgroudMusicInfo = soundtrackBean.getBackgroudMusicInfo();
         String url="";
         if (backgroudMusicInfo == null || backgroudMusicInfo.getAttachmentID().equals("0")) {
@@ -147,6 +158,112 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         initPlayMusic(isrecordvoice,url,url1);
     }
 
+
+    private MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer2;
+
+    private void  initPlayMusic(final boolean isrecordvoice, String url,String url2){
+        Log.e("syncing---", isrecordvoice+"   background music "+url+"  "+url2);
+        if(!TextUtils.isEmpty(url)) {
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+                mediaPlayer.reset();
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }else{
+                mediaPlayer = new MediaPlayer();
+            }
+            try {
+                mediaPlayer.setDataSource(url);
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//                mediaPlayer.prepare();
+                mediaPlayer.prepareAsync();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                    refreshRecord();
+                    if (isrecordvoice) {
+                        //启动录音程序
+                        startAudioRecord();
+                    }
+                }
+            });
+        }else{
+            refreshRecord();
+            if (isrecordvoice) {
+                //启动录音程序
+                startAudioRecord();
+            }
+        }
+
+        if (!TextUtils.isEmpty(url2)) {
+            if (mediaPlayer2 != null) {
+                mediaPlayer2.stop();
+                mediaPlayer2.reset();
+                mediaPlayer2.release();
+                mediaPlayer2 = null;
+            }
+            mediaPlayer2 = new MediaPlayer();
+            try {
+                mediaPlayer2.setDataSource(url2);
+                mediaPlayer2.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mediaPlayer2.prepareAsync();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mediaPlayer2.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+        }
+    }
+
+
+
+
+    private ImageView playstop,syncicon,close;
+    private  TextView audiotime,isStatus;
+	private ImageView timeHidden;
+    private SeekBar mSeekBar;
+    private boolean isPause=false;
+    private ProgressBar sondtrack_record_load_bar;
+
+    public void displayLayout() {
+        audiosyncll.setVisibility(View.VISIBLE);
+        playstop = audiosyncll.findViewById(R.id.playstop);
+	    timeHidden = audiosyncll.findViewById(R.id.timehidden);
+	    timeHidden.setOnClickListener(this);
+        playstop.setOnClickListener(this);
+        playstop.setImageResource(R.drawable.video_stop);
+        syncicon =  audiosyncll.findViewById(R.id.syncicon);
+        close = audiosyncll.findViewById(R.id.close);
+        close.setOnClickListener(this);
+        isStatus =  audiosyncll.findViewById(R.id.isStatus);
+        sondtrack_record_load_bar =  audiosyncll.findViewById(R.id.sondtrack_record_load_bar);
+        sondtrack_record_load_bar.setVisibility(View.VISIBLE);
+        isStatus.setVisibility(View.INVISIBLE);
+        audiotime =  audiosyncll.findViewById(R.id.audiotime);
+        audiotime.setText("00:00");
+        mSeekBar = audiosyncll.findViewById(R.id.seekBar);
+        mSeekBar.setVisibility(View.GONE  );
+        if (isrecordvoice) {
+            isStatus.setText("Recording");
+            syncicon.setVisibility(View.VISIBLE);
+        } else {
+            isStatus.setText("Syncing");  //只同步  不錄音
+            syncicon.setVisibility(View.GONE);
+        }
+    }
+
+
+
+
     private List<JSONObject> noteActionList=new ArrayList<>();
 
     /**
@@ -155,7 +272,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
      * @param data
      */
     public void recordNoteAction(NoteRecordType noteRecordType, JSONObject data){
-	    if (audiosyncll != null && (audiosyncll.getVisibility() == View.VISIBLE || timeShow.getVisibility() == View.VISIBLE)) {
+        if (audiosyncll != null && (audiosyncll.getVisibility() == View.VISIBLE || timeShow.getVisibility() == View.VISIBLE)) {
             int acitontype=noteRecordType.getActiontype();
             try {
                 JSONObject jsonObject=new JSONObject();
@@ -189,143 +306,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
 
-    public void  recordDocumentAction2(String action){
-
-        try {
-            JSONArray jsonArray=new JSONArray("[{\"type\":2,\"page\":1,\"time\":1},{\"type\":32,\"page\":1,\"CW\":1872,\"CH\":2422,\"VW\":1882,\"VH\":503,\"ST\":0,\"SL\":0,\"time\":2}," +
-                    "{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1877,26]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":154}," +
-                    "{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1816,17]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":192}," +
-                    "{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1751,9]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":224}," +
-                    "{\"type\":22,\"page\":1,\"CW\":1872,\"CH\":2422,\"VW\":1882,\"VH\":553,\"id\":\"bd149d3b-7808-4432-0b6a-48e6c5b2c62f\",\"w\":\"3\",\"color\":\"#458df3\",\"d\":[[1713,19]],\"tar\":\"\"," +
-                    "\"time\":608},{\"type\":34,\"show\":1,\"sleep\":10,\"bd\":0,\"poz\":[[1711,30]],\"delay\":1,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":655},{\"type\":21,\"page\"" +
-                    ":1,\"CW\":1872,\"CH\":2422,\"VW\":1882,\"VH\":553,\"id\":\"bd149d3b-7808-4432-0b6a-48e6c5b2c62f\",\"d\":\"M1713,19 L1712,21 L1712,23 L1712,25 L1712,26 L1711,27 L1711,30 L1711," +
-                    "31 L1711,33 L1711,36 L1711,38 L1710,40 L1710,41 L1710,42\",\"w\":\"3\",\"color\":\"#458df3\",\"save\":1,\"tar\":\"\",\"time\":902}," +
-                    "{\"type\":35,\"poz\":[1710,42],\"bd\":0,\"page\":1,\"VW\":1882,\"CW\":1872,\"ST\":0,\"SL\":0,\"time\":902},{\"type\":34,\"show\":0,\"page\":1,\"time\":1094}]");
-            action=jsonArray.toString();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Log.e("sync---原始数据",action);
-        try {
-            String  compressdata=GZipUtil.compress(action);
-            Log.e("sync---GZIP压缩",compressdata);
-            String base64 = LoginGet.getBase64Password(compressdata);
-            Log.e("sync---Base64编码",base64);
-
-            String baseee=LoginGet.DecodeBase64Password(base64);
-            Log.e("sync---Base64解码码",baseee);
-            String  uncompressdata=GZipUtil.unCompress(baseee);
-            Log.e("sync---GZIP解压",uncompressdata);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-
-
-
-    private MediaPlayer mediaPlayer;
-    private MediaPlayer mediaPlayer2;
-
-    private void  initPlayMusic(final boolean isrecordvoice, String url,String url2){
-        Log.e("syncing---", isrecordvoice+"  "+url+"  "+url2);
-	    if (isrecordvoice) {
-		    //启动录音程序
-		    startAudioRecord();
-	    }
-	    //显示进度条
-	    displayLayout();
-        initAction();
-
-        EventSoundSync soundSync=new EventSoundSync();
-        soundSync.setSoundtrackID(soundtrackBean.getSoundtrackID());
-        soundSync.setStatus(1);
-        soundSync.setTime(tttime);
-        EventBus.getDefault().post(soundSync);
-
-        if(!TextUtils.isEmpty(url)) {
-            if (mediaPlayer != null) {
-                mediaPlayer.stop();
-                mediaPlayer.reset();
-                mediaPlayer.release();
-                mediaPlayer = null;
-            }else{
-                mediaPlayer = new MediaPlayer();
-            }
-            try {
-                mediaPlayer.setDataSource(url);
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mediaPlayer.prepare();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-        }
-
-        if (!TextUtils.isEmpty(url2)) {
-            if (mediaPlayer2 != null) {
-                mediaPlayer2.stop();
-                mediaPlayer2.reset();
-                mediaPlayer2.release();
-                mediaPlayer2 = null;
-            }
-            mediaPlayer2 = new MediaPlayer();
-            try {
-                mediaPlayer2.setDataSource(url2);
-                mediaPlayer2.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mediaPlayer2.prepare();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mediaPlayer2.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-        }
-    }
-
-
-
-
-    private ImageView playstop,syncicon,close;
-    private  TextView audiotime,isStatus;
-	private ImageView timeHidden;
-    private SeekBar mSeekBar;
-    private boolean isPause=false;
-
-    public void displayLayout() {
-        audiosyncll.setVisibility(View.VISIBLE);
-        playstop = audiosyncll.findViewById(R.id.playstop);
-	    timeHidden = audiosyncll.findViewById(R.id.timehidden);
-	    timeHidden.setOnClickListener(this);
-        playstop.setOnClickListener(this);
-        playstop.setImageResource(R.drawable.video_stop);
-        syncicon =  audiosyncll.findViewById(R.id.syncicon);
-        close = audiosyncll.findViewById(R.id.close);
-        close.setOnClickListener(this);
-        isStatus =  audiosyncll.findViewById(R.id.isStatus);
-        audiotime =  audiosyncll.findViewById(R.id.audiotime);
-        mSeekBar = audiosyncll.findViewById(R.id.seekBar);
-        mSeekBar.setVisibility(View.GONE  );
-        if (isrecordvoice) {
-            isStatus.setText("Recording");
-            syncicon.setVisibility(View.VISIBLE);
-        } else {
-            isStatus.setText("Syncing");  //只同步  不錄音
-            syncicon.setVisibility(View.GONE);
-        }
-        refreshRecord();
-    }
 
     private  void initAction(){
         noteActionList.clear();
@@ -347,15 +327,16 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
      * 每隔100毫秒拿录制进度
      */
     private void refreshRecord() {
+        sondtrack_record_load_bar.setVisibility(View.INVISIBLE);
+        isStatus.setVisibility(View.VISIBLE);
+
         tttime = 0;
-        audiotime.setText("00:00");
         if (audioplaytimer != null) {
             audioplaytimer.cancel();
             audioplaytimer = null;
         }
         audioplaytimer = new Timer();
         audioplaytimer.schedule(new TimerTask() {
-
             @Override
             public void run() {
                 Log.e("refreshTime", isPause + "");
@@ -474,37 +455,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         }
     }
 
-
-
-    private void  executeUploadDocument2(final DocumentAction documentAction){
-//        String url="https://testapi.peertime.cn/MeetingServer/sync_action/upload_all_actions";
-        String url=AppConfig.URL_MEETING_BASE+"sync_action/upload_all_actions";
-        ServiceInterfaceTools.getinstance().uploadAllactions(url, ServiceInterfaceTools.UPLOADALLACTIONS, documentAction, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                if(isrecordvoice){
-                    uploadAudioPopupdate.setProgress1(documentAction.getTotal(), documentAction.getIndex());
-                }else{
-                    uploadAudioPopupdate.setProgress(documentAction.getTotal(), documentAction.getIndex());
-                }
-                if(documentAction.getIndex()==uploaddocumentActionsList.size()){ //  上传文档动作成功
-                    if (isrecordvoice) {    // 完成录音
-                        Log.e("syncing---docu","开始上传录音");
-                        stopAudioRecord();
-                    }else{
-                        Log.e("syncing---docu","笔记动作");
-                        stopRecordNoteAction(); //笔记动作
-                    }
-                }else{
-                    Log.e("syncing---docu","开始上传下一个录音"+documentAction.getIndex());
-                    if(documentAction.getIndex()<uploaddocumentActionsList.size()){
-                        DocumentAction nextdocumentAction=uploaddocumentActionsList.get(documentAction.getIndex());
-                        executeUploadDocument2(nextdocumentAction);
-                    }
-                }
-            }
-        });
-    }
 
 
     private void   executeUploadDocument(DocumentAction documentAction){

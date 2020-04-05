@@ -2379,7 +2379,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 //                @Override
 //                public void accept(String s) throws Exception {
 //                    hideEnterLoading();
-//                    String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
+//                    String localNoteBlankPage = FileUtilsType.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
 //                    Log.e("show_PDF", "javascript:ShowPDF('" + localNoteBlankPage + "'," + 1 + ",''," + meetingConfig.getDocumentId() + "," + true + ")");
 //                    web.load("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocumentId() + "," + true + ")", null);
 //                    web.load("javascript:Record()", null);

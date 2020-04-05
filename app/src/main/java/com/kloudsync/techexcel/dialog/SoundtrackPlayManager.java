@@ -568,7 +568,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
         Log.e("check_do_pause", "setSoundtrackAudioToPause");
         soundtrackAudioManager.setSoundtrackAudioToPause(soundtrackDetail.getNewAudioInfo(), time);
-//        String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
+//        String localNoteBlankPage = FileUtilsType.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
 //        web.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
 //        web.loadUrl("javascript:Record()", null);
         soundtrackPlayLayout.setVisibility(View.VISIBLE);
@@ -629,7 +629,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         seekBar.setProgress(0);
         loadingBar.setVisibility(View.VISIBLE);
         statusText.setVisibility(View.INVISIBLE);
-//        String localNoteBlankPage = FileUtils.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
+//        String localNoteBlankPage = FileUtilsType.getBaseDir() + "note" + File.separator + "blank_note_1.jpg";
 //        web.loadUrl("javascript:ShowPDF('" + localNoteBlankPage + "'," + (1) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + true + ")", null);
 //        web.loadUrl("javascript:Record()", null);
         soundtrackPlayLayout.setVisibility(View.VISIBLE);

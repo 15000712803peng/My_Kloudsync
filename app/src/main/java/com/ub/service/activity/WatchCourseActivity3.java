@@ -171,7 +171,7 @@
 //import com.ub.techexcel.tools.DownloadUtil;
 //import com.ub.techexcel.tools.FavoritePopup;
 //import com.ub.techexcel.tools.FavoriteVideoPopup;
-//import com.ub.techexcel.tools.FileUtils;
+//import com.ub.techexcel.tools.FileUtilsType;
 //import com.ub.techexcel.tools.InviteUserPopup;
 //import com.ub.techexcel.tools.MeetingServiceTools;
 //import com.ub.techexcel.tools.MoreactionPopup;
@@ -3309,7 +3309,7 @@
 //        if (TextUtils.isEmpty(pdfurl)) {
 //            return;
 //        }
-//        FileUtils fileUtils = new FileUtils(WatchCourseActivity3.this);
+//        FileUtilsType fileUtils = new FileUtilsType(WatchCourseActivity3.this);
 //        File fileUtils1 = new File(fileUtils.getStorageDirectory());
 //        if (!fileUtils1.exists()) {
 //            fileUtils1.mkdir();
@@ -3484,7 +3484,7 @@
 //            final String fileurl2 = url.substring(0, url.lastIndexOf("<")) + currentpageNum + url.substring(url.lastIndexOf("."));
 //            String fileurl = url.substring(0, url.lastIndexOf("<")) + currentpageNum + url.substring(url.lastIndexOf("."));
 //            fileurl = fileurl.replace("ubao2", "ubao");
-//            final FileUtils fileUtils = new FileUtils(WatchCourseActivity3.this);
+//            final FileUtilsType fileUtils = new FileUtilsType(WatchCourseActivity3.this);
 //            Log.e("downEveryOnePdf2", fileurl2 + "  " + fileurl);
 //            if (fileUtils.isFileExists(fileurl2)) {
 //                handler.postDelayed(new Runnable() {
@@ -6874,7 +6874,7 @@
 //                @Override
 //                public void endRecord(String fileName) {
 //                    Log.e("audioooooooooo", "录音结束，开始上传 " + fileName);
-//                    File file = com.ub.service.audiorecord.FileUtils.getWavFile(fileName);
+//                    File file = com.ub.service.audiorecord.FileUtilsType.getWavFile(fileName);
 //                    if (file != null) {
 //                        Log.e("audioooooooooo", file.getAbsolutePath() + "   " + file.getName());
 //                        uploadAudioFile(file, soundtrackID, false, false);
@@ -7252,7 +7252,7 @@
 //        // 系统相册返回
 //        if (requestCode == REQUEST_CODE_CAPTURE_ALBUM && resultCode == Activity.RESULT_OK
 //                && data != null) {                                   // 选择照片
-//            String path = FileUtils.getPath(this, data.getData());
+//            String path = FileUtilsType.getPath(this, data.getData());
 //            String pathname = path.substring(path.lastIndexOf("/") + 1);
 //            Log.e("path", path + "    " + pathname + "   " + data.getData());
 //            LineItem attachmentBean = new LineItem();
