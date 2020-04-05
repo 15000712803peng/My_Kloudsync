@@ -6335,6 +6335,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             audioRecorder.canel();  //取消录音
         }
         if (wv_show != null) {
+            wv_show.clearCache(true);
             wv_show.removeAllViews();
             wv_show.destroy();
             wv_show.clearCache(true);
