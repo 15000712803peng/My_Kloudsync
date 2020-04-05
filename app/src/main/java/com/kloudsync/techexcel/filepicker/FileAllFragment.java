@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +36,27 @@ public class FileAllFragment extends Fragment {
     private List<FileEntity> mListFiles;
     private FileSelectFilter mFilter;
     //筛选类型条件
-    private String[] mFileTypes = new String[]{};
+    String[] mFileTypesw = new String[]{
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("text"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("dotx"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("dotx"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("potx"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppsx"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("xltx"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("jpg"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("jpg"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("png"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("svg"),
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension("gif")
+    };
+    private String[] mFileTypes = new String[]{"txt","text","doc","docx","dotx","pdf","ppt","pptx","potx","ppsx","xls","xlsx","xltx","jpg","png","svg","gif"};
     private AllFileAdapter mAllFileAdapter;
     private OnUpdateDataListener mOnUpdateDataListener;
 
