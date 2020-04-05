@@ -331,7 +331,7 @@ public class SoundtrackPlayDialog implements View.OnClickListener, Dialog.OnDism
         soundtrackAudioManager.setSoundtrackAudio(soundtrackDetail.getNewAudioInfo());
 
         backgroundMusicManager = SoundtrackBackgroundMusicManager.getInstance(host);
-        backgroundMusicManager.setSoundtrackAudio(soundtrackDetail.getBackgroudMusicInfo());
+//        backgroundMusicManager.setSoundtrackAudio(soundtrackDetail.getBackgroudMusicInfo(),soundtrackAudioManager);
 
         Observable.just("preload").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
             @Override

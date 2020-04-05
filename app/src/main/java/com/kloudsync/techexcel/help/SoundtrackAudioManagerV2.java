@@ -15,6 +15,7 @@ import com.ywl5320.wlmedia.WlMedia;
 import com.ywl5320.wlmedia.enums.WlPlayModel;
 import com.ywl5320.wlmedia.listener.WlOnCompleteListener;
 import com.ywl5320.wlmedia.listener.WlOnErrorListener;
+import com.ywl5320.wlmedia.listener.WlOnLoadListener;
 import com.ywl5320.wlmedia.listener.WlOnPreparedListener;
 import com.ywl5320.wlmedia.listener.WlOnTimeInfoListener;
 import com.ywl5320.wlmedia.util.WlTimeUtil;
@@ -32,7 +33,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompleteListener, WlOnErrorListener {
+public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompleteListener, WlOnErrorListener,WlOnLoadListener,WlOnTimeInfoListener{
 
     private static SoundtrackAudioManagerV2 instance;
     private WlMedia audioPlayer;
@@ -58,6 +59,15 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     private boolean isPlaying;
 
+    private boolean isLoading;
+
+    public boolean isLoading() {
+        return isLoading;
+    }
+
+    public void setLoading(boolean loading) {
+        isLoading = loading;
+    }
 
     public boolean ismIsPauseStatus() {
         return mIsPauseStatus;
@@ -86,29 +96,15 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     public void setSoundtrackAudio(SoundtrackMediaInfo _mediaInfo) {
 
         this.mediaInfo = _mediaInfo;
-        if (mediaInfo == null || this.mediaInfo.isPreparing()) {
+        if (mediaInfo == null) {
             return;
         }
         this.mediaInfo.setPreparing(true);
         Log.e("check_soundtrack_play", "step_two:" + "do_play:mediaInfo" + mediaInfo);
-        Observable.just("load_in_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                prepareAudioAndPlay(mediaInfo);
-            }
-        });
+        prepareAudioAndPlay(mediaInfo);
     }
 
-    public void setSoundtrackAudioToPause(SoundtrackMediaInfo mediaInfo, long time) {
-        Log.e("check_do_pause", "setSoundtrackAudioToPause:" + mediaInfo);
-        this.mediaInfo = mediaInfo;
-        if (mediaInfo == null || this.mediaInfo.isPreparing()) {
-            return;
-        }
-        this.mediaInfo.setPreparing(true);
-        predownSoundtrackAudio(context, mediaInfo.getAttachmentUrl());
-        prepareAudioAndPause(mediaInfo, time);
-    }
+
 
     public void setSoundtrackAudioPlayAtTime(SoundtrackMediaInfo _mediaInfo, long time) {
         Log.e("check_play", "mediaInfo:" + mediaInfo);
@@ -154,10 +150,11 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                 } catch (IllegalStateException exception) {
 
                 }
-
-                audioPlayer.setOnPreparedListener(SoundtrackAudioManagerV2.this);
-                audioPlayer.setOnCompleteListener(SoundtrackAudioManagerV2.this);
-                audioPlayer.setOnErrorListener(SoundtrackAudioManagerV2.this);
+                audioPlayer.setOnLoadListener(this);
+                audioPlayer.setOnPreparedListener(this);
+                audioPlayer.setOnCompleteListener(this);
+                audioPlayer.setOnErrorListener(this);
+                audioPlayer.setOnTimeInfoListener(this);
                 Uri uri = null;
 //                String sourcePath = "";
 //                if (audioCache.containFile(audioData.getAttachmentUrl())) {
@@ -178,20 +175,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
                 audioPlayer.setSource(audioData.getAttachmentUrl());
 //                    audioPlayer.setDataSource(context, Uri.parse(URLDecoder.decode(audioData.getAttachmentUrl(),"UTF-8")));
                 audioPlayer.setPlayModel(WlPlayModel.PLAYMODEL_ONLY_AUDIO);
-                audioPlayer.setOnTimeInfoListener(new WlOnTimeInfoListener() {
-                    @Override
-                    public void onTimeInfo(double currentTime) {
-                        if (duration == -1) {
-                            duration = (int) audioPlayer.getDuration();
-                            if (onAudioInfoCallBack != null)
-                                onAudioInfoCallBack.onDurationCall(duration);
-                        }
-                        if (onAudioInfoCallBack != null) {
-                            onAudioInfoCallBack.onCurrentTimeCall((int) currentTime);
-                            onAudioInfoCallBack.onShowTimeCall(WlTimeUtil.secdsToDateFormat((int) currentTime) + "/" + WlTimeUtil.secdsToDateFormat((int) duration));
-                        }
-                    }
-                });
 
                 try {
                     Log.e("check_soundtrack_play", "step_four:prepared:");
@@ -211,78 +194,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     }
 
-    public void prepareAudioAndPause(final SoundtrackMediaInfo audioData, final long time) {
-
-        Observable.just("play").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                audioPlayer = new WlMedia();
-                Log.e("check_do_pause", "prepareAudioAndPause:" + time);
-                try {
-                    try {
-                        if (audioPlayer.isPlay()) {
-                            return;
-                        }
-                    } catch (IllegalStateException exception) {
-
-                    }
-
-                    audioPlayer.setOnPreparedListener(SoundtrackAudioManagerV2.this);
-                    audioPlayer.setOnCompleteListener(SoundtrackAudioManagerV2.this);
-                    audioPlayer.setOnErrorListener(SoundtrackAudioManagerV2.this);
-                    Uri uri = null;
-                    if (audioCache.containFile(audioData.getAttachmentUrl())) {
-                        File file = new File(audioCache.getAudioPath(audioData.getAttachmentUrl()));
-                        if (file.exists()) {
-                            audioPlayer.setSource(file.getAbsolutePath());
-//                            audioPlayer.setSource(audioData.getAttachmentUrl());
-                        } else {
-                            audioPlayer.setSource(audioData.getAttachmentUrl());
-                        }
-
-                    } else {
-                        audioPlayer.setSource(audioData.getAttachmentUrl());
-                    }
-
-//                    audioPlayer.setDataSource(context, Uri.parse(URLDecoder.decode(audioData.getAttachmentUrl(),"UTF-8")));
-                    audioPlayer.setPlayModel(WlPlayModel.PLAYMODEL_ONLY_AUDIO);
-
-                    audioPlayer.setOnTimeInfoListener(new WlOnTimeInfoListener() {
-                        @Override
-                        public void onTimeInfo(double currentTime) {
-                            Log.e("check_do_pause", "currentTime:" + currentTime);
-                            if (duration == -1) {
-                                duration = (int) audioPlayer.getDuration();
-                                if (onAudioInfoCallBack != null)
-                                    onAudioInfoCallBack.onDurationCall(duration);
-                            }
-                            if (onAudioInfoCallBack != null) {
-                                onAudioInfoCallBack.onCurrentTimeCall((int) currentTime);
-                                onAudioInfoCallBack.onShowTimeCall(WlTimeUtil.secdsToDateFormat((int) currentTime) + "/" + WlTimeUtil.secdsToDateFormat((int) duration));
-                            }
-                        }
-                    });
-
-                    try {
-                        Log.e("check_prepared_and_play", "stopToPause");
-//                        audioPlayer.prepared();
-                        stopToPause(time / 1000);
-                    } catch (IllegalStateException e) {
-                        Log.e("check_prepared_and_play", "IllegalStateException:" + e.getMessage());
-                        reinit(audioData);
-                    }
-
-                    audioData.setPreparing(false);
-                    audioData.setPrepared(true);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    audioData.setPreparing(false);
-                }
-            }
-        });
-
-    }
 
 
     private void reinit(SoundtrackMediaInfo mediaInfo) {
@@ -300,63 +211,9 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     }
 
 
-    @Override
-    public void onPrepared() {
-        Log.e("check_soundtrack_play", "step_five:onPrepared:" + mediaInfo);
-        if (mediaInfo == null) {
-            return;
-        }
-
-        Observable.just("load_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                if(mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_PLAY){
-                    audioPlayer.start();
-                }else if(mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_SEEK){
-                    if(isPlaying){
-                        audioPlayer.start();
-                    }
-                }
-            }
-        });
-
-//        mediaInfo.setPrepared(false);
-//        if (mediaInfo != null) {
-//            if (mediaInfo.getTime() > 0) {
-//                Log.e("check_prepared_and_play", "seek_start");
-//                audioPlayer.seek(mediaInfo.getTime() / 1000);
-//                audioPlayer.start();
-//                isPlaying = true;
-//            } else {
-//                audioPlayer.seek(progress);
-//                if (!mIsPauseStatus) {
-//                    audioPlayer.start();
-//                    isPlaying = true;
-//                } else {
-//                    SeekData seekData = new SeekData();
-//                    seekData.setProgress((int) progress);
-//                    EventBus.getDefault().post(seekData);
-////                    audioPlayer.start();
-////                    audioPlayer.pause();
-//
-//                }
-//            }
-//            progress = 0;
-//        }
-    }
-
-    @Override
-    public void onComplete() {
-        if (!mIsSeekStatus)
-//            EventBus.getDefault().post(new EventCloseSoundtrack());
-            mIsSeekStatus = false;
-    }
 
 
-    @Override
-    public void onError(int code, String msg) {
 
-    }
 
     public boolean isPlaying() {
 //        if (mediaInfo == null) {
@@ -416,7 +273,9 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         if (audioPlayer != null) {
+
             audioPlayer.pause();
+
             isPlaying = false;
         }
 
@@ -428,7 +287,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         }
         if (audioPlayer != null) {
             audioPlayer.resume();
-            isPlaying = true;
         }
 
     }
@@ -438,8 +296,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         if (audioPlayer != null) {
+            Log.e("check_soundtrack_play", "start");
             audioPlayer.start();
-            isPlaying = true;
         }
 
     }
@@ -449,8 +307,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         if (audioPlayer != null) {
+            Log.e("check_soundtrack_play", "seekTo:" + time);
             audioPlayer.seek(time);
-            isPlaying = true;
             //audioPlayer.seek(time / 1000);
             Log.e("vedio_check", "seek_to,time:" + time);
         }
@@ -511,69 +369,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     }
 
-    private synchronized void safeDownloadFile(final String url, final String savePath, final boolean needRedownload) {
-        audioCache = SoundtrackAudioCache.getInstance(context);
-        final ThreadLocal<String> localPage = new ThreadLocal<>();
-        localPage.set(url);
-        Log.e("safeDownloadFile", "start_download,url:" + url);
-//      DownloadUtil.get().cancelAll();
-        DownloadUtil.get().syncDownload(localPage.get(), savePath, new DownloadUtil.OnDownloadListener() {
-            @Override
-            public void onDownloadSuccess(int code) {
-                Log.e("safeDownloadFile", "onDownloadSuccess:" + localPage.get());
-                audioCache.cacheAudio(localPage.get(), savePath);
 
-            }
-
-            @Override
-            public void onDownloading(int progress) {
-                Log.e("safeDownloadFile", "download,progress:" + progress);
-            }
-
-            @Override
-            public void onDownloadFailed() {
-                Log.e("safeDownloadFile", "onDownloadFailed:" + localPage.get());
-                if (needRedownload) {
-                    safeDownloadFile(url, savePath, false);
-                }
-            }
-        });
-    }
-
-    public void predownSoundtrackAudio(Context context, String url) {
-        audioCache = SoundtrackAudioCache.getInstance(context);
-        FileUtils.createAudioFilesDir(context);
-        if (!TextUtils.isEmpty(url)) {
-            Observable.just(url).observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
-                @Override
-                public void accept(String _url) throws Exception {
-                    if (_url instanceof String) {
-                        String url = (String) _url;
-                        if (!TextUtils.isEmpty(url)) {
-                            if (audioCache.containFile(url)) {
-                                String path = audioCache.getAudioPath(url);
-                                File localFile = new File(path);
-                                if (localFile.exists()) {
-                                    return;
-                                } else {
-                                    audioCache.removeFile(url);
-                                }
-                            }
-
-                            String _path = FileUtils.getBaseAudiosDir();
-                            File dir = new File(_path);
-                            String name = mediaInfo.getItemID() + "_" + url.substring(url.lastIndexOf("/"), url.length());
-                            File audioFile = new File(dir, name);
-                            queryDocumentAndDownLoad(url, audioFile.getAbsolutePath());
-
-                        }
-                    }
-                }
-            }).subscribe();
-
-
-        }
-    }
 
     private Uploadao parseQueryResponse(final String jsonstring) {
         try {
@@ -603,6 +399,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         if (audioPlayer != null) {
+            Log.e("check_soundtrack_play", "stop");
             audioPlayer.stop();
         }
     }
@@ -622,54 +419,126 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         }
     }
 
-    /**
-     * 用于拖拽后的播放
-     */
-    public void doSeek(double progress) {
-        Log.e("seekToPlay", "progress:" + progress);
-        mIsSeekStatus = false;
-        mIsPauseStatus = false;
-        this.progress = progress;
+
+    public void seek(double progress) {
+
         if (mediaInfo == null) {
             return;
         }
+
+        if(progress > audioPlayer.getDuration()){
+            return;
+        }
+
         mediaInfo.setPlayType(SoundtrackMediaInfo.TYPE_SEEK);
+        mediaInfo.setPlaying(isPlaying);
+        mediaInfo.setSeekProgress(progress);
+        Log.e("check_soundtrack_play","seek:" + isPlaying() + ",progress:" + progress +",thread:" + Thread.currentThread());
         if (audioPlayer != null) {
-//            audioPlayer.prepared();
-            audioPlayer.seek(progress);
-            audioPlayer.prepared();
+            audioPlayer.stop();
         }
     }
 
-    /**
-     * 用于指定时间暂停
-     */
-    public void stopToPause(double progress) {
-        mIsPauseStatus = true;
-        this.progress = progress;
-        if (mediaInfo == null) {
-            return;
-        }
+    public void preparedForSeek(){
         if (audioPlayer != null) {
-            audioPlayer.prepared();
+            if(mediaInfo != null){
+                audioPlayer.prepared();
+            }
+            Log.e("check_soundtrack_play","prepared for seek");
+
         }
     }
 
-    /**
-     * 将音响播放时长回调出去
-     */
+
     public OnAudioInfoCallBack onAudioInfoCallBack;
 
     public void setOnAudioInfoCallBack(OnAudioInfoCallBack onAudioInfoCallBack) {
         this.onAudioInfoCallBack = onAudioInfoCallBack;
     }
 
+    @Override
+    public void onLoad(boolean load) {
+        isLoading = load;
+        if(load){
+            if(onAudioInfoCallBack != null){
+                onAudioInfoCallBack.onAudioLoding();
+            }
+        }
+        Log.e("check_soundtrack_play","onLoad:" + load);
+    }
+
+    @Override
+    public void onTimeInfo(double currentTime) {
+        Log.e("check_soundtrack_play","onTimeInfo:" + currentTime + ",Thread:" + Thread.currentThread());
+        if(mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_SEEK){
+            mediaInfo.setPlayType(SoundtrackMediaInfo.TYPE_PLAY);
+            if(!mediaInfo.isPlaying()){
+                pause();
+                if(onAudioInfoCallBack != null){
+                    onAudioInfoCallBack.seekCompletionAndPause(currentTime);
+                }
+                return;
+            }
+        }
+        isPlaying = true;
+        if(onAudioInfoCallBack != null){
+            onAudioInfoCallBack.onAudioPlayTimeInfo((long) (currentTime * 1000));
+        }
+    }
+
+    @Override
+    public void onComplete() {
+        isPlaying = false;
+        if(onAudioInfoCallBack != null){
+            onAudioInfoCallBack.onCompletionCalled();
+        }        Log.e("check_soundtrack_play","onComplete");
+
+    }
+
+
+    @Override
+    public void onError(int code, String msg) {
+        isPlaying = false;
+        Log.e("check_soundtrack_play","onError:" + code + ",msg:" + msg);
+    }
+
+    @Override
+    public void onPrepared() {
+        Log.e("check_soundtrack_play", "onPrepared" + mediaInfo);
+        if (mediaInfo == null) {
+            return;
+        }
+
+        isLoading = false;
+
+        Observable.just("load_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                if(mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_PLAY){
+                    audioPlayer.start();
+                    isPlaying = true;
+                }else if(mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_SEEK){
+                    Log.e("check_soundtrack_play", "onPrepared,do_seek");
+                    audioPlayer.seek(mediaInfo.getSeekProgress());
+                    if(mediaInfo.isPlaying()){
+                        isPlaying = true;
+                        audioPlayer.start();
+                    }else {
+                        isPlaying = false;
+                        audioPlayer.start();
+
+                    }
+                }
+            }
+        });
+
+    }
+
     public interface OnAudioInfoCallBack {
-        void onDurationCall(int duration);
-
-        void onCurrentTimeCall(int currentTime);
-
-        void onShowTimeCall(String time);
+        void onAudioPlayTimeInfo(long playTime);
+        void onCompletionCalled();
+        void seekCompletionAndPause(double playTime);
+        void onAudioLoding();
     }
 
 }

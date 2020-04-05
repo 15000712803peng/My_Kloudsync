@@ -38,9 +38,12 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
         return instance;
     }
 
-    public void setSoundtrackAudio(SoundtrackMediaInfo mediaInfo) {
+    private SoundtrackAudioManagerV2 soundtrackAudioManager;
+
+    public void setSoundtrackAudio(SoundtrackMediaInfo mediaInfo,SoundtrackAudioManagerV2 soundtrackAudioManager) {
         Log.e("check_play","mediaInfo:" + mediaInfo);
         this.mediaInfo = mediaInfo;
+        this.soundtrackAudioManager = soundtrackAudioManager;
         if(mediaInfo == null){
             return;
         }
@@ -107,6 +110,11 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
         if (mediaInfo != null) {
             Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());
             mp.start();
+            if(soundtrackAudioManager != null){
+                if(!soundtrackAudioManager.isPlaying()){
+                    mp.pause();
+                }
+            }
 
         }
     }
