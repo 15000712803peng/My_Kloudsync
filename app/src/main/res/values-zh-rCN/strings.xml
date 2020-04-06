@@ -549,6 +549,7 @@
     <string name="mtDocuments">来自团队文档</string>
     <string name="mtTPhoto">拍照</string>
     <string name="mtLibrary">通过资料库导入</string>
+    <string name="mtFileLibrary">通过文件系统导入</string>
     <string name="mtSavedFiles">我的收藏文档</string>
 
     <!--个人设置-->
