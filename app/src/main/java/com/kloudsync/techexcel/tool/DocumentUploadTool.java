@@ -58,6 +58,7 @@ public class DocumentUploadTool {
     private int spaceID;
     private File mfile;
     private String MD5Hash;
+    private String fileHash;
     private String fileName;
     private Timer timer1;
     private TimerTask timerTask1;
@@ -149,6 +150,7 @@ public class DocumentUploadTool {
         lg.GetprepareUploading(mContext);
     }
 
+
     public void uploadFileV2(final Context context, String targetFolderKey1, int field1,
                              File file, int spaceID) {
         this.mContext = context;
@@ -156,6 +158,7 @@ public class DocumentUploadTool {
         this.field = field1;
         this.spaceID = spaceID;
         this.mfile = file;
+        fileHash = Md5Tool.getMd5ByFile(mfile);
         this.type = 0;
         this.fileName = file.getName();
         this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName())+ System.currentTimeMillis();
@@ -182,6 +185,7 @@ public class DocumentUploadTool {
         this.field = field1;
         this.lessionId = lessionId;
         this.mfile = file;
+        fileHash = Md5Tool.getMd5ByFile(mfile);
         this.type = type;
         this.fileName = file.getName();
         this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName())+ System.currentTimeMillis();
@@ -199,35 +203,6 @@ public class DocumentUploadTool {
         lg.GetprepareUploading(mContext);
     }
 
-    /**
-     * Favorite上传
-     *
-     * @param context
-     * @param targetFolderKey1
-     * @param field1
-     * @param attachmentBean
-     * @param fAdapter1
-     * @param mlist1
-     */
-    public void uploadFileFavorite(final Context context, String targetFolderKey1, int field1, final LineItem attachmentBean,
-                                   FavoriteAdapter fAdapter1, ArrayList<Document> mlist1) {
-        this.mContext = context;
-        this.targetFolderKey = targetFolderKey1;
-        this.field = field1;
-        type = 1;
-        LoginGet lg = new LoginGet();
-        lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
-            @Override
-            public void getUD(Uploadao ud) {
-                if (1 == ud.getServiceProviderId()) {
-                    uploadWithTransferUtility(attachmentBean, ud);
-                } else if (2 == ud.getServiceProviderId()) {
-                    initOSS(attachmentBean, ud);
-                }
-            }
-        });
-        lg.GetprepareUploading(mContext);
-    }
 
     /**
      * Favorite上传
@@ -243,6 +218,7 @@ public class DocumentUploadTool {
         this.mfile = file;
         type = 1;
         this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName())+ System.currentTimeMillis();
+        fileHash = Md5Tool.getMd5ByFile(mfile);
         this.fileName = file.getName();
         LoginGet lg = new LoginGet();
         lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
@@ -260,6 +236,7 @@ public class DocumentUploadTool {
 
     public void uploadWithTransferUtility(final LineItem attachmentBean, final Uploadao ud) {
         mfile = new File(attachmentBean.getUrl());
+        fileHash = Md5Tool.getMd5ByFile(mfile);
         fileName = mfile.getName();
         String name2 = AppConfig.UserID + mfile.getName();
         MD5Hash = Md5Tool.transformMD5(name2);
@@ -372,81 +349,7 @@ public class DocumentUploadTool {
 
             }
         }).start(ThreadManager.getManager());
-
-
     }
-
-    /*
-    public void uploadWithTransferUtility(final LineItem attachmentBean, final Uploadao ud) {
-        mfile = new File(attachmentBean.getUrl());
-        fileName = mfile.getName();
-        String name2 = AppConfig.UserID + mfile.getName();
-        MD5Hash = Md5Tool.transformMD5(name2);
-
-        BasicSessionCredentials sessionCredentials = new BasicSessionCredentials(
-                ud.getAccessKeyId(),
-                ud.getAccessKeySecret(),
-                ud.getSecurityToken());
-        AmazonS3Client s3 = new AmazonS3Client(sessionCredentials);
-
-        TransferUtility transferUtility =
-                TransferUtility.builder()
-                        .context(mActivity)
-                        .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
-                        .s3Client(s3)
-                        .build();
-        TransferObserver uploadObserver =
-                transferUtility.upload(
-                        ud.getBucketName(),
-                        MD5Hash,
-                        mfile);
-
-        initFavorite(attachmentBean);
-
-
-        uploadObserver.setTransferListener(new TransferListener() {
-            @Override
-            public void onStateChanged(int id, TransferState state) {
-                Log.e("YourActivity", "id:" + id + "  state:" + state);
-                if (TransferState.COMPLETED == state) {
-                    attachmentBean.setFlag(2);
-                    if (flags) {
-                        if (puo != null) {
-                            puo.DissmissPop();
-                        }
-                    } else {
-//                        favorite.setAttachmentID(attachmentid);
-                        favorite.setFlag(2);
-                        favorite.setProgressbar(0);
-                    }
-                    startConverting(ud, attachmentBean);
-                }
-            }
-
-            @Override
-            public void onProgressChanged(int id, final long bytesCurrent, final long bytesTotal) {
-                float percentDonef = ((float) bytesCurrent / (float) bytesTotal) * 100;
-                int percentDone = (int) percentDonef;
-                if (flags) {
-                    if (puo != null) {
-                        puo.setProgress(bytesTotal, bytesCurrent);
-                    }
-                } else {
-                    fAdapter.SetMyProgress(bytesTotal, bytesCurrent, favorite);
-                }
-
-                Log.e("YourActivity", "ID:" + id + " bytesCurrent: " + bytesCurrent
-                        + " bytesTotal: " + bytesTotal + " " + percentDone + "%");
-            }
-
-            @Override
-            public void onError(int id, Exception ex) {
-                Log.e("YourActivity", "onError");
-            }
-
-        });
-
-    }*/
 
     private OSS oss;
 
@@ -493,6 +396,7 @@ public class DocumentUploadTool {
         mfile = new File(path);
         fileName = mfile.getName();
         String name2 = AppConfig.UserID + mfile.getName();
+        fileHash = Md5Tool.getMd5ByFile(mfile);
         MD5Hash = Md5Tool.transformMD5(name2);
        /* PutObjectRequest put = new PutObjectRequest(ud.getBucketName(),
                 MD5Hash, path);
@@ -702,7 +606,7 @@ public class DocumentUploadTool {
                 if (type == 10) {
                     Log.e("addLocalNote", "step six type:" + type);
                     ServiceInterfaceTools.getinstance().uploadLocalNoteFile(AppConfig.URL_PUBLIC + "DocumentNote/UploadNewFile", ServiceInterfaceTools.UPLOADFAVORITENEWFILE, fileName, "",
-                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId, this.noteLinkProperty, new ServiceInterfaceListener() {
+                            fileHash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId, this.noteLinkProperty, new ServiceInterfaceListener() {
                                 @Override
                                 public void getServiceReturnData(Object object) {
                                     if (object != null) {
@@ -722,7 +626,7 @@ public class DocumentUploadTool {
                             });
                 } else if (type == 3) {
                     ServiceInterfaceTools.getinstance().uploadNewFile(AppConfig.URL_PUBLIC + "EventAttachment/UploadNewFile", ServiceInterfaceTools.UPLOADNEWFILE,
-                            fileName, uploadao, lessionId, MD5Hash, convertingResult, true, field, new ServiceInterfaceListener() {
+                            fileName, uploadao, lessionId, fileHash, convertingResult, true, field, new ServiceInterfaceListener() {
                                 @Override
                                 public void getServiceReturnData(Object object) {
                                     Log.e("UploadNewFile", "object:" + object);
@@ -736,7 +640,7 @@ public class DocumentUploadTool {
                 } else {
                     ServiceInterfaceTools.getinstance().uploadSpaceNewFile(AppConfig.URL_PUBLIC + "SpaceAttachment/UploadNewFile",
                             ServiceInterfaceTools.UPLOADSPACENEWFILE,
-                            fileName, spaceID, "", MD5Hash,
+                            fileName, spaceID, "", fileHash,
                             convertingResult, field, new ServiceInterfaceListener() {
                                 @Override
                                 public void getServiceReturnData(Object object) {
@@ -752,7 +656,7 @@ public class DocumentUploadTool {
 
                 ServiceInterfaceTools.getinstance().uploadFavoriteNewFile(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
                         ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
-                        fileName, "", MD5Hash,
+                        fileName, "", fileHash,
                         convertingResult, field, new ServiceInterfaceListener() {
                             @Override
                             public void getServiceReturnData(Object object) {
@@ -812,7 +716,7 @@ public class DocumentUploadTool {
                 if (type == 10) {
                     Log.e("addLocalNote", "step six type:" + type);
                     ServiceInterfaceTools.getinstance().uploadLocalNoteFile(AppConfig.URL_PUBLIC + "DocumentNote/UploadNewFile", ServiceInterfaceTools.UPLOADFAVORITENEWFILE, fileName, "",
-                            MD5Hash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId, this.noteLinkProperty, new ServiceInterfaceListener() {
+                            fileHash, convertingResult, field, this.documentId, this.pageIndex, this.noteId, this.syncroomId, this.noteLinkProperty, new ServiceInterfaceListener() {
                                 @Override
                                 public void getServiceReturnData(Object object) {
                                     if (object != null) {
@@ -833,7 +737,7 @@ public class DocumentUploadTool {
                 } else if (type == 3) {
 
                     ServiceInterfaceTools.getinstance().uploadNewFile(AppConfig.URL_PUBLIC + "EventAttachment/UploadNewFile", ServiceInterfaceTools.UPLOADNEWFILE,
-                            fileName, uploadao, lessionId, MD5Hash, convertingResult, true, field, new ServiceInterfaceListener() {
+                            fileName, uploadao, lessionId, fileHash, convertingResult, true, field, new ServiceInterfaceListener() {
                                 @Override
                                 public void getServiceReturnData(Object object) {
                                     Log.e("UploadNewFile", "object:" + object);
@@ -847,7 +751,7 @@ public class DocumentUploadTool {
                 } else {
                     ServiceInterfaceTools.getinstance().uploadSpaceNewFile(AppConfig.URL_PUBLIC + "SpaceAttachment/UploadNewFile",
                             ServiceInterfaceTools.UPLOADSPACENEWFILE,
-                            fileName, spaceID, "", MD5Hash,
+                            fileName, spaceID, "", fileHash,
                             convertingResult, field, new ServiceInterfaceListener() {
                                 @Override
                                 public void getServiceReturnData(Object object) {
@@ -867,7 +771,7 @@ public class DocumentUploadTool {
 
                 ServiceInterfaceTools.getinstance().uploadFavoriteNewFile(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
                         ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
-                        fileName, "", MD5Hash,
+                        fileName, "", fileHash,
                         convertingResult, field, new ServiceInterfaceListener() {
                             @Override
                             public void getServiceReturnData(Object object) {
@@ -923,6 +827,7 @@ public class DocumentUploadTool {
         this.fileName = file.getName();
         this.spaceID = spaceID;
         this.noteLinkProperty = noteLinkProperty;
+        fileHash = Md5Tool.getMd5ByFile(mfile);
         this.MD5Hash = Md5Tool.transformMD5(AppConfig.UserID + mfile.getName()) + System.currentTimeMillis();
         LoginGet lg = new LoginGet();
         lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
@@ -948,6 +853,7 @@ public class DocumentUploadTool {
         this.targetFolderKey = targetFolderKey1;
         this.field = field1;
         this.mfile = file;
+        fileHash = Md5Tool.getMd5ByFile(mfile);
         this.type = 10;
         this.syncroomId = syncroomId;
         this.fileName = file.getName();
