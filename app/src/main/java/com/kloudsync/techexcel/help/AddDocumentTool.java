@@ -91,7 +91,7 @@ public class AddDocumentTool {
             try {
                 url = AppConfig.URL_PUBLIC + "EventAttachment/UploadFileWithHash?LessonID=" + lessonId + "&Title="
                         + URLEncoder.encode(LoginGet.getBase64Password(file.getName()), "UTF-8") + "&Hash=" +
-                        Md5Tool.getMd5ByFile(file) + "&IsAddToFavorite= 1";
+                        Md5Tool.getMd5ByFile(file) + "&IsAddToFavorite=1";
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

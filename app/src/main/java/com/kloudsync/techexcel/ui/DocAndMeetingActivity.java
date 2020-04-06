@@ -1321,43 +1321,69 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         }
 
-	    // handle soundtrack
-	    if (meetingConfig.getType() == MeetingType.MEETING) {
+        // handle soundtrack
+        if (meetingConfig.getType() == MeetingType.MEETING) {
 
-		    if (soundtrackPlayManager == null) {
-			    return;
-		    }
-		    if (soundtrackPlayManager != null) {
-			    if (soundtrackPlayManager.isLoading()) {
-				    return;
-			    }
-		    }
+            if (soundtrackPlayManager == null) {
+                return;
+            }
 
-		    if (TextUtils.isEmpty(helloMessage.getPlayAudioData())) {
-			    // 没有soundtrack的信息
-			    if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
-				    soundtrackPlayManager.followClose();
-			    }
-			    return;
-		    }
+            if (TextUtils.isEmpty(helloMessage.getPlayAudioData())) {
+                // 没有soundtrack的信息
+                if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
+                    soundtrackPlayManager.followClose();
+                }
+                return;
+            }
 
-		    try {
-			    JSONObject audioJson = new JSONObject(Tools.getFromBase64(helloMessage.getPlayAudioData()));
+            try {
+                JSONObject audioJson = new JSONObject(Tools.getFromBase64(helloMessage.getPlayAudioData()));
+                if (audioJson.has("stat")) {
+                    int status = audioJson.getInt("stat");
+                    if(status == 0){
+                        if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
+                            soundtrackPlayManager.followClose();
+                        }
+                        return;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-			    if (audioJson.has("stat")) {
-				    int status = audioJson.getInt("stat");
-				    if (status == 2) {
-					    // 心跳里面是暂停
-					    if (soundtrackPlayManager.isPlaying()) {
-						    soundtrackPlayManager.followPause();
-					    }
-				    }
-			    }
-		    } catch (JSONException e) {
-			    e.printStackTrace();
-		    }
 
-	    }
+            if (soundtrackPlayManager != null) {
+                if (soundtrackPlayManager.isLoading()) {
+                    return;
+                }
+            }
+
+            try {
+                JSONObject audioJson = new JSONObject(Tools.getFromBase64(helloMessage.getPlayAudioData()));
+                Log.e("check_hello_soundtrack", "audioJson:" + audioJson);
+                if (audioJson.has("stat")) {
+                    int status = audioJson.getInt("stat");
+                    if (status == 2) {
+                        // 心跳里面是暂停
+                        Log.e("check_hello_soundtrack", "audioJson:" + audioJson + ",is playing:" + soundtrackPlayManager.isPlaying());
+                        if (soundtrackPlayManager.isPlaying()) {
+                            long time = audioJson.getLong("time");
+                            soundtrackPlayManager.followPause(time);
+                        }
+                    } else if (status == 4) {
+                        long time = audioJson.getLong("time");
+                        if (!soundtrackPlayManager.isPlaying()) {
+                            soundtrackPlayManager.followRestart(time);
+                        } else {
+                            soundtrackPlayManager.followTheProgress(time);
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
 
     }
 
@@ -1412,7 +1438,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         }
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveNotePageActions(EventNotePageActions pageActions) {
@@ -3705,14 +3730,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void playSoundtrack(EventPlaySoundtrack soundtrack) {
         Log.e("check_soundtrack_play", "playSoundtrack");
-	    soundtrackPlayManager.followClose();
-	    soundtrackPlayManager.initLoading(menuIcon);
-        if(soundtrack.getSoundTrack()!=null){
-	        requestDetailAndPlay(soundtrack.getSoundTrack(), 0);
+        soundtrackPlayManager.followClose();
+        soundtrackPlayManager.initLoading(menuIcon);
+        if (soundtrack.getSoundTrack() != null) {
+            requestDetailAndPlay(soundtrack.getSoundTrack(), 0);
         }
     }
 
-	private void requestDetailAndPlay(final SoundTrack soundTrack, final long time) {
+    private void requestDetailAndPlay(final SoundTrack soundTrack, final long time) {
 
         Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
             @Override
@@ -3731,10 +3756,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             @Override
             public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
                 SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
-                if(soundtrackDetail != null &&  soundtrackDetail.getNewAudioInfo()!= null){
-                   SoundtrackMediaInfo mediaInfo =  soundtrackDetail.getNewAudioInfo();
-                    if(!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())){
-                        Log.e("checkUrlForDifferentRegion","attachmenturl:" + mediaInfo.getAttachmentUrl());
+                if (soundtrackDetail != null && soundtrackDetail.getNewAudioInfo() != null) {
+                    SoundtrackMediaInfo mediaInfo = soundtrackDetail.getNewAudioInfo();
+                    if (!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())) {
+                        Log.e("checkUrlForDifferentRegion", "attachmenturl:" + mediaInfo.getAttachmentUrl());
                         String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
                         mediaInfo.setAttachmentUrl(newUrl);
 
@@ -3745,10 +3770,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             @Override
             public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
                 SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
-                if(soundtrackDetail != null &&  soundtrackDetail.getBackgroudMusicInfo()!= null){
-                    SoundtrackMediaInfo mediaInfo =  soundtrackDetail.getBackgroudMusicInfo();
-                    if(!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())){
-                        Log.e("checkUrlForDifferentRegion","attachmenturl:" + mediaInfo.getAttachmentUrl());
+                if (soundtrackDetail != null && soundtrackDetail.getBackgroudMusicInfo() != null) {
+                    SoundtrackMediaInfo mediaInfo = soundtrackDetail.getBackgroudMusicInfo();
+                    if (!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())) {
+                        Log.e("checkUrlForDifferentRegion", "attachmenturl:" + mediaInfo.getAttachmentUrl());
                         String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
                         mediaInfo.setAttachmentUrl(newUrl);
 
@@ -3759,10 +3784,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             @Override
             public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
                 SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
-                if(soundtrackDetail != null &&  soundtrackDetail.getSelectedAudioInfo() != null){
-                    SoundtrackMediaInfo mediaInfo =  soundtrackDetail.getSelectedAudioInfo();
-                    if(!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())){
-                        Log.e("checkUrlForDifferentRegion","attachmenturl:" + mediaInfo.getAttachmentUrl());
+                if (soundtrackDetail != null && soundtrackDetail.getSelectedAudioInfo() != null) {
+                    SoundtrackMediaInfo mediaInfo = soundtrackDetail.getSelectedAudioInfo();
+                    if (!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())) {
+                        Log.e("checkUrlForDifferentRegion", "attachmenturl:" + mediaInfo.getAttachmentUrl());
                         String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
                         mediaInfo.setAttachmentUrl(newUrl);
                     }
@@ -3785,36 +3810,36 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         return;
                     }
 
-	                if (soundtrackPlayManager.isClosed()) {
-		                return;
-	                }
+                    if (soundtrackPlayManager.isClosed()) {
+                        return;
+                    }
 
                     soundtrackPlayManager.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
 
-	                SoundtrackMediaInfo soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getNewAudioInfo();
+                    SoundtrackMediaInfo soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getNewAudioInfo();
 
-	                if (soundtrackMediaInfo == null) {
-		                soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getBackgroudMusicInfo();
-		                soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_BACKGROUND);
+                    if (soundtrackMediaInfo == null) {
+                        soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getBackgroudMusicInfo();
+                        soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_BACKGROUND);
 
-	                } else {
-		                soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_NEW_AUDIO);
-	                }
+                    } else {
+                        soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_NEW_AUDIO);
+                    }
 
-	                if (soundtrackMediaInfo == null) {
-		                soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getSelectedAudioInfo();
-		                soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_BACKGROUND);
-	                }
+                    if (soundtrackMediaInfo == null) {
+                        soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getSelectedAudioInfo();
+                        soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_BACKGROUND);
+                    }
 
-	                if (soundtrackMediaInfo == null) {
-		                ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
-		                soundtrackPlayManager.followClose();
-                    }else {
-		                soundtrackPlayManager.doPlay(soundtrackMediaInfo, time);
+                    if (soundtrackMediaInfo == null) {
+                        ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
+                        soundtrackPlayManager.followClose();
+                    } else {
+                        soundtrackPlayManager.doPlay(soundtrackMediaInfo, time);
                     }
 
 
-                }else {
+                } else {
                     ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
                     soundtrackPlayManager.followClose();
 
@@ -3823,115 +3848,115 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }).subscribe();
     }
 
-	private void requestDetailAndPause(final SoundTrack soundTrack, final long time) {
+    private void requestDetailAndPause(final SoundTrack soundTrack, final long time) {
 
-		Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
-			@Override
-			public SoundtrackDetailData apply(SoundTrack soundtrack) throws Exception {
-				SoundtrackDetailData soundtrackDetailData = new SoundtrackDetailData();
-				JSONObject response = ServiceInterfaceTools.getinstance().syncGetSoundtrackDetail(soundTrack);
-				if (response.has("RetCode")) {
-					if (response.getInt("RetCode") == 0) {
-						SoundtrackDetail soundtrackDetail = new Gson().fromJson(response.getJSONObject("RetData").toString(), SoundtrackDetail.class);
-						soundtrackDetailData.setSoundtrackDetail(soundtrackDetail);
-					}
-				}
-				return soundtrackDetailData;
-			}
-		}).doOnNext(new Consumer<SoundtrackDetailData>() {
-			@Override
-			public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
-				SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
-				if (soundtrackDetail != null && soundtrackDetail.getNewAudioInfo() != null) {
-					SoundtrackMediaInfo mediaInfo = soundtrackDetail.getNewAudioInfo();
-					if (!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())) {
-						Log.e("checkUrlForDifferentRegion", "attachmenturl:" + mediaInfo.getAttachmentUrl());
-						String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
-						mediaInfo.setAttachmentUrl(newUrl);
+        Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
+            @Override
+            public SoundtrackDetailData apply(SoundTrack soundtrack) throws Exception {
+                SoundtrackDetailData soundtrackDetailData = new SoundtrackDetailData();
+                JSONObject response = ServiceInterfaceTools.getinstance().syncGetSoundtrackDetail(soundTrack);
+                if (response.has("RetCode")) {
+                    if (response.getInt("RetCode") == 0) {
+                        SoundtrackDetail soundtrackDetail = new Gson().fromJson(response.getJSONObject("RetData").toString(), SoundtrackDetail.class);
+                        soundtrackDetailData.setSoundtrackDetail(soundtrackDetail);
+                    }
+                }
+                return soundtrackDetailData;
+            }
+        }).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
+                if (soundtrackDetail != null && soundtrackDetail.getNewAudioInfo() != null) {
+                    SoundtrackMediaInfo mediaInfo = soundtrackDetail.getNewAudioInfo();
+                    if (!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())) {
+                        Log.e("checkUrlForDifferentRegion", "attachmenturl:" + mediaInfo.getAttachmentUrl());
+                        String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
+                        mediaInfo.setAttachmentUrl(newUrl);
 
-					}
-				}
-			}
-		}).doOnNext(new Consumer<SoundtrackDetailData>() {
-			@Override
-			public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
-				SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
-				if (soundtrackDetail != null && soundtrackDetail.getBackgroudMusicInfo() != null) {
-					SoundtrackMediaInfo mediaInfo = soundtrackDetail.getBackgroudMusicInfo();
-					if (!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())) {
-						Log.e("checkUrlForDifferentRegion", "attachmenturl:" + mediaInfo.getAttachmentUrl());
-						String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
-						mediaInfo.setAttachmentUrl(newUrl);
+                    }
+                }
+            }
+        }).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
+                if (soundtrackDetail != null && soundtrackDetail.getBackgroudMusicInfo() != null) {
+                    SoundtrackMediaInfo mediaInfo = soundtrackDetail.getBackgroudMusicInfo();
+                    if (!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())) {
+                        Log.e("checkUrlForDifferentRegion", "attachmenturl:" + mediaInfo.getAttachmentUrl());
+                        String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
+                        mediaInfo.setAttachmentUrl(newUrl);
 
-					}
-				}
-			}
-		}).doOnNext(new Consumer<SoundtrackDetailData>() {
-			@Override
-			public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
-				SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
-				if (soundtrackDetail != null && soundtrackDetail.getSelectedAudioInfo() != null) {
-					SoundtrackMediaInfo mediaInfo = soundtrackDetail.getSelectedAudioInfo();
-					if (!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())) {
-						Log.e("checkUrlForDifferentRegion", "attachmenturl:" + mediaInfo.getAttachmentUrl());
-						String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
-						mediaInfo.setAttachmentUrl(newUrl);
-					}
-				}
-			}
-		}).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<SoundtrackDetailData>() {
-			@Override
-			public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                    }
+                }
+            }
+        }).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
+                SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
+                if (soundtrackDetail != null && soundtrackDetail.getSelectedAudioInfo() != null) {
+                    SoundtrackMediaInfo mediaInfo = soundtrackDetail.getSelectedAudioInfo();
+                    if (!TextUtils.isEmpty(mediaInfo.getAttachmentUrl())) {
+                        Log.e("checkUrlForDifferentRegion", "attachmenturl:" + mediaInfo.getAttachmentUrl());
+                        String newUrl = checkUrlForDifferentRegion(mediaInfo.getAttachmentUrl());
+                        mediaInfo.setAttachmentUrl(newUrl);
+                    }
+                }
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<SoundtrackDetailData>() {
+            @Override
+            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
 
-				if (soundtrackDetailData.getSoundtrackDetail() != null) {
-					SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
-					SoundtrackMediaInfo newAudioInfo = soundtrackDetail.getNewAudioInfo();
-					SoundtrackMediaInfo backgroundAudioInfo = soundtrackDetail.getBackgroudMusicInfo();
-					if (newAudioInfo == null && backgroundAudioInfo == null) {
-						new AlertDialog.Builder(DocAndMeetingActivity.this, R.style.ThemeAlertDialog)
-								.setMessage(getResources().getString(R.string.sound_is_still_preparing_and_cannot_do_this))
-								.setNegativeButton(getResources().getText(R.string.know_the), null)
-								.show();
-						soundtrackPlayManager.followClose();
-						return;
-					}
+                if (soundtrackDetailData.getSoundtrackDetail() != null) {
+                    SoundtrackDetail soundtrackDetail = soundtrackDetailData.getSoundtrackDetail();
+                    SoundtrackMediaInfo newAudioInfo = soundtrackDetail.getNewAudioInfo();
+                    SoundtrackMediaInfo backgroundAudioInfo = soundtrackDetail.getBackgroudMusicInfo();
+                    if (newAudioInfo == null && backgroundAudioInfo == null) {
+                        new AlertDialog.Builder(DocAndMeetingActivity.this, R.style.ThemeAlertDialog)
+                                .setMessage(getResources().getString(R.string.sound_is_still_preparing_and_cannot_do_this))
+                                .setNegativeButton(getResources().getText(R.string.know_the), null)
+                                .show();
+                        soundtrackPlayManager.followClose();
+                        return;
+                    }
 
-					if (soundtrackPlayManager.isClosed()) {
-						return;
-					}
+                    if (soundtrackPlayManager.isClosed()) {
+                        return;
+                    }
 
-					soundtrackPlayManager.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
+                    soundtrackPlayManager.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
 
-					SoundtrackMediaInfo soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getNewAudioInfo();
+                    SoundtrackMediaInfo soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getNewAudioInfo();
 
-					if (soundtrackMediaInfo == null) {
-						soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getBackgroudMusicInfo();
-						soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_BACKGROUND);
+                    if (soundtrackMediaInfo == null) {
+                        soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getBackgroudMusicInfo();
+                        soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_BACKGROUND);
 
-					} else {
-						soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_NEW_AUDIO);
-					}
+                    } else {
+                        soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_NEW_AUDIO);
+                    }
 
-					if (soundtrackMediaInfo == null) {
-						soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getSelectedAudioInfo();
-						soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_BACKGROUND);
-					}
+                    if (soundtrackMediaInfo == null) {
+                        soundtrackMediaInfo = soundtrackDetailData.getSoundtrackDetail().getSelectedAudioInfo();
+                        soundtrackMediaInfo.setMediaType(SoundtrackMediaInfo.MEDIA_TYPE_BACKGROUND);
+                    }
 
-					if (soundtrackMediaInfo == null) {
-						ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
-						soundtrackPlayManager.followClose();
-					} else {
-						soundtrackPlayManager.doPause(soundtrackMediaInfo, time);
-					}
+                    if (soundtrackMediaInfo == null) {
+                        ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
+                        soundtrackPlayManager.followClose();
+                    } else {
+                        soundtrackPlayManager.doPause(soundtrackMediaInfo, time);
+                    }
 
 
-				} else {
-					ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
-					soundtrackPlayManager.followClose();
+                } else {
+                    ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
+                    soundtrackPlayManager.followClose();
 
-				}
-			}
-		}).subscribe();
+                }
+            }
+        }).subscribe();
     }
 
 
@@ -4416,6 +4441,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             return;
         }
 
+
         switch (data.getInt("actionType")) {
             case 8:
                 if (data.has("docType")) {
@@ -4510,15 +4536,16 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 break;
 
             case 23:
-	            if (soundtrackPlayManager == null) {
-		            return;
-	            }
+                Log.e("check_soundtrack_data", "data:" + data + ",isloading:" + soundtrackPlayManager.isLoading());
+                if (soundtrackPlayManager == null) {
+                    return;
+                }
 
-	            if (soundtrackPlayManager != null) {
-		            if (soundtrackPlayManager.isLoading()) {
-			            return;
-		            }
-	            }
+                if (soundtrackPlayManager != null) {
+                    if (soundtrackPlayManager.isLoading()) {
+                        return;
+                    }
+                }
                 //播放音想
                 if (data.has("stat")) {
                     final int stat = data.getInt("stat");
@@ -4536,21 +4563,22 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         SoundTrack soundTrack = new SoundTrack();
                         soundTrack.setSoundtrackID(vid2);
 //                        requestSyncDetailAndPlay(soundTrack);
-	                    EventPlaySoundtrack playSoundtrack = new EventPlaySoundtrack();
-	                    playSoundtrack.setSoundTrack(soundTrack);
-	                    playSoundtrack(playSoundtrack);
+                        EventPlaySoundtrack playSoundtrack = new EventPlaySoundtrack();
+                        playSoundtrack.setSoundTrack(soundTrack);
+                        playSoundtrack(playSoundtrack);
                     } else if (stat == 0) { //停止播放
                         if (soundtrackPlayManager != null) {
                             soundtrackPlayManager.followClose();
                         }
                     } else if (stat == 2) {  //暂停播放
                         if (soundtrackPlayManager != null) {
-                            soundtrackPlayManager.followPause();
+                            long time = data.getLong("time");
+                            soundtrackPlayManager.followPause(time);
                         }
                     } else if (stat == 3) {
-	                    // 继续播放
+                        // 继续播放
                         if (soundtrackPlayManager != null) {
-                            soundtrackPlayManager.followRestart();
+                            soundtrackPlayManager.followRestart(0);
                         }
                     } else if (stat == 4) {  // 追上进度
 //
@@ -4560,7 +4588,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         if (soundtrackPlayManager != null) {
 //                            soundtrackPlayManager.followSeekTo(audioTime);
                             audioTime = data.getInt("time");
-	                        soundtrackPlayManager.followSeek(audioTime / 100);
+                            soundtrackPlayManager.followSeek(audioTime / 100);
                         }
                     }
                 }
@@ -4612,8 +4640,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
 
-
-
     private void followShowFullScreenSingleAgoraMember(String memberId) {
         if (cameraList.getVisibility() == View.VISIBLE) {
             for (AgoraMember member : cameraAdapter.getUsers()) {
@@ -4646,7 +4672,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         getMeetingMembers(usersList);
                     }
                 }
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -4747,7 +4773,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                                 final String audioData = dataJson.getString("playAudioData");
                                 if (!TextUtils.isEmpty(audioData)) {
                                     Log.e("audioData", "audioData:" + audioData);
-	                                Observable.just("delay_load").delay(2000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                                    Observable.just("delay_load").delay(2000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                                         @Override
                                         public void accept(String s) throws Exception {
                                             handleSoundtrackWhenJoinMeeting(audioData);
@@ -4778,88 +4804,87 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     private void handleSoundtrackWhenJoinMeeting(String playAudioData) {
 //        {"actionType":23,"soundtrackId":38065,"time":131086,"stat":2}
-	    Log.e("handleSoundtrackWhenJoinMeeting", "play_audio_data:" + playAudioData);
-	    if (soundtrackPlayManager != null) {
-		    if (soundtrackPlayManager.isLoading()) {
-			    return;
-		    }
+        Log.e("handleSoundtrackWhenJoinMeeting", "play_audio_data:" + playAudioData);
+        if (soundtrackPlayManager != null) {
+            if (soundtrackPlayManager.isLoading()) {
+                return;
+            }
 
-		    try {
-			    JSONObject data = new JSONObject(Tools.getFromBase64(playAudioData));
-			    Log.e("check_do_pause", "data:" + data);
-			    if (data.has("stat")) {
+            try {
+                JSONObject data = new JSONObject(Tools.getFromBase64(playAudioData));
+                Log.e("check_do_pause", "data:" + data);
+                if (data.has("stat")) {
 
 
-				    final int stat = data.getInt("stat");
-				    final String soundtrackID = data.getString("soundtrackId");
-				    int audioTime = 0;
-				    if (stat == 4) {
-					    audioTime = data.getInt("time");
-				    }
+                    final int stat = data.getInt("stat");
+                    final String soundtrackID = data.getString("soundtrackId");
+                    int audioTime = 0;
+                    if (stat == 4) {
+                        audioTime = data.getInt("time");
+                    }
 
-				    Log.e("mediaplayer-----", stat + ":   " + soundtrackID);
-				    if (stat == 1) {  //开始播放
-					    int vid2 = 0;
-					    if (!TextUtils.isEmpty(soundtrackID)) {
-						    vid2 = Integer.parseInt(soundtrackID);
-					    }
-					    SoundTrack soundTrack = new SoundTrack();
-					    soundTrack.setSoundtrackID(vid2);
-					    EventPlaySoundtrack playSoundtrack = new EventPlaySoundtrack();
-					    playSoundtrack.setSoundTrack(soundTrack);
-					    playSoundtrack(playSoundtrack);
+                    Log.e("mediaplayer-----", stat + ":   " + soundtrackID);
+                    if (stat == 1) {  //开始播放
+                        int vid2 = 0;
+                        if (!TextUtils.isEmpty(soundtrackID)) {
+                            vid2 = Integer.parseInt(soundtrackID);
+                        }
+                        SoundTrack soundTrack = new SoundTrack();
+                        soundTrack.setSoundtrackID(vid2);
+                        EventPlaySoundtrack playSoundtrack = new EventPlaySoundtrack();
+                        playSoundtrack.setSoundTrack(soundTrack);
+                        playSoundtrack(playSoundtrack);
 //                    requestSyncDetailAndPlay(soundTrack);
-				    } else if (stat == 0) { //停止播放
-					    if (soundtrackPlayManager != null) {
-						    soundtrackPlayManager.followClose();
-					    }
-				    } else if (stat == 2) {  //暂停播放
-					    if (soundtrackPlayManager != null) {
-						    soundtrackPlayManager.followClose();
-						    soundtrackPlayManager.initLoading(menuIcon);
+                    } else if (stat == 0) { //停止播放
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followClose();
+                        }
+                    } else if (stat == 2) {  //暂停播放
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followClose();
+                            soundtrackPlayManager.initLoading(menuIcon);
 //                        soundtrackPlayManager.followPause();
-						    int vid2 = 0;
-						    if (!TextUtils.isEmpty(soundtrackID)) {
-							    vid2 = Integer.parseInt(soundtrackID);
-						    }
-						    long time = data.getLong("time");
-						    SoundTrack soundTrack = new SoundTrack();
-						    soundTrack.setSoundtrackID(vid2);
-						    requestDetailAndPause(soundTrack, time);
-					    }
-				    } else if (stat == 3) { // 继续播放
-					    if (soundtrackPlayManager != null) {
-						    soundtrackPlayManager.followRestart();
-					    }
+                            int vid2 = 0;
+                            if (!TextUtils.isEmpty(soundtrackID)) {
+                                vid2 = Integer.parseInt(soundtrackID);
+                            }
+                            long time = data.getLong("time");
+                            SoundTrack soundTrack = new SoundTrack();
+                            soundTrack.setSoundtrackID(vid2);
+                            requestDetailAndPause(soundTrack, time);
+                        }
+                    } else if (stat == 3) { // 继续播放
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followRestart(0);
+                        }
 
-				    } else if (stat == 4) {  // 追上进度
-					    int vid2 = 0;
-					    if (!TextUtils.isEmpty(soundtrackID)) {
-						    vid2 = Integer.parseInt(soundtrackID);
-					    }
-					    SoundTrack soundTrack = new SoundTrack();
-					    soundTrack.setSoundtrackID(vid2);
-					    long time = data.getLong("time");
-					    if (soundtrackPlayManager != null) {
-						    soundtrackPlayManager.followClose();
-						    soundtrackPlayManager.initLoading(menuIcon);
-						    requestDetailAndPlay(soundTrack, time);
-					    }
+                    } else if (stat == 4) {  // 追上进度
+                        int vid2 = 0;
+                        if (!TextUtils.isEmpty(soundtrackID)) {
+                            vid2 = Integer.parseInt(soundtrackID);
+                        }
+                        SoundTrack soundTrack = new SoundTrack();
+                        soundTrack.setSoundtrackID(vid2);
+                        long time = data.getLong("time");
+                        if (soundtrackPlayManager != null) {
+                            soundtrackPlayManager.followClose();
+                            soundtrackPlayManager.initLoading(menuIcon);
+                            requestDetailAndPlay(soundTrack, time);
+                        }
 //                    requestSyncDetailAndPause(soundTrack);
 //
-				    } else if (stat == 5) {  // 拖动进度条
+                    } else if (stat == 5) {  // 拖动进度条
 //                    seekToTime(audioTime);
-					    if (soundtrackPlayManager != null) {
+                        if (soundtrackPlayManager != null) {
 //                        soundtrackPlayManager.followSeekTo(audioTime);
 //                           soundtrackPlayManager.followSeek(audioTime/1000);
-					    }
-				    }
-			    }
-		    } catch (JSONException e) {
-			    e.printStackTrace();
-		    }
-	    }
-
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
 
     }
@@ -5086,7 +5111,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         }
 
-        Log.e("checkUrlForDifferentRegion","new_url:" + newUrl);
+        Log.e("checkUrlForDifferentRegion", "new_url:" + newUrl);
         return newUrl;
     }
 

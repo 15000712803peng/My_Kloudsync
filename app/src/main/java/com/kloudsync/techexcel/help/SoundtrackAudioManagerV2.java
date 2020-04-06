@@ -56,15 +56,15 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     private boolean isPlaying;
 
-	private boolean isLoading;
+    private boolean isLoading;
 
-	public boolean isLoading() {
-		return isLoading;
-	}
+    public boolean isLoading() {
+        return isLoading;
+    }
 
-	public void setLoading(boolean loading) {
-		isLoading = loading;
-	}
+    public void setLoading(boolean loading) {
+        isLoading = loading;
+    }
 
     public boolean ismIsPauseStatus() {
         return mIsPauseStatus;
@@ -93,14 +93,13 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     public void setSoundtrackAudio(SoundtrackMediaInfo _mediaInfo) {
 
         this.mediaInfo = _mediaInfo;
-	    if (mediaInfo == null) {
+        if (mediaInfo == null) {
             return;
         }
         this.mediaInfo.setPreparing(true);
         Log.e("check_soundtrack_play", "step_two:" + "do_play:mediaInfo" + mediaInfo);
-	    prepareAudioAndPlay(mediaInfo);
+        prepareAudioAndPlay(mediaInfo);
     }
-
 
 
     public void setSoundtrackAudioPlayAtTime(SoundtrackMediaInfo _mediaInfo, long time) {
@@ -128,31 +127,31 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     public void prepareAudioAndPlay(final SoundtrackMediaInfo audioData) {
 
         Log.e("check_soundtrack_play", "step_two:" + "prepareAudioAndPlay:mediaInfo" + mediaInfo);
-            if(audioPlayer != null){
-                try {
-                    audioPlayer.stop();
-                    audioPlayer.release();
-                    audioPlayer = null;
-                }catch (Exception e){
-
-                }
-            }
-
-            audioPlayer = new WlMedia();
+        if (audioPlayer != null) {
             try {
-                try {
-                    if (audioPlayer.isPlay()) {
-                        return;
-                    }
-                } catch (IllegalStateException exception) {
+                audioPlayer.stop();
+                audioPlayer.release();
+                audioPlayer = null;
+            } catch (Exception e) {
 
+            }
+        }
+
+        audioPlayer = new WlMedia();
+        try {
+            try {
+                if (audioPlayer.isPlay()) {
+                    return;
                 }
-	            audioPlayer.setOnLoadListener(this);
-	            audioPlayer.setOnPreparedListener(this);
-	            audioPlayer.setOnCompleteListener(this);
-	            audioPlayer.setOnErrorListener(this);
-	            audioPlayer.setOnTimeInfoListener(this);
-                Uri uri = null;
+            } catch (IllegalStateException exception) {
+
+            }
+            audioPlayer.setOnLoadListener(this);
+            audioPlayer.setOnPreparedListener(this);
+            audioPlayer.setOnCompleteListener(this);
+            audioPlayer.setOnErrorListener(this);
+            audioPlayer.setOnTimeInfoListener(this);
+            Uri uri = null;
 //                String sourcePath = "";
 //                if (audioCache.containFile(audioData.getAttachmentUrl())) {
 //                    File file = new File(audioCache.getAudioPath(audioData.getAttachmentUrl()));
@@ -168,29 +167,28 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 //
 //                }
 
-                Log.e("check_soundtrack_play", "step_three:setSource:" + audioData.getAttachmentUrl());
-                audioPlayer.setSource(audioData.getAttachmentUrl());
+            Log.e("check_soundtrack_play", "step_three:setSource:" + audioData.getAttachmentUrl());
+            audioPlayer.setSource(audioData.getAttachmentUrl());
 //                    audioPlayer.setDataSource(context, Uri.parse(URLDecoder.decode(audioData.getAttachmentUrl(),"UTF-8")));
-                audioPlayer.setPlayModel(WlPlayModel.PLAYMODEL_ONLY_AUDIO);
+            audioPlayer.setPlayModel(WlPlayModel.PLAYMODEL_ONLY_AUDIO);
 
-                try {
-                    Log.e("check_soundtrack_play", "step_four:prepared:");
-                    audioPlayer.prepared();
-                } catch (IllegalStateException e) {
-                    Log.e("check_prepared_and_play", "IllegalStateException:" + e.getMessage());
-                    reinit(audioData);
-                }
-
-                audioData.setPreparing(false);
-                audioData.setPrepared(true);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                audioData.setPreparing(false);
+            try {
+                Log.e("check_soundtrack_play", "step_four:prepared:");
+                audioPlayer.prepared();
+            } catch (IllegalStateException e) {
+                Log.e("check_prepared_and_play", "IllegalStateException:" + e.getMessage());
+                reinit(audioData);
             }
 
-    }
+            audioData.setPreparing(false);
+            audioData.setPrepared(true);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            audioData.setPreparing(false);
+        }
+
+    }
 
 
     private void reinit(SoundtrackMediaInfo mediaInfo) {
@@ -206,10 +204,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         }
 
     }
-
-
-
-
 
 
     public boolean isPlaying() {
@@ -242,7 +236,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         }
         return (long) audioPlayer.getDuration() * 1000;
     }
-
 
     public void release() {
         if (audioPlayer != null) {
@@ -293,7 +286,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         if (audioPlayer != null) {
-	        Log.e("check_soundtrack_play", "start");
+            Log.e("check_soundtrack_play", "start");
             audioPlayer.start();
         }
 
@@ -304,7 +297,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         if (audioPlayer != null) {
-	        Log.e("check_soundtrack_play", "seekTo:" + time);
+            Log.e("check_soundtrack_play", "seekTo:" + time);
             audioPlayer.seek(time);
             //audioPlayer.seek(time / 1000);
             Log.e("vedio_check", "seek_to,time:" + time);
@@ -366,8 +359,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     }
 
-
-
     private Uploadao parseQueryResponse(final String jsonstring) {
         try {
             JSONObject returnjson = new JSONObject(jsonstring);
@@ -396,7 +387,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
         if (audioPlayer != null) {
-	        Log.e("check_soundtrack_play", "stop");
+            Log.e("check_soundtrack_play", "stop");
             audioPlayer.stop();
         }
     }
@@ -416,130 +407,132 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         }
     }
 
-
-	public void seek(double progress) {
+    public void seek(double progress) {
 
         if (mediaInfo == null) {
             return;
         }
 
-		if (progress > audioPlayer.getDuration()) {
-			return;
-		}
+        if (progress > audioPlayer.getDuration()) {
+            return;
+        }
 
         mediaInfo.setPlayType(SoundtrackMediaInfo.TYPE_SEEK);
-		mediaInfo.setPlaying(isPlaying);
-		mediaInfo.setSeekProgress(progress);
-		Log.e("check_soundtrack_play", "seek:" + isPlaying() + ",progress:" + progress + ",thread:" + Thread.currentThread());
+        mediaInfo.setPlaying(isPlaying);
+        mediaInfo.setSeekProgress(progress);
+        Log.e("check_soundtrack_play", "seek:" + isPlaying() + ",progress:" + progress + ",thread:" + Thread.currentThread());
         if (audioPlayer != null) {
-	        audioPlayer.stop();
+            audioPlayer.stop();
         }
     }
 
-	public void preparedForSeek() {
+    public void preparedForSeek() {
         if (audioPlayer != null) {
-	        if (mediaInfo != null) {
-		        audioPlayer.prepared();
-	        }
-	        Log.e("check_soundtrack_play", "prepared for seek");
+            if (mediaInfo != null) {
+                audioPlayer.prepared();
+            }
+            Log.e("check_soundtrack_play", "prepared for seek");
 
         }
     }
 
 
-	public OnAudioInfoCallBack onAudioInfoCallBack;
+    public OnAudioInfoCallBack onAudioInfoCallBack;
 
     public void setOnAudioInfoCallBack(OnAudioInfoCallBack onAudioInfoCallBack) {
         this.onAudioInfoCallBack = onAudioInfoCallBack;
     }
 
-	@Override
-	public void onLoad(boolean load) {
-		isLoading = load;
-		if (load) {
-			if (onAudioInfoCallBack != null) {
-				onAudioInfoCallBack.onAudioLoding();
-			}
-		}
-		Log.e("check_soundtrack_play", "onLoad:" + load);
-	}
+    @Override
+    public void onLoad(boolean load) {
+        isLoading = load;
+        if (load) {
+            if (onAudioInfoCallBack != null) {
+                onAudioInfoCallBack.onAudioLoding();
+            }
+        }
+        Log.e("check_soundtrack_play", "onLoad:" + load);
+    }
 
-	@Override
-	public void onTimeInfo(double currentTime) {
-		Log.e("check_soundtrack_play", "onTimeInfo:" + currentTime + ",Thread:" + Thread.currentThread());
-		if (mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_SEEK) {
-			mediaInfo.setPlayType(SoundtrackMediaInfo.TYPE_PLAY);
-			if (!mediaInfo.isPlaying()) {
-				pause();
-				if (onAudioInfoCallBack != null) {
-					onAudioInfoCallBack.seekCompletionAndPause(currentTime);
-				}
-				return;
-			}
-		}
-		isPlaying = true;
-		if (onAudioInfoCallBack != null) {
-			onAudioInfoCallBack.onAudioPlayTimeInfo((long) (currentTime * 1000));
-		}
-	}
+    @Override
+    public void onTimeInfo(double currentTime) {
+        Log.e("check_soundtrack_play", "onTimeInfo:" + currentTime + ",Thread:" + Thread.currentThread());
+        if(mediaInfo == null){
+            return;
+        }
+        if (mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_SEEK) {
+            mediaInfo.setPlayType(SoundtrackMediaInfo.TYPE_PLAY);
+            if (!mediaInfo.isPlaying()) {
+                pause();
+                if (onAudioInfoCallBack != null) {
+                    onAudioInfoCallBack.seekCompletionAndPause(currentTime);
+                }
+                return;
+            }
+        }
+        isPlaying = true;
+        if (onAudioInfoCallBack != null) {
+            onAudioInfoCallBack.onAudioPlayTimeInfo((long) (currentTime * 1000));
+        }
+    }
 
-	@Override
-	public void onComplete() {
-		isPlaying = false;
-		if (onAudioInfoCallBack != null) {
-			onAudioInfoCallBack.onCompletionCalled();
-		}
-		Log.e("check_soundtrack_play", "onComplete");
+    @Override
+    public void onComplete() {
+        isPlaying = false;
+        if (onAudioInfoCallBack != null) {
+            onAudioInfoCallBack.onCompletionCalled();
+        }
+        Log.e("check_soundtrack_play", "onComplete");
 
-	}
+    }
 
 
-	@Override
-	public void onError(int code, String msg) {
-		isPlaying = false;
-		Log.e("check_soundtrack_play", "onError:" + code + ",msg:" + msg);
-	}
+    @Override
+    public void onError(int code, String msg) {
+        isPlaying = false;
+        Log.e("check_soundtrack_play", "onError:" + code + ",msg:" + msg);
+    }
 
-	@Override
-	public void onPrepared() {
-		Log.e("check_soundtrack_play", "onPrepared" + mediaInfo);
-		if (mediaInfo == null) {
-			return;
-		}
+    @Override
+    public void onPrepared() {
+        Log.e("check_soundtrack_play", "onPrepared" + mediaInfo);
+        if (mediaInfo == null) {
+            return;
+        }
 
-		isLoading = false;
+        isLoading = false;
 
-		Observable.just("load_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-			@Override
-			public void accept(String s) throws Exception {
-				if (mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_PLAY) {
-					audioPlayer.start();
-					isPlaying = true;
-				} else if (mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_SEEK) {
-					Log.e("check_soundtrack_play", "onPrepared,do_seek");
-					audioPlayer.seek(mediaInfo.getSeekProgress());
-					if (mediaInfo.isPlaying()) {
-						isPlaying = true;
-						audioPlayer.start();
-					} else {
-						isPlaying = false;
-						audioPlayer.start();
+        Observable.just("load_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                if (mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_PLAY) {
+                    audioPlayer.start();
+                    isPlaying = true;
+                } else if (mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_SEEK) {
+                    Log.e("check_soundtrack_play", "onPrepared,do_seek");
+                    audioPlayer.seek(mediaInfo.getSeekProgress());
+                    if (mediaInfo.isPlaying()) {
+                        isPlaying = true;
+                        audioPlayer.start();
+                    } else {
+                        isPlaying = false;
+                        audioPlayer.start();
 
-					}
-				}
-			}
-		});
+                    }
+                }
+            }
+        });
 
-	}
+    }
 
     public interface OnAudioInfoCallBack {
-	    void onAudioPlayTimeInfo(long playTime);
+        void onAudioPlayTimeInfo(long playTime);
 
-	    void onCompletionCalled();
+        void onCompletionCalled();
 
-	    void seekCompletionAndPause(double playTime);
+        void seekCompletionAndPause(double playTime);
 
-	    void onAudioLoding();
+        void onAudioLoding();
     }
 
 }
