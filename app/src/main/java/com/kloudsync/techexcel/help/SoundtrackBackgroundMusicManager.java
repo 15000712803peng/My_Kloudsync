@@ -35,16 +35,15 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
         return instance;
     }
 
-	private SoundtrackAudioManagerV2 soundtrackAudioManager;
+    private SoundtrackAudioManagerV2 soundtrackAudioManager;
 
-	public void setSoundtrackAudio(SoundtrackMediaInfo mediaInfo, SoundtrackAudioManagerV2 soundtrackAudioManager) {
-        if(mediaInfo == null){
+    public void setSoundtrackAudio(SoundtrackMediaInfo mediaInfo, SoundtrackAudioManagerV2 soundtrackAudioManager) {
+        if (mediaInfo == null) {
             return;
         }
-		Log.e("check_background_play", "background_mediaInfo:" + mediaInfo);
-		this.mediaInfo = mediaInfo;
-		this.soundtrackAudioManager = soundtrackAudioManager;
-
+//        Log.e("check_background_play", "background_mediaInfo:" + mediaInfo);
+        this.mediaInfo = mediaInfo;
+        this.soundtrackAudioManager = soundtrackAudioManager;
         prepareAudioAndPlay(mediaInfo);
     }
 
@@ -53,40 +52,40 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
     }
 
     public void prepareAudioAndPlay(SoundtrackMediaInfo audioData) {
-	    Log.e("check_background_play", "prepareAudioAndPlay");
+        Log.e("check_background_play", "prepareAudioAndPlay");
         try {
             audioPlayer = new MediaPlayer();
             try {
-                if(audioPlayer.isPlaying()){
+                if (audioPlayer.isPlaying()) {
                     return;
                 }
-            }catch (IllegalStateException exception){
+            } catch (IllegalStateException exception) {
 
             }
             audioPlayer.setOnPreparedListener(this);
             audioPlayer.setOnCompletionListener(this);
             audioPlayer.setOnErrorListener(this);
-	        Log.e("check_background_play", "set_data_source:" + audioData.getAttachmentUrl());
-	        audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
+            Log.e("check_background_play", "set_data_source:" + audioData.getAttachmentUrl());
+            audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
             audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
-	            mediaInfo.setPrepared(false);
+                mediaInfo.setPrepared(false);
                 audioPlayer.prepareAsync();
-            }catch (IllegalStateException e){
-	            Log.e("check_background_play", "IllegalStateException," + e.getMessage());
+            } catch (IllegalStateException e) {
+                Log.e("check_background_play", "IllegalStateException," + e.getMessage());
                 reinit(audioData);
             }
 
         } catch (IOException e) {
-	        Log.e("check_background_play", "IOException," + e.getMessage());
+            Log.e("check_background_play", "IOException," + e.getMessage());
             e.printStackTrace();
             audioData.setPreparing(false);
         }
 
     }
 
-    private void reinit(SoundtrackMediaInfo mediaInfo){
-        if(this.mediaInfo == null){
+    private void reinit(SoundtrackMediaInfo mediaInfo) {
+        if (this.mediaInfo == null) {
             return;
         }
         audioPlayer = null;
@@ -105,18 +104,18 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-	    Log.e("check_background_play", "onPrepared");
+        Log.e("check_background_play", "onPrepared");
         if (mediaInfo != null) {
-	        mediaInfo.setPrepared(true);
+            mediaInfo.setPrepared(true);
             Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());
             mp.start();
-	        if (soundtrackAudioManager != null) {
-		        if (!soundtrackAudioManager.isPlaying()) {
-			        mp.pause();
-			        Log.e("check_background_play", "paused");
+            if (soundtrackAudioManager != null) {
+                if (!soundtrackAudioManager.isPlaying()) {
+                    mp.pause();
+                    Log.e("check_background_play", "paused");
 
-		        }
-	        }
+                }
+            }
 
         }
     }
@@ -132,36 +131,36 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
         return false;
     }
 
-    public boolean isPlaying(){
-        if(this.mediaInfo == null){
+    public boolean isPlaying() {
+        if (this.mediaInfo == null) {
             return false;
         }
-        if(audioPlayer != null){
+        if (audioPlayer != null) {
             return audioPlayer.isPlaying();
         }
 
         return false;
     }
 
-    public long getPlayTime(){
-        if(this.mediaInfo == null){
+    public long getPlayTime() {
+        if (this.mediaInfo == null) {
             return 0;
         }
-        if(audioPlayer == null){
-            return  0;
+        if (audioPlayer == null) {
+            return 0;
         }
         return audioPlayer.getCurrentPosition();
     }
 
-    public long getTotalTime(){
-        if(this.mediaInfo == null){
+    public long getTotalTime() {
+        if (this.mediaInfo == null) {
             return 0;
         }
         return audioPlayer.getDuration();
     }
 
 
-    public void release(){
+    public void release() {
         if (audioPlayer != null) {
             audioPlayer.stop();
             audioPlayer.reset();
@@ -173,47 +172,47 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
         instance = null;
     }
 
-    public long getDuration(){
-        if(this.mediaInfo == null){
+    public long getDuration() {
+        if (this.mediaInfo == null) {
             return 0;
         }
         return audioPlayer.getDuration();
     }
 
-    public void pause(){
-        if(this.mediaInfo == null){
-            return ;
+    public void pause() {
+        if (this.mediaInfo == null) {
+            return;
         }
-        if(audioPlayer != null){
-            Log.e("vedio_check","pause_begin");
+        if (audioPlayer != null) {
+            Log.e("vedio_check", "pause_begin");
             audioPlayer.pause();
-            Log.e("vedio_check","pause_");
+            Log.e("vedio_check", "pause_");
         }
     }
 
-    public void restart(){
-	    Log.e("check_background_play", "restart");
-        if(this.mediaInfo == null){
+    public void restart() {
+        Log.e("check_background_play", "restart");
+        if (this.mediaInfo == null) {
             return;
         }
-        if(audioPlayer != null){
+        if (audioPlayer != null) {
             audioPlayer.start();
         }
     }
 
-    public void seekTo(int time){
-        if(this.mediaInfo == null){
-            return ;
+    public void seekTo(int time) {
+        if (this.mediaInfo == null) {
+            return;
         }
 
         try {
-            if(audioPlayer != null){
-                if(time < audioPlayer.getDuration()){
+            if (audioPlayer != null) {
+                if (time < audioPlayer.getDuration()) {
                     audioPlayer.seekTo(time);
                 }
-                Log.e("vedio_check","seek_to,time:" + time);
+                Log.e("vedio_check", "seek_to,time:" + time);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
 

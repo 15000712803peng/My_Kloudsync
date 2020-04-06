@@ -66,7 +66,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-
 public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, SoundtrackAudioManagerV2.OnAudioInfoCallBack {
     public Activity host;
     public int width;
@@ -142,7 +141,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public boolean isPlaying() {
 
         boolean _isPlaying = false;
-        if(soundtrackAudioManager != null){
+        if (soundtrackAudioManager != null) {
             _isPlaying = soundtrackAudioManager.isPlaying();
         }
         return _isPlaying;
@@ -624,14 +623,26 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 }
 
                 if (!backgroundMusicManager.isPlaying()) {
-                    backgroundMusicManager.restart();
+                    long backgroundTime = backgroundMusicManager.getPlayTime();
+                    if (backgroundTime >= playTime + 2) {
+                        backgroundMusicManager.pause();
+                    } else {
+                        backgroundMusicManager.restart();
+                    }
+
                 }
+
+//                if(!backgroundMusicManager.isPlaying()){
+//                    long backgroundTime = backgroundMusicManager.getPlayTime();
+//                    if(backgroundTime > playTime + 3){
+//                        backgroundMusicManager.pause();
+//                    }
+//                }
             }
             Log.e("check_background_play", "isPlaying:" + backgroundMusicManager.isPlaying());
 
         }
     }
-
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -676,9 +687,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
         seekBar.setProgress(currentProgress);
         seek(seekBar.getProgress() * 100);
-
     }
-
 
     private void seek(final int _time) {
         if (isLoading()) {
@@ -836,7 +845,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
         PageActionsAndNotesMgr.requestActionsAndNoteForSoundtrackByTime(meetingConfig, pageNum + "", soundtrackDetail.getSoundtrackID() + "", playTime);
 
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -944,7 +952,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
     public void followRestart(long time) {
         restart();
-        if(time > 0){
+        if (time > 0) {
             if (Math.abs(time - playTime) >= 5000) {
                 playTime = time;
                 seek((int) time);
@@ -953,7 +961,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
     }
 
-    public void followTheProgress(long time){
+    public void followTheProgress(long time) {
         if (Math.abs(time - playTime) >= 5000) {
             playTime = time;
             seek((int) time);
@@ -1207,6 +1215,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public void onAudioLoding() {
         loadingBar.setVisibility(View.VISIBLE);
         statusText.setVisibility(View.INVISIBLE);
+        if(backgroundMusicManager != null && backgroundMusicManager.isPlaying()){
+            backgroundMusicManager.pause();
+        }
     }
 
     public boolean isLoading() {

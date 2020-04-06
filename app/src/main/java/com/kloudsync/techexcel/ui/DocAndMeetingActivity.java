@@ -1327,11 +1327,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             if (soundtrackPlayManager == null) {
                 return;
             }
-            if (soundtrackPlayManager != null) {
-                if (soundtrackPlayManager.isLoading()) {
-                    return;
-                }
-            }
 
             if (TextUtils.isEmpty(helloMessage.getPlayAudioData())) {
                 // 没有soundtrack的信息
@@ -1339,6 +1334,28 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     soundtrackPlayManager.followClose();
                 }
                 return;
+            }
+
+            try {
+                JSONObject audioJson = new JSONObject(Tools.getFromBase64(helloMessage.getPlayAudioData()));
+                if (audioJson.has("stat")) {
+                    int status = audioJson.getInt("stat");
+                    if(status == 0){
+                        if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
+                            soundtrackPlayManager.followClose();
+                        }
+                        return;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            if (soundtrackPlayManager != null) {
+                if (soundtrackPlayManager.isLoading()) {
+                    return;
+                }
             }
 
             try {
@@ -1421,7 +1438,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         }
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveNotePageActions(EventNotePageActions pageActions) {
@@ -4656,7 +4672,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         getMeetingMembers(usersList);
                     }
                 }
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

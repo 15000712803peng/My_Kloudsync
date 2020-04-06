@@ -457,6 +457,9 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     @Override
     public void onTimeInfo(double currentTime) {
         Log.e("check_soundtrack_play", "onTimeInfo:" + currentTime + ",Thread:" + Thread.currentThread());
+        if(mediaInfo == null){
+            return;
+        }
         if (mediaInfo.getPlayType() == SoundtrackMediaInfo.TYPE_SEEK) {
             mediaInfo.setPlayType(SoundtrackMediaInfo.TYPE_PLAY);
             if (!mediaInfo.isPlaying()) {
