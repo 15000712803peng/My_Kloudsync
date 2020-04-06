@@ -504,6 +504,7 @@
     <string name="mtDocuments">From Team Documents</string>
     <string name="mtTPhoto">Take Photo</string>
     <string name="mtLibrary">Import From Library</string>
+    <string name="mtFileLibrary">Import From File System</string>
     <string name="mtSavedFiles">My Saved Files</string>
 
     <!--个人设置-->

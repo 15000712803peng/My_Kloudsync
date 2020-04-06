@@ -8,17 +8,17 @@
     android:id="@+id/layout_soundtrack_play"
     >
 
-    <org.xwalk.core.XWalkView
+    <WebView
         android:id="@+id/web"
         android:layout_marginBottom="4dp"
         android:layout_marginTop="4dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></org.xwalk.core.XWalkView>
+        android:layout_height="match_parent"></WebView>
 
-    <org.xwalk.core.XWalkView
+    <WebView
         android:id="@+id/main_note_web"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></org.xwalk.core.XWalkView>
+        android:layout_height="match_parent"></WebView>
 
 
     <LinearLayout
@@ -112,10 +112,11 @@
                 android:background="@color/bg_gray"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <org.xwalk.core.XWalkView
+
+                <WebView
                     android:id="@+id/small_web_note"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"></org.xwalk.core.XWalkView>
+                    android:layout_height="match_parent"></WebView>
 
             </RelativeLayout>
         </com.kloudsync.techexcel.ui.MaskViewGroup>

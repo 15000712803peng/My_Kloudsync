@@ -10,7 +10,7 @@
         android:layout_width="0.1dp"
         android:layout_height="0.1dp" />
 
-    <org.xwalk.core.XWalkView
+    <WebView
         android:id="@+id/wv_show"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -109,6 +109,9 @@ import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
+import com.kloudsync.techexcel.filepicker.FileEntity;
+import com.kloudsync.techexcel.filepicker.FilePickerActivity;
+import com.kloudsync.techexcel.filepicker.PickerManager;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.AudiencePromptDialog;
@@ -2838,6 +2841,14 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 		startRequestPermission(permissions, 323);
 	}
 
+
+	@Override
+	public void addFromFileSystem() {
+		Intent intent = new Intent(this, FilePickerActivity.class);
+		startActivityForResult(intent,REQUEST_CODE_REQUEST_SELECTED_FILE);
+	}
+
+
 	@Override
 	public void addBlankFile() {
 		reqeustNewBlankPage();
@@ -3227,6 +3238,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 	private static final int REQUEST_PICTURE_ADD_DOC = 2;
 	private static final int REQUEST_SCAN = 3;
 	private static final int REQUEST_CODE_ADD_NOTE = 100;
+	private static final int REQUEST_CODE_REQUEST_SELECTED_FILE= 200;
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -3267,6 +3279,18 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 						uploadNote(note);
 					}
 					drawTempNote();
+					break;
+				case REQUEST_CODE_REQUEST_SELECTED_FILE:
+					List<FileEntity>  fff = PickerManager.getInstance().files;
+					for (int i = 0; i < fff.size(); i++) {
+						FileEntity fileEntity=fff.get(0);
+						if(!TextUtils.isEmpty(fileEntity.getPath())){
+							File picture = new File(fileEntity.getPath());
+							if (picture != null && picture.exists()) {
+								uploadFileWhenAddDoc(picture);
+							}
+						}
+					}
 					break;
 			}
 		}
