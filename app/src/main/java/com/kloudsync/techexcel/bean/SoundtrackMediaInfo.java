@@ -8,8 +8,8 @@ public class SoundtrackMediaInfo {
     public static final int TYPE_PLAY = 1;
     public static final int TYPE_PAUSE = 2;
     public static final int TYPE_SEEK = 3;
-    public static final int MEDIA_TYPE_NEW_AUDIO = 1;
-    public static final int MEDIA_TYPE_BACKGROUND = 2;
+	public static final int MEDIA_TYPE_NEW_AUDIO = 1;
+	public static final int MEDIA_TYPE_BACKGROUND = 2;
     private int ItemID;
     private String Title;
     private String Description;
@@ -34,24 +34,24 @@ public class SoundtrackMediaInfo {
     private boolean isPlaying;
     private long time;
     private int playType;
-    private double seekProgress;
-    private int mediaType;
+	private double seekProgress;
+	private int mediaType;
 
-    public int getMediaType() {
-        return mediaType;
-    }
+	public int getMediaType() {
+		return mediaType;
+	}
 
-    public void setMediaType(int mediaType) {
-        this.mediaType = mediaType;
-    }
+	public void setMediaType(int mediaType) {
+		this.mediaType = mediaType;
+	}
 
-    public double getSeekProgress() {
-        return seekProgress;
-    }
+	public double getSeekProgress() {
+		return seekProgress;
+	}
 
-    public void setSeekProgress(double seekProgress) {
-        this.seekProgress = seekProgress;
-    }
+	public void setSeekProgress(double seekProgress) {
+		this.seekProgress = seekProgress;
+	}
 
     public int getPlayType() {
         return playType;

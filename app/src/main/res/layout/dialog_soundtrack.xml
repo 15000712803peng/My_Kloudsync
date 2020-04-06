@@ -59,6 +59,7 @@
 
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <LinearLayout
                         android:visibility="visible"
                         android:id="@+id/layout_loading"
@@ -66,6 +67,7 @@
                         android:gravity="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
+
                         <ProgressBar
                             android:layout_centerInParent="true"
                             android:layout_width="16dp"
@@ -73,6 +75,7 @@
                             android:indeterminateBehavior="repeat"
                             android:indeterminateDrawable="@drawable/dialog_loading"
                             android:indeterminateOnly="true" />
+
                         <TextView
                             android:layout_marginLeft="6dp"
                             android:textSize="14sp"
@@ -94,15 +97,13 @@
                         android:layout_height="wrap_content" />
 
 
-
                 </RelativeLayout>
 
                 <android.support.v7.widget.RecyclerView
                     android:visibility="invisible"
                     android:id="@+id/list_soundtrack"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    ></android.support.v7.widget.RecyclerView>
+                    android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 
             </RelativeLayout>
 

@@ -468,7 +468,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
 
-    public void postShareScreenDelay(final int uid) {
+	public void postShareScreenDelay(final int uid) {
 //        if(meetingConfig.getMode() != 3){
 //            return;
 //        }

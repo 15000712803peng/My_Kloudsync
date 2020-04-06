@@ -87,9 +87,9 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
     private RecyclerView allrecycleview;
     private SharedPreferences sharedPreferences;
     private TextView createsynctext;
-    private TextView noDataText;
+	private TextView noDataText;
 
-    private LinearLayout loadingLayout;
+	private LinearLayout loadingLayout;
 
     private void init() {
         if (null != dialog) {
@@ -113,9 +113,9 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
         selectmore=view.findViewById(R.id.selectmore);
         ll1 = (RelativeLayout) view.findViewById(R.id.ll1);
         ll2 = (RelativeLayout) view.findViewById(R.id.ll2);
-        loadingLayout = view.findViewById(R.id.layout_loading);
+	    loadingLayout = view.findViewById(R.id.layout_loading);
         createsynctext = (TextView) view.findViewById(R.id.createsynctext);
-        noDataText = view.findViewById(R.id.txt_no_data);
+	    noDataText = view.findViewById(R.id.txt_no_data);
         ok = (TextView) view.findViewById(R.id.ok);
         ok.setOnClickListener(this);
         backimg = (RelativeLayout) view.findViewById(R.id.layout_back);
@@ -270,28 +270,28 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
         Observable.just(soundtrackList).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<EventSoundtrackList>() {
             @Override
             public void accept(EventSoundtrackList soundtrackList) throws Exception {
-                loadingLayout.setVisibility(View.GONE);
-                if (soundtrackList.getSoundTracks() != null) {
-                    if(soundtrackList.getSoundTracks().size() >= 0){
-                        soundtrackListView.setVisibility(View.VISIBLE);
-                        noDataText.setVisibility(View.GONE);
-                        if (soundtrackAdapter == null) {
-                            soundtrackAdapter = new SoundtrackAdapter(host);
-                            soundtrackAdapter.setSoundTracks(soundtrackList.getSoundTracks());
-                            soundtrackListView.setAdapter(soundtrackAdapter);
+	            loadingLayout.setVisibility(View.GONE);
+	            if (soundtrackList.getSoundTracks() != null) {
+		            if (soundtrackList.getSoundTracks().size() >= 0) {
+			            soundtrackListView.setVisibility(View.VISIBLE);
+			            noDataText.setVisibility(View.GONE);
+			            if (soundtrackAdapter == null) {
+				            soundtrackAdapter = new SoundtrackAdapter(host);
+				            soundtrackAdapter.setSoundTracks(soundtrackList.getSoundTracks());
+				            soundtrackListView.setAdapter(soundtrackAdapter);
 
-                        } else {
-                            soundtrackAdapter.setSoundTracks(soundtrackList.getSoundTracks());
-                        }
-                        soundtrackAdapter.setOnSoundtrackClickedListener(UserSoundtrackDialog.this);
-                    }else {
-                        soundtrackListView.setVisibility(View.INVISIBLE);
-                        noDataText.setVisibility(View.VISIBLE);
-                    }
+			            } else {
+				            soundtrackAdapter.setSoundTracks(soundtrackList.getSoundTracks());
+			            }
+			            soundtrackAdapter.setOnSoundtrackClickedListener(UserSoundtrackDialog.this);
+		            } else {
+			            soundtrackListView.setVisibility(View.INVISIBLE);
+			            noDataText.setVisibility(View.VISIBLE);
+		            }
 
-                }else {
-                    soundtrackListView.setVisibility(View.INVISIBLE);
-                    noDataText.setVisibility(View.VISIBLE);
+	            } else {
+		            soundtrackListView.setVisibility(View.INVISIBLE);
+		            noDataText.setVisibility(View.VISIBLE);
                 }
             }
         }).subscribe();

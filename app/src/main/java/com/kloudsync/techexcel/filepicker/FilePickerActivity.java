@@ -13,14 +13,16 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 
+import java.util.ArrayList;
+
 
 public class FilePickerActivity extends AppCompatActivity implements View.OnClickListener,OnUpdateDataListener {
     private Button btn_common,btn_all;
     private TextView tv_size,tv_confirm;
     private Fragment commonFileFragment,allFileFragment;
     private boolean isConfirm = false;
-    TextView titleText;
-    private RelativeLayout backLayout;
+	TextView titleText;
+	private RelativeLayout backLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,10 +43,11 @@ public class FilePickerActivity extends AppCompatActivity implements View.OnClic
         btn_all = (Button) findViewById(R.id.btn_all);
         tv_size = (TextView) findViewById(R.id.tv_size);
         tv_confirm = (TextView) findViewById(R.id.tv_confirm);
-        backLayout = findViewById(R.id.layout_back);
-        titleText = findViewById(R.id.tv_title);
-        titleText.setText("选择一个文件");
-        backLayout.setOnClickListener(this);
+	    backLayout = findViewById(R.id.layout_back);
+	    titleText = findViewById(R.id.tv_title);
+	    titleText.setText("选择一个文件");
+	    backLayout.setOnClickListener(this);
+	    PickerManager.getInstance().files = new ArrayList<>();
     }
 
     private void setFragment(int type) {
@@ -103,9 +106,9 @@ public class FilePickerActivity extends AppCompatActivity implements View.OnClic
                 setResult(RESULT_OK);
                 finish();
                 break;
-            case R.id.layout_back:
-                finish();
-                break;
+	        case R.id.layout_back:
+		        finish();
+		        break;
         }
     }
     private long currentSize;

@@ -6,13 +6,9 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
 
-import com.kloudsync.techexcel.bean.EventCloseSoundtrack;
 import com.kloudsync.techexcel.bean.SoundtrackMediaInfo;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.IOException;
-import java.net.URLDecoder;
 
 
 public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
@@ -39,15 +35,15 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
         return instance;
     }
 
-    private SoundtrackAudioManagerV2 soundtrackAudioManager;
+	private SoundtrackAudioManagerV2 soundtrackAudioManager;
 
-    public void setSoundtrackAudio(SoundtrackMediaInfo mediaInfo,SoundtrackAudioManagerV2 soundtrackAudioManager) {
+	public void setSoundtrackAudio(SoundtrackMediaInfo mediaInfo, SoundtrackAudioManagerV2 soundtrackAudioManager) {
         if(mediaInfo == null){
             return;
         }
-        Log.e("check_background_play","background_mediaInfo:" + mediaInfo);
-        this.mediaInfo = mediaInfo;
-        this.soundtrackAudioManager = soundtrackAudioManager;
+		Log.e("check_background_play", "background_mediaInfo:" + mediaInfo);
+		this.mediaInfo = mediaInfo;
+		this.soundtrackAudioManager = soundtrackAudioManager;
 
         prepareAudioAndPlay(mediaInfo);
     }
@@ -57,7 +53,7 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
     }
 
     public void prepareAudioAndPlay(SoundtrackMediaInfo audioData) {
-        Log.e("check_background_play","prepareAudioAndPlay");
+	    Log.e("check_background_play", "prepareAudioAndPlay");
         try {
             audioPlayer = new MediaPlayer();
             try {
@@ -70,19 +66,19 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
             audioPlayer.setOnPreparedListener(this);
             audioPlayer.setOnCompletionListener(this);
             audioPlayer.setOnErrorListener(this);
-            Log.e("check_background_play","set_data_source:" + audioData.getAttachmentUrl());
-            audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
+	        Log.e("check_background_play", "set_data_source:" + audioData.getAttachmentUrl());
+	        audioPlayer.setDataSource(context, Uri.parse(audioData.getAttachmentUrl()));
             audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
-                mediaInfo.setPrepared(false);
+	            mediaInfo.setPrepared(false);
                 audioPlayer.prepareAsync();
             }catch (IllegalStateException e){
-                Log.e("check_background_play","IllegalStateException," + e.getMessage());
+	            Log.e("check_background_play", "IllegalStateException," + e.getMessage());
                 reinit(audioData);
             }
 
         } catch (IOException e) {
-            Log.e("check_background_play","IOException," + e.getMessage());
+	        Log.e("check_background_play", "IOException," + e.getMessage());
             e.printStackTrace();
             audioData.setPreparing(false);
         }
@@ -109,18 +105,18 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        Log.e("check_background_play","onPrepared");
+	    Log.e("check_background_play", "onPrepared");
         if (mediaInfo != null) {
-            mediaInfo.setPrepared(true);
+	        mediaInfo.setPrepared(true);
             Log.e("check_play", "on prepared,id:" + mediaInfo.getAttachmentUrl());
             mp.start();
-            if(soundtrackAudioManager != null){
-                if(!soundtrackAudioManager.isPlaying()){
-                    mp.pause();
-                    Log.e("check_background_play","paused");
+	        if (soundtrackAudioManager != null) {
+		        if (!soundtrackAudioManager.isPlaying()) {
+			        mp.pause();
+			        Log.e("check_background_play", "paused");
 
-                }
-            }
+		        }
+	        }
 
         }
     }
@@ -196,7 +192,7 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
     }
 
     public void restart(){
-        Log.e("check_background_play","restart");
+	    Log.e("check_background_play", "restart");
         if(this.mediaInfo == null){
             return;
         }
