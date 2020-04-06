@@ -5,10 +5,10 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <org.xwalk.core.XWalkView
+    <WebView
         android:id="@+id/web"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></org.xwalk.core.XWalkView>
+        android:layout_height="match_parent"></WebView>
 
     <LinearLayout
         android:visibility="visible"
@@ -282,11 +282,12 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <org.xwalk.core.XWalkView
+
+            <WebView
                 android:id="@+id/web_note"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="match_parent"></org.xwalk.core.XWalkView>
+                android:layout_height="match_parent"></WebView>
 
             <View
                 android:background="@color/divider_line"
@@ -619,7 +620,7 @@
                 android:layout_height="1dp"/>
         </LinearLayout>
 
-        <org.xwalk.core.XWalkView
+        <WebView
             android:padding="1dp"
             android:layout_width="250dp"
             android:id="@+id/xwalkview"

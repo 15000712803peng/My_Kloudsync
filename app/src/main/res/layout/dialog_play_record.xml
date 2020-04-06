@@ -5,13 +5,13 @@
     android:layout_height="match_parent"
     android:background="@drawable/rc_white_bg_shape">
 
-    <org.xwalk.core.XWalkView
+    <WebView
         android:id="@+id/web"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="2dp"
-        android:background="@drawable/rc_white_bg_shape"></org.xwalk.core.XWalkView>
+        android:background="@drawable/rc_white_bg_shape"></WebView>
 
 
     <LinearLayout
