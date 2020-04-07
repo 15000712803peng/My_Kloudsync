@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 
@@ -38,17 +39,65 @@ public class FileScannerTask extends AsyncTask<Void, Void, List<FileEntity>> {
 
     private Context context;
     private FileScannerListener mFileScannerListener;
+    private int fileType;
 
-    public FileScannerTask(Context context, FileScannerListener fileScannerListener) {
+    public FileScannerTask(Context context,int fileType,FileScannerListener fileScannerListener) {
         this.context = context;
         mFileScannerListener = fileScannerListener;
+        this.fileType=fileType;
     }
 
     //MediaStore.Files存储了所有应用中共享的文件，包括图片、文件、视频、音乐等多媒体文件，包括非多媒体文件。
     @Override
     protected List<FileEntity> doInBackground(Void... params) {
         List<FileEntity> fileEntities = new ArrayList<>();
-        String selection = MediaStore.Files.FileColumns.MIME_TYPE + "= ? "
+        String selection;
+        String[] selectionArgs;
+        if(fileType==1){ //带音频文件
+            Log.e("doInBackground--",fileType+"");
+            selection = MediaStore.Files.FileColumns.MIME_TYPE + "= ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? ";
+            selectionArgs = new String[]{
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("text"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("dotx"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("dotx"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("potx"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppsx"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("xltx"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("jpg"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("jpg"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("png"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("svg"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("gif"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("mp3")
+            };
+        }else{
+
+         selection = MediaStore.Files.FileColumns.MIME_TYPE + "= ? "
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
@@ -66,7 +115,7 @@ public class FileScannerTask extends AsyncTask<Void, Void, List<FileEntity>> {
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? ";
-        String[] selectionArgs = new String[]{
+        selectionArgs = new String[]{
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension("text"),
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc"),
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx"),
@@ -86,6 +135,8 @@ public class FileScannerTask extends AsyncTask<Void, Void, List<FileEntity>> {
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension("svg"),
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension("gif")
         };
+
+        }
 //        for (String str : selectionArgs) {
 //            Log.i("selectionArgs" , str);
 //        }

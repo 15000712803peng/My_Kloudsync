@@ -69,7 +69,7 @@ public class FavoriteVideoPopup {
             savevideo.setVisibility(View.VISIBLE);
             uploadfile.setVisibility(View.VISIBLE);
         }else if(type==3){
-            uploadfile.setVisibility(View.INVISIBLE);
+            uploadfile.setVisibility(View.VISIBLE);
             savevideo.setTextColor(mContext.getResources().getColor(R.color.black));
             savevideo.setVisibility(View.GONE);
         }
@@ -102,7 +102,7 @@ public class FavoriteVideoPopup {
 
         void save(int type, boolean isYinxiang);
 
-        void uploadFile();
+        void uploadFile(int type);
 
         void dismiss();
 
@@ -171,8 +171,7 @@ public class FavoriteVideoPopup {
         uploadfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                mFavoritePoPListener.uploadFile();
+                mFavoritePoPListener.uploadFile(type);
             }
         });
 
