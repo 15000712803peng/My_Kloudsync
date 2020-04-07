@@ -67,7 +67,6 @@ import com.kloudsync.techexcel.tool.DocumentUploadTool;
 import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.Md5Tool;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
-
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
 import com.ub.techexcel.bean.LineItem;
@@ -118,6 +117,7 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
     private static final int REQUEST_CODE_CHANGESPACE = 3;
     private static final int REQUEST_EDIT_SPACE = 4;
     private static final int REQUEST_MOVE_DOCUMENT = 5;
+	private SoundtrackBean mTempClickedSoundtrackBean;
 
 
     UploadFileDialog uploadFileDialog;
@@ -180,7 +180,9 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
         intent.putExtra("isInstantMeeting", 1);
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
+	    intent.putExtra(DocAndMeetingActivity.SUNDTRACKBEAN, mTempClickedSoundtrackBean);
         startActivity(intent);
+	    mTempClickedSoundtrackBean = null;
     }
 
     private void ViewdoHaha(final String meetingID) {
@@ -360,6 +362,13 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
                             public void deleteRefresh() {
                                 getSpaceList();
                             }
+
+	                        @Override
+	                        public void playDocSoundTrackItem(Document document, SoundtrackBean soundtrackBean) {
+		                        mTempClickedSoundtrackBean = soundtrackBean;
+		                        getTempLesson(document);
+
+	                        }
                         });
 
                     }

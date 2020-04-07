@@ -7,7 +7,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -36,6 +35,8 @@ public class DocumentYinXiangPopup implements View.OnClickListener {
     private static FavoritePoPListener mFavoritePoPListener;
 
     public interface FavoritePoPListener {
+
+	    void play();
 
         void share();
 
@@ -87,7 +88,7 @@ public class DocumentYinXiangPopup implements View.OnClickListener {
         yinxiangshare.setOnClickListener(this);
         closebnt.setOnClickListener(this);
 
-        yinxiangplay.setVisibility(View.GONE);
+//        yinxiangplay.setVisibility(View.GONE);
 
 //        mPopupWindow = new Dialog(view, ViewGroup.LayoutParams.MATCH_PARENT,
 //                ViewGroup.LayoutParams.WRAP_CONTENT, false);
@@ -134,6 +135,7 @@ public class DocumentYinXiangPopup implements View.OnClickListener {
                 break;
             case R.id.yinxiangplay:
                 dismiss();
+	            mFavoritePoPListener.play();
                 break;
             case R.id.yinxiangdelete:
                 dismiss();

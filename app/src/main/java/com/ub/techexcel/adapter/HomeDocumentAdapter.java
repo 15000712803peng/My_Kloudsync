@@ -85,6 +85,8 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
         void dismiss();
 
         void deleteRefresh();
+
+        void playDocSoundTrackItem(Document document, SoundtrackBean soundtrackBean);
     }
 
     public void setOnItemLectureListener(OnItemLectureListener onItemLectureListener) {
@@ -289,7 +291,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
             viewHolder.operation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    onItemLectureListener.playDocSoundTrackItem(document, soundtrackBean);
                 }
             });
             viewHolder.morepopup.setOnClickListener(new View.OnClickListener() {
@@ -298,6 +300,11 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
                     DocumentYinXiangPopup documentYinXiangPopup = new DocumentYinXiangPopup();
                     documentYinXiangPopup.getPopwindow(context);
                     documentYinXiangPopup.setFavoritePoPListener(new DocumentYinXiangPopup.FavoritePoPListener() {
+                        @Override
+                        public void play() {
+                            onItemLectureListener.playDocSoundTrackItem(document, soundtrackBean);
+                        }
+
                         @Override
                         public void share() {
                             onItemLectureListener.share(soundtrackBean.getSoundtrackID(), document,soundtrackBean);
