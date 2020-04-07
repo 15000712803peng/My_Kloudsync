@@ -679,7 +679,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
 
         if (_fromUser) {
-            
+
             if (isLoading()) {
                 return;
             }
