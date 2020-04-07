@@ -162,6 +162,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
         } else {
             holder.syncll.setVisibility(View.VISIBLE);
         }
+
         holder.syncll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -57,6 +57,15 @@ public class MeetingConfig {
     private boolean isInViewDigitalNote = true;
     private DocumentPage restoreDocument;
     private boolean isPlayingSoundtrack;
+    private int meetingStatus;
+
+    public int getMeetingStatus() {
+        return meetingStatus;
+    }
+
+    public void setMeetingStatus(int meetingStatus) {
+        this.meetingStatus = meetingStatus;
+    }
 
     public boolean isPlayingSoundtrack() {
         return isPlayingSoundtrack;

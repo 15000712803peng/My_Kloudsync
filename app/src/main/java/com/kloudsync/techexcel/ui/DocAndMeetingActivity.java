@@ -59,6 +59,7 @@ import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventFloatingNote;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.EventInviteUsers;
+import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.bean.EventKickOffMember;
 import com.kloudsync.techexcel.bean.EventMeetingDocuments;
 import com.kloudsync.techexcel.bean.EventMute;
@@ -129,6 +130,7 @@ import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.SetPresenterDialog;
 import com.kloudsync.techexcel.help.ShareDocumentDialog;
+import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
@@ -310,6 +312,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Bind(R.id.sondtrack_load_bar)
     ProgressBar soundtrackLoadingBar;
 
+    @Bind(R.id.layout_waiting_meeting)
+    RelativeLayout waitingMeetingLayout;
+
     @Override
     public void showErrorPage() {
 
@@ -325,13 +330,23 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
 
         Log.e("DocAndMeetingActivity", "on_create");
-
         meetingSettingCache = MeetingSettingCache.getInstance(this);
         writeNoteBlankPageImage();
         initViews();
         //----
         RealMeetingSetting realMeetingSetting = MeetingSettingCache.getInstance(this).getMeetingSetting();
         meetingConfig = getConfig();
+        gson = new Gson();
+        pageCache = DocumentPageCache.getInstance(this);
+        //--
+        menuManager = BottomMenuManager.getInstance(this, meetingConfig);
+        menuManager.setBottomMenuOperationsListener(this);
+        menuManager.setMenuIcon(menuIcon);
+        initWeb();
+        soundtrackPlayManager = new SoundtrackPlayManager(this, meetingConfig, soundtrackPlayLayout);
+        bottomFilePop = new PopBottomFile(this);
+        sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
+                MODE_PRIVATE);
         messageManager = SocketMessageManager.getManager(this);
         messageManager.registerMessageReceiver();
         if (meetingConfig.getType() != MeetingType.MEETING) {
@@ -341,6 +356,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
             //是meeting
+
+            if(meetingConfig.getLessionId() == -1){
+                messageManager.sendMessage_JoinMeeting(meetingConfig);
+                // 会议还没有开始
+                return;
+            }
+
+
             MeetingKit.getInstance().init(this, meetingConfig);
             String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
             MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
@@ -367,18 +390,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
             });
         }
-
-        pageCache = DocumentPageCache.getInstance(this);
-        //--
-        menuManager = BottomMenuManager.getInstance(this, meetingConfig);
-        menuManager.setBottomMenuOperationsListener(this);
-        menuManager.setMenuIcon(menuIcon);
-        initWeb();
-        soundtrackPlayManager = new SoundtrackPlayManager(this, meetingConfig, soundtrackPlayLayout);
-        bottomFilePop = new PopBottomFile(this);
-        gson = new Gson();
-        sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
-                MODE_PRIVATE);
     }
 
     private void safeJoinMeetingIfAlreadyInMeeting() {
@@ -604,6 +615,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             mFloatingWindowNoteManager = null;
             FloatingWindowNoteManager.instance = null;
         }
+
         MeetingKit.getInstance().release();
         if (web != null) {
             web.removeAllViews();
@@ -1067,6 +1079,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         member.setPresenter(0);
                     }
                 }
+
                 EventRefreshMembers refreshMembers = new EventRefreshMembers();
                 refreshMembers.setMeetingConfig(meetingConfig);
                 EventBus.getDefault().post(refreshMembers);
@@ -1180,6 +1193,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         e.printStackTrace();
                     }
                 }
+                break;
+            case SocketMessageManager.MESSAGE_MEETING_STATUS:
+                JSONObject meetingStatusObj = socketMessage.getData();
+                handleMessageMeetingStatus(meetingStatusObj);
+                //{"action":"MEETING_STATUS","retCode":"1","meetingId":"M11","status":"1","changeNumber":"3"}
                 break;
         }
     }
@@ -1307,28 +1325,26 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             if (meetingConfig.getRole() != MeetingConfig.MeetingRole.HOST && meetingConfig.getRole() != MeetingConfig.MeetingRole.MEMBER) {
                 // 自己不是host也不是主讲人
-                if (menuIcon.getVisibility() == View.VISIBLE) {
+                if (menuIcon.getVisibility() == View.VISIBLE && meetingConfig.getMeetingStatus() != 0) {
                     MeetingKit.getInstance().disableAudioAndVideoStream();
                     menuIcon.setVisibility(View.GONE);
                     meetingMenuMemberImage.setVisibility(View.VISIBLE);
                 }
 
             } else {
-                if (meetingMenuMemberImage.getVisibility() == View.VISIBLE) {
-                    menuIcon.setVisibility(View.VISIBLE);
-                    meetingMenuMemberImage.setVisibility(View.GONE);
+                if(meetingConfig.getMeetingStatus() != 0){
+                    if (meetingMenuMemberImage.getVisibility() == View.VISIBLE) {
+                        menuIcon.setVisibility(View.VISIBLE);
+                        meetingMenuMemberImage.setVisibility(View.GONE);
+                    }
                 }
             }
         }
 
         // handle soundtrack
         if (meetingConfig.getType() == MeetingType.MEETING) {
-
-            if (soundtrackPlayManager == null) {
-                return;
-            }
-
-            if (TextUtils.isEmpty(helloMessage.getPlayAudioData())) {
+            String audioData = helloMessage.getPlayAudioData();
+            if (TextUtils.isEmpty(audioData)) {
                 // 没有soundtrack的信息
                 if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
                     soundtrackPlayManager.followClose();
@@ -1337,54 +1353,103 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
 
             try {
-                JSONObject audioJson = new JSONObject(Tools.getFromBase64(helloMessage.getPlayAudioData()));
-                if (audioJson.has("stat")) {
-                    int status = audioJson.getInt("stat");
-                    if(status == 0){
-                        if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
-                            soundtrackPlayManager.followClose();
-                        }
-                        return;
-                    }
-                }
+                JSONObject audioJson = new JSONObject(Tools.getFromBase64(audioData));
+                handleSountrackMessages(audioJson);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
 
-            if (soundtrackPlayManager != null) {
-                if (soundtrackPlayManager.isLoading()) {
+        }
+
+    }
+
+    private void handleSountrackMessages(JSONObject audioJson){
+
+        if(audioJson == null){
+            return;
+        }
+
+        if (soundtrackPlayManager == null) {
+            return;
+        }
+
+        if (soundtrackPlayManager != null) {
+            if (soundtrackPlayManager.isLoading()) {
+                return;
+            }
+        }
+
+        try {
+            if (audioJson.has("stat")) {
+                int status = audioJson.getInt("stat");
+                if(status == 0){
+                    if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
+                        soundtrackPlayManager.followClose();
+                    }
                     return;
                 }
-            }
 
-            try {
-                JSONObject audioJson = new JSONObject(Tools.getFromBase64(helloMessage.getPlayAudioData()));
-                Log.e("check_hello_soundtrack", "audioJson:" + audioJson);
-                if (audioJson.has("stat")) {
-                    int status = audioJson.getInt("stat");
-                    if (status == 2) {
-                        // 心跳里面是暂停
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            Log.e("check_hello_soundtrack", "audioJson:" + audioJson);
+            if (audioJson.has("stat")) {
+                int status = audioJson.getInt("stat");
+                if (status == 2 || status == 6) {
+                    long time = 0;
+                    if(audioJson.has("time")){
+                        time = audioJson.getLong("time");
+                    }
+                    // 心跳里面是暂停
+                    if(soundtrackPlayLayout.getVisibility() != View.VISIBLE){
+                        soundtrackPlayManager.followClose();
+                        soundtrackPlayManager.initLoading(menuIcon);
+                        SoundTrack soundTrack = new SoundTrack();
+                        soundTrack.setSoundtrackID(audioJson.getInt("soundtrackId"));
+                        requestDetailAndPause(soundTrack, time);
+                    }else {
                         Log.e("check_hello_soundtrack", "audioJson:" + audioJson + ",is playing:" + soundtrackPlayManager.isPlaying());
                         if (soundtrackPlayManager.isPlaying()) {
-                            long time = audioJson.getLong("time");
                             soundtrackPlayManager.followPause(time);
+                        }else {
+                            if(Math.abs(soundtrackPlayManager.getPlayTime() - time) > 2000){
+                                soundtrackPlayManager.followPause(time);
+                            }
                         }
-                    } else if (status == 4) {
-                        long time = audioJson.getLong("time");
+                    }
+
+
+                } else if (status == 4 || status == 5 || status == 1) {
+                    //跟随播放
+                    long time = 0;
+                    if(audioJson.has("time")){
+                        time = audioJson.getLong("time");
+                    }
+                    if(soundtrackPlayLayout.getVisibility() != View.VISIBLE){
+                        // TODO
+                        soundtrackPlayManager.followClose();
+                        soundtrackPlayManager.initLoading(menuIcon);
+                        SoundTrack soundTrack = new SoundTrack();
+                        soundTrack.setSoundtrackID(audioJson.getInt("soundtrackId"));
+                        requestDetailAndPlay(soundTrack, time);
+                    }else {
                         if (!soundtrackPlayManager.isPlaying()) {
                             soundtrackPlayManager.followRestart(time);
                         } else {
                             soundtrackPlayManager.followTheProgress(time);
                         }
                     }
+
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
-
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
     }
 
     private void addLinkBorderForDTNew(JSONObject p1Created) throws JSONException {
@@ -1457,7 +1522,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             if (pageNotes.getPageNumber() == meetingConfig.getPageNumber()) {
 
                 for (NoteDetail note : notes) {
-
                     try {
                         JSONObject message = new JSONObject();
                         message.put("type", 38);
@@ -1502,7 +1566,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         checkAgoraMemberNameAndAgoraStatus();
         Log.e("showMemeberCamera", "member:" + member);
 
-
         if (cameraAdapter != null) {
             cameraAdapter.setOnCameraOptionsListener(this);
         }
@@ -1520,7 +1583,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 delayLoadMembersAndRefresh(member);
                 return;
             }
-
         }
 
         refreshAgoraMember(member);
@@ -3112,6 +3174,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         MeetingKit.getInstance().startMeeting();
         meetingLayout.setVisibility(View.VISIBLE);
         meetingMenu.setVisibility(View.VISIBLE);
+        waitingMeetingLayout.setVisibility(View.GONE);
+        menuIcon.setImageResource(R.drawable.icon_menu);
+        menuIcon.setEnabled(true);
         if (messageManager != null && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
             messageManager.sendMessage_MeetingStatus(meetingConfig);
         }
@@ -4441,7 +4506,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             return;
         }
 
-
         switch (data.getInt("actionType")) {
             case 8:
                 if (data.has("docType")) {
@@ -4536,62 +4600,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 break;
 
             case 23:
-                Log.e("check_soundtrack_data", "data:" + data + ",isloading:" + soundtrackPlayManager.isLoading());
-                if (soundtrackPlayManager == null) {
-                    return;
-                }
-
-                if (soundtrackPlayManager != null) {
-                    if (soundtrackPlayManager.isLoading()) {
-                        return;
-                    }
-                }
-                //播放音想
-                if (data.has("stat")) {
-                    final int stat = data.getInt("stat");
-                    final String soundtrackID = data.getString("soundtrackId");
-                    int audioTime = 0;
-                    /*if (stat == 4) {
-                        audioTime = data.getInt("time");
-                    }*/
-                    Log.e("mediaplayer-----", stat + ":   " + soundtrackID);
-                    if (stat == 1) {  //开始播放
-                        int vid2 = 0;
-                        if (!TextUtils.isEmpty(soundtrackID)) {
-                            vid2 = Integer.parseInt(soundtrackID);
-                        }
-                        SoundTrack soundTrack = new SoundTrack();
-                        soundTrack.setSoundtrackID(vid2);
-//                        requestSyncDetailAndPlay(soundTrack);
-                        EventPlaySoundtrack playSoundtrack = new EventPlaySoundtrack();
-                        playSoundtrack.setSoundTrack(soundTrack);
-                        playSoundtrack(playSoundtrack);
-                    } else if (stat == 0) { //停止播放
-                        if (soundtrackPlayManager != null) {
-                            soundtrackPlayManager.followClose();
-                        }
-                    } else if (stat == 2) {  //暂停播放
-                        if (soundtrackPlayManager != null) {
-                            long time = data.getLong("time");
-                            soundtrackPlayManager.followPause(time);
-                        }
-                    } else if (stat == 3) {
-                        // 继续播放
-                        if (soundtrackPlayManager != null) {
-                            soundtrackPlayManager.followRestart(0);
-                        }
-                    } else if (stat == 4) {  // 追上进度
-//
-                    } else if (stat == 5) {  // 拖动进度条
-//                    seekToTime(audioTime);
-                        audioTime = data.getInt("time");
-                        if (soundtrackPlayManager != null) {
-//                            soundtrackPlayManager.followSeekTo(audioTime);
-                            audioTime = data.getInt("time");
-                            soundtrackPlayManager.followSeek(audioTime / 100);
-                        }
-                    }
-                }
+                handleSountrackMessages(data);
                 break;
             case 30:
                 // 被踢出会议
@@ -4609,6 +4618,56 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             default:
                 break;
         }
+    }
+
+    private void handleMessageMeetingStatus(JSONObject data){
+        Log.e("handleMessageMeetingStatus","data:"  + data);
+        if(data != null){
+            if(data.has("status")){
+                try {
+                    int status = data.getInt("status");
+                    if(status == 1){
+                        if(meetingConfig.getMeetingStatus() == 0){
+                            //Leave meeting，从新加入会议
+                            String meetingId = data.getString("meetingId");
+                            followJoinMeetingWhenMeetingStart(meetingId);
+
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    private void followJoinMeetingWhenMeetingStart(final String meetingId){
+        Observable.just("follow_join_meeting").doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                messageManager.sendMessage_LeaveMeeting(meetingConfig);
+            }
+        }).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String str) throws Exception {
+                JSONObject result = ServiceInterfaceTools.getinstance().syncGetJoinMeetingDefaultStatus(meetingId);
+                if(result.has("code")){
+                    int code = result.getInt("code");
+                    if(code == 0){
+                        JSONObject data = result.getJSONObject("data");
+                        meetingConfig.setRole(data.getInt("role"));
+                    }
+                }
+
+            }
+        }).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                meetingConfig.setMeetingId(meetingId);
+                messageManager.sendMessage_JoinMeeting(meetingConfig);
+            }
+        }).subscribe();
     }
 
 
@@ -4663,6 +4722,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (data == null) {
             return;
         }
+        if(meetingConfig.getMeetingStatus() == 0){
+            return;
+        }
 
         if (data.has("retCode")) {
             try {
@@ -4715,14 +4777,25 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                        Toast.makeText(this, "join meeting failed", Toast.LENGTH_SHORT).show();
 //                        return;
 //                    }
-
                     JoinMeetingMessage joinMeetingMessage = gson.fromJson(dataJson.toString(), JoinMeetingMessage.class);
-                    Log.e("JOIN_MEETING", "join_meeting_message:" + joinMeetingMessage);
+                    meetingConfig.setType(joinMeetingMessage.getType());
+
+                    if(meetingConfig.getType() == MeetingType.MEETING){
+                        if(dataJson.has("status")){
+                            int status = dataJson.getInt("status");
+                            meetingConfig.setMeetingStatus(status);
+                            if(status == 0){
+                                // 会议还没有开始
+                                showWatingMeeting();
+                                return;
+                            }
+                        }
+                    }
                     String[] datas = joinMeetingMessage.getCurrentDocumentPage().split("-");
                     meetingConfig.setFileId(Integer.parseInt(datas[0]));
                     float page = Float.parseFloat(datas[1]);
                     meetingConfig.setPageNumber((int) page);
-                    meetingConfig.setType(joinMeetingMessage.getType());
+
                     if (dataJson.has("currentMode")) {
                         meetingConfig.setMode(joinMeetingMessage.getCurrentMode());
                     }
@@ -4730,11 +4803,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         meetingConfig.setCurrentMaxVideoUserId(joinMeetingMessage.getCurrentMaxVideoUserId());
                     }
 
-                    if (documents == null || documents.size() <= 0) {
-                        requestDocumentsAndShowPage();
-                    } else {
-//                        requestDocuments();
+                    if(dataJson.has("lessonId")){
+                        meetingConfig.setLessionId(Integer.parseInt(dataJson.getString("lessonId")));
                     }
+
+                    Log.e("JOIN_MEETING", "join_meeting_message:" + documents);
+
+
                     if (joinMeetingMessage.getNoteId() > 0 && !TextUtils.isEmpty(joinMeetingMessage.getNotePageId())) {
                         followShowNote((int) joinMeetingMessage.getNoteId());
                     }
@@ -4742,7 +4817,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     if (meetingConfig.getType() == MeetingType.DOC) {
                         meetingLayout.setVisibility(View.GONE);
                         meetingMenu.setVisibility(View.GONE);
+                        requestDocumentsAndShowPage();
                     } else if (meetingConfig.getType() == MeetingType.MEETING) {
+                        waitingMeetingLayout.setVisibility(View.GONE);
                         if (dataJson.has("presenterSessionId")) {
                             meetingConfig.setPresenterSessionId(joinMeetingMessage.getPresenterSessionId());
                         }
@@ -4757,7 +4834,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         if (AppConfig.UserID.equals(joinMeetingMessage.getUserId())) {
                             // 说明是自己加入了会议返回的JOIN_MEETING的消息
                             Log.e("check_JOIN_MEETING", "my_self_join_in");
-
+                            requestDocumentsAndShowPage();
                             if (dataJson.has("role")) {
                                 meetingConfig.setRole(dataJson.getInt("role"));
                             }
@@ -4800,6 +4877,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 e.printStackTrace();
             }
         }
+    }
+
+    private void showWatingMeeting(){
+        hideEnterLoading();
+        waitingMeetingLayout.setVisibility(View.VISIBLE);
+        menuIcon.setImageResource(R.drawable.shape_transparent);
     }
 
     private void handleSoundtrackWhenJoinMeeting(String playAudioData) {
