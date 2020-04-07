@@ -214,6 +214,7 @@ import retrofit2.Response;
 public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
         BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener {
 
+    public static final String SUNDTRACKBEAN = "sundtrackbean";
     public static MeetingConfig meetingConfig;
     private SocketMessageManager messageManager;
     //---
@@ -309,6 +310,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     @Bind(R.id.sondtrack_load_bar)
     ProgressBar soundtrackLoadingBar;
+    private SoundtrackBean mSoundtrackBean;
 
     @Override
     public void showErrorPage() {
@@ -379,6 +381,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         gson = new Gson();
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
+        mSoundtrackBean = (SoundtrackBean) getIntent().getSerializableExtra(SUNDTRACKBEAN);
     }
 
     private void safeJoinMeetingIfAlreadyInMeeting() {
@@ -2649,6 +2652,16 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (meetingConfig.getCurrentDocumentPage() != null) {
             meetingConfig.getCurrentDocumentPage().setPageNumber(pageNum);
         }
+        /*是否播放直接播放音想*/
+        if (mSoundtrackBean != null) {
+            SoundTrack soundTrack = new SoundTrack();
+            soundTrack.setSoundtrackID(mSoundtrackBean.getSoundtrackID());
+            EventPlaySoundtrack playSoundtrack = new EventPlaySoundtrack();
+            playSoundtrack.setSoundTrack(soundTrack);
+            EventBus.getDefault().post(playSoundtrack);
+            mSoundtrackBean = null;
+        }
+
     }
 
     @JavascriptInterface

@@ -313,7 +313,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewHolder.operation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+	                onItemLectureListener.playDocSoundTrackItem(favorite, soundtrackBean);
                 }
             });
             viewHolder.morepopup.setOnClickListener(new View.OnClickListener() {
@@ -322,6 +322,11 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     DocumentYinXiangPopup documentYinXiangPopup = new DocumentYinXiangPopup();
                     documentYinXiangPopup.getPopwindow(context);
                     documentYinXiangPopup.setFavoritePoPListener(new DocumentYinXiangPopup.FavoritePoPListener() {
+	                    @Override
+	                    public void play() {
+		                    onItemLectureListener.playDocSoundTrackItem(favorite, soundtrackBean);
+	                    }
+
                         @Override
                         public void share() {
                             onItemLectureListener.share(soundtrackBean.getSoundtrackID(), favorite);
@@ -402,5 +407,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         void dismiss();
 
         void deleteRefresh();
+
+	    void playDocSoundTrackItem(Document favorite, SoundtrackBean soundtrackBean);
     }
 }

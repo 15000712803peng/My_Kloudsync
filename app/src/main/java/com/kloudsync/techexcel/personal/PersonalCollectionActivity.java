@@ -56,6 +56,7 @@ import com.lidroid.xutils.http.client.HttpRequest;
 import com.ub.kloudsync.activity.Document;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.ServiceBean;
+import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -102,6 +103,7 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
     private TextView titleText;
     private RelativeLayout addFavoriteLayout;
     private LinearLayout searchLayout;
+	private SoundtrackBean mTempClickedSoundtrackBean;
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         @SuppressLint("NewApi")
@@ -216,11 +218,13 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
         intent.putExtra("document", lesson);
+	    intent.putExtra(DocAndMeetingActivity.SUNDTRACKBEAN, mTempClickedSoundtrackBean);
 //        Intent intent = new Intent(this, MeetingActivity.class);
 //        intent.putExtra("host_id",AppConfig.UserID);
 //        intent.putExtra("meeting_id", lesson.getLessonId() + "," + AppConfig.UserID);
 //        intent.putExtra("meeting_role", 2);
         startActivity(intent);
+	    mTempClickedSoundtrackBean = null;
     }
 
     private void ViewdoHaha(final String meetingID) {
@@ -397,15 +401,21 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
 
             @Override
             public void deleteRefresh() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new CenterToast.Builder(PersonalCollectionActivity.this).setSuccess(true).setMessage(getResources().getString(R.string.operate_success)).create().show();
-                        getData();
-                    }
-                });
+	            runOnUiThread(new Runnable() {
+		            @Override
+		            public void run() {
+			            new CenterToast.Builder(PersonalCollectionActivity.this).setSuccess(true).setMessage(getResources().getString(R.string.operate_success)).create().show();
+			            getData();
+		            }
+	            });
 
             }
+
+	        @Override
+	        public void playDocSoundTrackItem(Document favorite, SoundtrackBean soundtrackBean) {
+		        mTempClickedSoundtrackBean = soundtrackBean;
+		        GetTempLesson(favorite);
+	        }
         });
         rv_pc.setAdapter(fAdapter);
     }

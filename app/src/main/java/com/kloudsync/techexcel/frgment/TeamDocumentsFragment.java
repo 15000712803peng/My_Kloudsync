@@ -319,6 +319,16 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
                             public void deleteRefresh() {
                                 getAllDocumentList();
                             }
+
+	                        @Override
+	                        public void playDocSoundTrackItem(Document document, SoundtrackBean soundtrackBean) {
+		                        if (!Tools.isFastClick()) {
+//                                    requestDocumentDetail(document);
+			                        tempClickedDocument = document;
+			                        mTempClickedSoundtrackBean = soundtrackBean;
+			                        viewDocIfPermissionGranted(document);
+		                        }
+	                        }
                         });
 
                     } else {
@@ -846,7 +856,9 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
         intent.putExtra("meeting_type", 2);
         intent.putExtra("space_id", itemID);
         intent.putExtra("lession_id", Integer.parseInt(lesson.getLessonId()));
+	    intent.putExtra(DocAndMeetingActivity.SUNDTRACKBEAN, mTempClickedSoundtrackBean);
         startActivity(intent);
+	    mTempClickedSoundtrackBean = null;
     }
 
     private void updateSocket(){
@@ -961,6 +973,7 @@ public class TeamDocumentsFragment extends MyFragment implements View.OnClickLis
 
 
     private Document tempClickedDocument;
+	private SoundtrackBean mTempClickedSoundtrackBean;
 
     private void viewDocIfPermissionGranted(Document document){
         if(KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())){

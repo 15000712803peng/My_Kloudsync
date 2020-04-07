@@ -884,6 +884,7 @@ Please input the cell phone number to add the contact
     <string name="name_cannot_be_empty">Name cannot be empty</string>
     <string name="know_the">Know the</string>
     <string name="sound_is_still_preparing_and_cannot_do_this">Sound is still preparing and do this!</string>
+    <string name="play_soundtrack">Play sound track</string>
     <!--聊天-->
     <!--会议-->
     <string name="kick_off_from_meeting">kick off from meeting</string>
