@@ -4370,9 +4370,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
 
             @Override
-            public void uploadFile() {
+            public void uploadFile(int type) {
 
             }
+
         });
     }
 
