@@ -99,7 +99,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     private static final int TYPE_SOUNDTRACK_PLAY = 1;
     private static final int TYPE_SOUNDTRACK_PAUSE = 2;
     private static final int TYPE_SOUNDTRACK_RESTART = 3;
-    private static final int TYPE_SOUNDTRACK_SEEK = 5;
+    private static final int TYPE_SOUNDTRACK_SEEK_PLAY = 5;
+    private static final int TYPE_SOUNDTRACK_SEEK_STOP = 6;
     //
     String totalTimeStr = "00:00";
     String timeStr = "00:00/00:00";
@@ -580,6 +581,14 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
     }
 
+    public long getPlayTime() {
+        return playTime;
+    }
+
+    public void setPlayTime(long playTime) {
+        this.playTime = playTime;
+    }
+
     private void moveByTime(long currentTime) {
 
         Log.e("check_soundtrack_play", "move_by_time:" + currentTime);
@@ -670,11 +679,18 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
 
         if (_fromUser) {
+
             if (isLoading()) {
                 return;
             }
             if (isPresenter()) {
-                notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_SEEK, seekBar.getProgress() * 100);
+                if (isPlaying()) {
+                    notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_SEEK_PLAY, seekBar.getProgress() * 100);
+                } else {
+                    notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_SEEK_STOP, seekBar.getProgress() * 100);
+
+                }
+
             }
             seek(seekBar.getProgress() * 100);
         }
@@ -689,10 +705,13 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         seek(seekBar.getProgress() * 100);
     }
 
+
     private void seek(final int _time) {
         if (isLoading()) {
             return;
         }
+
+
         Log.e("check_soundtrack_play", "seek,time:" + _time);
         isSeeking = true;
         statusText.setVisibility(View.INVISIBLE);
@@ -942,11 +961,13 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         SoundtrackBackgroundMusicManager.getInstance(host).pause();
         statusText.setText(R.string.paused);
         startPauseImage.setImageResource(R.drawable.video_play);
-
-        if (Math.abs(time - playTime) >= 5000) {
-            playTime = time;
-            seek((int) time);
+        if (time > 0) {
+            if (Math.abs(time - playTime) >= 1000) {
+                playTime = time;
+                seek((int) time);
+            }
         }
+
 
     }
 
@@ -964,6 +985,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public void followTheProgress(long time) {
         if (Math.abs(time - playTime) >= 5000) {
             playTime = time;
+            time += 3000;
             seek((int) time);
         }
     }
@@ -1215,7 +1237,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     public void onAudioLoding() {
         loadingBar.setVisibility(View.VISIBLE);
         statusText.setVisibility(View.INVISIBLE);
-        if(backgroundMusicManager != null && backgroundMusicManager.isPlaying()){
+        if (backgroundMusicManager != null && backgroundMusicManager.isPlaying()) {
             backgroundMusicManager.pause();
         }
     }

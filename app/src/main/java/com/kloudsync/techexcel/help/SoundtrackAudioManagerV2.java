@@ -413,8 +413,8 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
             return;
         }
 
-        if (progress > audioPlayer.getDuration()) {
-            return;
+        if (progress >= audioPlayer.getDuration()) {
+            progress = audioPlayer.getDuration();
         }
 
         mediaInfo.setPlayType(SoundtrackMediaInfo.TYPE_SEEK);

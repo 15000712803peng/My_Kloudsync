@@ -47,7 +47,6 @@ import com.kloudsync.techexcel.school.SelectSchoolActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.StringUtils;
-
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.mining.app.zxing.MipcaActivityCapture;
@@ -743,6 +742,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     }
 
     private void doStartMeeting(final String meetingRoom) {
+
         final EventJoinMeeting joinMeeting = new EventJoinMeeting();
         Observable.just(joinMeeting).observeOn(Schedulers.io()).doOnNext(new Consumer<EventJoinMeeting>() {
             @Override
@@ -822,8 +822,9 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void joinMeeting(EventJoinMeeting eventJoinMeeting) {
         Log.e("check_event_join_meeting", "eventJoinMeeting:" + eventJoinMeeting);
-        if (eventJoinMeeting.getLessionId() <= 0) {
-            Toast.makeText(getActivity(), "加入的meeting不存在或没有开始", Toast.LENGTH_SHORT).show();
+	    if (eventJoinMeeting.getLessionId() == -1) {
+//            Toast.makeText(getActivity(), "加入的meeting不存在或没有开始", Toast.LENGTH_SHORT).show();
+		    goToWatingMeeting(eventJoinMeeting);
             return;
         }
 
@@ -838,6 +839,19 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         intent.putExtra("from_meeting", true);
         startActivity(intent);
     }
+
+	private void goToWatingMeeting(EventJoinMeeting eventJoinMeeting) {
+		Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		//-----
+		intent.putExtra("meeting_id", eventJoinMeeting.getMeetingId());
+		intent.putExtra("meeting_type", 0);
+		intent.putExtra("lession_id", -1);
+		intent.putExtra("meeting_role", eventJoinMeeting.getRole());
+		//intent.putExtra("meeting_role", 3);
+		intent.putExtra("from_meeting", true);
+		startActivity(intent);
+	}
 
     private void joinMeetingBeforeCheckPession() {
         if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
