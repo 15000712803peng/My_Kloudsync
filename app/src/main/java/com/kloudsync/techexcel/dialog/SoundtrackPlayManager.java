@@ -125,6 +125,11 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     private boolean isSeeking;
     private boolean isPlaying;
     private boolean isClosed;
+    /**
+     * 播放过程中是否拖拽seek刚结束 这个变量用于解决
+     * 音响播放时拖动进度条快进结束后进度条会往后退一点然后在继续前进的bug
+     * */
+    private boolean mIsSeekStop=false;
 
     private void resetStatus() {
         isSeeking = false;
@@ -566,7 +571,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         final String _timeToatl = new SimpleDateFormat("mm:ss").format(totalTime);
         String time = currenttime + "/" + _timeToatl;
         playTimeText.setText(time);
-        seekBar.setProgress((int) (currentTime / 100));
+        //seekBar.setProgress((int) (currentTime / 100));//暂停时拖拽seek这里不要setProgress 否则导致小幅度回退反弹
         String _time = time;
         if (time.contains("/")) {
             String[] parts = time.split("/");
@@ -574,7 +579,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 _time = parts[0];
             }
         }
-//        seekBar.setProgress((int)(currentTime / 100));
         onlyShowTimeText.setText(_time);
         actionsManager.setPlayTime(currentTime);
         if (currentTime >= totalTime) {
@@ -622,7 +626,11 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 _time = parts[0];
             }
         }
-        seekBar.setProgress((int) (currentTime / 100));
+        if(mIsSeekStop){
+            mIsSeekStop=false;
+        }else {
+            seekBar.setProgress((int) (currentTime / 100));
+        }
         onlyShowTimeText.setText(_time);
         actionsManager.setPlayTime(currentTime);
         if (currentTime >= totalTime) {
@@ -677,7 +685,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        Log.e("seek_bar", "stop_tracking");
+        mIsSeekStop=true;
+        Log.e("onStopTrackingTouch", "onStopTrackingTouch->"+seekBar.getProgress()+"---"+seekBar.getMax());
 //        pause();
 //        final int time = seekBar.getProgress() * 10;
         if (!hasPermisson()) {
@@ -1210,9 +1219,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 
     @Override
     public void onAudioPlayTimeInfo(long playTime) {
+        Log.e("onStopTrackingTouch", "playTime->"+playTime);
         isSeeking = false;
         moveByTime(playTime);
-
     }
 
     @Override
