@@ -85,6 +85,7 @@ public class TeamAndDocSearchActivity extends BaseActivity implements SpaceAdapt
     int teamID = -1;
     String teamName;
     private static final int REQUEST_MOVE_DOC = 1;
+	private SoundtrackBean mTempClickedSoundtrackBean;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -237,6 +238,14 @@ public class TeamAndDocSearchActivity extends BaseActivity implements SpaceAdapt
             public void deleteRefresh() {
 
             }
+
+	        @Override
+	        public void playDocSoundTrackItem(Document document, SoundtrackBean soundtrackBean) {
+		        if (!Tools.isFastClick()) {
+			        mTempClickedSoundtrackBean = soundtrackBean;
+			        getTempLesson(document);
+		        }
+	        }
         });
     }
 
@@ -543,7 +552,9 @@ public class TeamAndDocSearchActivity extends BaseActivity implements SpaceAdapt
         intent.putExtra("isInstantMeeting", 0);
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
+	    intent.putExtra(DocAndMeetingActivity.SUNDTRACKBEAN, mTempClickedSoundtrackBean);
         startActivity(intent);
+	    mTempClickedSoundtrackBean = null;
     }
 
     private void asyncSearch(String searchStr) {

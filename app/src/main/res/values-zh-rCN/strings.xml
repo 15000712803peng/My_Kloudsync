@@ -874,6 +874,7 @@
     <string name="name_cannot_be_empty">名称不能为空</string>
     <string name="know_the">知道了</string>
     <string name="sound_is_still_preparing_and_cannot_do_this">音想还在准备中,不能这样做!</string>
+    <string name="play_soundtrack">播放音想</string>
     <!--聊天-->
     <!--会议-->
     <!--音想-->

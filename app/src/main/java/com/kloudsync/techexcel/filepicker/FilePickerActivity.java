@@ -23,10 +23,13 @@ public class FilePickerActivity extends AppCompatActivity implements View.OnClic
     private boolean isConfirm = false;
 	TextView titleText;
 	private RelativeLayout backLayout;
+
+	private int fileType=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_picker);
+        fileType=getIntent().getIntExtra("fileType",0);
         initView();
         initEvent();
         setFragment(1);
@@ -58,6 +61,9 @@ public class FilePickerActivity extends AppCompatActivity implements View.OnClic
             case 1:
                 if(commonFileFragment==null){
                     commonFileFragment = FileCommonFragment.newInstance();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("fileType",fileType);
+                    commonFileFragment.setArguments(bundle);//数据传递到fragment中
                     ((FileCommonFragment)commonFileFragment).setOnUpdateDataListener(this);
                     fragmentTransaction.add(R.id.fl_content,commonFileFragment);
                 }else {
@@ -67,6 +73,9 @@ public class FilePickerActivity extends AppCompatActivity implements View.OnClic
             case 2:
                 if(allFileFragment==null){
                     allFileFragment = FileAllFragment.newInstance();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("fileType",fileType);
+                    allFileFragment.setArguments(bundle);//数据传递到fragment中
                     ((FileAllFragment)allFileFragment).setOnUpdateDataListener(this);
                     fragmentTransaction.add(R.id.fl_content,allFileFragment);
                 }else {

@@ -207,12 +207,12 @@ public class SoundtrackBackgroundMusicManager implements MediaPlayer.OnPreparedL
 
         try {
             if (audioPlayer != null) {
-                if (time < audioPlayer.getDuration()) {
-                    audioPlayer.seekTo(time);
-                }else {
-                    audioPlayer.seekTo(audioPlayer.getDuration() - 500);
+	            if (time < audioPlayer.getDuration()) {
+		            audioPlayer.seekTo(time);
+	            } else {
+		            audioPlayer.seekTo(audioPlayer.getDuration() - 500);
 
-                }
+	            }
                 Log.e("vedio_check", "seek_to,time:" + time);
             }
         } catch (Exception e) {

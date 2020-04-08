@@ -3,7 +3,6 @@ package com.kloudsync.techexcel.frgment;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -236,7 +235,9 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
         intent.putExtra("meeting_type", 2);
         intent.putExtra("space_id", spaceId);
         intent.putExtra("lession_id", Integer.parseInt(lesson.getLessonId()));
+	    intent.putExtra(DocAndMeetingActivity.SUNDTRACKBEAN, mTempClickedSoundtrackBean);
         startActivity(intent);
+	    mTempClickedSoundtrackBean = null;
     }
 
     private void ViewdoHaha(final String meetingID) {
@@ -363,6 +364,7 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
     }
 
     private Document tempClickedDocument;
+	private SoundtrackBean mTempClickedSoundtrackBean;
 
     private void getSpaceList() {
         TeamSpaceInterfaceTools.getinstance().getSpaceDocumentList(AppConfig.URL_PUBLIC + "SpaceAttachment/List?spaceID=" + spaceId + "&type=1&pageIndex=0&pageSize=20&searchText=",
@@ -452,6 +454,13 @@ public class SpaceDocumentsFragment extends Fragment implements View.OnClickList
                             public void deleteRefresh() {
                                 getSpaceList();
                             }
+
+	                        @Override
+	                        public void playDocSoundTrackItem(Document document, SoundtrackBean soundtrackBean) {
+		                        tempClickedDocument = document;
+		                        mTempClickedSoundtrackBean = soundtrackBean;
+		                        viewDocIfPermissionGranted(document);
+	                        }
                         });
 
                     }

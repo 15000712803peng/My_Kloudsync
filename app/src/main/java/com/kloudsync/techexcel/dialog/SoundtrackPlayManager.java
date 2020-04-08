@@ -690,9 +690,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
                 return;
             }
             if (isPresenter()) {
-                if(isPlaying()){
+                if (isPlaying()) {
                     notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_SEEK_PLAY, seekBar.getProgress() * 100);
-                }else {
+                } else {
                     notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_SEEK_STOP, seekBar.getProgress() * 100);
 
                 }
@@ -712,12 +712,10 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     }
 
 
-
     private void seek(final int _time) {
         if (isLoading()) {
             return;
         }
-
 
 
         Log.e("check_soundtrack_play", "seek,time:" + _time);

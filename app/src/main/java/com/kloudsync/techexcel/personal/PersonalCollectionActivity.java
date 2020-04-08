@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -24,6 +25,9 @@ import com.kloudsync.techexcel.bean.EventSyncSucc;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.UploadFileDialog;
+import com.kloudsync.techexcel.filepicker.FileEntity;
+import com.kloudsync.techexcel.filepicker.FilePickerActivity;
+import com.kloudsync.techexcel.filepicker.PickerManager;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.AddFavoriteDialog;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -56,6 +60,7 @@ import com.lidroid.xutils.http.client.HttpRequest;
 import com.ub.kloudsync.activity.Document;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.ServiceBean;
+import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -71,6 +76,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -102,6 +108,7 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
     private TextView titleText;
     private RelativeLayout addFavoriteLayout;
     private LinearLayout searchLayout;
+	private SoundtrackBean mTempClickedSoundtrackBean;
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         @SuppressLint("NewApi")
@@ -216,11 +223,13 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
         intent.putExtra("document", lesson);
+	    intent.putExtra(DocAndMeetingActivity.SUNDTRACKBEAN, mTempClickedSoundtrackBean);
 //        Intent intent = new Intent(this, MeetingActivity.class);
 //        intent.putExtra("host_id",AppConfig.UserID);
 //        intent.putExtra("meeting_id", lesson.getLessonId() + "," + AppConfig.UserID);
 //        intent.putExtra("meeting_role", 2);
         startActivity(intent);
+	    mTempClickedSoundtrackBean = null;
     }
 
     private void ViewdoHaha(final String meetingID) {
@@ -397,15 +406,21 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
 
             @Override
             public void deleteRefresh() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new CenterToast.Builder(PersonalCollectionActivity.this).setSuccess(true).setMessage(getResources().getString(R.string.operate_success)).create().show();
-                        getData();
-                    }
-                });
+	            runOnUiThread(new Runnable() {
+		            @Override
+		            public void run() {
+			            new CenterToast.Builder(PersonalCollectionActivity.this).setSuccess(true).setMessage(getResources().getString(R.string.operate_success)).create().show();
+			            getData();
+		            }
+	            });
 
             }
+
+	        @Override
+	        public void playDocSoundTrackItem(Document favorite, SoundtrackBean soundtrackBean) {
+		        mTempClickedSoundtrackBean = soundtrackBean;
+		        GetTempLesson(favorite);
+	        }
         });
         rv_pc.setAdapter(fAdapter);
     }
@@ -620,167 +635,186 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
                 String path = FileUtils.getPath(this, data.getData());
                 String title = path.substring(path.lastIndexOf("/") + 1);
 //                uploadFavoirte(path, title);
-                AddDocumentTool.addDocumentToFavorite(this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
-                    @Override
-                    public void uploadStart() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                uploadFileDialog = new UploadFileDialog(PersonalCollectionActivity.this);
-                                uploadFileDialog.setTile("uploading");
-                                uploadFileDialog.show();
+                uploadfile(path);
+            }else if(requestCode==REQUEST_SELECTED_FILE){
 
-                            }
-                        });
+                List<FileEntity>  fff = PickerManager.getInstance().files;
+                for (int i = 0; i < fff.size(); i++) {
+                    FileEntity fileEntity=fff.get(0);
+                    String path=fileEntity.getPath();
+                    Log.e("buildversion",path+"");
+                    if(!TextUtils.isEmpty(path)){
+                        String suff=getSuffix(path);
+                        if(suff.equals("mp3")){
+                            uploadMp3file(path);
+                        }else{
+                            uploadfile(path);
+                        }
                     }
+                }
+            }
+        }
+    }
 
+
+
+    private String getSuffix(String fileName){
+        int index = fileName.lastIndexOf(".");
+        if (index != -1) {
+            return fileName.substring(index + 1).toLowerCase(Locale.US);
+        } else {
+            return null;
+        }
+    }
+
+
+    private void  uploadfile(String path){
+        AddDocumentTool.addDocumentToFavorite(this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
+            @Override
+            public void uploadStart() {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void uploadFile(final int progress) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
-                                    uploadFileDialog.setProgress(progress);
-                                }
-                            }
-                        });
-                    }
+                    public void run() {
+                        uploadFileDialog = new UploadFileDialog(PersonalCollectionActivity.this);
+                        uploadFileDialog.setTile("uploading");
+                        uploadFileDialog.show();
 
-                    @Override
-                    public void convertFile(final int progress) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
-                                    uploadFileDialog.setTile("Converting");
-                                    uploadFileDialog.setProgress(progress);
-                                }
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void uploadFinished(Object result) {
-                        getData();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (uploadFileDialog != null) {
-                                    uploadFileDialog.cancel();
-                                }
-                                new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage(getResources().getString(R.string.create_success)).create().show();
-
-                            }
-                        }, 600);
-
-                    }
-
-                    @Override
-                    public void uploadError(String message) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (uploadFileDialog != null) {
-                                    uploadFileDialog.cancel();
-                                }
-                                Toast.makeText(getApplicationContext(), "add failed", Toast.LENGTH_SHORT).show();
-                            }
-                        });
                     }
                 });
             }
-        }
-    }
 
-
-
-
-
-
-    private void uploadFavoirte(final String path1, final String title) {
-        Log.e("video", path1 + " : " + title);
-        Message msg = new Message();
-        final LineItem attachmentBean = new LineItem();
-        attachmentBean.setUrl(path1);
-        attachmentBean.setFileName(title);
-
-        final JSONObject jsonobject = null;
-        String url = null;
-
-        File file = FileGetTool.GetFile(attachmentBean);
-        if (file.exists()) {
-            try {
-                url = AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadFileWithHash?Title="
-                        + URLEncoder.encode(LoginGet.getBase64Password(title), "UTF-8") +
-                        "&schoolID=" +
-                        SchoolID +
-                        "&Hash=" +
-                        Md5Tool.getMd5ByFile(file);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            final String finalUrl = url;
-            new ApiTask(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        JSONObject responsedata = ConnectService
-                                .submitDataByJson(finalUrl, jsonobject);
-                        Log.e("UploadFileWithHash", responsedata.toString() + "");
-                        String retcode = responsedata.getString("RetCode");
-                        Message msg = new Message();
-                        if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
-                            msg.what = AppConfig.DELETESUCCESS;
-                            handler.sendMessage(msg);
-                        } else if (retcode.equals(AppConfig.Upload_NoExist + "")) {
-                            msg.what = AppConfig.Upload_NoExist;
-                            mPath = path1;
-                            mTitle = title;
-                            JSONObject jsonObject = responsedata.getJSONObject("RetData");
-                            targetFolderKey = jsonObject.getString("Path");
-                            field = jsonObject.getInt("FileID");
-                            DocumentUploadUtil duu = new DocumentUploadUtil();
-                            duu.setUpdateGetListener(new DocumentUploadUtil.UpdateGetListener() {
-                                @Override
-                                public void Update() {
-                                    HttpSend(AppConfig.DELETESUCCESS);
-                                }
-                            });
-                            duu.uploadFileFavorite(PersonalCollectionActivity.this, targetFolderKey, field,
-                                    attachmentBean, rl_update, fAdapter, mlist);
-                        } else if (retcode.equals(AppConfig.Upload_Exist + "")) {
-                            msg.what = AppConfig.FAILED;
-                            String ErrorMessage = responsedata
-                                    .getString("ErrorMessage");
-                            msg.obj = ErrorMessage;
-                            handler.sendMessage(msg);
+            @Override
+            public void uploadFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setProgress(progress);
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
-                }
-            }).start(ThreadManager.getManager());
+                });
+            }
 
-        } else {
-            Toast.makeText(getApplicationContext(), getString(R.string.nofile),
-                    Toast.LENGTH_LONG).show();
-        }
+            @Override
+            public void convertFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setTile("Converting");
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+            }
 
+            @Override
+            public void uploadFinished(Object result) {
+                getData();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null) {
+                            uploadFileDialog.cancel();
+                        }
+                        new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage(getResources().getString(R.string.create_success)).create().show();
+
+                    }
+                }, 600);
+
+            }
+
+            @Override
+            public void uploadError(String message) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null) {
+                            uploadFileDialog.cancel();
+                        }
+                        Toast.makeText(getApplicationContext(), "add failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
+    private void  uploadMp3file(String path){
+        AddDocumentTool.addDocumentToFavoriteMp3(this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
+            @Override
+            public void uploadStart() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        uploadFileDialog = new UploadFileDialog(PersonalCollectionActivity.this);
+                        uploadFileDialog.setTile("uploading");
+                        uploadFileDialog.show();
+
+                    }
+                });
+            }
+
+            @Override
+            public void uploadFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void convertFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setTile("Converting");
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void uploadFinished(Object result) {
+                getData();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null) {
+                            uploadFileDialog.cancel();
+                        }
+                        new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage(getResources().getString(R.string.create_success)).create().show();
+                    }
+                }, 600);
+
+            }
+
+            @Override
+            public void uploadError(String message) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null) {
+                            uploadFileDialog.cancel();
+                        }
+                        Toast.makeText(getApplicationContext(), "add failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
+
+
 
     private void UploadFile(String path, String title) {
         final Document favorite = new Document();
         favorite.setFlag(1);
         favorite.setTitle(title);
-        /*puo = new Popupdate();
-        puo.getPopwindow(PersonalCollectionActivity.this, title);
-        puo.setPoPDismissListener(new Popupdate.PopDismissListener() {
-            @Override
-            public void PopDismiss() {
-                rl_update.setVisibility(View.GONE);
-
-            }
-        });*/
         RequestParams params = new RequestParams();
         params.setHeader("UserToken", AppConfig.UserToken);
 
@@ -999,6 +1033,7 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
     }
 
     private static final int REQUEST_SELECTED_IMAGE = 1;
+    private static final int REQUEST_SELECTED_FILE = 4;
 
     @Override
     public void onItemClick(Document document) {
@@ -1013,8 +1048,12 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
 
     }
 
+
     @Override
     public void selectFromDocs() {
+        Intent intent = new Intent(this, FilePickerActivity.class);
+        intent.putExtra("fileType",1);
+        startActivityForResult(intent,REQUEST_SELECTED_FILE);
 
     }
 

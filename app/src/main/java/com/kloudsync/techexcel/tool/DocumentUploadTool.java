@@ -234,6 +234,34 @@ public class DocumentUploadTool {
         lg.GetprepareUploading(mContext);
     }
 
+
+    boolean isNeedConvert=true;
+    String fileNamecon;
+    public void uploadFileFavoritemp3(final Context context, String targetFolderKey1, int field1, File file) {
+        this.mContext = context;
+        this.targetFolderKey = targetFolderKey1;
+        this.field = field1;
+        this.mfile = file;
+        type = 1;
+        isNeedConvert=false;
+        fileHash = Md5Tool.getMd5ByFile(mfile);
+        this.fileName = file.getName();
+        fileNamecon = Md5Tool.getUUID();
+        MD5Hash = targetFolderKey + "/" +fileNamecon + ".mp3";
+        LoginGet lg = new LoginGet();
+        lg.setprepareUploadingGetListener(new LoginGet.prepareUploadingGetListener() {
+            @Override
+            public void getUD(Uploadao ud) {
+                if (1 == ud.getServiceProviderId()) {
+                    uploadWithTransferUtility(ud);
+                } else if (2 == ud.getServiceProviderId()) {
+                    initOSS(ud);
+                }
+            }
+        });
+        lg.GetprepareUploading(mContext);
+    }
+
     public void uploadWithTransferUtility(final LineItem attachmentBean, final Uploadao ud) {
         mfile = new File(attachmentBean.getUrl());
         fileHash = Md5Tool.getMd5ByFile(mfile);
@@ -340,7 +368,29 @@ public class DocumentUploadTool {
                     ((Activity) mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            startConverting(ud);
+                            if(isNeedConvert){
+                                startConverting(ud);
+                            }else{
+                                {
+                                    ConvertingResult convertingResult=new ConvertingResult();
+                                    convertingResult.setFileName(fileNamecon);
+                                    convertingResult.setCount(1);
+                                    ServiceInterfaceTools.getinstance().uploadFavoriteNewFile(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
+                                            ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
+                                            fileName, "", fileHash,
+                                            convertingResult, field, new ServiceInterfaceListener() {
+                                                @Override
+                                                public void getServiceReturnData(Object object) {
+                                                    Log.e("UploadMp3File", "FavoriteAttachment/UploadNewFile");
+                                                    if (uploadDetailLinstener != null) {
+                                                        uploadDetailLinstener.uploadFinished(object);
+                                                    }
+                                                }
+                                            }
+                                    );
+                                }
+                            }
+
                         }
                     });
                 } catch (InterruptedException e) {
@@ -460,14 +510,12 @@ public class DocumentUploadTool {
                 MD5Hash, path);
         put.setCRC64(OSSRequest.CRC64Config.YES);*/
         //开始下载
-
         String recordDirectory = Environment.getExternalStorageDirectory().getAbsolutePath() + "/oss_record/";
         File recordDir = new File(recordDirectory);
         // 要保证目录存在，如果不存在则主动创建
         if (!recordDir.exists()) {
             recordDir.mkdirs();
         }
-
         // 创建断点上传请求，参数中给出断点记录文件的保存位置，需是一个文件夹的绝对路径
         ResumableUploadRequest request = new ResumableUploadRequest(ud.getBucketName(), MD5Hash, mfile.getAbsolutePath(), recordDirectory);
         //设置false,取消时，不删除断点记录文件，如果不进行设置，默认true，是会删除断点记录文件，下次再进行上传时会重新上传。
@@ -482,7 +530,7 @@ public class DocumentUploadTool {
                     @Override
                     public void run() {
                         int progress = (int) (currentSize * 100 / totalSize);
-
+                        Log.e("UploadMp3File", progress+"  "+MD5Hash+"   "+field+"  "+targetFolderKey);
                         if (uploadDetailLinstener != null) {
                             uploadDetailLinstener.uploadFile(progress);
                         }
@@ -494,14 +542,33 @@ public class DocumentUploadTool {
         oss.asyncResumableUpload(request, new OSSCompletedCallback<ResumableUploadRequest, ResumableUploadResult>() {
             @Override
             public void onSuccess(ResumableUploadRequest request, ResumableUploadResult result) {
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(isNeedConvert) {
+                                startConverting(ud);
+                            } else{
+                                ConvertingResult convertingResult=new ConvertingResult();
+                                convertingResult.setFileName(fileNamecon);
+                                convertingResult.setCount(1);
+                                ServiceInterfaceTools.getinstance().uploadFavoriteNewFile(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
+                                        ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
+                                        fileName, "", fileHash,
+                                        convertingResult, field, new ServiceInterfaceListener() {
+                                            @Override
+                                            public void getServiceReturnData(Object object) {
+                                                Log.e("UploadMp3File", "FavoriteAttachment/UploadNewFile");
+                                                if (uploadDetailLinstener != null) {
+                                                    uploadDetailLinstener.uploadFinished(object);
+                                                }
+                                            }
+                                        }
+                                );
+                            }
+                        }
+                    });
+                }
 
-                ((Activity) mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        startConverting(ud);
-                    }
-                });
-            }
 
             @Override
             public void onFailure(ResumableUploadRequest request, ClientException clientExcepion, ServiceException serviceException) {
