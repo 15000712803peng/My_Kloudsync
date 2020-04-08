@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingType;
+import com.kloudsync.techexcel.config.AppConfig;
 
 public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickListener {
 
@@ -47,6 +48,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
 
     @Override
     public void onClick(View v) {
+
         switch (v.getId()) {
             case R.id.bottom_menu_close:
                 hide();
@@ -56,6 +58,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_file:
+                if(meetingConfig.getType() == MeetingType.MEETING){
+                    if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+                        return;
+                    }
+                }
                 hide();
                 if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuFileClicked();
@@ -74,6 +81,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_notes:
+                if(meetingConfig.getType() == MeetingType.MEETING){
+                    if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+                        return;
+                    }
+                }
                 hide();
                 if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuNoteClicked();
@@ -93,6 +105,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_sync:
+                if(meetingConfig.getType() == MeetingType.MEETING){
+                    if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+                        return;
+                    }
+                }
                 hide();
                 if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuSyncClicked();

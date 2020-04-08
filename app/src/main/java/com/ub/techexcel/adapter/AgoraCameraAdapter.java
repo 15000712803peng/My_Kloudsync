@@ -326,7 +326,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
 
     public void refreshMyAgoraStatus(AgoraMember agoraMember){
         int index = this.users.indexOf(agoraMember);
-        Log.e("refreshMyAgoraStatus","notifyItemChanged,user:" + this.users.get(index));
+//        Log.e("refreshMyAgoraStatus","notifyItemChanged,user:" + this.users.get(index));
         if(index >= 0){
             AgoraMember _member = this.users.get(index);
             _member.setMuteAudio(agoraMember.isMuteAudio());

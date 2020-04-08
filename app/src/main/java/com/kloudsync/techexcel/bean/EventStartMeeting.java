@@ -4,7 +4,8 @@ package com.kloudsync.techexcel.bean;
  * Created by tonyan on 2019/12/17.
  */
 
-public class EventJoinMeeting {
+public class EventStartMeeting {
+
     private String meetingId;
     private int lessionId = -1;
     private int role = 1;

@@ -414,7 +414,6 @@ public class SocketMessageManager {
                 //   5 进度条拖动停止通知播放进度
                 message.put("time", time);
             }
-            Log.e("sendMessage_Soundtrack_Playing_Status", message.toString());
             doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
         } catch (JSONException e) {
             e.printStackTrace();

@@ -4,11 +4,11 @@
     android:layout_width="@dimen/meeting_members_setting_width"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    app:angle="4dp"
-    app:arrowHeight="8dp"
-    app:arrowLocation="top"
-    app:arrowPosition="130dp"
-    app:arrowWidth="16dp"
+    app:angle="5dp"
+    app:arrowHeight="10dp"
+    app:arrowLocation="right"
+    app:arrowPosition="30dp"
+    app:arrowWidth="12dp"
     app:bubbleColor="@color/divider_line">
     <ScrollView
         android:layout_width="match_parent"

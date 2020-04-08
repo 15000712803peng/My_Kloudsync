@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.kloudsync.techexcel.bean.EventKickOffMember;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.linshi.LinshiActivity;
+import com.kloudsync.techexcel.tool.DensityUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -28,12 +31,15 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
     private Context context;
 
     private MeetingMember meetingMember;
-    private TextView setPresenter,setAuditor,setSpeakMember,kickOffMember;
+    private TextView setPresenter, setAuditor, setSpeakMember, kickOffMember;
     private MeetingConfig meetingConfig;
+    View view;
 
-    public interface OnMemberSettingChanged{
+    public interface OnMemberSettingChanged {
         void setPresenter(MeetingMember meetingMember);
+
         void setAuditor(MeetingMember meetingMember);
+
         void setSpeakMember(MeetingMember meetingMember);
     }
 
@@ -51,7 +57,7 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
 
     private void initalize() {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.pop_meeting_member_options, null);
+        view = inflater.inflate(R.layout.pop_meeting_member_options, null);
         setPresenter = view.findViewById(R.id.txt_setting_presenter);
         setAuditor = view.findViewById(R.id.txt_setting_auditor);
         setSpeakMember = view.findViewById(R.id.txt_setting_speak_member);
@@ -74,23 +80,23 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
 
     }
 
-    public void showAtBottom(MeetingMember meetingMember,View view,MeetingConfig meetingConfig) {
+    public void showAtBottom(MeetingMember meetingMember, View view, MeetingConfig meetingConfig) {
         this.meetingMember = meetingMember;
         this.meetingConfig = meetingConfig;
-        if(meetingMember.getPresenter() == 1){
+        if (meetingMember.getPresenter() == 1) {
             setPresenter.setVisibility(View.GONE);
         }
-        if(meetingMember.getPresenter() == 1 || meetingMember.getRole() == 2){
+        if (meetingMember.getPresenter() == 1 || meetingMember.getRole() == 2) {
             setAuditor.setVisibility(View.GONE);
         }
-        if(meetingConfig.getMeetingHostId().equals(meetingMember.getUserId()+"")){
+        if (meetingConfig.getMeetingHostId().equals(meetingMember.getUserId() + "")) {
             // 操作的成员是HOST
             kickOffMember.setVisibility(View.GONE);
-        }else {
+        } else {
             // 不是HOST，如果自己是HOST
-            if(AppConfig.UserID.equals(meetingConfig.getMeetingHostId())){
+            if (AppConfig.UserID.equals(meetingConfig.getMeetingHostId())) {
                 kickOffMember.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 kickOffMember.setVisibility(View.GONE);
             }
         }
@@ -98,32 +104,62 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
         showAsDropDown(view, -context.getResources().getDimensionPixelOffset(R.dimen.meeting_members_setting_width) + context.getResources().getDimensionPixelOffset(R.dimen.pop_setting_left_margin), 10);
     }
 
+    public void showAtLeft(MeetingMember meetingMember, View view, MeetingConfig meetingConfig) {
+        this.meetingMember = meetingMember;
+        this.meetingConfig = meetingConfig;
+        if (meetingMember.getPresenter() == 1) {
+            setPresenter.setVisibility(View.GONE);
+        }
+        if (meetingMember.getPresenter() == 1 || meetingMember.getRole() == 2) {
+            setAuditor.setVisibility(View.GONE);
+        }
+        if (meetingConfig.getMeetingHostId().equals(meetingMember.getUserId() + "")) {
+            // 操作的成员是HOST
+            kickOffMember.setVisibility(View.GONE);
+        } else {
+            // 不是HOST，如果自己是HOST
+            if (AppConfig.UserID.equals(meetingConfig.getMeetingHostId())) {
+                kickOffMember.setVisibility(View.VISIBLE);
+            } else {
+                kickOffMember.setVisibility(View.GONE);
+            }
+        }
+
+        this.view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int popupWidth = this.view.getMeasuredWidth();
+        int popupHeight = this.view.getMeasuredHeight();
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+
+        showAtLocation(view, Gravity.NO_GRAVITY, location[0] - popupWidth - DensityUtil.dp2px(context, 40), location[1] + view.getHeight() / 2 - popupHeight / 2);
+//        showAsDropDown(view, -context.getResources().getDimensionPixelOffset(R.dimen.meeting_members_setting_width) + context.getResources().getDimensionPixelOffset(R.dimen.pop_setting_left_margin), 10);
+    }
 
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.txt_setting_presenter://设置为主持人
-                if(meetingMember != null && onMemberSettingChanged != null){
+                if (meetingMember != null && onMemberSettingChanged != null) {
                     onMemberSettingChanged.setPresenter(meetingMember);
                 }
                 dismiss();
                 break;
             case R.id.txt_setting_auditor://设置为参会者
-                if(meetingMember != null && onMemberSettingChanged != null){
+                if (meetingMember != null && onMemberSettingChanged != null) {
                     onMemberSettingChanged.setAuditor(meetingMember);
                 }
                 dismiss();
                 break;
             case R.id.txt_setting_speak_member://设置为可讲话参会者
-                if(meetingMember != null && onMemberSettingChanged != null){
+                if (meetingMember != null && onMemberSettingChanged != null) {
                     onMemberSettingChanged.setSpeakMember(meetingMember);
                 }
                 dismiss();
                 break;
             case R.id.txt_kick_off:
-                if(meetingMember != null){
-                    Log.e("check_post_kick_off","post_4");
+                if (meetingMember != null) {
+                    Log.e("check_post_kick_off", "post_4");
                     EventKickOffMember kickOffMember = new EventKickOffMember();
                     kickOffMember.setMeetingMember(meetingMember);
                     EventBus.getDefault().post(kickOffMember);
