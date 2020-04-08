@@ -3897,9 +3897,10 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 			}
 
 			@Override
-			public void uploadFile() {
+			public void uploadFile(int type) {
 
 			}
+
 		});
 	}
 

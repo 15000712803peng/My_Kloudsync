@@ -49,6 +49,7 @@ import com.facebook.network.connectionclass.ConnectionQuality;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.BookNote;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventClose;
@@ -59,6 +60,7 @@ import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventFloatingNote;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.EventInviteUsers;
+import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.bean.EventKickOffMember;
 import com.kloudsync.techexcel.bean.EventMeetingDocuments;
 import com.kloudsync.techexcel.bean.EventMute;
@@ -129,6 +131,7 @@ import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.SetPresenterDialog;
 import com.kloudsync.techexcel.help.ShareDocumentDialog;
+import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
@@ -312,8 +315,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     ProgressBar soundtrackLoadingBar;
     private SoundtrackBean mSoundtrackBean;
 
-	@Bind(R.id.layout_waiting_meeting)
-	RelativeLayout waitingMeetingLayout;
+    @Bind(R.id.layout_waiting_meeting)
+    RelativeLayout waitingMeetingLayout;
 
     @Override
     public void showErrorPage() {
@@ -336,17 +339,17 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         //----
         RealMeetingSetting realMeetingSetting = MeetingSettingCache.getInstance(this).getMeetingSetting();
         meetingConfig = getConfig();
-	    gson = new Gson();
-	    pageCache = DocumentPageCache.getInstance(this);
-	    //--
-	    menuManager = BottomMenuManager.getInstance(this, meetingConfig);
-	    menuManager.setBottomMenuOperationsListener(this);
-	    menuManager.setMenuIcon(menuIcon);
-	    initWeb();
-	    soundtrackPlayManager = new SoundtrackPlayManager(this, meetingConfig, soundtrackPlayLayout);
-	    bottomFilePop = new PopBottomFile(this);
-	    sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
-			    MODE_PRIVATE);
+        gson = new Gson();
+        pageCache = DocumentPageCache.getInstance(this);
+        //--
+        menuManager = BottomMenuManager.getInstance(this, meetingConfig);
+        menuManager.setBottomMenuOperationsListener(this);
+        menuManager.setMenuIcon(menuIcon);
+        initWeb();
+        soundtrackPlayManager = new SoundtrackPlayManager(this, meetingConfig, soundtrackPlayLayout);
+        bottomFilePop = new PopBottomFile(this);
+        sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
+                MODE_PRIVATE);
         messageManager = SocketMessageManager.getManager(this);
         messageManager.registerMessageReceiver();
         if (meetingConfig.getType() != MeetingType.MEETING) {
@@ -357,11 +360,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
             //是meeting
 
-	        if (meetingConfig.getLessionId() == -1) {
-		        messageManager.sendMessage_JoinMeeting(meetingConfig);
-		        // 会议还没有开始
-		        return;
-	        }
+            if (meetingConfig.getLessionId() == -1) {
+                messageManager.sendMessage_JoinMeeting(meetingConfig);
+                // 会议还没有开始
+                return;
+            }
 
             MeetingKit.getInstance().init(this, meetingConfig);
             String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
@@ -382,9 +385,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                                MeetingKit.getInstance().startMeeting();
                             } else {
                                 MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
-
                             }
                         }
+                    } else {
+                        MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+
                     }
                 }
             });
@@ -587,6 +592,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         meetingConfig.setUserToken(UserData.getUserToken(this));
         meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting", false));
         meetingConfig.setSpaceId(getIntent().getIntExtra("space_id", 0));
+        meetingConfig.setHost(getIntent().getBooleanExtra("is_host", false));
         return meetingConfig;
     }
 
@@ -1094,6 +1100,35 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 finish();
                 break;
             case SocketMessageManager.MESSAGE_MEMBER_LIST_CHANGE:
+                if (socketMessage.getData() != null) {
+                    JSONObject data = socketMessage.getData();
+                    Log.e("check_list_changed", "data:" + data);
+                    if (data.has("retData")) {
+                        JSONObject retData = data.optJSONObject("retData");
+                        if (retData != null) {
+                            try {
+                                int type = retData.getInt("type");
+                                switch (type) {
+                                    case 17:
+                                        // 麦克风状态变化
+                                        int value = retData.getInt("value");
+                                        if (value == 5) {
+                                            // 主持人关闭麦克风
+                                            Log.e("check_list_changed", "mute_audio");
+                                            MeetingKit.getInstance().menuMicroClicked(false);
+                                            MeetingKit.getInstance().refreshMeetingMenu();
+                                        }
+                                        break;
+                                }
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                }
                 MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
                 break;
             case SocketMessageManager.MESSAGE_AGORA_STATUS_CHANGE:
@@ -1194,11 +1229,23 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     }
                 }
                 break;
-	        case SocketMessageManager.MESSAGE_MEETING_STATUS:
-		        JSONObject meetingStatusObj = socketMessage.getData();
-		        handleMessageMeetingStatus(meetingStatusObj);
-		        //{"action":"MEETING_STATUS","retCode":"1","meetingId":"M11","status":"1","changeNumber":"3"}
-		        break;
+            case SocketMessageManager.MESSAGE_MEETING_STATUS:
+                JSONObject meetingStatusObj = socketMessage.getData();
+
+                if (!meetingConfig.isHost()) {
+                    handleMessageMeetingStatus(meetingStatusObj);
+                }
+
+                if (meetingStatusObj.has("status")) {
+                    try {
+                        int status = meetingStatusObj.getInt("status");
+                        meetingConfig.setMeetingStatus(status);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //{"action":"MEETING_STATUS","retCode":"1","meetingId":"M11","status":"1","changeNumber":"3"}
+                break;
         }
     }
 
@@ -1241,17 +1288,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         }
                     }
 
-
                 } else {
                     Log.e("check_hello_json", "is:1");
                     if (meetingSettingCache.getMeetingSetting().isMicroOn()) {
                         MeetingKit.getInstance().disableAudioAndVideoStream();
                     }
 //                    MeetingKit.getInstance().enableAudioAndVideo();
-
                 }
             }
-
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1264,6 +1308,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
 
         if (meetingConfig.getType() == MeetingType.MEETING) {
+
+            if (meetingConfig.getMeetingStatus() == 0) {
+                // 等待会议开启的状态
+                return;
+            }
 
             meetingMenu.setVisibility(View.VISIBLE);
             //---处理笔记
@@ -1325,119 +1374,121 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             if (meetingConfig.getRole() != MeetingConfig.MeetingRole.HOST && meetingConfig.getRole() != MeetingConfig.MeetingRole.MEMBER) {
                 // 自己不是host也不是主讲人
-	            if (menuIcon.getVisibility() == View.VISIBLE && meetingConfig.getMeetingStatus() != 0) {
+                if (menuIcon.getVisibility() == View.VISIBLE && meetingConfig.getMeetingStatus() != 0) {
                     MeetingKit.getInstance().disableAudioAndVideoStream();
                     menuIcon.setVisibility(View.GONE);
                     meetingMenuMemberImage.setVisibility(View.VISIBLE);
                 }
 
             } else {
-	            if (meetingConfig.getMeetingStatus() != 0) {
-		            if (meetingMenuMemberImage.getVisibility() == View.VISIBLE) {
-			            menuIcon.setVisibility(View.VISIBLE);
-			            meetingMenuMemberImage.setVisibility(View.GONE);
-		            }
+                if (meetingConfig.getMeetingStatus() != 0) {
+                    if (meetingMenuMemberImage.getVisibility() == View.VISIBLE) {
+                        menuIcon.setVisibility(View.VISIBLE);
+                        meetingMenuMemberImage.setVisibility(View.GONE);
+                    }
                 }
             }
-        }
 
-        // handle soundtrack
-        if (meetingConfig.getType() == MeetingType.MEETING) {
-	        String audioData = helloMessage.getPlayAudioData();
-	        if (TextUtils.isEmpty(audioData)) {
-                // 没有soundtrack的信息
-                if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
-                    soundtrackPlayManager.followClose();
+            // handle soundtrack
+
+            String audioData = helloMessage.getPlayAudioData();
+            if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                if (TextUtils.isEmpty(audioData)) {
+                    // 没有soundtrack的信息
+                    if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
+                        soundtrackPlayManager.followClose();
+                    }
+                    return;
                 }
-                return;
+
+                try {
+
+                    JSONObject audioJson = new JSONObject(Tools.getFromBase64(audioData));
+                    handleSountrackMessages(audioJson);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
-
-            try {
-	            JSONObject audioJson = new JSONObject(Tools.getFromBase64(audioData));
-	            handleSountrackMessages(audioJson);
-            } catch (JSONException e) {
-	            e.printStackTrace();
-            }
-
-
+            // handle 自己声网的状态
         }
 
     }
 
-	private void handleSountrackMessages(JSONObject audioJson) {
+    private void handleSountrackMessages(JSONObject audioJson) {
 
-		if (audioJson == null) {
-			return;
-		}
+        if (audioJson == null) {
+            return;
+        }
 
-		if (soundtrackPlayManager == null) {
-			return;
-		}
+        if (soundtrackPlayManager == null) {
+            return;
+        }
 
-		if (soundtrackPlayManager != null) {
-			if (soundtrackPlayManager.isLoading()) {
-				return;
-			}
-		}
+        if (soundtrackPlayManager != null) {
+            if (soundtrackPlayManager.isLoading()) {
+                return;
+            }
+        }
 
-		try {
-			if (audioJson.has("stat")) {
-				int status = audioJson.getInt("stat");
-				if (status == 0) {
-					if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
-						soundtrackPlayManager.followClose();
-					}
-					return;
-				}
+        try {
+            if (audioJson.has("stat")) {
+                int status = audioJson.getInt("stat");
+                if (status == 0) {
+                    if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
+                        soundtrackPlayManager.followClose();
+                    }
+                    return;
+                }
 
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
 
-		try {
-			Log.e("check_hello_soundtrack", "audioJson:" + audioJson);
-			if (audioJson.has("stat")) {
-				int status = audioJson.getInt("stat");
-				if (status == 2 || status == 6) {
-					long time = 0;
-					if (audioJson.has("time")) {
-						time = audioJson.getLong("time");
-					}
-					// 心跳里面是暂停
-					if (soundtrackPlayLayout.getVisibility() != View.VISIBLE) {
-						soundtrackPlayManager.followClose();
-						soundtrackPlayManager.initLoading(menuIcon);
-						SoundTrack soundTrack = new SoundTrack();
-						soundTrack.setSoundtrackID(audioJson.getInt("soundtrackId"));
-						requestDetailAndPause(soundTrack, time);
-					} else {
+        try {
+            Log.e("check_hello_soundtrack", "audioJson:" + audioJson);
+            if (audioJson.has("stat")) {
+                int status = audioJson.getInt("stat");
+                if (status == 2 || status == 6) {
+                    long time = 0;
+                    if (audioJson.has("time")) {
+                        time = audioJson.getLong("time");
+                    }
+                    // 心跳里面是暂停
+                    if (soundtrackPlayLayout.getVisibility() != View.VISIBLE) {
+                        soundtrackPlayManager.followClose();
+                        soundtrackPlayManager.initLoading(menuIcon);
+                        SoundTrack soundTrack = new SoundTrack();
+                        soundTrack.setSoundtrackID(audioJson.getInt("soundtrackId"));
+                        requestDetailAndPause(soundTrack, time);
+                    } else {
                         Log.e("check_hello_soundtrack", "audioJson:" + audioJson + ",is playing:" + soundtrackPlayManager.isPlaying());
-						if (soundtrackPlayManager.isPlaying()) {
-							soundtrackPlayManager.followPause(time);
-						} else {
-							if (Math.abs(soundtrackPlayManager.getPlayTime() - time) > 2000) {
-								soundtrackPlayManager.followPause(time);
-							}
-						}
-					}
+                        if (soundtrackPlayManager.isPlaying()) {
+                            soundtrackPlayManager.followPause(time);
+                        } else {
+                            if (Math.abs(soundtrackPlayManager.getPlayTime() - time) > 2000) {
+                                soundtrackPlayManager.followPause(time);
+                            }
+                        }
+                    }
 
 
-				} else if (status == 4 || status == 5 || status == 1) {
-					//跟随播放
-					long time = 0;
-					if (audioJson.has("time")) {
-						time = audioJson.getLong("time");
-					}
-					if (soundtrackPlayLayout.getVisibility() != View.VISIBLE) {
-						// TODO
-						soundtrackPlayManager.followClose();
-						soundtrackPlayManager.initLoading(menuIcon);
-						SoundTrack soundTrack = new SoundTrack();
-						soundTrack.setSoundtrackID(audioJson.getInt("soundtrackId"));
-						requestDetailAndPlay(soundTrack, time);
-					} else {
+                } else if (status == 4 || status == 5 || status == 1) {
+                    //跟随播放
+                    long time = 0;
+                    if (audioJson.has("time")) {
+                        time = audioJson.getLong("time");
+                    }
+                    if (soundtrackPlayLayout.getVisibility() != View.VISIBLE) {
+                        // TODO
+                        soundtrackPlayManager.followClose();
+                        soundtrackPlayManager.initLoading(menuIcon);
+                        SoundTrack soundTrack = new SoundTrack();
+                        soundTrack.setSoundtrackID(audioJson.getInt("soundtrackId"));
+                        requestDetailAndPlay(soundTrack, time);
+                    } else {
                         if (!soundtrackPlayManager.isPlaying()) {
                             soundtrackPlayManager.followRestart(time);
                         } else {
@@ -1445,11 +1496,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         }
                     }
 
-				}
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void addLinkBorderForDTNew(JSONObject p1Created) throws JSONException {
@@ -1638,7 +1689,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             });
 
                         }
-
                     }
                 }
             }
@@ -3080,7 +3130,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Override
     public void addFromFileSystem() {
         Intent intent = new Intent(this, FilePickerActivity.class);
-	    startActivityForResult(intent, REQUEST_CODE_REQUEST_SELECTED_FILE);
+        startActivityForResult(intent, REQUEST_CODE_REQUEST_SELECTED_FILE);
     }
 
     @Override
@@ -3175,23 +3225,20 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     private void initRealMeeting() {
         Log.e("DocAndMeetigActivity", "initRealMeeting");
-	    if (meetingConfig.getType() != MeetingType.MEETING || meetingConfig.getMeetingStatus() == 0) {
+        if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
         keepScreenWake();
-
         MeetingRecordManager.getManager(this).initRecording(recordstatus, messageManager, meetingConfig);
-
         MeetingKit.getInstance().startMeeting();
         meetingLayout.setVisibility(View.VISIBLE);
         meetingMenu.setVisibility(View.VISIBLE);
-	    waitingMeetingLayout.setVisibility(View.GONE);
-	    menuIcon.setImageResource(R.drawable.icon_menu);
-	    menuIcon.setEnabled(true);
-        if (messageManager != null && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
+        waitingMeetingLayout.setVisibility(View.GONE);
+        menuIcon.setImageResource(R.drawable.icon_menu);
+        menuIcon.setEnabled(true);
+        if (messageManager != null && meetingConfig.isHost()) {
             messageManager.sendMessage_MeetingStatus(meetingConfig);
         }
-
         String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
         ChatManager.getManager(this, meetingIndetifier).joinChatRoom(getResources().getString(R.string.Classroom) + meetingConfig.getLessionId());
 
@@ -3476,7 +3523,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private static final int REQUEST_PICTURE_ADD_DOC = 2;
     private static final int REQUEST_SCAN = 3;
     private static final int REQUEST_CODE_ADD_NOTE = 100;
-	private static final int REQUEST_CODE_REQUEST_SELECTED_FILE = 200;
+    private static final int REQUEST_CODE_REQUEST_SELECTED_FILE = 200;
 
 
     @Override
@@ -3520,10 +3567,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     drawTempNote();
                     break;
                 case REQUEST_CODE_REQUEST_SELECTED_FILE:
-	                List<FileEntity> fff = PickerManager.getInstance().files;
+                    List<FileEntity> fff = PickerManager.getInstance().files;
                     for (int i = 0; i < fff.size(); i++) {
-	                    FileEntity fileEntity = fff.get(0);
-	                    if (!TextUtils.isEmpty(fileEntity.getPath())) {
+                        FileEntity fileEntity = fff.get(0);
+                        if (!TextUtils.isEmpty(fileEntity.getPath())) {
                             File picture = new File(fileEntity.getPath());
                             if (picture != null && picture.exists()) {
                                 uploadFileWhenAddDoc(picture);
@@ -4370,9 +4417,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
 
             @Override
-            public void uploadFile() {
+            public void uploadFile(int type) {
 
             }
+            
         });
     }
 
@@ -4611,7 +4659,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 break;
 
             case 23:
-	            handleSountrackMessages(data);
+                handleSountrackMessages(data);
                 break;
             case 30:
                 // 被踢出会议
@@ -4631,57 +4679,56 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
     }
 
-	private void handleMessageMeetingStatus(JSONObject data) {
-		Log.e("handleMessageMeetingStatus", "data:" + data);
-		if (data != null) {
-			if (data.has("status")) {
-				try {
-					int status = data.getInt("status");
-					if (status == 1) {
-						if (meetingConfig.getMeetingStatus() == 0) {
-							//Leave meeting，从新加入会议
-							String meetingId = data.getString("meetingId");
-							followJoinMeetingWhenMeetingStart(meetingId);
-						}
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+    private void handleMessageMeetingStatus(JSONObject data) {
+        Log.e("handleMessageMeetingStatus", "data:" + data);
+        if (data != null) {
+            if (data.has("status")) {
+                try {
+                    int status = data.getInt("status");
+                    if (status == 1) {
+                        if (meetingConfig.getMeetingStatus() == 0) {
+                            //Leave meeting，从新加入会议
+                            String meetingId = data.getString("meetingId");
+                            followJoinMeetingWhenMeetingStart(meetingId);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
-	}
+    }
 
-	private void followJoinMeetingWhenMeetingStart(final String meetingId) {
-		Observable.just("follow_join_meeting").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
-			@Override
-			public void accept(String s) throws Exception {
-				messageManager.sendMessage_LeaveMeeting(meetingConfig);
-			}
-		}).doOnNext(new Consumer<String>() {
-			@Override
-			public void accept(String str) throws Exception {
-				JSONObject result = ServiceInterfaceTools.getinstance().syncGetJoinMeetingDefaultStatus(meetingId);
-				if (result.has("code")) {
-					int code = result.getInt("code");
-					if (code == 0) {
-						JSONObject data = result.getJSONObject("data");
-						meetingConfig.setRole(data.getInt("role"));
-					}
-				}
+    private void followJoinMeetingWhenMeetingStart(final String meetingId) {
+        Observable.just("follow_join_meeting").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                messageManager.sendMessage_LeaveMeeting(meetingConfig);
+            }
+        }).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String str) throws Exception {
+                JSONObject result = ServiceInterfaceTools.getinstance().syncGetJoinMeetingDefaultStatus(meetingId);
+                if (result.has("code")) {
+                    int code = result.getInt("code");
+                    if (code == 0) {
+                        JSONObject data = result.getJSONObject("data");
+                        meetingConfig.setRole(data.getInt("role"));
+                    }
+                }
 
-			}
-		}).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
-			@Override
-			public void accept(String s) throws Exception {
-				meetingConfig.setMeetingId(meetingId);
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                meetingConfig.setMeetingId(meetingId);
 //                messageManager.sendMessage_JoinMeeting(meetingConfig);
-				MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
 
-			}
-		}).subscribe();
-	}
-
+            }
+        }).subscribe();
+    }
 
     private void requestSyncDetailAndPlay(final SoundTrack soundTrack) {
         Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
@@ -4734,9 +4781,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (data == null) {
             return;
         }
-	    if (meetingConfig.getMeetingStatus() == 0) {
-		    return;
-	    }
+        if (meetingConfig.getMeetingStatus() == 0) {
+            return;
+        }
 
         if (data.has("retCode")) {
             try {
@@ -4766,6 +4813,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (TextUtils.isEmpty(newDocumentId)) {
             return;
         }
+
         final String _id = newDocumentId;
         Observable.just(meetingConfig).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingConfig>() {
             @Override
@@ -4781,6 +4829,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
 
         if (data.has("retCode")) {
+
             try {
                 if (data.getInt("retCode") == 0) {
                     // 成功收到JOIN_MEETING的返回
@@ -4790,19 +4839,24 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                        return;
 //                    }
                     JoinMeetingMessage joinMeetingMessage = gson.fromJson(dataJson.toString(), JoinMeetingMessage.class);
-	                meetingConfig.setType(joinMeetingMessage.getType());
+                    meetingConfig.setType(joinMeetingMessage.getType());
 
-	                if (meetingConfig.getType() == MeetingType.MEETING) {
-		                if (dataJson.has("status")) {
-			                int status = dataJson.getInt("status");
-			                meetingConfig.setMeetingStatus(status);
-			                if (status == 0) {
-				                // 会议还没有开始
-				                showWatingMeeting();
-				                return;
-			                }
-		                }
-	                }
+                    if (meetingConfig.getType() == MeetingType.MEETING) {
+
+                        if (dataJson.has("role")) {
+                            meetingConfig.setRole(dataJson.getInt("role"));
+                        }
+
+                        if (dataJson.has("status")) {
+                            int status = dataJson.getInt("status");
+                            meetingConfig.setMeetingStatus(status);
+                            if (status == 0 && !meetingConfig.isHost()) {
+                                // 会议还没有开始
+                                showWatingMeeting();
+                                return;
+                            }
+                        }
+                    }
                     String[] datas = joinMeetingMessage.getCurrentDocumentPage().split("-");
                     meetingConfig.setFileId(Integer.parseInt(datas[0]));
                     float page = Float.parseFloat(datas[1]);
@@ -4815,11 +4869,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         meetingConfig.setCurrentMaxVideoUserId(joinMeetingMessage.getCurrentMaxVideoUserId());
                     }
 
-	                if (dataJson.has("lessonId")) {
-		                meetingConfig.setLessionId(Integer.parseInt(dataJson.getString("lessonId")));
+                    if (dataJson.has("lessonId")) {
+                        meetingConfig.setLessionId(Integer.parseInt(dataJson.getString("lessonId")));
                     }
 
-	                Log.e("JOIN_MEETING", "join_meeting_message:" + documents);
+                    Log.e("JOIN_MEETING", "join_meeting_message:" + documents);
 
 
                     if (joinMeetingMessage.getNoteId() > 0 && !TextUtils.isEmpty(joinMeetingMessage.getNotePageId())) {
@@ -4829,9 +4883,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     if (meetingConfig.getType() == MeetingType.DOC) {
                         meetingLayout.setVisibility(View.GONE);
                         meetingMenu.setVisibility(View.GONE);
-	                    requestDocumentsAndShowPage();
+                        requestDocumentsAndShowPage();
                     } else if (meetingConfig.getType() == MeetingType.MEETING) {
-	                    waitingMeetingLayout.setVisibility(View.GONE);
+                        waitingMeetingLayout.setVisibility(View.GONE);
                         if (dataJson.has("presenterSessionId")) {
                             meetingConfig.setPresenterSessionId(joinMeetingMessage.getPresenterSessionId());
                         }
@@ -4846,10 +4900,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         if (AppConfig.UserID.equals(joinMeetingMessage.getUserId())) {
                             // 说明是自己加入了会议返回的JOIN_MEETING的消息
                             Log.e("check_JOIN_MEETING", "my_self_join_in");
-	                        requestDocumentsAndShowPage();
-                            if (dataJson.has("role")) {
-                                meetingConfig.setRole(dataJson.getInt("role"));
-                            }
+                            requestDocumentsAndShowPage();
+
 
                             if (meetingConfig.getRole() != MeetingConfig.MeetingRole.HOST && meetingConfig.getRole() != MeetingConfig.MeetingRole.MEMBER) {
                                 // 进来自己不是host也不是主讲人
@@ -4891,11 +4943,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
     }
 
-	private void showWatingMeeting() {
-		hideEnterLoading();
-		waitingMeetingLayout.setVisibility(View.VISIBLE);
-		menuIcon.setImageResource(R.drawable.shape_transparent);
-	}
+    private void showWatingMeeting() {
+        hideEnterLoading();
+        waitingMeetingLayout.setVisibility(View.VISIBLE);
+        menuIcon.setImageResource(R.drawable.shape_transparent);
+        meetingMenu.setVisibility(View.VISIBLE);
+    }
 
     private void handleSoundtrackWhenJoinMeeting(String playAudioData) {
 //        {"actionType":23,"soundtrackId":38065,"time":131086,"stat":2}

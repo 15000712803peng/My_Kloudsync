@@ -99,6 +99,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     private static final int TYPE_SOUNDTRACK_PLAY = 1;
     private static final int TYPE_SOUNDTRACK_PAUSE = 2;
     private static final int TYPE_SOUNDTRACK_RESTART = 3;
+    private static final int TYPE_SOUNDTRACK_FOLLOW = 4;
     private static final int TYPE_SOUNDTRACK_SEEK_PLAY = 5;
     private static final int TYPE_SOUNDTRACK_SEEK_STOP = 6;
     //
@@ -464,7 +465,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         soundtrackAudioManager.setSoundtrackAudio(mediaInfo);
         soundtrackPlayLayout.setVisibility(View.VISIBLE);
         downloadActions(soundtrackDetail.getDuration(), soundtrackDetail.getSoundtrackID());
-        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, 0);
+        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PLAY, time);
         if (mediaInfo.getMediaType() == SoundtrackMediaInfo.MEDIA_TYPE_NEW_AUDIO) {
             backgroundMusicManager = SoundtrackBackgroundMusicManager.getInstance(host);
             backgroundMusicManager.setSoundtrackAudio(soundtrackDetail.getBackgroudMusicInfo(), soundtrackAudioManager);
@@ -589,8 +590,10 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         this.playTime = playTime;
     }
 
-    private void moveByTime(long currentTime) {
+    private int count = 0;
 
+    private void moveByTime(long currentTime) {
+        count++;
         Log.e("check_soundtrack_play", "move_by_time:" + currentTime);
         playTime = currentTime;
         if (onlyShowTimeText.getVisibility() != View.VISIBLE) {
@@ -647,6 +650,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 //                        backgroundMusicManager.pause();
 //                    }
 //                }
+            }
+            if(count % 2 == 0){
+                notifySoundtrackPlayStatus(soundtrackDetail,TYPE_SOUNDTRACK_FOLLOW,playTime);
             }
             Log.e("check_background_play", "isPlaying:" + backgroundMusicManager.isPlaying());
 
@@ -934,10 +940,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if (soundtrackAudioManager == null) {
             soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
         }
-        if (isPresenter()) {
-            notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, soundtrackAudioManager.getPlayTime());
+        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_PAUSE, playTime);
 
-        }
         if (soundtrackAudioManager != null) {
             soundtrackAudioManager.pause();
         }
@@ -1002,9 +1006,11 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if (soundtrackAudioManager == null) {
             soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
         }
-        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_RESTART, soundtrackAudioManager.getPlayTime());
+        notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_RESTART, playTime);
         soundtrackAudioManager.restart();
-        backgroundMusicManager.restart();
+        if(backgroundMusicManager != null){
+            backgroundMusicManager.restart();
+        }
         //SoundtrackBackgroundMusicManager.getInstance(host).restart();
         statusText.setText(R.string.playing);
         startPauseImage.setImageResource(R.drawable.video_stop);
@@ -1021,7 +1027,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             soundtrackPlayLayout.setVisibility(View.GONE);
             webVedioLayout.setVisibility(View.GONE);
             try {
-                notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_STOP, soundtrackAudioManager.getPlayTime());
+                notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_STOP, 0);
                 if (EventBus.getDefault().isRegistered(this)) {
                     EventBus.getDefault().unregister(this);
                 }

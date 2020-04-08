@@ -40,11 +40,17 @@ public class FileCommonFragment extends Fragment implements FileScannerTask.File
     public static FileCommonFragment newInstance(){
         return new FileCommonFragment();
     }
+
+    int  fileType = 0;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_file_normal,null);
         initView(view);
+        Bundle bundle =this.getArguments();
+        if(bundle!=null){
+            fileType = bundle.getInt("fileType");
+        }
         initData();
         return view;
     }
@@ -66,7 +72,7 @@ public class FileCommonFragment extends Fragment implements FileScannerTask.File
                 .onGranted(new Action<List<String>>() {
                     @Override
                     public void onAction(List<String> data) {
-                        new FileScannerTask(getContext(), FileCommonFragment.this).execute();
+                        new FileScannerTask(getContext(), fileType,FileCommonFragment.this).execute();
                     }
                 })
                 .onDenied(new Action<List<String>>() {

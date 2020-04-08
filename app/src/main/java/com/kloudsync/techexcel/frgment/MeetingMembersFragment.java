@@ -797,7 +797,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
         popMeetingMemberSetting = new PopMeetingMemberSetting(getActivity());
         popMeetingMemberSetting.setOnMemberSettingChanged(this);
-        popMeetingMemberSetting.showAtBottom(member, view, meetingConfig);
+        popMeetingMemberSetting.showAtLeft(member, view, meetingConfig);
     }
 
     PopMeetingSpeakMemberSetting popMeetingSpeakMemberSetting;
@@ -924,7 +924,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
         if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
             // 当前的member不是自己
-            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || (meetingConfig.getMeetingHostId() + "").equals(AppConfig.UserID)) {
+            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || (meetingConfig.getMeetingHostId() + "").equals(AppConfig.UserID) || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
                 // 如果自己是presenter
                 holder.handsUpText.setVisibility(View.GONE);
                 holder.changeToMember.setVisibility(View.VISIBLE);
@@ -935,6 +935,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     }
                 });
             } else {
+
                 holder.handsUpText.setVisibility(View.GONE);
                 holder.changeToMember.setVisibility(View.GONE);
                 holder.changeToMember.setOnClickListener(null);

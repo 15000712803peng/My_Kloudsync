@@ -37,6 +37,7 @@ import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventJoinMeeting;
+import com.kloudsync.techexcel.bean.EventStartMeeting;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -47,6 +48,7 @@ import com.kloudsync.techexcel.school.SelectSchoolActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.StringUtils;
+
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.mining.app.zxing.MipcaActivityCapture;
@@ -677,7 +679,6 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 startActivity(searchIntnt);
                 break;
             case R.id.lin_myroom:
-
                 startMeetingBeforeCheckPession();
                 break;
             case R.id.lin_join:
@@ -743,10 +744,10 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
 
     private void doStartMeeting(final String meetingRoom) {
 
-        final EventJoinMeeting joinMeeting = new EventJoinMeeting();
-        Observable.just(joinMeeting).observeOn(Schedulers.io()).doOnNext(new Consumer<EventJoinMeeting>() {
+        final EventStartMeeting startMeeting = new EventStartMeeting();
+        Observable.just(startMeeting).observeOn(Schedulers.io()).doOnNext(new Consumer<EventStartMeeting>() {
             @Override
-            public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+            public void accept(EventStartMeeting startMeeting) throws Exception {
                 JSONObject params = new JSONObject();
                 params.put("classroomID", meetingRoom.toUpperCase());
                 params.put("addBlankPage", 0);
@@ -755,13 +756,14 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
                 if (result.has("RetCode")) {
                     int retCode = result.getInt("RetCode");
                     if (retCode == 0) {
-                        joinMeeting.setLessionId(result.getInt("RetData"));
-                        joinMeeting.setMeetingId(meetingRoom.toUpperCase());
-                        joinMeeting.setRole(MeetingConfig.MeetingRole.HOST);
+                        startMeeting.setLessionId(result.getInt("RetData"));
+                        startMeeting.setMeetingId(meetingRoom.toUpperCase());
+//                        joinMeeting.setRole(MeetingConfig.MeetingRole.HOST);
+                        startMeeting.setHost(true);
                     }
                 }
 
-                EventBus.getDefault().post(joinMeeting);
+                EventBus.getDefault().post(startMeeting);
             }
         }).subscribe();
     }
@@ -822,12 +824,11 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void joinMeeting(EventJoinMeeting eventJoinMeeting) {
         Log.e("check_event_join_meeting", "eventJoinMeeting:" + eventJoinMeeting);
-	    if (eventJoinMeeting.getLessionId() == -1) {
+        if (eventJoinMeeting.getLessionId() == -1) {
 //            Toast.makeText(getActivity(), "加入的meeting不存在或没有开始", Toast.LENGTH_SHORT).show();
-		    goToWatingMeeting(eventJoinMeeting);
+            goToWatingMeeting(eventJoinMeeting);
             return;
         }
-
         Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //-----
@@ -840,18 +841,32 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         startActivity(intent);
     }
 
-	private void goToWatingMeeting(EventJoinMeeting eventJoinMeeting) {
-		Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		//-----
-		intent.putExtra("meeting_id", eventJoinMeeting.getMeetingId());
-		intent.putExtra("meeting_type", 0);
-		intent.putExtra("lession_id", -1);
-		intent.putExtra("meeting_role", eventJoinMeeting.getRole());
-		//intent.putExtra("meeting_role", 3);
-		intent.putExtra("from_meeting", true);
-		startActivity(intent);
-	}
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void startMeeting(EventStartMeeting eventStartMeeting) {
+        Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //-----
+        intent.putExtra("meeting_id", eventStartMeeting.getMeetingId());
+        intent.putExtra("meeting_type", 0);
+        intent.putExtra("lession_id", eventStartMeeting.getLessionId());
+        intent.putExtra("is_host", true);
+        //intent.putExtra("meeting_role", 3);
+        intent.putExtra("from_meeting", true);
+        startActivity(intent);
+    }
+
+    private void goToWatingMeeting(EventJoinMeeting eventJoinMeeting){
+        Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //-----
+        intent.putExtra("meeting_id", eventJoinMeeting.getMeetingId());
+        intent.putExtra("meeting_type", 0);
+        intent.putExtra("lession_id", -1);
+        intent.putExtra("meeting_role", eventJoinMeeting.getRole());
+        //intent.putExtra("meeting_role", 3);
+        intent.putExtra("from_meeting", true);
+        startActivity(intent);
+    }
 
     private void joinMeetingBeforeCheckPession() {
         if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {

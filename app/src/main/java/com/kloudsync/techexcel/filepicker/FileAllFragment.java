@@ -36,29 +36,10 @@ public class FileAllFragment extends Fragment {
     private List<FileEntity> mListFiles;
     private FileSelectFilter mFilter;
     //筛选类型条件
-    String[] mFileTypesw = new String[]{
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("text"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("doc"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("docx"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("dotx"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("dotx"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppt"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("pptx"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("potx"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("ppsx"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("xls"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("xlsx"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("xltx"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("jpg"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("jpg"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("png"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("svg"),
-		    MimeTypeMap.getSingleton().getMimeTypeFromExtension("gif")
-    };
 	private String[] mFileTypes = new String[]{"txt", "text", "doc", "docx", "dotx", "pdf", "ppt", "pptx", "potx", "ppsx", "xls", "xlsx", "xltx", "jpg", "png", "svg", "gif"};
     private AllFileAdapter mAllFileAdapter;
     private OnUpdateDataListener mOnUpdateDataListener;
+    int  fileType = 0;
 
     public void setOnUpdateDataListener(OnUpdateDataListener onUpdateDataListener) {
         mOnUpdateDataListener = onUpdateDataListener;
@@ -66,13 +47,25 @@ public class FileAllFragment extends Fragment {
     public static FileAllFragment newInstance(){
         return new FileAllFragment();
     }
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_file_all,null);
         initView(view);
+        Bundle bundle =this.getArguments();
+        if(bundle!=null){
+            fileType = bundle.getInt("fileType");
+            if(fileType==1){  //带音频文件
+                mFileTypes = new String[]{"txt", "text", "doc", "docx", "dotx", "pdf", "ppt", "pptx", "potx", "ppsx", "xls", "xlsx", "xltx", "jpg", "png", "svg", "gif","mp3"};
+            }
+        }
         initData();
         initEvent();
+
+
+
         return view;
     }
 

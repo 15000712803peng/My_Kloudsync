@@ -3471,10 +3471,12 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             }
 
             @Override
-            public void uploadFile() {
+            public void uploadFile(int type) {
                 favoritePopup.dismiss();
                 AddAlbum();
             }
+
+
         });
     }
 

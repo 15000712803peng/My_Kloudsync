@@ -51,6 +51,11 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.meeting_camera:
+
+                if(meetingConfig.getMeetingStatus() == 0){
+                    return;
+                }
+
                 if(meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE){
                     Toast.makeText(host,"没有权限操作",Toast.LENGTH_SHORT).show();
                     return;
@@ -65,6 +70,11 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 break;
 
             case R.id.meeting_camera_switch:
+
+                if(meetingConfig.getMeetingStatus() == 0){
+                    return;
+                }
+
                 if(meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE){
                     Toast.makeText(host,"没有权限操作",Toast.LENGTH_SHORT).show();
                     return;
@@ -74,6 +84,9 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 }
                 break;
             case R.id.meeting_menu_end:
+                if(meetingConfig.getMeetingStatus() == 0){
+                    return;
+                }
                 if(operationsListener != null){
                     operationsListener.menuEndClicked();
                 }
@@ -87,6 +100,9 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
 
                 break;
             case R.id.meeting_mic_enabel: {
+                if(meetingConfig.getMeetingStatus() == 0){
+                    return;
+                }
                 if(meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE){
                     Toast.makeText(host,"没有权限操作",Toast.LENGTH_SHORT).show();
                     return;
@@ -103,6 +119,9 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
             break;
 
             case R.id.meeting_voice: {
+                if(meetingConfig.getMeetingStatus() == 0){
+                    return;
+                }
                 int voiceStatus = getSettingCache(host).getMeetingSetting().getVoiceStatus();
                 Log.e("PopMeetingMenu", "voice_status:" + voiceStatus);
                 if (voiceStatus == 0) {
@@ -119,13 +138,20 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 }
             }
             break;
+
             case R.id.meeting_menu_invite:
+                if(meetingConfig.getMeetingStatus() == 0){
+                    return;
+                }
                 if (operationsListener != null) {
                     operationsListener.menuInviteClicked();
                 }
                 hide();
                 break;
             case R.id.meeting_menu_more:
+                if(meetingConfig.getMeetingStatus() == 0){
+                    return;
+                }
                 if (operationsListener != null) {
                     operationsListener.menuMoreClicked();
                 }
@@ -334,6 +360,13 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
 
         popMeetingMore = new PopMeetingMore(host);
         popMeetingMore.show(menuMore,this);
+    }
+
+    public void refreshStatus(){
+        if(window != null && window.isShowing()){
+            initBySetting();
+        }
+
     }
 
 

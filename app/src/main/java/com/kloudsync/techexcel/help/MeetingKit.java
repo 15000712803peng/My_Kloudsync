@@ -1088,4 +1088,10 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     }
 
+    public void refreshMeetingMenu(){
+        if(popMeetingMenu != null && popMeetingMenu.isShowing()){
+            popMeetingMenu.refreshStatus();
+        }
+    }
+
 }

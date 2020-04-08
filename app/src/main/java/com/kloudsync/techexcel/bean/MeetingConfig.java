@@ -58,6 +58,15 @@ public class MeetingConfig {
     private DocumentPage restoreDocument;
     private boolean isPlayingSoundtrack;
     private int meetingStatus;
+    private boolean isHost;
+
+    public boolean isHost() {
+        return isHost;
+    }
+
+    public void setHost(boolean host) {
+        isHost = host;
+    }
 
     public int getMeetingStatus() {
         return meetingStatus;
