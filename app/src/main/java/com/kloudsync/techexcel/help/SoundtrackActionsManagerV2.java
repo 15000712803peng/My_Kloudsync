@@ -32,6 +32,7 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -273,7 +274,7 @@ public class SoundtrackActionsManagerV2 {
     private void executeActions(List<WebAction> actions, long playTime) {
         for (final WebAction action : actions) {
 //            Log.e("check_action", "action:" + action);
-            Log.e("SoundtrackActionsManager", "executeActions" + actions + ",action_executed:" + action.isExecuted());
+//            Log.e("SoundtrackActionsManager", "executeActions" + actions + ",action_executed:" + action.isExecuted());
             if (action.isExecuted()) {
 //                Log.e("executeActionscontinue","continueaction = "+action.toString() + "action.IsExecuted = "+ action.isExecuted()+"actionTime="+action.getTime()+"isLoadingPage"+isLoadingPage);
                 continue;
@@ -311,7 +312,7 @@ public class SoundtrackActionsManagerV2 {
 
 
             if (playTime < action.getTime() || isLoadingPage) {
-                Log.e("executeActionscontinue","continue" + "playTime = "+ playTime+"actionTime="+action.getTime()+"isLoadingPage"+isLoadingPage);
+//                Log.e("executeActionscontinue","continue" + "playTime = "+ playTime+"actionTime="+action.getTime()+"isLoadingPage"+isLoadingPage);
                 continue;
             }
 
@@ -368,7 +369,7 @@ public class SoundtrackActionsManagerV2 {
                     Log.e("chage_page", "currentPage:" + currentPage + ",page:" + page);
                     downLoadDocumentPageAndShow(page);
             } else if (data.getInt("type") != 2) {
-                Log.e("doExecuteAction", "action," + action.getData() + ",playtime:" + playTime);
+//                Log.e("doExecuteAction", "action," + action.getData() + ",playtime:" + playTime);
                 web.loadUrl("javascript:PlayActionByTxt('" + action.getData() + "')", null);
                 web.loadUrl("javascript:Record()", null);
             }
