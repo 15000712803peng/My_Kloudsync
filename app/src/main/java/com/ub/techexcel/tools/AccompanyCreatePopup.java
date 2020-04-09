@@ -13,15 +13,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
@@ -41,7 +44,7 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by wang on 2017/9/18.
  */
 
-public class YinxiangCreatePopup implements View.OnClickListener {
+public class AccompanyCreatePopup implements View.OnClickListener {
 
     public Context mContext;
     public int width;
@@ -59,15 +62,19 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     private CheckBox checkBox;
     private String attachmentId;
     private static FavoritePoPListener mFavoritePoPListener;
-    private TextView recordname, recordtime;
-    private TextView bgname, bgtime;
+    private TextView recordname;
+    private TextView bgname;
     private LinearLayout backgroundAudioLayout;
     private LinearLayout recordMyVoiceLayout;
     private RelativeLayout voiceItemLayout;
     private LinearLayout addVoiceLayout;
+    private LinearLayout ishiddenll;
     private CheckBox isPublic;
     private TextView tv_bg_audio, tv_record_voice;
     private SharedPreferences sharedPreferences;
+
+    private TextView isaccompanytv;
+    private ImageView isaccompanytv_gou;
 
     private Handler handler = new Handler() {
         @Override
@@ -133,7 +140,7 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     public void initPopuptWindow() {
         sharedPreferences = mContext.getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-        view = layoutInflater.inflate(R.layout.yinxiang_create_popup, null);
+        view = layoutInflater.inflate(R.layout.accompany_create_popup, null);
         close = (ImageView) view.findViewById(R.id.close);
         cancel = (TextView) view.findViewById(R.id.cancel);
         cancel.setOnClickListener(this);
@@ -142,9 +149,11 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         addaudio = (TextView) view.findViewById(R.id.addaudio);
         addrecord = (TextView) view.findViewById(R.id.addrecord);
         recordname = (TextView) view.findViewById(R.id.recordname);
-        recordtime = (TextView) view.findViewById(R.id.recordtime);
         bgname = (TextView) view.findViewById(R.id.bgname);
-        bgtime = (TextView) view.findViewById(R.id.bgtime);
+        isaccompanytv = (TextView) view.findViewById(R.id.isaccompanytv);
+        isaccompanytv.setOnClickListener(this);
+        isaccompanytv.setOnClickListener(this);
+        isaccompanytv_gou=view.findViewById(R.id.isaccompanytv_gou);
         backgroundAudioLayout = (LinearLayout) view.findViewById(R.id.layout_background_audio);
         edittext = (EditText) view.findViewById(R.id.edittext);
         String time = new SimpleDateFormat("yyyyMMdd_hh:mm").format(new Date());
@@ -156,6 +165,7 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         isPublic = (CheckBox) view.findViewById(R.id.isPublic);
         recordMyVoiceLayout = view.findViewById(R.id.layout_record_my_voice);
         addVoiceLayout = view.findViewById(R.id.layout_add_voice);
+        ishiddenll = view.findViewById(R.id.ishiddenll);
         recordMyVoiceLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,10 +177,8 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                 }
                 setCreateSyncText();
             }
-
         });
-
-        setBindViewText();
+//        setBindViewText();
         delete1 = (ImageView) view.findViewById(R.id.delete1);
         delete2 = (ImageView) view.findViewById(R.id.delete2);
         delete1.setOnClickListener(this);
@@ -200,43 +208,90 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         mPopupWindow.getWindow().setAttributes(params);
     }
 
-    private void setBindViewText(){
-        String voice=getBindViewText(1020);
-        tv_record_voice.setText(TextUtils.isEmpty(voice)? "录制新的声音":"录制" +voice);
-        String audio=getBindViewText(1018);
-        tv_bg_audio.setText(TextUtils.isEmpty(audio)? "开启背景音频":"开启"+audio);
-    }
+//    private void setBindViewText(){
+//        String voice=getBindViewText(1020);
+//        tv_record_voice.setText(TextUtils.isEmpty(voice)? "录制新的声音":"录制" +voice);
+//        String audio=getBindViewText(1018);
+//        tv_bg_audio.setText(TextUtils.isEmpty(audio)? "开启背景音频":"开启"+audio);
+//    }
 
+
+
+    private int actionBaseSoundtrackID;
 
     public void setAudioBean(Document favorite) {
-        Log.e("Yinxiang", "setAudioBean");
         this.favorite = favorite;
+        actionBaseSoundtrackID=Integer.parseInt(favorite.getItemID());
         delete1.setVisibility(View.VISIBLE);
         addaudio.setVisibility(View.INVISIBLE);
         backgroundAudioLayout.setVisibility(View.VISIBLE);
+        isaccompanytv.setText("制作同步音乐伴奏带");
         if (favorite != null) {
             bgname.setVisibility(View.VISIBLE);
-            bgtime.setVisibility(View.VISIBLE);
-            bgtime.setText("size:" + favorite.getSize() + "M");
-            bgname.setText("Audio: " + favorite.getTitle());
+            bgname.setText( favorite.getTitle());
         }
         setCreateSyncText();
     }
 
+
+    public void setAudioBean1(final SoundTrack soundTrack) {
+        actionBaseSoundtrackID=soundTrack.getSoundtrackID();
+        isaccompanytv.setText("重新同步");
+        ServiceInterfaceTools.getinstance().getSoundItem(AppConfig.URL_PUBLIC + "Soundtrack/Item?soundtrackID=" + actionBaseSoundtrackID,
+                ServiceInterfaceTools.GETSOUNDITEM,
+                new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                            SoundtrackBean soundtrackBean = (SoundtrackBean) object;
+                            favorite=new Document();
+                            favorite.setAttachmentID(soundtrackBean.getBackgroudMusicAttachmentID()+"");
+                            favorite.setTitle(soundTrack.getTitle());
+                            favorite.setItemID("0");
+                            bgname.setVisibility(View.VISIBLE);
+                            bgname.setText(soundTrack.getTitle());
+                            setCreateSyncText();
+                    }
+                });
+        delete1.setVisibility(View.VISIBLE);
+        addaudio.setVisibility(View.INVISIBLE);
+        backgroundAudioLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void setRecordBean1(final SoundTrack soundTrack) {
+        delete2.setVisibility(View.VISIBLE);
+        addrecord.setVisibility(View.INVISIBLE);
+        addVoiceLayout.setVisibility(View.INVISIBLE);
+        ServiceInterfaceTools.getinstance().getSoundItem(AppConfig.URL_PUBLIC + "Soundtrack/Item?soundtrackID=" + soundTrack.getSoundtrackID(),
+                ServiceInterfaceTools.GETSOUNDITEM,
+                new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        SoundtrackBean soundtrackBean = (SoundtrackBean) object;
+
+                        recordfavorite=new Document();
+                        recordfavorite.setAttachmentID(soundtrackBean.getBackgroudMusicAttachmentID()+"");
+                        recordfavorite.setItemID("0");
+                        recordfavorite.setTitle(soundTrack.getTitle());
+
+                        voiceItemLayout.setVisibility(View.VISIBLE);
+                        recordname.setVisibility(View.VISIBLE);
+                        recordname.setText(recordfavorite.getTitle());
+                        setCreateSyncText();
+                    }
+                });
+    }
+
+
+
     public void setRecordBean(Document favorite) {
-        Log.e("Yinxiang", "setRecordBean");
         this.recordfavorite = favorite;
         delete2.setVisibility(View.VISIBLE);
         addrecord.setVisibility(View.INVISIBLE);
         addVoiceLayout.setVisibility(View.INVISIBLE);
-//        checkBox.setVisibility(View.INVISIBLE);
-//        checkBox.setChecked(false);
-//        recordsync.setText("Sync");
         if (recordfavorite != null) {
             voiceItemLayout.setVisibility(View.VISIBLE);
             recordname.setVisibility(View.VISIBLE);
-            recordtime.setVisibility(View.VISIBLE);
-            recordname.setText("Voice: " + recordfavorite.getTitle());
+            recordname.setText(recordfavorite.getTitle());
         }
         setCreateSyncText();
     }
@@ -245,7 +300,6 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     @SuppressLint("NewApi")
     public void StartPop(View v, String attachmentId) {
         if (mPopupWindow != null) {
-
             this.attachmentId = attachmentId;
             mPopupWindow.show();
         }
@@ -279,7 +333,6 @@ public class YinxiangCreatePopup implements View.OnClickListener {
             public void run() {
                 try {
                     JSONObject jsonObject = new JSONObject();
-
                     jsonObject.put("Title", edittext.getText().toString());
                     jsonObject.put("AttachmentID", Integer.parseInt(attachmentId));
                     jsonObject.put("BackgroudMusicAttachmentID", TextUtils.isEmpty(favorite.getAttachmentID())?0:favorite.getAttachmentID());
@@ -290,7 +343,11 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                     jsonObject.put("SelectedAudioTitle", recordfavorite.getTitle());
                     jsonObject.put("BackgroudMusicTitle",  favorite.getTitle());
                     jsonObject.put("IsPublic",1);
-
+                    jsonObject.put("Type",0);
+                    jsonObject.put("LessonID",0);
+                    jsonObject.put("ItemID",0);
+                    jsonObject.put("ActionBaseSoundtrackID",actionBaseSoundtrackID);
+                    jsonObject.put("MusicType", checkBox.isChecked() ? 1 : 0);  //0是伴奏，1是演唱
                     JSONObject returnjson = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Soundtrack/CreateSoundtrack", jsonObject);
                     Log.e("hhh", jsonObject.toString() + "      " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
@@ -305,6 +362,8 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                         soundtrackBean.setCreatedDate(jsonObject1.getString("CreatedDate"));
                         soundtrackBean.setAttachmentId(jsonObject1.getInt("AttachmentID"));
                         soundtrackBean.setIsPublic(jsonObject1.getInt("IsPublic"));
+                        soundtrackBean.setActionBaseSoundtrackID(actionBaseSoundtrackID);
+
 
                         JSONObject pathinfo=jsonObject1.getJSONObject("PathInfo");
                         soundtrackBean.setFileId(pathinfo.getInt("FileID"));
@@ -375,7 +434,6 @@ public class YinxiangCreatePopup implements View.OnClickListener {
             case R.id.recordsync:
                 dismiss();
                 createSoundtrack();
-
                 break;
             case R.id.delete1:
                 favorite = new Document();
@@ -383,25 +441,44 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                 delete1.setVisibility(View.INVISIBLE);
                 addaudio.setVisibility(View.VISIBLE);
                 bgname.setVisibility(View.INVISIBLE);
-                bgtime.setVisibility(View.INVISIBLE);
                 setCreateSyncText();
                 break;
             case R.id.delete2:
-                recordfavorite = new Document();
-                voiceItemLayout.setVisibility(View.INVISIBLE);
-                addVoiceLayout.setVisibility(View.VISIBLE);
-                delete2.setVisibility(View.INVISIBLE);
-                if (checkBox.isChecked()) {
-                    addrecord.setVisibility(View.INVISIBLE);
-                } else {
-                    addrecord.setVisibility(View.VISIBLE);
+                delete2();
+                break;
+            case R.id.isaccompanytv:   //重新同步
+                if(isAccompanyOrMusic==1){
+                    isAccompanyOrMusic=0;
+                    isaccompanytv_gou.setVisibility(View.VISIBLE);
+                    checkBox.setChecked(false);
+                    delete2();
+                    ishiddenll.setVisibility(View.GONE);
+                }else{
+                    isAccompanyOrMusic=1;
+                    isaccompanytv_gou.setVisibility(View.GONE);
+                    ishiddenll.setVisibility(View.VISIBLE);
                 }
-                setCreateSyncText();
                 break;
             default:
                 break;
         }
     }
+
+    private void delete2(){
+        recordfavorite = new Document();
+        voiceItemLayout.setVisibility(View.INVISIBLE);
+        addVoiceLayout.setVisibility(View.VISIBLE);
+        delete2.setVisibility(View.INVISIBLE);
+        if (checkBox.isChecked()) {
+            addrecord.setVisibility(View.INVISIBLE);
+        } else {
+            addrecord.setVisibility(View.VISIBLE);
+        }
+        setCreateSyncText();
+    }
+
+
+    private int isAccompanyOrMusic=1;//0是伴奏，1是演唱
 
     private String getBindViewText(int fileId){
         String appBindName="";

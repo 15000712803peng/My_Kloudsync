@@ -166,6 +166,7 @@ public class MeetingServiceTools {
                         accountSettingBean.setSchoolName(datajson.getString("companyName"));
                         accountSettingBean.setVerifyEmailAddress(datajson.getString("verifyEmailAddress"));
                         accountSettingBean.setWebAddress(datajson.getString("webAddress"));
+                        accountSettingBean.setSystemType(datajson.getInt("systemType"));
                         Message msg = Message.obtain();
                         msg.obj = accountSettingBean;
                         msg.what = code;

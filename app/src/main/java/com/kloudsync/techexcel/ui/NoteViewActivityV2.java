@@ -3735,7 +3735,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 			@Override
 			public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
 				soundtrackRecordManager = SoundtrackRecordManager.getManager(NoteViewActivityV2.this);
-				soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll, timeshow, meetingConfig);
+				soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll,web, timeshow, meetingConfig);
 			}
 		});
 		Log.e("syncing---", meetingConfig.getDocument().getAttachmentID() + "");
