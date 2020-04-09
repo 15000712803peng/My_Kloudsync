@@ -113,6 +113,7 @@ import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayManager;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
+import com.kloudsync.techexcel.dialog.UploadFileDialog;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.filepicker.FileEntity;
 import com.kloudsync.techexcel.filepicker.FilePickerActivity;
@@ -136,6 +137,7 @@ import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
+import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.DocumentModel;
@@ -3528,6 +3530,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private static final int REQUEST_SCAN = 3;
     private static final int REQUEST_CODE_ADD_NOTE = 100;
     private static final int REQUEST_CODE_REQUEST_SELECTED_FILE = 200;
+    private static final int REQUEST_SELECTED_MP3_FILE = 201;
 
 
     @Override
@@ -3578,6 +3581,22 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             File picture = new File(fileEntity.getPath());
                             if (picture != null && picture.exists()) {
                                 uploadFileWhenAddDoc(picture);
+                            }
+                        }
+                    }
+                    break;
+                case REQUEST_SELECTED_MP3_FILE://
+                    List<FileEntity>  audioList = PickerManager.getInstance().files;
+                    for (int i = 0; i < audioList.size(); i++) {
+                        FileEntity fileEntity=audioList.get(0);
+                        String path=fileEntity.getPath();
+                        Log.e("buildversion",path+"");
+                        if(!TextUtils.isEmpty(path)){
+                            String suff=getSuffix(path);
+                            if(suff.equals("mp3")){
+                                uploadMp3file(path);
+                            }else{
+                               Toast.makeText(DocAndMeetingActivity.this,"请上传音频文件",Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -3690,6 +3709,83 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         });
     }
 
+   private UploadFileDialog uploadFileDialog;
+    private void  uploadMp3file(String path){
+        AddDocumentTool.addDocumentToFavoriteMp3(this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
+            @Override
+            public void uploadStart() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        uploadFileDialog = new UploadFileDialog(DocAndMeetingActivity.this);
+                        uploadFileDialog.setTile("uploading");
+                        uploadFileDialog.show();
+
+                    }
+                });
+            }
+
+            @Override
+            public void uploadFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void convertFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setTile("Converting");
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void uploadFinished(Object result) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage(getResources().getString(R.string.create_success)).create().show();
+                    }
+                });
+
+
+
+            }
+
+            @Override
+            public void uploadError(String message) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null) {
+                            uploadFileDialog.cancel();
+                        }
+                        Toast.makeText(getApplicationContext(), "add failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+    private String getSuffix(String fileName){
+        int index = fileName.lastIndexOf(".");
+        if (index != -1) {
+            return fileName.substring(index + 1).toLowerCase(Locale.US);
+        } else {
+            return null;
+        }
+    }
     private void reqeustNewBlankPage() {
         Observable.just(meetingConfig).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingConfig>() {
             @Override
@@ -4322,8 +4418,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
                 @Override
                 public void uploadFile() {  //上传音频文件
-//                    Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
-//                    startActivityForResult(intent,REQUEST_SELECTED_FILE);
+                    accompanyCreatePopup.dismiss();
+                    Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
+                    intent.putExtra("fileType",1);
+                    startActivityForResult(intent,REQUEST_SELECTED_MP3_FILE);
                 }
             });
         }
@@ -4501,7 +4599,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             @Override
             public void uploadFile(int type) {
-
+                favoritePopup.dismiss();
+                Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
+                intent.putExtra("fileType",1);
+                startActivityForResult(intent,REQUEST_SELECTED_MP3_FILE);
             }
             
         });
