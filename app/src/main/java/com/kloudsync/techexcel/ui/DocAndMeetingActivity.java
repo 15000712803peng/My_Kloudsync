@@ -3752,16 +3752,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             @Override
             public void uploadFinished(Object result) {
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage(getResources().getString(R.string.create_success)).create().show();
                     }
                 });
-
-
-
             }
 
             @Override
@@ -3786,6 +3782,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             return null;
         }
     }
+
     private void reqeustNewBlankPage() {
         Observable.just(meetingConfig).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingConfig>() {
             @Override

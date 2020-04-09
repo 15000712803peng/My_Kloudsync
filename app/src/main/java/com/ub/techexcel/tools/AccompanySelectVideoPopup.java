@@ -151,10 +151,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener ,Soundtra
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
         mPopupWindow.setContentView(view);
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
-        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5 + 80;
-        params.height = mContext.getResources().getDisplayMetrics().heightPixels * 4/ 5 - 30;
-        mPopupWindow.getWindow().setAttributes(params);
+
     }
 
 
@@ -164,6 +161,17 @@ public class AccompanySelectVideoPopup implements View.OnClickListener ,Soundtra
     public void StartPop(MeetingConfig meetingConfig,int role) {
         this.role=role;
         if (mPopupWindow != null) {
+            WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
+            if (Tools.isOrientationPortrait((Activity) mContext)) {
+                View root = ((Activity) mContext).getWindow().getDecorView();
+                params.width = root.getMeasuredWidth()*9/10;
+                params.height =mContext.getResources().getDisplayMetrics().heightPixels * 1 / 2;
+            }else{
+                params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
+                View root = ((Activity) mContext).getWindow().getDecorView();
+                params.height = root.getMeasuredHeight() * 4 / 5 + 30;
+            }
+            mPopupWindow.getWindow().setAttributes(params);
             mPopupWindow.show();
             if(role==2){ //老师身份  都显示
 
@@ -171,7 +179,6 @@ public class AccompanySelectVideoPopup implements View.OnClickListener ,Soundtra
                 accompanymusicll.setVisibility(View.GONE);
                 listView2.setVisibility(View.GONE);
             }
-
             getData(meetingConfig);
         }
     }
@@ -223,7 +230,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener ,Soundtra
                 listView1.setVisibility(View.VISIBLE);
                 listView2.setVisibility(View.GONE);
                 adapter1.notifyDataSetChanged();
-                uploadfile.setVisibility(View.GONE);
+                uploadfile.setVisibility(View.INVISIBLE);
                 break;
             case R.id.accompanymusicll:
                 selectPosition=-1;
