@@ -50,6 +50,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.AccountSettingBean;
 import com.kloudsync.techexcel.bean.BookNote;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventClose;
@@ -146,6 +147,7 @@ import com.kloudsync.techexcel.tool.QueryLocalNoteTool;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.tool.ToastUtils;
 import com.mining.app.zxing.MipcaActivityCapture;
+import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.AddMeetingMemberActivity;
@@ -163,6 +165,8 @@ import com.ub.techexcel.bean.EventUnmuteAll;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.bean.TelePhoneCall;
+import com.ub.techexcel.tools.AccompanyCreatePopup;
+import com.ub.techexcel.tools.AccompanySelectVideoPopup;
 import com.ub.techexcel.tools.DevicesListDialog;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
@@ -4109,13 +4113,25 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     }
 
+    int systemType;
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void createSync(EventCreateSync createSync) {
-        openSaveVideoPopup();
-        String[] permissions = new String[]{
-                Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS};
-        startRequestPermission(permissions, 321);
+        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
+        MeetingServiceTools.getInstance().getAccountInfo(url, MeetingServiceTools.GETACCOUNTINFO, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                AccountSettingBean accountSettingBean = (AccountSettingBean) object;
+                systemType=accountSettingBean.getSystemType();
+                if(systemType==1){  //教育
 
+                }else {
+                    openSaveVideoPopup();
+                }
+                String[] permissions = new String[]{
+                        Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS};
+                startRequestPermission(permissions, 321);
+            }
+        });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -4245,10 +4261,73 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             @Override
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
                 soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
-                soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll, timeshow, meetingConfig);
+                soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll,web, timeshow, meetingConfig);
             }
         });
         yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
+    }
+
+
+    private AccompanyCreatePopup accompanyCreatePopup;
+    private void showCreateAccompanyDialog() {
+        accompanyCreatePopup = new AccompanyCreatePopup();
+        accompanyCreatePopup.getPopwindow(DocAndMeetingActivity.this);
+        accompanyCreatePopup.setFavoritePoPListener(new AccompanyCreatePopup.FavoritePoPListener() {
+            @Override
+            public void addrecord(int ii) {
+                isrecord = ii;
+                openAccompanyMusicPop(meetingConfig.getRole());
+            }
+
+            @Override
+            public void addaudio(int ii) {
+                isrecord = ii;
+                openAccompanyMusicPop(meetingConfig.getRole());
+            }
+
+            @Override
+            public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean) {  //录制音响
+                soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
+                soundtrackRecordManager.setInitParams(checked, soundtrackBean, audiosyncll,web, timeshow, meetingConfig);
+            }
+        });
+        accompanyCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
+    }
+    private AccompanySelectVideoPopup accompanySelectVideoPopup;
+    private void openAccompanyMusicPop(int role){
+        if(accompanySelectVideoPopup==null){
+            accompanySelectVideoPopup=new AccompanySelectVideoPopup(DocAndMeetingActivity.this);
+            accompanySelectVideoPopup.setFavoritePoPListener(new AccompanySelectVideoPopup.FavoriteVideoPoPListener() {
+                @Override
+                public void save(Document document) {  //选择伴奏带
+                    if (accompanyCreatePopup != null) {
+                        if (isrecord == 0) {
+                            accompanyCreatePopup.setAudioBean(document);
+                        } else if (isrecord == 1) {
+                            accompanyCreatePopup.setRecordBean(document);
+                        }
+                    }
+                }
+
+                @Override
+                public void save1(SoundTrack soundTrack) {  // 选择伴奏音乐
+                    if (accompanyCreatePopup != null) {
+                        if (isrecord == 0) {
+                            accompanyCreatePopup.setAudioBean1(soundTrack);
+                        } else if (isrecord == 1) {
+                            accompanyCreatePopup.setRecordBean1(soundTrack);
+
+                        }
+                    }
+                }
+                @Override
+                public void uploadFile() {  //上传音频文件
+//                    Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
+//                    startActivityForResult(intent,REQUEST_SELECTED_FILE);
+                }
+            });
+        }
+        accompanySelectVideoPopup.StartPop(meetingConfig,role);
     }
 
 
@@ -4273,7 +4352,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    showCreateSyncDialog();
+                    if(systemType==1){
+                        showCreateAccompanyDialog();
+                    }else{
+                        showCreateSyncDialog();
+                    }
                 }
             }
         } else if (requestCode == 322) {

@@ -69,7 +69,7 @@ public class FavoriteVideoPopup {
             savevideo.setVisibility(View.VISIBLE);
             uploadfile.setVisibility(View.VISIBLE);
         }else if(type==3){
-            uploadfile.setVisibility(View.VISIBLE);
+            uploadfile.setVisibility(View.GONE);
             savevideo.setTextColor(mContext.getResources().getColor(R.color.black));
             savevideo.setVisibility(View.GONE);
         }
