@@ -131,6 +131,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
      * */
     private boolean mIsSeekStop=false;
 
+
     private void resetStatus() {
         isSeeking = false;
         isPlaying = false;
@@ -571,7 +572,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         final String _timeToatl = new SimpleDateFormat("mm:ss").format(totalTime);
         String time = currenttime + "/" + _timeToatl;
         playTimeText.setText(time);
-        //seekBar.setProgress((int) (currentTime / 100));//暂停时拖拽seek这里不要setProgress 否则导致小幅度回退反弹
+        if(!mIsSeekStop){//如果不是其他端控制Android暂停时拖拽seek这里不要setProgress 否则导致小幅度回退反弹
+            seekBar.setProgress((int) (currentTime / 100));
+        }
         String _time = time;
         if (time.contains("/")) {
             String[] parts = time.split("/");
@@ -963,7 +966,6 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 //        if (soundtrackAudioManager.isPlaying()) {
 //
 //        }
-
         if (soundtrackAudioManager == null) {
             soundtrackAudioManager = SoundtrackAudioManagerV2.getInstance(host);
         }
