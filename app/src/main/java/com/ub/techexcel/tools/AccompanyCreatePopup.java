@@ -194,18 +194,7 @@ public class AccompanyCreatePopup implements View.OnClickListener {
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
         mPopupWindow.setContentView(view);
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
 
-        if (Tools.isOrientationPortrait((Activity) mContext)) {
-            View root = ((Activity) mContext).getWindow().getDecorView();
-            params.width = root.getMeasuredWidth()*9/10;
-           // params.height =mContext.getResources().getDisplayMetrics().heightPixels * 3 / 5;
-        }else{
-            params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
-            View root = ((Activity) mContext).getWindow().getDecorView();
-            params.height = root.getMeasuredHeight() * 4 / 5 + 30;
-        }
-        mPopupWindow.getWindow().setAttributes(params);
     }
 
 //    private void setBindViewText(){
@@ -301,6 +290,17 @@ public class AccompanyCreatePopup implements View.OnClickListener {
     public void StartPop(View v, String attachmentId) {
         if (mPopupWindow != null) {
             this.attachmentId = attachmentId;
+            WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
+            if (Tools.isOrientationPortrait((Activity) mContext)) {
+                View root = ((Activity) mContext).getWindow().getDecorView();
+                params.width = root.getMeasuredWidth()*9/10;
+                // params.height =mContext.getResources().getDisplayMetrics().heightPixels * 3 / 5;
+            }else{
+                params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
+                View root = ((Activity) mContext).getWindow().getDecorView();
+                params.height = root.getMeasuredHeight() * 4 / 5 + 30;
+            }
+            mPopupWindow.getWindow().setAttributes(params);
             mPopupWindow.show();
         }
     }
