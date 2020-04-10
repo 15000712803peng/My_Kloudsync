@@ -759,6 +759,7 @@ public class ServiceInterfaceTools {
                             soundtrackBean.setAvatarUrl(jsonObject.getString("AvatarUrl"));
                             soundtrackBean.setDuration(jsonObject.getString("Duration"));
                             soundtrackBean.setCreatedDate(jsonObject.getString("CreatedDate"));
+	                        soundtrackBean.setMusicType(jsonObject.getInt("MusicType"));
                             soundtrackBean.setHidden(isHidden);
                             soundtrackBean.setHavePresenter(ishavepresenter);
                             mlist.add(soundtrackBean);

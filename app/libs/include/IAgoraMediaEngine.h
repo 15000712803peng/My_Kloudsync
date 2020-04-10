@@ -3,6 +3,8 @@
 #if defined _WIN32 || defined __CYGWIN__
 typedef __int64 int64_t;
 typedef unsigned __int64 uint64_t;
+typedef __int32 int32_t;
+typedef unsigned __int32 uint32_t;
 #else
 #include <stdint.h>
 #endif
@@ -45,8 +47,11 @@ class IVideoFrameObserver
 public:
   enum VIDEO_FRAME_TYPE {
     FRAME_TYPE_YUV420 = 0,  //YUV 420 format
-    FRAME_TYPE_YUV422 = 1,  //YUV 422P format
-    FRAME_TYPE_RGBA = 2, //RGBA
+  };
+  enum VIDEO_OBSERVER_POSITION {
+    POSITION_POST_CAPTURER = 1 << 0,
+    POSITION_PRE_RENDERER = 1 << 1,
+    POSITION_PRE_ENCODER = 1 << 2,
   };
   struct VideoFrame {
     VIDEO_FRAME_TYPE type;
@@ -64,10 +69,10 @@ public:
   };
 public:
   virtual bool onCaptureVideoFrame(VideoFrame& videoFrame) = 0;
+  virtual bool onPreEncodeVideoFrame(VideoFrame& videoFrame) { return true; }
   virtual bool onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame) = 0;
-  virtual VIDEO_FRAME_TYPE getVideoFormatPreference() { return FRAME_TYPE_YUV420; }
   virtual bool getRotationApplied() { return false; }
-  virtual bool getMirrorApplied() { return false; }
+  virtual uint32_t getObservedFramePosition() { return POSITION_POST_CAPTURER | POSITION_PRE_RENDERER; }
 };
 
 class IVideoFrame
@@ -97,7 +102,6 @@ public:
     VIDEO_TYPE_NV12 = 14,
     VIDEO_TYPE_BGRA = 15,
     VIDEO_TYPE_RGBA = 16,
-    VIDEO_TYPE_I422 = 17,
   };
   virtual void release() = 0;
   virtual const unsigned char* buffer(PLANE_TYPE type) const = 0;
@@ -137,8 +141,6 @@ public:
 
   // Return true if underlying plane buffers are of zero size, false if not.
   virtual bool IsZeroSize() const = 0;
-
-  virtual VIDEO_TYPE GetVideoType() const = 0;
 };
 
 class IExternalVideoRenderCallback
@@ -186,9 +188,7 @@ struct ExternalVideoFrame
     VIDEO_PIXEL_UNKNOWN = 0,
     VIDEO_PIXEL_I420 = 1,
     VIDEO_PIXEL_BGRA = 2,
-
     VIDEO_PIXEL_NV12 = 8,
-    VIDEO_PIXEL_I422 = 16,
   };
 
   VIDEO_BUFFER_TYPE type;

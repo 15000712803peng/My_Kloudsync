@@ -13,10 +13,9 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.SoundTrack;
-import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.Tools;
-import com.ub.techexcel.tools.YinxiangOperatorPopup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +39,11 @@ public class SoundtrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.onSoundtrackClickedListener = onSoundtrackClickedListener;
     }
 
-    public SoundtrackAdapter(Context context) {
+	private MeetingConfig meetingConfig;
+
+	public SoundtrackAdapter(Context context, MeetingConfig meetingConfig) {
         this.mContext = context;
+		this.meetingConfig = meetingConfig;
         defaultImageUri = Tools.getUriFromDrawableRes(context, R.drawable.hello);
     }
 
@@ -76,6 +78,12 @@ public class SoundtrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         } else {
             holder.divider.setVisibility(View.GONE);
         }
+	    if (meetingConfig.getSystemType() == 0) {
+		    holder.soundtype.setVisibility(View.GONE);
+	    } else {  //教育
+		    holder.soundtype.setVisibility(View.VISIBLE);
+	    }
+	    holder.soundtype.setText(soundTrack.getMusicType() == 0 ? "伴奏音乐" : "演唱");
 
         String url = soundTrack.getAvatarUrl();
         Uri imageUri2;
@@ -105,6 +113,7 @@ public class SoundtrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         TextView title;
         RelativeLayout operation;
         TextView username;
+	    TextView soundtype;
         TextView duration;
         SimpleDraweeView image;
         View divider;
@@ -114,6 +123,7 @@ public class SoundtrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             super(view);
             title = (TextView) view.findViewById(R.id.title);
             username = (TextView) view.findViewById(R.id.username);
+	        soundtype = (TextView) view.findViewById(R.id.soundtype);
             duration = (TextView) view.findViewById(R.id.duration);
             operation = (RelativeLayout) view.findViewById(R.id.operation);
             image = (SimpleDraweeView) view.findViewById(R.id.image);

@@ -1778,6 +1778,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 Toast.makeText(this, "开始会议需要访问相机，请允许", Toast.LENGTH_SHORT).show();
             }
+
         } else if (requestCode == REQUEST_PERMISSION_FOR_INSTALL_APK) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
                     grantResults[1] == PackageManager.PERMISSION_GRANTED) {

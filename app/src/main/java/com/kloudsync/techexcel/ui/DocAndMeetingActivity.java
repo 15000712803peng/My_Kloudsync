@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.os.PersistableBundle;
 import android.os.PowerManager;
 import android.provider.MediaStore;
@@ -49,6 +50,7 @@ import com.facebook.network.connectionclass.ConnectionQuality;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.AccountSettingBean;
 import com.kloudsync.techexcel.bean.BookNote;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventClose;
@@ -74,6 +76,7 @@ import com.kloudsync.techexcel.bean.EventPresnterChanged;
 import com.kloudsync.techexcel.bean.EventRefreshDocs;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.EventSelectNote;
+import com.kloudsync.techexcel.bean.EventSendJoinMeetingMessage;
 import com.kloudsync.techexcel.bean.EventSetPresenter;
 import com.kloudsync.techexcel.bean.EventShareDocInMeeting;
 import com.kloudsync.techexcel.bean.EventShareScreen;
@@ -111,6 +114,7 @@ import com.kloudsync.techexcel.dialog.ShareDocInMeetingDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.dialog.SoundtrackPlayManager;
 import com.kloudsync.techexcel.dialog.SoundtrackRecordManager;
+import com.kloudsync.techexcel.dialog.UploadFileDialog;
 import com.kloudsync.techexcel.dialog.plugin.UserNotesDialog;
 import com.kloudsync.techexcel.filepicker.FileEntity;
 import com.kloudsync.techexcel.filepicker.FilePickerActivity;
@@ -147,6 +151,7 @@ import com.kloudsync.techexcel.tool.QueryLocalNoteTool;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.tool.ToastUtils;
 import com.mining.app.zxing.MipcaActivityCapture;
+import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.service.activity.AddMeetingMemberActivity;
@@ -164,6 +169,8 @@ import com.ub.techexcel.bean.EventUnmuteAll;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.bean.TelePhoneCall;
+import com.ub.techexcel.tools.AccompanyCreatePopup;
+import com.ub.techexcel.tools.AccompanySelectVideoPopup;
 import com.ub.techexcel.tools.DevicesListDialog;
 import com.ub.techexcel.tools.DownloadUtil;
 import com.ub.techexcel.tools.ExitDialog;
@@ -320,6 +327,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 	private boolean mIsMeetingPause;
 	private DocAndMeetingPresenter mDocAndMeetingPresenter;
 
+    private Handler rejoinHandler;
+    private static final int MESSAGE_JOIN_TIME = 1;
+    private int joinTime = 0;
+    private EventSendJoinMeetingMessage joinMeetingMessage;
+
     @Override
     public void showErrorPage() {
 
@@ -333,7 +345,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             finish();
             return;
         }
-
         Log.e("DocAndMeetingActivity", "on_create");
         meetingSettingCache = MeetingSettingCache.getInstance(this);
         writeNoteBlankPageImage();
@@ -352,8 +363,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         bottomFilePop = new PopBottomFile(this);
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
+
         messageManager = SocketMessageManager.getManager(this);
         messageManager.registerMessageReceiver();
+        handleRejoinMeetingBecauseFailed();
         if (meetingConfig.getType() != MeetingType.MEETING) {
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
@@ -396,10 +409,47 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
             });
         }
-	    mSoundtrackBean = (SoundtrackBean) getIntent().getSerializableExtra(SUNDTRACKBEAN);
+        mSoundtrackBean = (SoundtrackBean) getIntent().getSerializableExtra(SUNDTRACKBEAN);
 	    mDocAndMeetingPresenter = new DocAndMeetingPresenter();
 	    mDocAndMeetingPresenter.attachView(this);
 	    mDocAndMeetingPresenter.getAccountInfo();
+    }
+
+    private void handleRejoinMeetingBecauseFailed() {
+        rejoinHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                int what = msg.what;
+                if (what == MESSAGE_JOIN_TIME) {
+                    Log.e("check_join_message", "time:" + joinTime);
+
+                    joinTime++;
+                    if (joinTime >= 8) {
+                        if (joinMeetingMessage != null) {
+                            joinTime = 0;
+                            if (messageManager != null) {
+                                if (TextUtils.isEmpty(joinMeetingMessage.getNewMeetingId())) {
+                                    messageManager.sendMessage_JoinMeeting(meetingConfig);
+                                } else {
+                                    messageManager.sendMessage_startMeeting(meetingConfig, joinMeetingMessage.getNewMeetingId());
+                                }
+                                joinMeetingMessage = null;
+                            }
+                        }
+                        rejoinHandler.removeMessages(MESSAGE_JOIN_TIME);
+
+                    } else {
+                        rejoinHandler.sendEmptyMessageDelayed(MESSAGE_JOIN_TIME, 1000);
+                        Log.e("check_join_message", "send_delay");
+                    }
+
+
+                }
+            }
+
+
+        };
     }
 
     private void safeJoinMeetingIfAlreadyInMeeting() {
@@ -1139,6 +1189,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                                             Log.e("check_list_changed", "mute_audio");
                                             MeetingKit.getInstance().menuMicroClicked(false);
                                             MeetingKit.getInstance().refreshMeetingMenu();
+                                        } else if (value == 6) {
+                                            MeetingKit.getInstance().menuMicroClicked(true);
+                                            MeetingKit.getInstance().refreshMeetingMenu();
                                         }
                                         break;
                                 }
@@ -1334,6 +1387,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
         if (meetingConfig.getType() == MeetingType.MEETING) {
 
+            meetingConfig.setMeetingStatus(helloMessage.getCurrentStatus());
+
             if (meetingConfig.getMeetingStatus() == 0) {
                 // 等待会议开启的状态
                 return;
@@ -1436,6 +1491,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             }
             // handle 自己声网的状态
+
+
         }
 
     }
@@ -2361,6 +2418,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     private void downLoadDocumentPageAndShow() {
+        if (meetingConfig.getDocument() == null || meetingConfig.getDocument().getDocumentPages() == null || meetingConfig.getDocument().getDocumentPages().size() <= 0) {
+            return;
+        }
         Observable.just(meetingConfig.getDocument()).observeOn(Schedulers.io()).map(new Function<MeetingDocument, Object>() {
             @Override
             public Object apply(MeetingDocument document) throws Exception {
@@ -2373,6 +2433,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
                 if (pageNumber > document.getDocumentPages().size()) {
                     pageNumber = document.getDocumentPages().size();
+                }
+
+                if (pageNumber <= 0) {
+                    return null;
                 }
                 DocumentPage page = document.getDocumentPages().get(pageNumber - 1);
                 queryAndDownLoadPageToShow(page, true);
@@ -2834,7 +2898,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
 
         if (meetingConfig.getType() != MeetingType.MEETING) {
-            if (isSyncing) {
+            if (meetingConfig.isSyncing()) {
                 if (!TextUtils.isEmpty(actions)) {
                     SoundtrackRecordManager.getManager(this).recordDocumentAction(actions);
                 }
@@ -3003,12 +3067,16 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     private void handleExit(boolean isEnd) {
+        if (meetingConfig == null) {
+            finish();
+        }
         if (exitDialog != null) {
             if (exitDialog.isShowing()) {
                 exitDialog.dismiss();
             }
             exitDialog = null;
         }
+
         exitDialog = new ExitDialog(this, meetingConfig);
         exitDialog.setEndMeeting(isEnd);
         exitDialog.setDialogClickListener(new ExitDialog.ExitDialogClickListener() {
@@ -3120,14 +3188,23 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private UserSoundtrackDialog soundtrackDialog;
 
     private void showSoundtrackDialog() {
-        if (soundtrackDialog != null) {
-            if (soundtrackDialog.isShowing()) {
-                soundtrackDialog.dismiss();
-                soundtrackDialog = null;
+        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
+        MeetingServiceTools.getInstance().getAccountInfo(url, MeetingServiceTools.GETACCOUNTINFO, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                AccountSettingBean accountSettingBean = (AccountSettingBean) object;
+                int systemType = accountSettingBean.getSystemType();
+                meetingConfig.setSystemType(systemType);
+                if (soundtrackDialog != null) {
+                    if (soundtrackDialog.isShowing()) {
+                        soundtrackDialog.dismiss();
+                        soundtrackDialog = null;
+                    }
+                }
+                soundtrackDialog = new UserSoundtrackDialog(DocAndMeetingActivity.this);
+                soundtrackDialog.show(meetingConfig);
             }
-        }
-        soundtrackDialog = new UserSoundtrackDialog(this);
-        soundtrackDialog.show(meetingConfig);
+        });
     }
 
     //-----
@@ -3549,6 +3626,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private static final int REQUEST_SCAN = 3;
     private static final int REQUEST_CODE_ADD_NOTE = 100;
     private static final int REQUEST_CODE_REQUEST_SELECTED_FILE = 200;
+    private static final int REQUEST_SELECTED_MP3_FILE = 201;
 
 
     @Override
@@ -3599,6 +3677,22 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             File picture = new File(fileEntity.getPath());
                             if (picture != null && picture.exists()) {
                                 uploadFileWhenAddDoc(picture);
+                            }
+                        }
+                    }
+                    break;
+                case REQUEST_SELECTED_MP3_FILE://
+                    List<FileEntity> audioList = PickerManager.getInstance().files;
+                    for (int i = 0; i < audioList.size(); i++) {
+                        FileEntity fileEntity = audioList.get(0);
+                        String path = fileEntity.getPath();
+                        Log.e("buildversion", path + "");
+                        if (!TextUtils.isEmpty(path)) {
+                            String suff = getSuffix(path);
+                            if (suff.equals("mp3")) {
+                                uploadMp3file(path);
+                            } else {
+                                Toast.makeText(DocAndMeetingActivity.this, "请上传音频文件", Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -3709,6 +3803,82 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             }
         });
+    }
+
+    private UploadFileDialog uploadFileDialog;
+
+    private void uploadMp3file(String path) {
+        AddDocumentTool.addDocumentToFavoriteMp3(this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
+            @Override
+            public void uploadStart() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        uploadFileDialog = new UploadFileDialog(DocAndMeetingActivity.this);
+                        uploadFileDialog.setTile("uploading");
+                        uploadFileDialog.show();
+
+                    }
+                });
+            }
+
+            @Override
+            public void uploadFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void convertFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setTile("Converting");
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void uploadFinished(Object result) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage(getResources().getString(R.string.create_success)).create().show();
+                    }
+                });
+            }
+
+            @Override
+            public void uploadError(String message) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null) {
+                            uploadFileDialog.cancel();
+                        }
+                        Toast.makeText(getApplicationContext(), "add failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
+    private String getSuffix(String fileName) {
+        int index = fileName.lastIndexOf(".");
+        if (index != -1) {
+            return fileName.substring(index + 1).toLowerCase(Locale.US);
+        } else {
+            return null;
+        }
     }
 
     private void reqeustNewBlankPage() {
@@ -4136,11 +4306,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void createSync(EventCreateSync createSync) {
-        openSaveVideoPopup();
+        if (meetingConfig.getSystemType() == 1) {  //教育
+        } else {
+            openSaveVideoPopup();
+        }
         String[] permissions = new String[]{
                 Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS};
         startRequestPermission(permissions, 321);
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -4270,10 +4442,79 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             @Override
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
                 soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
-                soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll, timeshow, meetingConfig);
+                soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll, web, timeshow, meetingConfig);
             }
         });
         yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
+    }
+
+
+    private AccompanyCreatePopup accompanyCreatePopup;
+
+    private void showCreateAccompanyDialog() {
+        accompanyCreatePopup = new AccompanyCreatePopup();
+        accompanyCreatePopup.getPopwindow(DocAndMeetingActivity.this);
+        accompanyCreatePopup.setFavoritePoPListener(new AccompanyCreatePopup.FavoritePoPListener() {
+            @Override
+            public void addrecord(int ii) {
+                isrecord = ii;
+                openAccompanyMusicPop(meetingConfig.getRole());
+            }
+
+            @Override
+            public void addaudio(int ii) {
+                isrecord = ii;
+                openAccompanyMusicPop(meetingConfig.getRole());
+            }
+
+            @Override
+            public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean) {  //录制音响
+                soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
+                soundtrackRecordManager.setInitParams(checked, soundtrackBean, audiosyncll, web, timeshow, meetingConfig);
+            }
+        });
+        accompanyCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
+    }
+
+    private AccompanySelectVideoPopup accompanySelectVideoPopup;
+
+    private void openAccompanyMusicPop(int role) {
+        if (accompanySelectVideoPopup == null) {
+            accompanySelectVideoPopup = new AccompanySelectVideoPopup(DocAndMeetingActivity.this);
+            accompanySelectVideoPopup.setFavoritePoPListener(new AccompanySelectVideoPopup.FavoriteVideoPoPListener() {
+                @Override
+                public void save(Document document) {  //选择伴奏带
+                    if (accompanyCreatePopup != null) {
+                        if (isrecord == 0) {
+                            accompanyCreatePopup.setAudioBean(document);
+                        } else if (isrecord == 1) {
+                            accompanyCreatePopup.setRecordBean(document);
+                        }
+                    }
+                }
+
+                @Override
+                public void save1(SoundTrack soundTrack) {  // 选择伴奏音乐
+                    if (accompanyCreatePopup != null) {
+                        if (isrecord == 0) {
+                            accompanyCreatePopup.setAudioBean1(soundTrack);
+                        } else if (isrecord == 1) {
+                            accompanyCreatePopup.setRecordBean1(soundTrack);
+
+                        }
+                    }
+                }
+
+                @Override
+                public void uploadFile() {  //上传音频文件
+                    accompanySelectVideoPopup.dismiss();
+                    Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
+                    intent.putExtra("fileType", 1);
+                    startActivityForResult(intent, REQUEST_SELECTED_MP3_FILE);
+                }
+            });
+        }
+        accompanySelectVideoPopup.StartPop(meetingConfig, role);
     }
 
 
@@ -4298,7 +4539,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    showCreateSyncDialog();
+                    if (meetingConfig.getSystemType() == 1) {
+                        showCreateAccompanyDialog();
+                    } else {
+                        showCreateSyncDialog();
+                    }
                 }
             }
         } else if (requestCode == 322) {
@@ -4322,14 +4567,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
     }
 
-    private boolean isSyncing = false;
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveEventSoundSync(EventSoundSync eventSoundSync) {
         Log.e("syncing---", eventSoundSync.getSoundtrackID() + "  " + eventSoundSync.getStatus() + "  " + eventSoundSync.getTime());
         int soundtrackID = eventSoundSync.getSoundtrackID();
         if (eventSoundSync.getStatus() == 1) { //开始录制
-            isSyncing = true;
+            meetingConfig.setSyncing(true);
             getJspPagenumber();
 //            messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
             recordstatus.setVisibility(View.VISIBLE);
@@ -4348,7 +4593,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         } else if (eventSoundSync.getStatus() == 0) {   //录音结束
             recordstatus.setVisibility(View.GONE);
-            isSyncing = false;
+            meetingConfig.setSyncing(false);
             //清除最后一页上的数据
             web.loadUrl("javascript:ClearPageAndAction()", null);
             PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
@@ -4365,7 +4610,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void eventTelephone(TelePhoneCall telePhoneCall) {
         boolean isTelephoneComing = telePhoneCall.isCall();
-        if (isSyncing) { //录制音想模式
+        if (meetingConfig.isSyncing()) { //录制音想模式
             if (isTelephoneComing) { //电话进来了  停止录音
                 if (soundtrackRecordManager != null) {
                     soundtrackRecordManager.pause();
@@ -4443,9 +4688,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             @Override
             public void uploadFile(int type) {
-
+                favoritePopup.dismiss();
+                Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
+                intent.putExtra("fileType", 1);
+                startActivityForResult(intent, REQUEST_SELECTED_MP3_FILE);
             }
-            
+
         });
     }
 
@@ -4681,6 +4929,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         vedioManager.close();
                     }
                 }
+
                 break;
 
             case 23:
@@ -4849,6 +5098,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     public void handleMessageJoinMeeting(JSONObject data) {
+        Log.e("check_join_message", "removeMessages");
+        rejoinHandler.removeMessages(MESSAGE_JOIN_TIME);
+        joinTime = 0;
         if (data == null) {
             return;
         }
@@ -4882,6 +5134,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             }
                         }
                     }
+
                     String[] datas = joinMeetingMessage.getCurrentDocumentPage().split("-");
                     meetingConfig.setFileId(Integer.parseInt(datas[0]));
                     float page = Float.parseFloat(datas[1]);
@@ -4948,6 +5201,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
                                 }
                             }
+                            //                            delayRefreshAgoraList();
 	                        if (joinMeetingMessage.isIfPause()) {//会议是暂停的
 		                        mIsMeetingPause = true;
 		                        String tipsText = Tools.getFromBase64(joinMeetingMessage.getPauseMsg());
@@ -5324,6 +5578,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
         Log.e("checkUrlForDifferentRegion", "new_url:" + newUrl);
         return newUrl;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventStartJoinMeeting(EventSendJoinMeetingMessage joinMeetingMessage) {
+        this.joinMeetingMessage = joinMeetingMessage;
+        rejoinHandler.obtainMessage(MESSAGE_JOIN_TIME).sendToTarget();
     }
 
 }

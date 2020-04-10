@@ -274,7 +274,7 @@ public class SoundtrackActionsManagerV2 {
     private void executeActions(List<WebAction> actions, long playTime) {
         for (final WebAction action : actions) {
 //            Log.e("check_action", "action:" + action);
-//            Log.e("SoundtrackActionsManager", "executeActions" + actions + ",action_executed:" + action.isExecuted());
+	        Log.e("SoundtrackActionsManager", "executeActions" + actions + ",action_executed:" + action.isExecuted());
             if (action.isExecuted()) {
 //                Log.e("executeActionscontinue","continueaction = "+action.toString() + "action.IsExecuted = "+ action.isExecuted()+"actionTime="+action.getTime()+"isLoadingPage"+isLoadingPage);
                 continue;
@@ -312,7 +312,7 @@ public class SoundtrackActionsManagerV2 {
 
 
             if (playTime < action.getTime() || isLoadingPage) {
-//                Log.e("executeActionscontinue","continue" + "playTime = "+ playTime+"actionTime="+action.getTime()+"isLoadingPage"+isLoadingPage);
+	            Log.e("executeActionscontinue", "continue" + "playTime = " + playTime + "actionTime=" + action.getTime() + "isLoadingPage" + isLoadingPage);
                 continue;
             }
 
@@ -365,11 +365,11 @@ public class SoundtrackActionsManagerV2 {
 //            Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
             int page = data.getInt("page");
             if (data.getInt("type") == 2 && currentPage != page) {
-                    isLoadingPage = true;
-                    Log.e("chage_page", "currentPage:" + currentPage + ",page:" + page);
-                    downLoadDocumentPageAndShow(page);
+	            isLoadingPage = true;
+	            Log.e("chage_page", "currentPage:" + currentPage + ",page:" + page);
+	            downLoadDocumentPageAndShow(page);
             } else if (data.getInt("type") != 2) {
-//                Log.e("doExecuteAction", "action," + action.getData() + ",playtime:" + playTime);
+	            Log.e("doExecuteAction", "action," + action.getData() + ",playtime:" + playTime);
                 web.loadUrl("javascript:PlayActionByTxt('" + action.getData() + "')", null);
                 web.loadUrl("javascript:Record()", null);
             }
@@ -393,10 +393,10 @@ public class SoundtrackActionsManagerV2 {
         try {
             JSONObject data = new JSONObject(action.getData());
             Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
-                int page = data.getInt("page");
+	        int page = data.getInt("page");
             if (data.getInt("type") == 2 && currentPage != page) {
                 isLoadingPage = true;
-                Log.e("chage_page","currentPage:" + currentPage + ",page:" + page);
+	            Log.e("chage_page", "currentPage:" + currentPage + ",page:" + page);
                 downLoadDocumentPageAndShow(page);
             } /*else if (data.getInt("type") != 2){
                 Observable.just(action).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<WebAction>() {
@@ -669,9 +669,18 @@ public class SoundtrackActionsManagerV2 {
     }
 
     private void downLoadDocumentPageAndShow(final int pageNumber) {
-        if(meetingConfig.getDocument() == null){
+
+	    if (meetingConfig.getDocument() == null) {
             return;
         }
+	    if (meetingConfig.getDocument().getDocumentPages() == null) {
+		    return;
+	    }
+
+	    if (pageNumber > meetingConfig.getDocument().getDocumentPages().size()) {
+		    return;
+	    }
+
         Observable.just(meetingConfig.getDocument()).observeOn(Schedulers.io()).map(new Function<MeetingDocument, Object>() {
             @Override
             public Object apply(MeetingDocument document) throws Exception {

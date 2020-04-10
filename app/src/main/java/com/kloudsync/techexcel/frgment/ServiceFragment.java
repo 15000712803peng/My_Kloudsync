@@ -37,8 +37,8 @@ import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventJoinMeeting;
+import com.kloudsync.techexcel.bean.EventRequestFailed;
 import com.kloudsync.techexcel.bean.EventStartMeeting;
-import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.KloudPerssionManger;
@@ -48,7 +48,6 @@ import com.kloudsync.techexcel.school.SelectSchoolActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.StringUtils;
-
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.mining.app.zxing.MipcaActivityCapture;
@@ -855,6 +854,11 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
         startActivity(intent);
     }
 
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void toastRequestFaileMessage(EventRequestFailed eventRequestFailed) {
+		Toast.makeText(getActivity(), eventRequestFailed.getCode() + "," + eventRequestFailed.getMessage(), Toast.LENGTH_LONG).show();
+	}
+
     private void goToWatingMeeting(EventJoinMeeting eventJoinMeeting){
         Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1049,4 +1053,6 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener 
             }
         },500);
     }
+
+
 }

@@ -3,6 +3,9 @@ package io.agora.openlive.model;
 import android.content.Context;
 import android.util.Log;
 
+import com.kloudsync.techexcel.bean.EventAgoraLog;
+
+import org.greenrobot.eventbus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,6 +182,9 @@ public class MyEngineEventHandler {
         @Override
         public void onError(int err) {
             super.onError(err);
+	        EventAgoraLog agoraLog = new EventAgoraLog();
+	        agoraLog.setMessage("join error," + err);
+	        EventBus.getDefault().post(agoraLog);
             log.debug("onError " + err);
         }
 

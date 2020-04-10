@@ -169,23 +169,7 @@ public class YinxiangCreatePopup implements View.OnClickListener {
             }
 
         });
-//        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                delete2.setVisibility(View.GONE);
-//                recordname.setVisibility(View.GONE);
-//                recordtime.setVisibility(View.GONE);
-//                recordfavorite = new Document();
-//
-//                if (isChecked) {
-//                    addrecord.setVisibility(View.GONE);
-//                    recordsync.setText("Record & Sync");
-//                } else {
-//                    addrecord.setVisibility(View.VISIBLE);
-//                    recordsync.setText("Sync");
-//                }
-//            }
-//        });
+
         setBindViewText();
         delete1 = (ImageView) view.findViewById(R.id.delete1);
         delete2 = (ImageView) view.findViewById(R.id.delete2);
@@ -202,18 +186,7 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
         mPopupWindow.setContentView(view);
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
 
-        if (Tools.isOrientationPortrait((Activity) mContext)) {
-            View root = ((Activity) mContext).getWindow().getDecorView();
-            params.width = root.getMeasuredWidth()*9/10;
-           // params.height =mContext.getResources().getDisplayMetrics().heightPixels * 3 / 5;
-        }else{
-            params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
-            View root = ((Activity) mContext).getWindow().getDecorView();
-            params.height = root.getMeasuredHeight() * 4 / 5 + 30;
-        }
-        mPopupWindow.getWindow().setAttributes(params);
     }
 
     private void setBindViewText(){
@@ -248,7 +221,6 @@ public class YinxiangCreatePopup implements View.OnClickListener {
 //        checkBox.setVisibility(View.INVISIBLE);
 //        checkBox.setChecked(false);
 //        recordsync.setText("Sync");
-
         if (recordfavorite != null) {
             voiceItemLayout.setVisibility(View.VISIBLE);
             recordname.setVisibility(View.VISIBLE);
@@ -263,6 +235,17 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     public void StartPop(View v, String attachmentId) {
         if (mPopupWindow != null) {
 
+	        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
+	        if (Tools.isOrientationPortrait((Activity) mContext)) {
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.width = root.getMeasuredWidth() * 9 / 10;
+		        // params.height =mContext.getResources().getDisplayMetrics().heightPixels * 3 / 5;
+	        } else {
+		        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.height = root.getMeasuredHeight() * 4 / 5 + 30;
+	        }
+	        mPopupWindow.getWindow().setAttributes(params);
             this.attachmentId = attachmentId;
             mPopupWindow.show();
         }
@@ -296,28 +279,18 @@ public class YinxiangCreatePopup implements View.OnClickListener {
             public void run() {
                 try {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("AttachmentID", Integer.parseInt(attachmentId));
-
-                    if (recordfavorite == null) {
-                        recordfavorite = new Document();
-                        recordfavorite.setAttachmentID(0 + "");
-                    }
-                    jsonObject.put("SelectedAudioAttachmentID", recordfavorite.getAttachmentID());
-                    jsonObject.put("SelectedAudioTitle", recordfavorite.getAttachmentID().equals("0") ? "" : recordfavorite.getTitle());
-                    if (favorite == null) {
-                        favorite = new Document();
-                        favorite.setAttachmentID(0 + "");
-                    }
-
-                    jsonObject.put("BackgroudMusicAttachmentID", favorite.getAttachmentID());
 
                     jsonObject.put("Title", edittext.getText().toString());
-                    jsonObject.put("EnableBackgroud", 1);
-                    jsonObject.put("EnableSelectVoice", 1);
+	                jsonObject.put("AttachmentID", Integer.parseInt(attachmentId));
+	                jsonObject.put("BackgroudMusicAttachmentID", TextUtils.isEmpty(favorite.getAttachmentID()) ? 0 : favorite.getAttachmentID());
+	                jsonObject.put("SelectedAudioAttachmentID", TextUtils.isEmpty(recordfavorite.getAttachmentID()) ? 0 : recordfavorite.getAttachmentID());
+	                jsonObject.put("EnableBackgroud", TextUtils.isEmpty(favorite.getAttachmentID()) ? 0 : 1);
+	                jsonObject.put("EnableSelectVoice", TextUtils.isEmpty(recordfavorite.getAttachmentID()) ? 0 : 1);
                     jsonObject.put("EnableRecordNewVoice", checkBox.isChecked() ? 1 : 0);
-                    jsonObject.put("SelectedAudioTitle", recordfavorite.getAttachmentID().equals("0") ? "" : recordfavorite.getTitle());
-                    jsonObject.put("BackgroudMusicTitle", favorite.getAttachmentID().equals("0") ? "" : favorite.getTitle());
-                    jsonObject.put("IsPublic", isPublic.isChecked()?1:0);
+	                jsonObject.put("SelectedAudioTitle", recordfavorite.getTitle());
+	                jsonObject.put("BackgroudMusicTitle", favorite.getTitle());
+	                jsonObject.put("IsPublic", 1);
+
                     JSONObject returnjson = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Soundtrack/CreateSoundtrack", jsonObject);
                     Log.e("hhh", jsonObject.toString() + "      " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
@@ -424,10 +397,6 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                     addrecord.setVisibility(View.VISIBLE);
                 }
                 setCreateSyncText();
-//                addrecord.setVisibility(View.VISIBLE);
-//                recordname.setVisibility(View.INVISIBLE);
-//                recordtime.setVisibility(View.INVISIBLE);
-//                recordsync.setText("Sync");
                 break;
             default:
                 break;

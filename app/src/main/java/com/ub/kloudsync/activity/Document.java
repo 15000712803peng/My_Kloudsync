@@ -16,7 +16,7 @@ public class Document implements Serializable {
     private String Title;
     private String Description;
     private String AttachmentFileID;
-    private String AttachmentID = "0";
+	private String AttachmentID = "";
     private String FileID;
     private String FileName;
     private String SourceFileName;

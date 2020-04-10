@@ -50,23 +50,23 @@
 
 
     <RelativeLayout
-        android:layout_marginTop="26dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp"
-        android:background="#007bff"
         android:id="@+id/layout_open_contact"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="12dp"
+        android:background="#007bff"
+        android:paddingLeft="10dp"
         android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:layout_height="wrap_content">
+        android:paddingRight="10dp"
+        android:paddingBottom="8dp">
 
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/img1"
             android:layout_width="30dp"
-            android:layout_centerVertical="true"
             android:layout_height="30dp"
+            android:layout_centerVertical="true"
             fresco:fadeDuration="500"
             fresco:failureImageScaleType="centerInside"
             fresco:placeholderImage="@drawable/icon_my_contact"
@@ -96,7 +96,6 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

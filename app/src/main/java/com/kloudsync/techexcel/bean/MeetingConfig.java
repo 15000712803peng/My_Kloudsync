@@ -59,6 +59,24 @@ public class MeetingConfig {
     private boolean isPlayingSoundtrack;
     private int meetingStatus;
     private boolean isHost;
+    private int systemType = 0;// 1 是教育
+    private boolean isSyncing = false;
+
+    public int getSystemType() {
+        return systemType;
+    }
+
+    public void setSystemType(int systemType) {
+        this.systemType = systemType;
+    }
+
+    public boolean isSyncing() {
+        return isSyncing;
+    }
+
+    public void setSyncing(boolean syncing) {
+        isSyncing = syncing;
+    }
 
     public boolean isHost() {
         return isHost;

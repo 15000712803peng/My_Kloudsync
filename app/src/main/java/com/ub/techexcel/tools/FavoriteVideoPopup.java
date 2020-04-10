@@ -178,17 +178,25 @@ public class FavoriteVideoPopup {
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
         mPopupWindow.setContentView(view);
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
-        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5 + 80;
-        View root = ((Activity) mContext).getWindow().getDecorView();
-        params.height = mContext.getResources().getDisplayMetrics().heightPixels * 4 / 5 - 30;
-        mPopupWindow.getWindow().setAttributes(params);
+
     }
 
     @SuppressLint("NewApi")
     public void StartPop(View v) {
         if (mPopupWindow != null) {
             mFavoritePoPListener.open();
+
+	        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
+	        if (Tools.isOrientationPortrait((Activity) mContext)) {
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.width = root.getMeasuredWidth() * 9 / 10;
+		        params.height = mContext.getResources().getDisplayMetrics().heightPixels * 1 / 2;
+	        } else {
+		        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.height = root.getMeasuredHeight() * 4 / 5 + 30;
+	        }
+
             mPopupWindow.show();
         }
     }
