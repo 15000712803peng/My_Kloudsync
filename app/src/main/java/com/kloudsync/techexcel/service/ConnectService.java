@@ -3,8 +3,10 @@ package com.kloudsync.techexcel.service;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.kloudsync.techexcel.bean.EventRequestFailed;
 import com.kloudsync.techexcel.config.AppConfig;
 
 import org.apache.http.HttpEntity;
@@ -17,6 +19,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -25,6 +28,7 @@ import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -230,10 +234,13 @@ public class ConnectService {
      * @return
      */
     public static JSONObject getIncidentbyHttpGet(String url) {
+
         JSONObject jsonObject = new JSONObject();
         try {
+            URL _url = new URL(url);
+            URI uri = new URI(_url.getProtocol(), _url.getHost(), _url.getPath(), _url.getQuery(), null);
             HttpClient client = new DefaultHttpClient();
-            HttpGet get = new HttpGet(url);
+            HttpGet get = new HttpGet(uri);
             get.setHeader("UserToken", AppConfig.UserToken);
             /*
              * get.setHeader("UserToken", AppConfig.UserToken);
@@ -244,9 +251,26 @@ public class ConnectService {
                 HttpEntity entity = httpResponse.getEntity();
                 String result = StringUtils.retrieveInputStream(entity);
                 jsonObject = new JSONObject(result);
+            } else {
+                EventRequestFailed requestFailed = new EventRequestFailed();
+                requestFailed.setCode(httpResponse.getStatusLine().getStatusCode());
+                String message = httpResponse.getStatusLine().getReasonPhrase();
+                if (TextUtils.isEmpty(message)) {
+                    message = "network request failed";
+                }
+                requestFailed.setMessage(message);
+                EventBus.getDefault().post(requestFailed);
             }
         } catch (Exception e) {
-            Log.e("getIncidentbyHttpGet","exception:" + e);
+            Log.e("getIncidentbyHttpGet", "exception:" + e);
+            EventRequestFailed requestFailed = new EventRequestFailed();
+            requestFailed.setCode(0);
+            String message = e.getMessage();
+            if (TextUtils.isEmpty(message)) {
+                message = "network request failed";
+            }
+            requestFailed.setMessage(message);
+            EventBus.getDefault().post(requestFailed);
             e.printStackTrace();
         }
         return jsonObject;
@@ -312,6 +336,7 @@ public class ConnectService {
         return responsejson;
 
     }
+
     // 利用http发送数据到服务器（addincident）
     public static JSONObject submitDataByJson4(String path, String content) {
         JSONObject responsejson = new JSONObject();
@@ -361,7 +386,7 @@ public class ConnectService {
             HttpURLConnection connection = (HttpURLConnection) url2
                     .openConnection();
             connection.setConnectTimeout(5000);
-            connection.addRequestProperty("Authorization", "Bearer " +AppConfig.liveToken);
+            connection.addRequestProperty("Authorization", "Bearer " + AppConfig.liveToken);
             connection.setRequestProperty("Accept", "image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/x-shockwave-flash," +
                     " application/vnd.ms-powerpoint, application/vnd.ms-excel, application/msword, */*");
             connection.setDoOutput(true);
@@ -425,41 +450,41 @@ public class ConnectService {
         return result;
     }
 
-	/**
-	 * 上传笔记数据
-	 *
-	 * @param path
-	 * @param jsonObject
-	 * @return
-	 */
-	public static String uploadDrawing(String path, JSONObject jsonObject) {
-		String result = null;
-		try {
-			URL url = new URL(path);
-			String content = String.valueOf(jsonObject);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setConnectTimeout(5000);
-			connection.addRequestProperty("Authorization", "Bearer " + AppConfig.liveToken);
-			connection.setDoOutput(true);
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("User-Agent", "Fiddler");
-			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestProperty("Charset", "utf-8");
-			OutputStream os = new BufferedOutputStream(connection.getOutputStream());
-			os.write(content.getBytes());
-			os.close();
-			int code = connection.getResponseCode();
-			if (code == 200) {
-				InputStream is = new BufferedInputStream(connection.getInputStream());
-				result = StringUtils.inputStreamTString(is);
-				is.close();
-				connection.disconnect();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
+    /**
+     * 上传笔记数据
+     *
+     * @param path
+     * @param jsonObject
+     * @return
+     */
+    public static String uploadDrawing(String path, JSONObject jsonObject) {
+        String result = null;
+        try {
+            URL url = new URL(path);
+            String content = String.valueOf(jsonObject);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(5000);
+            connection.addRequestProperty("Authorization", "Bearer " + AppConfig.liveToken);
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("User-Agent", "Fiddler");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Charset", "utf-8");
+            OutputStream os = new BufferedOutputStream(connection.getOutputStream());
+            os.write(content.getBytes());
+            os.close();
+            int code = connection.getResponseCode();
+            if (code == 200) {
+                InputStream is = new BufferedInputStream(connection.getInputStream());
+                result = StringUtils.inputStreamTString(is);
+                is.close();
+                connection.disconnect();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
 
     // 利用http发送数据到服务器（addincident）

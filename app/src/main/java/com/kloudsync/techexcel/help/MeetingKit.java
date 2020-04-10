@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.EventAgoraLog;
 import com.kloudsync.techexcel.bean.EventCloseShare;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventMute;
@@ -171,6 +172,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         Log.e("MeetingKit", "joinChannel:" + meetingConfig.getMeetingId());
         getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
         setEncoderConfigurationBaseMode();
+//        EventAgoraLog agoraLog = new EventAgoraLog();
+//        agoraLog.setMessage("加入频道号：" + meetingConfig.getMeetingId().trim() +",id:" + Integer.parseInt(AppConfig.UserID));
+//        EventBus.getDefault().post(agoraLog);
         rtcManager.joinRtcChannle(meetingConfig.getMeetingId());
 
     }
@@ -320,7 +324,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     @Override
     public void onJoinChannelSuccess(String channel, final int uid, int elapsed) {
         isStarted = true;
-        Log.e("MeetingKit", "onJoinChannelSuccess:" + channel);
+//        EventAgoraLog agoraLog = new EventAgoraLog();
+//        agoraLog.setMessage("JoinChannelSuccess:channel," + channel + ",uid:" + uid);
+//        Log.e("MeetingKit", "onJoinChannelSuccess:channel:" + channel +",uid:" + uid);
+//        EventBus.getDefault().post(agoraLog);
+
         if (meetingConfig != null) {
             meetingConfig.setInRealMeeting(true);
             meetingConfig.setAgoraChannelId(channel);

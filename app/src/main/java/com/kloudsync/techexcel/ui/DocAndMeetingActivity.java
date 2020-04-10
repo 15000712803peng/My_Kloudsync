@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.os.PersistableBundle;
 import android.os.PowerManager;
 import android.provider.MediaStore;
@@ -52,6 +53,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.BookNote;
 import com.kloudsync.techexcel.bean.DocumentPage;
+import com.kloudsync.techexcel.bean.EventAgoraLog;
 import com.kloudsync.techexcel.bean.EventClose;
 import com.kloudsync.techexcel.bean.EventCloseNoteView;
 import com.kloudsync.techexcel.bean.EventCloseShare;
@@ -76,6 +78,7 @@ import com.kloudsync.techexcel.bean.EventPresnterChanged;
 import com.kloudsync.techexcel.bean.EventRefreshDocs;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.EventSelectNote;
+import com.kloudsync.techexcel.bean.EventSendJoinMeetingMessage;
 import com.kloudsync.techexcel.bean.EventSetPresenter;
 import com.kloudsync.techexcel.bean.EventShareDocInMeeting;
 import com.kloudsync.techexcel.bean.EventShareScreen;
@@ -318,6 +321,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Bind(R.id.layout_waiting_meeting)
     RelativeLayout waitingMeetingLayout;
 
+    private Handler rejoinHandler;
+    private static final int MESSAGE_JOIN_TIME = 1;
+    private int joinTime = 0;
+    private EventSendJoinMeetingMessage joinMeetingMessage;
+
     @Override
     public void showErrorPage() {
 
@@ -331,7 +339,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             finish();
             return;
         }
-
         Log.e("DocAndMeetingActivity", "on_create");
         meetingSettingCache = MeetingSettingCache.getInstance(this);
         writeNoteBlankPageImage();
@@ -350,8 +357,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         bottomFilePop = new PopBottomFile(this);
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
+
         messageManager = SocketMessageManager.getManager(this);
         messageManager.registerMessageReceiver();
+        handleRejoinMeetingBecauseFailed();
         if (meetingConfig.getType() != MeetingType.MEETING) {
             messageManager.sendMessage_JoinMeeting(meetingConfig);
         } else {
@@ -394,7 +403,45 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
             });
         }
-	    mSoundtrackBean = (SoundtrackBean) getIntent().getSerializableExtra(SUNDTRACKBEAN);
+        mSoundtrackBean = (SoundtrackBean) getIntent().getSerializableExtra(SUNDTRACKBEAN);
+
+    }
+
+    private void handleRejoinMeetingBecauseFailed(){
+        rejoinHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                int what = msg.what;
+                if(what == MESSAGE_JOIN_TIME){
+                    Log.e("check_join_message","time:" + joinTime);
+
+                    joinTime++;
+                    if(joinTime >= 8){
+                        if(joinMeetingMessage != null){
+                            joinTime = 0;
+                            if(messageManager != null){
+                                if(TextUtils.isEmpty(joinMeetingMessage.getNewMeetingId())){
+                                    messageManager.sendMessage_JoinMeeting(meetingConfig);
+                                }else {
+                                    messageManager.sendMessage_startMeeting(meetingConfig,joinMeetingMessage.getNewMeetingId());
+                                }
+                                joinMeetingMessage = null;
+                            }
+                        }
+                        rejoinHandler.removeMessages(MESSAGE_JOIN_TIME);
+
+                    }else {
+                        rejoinHandler.sendEmptyMessageDelayed(MESSAGE_JOIN_TIME,1000);
+                        Log.e("check_join_message","send_delay");
+                    }
+
+
+                }
+            }
+
+
+        };
     }
 
     private void safeJoinMeetingIfAlreadyInMeeting() {
@@ -1117,6 +1164,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                                             Log.e("check_list_changed", "mute_audio");
                                             MeetingKit.getInstance().menuMicroClicked(false);
                                             MeetingKit.getInstance().refreshMeetingMenu();
+                                        } else if (value == 6) {
+                                            MeetingKit.getInstance().menuMicroClicked(true);
+                                            MeetingKit.getInstance().refreshMeetingMenu();
                                         }
                                         break;
                                 }
@@ -1309,6 +1359,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
         if (meetingConfig.getType() == MeetingType.MEETING) {
 
+            meetingConfig.setMeetingStatus(helloMessage.getCurrentStatus());
+
             if (meetingConfig.getMeetingStatus() == 0) {
                 // 等待会议开启的状态
                 return;
@@ -1411,6 +1463,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             }
             // handle 自己声网的状态
+
+
         }
 
     }
@@ -2336,6 +2390,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     private void downLoadDocumentPageAndShow() {
+        if(meetingConfig.getDocument() == null || meetingConfig.getDocument().getDocumentPages() == null || meetingConfig.getDocument().getDocumentPages().size() <= 0){
+            return;
+        }
         Observable.just(meetingConfig.getDocument()).observeOn(Schedulers.io()).map(new Function<MeetingDocument, Object>() {
             @Override
             public Object apply(MeetingDocument document) throws Exception {
@@ -2348,6 +2405,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
                 if (pageNumber > document.getDocumentPages().size()) {
                     pageNumber = document.getDocumentPages().size();
+                }
+
+                if(pageNumber <= 0){
+                    return null;
                 }
                 DocumentPage page = document.getDocumentPages().get(pageNumber - 1);
                 queryAndDownLoadPageToShow(page, true);
@@ -2978,12 +3039,16 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     private void handleExit(boolean isEnd) {
+        if (meetingConfig == null) {
+            finish();
+        }
         if (exitDialog != null) {
             if (exitDialog.isShowing()) {
                 exitDialog.dismiss();
             }
             exitDialog = null;
         }
+
         exitDialog = new ExitDialog(this, meetingConfig);
         exitDialog.setEndMeeting(isEnd);
         exitDialog.setDialogClickListener(new ExitDialog.ExitDialogClickListener() {
@@ -4420,7 +4485,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             public void uploadFile(int type) {
 
             }
-            
+
         });
     }
 
@@ -4656,6 +4721,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         vedioManager.close();
                     }
                 }
+
                 break;
 
             case 23:
@@ -4824,6 +4890,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     public void handleMessageJoinMeeting(JSONObject data) {
+        Log.e("check_join_message","removeMessages");
+        rejoinHandler.removeMessages(MESSAGE_JOIN_TIME);
+        joinTime = 0;
         if (data == null) {
             return;
         }
@@ -4857,6 +4926,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             }
                         }
                     }
+
                     String[] datas = joinMeetingMessage.getCurrentDocumentPage().split("-");
                     meetingConfig.setFileId(Integer.parseInt(datas[0]));
                     float page = Float.parseFloat(datas[1]);
@@ -5261,6 +5331,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
         Log.e("checkUrlForDifferentRegion", "new_url:" + newUrl);
         return newUrl;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventStartJoinMeeting(EventSendJoinMeetingMessage joinMeetingMessage) {
+        this.joinMeetingMessage = joinMeetingMessage;
+        rejoinHandler.obtainMessage(MESSAGE_JOIN_TIME).sendToTarget();
     }
 
 }

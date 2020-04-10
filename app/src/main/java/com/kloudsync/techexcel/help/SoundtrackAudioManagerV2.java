@@ -2,6 +2,7 @@ package com.kloudsync.techexcel.help;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -37,6 +38,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     private volatile long playTime;
     private Context context;
     private SoundtrackMediaInfo mediaInfo;
+    private Handler handler;
     /**
      * 播放总长
      */
@@ -189,7 +191,6 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
         }
 
     }
-
 
     private void reinit(SoundtrackMediaInfo mediaInfo) {
 
@@ -478,6 +479,13 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     @Override
     public void onComplete() {
+        if(isError){
+            isError = false;
+            if(mediaInfo != null){
+                reinit(mediaInfo);
+            }
+            return;
+        }
         isPlaying = false;
         if (onAudioInfoCallBack != null) {
             onAudioInfoCallBack.onCompletionCalled();
@@ -486,10 +494,14 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     }
 
+    boolean isError = false;
+
 
     @Override
     public void onError(int code, String msg) {
         isPlaying = false;
+        isError = true;
+
         Log.e("check_soundtrack_play", "onError:" + code + ",msg:" + msg);
     }
 

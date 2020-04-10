@@ -171,8 +171,9 @@ public class JoinMeetingPopup implements View.OnClickListener {
 
     Disposable disposable;
     private void doJoin(final String meetingRoom){
-
         loadingDialog.show();
+        loadingDialog.setCancelable(true);
+//        loadingDialog.setCanceledOnTouchOutside(true);
         Observable.just(meetingRoom).observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String meetingId) throws Exception {
@@ -296,6 +297,8 @@ public class JoinMeetingPopup implements View.OnClickListener {
                         });
 
                     }
+                }else {
+                    hideLoadingDialog();
                 }
 
             }
@@ -320,7 +323,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
                     InputMethodManager imm = (InputMethodManager)
                             mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(roomet.getWindowToken(), 0);
-                    roomid = roomet.getText().toString();
+                    roomid = roomet.getText().toString().trim();
                     if (!TextUtils.isEmpty(roomid)) {
 //                        checkClassRoomExist(roomid);
                         roomid = roomid.toUpperCase();
