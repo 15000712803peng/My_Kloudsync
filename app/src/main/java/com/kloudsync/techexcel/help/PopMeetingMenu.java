@@ -1,9 +1,7 @@
 package com.kloudsync.techexcel.help;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
-import android.opengl.ETC1Util;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -26,10 +24,6 @@ import com.ub.techexcel.tools.PopMeetingMore;
 
 import org.greenrobot.eventbus.EventBus;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-
 public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickListener,PopMeetingMore.OnMoreActionsListener {
 
     int width;
@@ -46,6 +40,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
 
     //----
     private MeetingSettingCache settingCache;
+	private RelativeLayout mMenuPause;
 
     @Override
     public void onClick(View v) {
@@ -148,6 +143,8 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 }
                 hide();
                 break;
+	        case R.id.meeting_menu_pause:
+		        break;
             case R.id.meeting_menu_more:
                 if(meetingConfig.getMeetingStatus() == 0){
                     return;
@@ -224,6 +221,8 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         voiceImage.setOnClickListener(this);
         menuInvite = view.findViewById(R.id.meeting_menu_invite);
         menuInvite.setOnClickListener(this);
+	    mMenuPause = view.findViewById(R.id.meeting_menu_pause);
+	    mMenuPause.setOnClickListener(this);
         menuMore = view.findViewById(R.id.meeting_menu_more);
         menuMore.setOnClickListener(this);
         cameraImage = view.findViewById(R.id.meeting_camera);

@@ -680,7 +680,7 @@
     <RelativeLayout
         android:id="@+id/layout_real_meeting"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:visibility="gone">
 
         <LinearLayout
@@ -1151,6 +1151,13 @@
         android:src="@drawable/recordstart"
         android:visibility="gone" />
 
+    <include
+        layout="@layout/meeting_pause_layout"
+        android:layout_below="@id/layout_real_meeting"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 
 </RelativeLayout>

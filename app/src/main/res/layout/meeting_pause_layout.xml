@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rly_meeting_pause_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:alpha="0.7"
+    android:visibility="gone"
+    android:background="@color/black"
+    android:padding="@dimen/dp_10"
+    tools:showIn="@layout/activity_doc_and_meeting_v2">
+
+    <RelativeLayout
+        android:id="@+id/rly_meeting_pause_big"
+        android:layout_width="150dp"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_meeting_pause_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="会议暂停标题"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_13" />
+
+        <ImageView
+            android:id="@+id/iv_meeting_pause_minimize"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20"
+            android:layout_alignParentRight="true"
+            android:background="@color/white" />
+
+        <TextView
+            android:id="@+id/tv_meeting_pause_tips_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="5"
+            android:scrollbars="vertical"
+            android:layout_below="@id/tv_meeting_pause_title"
+            android:layout_marginTop="@dimen/dp_15"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_12" />
+
+        <EditText
+            android:id="@+id/et_meeting_pause_tips_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_meeting_pause_title"
+            android:layout_marginTop="@dimen/dp_15"
+            android:background="@null"
+            android:imeActionLabel="@string/base_enter"
+            android:maxLines="5"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_12"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_meeting_pause_tips_text"
+            android:layout_marginTop="@dimen/dp_10"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_meeting_pause_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/dp_5"
+                android:layout_weight="2"
+                android:text="00:00:00"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_18" />
+
+            <Button
+                android:id="@+id/btn_meeting_resume"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_25"
+                android:layout_weight="1.5"
+                android:background="@drawable/shape_green_all_radius_21"
+                android:gravity="center"
+                android:text="继续"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_15" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rly_meeting_pause_minimize"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_meeting_pause_minimize_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp_5"
+            android:layout_toLeftOf="@+id/tv_meeting_pause_min_time"
+            android:text="最小化会议暂停标题"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_13" />
+
+        <TextView
+            android:id="@+id/tv_meeting_pause_min_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/iv_meeting_pause_big"
+            android:layout_weight="2"
+            android:text="00:00:00"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_18" />
+
+        <ImageView
+            android:id="@+id/iv_meeting_pause_big"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp_5"
+            android:background="@color/white" />
+    </RelativeLayout>
+
+</RelativeLayout>
