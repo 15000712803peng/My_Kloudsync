@@ -31,6 +31,15 @@ public class SoundtrackBean implements Serializable {
     private int fileId;
     private String path;
     private int isPublic ;
+    private int actionBaseSoundtrackID;
+
+    public int getActionBaseSoundtrackID() {
+        return actionBaseSoundtrackID;
+    }
+
+    public void setActionBaseSoundtrackID(int actionBaseSoundtrackID) {
+        this.actionBaseSoundtrackID = actionBaseSoundtrackID;
+    }
 
     public int getIsPublic() {
         return isPublic;

@@ -8,6 +8,16 @@ public class AccountSettingBean {
 
     private String verifyEmailAddress;
 
+    private int systemType;
+
+    public int getSystemType() {
+        return systemType;
+    }
+
+    public void setSystemType(int systemType) {
+        this.systemType = systemType;
+    }
+
     public String getWebAddress() {
         return webAddress;
     }
