@@ -21,6 +21,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.help.SoundtrackManager;
 import com.kloudsync.techexcel.help.UploadAudioPopupdate;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.GZipUtil;
@@ -37,6 +38,7 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.UploadAudioListener;
 import com.ub.techexcel.tools.UploadAudioNoteActionTool;
 import com.ub.techexcel.tools.UploadAudioTool;
+import com.ub.techexcel.tools.UserSoundtrackDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -665,6 +667,10 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
             }
         });
+
+        if(false){  //是否暂停会议
+            addsoundtolesson(soundtrackBean.getSoundtrackID()+"");
+        }
         if (audioplaytimer != null) {
             audioplaytimer.cancel();
             audioplaytimer = null;
@@ -675,6 +681,17 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 	    timeShow.setVisibility(View.GONE);
     }
 
+
+    private void addsoundtolesson(final String soundtrackIDs) {
+        String url = AppConfig.URL_PUBLIC + "LessonSoundtrack?lessonID=" + meetingConfig.getLessionId() + "&soundtrackIDs=" + soundtrackIDs;
+        ServiceInterfaceTools.getinstance().addSoundToLesson(url, ServiceInterfaceTools.ADDSOUNDTOLESSON,
+                new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+
+                    }
+                });
+    }
 
     private void resumeMedia() {
         playstop.setImageResource(R.drawable.video_stop);

@@ -30,6 +30,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -316,7 +317,7 @@ public class YinxiangPopup implements View.OnClickListener {
                         List<SoundtrackBean> oo = (List<SoundtrackBean>) object;
                         allList.clear();
                         allList.addAll(oo);
-                        yinXiangAdapter2 = new YinXiangAdapter2(mContext, mlist, allList);
+                        yinXiangAdapter2 = new YinXiangAdapter2(mContext, mlist, allList,new MeetingConfig());
                         allrecycleview.setAdapter(yinXiangAdapter2);
                     }
                 }, isHidden, ishavepresenter);

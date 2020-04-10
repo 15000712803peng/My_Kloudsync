@@ -163,8 +163,12 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
         SoundtrackManager.getInstance().requestSoundtrackList(meetingConfig, this);
 
         if (meetingConfig.getType() == MeetingType.MEETING) {
+
+
             selectmore.setVisibility(View.VISIBLE);
             createLayout.setVisibility(View.GONE);
+
+
         }else{
             selectmore.setVisibility(View.GONE);
             createLayout.setVisibility(View.VISIBLE);
@@ -243,7 +247,7 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
                         List<SoundtrackBean> oo = (List<SoundtrackBean>) object;
                         allList.clear();
                         allList.addAll(oo);
-                        yinXiangAdapter2 = new YinXiangAdapter2(host, new ArrayList<SoundtrackBean>(), allList);
+                        yinXiangAdapter2 = new YinXiangAdapter2(host, new ArrayList<SoundtrackBean>(), allList,meetingConfig);
                         allrecycleview.setAdapter(yinXiangAdapter2);
                     }
                 }, false, true);
@@ -276,7 +280,7 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
 			            soundtrackListView.setVisibility(View.VISIBLE);
 			            noDataText.setVisibility(View.GONE);
 			            if (soundtrackAdapter == null) {
-				            soundtrackAdapter = new SoundtrackAdapter(host);
+				            soundtrackAdapter = new SoundtrackAdapter(host,meetingConfig);
 				            soundtrackAdapter.setSoundTracks(soundtrackList.getSoundTracks());
 				            soundtrackListView.setAdapter(soundtrackAdapter);
 

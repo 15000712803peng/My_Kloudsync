@@ -32,6 +32,15 @@ public class SoundtrackBean implements Serializable {
     private String path;
     private int isPublic ;
     private int actionBaseSoundtrackID;
+    private int MusicType;
+
+    public int getMusicType() {
+        return MusicType;
+    }
+
+    public void setMusicType(int musicType) {
+        MusicType = musicType;
+    }
 
     public int getActionBaseSoundtrackID() {
         return actionBaseSoundtrackID;

@@ -2876,7 +2876,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
 
         if (meetingConfig.getType() != MeetingType.MEETING) {
-            if (isSyncing) {
+            if (meetingConfig.isSyncing()) {
                 if (!TextUtils.isEmpty(actions)) {
                     SoundtrackRecordManager.getManager(this).recordDocumentAction(actions);
                 }
@@ -3166,14 +3166,23 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private UserSoundtrackDialog soundtrackDialog;
 
     private void showSoundtrackDialog() {
-        if (soundtrackDialog != null) {
-            if (soundtrackDialog.isShowing()) {
-                soundtrackDialog.dismiss();
-                soundtrackDialog = null;
+        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
+        MeetingServiceTools.getInstance().getAccountInfo(url, MeetingServiceTools.GETACCOUNTINFO, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                AccountSettingBean accountSettingBean = (AccountSettingBean) object;
+                int systemType=accountSettingBean.getSystemType();
+                meetingConfig.setSystemType(systemType);
+                if (soundtrackDialog != null) {
+                    if (soundtrackDialog.isShowing()) {
+                        soundtrackDialog.dismiss();
+                        soundtrackDialog = null;
+                    }
+                }
+                soundtrackDialog = new UserSoundtrackDialog(DocAndMeetingActivity.this);
+                soundtrackDialog.show(meetingConfig);
             }
-        }
-        soundtrackDialog = new UserSoundtrackDialog(this);
-        soundtrackDialog.show(meetingConfig);
+        });
     }
 
     //-----
@@ -4271,25 +4280,15 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     }
 
-    int systemType;
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void createSync(EventCreateSync createSync) {
-        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
-        MeetingServiceTools.getInstance().getAccountInfo(url, MeetingServiceTools.GETACCOUNTINFO, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                AccountSettingBean accountSettingBean = (AccountSettingBean) object;
-                systemType=accountSettingBean.getSystemType();
-                if(systemType==1){  //教育
-
-                }else {
-                    openSaveVideoPopup();
-                }
-                String[] permissions = new String[]{
-                        Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS};
-                startRequestPermission(permissions, 321);
-            }
-        });
+        if(meetingConfig.getSystemType()==1){  //教育
+        }else {
+            openSaveVideoPopup();
+        }
+        String[] permissions = new String[]{
+                Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS};
+        startRequestPermission(permissions, 321);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -4512,7 +4511,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    if(systemType==1){
+                    if(meetingConfig.getSystemType()==1){
                         showCreateAccompanyDialog();
                     }else{
                         showCreateSyncDialog();
@@ -4540,14 +4539,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
     }
 
-    private boolean isSyncing = false;
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveEventSoundSync(EventSoundSync eventSoundSync) {
         Log.e("syncing---", eventSoundSync.getSoundtrackID() + "  " + eventSoundSync.getStatus() + "  " + eventSoundSync.getTime());
         int soundtrackID = eventSoundSync.getSoundtrackID();
         if (eventSoundSync.getStatus() == 1) { //开始录制
-            isSyncing = true;
+            meetingConfig.setSyncing(true);
             getJspPagenumber();
 //            messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
             recordstatus.setVisibility(View.VISIBLE);
@@ -4566,7 +4565,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         } else if (eventSoundSync.getStatus() == 0) {   //录音结束
             recordstatus.setVisibility(View.GONE);
-            isSyncing = false;
+            meetingConfig.setSyncing(false);
             //清除最后一页上的数据
             web.loadUrl("javascript:ClearPageAndAction()", null);
             PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
@@ -4583,7 +4582,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void eventTelephone(TelePhoneCall telePhoneCall) {
         boolean isTelephoneComing = telePhoneCall.isCall();
-        if (isSyncing) { //录制音想模式
+        if (meetingConfig.isSyncing()) { //录制音想模式
             if (isTelephoneComing) { //电话进来了  停止录音
                 if (soundtrackRecordManager != null) {
                     soundtrackRecordManager.pause();
