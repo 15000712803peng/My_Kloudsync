@@ -143,6 +143,7 @@ import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.tool.CameraTouchListener;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
@@ -257,6 +258,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Bind(R.id.image_vedio_close)
     ImageView closeVedioImage;
 
+    @Bind(R.id.layout_camera)
+    LinearLayout cameraLayout;
+
     @Bind(R.id.layout_meeting_default_document)
     RelativeLayout meetingDefaultDocument;
 
@@ -349,6 +353,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         meetingSettingCache = MeetingSettingCache.getInstance(this);
         writeNoteBlankPageImage();
         initViews();
+
         //----
         RealMeetingSetting realMeetingSetting = MeetingSettingCache.getInstance(this).getMeetingSetting();
         meetingConfig = getConfig();
@@ -1470,6 +1475,25 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
             // handle 自己声网的状态
 
+            if(meetingSettingCache.getMeetingSetting().isMicroOn()){
+                if(helloMessage.getMicrophoneStatus() != 2){
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,true,meetingSettingCache.getMeetingSetting().isCameraOn());
+                }
+            }else {
+                if(helloMessage.getMicrophoneStatus() == 2){
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,false,meetingSettingCache.getMeetingSetting().isCameraOn());
+                }
+            }
+
+            if(meetingSettingCache.getMeetingSetting().isCameraOn()){
+                if(helloMessage.getCameraStatus() != 2){
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,meetingSettingCache.getMeetingSetting().isMicroOn(),true);
+                }
+            }else {
+                if(helloMessage.getCameraStatus() == 2){
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,meetingSettingCache.getMeetingSetting().isMicroOn(),false);
+                }
+            }
 
         }
 
@@ -3345,6 +3369,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         _inviteLayout.setOnClickListener(this);
         _shareLayout.setOnClickListener(this);
         meetingMenuMemberImage.setOnClickListener(this);
+        CameraTouchListener cameraTouchListener = new CameraTouchListener();
+        cameraTouchListener.setCameraLayout(cameraLayout);
+        toggleCameraLayout.setOnTouchListener(cameraTouchListener);
     }
 
     @Override
@@ -4730,6 +4757,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     @Override
     public void onCameraFrameClick(AgoraMember member) {
+        if(!isPresenter()){
+            return;
+        }
         handleFullScreenCamera(cameraAdapter);
 //        showAgoraFull(member);
     }
