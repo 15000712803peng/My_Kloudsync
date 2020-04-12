@@ -31,7 +31,6 @@ import com.kloudsync.techexcel.dialog.MemberRoleDialog;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.tool.ContactsTool;
 import com.kloudsync.techexcel.ui.MainActivity;
-import com.kloudsync.techexcel.ui.WelcomeAndCreateActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -158,13 +157,13 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
         inviteMoreLayout.setOnClickListener(this);
         openContactLayout = findViewById(R.id.layout_open_contact);
         openContactLayout.setOnClickListener(this);
-        initInviteGuidePop();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                showInviteGuidePop(openContactLayout);
-            }
-        }, 1000);
+	    initInviteGuidePop();
+	    new Handler().postDelayed(new Runnable() {
+		    @Override
+		    public void run() {
+			    showInviteGuidePop(openContactLayout);
+		    }
+	    }, 1000);
     }
 
     @Override
@@ -291,46 +290,47 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
         return numbers;
     }
 
-    private PopupWindow guidePopupWindow;
-    private void initInviteGuidePop() {
-        View guideView = LayoutInflater.from(this).inflate(R.layout.pop_invite_guide, null);
-        guideView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        Display display = getWindowManager().getDefaultDisplay();
-        int width = display.getWidth();
-        guidePopupWindow = new PopupWindow(guideView,
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        guidePopupWindow.setBackgroundDrawable(new BitmapDrawable());
-        guideView.findViewById(R.id.tv_guide_next).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                guidePopupWindow.dismiss();
-            }
-        });
-    }
+	private PopupWindow guidePopupWindow;
 
-    private void showInviteGuidePop(View v) {
-        final WindowManager.LayoutParams lp = CreateOrganizationInviteActivity.this.getWindow().getAttributes();
-        lp.alpha = 0.5f;//代表透明程度，范围为0 - 1.0f
-        CreateOrganizationInviteActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        CreateOrganizationInviteActivity.this.getWindow().setAttributes(lp);
-        //点击在按钮的中上方弹出popupWindow
-        int btnWidth = v.getMeasuredWidth();
-        int btnHeight = v.getMeasuredHeight();
+	private void initInviteGuidePop() {
+		View guideView = LayoutInflater.from(this).inflate(R.layout.pop_invite_guide, null);
+		guideView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+		Display display = getWindowManager().getDefaultDisplay();
+		int width = display.getWidth();
+		guidePopupWindow = new PopupWindow(guideView,
+				ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		guidePopupWindow.setBackgroundDrawable(new BitmapDrawable());
+		guideView.findViewById(R.id.tv_guide_next).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				guidePopupWindow.dismiss();
+			}
+		});
+	}
 
-        int popWidth = guidePopupWindow.getContentView().getMeasuredWidth();
-        int popHeight = guidePopupWindow.getContentView().getMeasuredHeight();
+	private void showInviteGuidePop(View v) {
+		final WindowManager.LayoutParams lp = CreateOrganizationInviteActivity.this.getWindow().getAttributes();
+		lp.alpha = 0.5f;//代表透明程度，范围为0 - 1.0f
+		CreateOrganizationInviteActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+		CreateOrganizationInviteActivity.this.getWindow().setAttributes(lp);
+		//点击在按钮的中上方弹出popupWindow
+		int btnWidth = v.getMeasuredWidth();
+		int btnHeight = v.getMeasuredHeight();
 
-        final int xoff = (int) ((float) (btnWidth - popWidth) / 2);//PopupWindow的x偏移值
-        final int yoff = popHeight + btnHeight-40; //因为相对于按钮的上方，所以该值为负值
-        guidePopupWindow.showAsDropDown(v, xoff, -yoff);
+		int popWidth = guidePopupWindow.getContentView().getMeasuredWidth();
+		int popHeight = guidePopupWindow.getContentView().getMeasuredHeight();
 
-        guidePopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                lp.alpha = 1.0f;
-                CreateOrganizationInviteActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                CreateOrganizationInviteActivity.this.getWindow().setAttributes(lp);
-            }
-        });
-    }
+		final int xoff = (int) ((float) (btnWidth - popWidth) / 2);//PopupWindow的x偏移值
+		final int yoff = popHeight + btnHeight - 40; //因为相对于按钮的上方，所以该值为负值
+		guidePopupWindow.showAsDropDown(v, xoff, -yoff);
+
+		guidePopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+			@Override
+			public void onDismiss() {
+				lp.alpha = 1.0f;
+				CreateOrganizationInviteActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+				CreateOrganizationInviteActivity.this.getWindow().setAttributes(lp);
+			}
+		});
+	}
 }

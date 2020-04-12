@@ -50,11 +50,9 @@ import com.facebook.network.connectionclass.ConnectionQuality;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
-import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.AccountSettingBean;
 import com.kloudsync.techexcel.bean.BookNote;
 import com.kloudsync.techexcel.bean.DocumentPage;
-import com.kloudsync.techexcel.bean.EventAgoraLog;
 import com.kloudsync.techexcel.bean.EventClose;
 import com.kloudsync.techexcel.bean.EventCloseNoteView;
 import com.kloudsync.techexcel.bean.EventCloseShare;
@@ -63,7 +61,6 @@ import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventFloatingNote;
 import com.kloudsync.techexcel.bean.EventHighlightNote;
 import com.kloudsync.techexcel.bean.EventInviteUsers;
-import com.kloudsync.techexcel.bean.EventJoinMeeting;
 import com.kloudsync.techexcel.bean.EventKickOffMember;
 import com.kloudsync.techexcel.bean.EventMeetingDocuments;
 import com.kloudsync.techexcel.bean.EventMute;
@@ -89,6 +86,7 @@ import com.kloudsync.techexcel.bean.EventShowNotePage;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
 import com.kloudsync.techexcel.bean.HelloMessage;
 import com.kloudsync.techexcel.bean.JoinMeetingMessage;
+import com.kloudsync.techexcel.bean.MeetingChangeBean;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingMember;
@@ -129,6 +127,7 @@ import com.kloudsync.techexcel.help.ChatManager;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.DocVedioManager;
 import com.kloudsync.techexcel.help.MeetingKit;
+import com.kloudsync.techexcel.help.MeetingPauseManager;
 import com.kloudsync.techexcel.help.NoteViewManager;
 import com.kloudsync.techexcel.help.PageActionsAndNotesMgr;
 import com.kloudsync.techexcel.help.PopBottomChat;
@@ -136,11 +135,11 @@ import com.kloudsync.techexcel.help.PopBottomFile;
 import com.kloudsync.techexcel.help.PopBottomMenu;
 import com.kloudsync.techexcel.help.SetPresenterDialog;
 import com.kloudsync.techexcel.help.ShareDocumentDialog;
-import com.kloudsync.techexcel.help.SoundtrackAudioManager;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
-import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
+import com.kloudsync.techexcel.mvp.presenter.DocAndMeetingPresenter;
+import com.kloudsync.techexcel.mvp.view.DocAndMeetingView;
 import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.CameraTouchListener;
@@ -225,7 +224,7 @@ import retrofit2.Response;
  */
 
 public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
-        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener {
+		BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener, DocAndMeetingView {
 
     public static final String SUNDTRACKBEAN = "sundtrackbean";
     public static MeetingConfig meetingConfig;
@@ -311,13 +310,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Bind(R.id.layout_note_container)
     LinearLayout noteContainer;
 
-    AgoraCameraAdapter cameraAdapter;
-    FullAgoraCameraAdapter fullCameraAdapter;
-    Gson gson;
-    private SharedPreferences sharedPreferences;
-    private SurfaceView surfaceView;
-    private MeetingSettingCache meetingSettingCache;
-
     @Bind(R.id.layout_soundtrack_play)
     RelativeLayout soundtrackPlayLayout;
 
@@ -330,6 +322,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     @Bind(R.id.layout_waiting_meeting)
     RelativeLayout waitingMeetingLayout;
+	AgoraCameraAdapter cameraAdapter;
+	FullAgoraCameraAdapter fullCameraAdapter;
+	Gson gson;
+	private SharedPreferences sharedPreferences;
+	private SurfaceView surfaceView;
+	private MeetingSettingCache meetingSettingCache;
+	private boolean mIsMeetingPause;
+	private DocAndMeetingPresenter mDocAndMeetingPresenter;
 
     private Handler rejoinHandler;
     private static final int MESSAGE_JOIN_TIME = 1;
@@ -415,36 +415,38 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             });
         }
         mSoundtrackBean = (SoundtrackBean) getIntent().getSerializableExtra(SUNDTRACKBEAN);
-
+	    mDocAndMeetingPresenter = new DocAndMeetingPresenter();
+	    mDocAndMeetingPresenter.attachView(this);
+	    mDocAndMeetingPresenter.getAccountInfo();
     }
 
-    private void handleRejoinMeetingBecauseFailed(){
-        rejoinHandler = new Handler(){
+    private void handleRejoinMeetingBecauseFailed() {
+        rejoinHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 int what = msg.what;
-                if(what == MESSAGE_JOIN_TIME){
-                    Log.e("check_join_message","time:" + joinTime);
+                if (what == MESSAGE_JOIN_TIME) {
+                    Log.e("check_join_message", "time:" + joinTime);
 
                     joinTime++;
-                    if(joinTime >= 8){
-                        if(joinMeetingMessage != null){
+                    if (joinTime >= 8) {
+                        if (joinMeetingMessage != null) {
                             joinTime = 0;
-                            if(messageManager != null){
-                                if(TextUtils.isEmpty(joinMeetingMessage.getNewMeetingId())){
+                            if (messageManager != null) {
+                                if (TextUtils.isEmpty(joinMeetingMessage.getNewMeetingId())) {
                                     messageManager.sendMessage_JoinMeeting(meetingConfig);
-                                }else {
-                                    messageManager.sendMessage_startMeeting(meetingConfig,joinMeetingMessage.getNewMeetingId());
+                                } else {
+                                    messageManager.sendMessage_startMeeting(meetingConfig, joinMeetingMessage.getNewMeetingId());
                                 }
                                 joinMeetingMessage = null;
                             }
                         }
                         rejoinHandler.removeMessages(MESSAGE_JOIN_TIME);
 
-                    }else {
-                        rejoinHandler.sendEmptyMessageDelayed(MESSAGE_JOIN_TIME,1000);
-                        Log.e("check_join_message","send_delay");
+                    } else {
+                        rejoinHandler.sendEmptyMessageDelayed(MESSAGE_JOIN_TIME, 1000);
+                        Log.e("check_join_message", "send_delay");
                     }
 
 
@@ -567,6 +569,21 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     private ConnectionChangedListener connectionChangedListener = new ConnectionChangedListener();
 
+	@Override
+	public void toast(String msg) {
+
+	}
+
+	@Override
+	public void showLoading() {
+
+	}
+
+	@Override
+	public void dismissLoading() {
+
+	}
+
     private class ConnectionChangedListener implements ConnectionClassManager.ConnectionClassStateChangeListener {
         @Override
         public void onBandwidthStateChange(ConnectionQuality connectionQuality) {
@@ -657,6 +674,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Override
     protected void onDestroy() {
         super.onDestroy();
+	    mDocAndMeetingPresenter.detachView();
         if (messageManager != null) {
             messageManager.sendMessage_LeaveMeeting(meetingConfig);
             messageManager.release();
@@ -692,6 +710,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             soundtrackPlayManager.followClose();
         }
 
+	    MeetingPauseManager.getInstance(this, meetingConfig).destory();
         if (meetingConfig != null) {
             meetingConfig.reset();
         }
@@ -1307,6 +1326,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
                 //{"action":"MEETING_STATUS","retCode":"1","meetingId":"M11","status":"1","changeNumber":"3"}
                 break;
+	        case SocketMessageManager.MEETING_CHANGE:
+		        handleMessageMeetingChange(socketMessage.getData());
+		        break;
         }
     }
 
@@ -2420,7 +2442,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     private void downLoadDocumentPageAndShow() {
-        if(meetingConfig.getDocument() == null || meetingConfig.getDocument().getDocumentPages() == null || meetingConfig.getDocument().getDocumentPages().size() <= 0){
+        if (meetingConfig.getDocument() == null || meetingConfig.getDocument().getDocumentPages() == null || meetingConfig.getDocument().getDocumentPages().size() <= 0) {
             return;
         }
         Observable.just(meetingConfig.getDocument()).observeOn(Schedulers.io()).map(new Function<MeetingDocument, Object>() {
@@ -2437,7 +2459,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     pageNumber = document.getDocumentPages().size();
                 }
 
-                if(pageNumber <= 0){
+                if (pageNumber <= 0) {
                     return null;
                 }
                 DocumentPage page = document.getDocumentPages().get(pageNumber - 1);
@@ -2900,7 +2922,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
 
         if (meetingConfig.getType() != MeetingType.MEETING) {
-            if (isSyncing) {
+            if (meetingConfig.isSyncing()) {
                 if (!TextUtils.isEmpty(actions)) {
                     SoundtrackRecordManager.getManager(this).recordDocumentAction(actions);
                 }
@@ -3190,14 +3212,23 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private UserSoundtrackDialog soundtrackDialog;
 
     private void showSoundtrackDialog() {
-        if (soundtrackDialog != null) {
-            if (soundtrackDialog.isShowing()) {
-                soundtrackDialog.dismiss();
-                soundtrackDialog = null;
+        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
+        MeetingServiceTools.getInstance().getAccountInfo(url, MeetingServiceTools.GETACCOUNTINFO, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                AccountSettingBean accountSettingBean = (AccountSettingBean) object;
+                int systemType = accountSettingBean.getSystemType();
+                meetingConfig.setSystemType(systemType);
+                if (soundtrackDialog != null) {
+                    if (soundtrackDialog.isShowing()) {
+                        soundtrackDialog.dismiss();
+                        soundtrackDialog = null;
+                    }
+                }
+                soundtrackDialog = new UserSoundtrackDialog(DocAndMeetingActivity.this);
+                soundtrackDialog.show(meetingConfig);
             }
-        }
-        soundtrackDialog = new UserSoundtrackDialog(this);
-        soundtrackDialog.show(meetingConfig);
+        });
     }
 
     //-----
@@ -3678,17 +3709,17 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     }
                     break;
                 case REQUEST_SELECTED_MP3_FILE://
-                    List<FileEntity>  audioList = PickerManager.getInstance().files;
+                    List<FileEntity> audioList = PickerManager.getInstance().files;
                     for (int i = 0; i < audioList.size(); i++) {
-                        FileEntity fileEntity=audioList.get(0);
-                        String path=fileEntity.getPath();
-                        Log.e("buildversion",path+"");
-                        if(!TextUtils.isEmpty(path)){
-                            String suff=getSuffix(path);
-                            if(suff.equals("mp3")){
+                        FileEntity fileEntity = audioList.get(0);
+                        String path = fileEntity.getPath();
+                        Log.e("buildversion", path + "");
+                        if (!TextUtils.isEmpty(path)) {
+                            String suff = getSuffix(path);
+                            if (suff.equals("mp3")) {
                                 uploadMp3file(path);
-                            }else{
-                               Toast.makeText(DocAndMeetingActivity.this,"请上传音频文件",Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(DocAndMeetingActivity.this, "请上传音频文件", Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -3801,8 +3832,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         });
     }
 
-   private UploadFileDialog uploadFileDialog;
-    private void  uploadMp3file(String path){
+    private UploadFileDialog uploadFileDialog;
+
+    private void uploadMp3file(String path) {
         AddDocumentTool.addDocumentToFavoriteMp3(this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
             @Override
             public void uploadStart() {
@@ -3866,7 +3898,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         });
     }
-    private String getSuffix(String fileName){
+
+    private String getSuffix(String fileName) {
         int index = fileName.lastIndexOf(".");
         if (index != -1) {
             return fileName.substring(index + 1).toLowerCase(Locale.US);
@@ -4298,25 +4331,15 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     }
 
-    int systemType;
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void createSync(EventCreateSync createSync) {
-        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
-        MeetingServiceTools.getInstance().getAccountInfo(url, MeetingServiceTools.GETACCOUNTINFO, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                AccountSettingBean accountSettingBean = (AccountSettingBean) object;
-                systemType=accountSettingBean.getSystemType();
-                if(systemType==1){  //教育
-
-                }else {
-                    openSaveVideoPopup();
-                }
-                String[] permissions = new String[]{
-                        Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS};
-                startRequestPermission(permissions, 321);
-            }
-        });
+        if (meetingConfig.getSystemType() == 1) {  //教育
+        } else {
+            openSaveVideoPopup();
+        }
+        String[] permissions = new String[]{
+                Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS};
+        startRequestPermission(permissions, 321);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -4446,7 +4469,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             @Override
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
                 soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
-                soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll,web, timeshow, meetingConfig);
+                soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll, web, timeshow, meetingConfig);
             }
         });
         yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
@@ -4454,6 +4477,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
 
     private AccompanyCreatePopup accompanyCreatePopup;
+
     private void showCreateAccompanyDialog() {
         accompanyCreatePopup = new AccompanyCreatePopup();
         accompanyCreatePopup.getPopwindow(DocAndMeetingActivity.this);
@@ -4473,15 +4497,17 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             @Override
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean) {  //录制音响
                 soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
-                soundtrackRecordManager.setInitParams(checked, soundtrackBean, audiosyncll,web, timeshow, meetingConfig);
+                soundtrackRecordManager.setInitParams(checked, soundtrackBean, audiosyncll, web, timeshow, meetingConfig);
             }
         });
         accompanyCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
     }
+
     private AccompanySelectVideoPopup accompanySelectVideoPopup;
-    private void openAccompanyMusicPop(int role){
-        if(accompanySelectVideoPopup==null){
-            accompanySelectVideoPopup=new AccompanySelectVideoPopup(DocAndMeetingActivity.this);
+
+    private void openAccompanyMusicPop(int role) {
+        if (accompanySelectVideoPopup == null) {
+            accompanySelectVideoPopup = new AccompanySelectVideoPopup(DocAndMeetingActivity.this);
             accompanySelectVideoPopup.setFavoritePoPListener(new AccompanySelectVideoPopup.FavoriteVideoPoPListener() {
                 @Override
                 public void save(Document document) {  //选择伴奏带
@@ -4505,16 +4531,17 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         }
                     }
                 }
+
                 @Override
                 public void uploadFile() {  //上传音频文件
                     accompanySelectVideoPopup.dismiss();
                     Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
-                    intent.putExtra("fileType",1);
-                    startActivityForResult(intent,REQUEST_SELECTED_MP3_FILE);
+                    intent.putExtra("fileType", 1);
+                    startActivityForResult(intent, REQUEST_SELECTED_MP3_FILE);
                 }
             });
         }
-        accompanySelectVideoPopup.StartPop(meetingConfig,role);
+        accompanySelectVideoPopup.StartPop(meetingConfig, role);
     }
 
 
@@ -4539,9 +4566,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    if(systemType==1){
+                    if (meetingConfig.getSystemType() == 1) {
                         showCreateAccompanyDialog();
-                    }else{
+                    } else {
                         showCreateSyncDialog();
                     }
                 }
@@ -4567,14 +4594,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
     }
 
-    private boolean isSyncing = false;
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveEventSoundSync(EventSoundSync eventSoundSync) {
         Log.e("syncing---", eventSoundSync.getSoundtrackID() + "  " + eventSoundSync.getStatus() + "  " + eventSoundSync.getTime());
         int soundtrackID = eventSoundSync.getSoundtrackID();
         if (eventSoundSync.getStatus() == 1) { //开始录制
-            isSyncing = true;
+            meetingConfig.setSyncing(true);
             getJspPagenumber();
 //            messageManager.sendMessage_audio_sync(meetingConfig, eventSoundSync);
             recordstatus.setVisibility(View.VISIBLE);
@@ -4593,7 +4620,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         } else if (eventSoundSync.getStatus() == 0) {   //录音结束
             recordstatus.setVisibility(View.GONE);
-            isSyncing = false;
+            meetingConfig.setSyncing(false);
             //清除最后一页上的数据
             web.loadUrl("javascript:ClearPageAndAction()", null);
             PageActionsAndNotesMgr.requestActionsAndNote(meetingConfig);
@@ -4610,7 +4637,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void eventTelephone(TelePhoneCall telePhoneCall) {
         boolean isTelephoneComing = telePhoneCall.isCall();
-        if (isSyncing) { //录制音想模式
+        if (meetingConfig.isSyncing()) { //录制音想模式
             if (isTelephoneComing) { //电话进来了  停止录音
                 if (soundtrackRecordManager != null) {
                     soundtrackRecordManager.pause();
@@ -4690,8 +4717,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             public void uploadFile(int type) {
                 favoritePopup.dismiss();
                 Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
-                intent.putExtra("fileType",1);
-                startActivityForResult(intent,REQUEST_SELECTED_MP3_FILE);
+                intent.putExtra("fileType", 1);
+                startActivityForResult(intent, REQUEST_SELECTED_MP3_FILE);
             }
 
         });
@@ -5101,7 +5128,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     public void handleMessageJoinMeeting(JSONObject data) {
-        Log.e("check_join_message","removeMessages");
+        Log.e("check_join_message", "removeMessages");
         rejoinHandler.removeMessages(MESSAGE_JOIN_TIME);
         joinTime = 0;
         if (data == null) {
@@ -5204,7 +5231,15 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
                                 }
                             }
-//                            delayRefreshAgoraList();
+                            //                            delayRefreshAgoraList();
+	                        if (joinMeetingMessage.isIfPause()) {//会议是暂停的
+		                        mIsMeetingPause = true;
+		                        String tipsText = Tools.getFromBase64(joinMeetingMessage.getPauseMsg());
+		                        MeetingPauseManager pauseManager = MeetingPauseManager.getInstance(this, meetingConfig);
+		                        pauseManager.setTipInfo(tipsText);
+		                        pauseManager.setPauseTime(joinMeetingMessage.getPauseDuration());
+		                        pauseManager.showBigLayout();
+	                        }
                         }
 
                         MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
@@ -5223,6 +5258,37 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         }
     }
+
+	/**
+	 * 暂停,恢复会议,更新暂停会议信息
+	 *
+	 * @param data
+	 */
+	private void handleMessageMeetingChange(JSONObject data) {
+		if (data == null) return;
+		MeetingChangeBean meetingChangeBean = gson.fromJson(data.toString(), MeetingChangeBean.class);
+		if (meetingChangeBean.getRetCode() == null) return;
+		if (meetingChangeBean.getRetCode().equals("0")) {
+			MeetingChangeBean.RetDataBean meetingChangeRetData = meetingChangeBean.getRetData();
+			int type = meetingChangeRetData.getType();
+			switch (type) {
+				case 1://暂停会议
+					mIsMeetingPause = true;
+					MeetingPauseManager.getInstance(this, meetingConfig).showBigLayout();
+					break;
+				case 2://恢复会议
+					mIsMeetingPause = false;
+					MeetingPauseManager.getInstance(this, meetingConfig).hide();
+					break;
+				case 3://更新暂停信息
+					String tipsText = meetingChangeRetData.getValue();
+					if (tipsText == null && TextUtils.isEmpty(tipsText)) return;
+					tipsText = Tools.getFromBase64(tipsText);
+					MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo(tipsText);
+					break;
+			}
+		}
+	}
 
     private void showWatingMeeting() {
         hideEnterLoading();

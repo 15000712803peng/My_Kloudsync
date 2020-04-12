@@ -66,13 +66,33 @@
             fresco:roundAsCircle="true" />
 
 
-        <TextView
-            android:id="@+id/username"
+        <LinearLayout
+            android:id="@+id/lll"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:orientation="horizontal"
             android:layout_marginLeft="10dp"
-            android:text="Bella" />
+            android:layout_toRightOf="@+id/image"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bella"
+                android:textColor="@color/txt_color1" />
+
+            <TextView
+                android:id="@+id/soundtype"
+                android:layout_marginLeft="5dp"
+                android:layout_width="wrap_content"
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:text="演唱"
+                android:textColor="@color/green" />
+
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/duration"

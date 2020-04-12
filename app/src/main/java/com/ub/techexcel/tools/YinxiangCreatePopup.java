@@ -235,17 +235,17 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     public void StartPop(View v, String attachmentId) {
         if (mPopupWindow != null) {
 
-            WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
-            if (Tools.isOrientationPortrait((Activity) mContext)) {
-                View root = ((Activity) mContext).getWindow().getDecorView();
-                params.width = root.getMeasuredWidth()*9/10;
-                // params.height =mContext.getResources().getDisplayMetrics().heightPixels * 3 / 5;
-            }else{
-                params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
-                View root = ((Activity) mContext).getWindow().getDecorView();
-                params.height = root.getMeasuredHeight() * 4 / 5 + 30;
-            }
-            mPopupWindow.getWindow().setAttributes(params);
+	        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
+	        if (Tools.isOrientationPortrait((Activity) mContext)) {
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.width = root.getMeasuredWidth() * 9 / 10;
+		        // params.height =mContext.getResources().getDisplayMetrics().heightPixels * 3 / 5;
+	        } else {
+		        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.height = root.getMeasuredHeight() * 4 / 5 + 30;
+	        }
+	        mPopupWindow.getWindow().setAttributes(params);
             this.attachmentId = attachmentId;
             mPopupWindow.show();
         }
@@ -281,15 +281,15 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                     JSONObject jsonObject = new JSONObject();
 
                     jsonObject.put("Title", edittext.getText().toString());
-                    jsonObject.put("AttachmentID", Integer.parseInt(attachmentId));
-                    jsonObject.put("BackgroudMusicAttachmentID", TextUtils.isEmpty(favorite.getAttachmentID())?0:favorite.getAttachmentID());
-                    jsonObject.put("SelectedAudioAttachmentID",  TextUtils.isEmpty(recordfavorite.getAttachmentID())?0:recordfavorite.getAttachmentID());
-                    jsonObject.put("EnableBackgroud", TextUtils.isEmpty(favorite.getAttachmentID())?0:1);
-                    jsonObject.put("EnableSelectVoice", TextUtils.isEmpty(recordfavorite.getAttachmentID())?0:1);
+	                jsonObject.put("AttachmentID", Integer.parseInt(attachmentId));
+	                jsonObject.put("BackgroudMusicAttachmentID", TextUtils.isEmpty(favorite.getAttachmentID()) ? 0 : favorite.getAttachmentID());
+	                jsonObject.put("SelectedAudioAttachmentID", TextUtils.isEmpty(recordfavorite.getAttachmentID()) ? 0 : recordfavorite.getAttachmentID());
+	                jsonObject.put("EnableBackgroud", TextUtils.isEmpty(favorite.getAttachmentID()) ? 0 : 1);
+	                jsonObject.put("EnableSelectVoice", TextUtils.isEmpty(recordfavorite.getAttachmentID()) ? 0 : 1);
                     jsonObject.put("EnableRecordNewVoice", checkBox.isChecked() ? 1 : 0);
-                    jsonObject.put("SelectedAudioTitle", recordfavorite.getTitle());
-                    jsonObject.put("BackgroudMusicTitle",  favorite.getTitle());
-                    jsonObject.put("IsPublic",1);
+	                jsonObject.put("SelectedAudioTitle", recordfavorite.getTitle());
+	                jsonObject.put("BackgroudMusicTitle", favorite.getTitle());
+	                jsonObject.put("IsPublic", 1);
 
                     JSONObject returnjson = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Soundtrack/CreateSoundtrack", jsonObject);
                     Log.e("hhh", jsonObject.toString() + "      " + returnjson.toString());

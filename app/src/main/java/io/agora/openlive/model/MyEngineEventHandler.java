@@ -182,9 +182,9 @@ public class MyEngineEventHandler {
         @Override
         public void onError(int err) {
             super.onError(err);
-            EventAgoraLog agoraLog = new EventAgoraLog();
-            agoraLog.setMessage("join error," + err);
-            EventBus.getDefault().post(agoraLog);
+	        EventAgoraLog agoraLog = new EventAgoraLog();
+	        agoraLog.setMessage("join error," + err);
+	        EventBus.getDefault().post(agoraLog);
             log.debug("onError " + err);
         }
 

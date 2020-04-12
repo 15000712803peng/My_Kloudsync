@@ -5,13 +5,13 @@ package com.kloudsync.techexcel.bean;
  */
 
 public class EventSendJoinMeetingMessage {
-    private String newMeetingId;
+	private String newMeetingId;
 
-    public String getNewMeetingId() {
-        return newMeetingId;
-    }
+	public String getNewMeetingId() {
+		return newMeetingId;
+	}
 
-    public void setNewMeetingId(String newMeetingId) {
-        this.newMeetingId = newMeetingId;
-    }
+	public void setNewMeetingId(String newMeetingId) {
+		this.newMeetingId = newMeetingId;
+	}
 }

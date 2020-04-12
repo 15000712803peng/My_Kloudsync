@@ -186,16 +186,16 @@ public class FavoriteVideoPopup {
         if (mPopupWindow != null) {
             mFavoritePoPListener.open();
 
-            WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
-            if (Tools.isOrientationPortrait((Activity) mContext)) {
-                View root = ((Activity) mContext).getWindow().getDecorView();
-                params.width = root.getMeasuredWidth()*9/10;
-                params.height =mContext.getResources().getDisplayMetrics().heightPixels * 1 / 2;
-            }else{
-                params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
-                View root = ((Activity) mContext).getWindow().getDecorView();
-                params.height = root.getMeasuredHeight() * 4 / 5 + 30;
-            }
+	        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
+	        if (Tools.isOrientationPortrait((Activity) mContext)) {
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.width = root.getMeasuredWidth() * 9 / 10;
+		        params.height = mContext.getResources().getDisplayMetrics().heightPixels * 1 / 2;
+	        } else {
+		        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.height = root.getMeasuredHeight() * 4 / 5 + 30;
+	        }
 
             mPopupWindow.show();
         }

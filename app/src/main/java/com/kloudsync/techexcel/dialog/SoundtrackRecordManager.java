@@ -22,7 +22,6 @@ import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.UploadAudioPopupdate;
-import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.GZipUtil;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.kloudsync.activity.Document;
@@ -64,7 +63,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     private Context mContext;
     private static Handler recordHandler;
     private  UploadAudioPopupdate uploadAudioPopupdate=new UploadAudioPopupdate();
-    private WebView webView;
+	private WebView webView;
 
     private SoundtrackRecordManager(Context context) {
         this.mContext = context;
@@ -92,7 +91,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                 String time= (String) message.obj;
                 audiotime.setText(time);
 	            timeShow.setText(time);
-                newAudioActionTime(tttime);
+	            newAudioActionTime(tttime);
                 break;
         }
     }
@@ -131,7 +130,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
      * @param audiosyncll
      */
     public void setInitParams(boolean isrecordvoice, SoundtrackBean soundtrackBean, LinearLayout audiosyncll, WebView webView, TextView timeshow, MeetingConfig meetingConfig) {
-        this.webView=webView;
+	    this.webView = webView;
         this.audiosyncll=audiosyncll;
 	    this.timeShow = timeshow;
 	    timeShow.setOnClickListener(this);
@@ -332,7 +331,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
      * 每隔100毫秒拿录制进度
      */
     private void refreshRecord() {
-        getAudioAction(soundtrackBean.getActionBaseSoundtrackID(),0);
+	    getAudioAction(soundtrackBean.getActionBaseSoundtrackID(), 0);
         sondtrack_record_load_bar.setVisibility(View.INVISIBLE);
         isStatus.setVisibility(View.VISIBLE);
         tttime = 0;
@@ -361,74 +360,73 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
 
-    /**
-     * 拿随 某时刻后面 20秒  音向 的Actions
-     *
-     * @param
-     */
-    private List<AudioActionBean> audioActionBeanList = new ArrayList<>();
-    private int startTimee;
+	/**
+	 * 拿随 某时刻后面 20秒  音向 的Actions
+	 *
+	 * @param
+	 */
+	private List<AudioActionBean> audioActionBeanList = new ArrayList<>();
+	private int startTimee;
 
-    private void getAudioAction(final int soundtrackID, int startTime) {
-        if(soundtrackID!=0){
-            startTimee = startTime;
-            String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + soundtrackID + "&startTime=" + startTime + "&endTime=" + (startTime + 20000);
-            ServiceInterfaceTools.getinstance().getSoundtrackActions(url, ServiceInterfaceTools.GETSOUNDTRACKACTIONS, new ServiceInterfaceListener() {
-                @Override
-                public void getServiceReturnData(Object object) {
-                    List<AudioActionBean> audioActionBeanList2 = (List<AudioActionBean>) object;
-                    audioActionBeanList.clear();
-                    if (audioActionBeanList2.size() > 0) {
-                        audioActionBeanList.addAll(audioActionBeanList2);
-                    }
-                }
-            });
-        }
-    }
+	private void getAudioAction(final int soundtrackID, int startTime) {
+		if (soundtrackID != 0) {
+			startTimee = startTime;
+			String url = AppConfig.URL_PUBLIC + "Soundtrack/SoundtrackActions?soundtrackID=" + soundtrackID + "&startTime=" + startTime + "&endTime=" + (startTime + 20000);
+			ServiceInterfaceTools.getinstance().getSoundtrackActions(url, ServiceInterfaceTools.GETSOUNDTRACKACTIONS, new ServiceInterfaceListener() {
+				@Override
+				public void getServiceReturnData(Object object) {
+					List<AudioActionBean> audioActionBeanList2 = (List<AudioActionBean>) object;
+					audioActionBeanList.clear();
+					if (audioActionBeanList2.size() > 0) {
+						audioActionBeanList.addAll(audioActionBeanList2);
+					}
+				}
+			});
+		}
+	}
 
-    private void newAudioActionTime(int locateTime) {
-        if(soundtrackBean.getActionBaseSoundtrackID()!=0){
-            Log.e("newAudioActionTime", audioActionBeanList.size() + "    当前播放器的位置 " + locateTime);
-            for (int i = 0; i < audioActionBeanList.size(); i++) {
-                AudioActionBean audioActionBean = audioActionBeanList.get(i);
-                Log.e("newAudioActionTime", locateTime + "   " + audioActionBean.getTime() + "      " + audioActionBean.getData());
-                if (locateTime >= audioActionBean.getTime()) {
-                    String data = audioActionBean.getData();
-                    if (doVideoAction(data)) { //存在  视频文件播放
+	private void newAudioActionTime(int locateTime) {
+		if (soundtrackBean.getActionBaseSoundtrackID() != 0) {
+			Log.e("newAudioActionTime", audioActionBeanList.size() + "    当前播放器的位置 " + locateTime);
+			for (int i = 0; i < audioActionBeanList.size(); i++) {
+				AudioActionBean audioActionBean = audioActionBeanList.get(i);
+				Log.e("newAudioActionTime", locateTime + "   " + audioActionBean.getTime() + "      " + audioActionBean.getData());
+				if (locateTime >= audioActionBean.getTime()) {
+					String data = audioActionBean.getData();
+					if (doVideoAction(data)) { //存在  视频文件播放
 
-                    } else {  // 不存在 视频文件播放
-                        if(webView!=null){
-                            recordDocumentAction(data);
-                            webView.loadUrl("javascript:PlayActionByTxt('" + data + "')", null);
-                            webView.loadUrl("javascript:Record()", null);
-                        }
-                    }
-                    audioActionBeanList.remove(i);
-                    i--;
-                } else {
-                    break;
-                }
-            }
-            if (locateTime > (startTimee + 10000)) {
-                getAudioAction(soundtrackBean.getActionBaseSoundtrackID(), locateTime);
-            }
-        }
-    }
+					} else {  // 不存在 视频文件播放
+						if (webView != null) {
+							recordDocumentAction(data);
+							webView.loadUrl("javascript:PlayActionByTxt('" + data + "')", null);
+							webView.loadUrl("javascript:Record()", null);
+						}
+					}
+					audioActionBeanList.remove(i);
+					i--;
+				} else {
+					break;
+				}
+			}
+			if (locateTime > (startTimee + 10000)) {
+				getAudioAction(soundtrackBean.getActionBaseSoundtrackID(), locateTime);
+			}
+		}
+	}
 
 
-
-    private boolean doVideoAction(String json) {
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            int actionType = jsonObject.getInt("actionType");
-            if (actionType == 19) {
-                return true;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-        return false;
-    }
+	private boolean doVideoAction(String json) {
+		try {
+			JSONObject jsonObject = new JSONObject(json);
+			int actionType = jsonObject.getInt("actionType");
+			if (actionType == 19) {
+				return true;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
+	}
 
 
     private AudioRecorder audioRecorder;
@@ -665,6 +663,10 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
             }
         });
+
+	    if (false) {  //是否暂停会议
+		    addsoundtolesson(soundtrackBean.getSoundtrackID() + "");
+	    }
         if (audioplaytimer != null) {
             audioplaytimer.cancel();
             audioplaytimer = null;
@@ -675,6 +677,17 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 	    timeShow.setVisibility(View.GONE);
     }
 
+
+	private void addsoundtolesson(final String soundtrackIDs) {
+		String url = AppConfig.URL_PUBLIC + "LessonSoundtrack?lessonID=" + meetingConfig.getLessionId() + "&soundtrackIDs=" + soundtrackIDs;
+		ServiceInterfaceTools.getinstance().addSoundToLesson(url, ServiceInterfaceTools.ADDSOUNDTOLESSON,
+				new ServiceInterfaceListener() {
+					@Override
+					public void getServiceReturnData(Object object) {
+
+					}
+				});
+	}
 
     private void resumeMedia() {
         playstop.setImageResource(R.drawable.video_stop);

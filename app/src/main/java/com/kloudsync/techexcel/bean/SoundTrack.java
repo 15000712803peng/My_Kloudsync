@@ -14,15 +14,15 @@ public class SoundTrack {
     private String Duration;
     private String CreatedDate;
     private int SyncStatus;
-    private int MusicType;
+	private int MusicType;
 
-    public int getMusicType() {
-        return MusicType;
-    }
+	public int getMusicType() {
+		return MusicType;
+	}
 
-    public void setMusicType(int musicType) {
-        MusicType = musicType;
-    }
+	public void setMusicType(int musicType) {
+		MusicType = musicType;
+	}
 
     public int getSoundtrackID() {
         return SoundtrackID;

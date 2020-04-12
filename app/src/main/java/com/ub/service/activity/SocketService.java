@@ -376,8 +376,6 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
 				e.printStackTrace();
 			}
 
-		} else if (actionString.equals("MEETING_CHANGE")) {
-
 		}
 
 

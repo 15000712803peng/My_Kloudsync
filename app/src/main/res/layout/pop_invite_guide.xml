@@ -32,6 +32,7 @@
             android:text="1.邀请成员：输入手机号码"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
         <TextView
             android:layout_marginTop="5dp"
             android:layout_marginLeft="15dp"
@@ -42,6 +43,7 @@
             android:text="2.设置身份：可对其设置为普通成员还是公司/机构管理员"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
         <TextView
             android:layout_marginTop="5dp"
             android:layout_marginLeft="15dp"

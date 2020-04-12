@@ -887,7 +887,15 @@ Please input the cell phone number to add the contact
     <string name="play_soundtrack">Play sound track</string>
     <!--聊天-->
     <!--会议-->
-    <string name="kick_off_from_meeting">kick off from meeting</string>
+    <string name="practice_time">Practice time</string>
+    <string name="the_meeting_is_suspended">The meeting is suspended</string>
+    <string name="practice_in_class">Practice in class</string>
+    <string name="meeting_suspended">Meeting suspended</string>
+    <string name="resume_meeting">Resume meeting</string>
+    <string name="continue_class">Continue class</string>
+    <string name="class_pause_tips">During the practice time between classes, you can do the exercises according to the teacher\'s requirements</string>
+    <string name="meeting_pause_tips">You can continue to browse the document while the meeting is suspended, or take a break</string>
+    <string name="the_content_can_not_be_blank">the content can not be blank</string>
     <!--音想-->
     <!--我-->
     <string name="stay_tuned">Stay tuned</string>
@@ -950,6 +958,7 @@ Please input the cell phone number to add the contact
     <string name="hint_input_invite_code">Please type in company invite code</string>
     <string name="scan_tv">Scanning TV devices</string>
     <string name="_meeting_id">Meeting id:</string>
+    <string name="kick_off_from_meeting">kick off from meeting</string>
     <string name="tips">tips</string>
     <string name="share_kloudsync">Share Kloud</string>
     <string name="copy_link">Copy Link</string>

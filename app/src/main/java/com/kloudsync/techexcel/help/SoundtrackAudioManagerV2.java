@@ -38,7 +38,7 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
     private volatile long playTime;
     private Context context;
     private SoundtrackMediaInfo mediaInfo;
-    private Handler handler;
+	private Handler handler;
     /**
      * 播放总长
      */
@@ -479,13 +479,13 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     @Override
     public void onComplete() {
-        if(isError){
-            isError = false;
-            if(mediaInfo != null){
-                reinit(mediaInfo);
-            }
-            return;
-        }
+	    if (isError) {
+		    isError = false;
+		    if (mediaInfo != null) {
+			    reinit(mediaInfo);
+		    }
+		    return;
+	    }
         isPlaying = false;
         if (onAudioInfoCallBack != null) {
             onAudioInfoCallBack.onCompletionCalled();
@@ -494,13 +494,13 @@ public class SoundtrackAudioManagerV2 implements WlOnPreparedListener, WlOnCompl
 
     }
 
-    boolean isError = false;
+	boolean isError = false;
 
 
     @Override
     public void onError(int code, String msg) {
         isPlaying = false;
-        isError = true;
+	    isError = true;
 
         Log.e("check_soundtrack_play", "onError:" + code + ",msg:" + msg);
     }

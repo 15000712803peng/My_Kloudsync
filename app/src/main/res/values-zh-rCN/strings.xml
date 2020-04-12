@@ -877,6 +877,16 @@
     <string name="play_soundtrack">播放音想</string>
     <!--聊天-->
     <!--会议-->
+    <string name="practice_time">课间练习时间</string>
+    <string name="practice_in_class">课间练习</string>
+    <string name="continue_class">继续上课</string>
+    <string name="the_meeting_is_suspended">会议暂停中</string>
+    <string name="meeting_suspended">会议暂停</string>
+    <string name="resume_meeting">继续会议</string>
+    <string name="class_pause_tips">课间练习时间,您可以按老师的要求做练习</string>
+    <string name="meeting_pause_tips">会议暂停中,您可以继续浏览文档,或者休息一下</string>
+    <string name="the_content_can_not_be_blank">内容不能为空</string>
+
     <!--音想-->
     <!--我-->
     <string name="stay_tuned">敬请期待</string>

@@ -5,13 +5,13 @@ package com.kloudsync.techexcel.bean;
  */
 
 public class EventAgoraLog {
-    private String message;
+	private String message;
 
-    public String getMessage() {
-        return message;
-    }
+	public String getMessage() {
+		return message;
+	}
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }
