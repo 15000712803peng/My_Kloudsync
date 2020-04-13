@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.CompanyAccountInfo;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.LoginResult;
 import com.kloudsync.techexcel.bean.RongCloudData;
@@ -373,6 +374,24 @@ public class LoginActivity extends Activity implements OnClickListener {
                     sendEventLoginFail("network error");
                 }
                 return rongCloudUrl;
+            }
+        }).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().syncGetCompanyAccountInfo();
+                if(response.has("code")){
+                    int code = response.getInt("code");
+                    if(code == 0){
+                        if(response.has("data")){
+                            CompanyAccountInfo accountInfo = new Gson().fromJson(response.getJSONObject("data").toString(),CompanyAccountInfo.class);
+                            if(accountInfo != null){
+                                Log.e("processLogin","system_type:" + accountInfo.getSystemType() + ",-" + accountInfo.getCompanyName());
+                                AppConfig.systemType = accountInfo.getSystemType();
+                                sharedPreferences.edit().putInt("system_type",accountInfo.getSystemType()).commit();
+                            }
+                        }
+                    }
+                }
             }
         }).map(new Function<String, String>() {
             @Override

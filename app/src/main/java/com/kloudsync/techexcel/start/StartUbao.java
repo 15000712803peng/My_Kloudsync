@@ -26,6 +26,7 @@ import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.AppName;
+import com.kloudsync.techexcel.bean.CompanyAccountInfo;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.LoginResult;
 import com.kloudsync.techexcel.bean.RongCloudData;
@@ -278,6 +279,7 @@ public class StartUbao extends Activity {
         loginDisposable = Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, String>() {
             @Override
             public String apply(String o) throws Exception {
+
                 try {
                     Response<NetworkResponse<LoginData>> response = ServiceInterfaceTools.getinstance().login(name, password).execute();
                     Log.e("processLogin", "LoginData,success:" + response.isSuccessful() + ",body:" + response.body());
@@ -311,6 +313,24 @@ public class StartUbao extends Activity {
 
                 }
                 return rongCloudUrl;
+            }
+        }).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().syncGetCompanyAccountInfo();
+                if(response.has("code")){
+                    int code = response.getInt("code");
+                    if(code == 0){
+                        if(response.has("data")){
+                            CompanyAccountInfo accountInfo = new Gson().fromJson(response.getJSONObject("data").toString(),CompanyAccountInfo.class);
+                            if(accountInfo != null){
+                                Log.e("processLogin","system_type:" + accountInfo.getSystemType() + ",-" + accountInfo.getCompanyName());
+                                AppConfig.systemType = accountInfo.getSystemType();
+                                sharedPreferences.edit().putInt("system_type",accountInfo.getSystemType()).commit();
+                            }
+                        }
+                    }
+                }
             }
         }).map(new Function<String, String>() {
             @Override

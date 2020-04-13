@@ -312,7 +312,6 @@ public class ServiceInterfaceTools {
     }
 
 
-
     public void uploadAllactions(final String url, final int code, final DocumentAction documentAction, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         new Thread(new Runnable() {
@@ -346,29 +345,28 @@ public class ServiceInterfaceTools {
     }
 
 
-
     public int uploadAllactions2(final String url, final DocumentAction documentAction) {
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("attachmentId", documentAction.getAttachmentId());
-                jsonObject.put("syncId", documentAction.getSyncId());
-                jsonObject.put("zippedActionData", documentAction.getZippedActionData());
-                jsonObject.put("index", documentAction.getIndex());
-                jsonObject.put("total", documentAction.getTotal());
-                JSONObject jsonObject1 = ConnectService.submitDataByJson(url, jsonObject);
-                Log.e("uploadAllactions", url + "   \n  " + jsonObject.toString() + "   \n  " + jsonObject1.toString());
-                if (jsonObject1.getInt("code") == 0) {
-                      return 0;
-                } else {
-                      return 1;
-                }
-            } catch (Exception e) {
-                    e.printStackTrace();
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("attachmentId", documentAction.getAttachmentId());
+            jsonObject.put("syncId", documentAction.getSyncId());
+            jsonObject.put("zippedActionData", documentAction.getZippedActionData());
+            jsonObject.put("index", documentAction.getIndex());
+            jsonObject.put("total", documentAction.getTotal());
+            JSONObject jsonObject1 = ConnectService.submitDataByJson(url, jsonObject);
+            Log.e("uploadAllactions", url + "   \n  " + jsonObject.toString() + "   \n  " + jsonObject1.toString());
+            if (jsonObject1.getInt("code") == 0) {
+                return 0;
+            } else {
+                return 1;
             }
-            return 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
-    public void UpdateTitleAndVisibility(final String url, final int code, final SoundtrackBean soundtrackBean,ServiceInterfaceListener serviceInterfaceListener) {
+    public void UpdateTitleAndVisibility(final String url, final int code, final SoundtrackBean soundtrackBean, ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         new Thread(new Runnable() {
             @Override
@@ -759,7 +757,7 @@ public class ServiceInterfaceTools {
                             soundtrackBean.setAvatarUrl(jsonObject.getString("AvatarUrl"));
                             soundtrackBean.setDuration(jsonObject.getString("Duration"));
                             soundtrackBean.setCreatedDate(jsonObject.getString("CreatedDate"));
-	                        soundtrackBean.setMusicType(jsonObject.getInt("MusicType"));
+                            soundtrackBean.setMusicType(jsonObject.getInt("MusicType"));
                             soundtrackBean.setHidden(isHidden);
                             soundtrackBean.setHavePresenter(ishavepresenter);
                             mlist.add(soundtrackBean);
@@ -3457,6 +3455,14 @@ public class ServiceInterfaceTools {
         Log.e("syncGetTempLessonWithOriginalDocument", url + "  " + response.toString());
         return response;
 
+
+    }
+
+    public JSONObject syncGetCompanyAccountInfo() {
+        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetCompanyAccountInfo", "url:" + url + ",response:" + response);
+        return response;
 
     }
 
