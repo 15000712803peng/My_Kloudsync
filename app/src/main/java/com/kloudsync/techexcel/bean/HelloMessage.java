@@ -33,9 +33,26 @@ public class HelloMessage {
     private int tvOwnerMeetingItemId;
     private String tvOwnerMeetingLessonId;
     private int tvOwnerMeetingType;
+    private int microphoneStatus;
+    private int cameraStatus;
 
+    public int getMicrophoneStatus() {
+        return microphoneStatus;
+    }
 
-	public long getCurrentItemId() {
+    public void setMicrophoneStatus(int microphoneStatus) {
+        this.microphoneStatus = microphoneStatus;
+    }
+
+    public int getCameraStatus() {
+        return cameraStatus;
+    }
+
+    public void setCameraStatus(int cameraStatus) {
+        this.cameraStatus = cameraStatus;
+    }
+
+    public long getCurrentItemId() {
         return currentItemId;
     }
 
