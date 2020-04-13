@@ -9,4 +9,6 @@ public class MeetingType {
     public static final int SYNCROOM = 1;
     public static final int DOC = 2;
     public static final int SYNCBOOK = 3;
+    /**即将开始的会议*/
+    public static final int UPCOMINGMEETING = 4;
 }
