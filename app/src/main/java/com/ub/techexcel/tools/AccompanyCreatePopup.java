@@ -221,7 +221,9 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 	}
 
 
+	private SoundTrack  lastSoundtrack=new SoundTrack();
 	public void setAudioBean1(final SoundTrack soundTrack) {
+		lastSoundtrack=soundTrack;
 		actionBaseSoundtrackID = soundTrack.getSoundtrackID();
 		isaccompanytv.setText("重新同步");
 		ServiceInterfaceTools.getinstance().getSoundItem(AppConfig.URL_PUBLIC + "Soundtrack/Item?soundtrackID=" + actionBaseSoundtrackID,
@@ -344,7 +346,14 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 					jsonObject.put("LessonID", 0);
 					jsonObject.put("ItemID", 0);
 					jsonObject.put("ActionBaseSoundtrackID", actionBaseSoundtrackID);
-					jsonObject.put("MusicType", checkBox.isChecked() ? 1 : 0);  //0是伴奏，1是演唱
+
+					int musicType=checkBox.isChecked() ? 1 : 0;
+					if(musicType==0){
+						if(!TextUtils.isEmpty(recordfavorite.getAttachmentID())){
+							musicType=1;
+						}
+					}
+					jsonObject.put("MusicType",musicType);  //0是伴奏，1是演唱
 					JSONObject returnjson = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Soundtrack/CreateSoundtrack", jsonObject);
 					Log.e("hhh", jsonObject.toString() + "      " + returnjson.toString());
 					if (returnjson.getInt("RetCode") == 0) {
@@ -446,12 +455,14 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 			case R.id.isaccompanytv:   //重新同步
 				if (isAccompanyOrMusic == 1) {
 					isAccompanyOrMusic = 0;
+					actionBaseSoundtrackID=0;
 					isaccompanytv_gou.setVisibility(View.VISIBLE);
 					checkBox.setChecked(false);
 					delete2();
 					ishiddenll.setVisibility(View.GONE);
 				} else {
 					isAccompanyOrMusic = 1;
+					actionBaseSoundtrackID=lastSoundtrack.getSoundtrackID();
 					isaccompanytv_gou.setVisibility(View.GONE);
 					ishiddenll.setVisibility(View.VISIBLE);
 				}

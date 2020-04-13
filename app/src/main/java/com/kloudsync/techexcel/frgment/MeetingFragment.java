@@ -222,7 +222,7 @@ public class MeetingFragment extends MyFragment {
 
                                 // --------
                                 intent.putExtra("meeting_id", bean.getId() + "");
-                                intent.putExtra("meeting_type", MeetingType.MEETING);
+                                intent.putExtra("meeting_type", MeetingType.UPCOMINGMEETING);
                                 intent.putExtra("meeting_role", bean.getRoleinlesson());
                                 try {
                                     intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
@@ -253,15 +253,18 @@ public class MeetingFragment extends MyFragment {
 
                         @Override
                         public void startMeeting() {
-                            Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
-                            intent.putExtra("userid", bean.getUserId());
-                            intent.putExtra("meetingId", bean.getId() + "");
-                            intent.putExtra("filemeetingId", bean.getId() + "");
-                            intent.putExtra("teacherid", bean.getTeacherId());
-                            intent.putExtra("identity", bean.getRoleinlesson());
-                            intent.putExtra("isInstantMeeting", 0);
-                            intent.putExtra("isStartCourse", true);
-                            startActivity(intent);
+//                            Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
+//                            intent.putExtra("userid", bean.getUserId());
+//                            intent.putExtra("meetingId", bean.getId() + "");
+//                            intent.putExtra("filemeetingId", bean.getId() + "");
+//                            intent.putExtra("teacherid", bean.getTeacherId());
+//                            intent.putExtra("identity", bean.getRoleinlesson());
+//                            intent.putExtra("isInstantMeeting", 0);
+//                            intent.putExtra("isStartCourse", true);
+//                            startActivity(intent);
+                            if(onStartMeetingCallBackListener!=null){
+                                onStartMeetingCallBackListener.startMeetingCallBack();
+                            }
                         }
 
                         @Override
@@ -406,6 +409,15 @@ public class MeetingFragment extends MyFragment {
         cal.set(Calendar.MILLISECOND, 0);
         long diff = cal.getTimeInMillis() - System.currentTimeMillis();
         return diff;
+    }
+
+    /**开始会议接口回调*/
+    public interface OnStartMeetingCallBackListener{
+        void startMeetingCallBack();
+    }
+    OnStartMeetingCallBackListener onStartMeetingCallBackListener;
+    public void setOnStartMeetingCallBackListener(OnStartMeetingCallBackListener onStartMeetingCallBackListener){
+        this.onStartMeetingCallBackListener=onStartMeetingCallBackListener;
     }
 
 }
