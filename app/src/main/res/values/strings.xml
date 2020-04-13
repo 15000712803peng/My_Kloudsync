@@ -185,7 +185,7 @@
 
     <string name="language">Language</string>
     <string name="language2">Language</string>
-    <string name="course">My course Template</string>
+    <string name="course">Course</string>
     <string name="course2">System course Template</string>
     <string name="credit">Activity</string>
     <string name="areas">Areas</string>
@@ -1012,5 +1012,6 @@ Please input the cell phone number to add the contact
     <string name="no_soundtrack">no soundtrack data</string>
     <string name="waiting_meeting_start">wait meeting start</string>
     <string name="meeting_not_stated">meeting not start yet</string>
+    <string name="meeting">Meeting</string>
 
 </resources>

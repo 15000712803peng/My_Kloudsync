@@ -27,6 +27,7 @@ import com.kloudsync.techexcel.adapter.OrganizationAdapterV2;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.AppName;
 import com.kloudsync.techexcel.bean.Company;
+import com.kloudsync.techexcel.bean.CompanyAccountInfo;
 import com.kloudsync.techexcel.bean.CompanySubsystem;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -57,6 +58,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -136,6 +140,7 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                 getCompanyNameList();
             }
         });
+
         lg.GetUserPreference(this, 10001 + "");
     }
 
@@ -144,12 +149,34 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         ServiceInterfaceTools.getinstance().getCompanyDisplayNameList(url, ServiceInterfaceTools.GETCOMPANYDISPLAYNAMELIST, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
-                JSONObject jsonObject = (JSONObject) object;
-                CustomSyncRoomTool.getInstance(SwitchOrganizationActivity.this).setCustomSyncRoomContent(jsonObject);
-                MainActivity.RESUME = true;
-                EventBus.getDefault().post(new TeamSpaceBean());
+                final JSONObject jsonObject = (JSONObject) object;
+                Observable.just("request_company_count_info").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        JSONObject response = ServiceInterfaceTools.getinstance().syncGetCompanyAccountInfo();
+                        if (response.has("code")) {
+                            int code = response.getInt("code");
+                            if (code == 0) {
+                                if (response.has("data")) {
+                                    CompanyAccountInfo accountInfo = new Gson().fromJson(response.getJSONObject("data").toString(), CompanyAccountInfo.class);
+                                    if (accountInfo != null) {
+                                        Log.e("processLogin", "system_type:" + accountInfo.getSystemType() + ",-" + accountInfo.getCompanyName());
+                                        AppConfig.systemType = accountInfo.getSystemType();
+                                        sharedPreferences.edit().putInt("system_type", accountInfo.getSystemType()).commit();
+                                    }
+                                }
+                            }
+
+                            CustomSyncRoomTool.getInstance(SwitchOrganizationActivity.this).setCustomSyncRoomContent(jsonObject);
+                            MainActivity.RESUME = true;
+
+                            EventBus.getDefault().post(new TeamSpaceBean());
 //                EventBus.getDefault().post(new EventRefreshTab());
-                finish();
+                            finish();
+                        }
+                    }
+                }).subscribe();
+
             }
         });
     }
@@ -315,8 +342,6 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         titleText.setText(getResources().getString(R.string.pc_sorganization_change));
         rightTitleText.setVisibility(View.GONE);
     }
-
-
 
 
     private int GetSaveInfo() {
@@ -590,24 +615,25 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 try {
                     JSONObject jsonObject = new JSONObject(response.body().toString());
-                    if(jsonObject.getString("msg").equals("success")){
+                    if (jsonObject.getString("msg").equals("success")) {
                         Gson gson = new Gson();
-                        List<AppName> appCNNameList=new ArrayList<AppName>();
-                        List<AppName> appENNameList=new ArrayList<AppName>();
-                        List<AppName> appNameList= gson.fromJson(jsonObject.getString("data"), new TypeToken<List<AppName>>(){}.getType());
-                        App.appNames=appNameList;
-                        for(AppName appName:appNameList){
-                            if(appName.getLanguageId()==0){
+                        List<AppName> appCNNameList = new ArrayList<AppName>();
+                        List<AppName> appENNameList = new ArrayList<AppName>();
+                        List<AppName> appNameList = gson.fromJson(jsonObject.getString("data"), new TypeToken<List<AppName>>() {
+                        }.getType());
+                        App.appNames = appNameList;
+                        for (AppName appName : appNameList) {
+                            if (appName.getLanguageId() == 0) {
                                 appCNNameList.add(appName);
-                            }else {
+                            } else {
                                 appENNameList.add(appName);
                             }
                         }
-                        App.appCNNames=appCNNameList;
-                        App.appENNames=appENNameList;
-                        System.out.println("App.appNames->"+App.appENNames.size());
+                        App.appCNNames = appCNNameList;
+                        App.appENNames = appENNameList;
+                        System.out.println("App.appNames->" + App.appENNames.size());
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
