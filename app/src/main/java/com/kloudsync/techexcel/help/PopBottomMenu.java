@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
@@ -106,7 +105,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 break;
             case R.id.bottom_menu_sync:
                 if(meetingConfig.getType() == MeetingType.MEETING){
-                    if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID) && !meetingConfig.isMeetingPause()) {
                         return;
                     }
                 }

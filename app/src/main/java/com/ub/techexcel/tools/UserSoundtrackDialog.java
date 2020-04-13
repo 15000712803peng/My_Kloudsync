@@ -166,7 +166,11 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
 
 
 	        selectmore.setVisibility(View.VISIBLE);
-            createLayout.setVisibility(View.GONE);
+            if (meetingConfig.isMeetingPause()) {
+                createLayout.setVisibility(View.VISIBLE);
+            } else {
+                createLayout.setVisibility(View.GONE);
+            }
 
 
         }else{

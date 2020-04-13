@@ -61,6 +61,15 @@ public class MeetingConfig {
     private boolean isHost;
     private int systemType = 0;// 1 是教育
     private boolean isSyncing = false;
+    private boolean IsMeetingPause;
+
+    public boolean isMeetingPause() {
+        return IsMeetingPause;
+    }
+
+    public void setMeetingPause(boolean meetingPause) {
+        IsMeetingPause = meetingPause;
+    }
 
     public int getSystemType() {
         return systemType;

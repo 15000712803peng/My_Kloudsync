@@ -90,6 +90,7 @@ import com.kloudsync.techexcel.bean.MeetingChangeBean;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingMember;
+import com.kloudsync.techexcel.bean.MeetingPauseOrResumBean;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.NoteId;
@@ -138,8 +139,6 @@ import com.kloudsync.techexcel.help.ShareDocumentDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
-import com.kloudsync.techexcel.mvp.presenter.DocAndMeetingPresenter;
-import com.kloudsync.techexcel.mvp.view.DocAndMeetingView;
 import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.DocumentModel;
@@ -223,7 +222,7 @@ import retrofit2.Response;
  */
 
 public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
-		BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener, DocAndMeetingView {
+        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener {
 
     public static final String SUNDTRACKBEAN = "sundtrackbean";
     public static MeetingConfig meetingConfig;
@@ -325,7 +324,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 	private SurfaceView surfaceView;
 	private MeetingSettingCache meetingSettingCache;
 	private boolean mIsMeetingPause;
-	private DocAndMeetingPresenter mDocAndMeetingPresenter;
 
     private Handler rejoinHandler;
     private static final int MESSAGE_JOIN_TIME = 1;
@@ -363,56 +361,63 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         bottomFilePop = new PopBottomFile(this);
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
+        /*获取机构类型*/
+        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
+        MeetingServiceTools.getInstance().getAccountInfo(url, MeetingServiceTools.GETACCOUNTINFO, new ServiceInterfaceListener() {
+            @Override
+            public void getServiceReturnData(Object object) {
+                AccountSettingBean accountSettingBean = (AccountSettingBean) object;
+                meetingConfig.setSystemType(accountSettingBean.getSystemType());
 
-        messageManager = SocketMessageManager.getManager(this);
-        messageManager.registerMessageReceiver();
-        handleRejoinMeetingBecauseFailed();
-        if (meetingConfig.getType() != MeetingType.MEETING) {
-            messageManager.sendMessage_JoinMeeting(meetingConfig);
-        } else {
-            if (Tools.isOrientationPortrait(this)) {
+                messageManager = SocketMessageManager.getManager(DocAndMeetingActivity.this);
+                messageManager.registerMessageReceiver();
+                handleRejoinMeetingBecauseFailed();
+                if (meetingConfig.getType() != MeetingType.MEETING) {
+                    messageManager.sendMessage_JoinMeeting(meetingConfig);
+                } else {
+                    if (Tools.isOrientationPortrait(DocAndMeetingActivity.this)) {
 //                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
-            //是meeting
+                    }
+                    //是meeting
 
-            if (meetingConfig.getLessionId() == -1) {
-                messageManager.sendMessage_JoinMeeting(meetingConfig);
-                // 会议还没有开始
-                return;
-            }
-
-            MeetingKit.getInstance().init(this, meetingConfig);
-            String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
-            MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
-                @Override
-                public void getServiceReturnData(Object object) {
-                    if (meetingConfig == null) {
+                    if (meetingConfig.getLessionId() == -1) {
+                        messageManager.sendMessage_JoinMeeting(meetingConfig);
+                        // 会议还没有开始
                         return;
                     }
-                    TvDevice tvDevice = (TvDevice) object;
-                    if (tvDevice != null) {
-                        if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
-                            openWarningInfo(0);
-                        } else {
-                            if (meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE) {
-                                showAudiencePromptDialog();
-                                messageManager.sendMessage_JoinMeeting(meetingConfig);
+
+                    MeetingKit.getInstance().init(DocAndMeetingActivity.this, meetingConfig);
+                    String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
+                    MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
+                        @Override
+                        public void getServiceReturnData(Object object) {
+                            if (meetingConfig == null) {
+                                return;
+                            }
+                            TvDevice tvDevice = (TvDevice) object;
+                            if (tvDevice != null) {
+                                if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
+                                    openWarningInfo(0);
+                                } else {
+                                    if (meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE) {
+                                        showAudiencePromptDialog();
+                                        messageManager.sendMessage_JoinMeeting(meetingConfig);
 //                                MeetingKit.getInstance().startMeeting();
+                                    } else {
+                                        MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                                    }
+                                }
                             } else {
                                 MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+
                             }
                         }
-                    } else {
-                        MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
-
-                    }
+                    });
                 }
-            });
-        }
+            }
+        });
         mSoundtrackBean = (SoundtrackBean) getIntent().getSerializableExtra(SUNDTRACKBEAN);
-	    mDocAndMeetingPresenter = new DocAndMeetingPresenter();
-	    mDocAndMeetingPresenter.attachView(this);
-	    mDocAndMeetingPresenter.getAccountInfo();
+
     }
 
     private void handleRejoinMeetingBecauseFailed() {
@@ -564,21 +569,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     private ConnectionChangedListener connectionChangedListener = new ConnectionChangedListener();
 
-	@Override
-	public void toast(String msg) {
-
-	}
-
-	@Override
-	public void showLoading() {
-
-	}
-
-	@Override
-	public void dismissLoading() {
-
-	}
-
     private class ConnectionChangedListener implements ConnectionClassManager.ConnectionClassStateChangeListener {
         @Override
         public void onBandwidthStateChange(ConnectionQuality connectionQuality) {
@@ -669,7 +659,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Override
     protected void onDestroy() {
         super.onDestroy();
-	    mDocAndMeetingPresenter.detachView();
         if (messageManager != null) {
             messageManager.sendMessage_LeaveMeeting(meetingConfig);
             messageManager.release();
@@ -3389,7 +3378,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 if (meetingKit == null) {
                     meetingKit = MeetingKit.getInstance();
                 }
-                meetingKit.showMeetingMenu(meetingMenu, this, meetingConfig);
+                meetingKit.showMeetingMenu(meetingMenu, this, meetingConfig, mIsMeetingPause);
                 break;
             case R.id.icon_back_full_screen:
 //                fullCamereLayout.setVisibility(View.GONE);
@@ -4445,6 +4434,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll, web, timeshow, meetingConfig);
             }
         });
+        if (meetingConfig.getDocument() == null) {
+            ToastUtils.show(this, R.string.no_document);
+            return;
+        }
         yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
     }
 
@@ -5204,6 +5197,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             //                            delayRefreshAgoraList();
 	                        if (joinMeetingMessage.isIfPause()) {//会议是暂停的
 		                        mIsMeetingPause = true;
+                                meetingConfig.setMeetingPause(mIsMeetingPause);
 		                        String tipsText = Tools.getFromBase64(joinMeetingMessage.getPauseMsg());
 		                        MeetingPauseManager pauseManager = MeetingPauseManager.getInstance(this, meetingConfig);
 		                        pauseManager.setTipInfo(tipsText);
@@ -5244,11 +5238,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 			switch (type) {
 				case 1://暂停会议
 					mIsMeetingPause = true;
-					MeetingPauseManager.getInstance(this, meetingConfig).showBigLayout();
+                    meetingConfig.setMeetingPause(mIsMeetingPause);
+                    MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo("");
+                    MeetingPauseManager.getInstance(this, meetingConfig).showBigLayout();
 					break;
 				case 2://恢复会议
 					mIsMeetingPause = false;
-					MeetingPauseManager.getInstance(this, meetingConfig).hide();
+                    meetingConfig.setMeetingPause(mIsMeetingPause);
+                    MeetingPauseManager.getInstance(this, meetingConfig).hide();
 					break;
 				case 3://更新暂停信息
 					String tipsText = meetingChangeRetData.getValue();
@@ -5259,6 +5256,24 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 			}
 		}
 	}
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventMeetingPauseOrResume(MeetingPauseOrResumBean meetingPauseOrResumBean) {
+        mIsMeetingPause = meetingPauseOrResumBean.isPause();
+        meetingConfig.setMeetingPause(mIsMeetingPause);
+        if (mIsMeetingPause) {
+            if (meetingConfig.getSystemType() == AppConfig.COMPANY_MODEL) {//如果是会议模式
+                MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo(getString(R.string.meeting_pause_tips));
+            } else {//如果是课堂模式
+                MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo(getString(R.string.class_pause_tips));
+            }
+            MeetingPauseManager.getInstance(this, meetingConfig).showBigLayout();
+        } else {
+            MeetingPauseManager.getInstance(this, meetingConfig).hide();
+        }
+    }
+
+
 
     private void showWatingMeeting() {
         hideEnterLoading();
