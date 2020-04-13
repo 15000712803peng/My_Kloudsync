@@ -316,5 +316,7 @@ public class AppConfig {
 
     public static boolean IsInMeeting = false;
 
+	public static final int COMPANY_MODEL = 0;//公司模式(机构)
+	public static final int SCKOOL_MODEL = 0;//学校模式(机构)
 
 }

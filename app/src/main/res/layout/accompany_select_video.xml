@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="6dp"
-                android:text="伴奏带"
+                android:text="伴奏音想"
                 android:textSize="14sp" />
 
             <View

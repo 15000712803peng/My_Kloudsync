@@ -3004,7 +3004,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 				if (meetingKit == null) {
 					meetingKit = MeetingKit.getInstance();
 				}
-				meetingKit.showMeetingMenu(meetingMenu, this, meetingConfig);
+				meetingKit.showMeetingMenu(meetingMenu, this, meetingConfig, false);
 				break;
 			case R.id.icon_back_full_screen:
 //                fullCamereLayout.setVisibility(View.GONE);

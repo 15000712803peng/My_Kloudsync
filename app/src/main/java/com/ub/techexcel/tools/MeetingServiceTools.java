@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.AccountSettingBean;
 import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventNote;
@@ -19,12 +20,15 @@ import com.kloudsync.techexcel.bean.EventPageNotesForSoundtrack;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.bean.MeetingMember;
+import com.kloudsync.techexcel.bean.MeetingPauseOrResumBean;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.bean.TvDevice;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
+import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.tool.ToastUtils;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.bean.ServiceBean;
@@ -90,6 +94,8 @@ public class MeetingServiceTools {
             super.handleMessage(msg);
             int code = msg.what;
             if (code == ERRORMESSAGE) {
+	            String errorMessage = (String) msg.obj;
+	            ToastUtils.show(App.getAppContext(), errorMessage);
             } else {
                 ServiceInterfaceListener serviceInterfaceListener = hashMap.get(code);
                 if (serviceInterfaceListener != null) {
@@ -1252,5 +1258,46 @@ public class MeetingServiceTools {
 		return noteDocument;
 	}
 
+	/***
+	 * 暂停会议
+	 */
+	public MeetingPauseOrResumBean requestMeetingPause() {
+		String url = AppConfig.URL_MEETING_BASE + "meeting/pause";
+		JSONObject responseJO = ConnectService.submitDataByJson(url, null);
+		String responseJson = responseJO.toString();
+		MeetingPauseOrResumBean meetingPauseOrResumBean = new Gson().fromJson(responseJson, MeetingPauseOrResumBean.class);
+		return meetingPauseOrResumBean;
+	}
 
+	/**
+	 * 继续会议
+	 */
+	public MeetingPauseOrResumBean requestMeetingResume() {
+		String url = AppConfig.URL_MEETING_BASE + "meeting/resume";
+		JSONObject responseJO = ConnectService.submitDataByJson(url, null);
+		String responseJson = responseJO.toString();
+		MeetingPauseOrResumBean meetingPauseOrResumBean = new Gson().fromJson(responseJson, MeetingPauseOrResumBean.class);
+		return meetingPauseOrResumBean;
+	}
+
+	/**
+	 * 设置会议暂停提示消息
+	 *
+	 * @param pauseMessage
+	 */
+	public MeetingPauseOrResumBean requestMeetingPauseMessage(String pauseMessage) {
+		String url = AppConfig.URL_MEETING_BASE + "meeting/pause_message";
+		pauseMessage = LoginGet.getBase64Password(pauseMessage.replaceAll("\t", ""));
+		MeetingPauseOrResumBean meetingPauseOrResumBean = new MeetingPauseOrResumBean();
+		try {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("pauseMsg", pauseMessage);
+			JSONObject responseJO = ConnectService.submitDataByJson(url, jsonObject);
+			String responseJson = responseJO.toString();
+			meetingPauseOrResumBean = new Gson().fromJson(responseJson, MeetingPauseOrResumBean.class);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return meetingPauseOrResumBean;
+	}
 }

@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.help;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -8,21 +9,32 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingPauseOrResumBean;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
+import com.kloudsync.techexcel.tool.ToastUtils;
 import com.ub.techexcel.bean.EventMuteAll;
 import com.ub.techexcel.bean.EventUnmuteAll;
+import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.PopMeetingMore;
 
 import org.greenrobot.eventbus.EventBus;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickListener,PopMeetingMore.OnMoreActionsListener {
 
@@ -41,6 +53,10 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
     //----
     private MeetingSettingCache settingCache;
 	private RelativeLayout mMenuPause;
+    private ImageView mIvPauseIcon;
+    private TextView mTvPauseText;
+    private boolean mIsMeetingPause;
+    private InputMethodManager mImm;
 
     @Override
     public void onClick(View v) {
@@ -144,7 +160,10 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 hide();
                 break;
 	        case R.id.meeting_menu_pause:
-		        break;
+                if (mImm.isActive()) mImm.hideSoftInputFromWindow(mMenuPause.getWindowToken(), 0);
+                meetingPauseOrResume();
+                hide();
+                break;
             case R.id.meeting_menu_more:
                 if(meetingConfig.getMeetingStatus() == 0){
                     return;
@@ -156,6 +175,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 break;
         }
     }
+
 
     @Override
     public void userMuteAll() {
@@ -210,6 +230,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
 
 
     public void init() {
+        mImm = (InputMethodManager) host.getSystemService(Context.INPUT_METHOD_SERVICE);
         LayoutInflater layoutInflater = LayoutInflater.from(host);
         View view = layoutInflater.inflate(R.layout.pop_meeting_menu, null);
         width = (int) (host.getResources().getDisplayMetrics().widthPixels);
@@ -222,7 +243,9 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         menuInvite = view.findViewById(R.id.meeting_menu_invite);
         menuInvite.setOnClickListener(this);
 	    mMenuPause = view.findViewById(R.id.meeting_menu_pause);
-	    mMenuPause.setOnClickListener(this);
+        mIvPauseIcon = view.findViewById(R.id.iv_meeting_pause_icon);
+        mTvPauseText = view.findViewById(R.id.tv_meeting_pause_text);
+        mMenuPause.setOnClickListener(this);
         menuMore = view.findViewById(R.id.meeting_menu_more);
         menuMore.setOnClickListener(this);
         cameraImage = view.findViewById(R.id.meeting_camera);
@@ -243,16 +266,42 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         window.setBackgroundDrawable(new BitmapDrawable());
     }
 
-    public void show(Activity host, ImageView menu, MeetingConfig meetingConfig, PopMeetingMenu.MeetingMenuOperationsListener operationsListener) {
+    public void show(Activity host, ImageView menu, MeetingConfig meetingConfig, MeetingMenuOperationsListener operationsListener, boolean isMeetingPause) {
         this.host = host;
         this.menuIcon = menu;
         this.meetingConfig = meetingConfig;
         this.operationsListener = operationsListener;
+        mIsMeetingPause = isMeetingPause;
+        setMeetingPauseOrResumeView();
         initBySetting();
         Log.e("PopMeetingMenu", "show_menu");
         window.showAtLocation(menu, Gravity.NO_GRAVITY,
                 width - host.getResources().getDimensionPixelSize(R.dimen.meeting_menu_margin_left),
                 host.getResources().getDimensionPixelSize(R.dimen.menu_top_margin));
+    }
+
+    /***
+     * 设置会议暂停和继续,UI的展示
+     */
+    private void setMeetingPauseOrResumeView() {
+        if (meetingConfig.getSystemType() == AppConfig.COMPANY_MODEL) {
+            if (mIsMeetingPause) {
+                setMeetingPauseIconAndText(R.drawable.playyinxiangplay, R.string.resume_meeting);
+            } else {
+                setMeetingPauseIconAndText(R.drawable.icon_command_pause, R.string.meeting_suspended);
+            }
+        } else {
+            if (mIsMeetingPause) {
+                setMeetingPauseIconAndText(R.drawable.playyinxiangplay, R.string.continue_class);
+            } else {
+                setMeetingPauseIconAndText(R.drawable.icon_command_pause, R.string.practice_in_class);
+            }
+        }
+    }
+
+    private void setMeetingPauseIconAndText(int resIconId, int resStrId) {
+        mIvPauseIcon.setImageResource(resIconId);
+        mTvPauseText.setText(resStrId);
     }
 
     public boolean isShowing() {
@@ -327,6 +376,11 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         }else{
             menuMore.setVisibility(View.GONE);
         }
+        if (/*meetingConfig.getMeetingHostId().equals(AppConfig.UserID) || */meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+            mMenuPause.setVisibility(View.VISIBLE);
+        } else {
+            mMenuPause.setVisibility(View.GONE);
+        }
 
         int voiceStatus = getSettingCache(host).getMeetingSetting().getVoiceStatus();
         Log.e("PopMeetingMenu", "voice_status:" + voiceStatus);
@@ -346,6 +400,59 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
             settingCache = MeetingSettingCache.getInstance(host);
         }
         return settingCache;
+    }
+
+    /**
+     * 会议暂停或继续,发送暂停提示消息
+     */
+    private void meetingPauseOrResume() {
+        Observable.just("meeting_pause").observeOn(Schedulers.io()).map(new Function<String, MeetingPauseOrResumBean>() {
+            @Override
+            public MeetingPauseOrResumBean apply(String s) throws Exception {
+                MeetingPauseOrResumBean meetingPauseOrResumBean;
+                if (mIsMeetingPause) {
+                    meetingPauseOrResumBean = MeetingServiceTools.getInstance().requestMeetingResume();
+                } else {
+                    meetingPauseOrResumBean = MeetingServiceTools.getInstance().requestMeetingPause();
+                }
+                return meetingPauseOrResumBean;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<MeetingPauseOrResumBean>() {
+            @Override
+            public void accept(MeetingPauseOrResumBean bean) throws Exception {
+                if (bean.getMsg() != null && bean.getMsg().equals("success")) {
+                    mIsMeetingPause = !mIsMeetingPause;
+                    setMeetingPauseOrResumeView();
+                    bean.setPause(mIsMeetingPause);
+                    EventBus.getDefault().post(bean);
+                } else {
+                    ToastUtils.show(host, bean.getMsg());
+                    return;
+                }
+            }
+        }).observeOn(Schedulers.io()).map(new Function<MeetingPauseOrResumBean, MeetingPauseOrResumBean>() {
+            @Override
+            public MeetingPauseOrResumBean apply(MeetingPauseOrResumBean meetingPauseOrResumBean) throws Exception {
+                MeetingPauseOrResumBean meetingPauseMessage;
+                if (mIsMeetingPause) {
+                    String pauseTipsText = MeetingPauseManager.getInstance(host, meetingConfig).getPauseTipsText();
+                    meetingPauseMessage = MeetingServiceTools.getInstance().requestMeetingPauseMessage(pauseTipsText);
+                } else {
+                    return new MeetingPauseOrResumBean();
+                }
+                if (meetingPauseMessage == null) {
+                    meetingPauseMessage = new MeetingPauseOrResumBean();
+                }
+                return meetingPauseMessage;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<MeetingPauseOrResumBean>() {
+            @Override
+            public void accept(MeetingPauseOrResumBean meetingPauseOrResumBean) throws Exception {
+                if (meetingPauseOrResumBean.getMsg() != null && !meetingPauseOrResumBean.getMsg().equals("success")) {
+                    ToastUtils.show(host, meetingPauseOrResumBean.getMsg());
+                }
+            }
+        }).subscribe();
     }
 
     PopMeetingMore popMeetingMore;

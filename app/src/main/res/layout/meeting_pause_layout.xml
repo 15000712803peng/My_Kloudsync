@@ -31,36 +31,68 @@
             android:layout_alignParentRight="true"
             android:background="@color/white" />
 
-        <TextView
-            android:id="@+id/tv_meeting_pause_tips_text"
+        <RelativeLayout
+            android:id="@+id/rly_pause_tips"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="5"
-            android:scrollbars="vertical"
-            android:layout_below="@id/tv_meeting_pause_title"
-            android:layout_marginTop="@dimen/dp_15"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp_12" />
+            android:layout_below="@id/tv_meeting_pause_title">
 
-        <EditText
-            android:id="@+id/et_meeting_pause_tips_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_meeting_pause_title"
-            android:layout_marginTop="@dimen/dp_15"
-            android:background="@null"
-            android:imeActionLabel="@string/base_enter"
-            android:maxLines="5"
-            android:imeOptions="actionDone"
-            android:inputType="textMultiLine"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp_12"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/tv_meeting_pause_tips_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_15"
+                android:maxLines="5"
+                android:scrollbars="vertical"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_12" />
+
+            <RelativeLayout
+                android:id="@+id/rly_meeting_pause_edit"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/et_meeting_pause_tips_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_15"
+                    android:background="@null"
+                    android:imeActionLabel="@string/base_enter"
+                    android:maxLines="3"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_12" />
+
+                <TextView
+                    android:id="@+id/tv_edit_pause_tips_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/et_meeting_pause_tips_text"
+                    android:layout_alignParentRight="true"
+                    android:padding="@dimen/dp_5"
+                    android:text="确定"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/sp_12" />
+
+                <TextView
+                    android:id="@+id/tv_edit_pause_tips_cancle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/tv_edit_pause_tips_ok"
+                    android:layout_marginRight="@dimen/dp_5"
+                    android:layout_toLeftOf="@id/tv_edit_pause_tips_ok"
+                    android:padding="@dimen/dp_5"
+                    android:text="取消"
+                    android:textColor="@color/colorFont99"
+                    android:textSize="@dimen/sp_12" />
+            </RelativeLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_meeting_pause_tips_text"
+            android:layout_below="@id/rly_pause_tips"
             android:layout_marginTop="@dimen/dp_10"
             android:gravity="center_vertical"
             android:orientation="horizontal">
@@ -84,7 +116,7 @@
                 android:gravity="center"
                 android:text="继续"
                 android:textColor="@color/white"
-                android:textSize="@dimen/sp_15" />
+                android:textSize="@dimen/sp_14" />
         </LinearLayout>
     </RelativeLayout>
 

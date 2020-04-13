@@ -205,7 +205,12 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				List<SoundTrack> soundTracks = soundtrackList.getSoundTracks();
 				if (soundTracks.size() >= 0) {
 					list1.clear();
-					list1.addAll(soundTracks);
+					for (int i = 0; i < soundTracks.size(); i++) {
+						SoundTrack soundTrack=soundTracks.get(i);
+						if(soundTrack.getMusicType()==0){
+							list1.add(soundTrack);
+						}
+					}
 					if (adapter1 != null) {
 						adapter1.notifyDataSetChanged();
 					}

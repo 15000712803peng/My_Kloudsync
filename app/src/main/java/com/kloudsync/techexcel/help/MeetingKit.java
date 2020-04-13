@@ -622,7 +622,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
     }
 
-    public void showMeetingMenu(ImageView menu, Activity host, MeetingConfig meetingConfig) {
+    public void showMeetingMenu(ImageView menu, Activity host, MeetingConfig meetingConfig, boolean isMeetingPause) {
         Log.e("PopMeetingMenu", "showMeetingMenu");
         this.meetingConfig = meetingConfig;
         this.host = host;
@@ -634,7 +634,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
 
         popMeetingMenu = new PopMeetingMenu(host);
-        popMeetingMenu.show(host, menu, meetingConfig, this);
+        popMeetingMenu.show(host, menu, meetingConfig, this, isMeetingPause);
     }
 
     // --- meeting menu
