@@ -379,6 +379,7 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             switch (msg.what) {
                 case 0x1001:
                     AppConfig.newlesson = true;
+                    setResult(1);
                     finish();
                     break;
             }

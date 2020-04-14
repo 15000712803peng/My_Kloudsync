@@ -29,8 +29,10 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.MemberRoleDialog;
 import com.kloudsync.techexcel.response.NetworkResponse;
+import com.kloudsync.techexcel.start.LoginActivity;
 import com.kloudsync.techexcel.tool.ContactsTool;
 import com.kloudsync.techexcel.ui.MainActivity;
+import com.kloudsync.techexcel.ui.WelcomeAndCreateActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -218,7 +220,11 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
     private void goToMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("FromOrganization",true);
         startActivity(intent);
+        LoginActivity.instance.finish();
+        WelcomeAndCreateActivity.instance.finish();
+        CreateOrganizationActivityV2.instance.finish();
         finish();
     }
 
