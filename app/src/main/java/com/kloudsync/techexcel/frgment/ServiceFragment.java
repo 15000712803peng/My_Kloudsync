@@ -85,7 +85,7 @@ import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSIO
 import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
 
 
-public class ServiceFragment extends MyFragment implements View.OnClickListener {
+public class ServiceFragment extends MyFragment implements View.OnClickListener{
     private boolean isPrepared = false;
     private ServiceAdapter2 serviceAdapter1;
     private ListView serviceListView1;

@@ -30,7 +30,7 @@ import java.util.List;
  * Created by wang on 2018/2/8.
  */
 
-public class CourseListActivity extends Activity implements View.OnClickListener {
+public class CourseListActivity extends Activity implements View.OnClickListener{
     private LinearLayout backll;
     private List<CourseLesson> courseLessons = new ArrayList<>();
     private ListView listView;

@@ -178,6 +178,7 @@ import com.ub.techexcel.tools.FavoriteVideoPopup;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.MeetingWarningDialog;
+import com.ub.techexcel.tools.PrepareLessionDialog;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
@@ -222,7 +223,7 @@ import retrofit2.Response;
  * Created by tonyan on 2019/11/19.
  */
 
-public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
+public class LessionActivity extends BaseWebActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
         BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener {
 
     public static final String SUNDTRACKBEAN = "sundtrackbean";
@@ -375,13 +376,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 AccountSettingBean accountSettingBean = (AccountSettingBean) object;
                 meetingConfig.setSystemType(accountSettingBean.getSystemType());
 
-                messageManager = SocketMessageManager.getManager(DocAndMeetingActivity.this);
+                messageManager = SocketMessageManager.getManager(LessionActivity.this);
                 messageManager.registerMessageReceiver();
                 handleRejoinMeetingBecauseFailed();
                 if (meetingConfig.getType() != MeetingType.MEETING) {
                     messageManager.sendMessage_JoinMeeting(meetingConfig);
                 } else {
-                    if (Tools.isOrientationPortrait(DocAndMeetingActivity.this)) {
+                    if (Tools.isOrientationPortrait(LessionActivity.this)) {
 //                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                     }
                     //是meeting
@@ -392,7 +393,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         return;
                     }
 
-                    MeetingKit.getInstance().init(DocAndMeetingActivity.this, meetingConfig);
+                    MeetingKit.getInstance().init(LessionActivity.this, meetingConfig);
                     String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
                     MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
                         @Override
@@ -410,11 +411,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                                         messageManager.sendMessage_JoinMeeting(meetingConfig);
 //                                MeetingKit.getInstance().startMeeting();
                                     } else {
-                                        MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                                        MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
                                     }
                                 }
                             } else {
-                                MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                                MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
 
                             }
                         }
@@ -508,9 +509,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             public void onUserStart() {
                 if (type == 1) {
                     meetingKit = MeetingKit.getInstance();
-                    meetingKit.prepareStart(DocAndMeetingActivity.this, meetingConfig, meetingConfig.getLessionId() + "");
+                    meetingKit.prepareStart(LessionActivity.this, meetingConfig, meetingConfig.getLessionId() + "");
                 } else {
-                    MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                    MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
                 }
             }
         });
@@ -949,7 +950,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 _data.put("TriggerEvent", false);
                 Log.e("ShowDotPanData", "ShowDotPanData");
                 noteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
-                RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+                RecordNoteActionManager.getManager(LessionActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override
@@ -3066,7 +3067,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         Observable.just(data).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String s) throws Exception {
-                PageActionsAndNotesMgr.handleNoteActions(DocAndMeetingActivity.this, action, new JSONObject(data), meetingConfig);
+                PageActionsAndNotesMgr.handleNoteActions(LessionActivity.this, action, new JSONObject(data), meetingConfig);
             }
         }).subscribe();
 
@@ -3151,7 +3152,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         openWarningInfo(1);
                     } else {
                         meetingKit = MeetingKit.getInstance();
-                        meetingKit.prepareStart(DocAndMeetingActivity.this, meetingConfig, meetingConfig.getLessionId() + "");
+                        meetingKit.prepareStart(LessionActivity.this, meetingConfig, meetingConfig.getLessionId() + "");
                     }
                 }
             }
@@ -3215,7 +3216,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         soundtrackDialog = null;
                     }
                 }
-                soundtrackDialog = new UserSoundtrackDialog(DocAndMeetingActivity.this);
+                soundtrackDialog = new UserSoundtrackDialog(LessionActivity.this);
                 soundtrackDialog.show(meetingConfig);
             }
         });
@@ -3709,7 +3710,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             if (suff.equals("mp3")) {
                                 uploadMp3file(path);
                             } else {
-                                Toast.makeText(DocAndMeetingActivity.this, "请上传音频文件", Toast.LENGTH_LONG).show();
+                                Toast.makeText(LessionActivity.this, "请上传音频文件", Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -3810,7 +3811,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            new CenterToast.Builder(DocAndMeetingActivity.this).
+                            new CenterToast.Builder(LessionActivity.this).
                                     setSuccess(false).setMessage("operate failed").create().show();
                             bottomFilePop.removeTempDoc();
                         }
@@ -3831,7 +3832,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        uploadFileDialog = new UploadFileDialog(DocAndMeetingActivity.this);
+                        uploadFileDialog = new UploadFileDialog(LessionActivity.this);
                         uploadFileDialog.setTile("uploading");
                         uploadFileDialog.show();
 
@@ -3921,7 +3922,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new CenterToast.Builder(DocAndMeetingActivity.this).
+                    new CenterToast.Builder(LessionActivity.this).
                             setSuccess(true).setMessage("operate success").create().show();
                 }
             });
@@ -3942,7 +3943,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         boolean enable = response.body().getData().isEnableBind();
                         if (devices != null && devices.size() > 0) {
                             devicesListDialog = new DevicesListDialog();
-                            devicesListDialog.getPopwindow(DocAndMeetingActivity.this);
+                            devicesListDialog.getPopwindow(LessionActivity.this);
                             devicesListDialog.setWebCamPopupListener(new DevicesListDialog.WebCamPopupListener() {
                                 @Override
                                 public void scanTv() {
@@ -4009,7 +4010,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = new Intent(DocAndMeetingActivity.this, MipcaActivityCapture.class);
+                    Intent intent = new Intent(LessionActivity.this, MipcaActivityCapture.class);
                     intent.putExtra("isHorization", true);
                     intent.putExtra("type", 0);
                     startActivityForResult(intent, REQUEST_SCAN);
@@ -4017,7 +4018,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }, 500);
 
         } else {
-            Intent intent = new Intent(DocAndMeetingActivity.this, MipcaActivityCapture.class);
+            Intent intent = new Intent(LessionActivity.this, MipcaActivityCapture.class);
             intent.putExtra("isHorization", true);
             intent.putExtra("type", 0);
             startActivityForResult(intent, REQUEST_SCAN);
@@ -4137,7 +4138,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     SoundtrackMediaInfo newAudioInfo = soundtrackDetail.getNewAudioInfo();
                     SoundtrackMediaInfo backgroundAudioInfo = soundtrackDetail.getBackgroudMusicInfo();
                     if (newAudioInfo == null && backgroundAudioInfo == null) {
-                        new AlertDialog.Builder(DocAndMeetingActivity.this, R.style.ThemeAlertDialog)
+                        new AlertDialog.Builder(LessionActivity.this, R.style.ThemeAlertDialog)
                                 .setMessage(getResources().getString(R.string.sound_is_still_preparing_and_cannot_do_this))
                                 .setNegativeButton(getResources().getText(R.string.know_the), null)
                                 .show();
@@ -4167,7 +4168,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     }
 
                     if (soundtrackMediaInfo == null) {
-                        ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
+                        ToastUtils.showInCenter(LessionActivity.this, "音想数据异常", "播放失败");
                         soundtrackPlayManager.followClose();
                     } else {
                         soundtrackPlayManager.doPlay(soundtrackMediaInfo, time);
@@ -4175,7 +4176,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
 
                 } else {
-                    ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
+                    ToastUtils.showInCenter(LessionActivity.this, "音想数据异常", "播放失败");
                     soundtrackPlayManager.followClose();
 
                 }
@@ -4248,7 +4249,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     SoundtrackMediaInfo newAudioInfo = soundtrackDetail.getNewAudioInfo();
                     SoundtrackMediaInfo backgroundAudioInfo = soundtrackDetail.getBackgroudMusicInfo();
                     if (newAudioInfo == null && backgroundAudioInfo == null) {
-                        new AlertDialog.Builder(DocAndMeetingActivity.this, R.style.ThemeAlertDialog)
+                        new AlertDialog.Builder(LessionActivity.this, R.style.ThemeAlertDialog)
                                 .setMessage(getResources().getString(R.string.sound_is_still_preparing_and_cannot_do_this))
                                 .setNegativeButton(getResources().getText(R.string.know_the), null)
                                 .show();
@@ -4278,7 +4279,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     }
 
                     if (soundtrackMediaInfo == null) {
-                        ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
+                        ToastUtils.showInCenter(LessionActivity.this, "音想数据异常", "播放失败");
                         soundtrackPlayManager.followClose();
                     } else {
                         soundtrackPlayManager.doPause(soundtrackMediaInfo, time);
@@ -4286,7 +4287,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
 
                 } else {
-                    ToastUtils.showInCenter(DocAndMeetingActivity.this, "音想数据异常", "播放失败");
+                    ToastUtils.showInCenter(LessionActivity.this, "音想数据异常", "播放失败");
                     soundtrackPlayManager.followClose();
 
                 }
@@ -4374,13 +4375,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             public void accept(JSONObject jsonObject) throws Exception {
                 if (jsonObject.has("RetCode")) {
                     if (jsonObject.getInt("RetCode") == 0) {
-                        new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(true).setMessage(getString(R.string.operate_success)).create().show();
+                        new CenterToast.Builder(LessionActivity.this).setSuccess(true).setMessage(getString(R.string.operate_success)).create().show();
                     } else {
-                        new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
+                        new CenterToast.Builder(LessionActivity.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
 
                     }
                 } else {
-                    new CenterToast.Builder(DocAndMeetingActivity.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
+                    new CenterToast.Builder(LessionActivity.this).setSuccess(false).setMessage(getString(R.string.operate_failure)).create().show();
 
                 }
             }
@@ -4436,7 +4437,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     private void showCreateSyncDialog() {
         yinxiangCreatePopup = new YinxiangCreatePopup();
-        yinxiangCreatePopup.getPopwindow(DocAndMeetingActivity.this);
+        yinxiangCreatePopup.getPopwindow(LessionActivity.this);
         yinxiangCreatePopup.setFavoritePoPListener(new YinxiangCreatePopup.FavoritePoPListener() {
             @Override
             public void addrecord(int ii) {
@@ -4458,7 +4459,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             @Override
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean2) {  //录制音响
-                soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
+                soundtrackRecordManager = SoundtrackRecordManager.getManager(LessionActivity.this);
                 soundtrackRecordManager.setInitParams(checked, soundtrackBean2, audiosyncll, web, timeshow, meetingConfig);
             }
         });
@@ -4474,7 +4475,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     private void showCreateAccompanyDialog() {
         accompanyCreatePopup = new AccompanyCreatePopup();
-        accompanyCreatePopup.getPopwindow(DocAndMeetingActivity.this);
+        accompanyCreatePopup.getPopwindow(LessionActivity.this);
         accompanyCreatePopup.setFavoritePoPListener(new AccompanyCreatePopup.FavoritePoPListener() {
             @Override
             public void addrecord(int ii) {
@@ -4490,7 +4491,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             @Override
             public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean) {  //录制音响
-                soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
+                soundtrackRecordManager = SoundtrackRecordManager.getManager(LessionActivity.this);
                 soundtrackRecordManager.setInitParams(checked, soundtrackBean, audiosyncll, web, timeshow, meetingConfig);
             }
         });
@@ -4501,7 +4502,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     private void openAccompanyMusicPop(int role) {
         if (accompanySelectVideoPopup == null) {
-            accompanySelectVideoPopup = new AccompanySelectVideoPopup(DocAndMeetingActivity.this);
+            accompanySelectVideoPopup = new AccompanySelectVideoPopup(LessionActivity.this);
             accompanySelectVideoPopup.setFavoritePoPListener(new AccompanySelectVideoPopup.FavoriteVideoPoPListener() {
                 @Override
                 public void save(Document document) {  //选择伴奏带
@@ -4529,7 +4530,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 @Override
                 public void uploadFile() {  //上传音频文件
                     accompanySelectVideoPopup.dismiss();
-                    Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
+                    Intent intent = new Intent(LessionActivity.this, FilePickerActivity.class);
                     intent.putExtra("fileType", 1);
                     startActivityForResult(intent, REQUEST_SELECTED_MP3_FILE);
                 }
@@ -4603,7 +4604,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             if (noteLayout.getVisibility() == View.VISIBLE) {
                 if (noteWeb != null) {
                     // 笔记先于音想打开
-                    RecordNoteActionManager.getManager(DocAndMeetingActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
+                    RecordNoteActionManager.getManager(LessionActivity.this).sendDisplayHomePageActions(currentNoteId, lastjsonObject);
                 }
             } else {
                 if (mFloatingWindowNoteManager != null) {
@@ -4710,7 +4711,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             @Override
             public void uploadFile(int type) {
                 favoritePopup.dismiss();
-                Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
+                Intent intent = new Intent(LessionActivity.this, FilePickerActivity.class);
                 intent.putExtra("fileType", 1);
                 startActivityForResult(intent, REQUEST_SELECTED_MP3_FILE);
             }
@@ -4729,7 +4730,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(DocAndMeetingActivity.this, "笔记在本地设备不存在", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LessionActivity.this, "笔记在本地设备不存在", Toast.LENGTH_SHORT).show();
                     }
                 });
                 return;
@@ -5022,7 +5023,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             public void accept(String s) throws Exception {
                 meetingConfig.setMeetingId(meetingId);
 //                messageManager.sendMessage_JoinMeeting(meetingConfig);
-                MeetingKit.getInstance().prepareJoin(DocAndMeetingActivity.this, meetingConfig);
+                MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
 
             }
         }).subscribe();
@@ -5079,7 +5080,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (data == null) {
             return;
         }
-
         if (meetingConfig.getMeetingStatus() == 0) {
             return;
         }
@@ -5122,6 +5122,20 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }).subscribe();
     }
 
+
+    PrepareLessionDialog prepareLessionDialog;
+    private void showCoursePreparedDialog(){
+        if(prepareLessionDialog != null){
+            if(prepareLessionDialog.isShowing()){
+                prepareLessionDialog.dismiss();
+                prepareLessionDialog = null;
+            }
+        }
+
+        prepareLessionDialog = new PrepareLessionDialog(this);
+        prepareLessionDialog.show();
+    }
+
     public void handleMessageJoinMeeting(JSONObject data) {
         Log.e("check_join_message", "removeMessages");
         rejoinHandler.removeMessages(MESSAGE_JOIN_TIME);
@@ -5129,6 +5143,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (data == null) {
             return;
         }
+
+        showCoursePreparedDialog();
 
         if (data.has("retCode")) {
 

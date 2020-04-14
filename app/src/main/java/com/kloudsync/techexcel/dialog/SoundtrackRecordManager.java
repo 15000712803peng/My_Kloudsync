@@ -194,43 +194,12 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-
-                    if(isrecordvoice){
-                        while (true){
-                            if(audioRecorder!=null){
-                                if(audioRecorder.getInitStatus()== AudioRecord.STATE_INITIALIZED){
-                                    audioRecorder.startRecord(null);
-                                    mp.start();
-                                    refreshRecord();
-                                    break;
-                                }
-                            }
-                        }
-                    }else{
-                        mp.start();
-                        refreshRecord();
-                    }
-
-
-
+                    mediaPlayer.start();
+                    refreshRecord();
                 }
             });
         }else{
-
-            if(isrecordvoice){
-                while (true){
-                    if(audioRecorder!=null){
-                        if(audioRecorder.getInitStatus()== AudioRecord.STATE_INITIALIZED){
-                            audioRecorder.startRecord(null);
-                            refreshRecord();
-                            break;
-                        }
-                    }
-                }
-            }else{
-                refreshRecord();
-            }
-
+            refreshRecord();
         }
 
         if (!TextUtils.isEmpty(url2)) {
@@ -251,7 +220,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             mediaPlayer2.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    mp.start();
+                    mediaPlayer2.start();
                 }
             });
         }
@@ -360,6 +329,31 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
      * 每隔100毫秒拿录制进度
      */
     private void refreshRecord() {
+        if(mediaPlayer!=null){
+            while(true){
+                if(mediaPlayer.getCurrentPosition()>50){
+                    if(isrecordvoice){
+                        while (true){
+                            if(audioRecorder.getInitStatus()==AudioRecord.STATE_INITIALIZED){
+                                audioRecorder.startRecord(null);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }else{
+            if(isrecordvoice){
+                while (true){
+                    if(audioRecorder.getInitStatus()==AudioRecord.STATE_INITIALIZED){
+                        audioRecorder.startRecord(null);
+                        break;
+                    }
+                }
+            }
+        }
+
         getAudioAction(soundtrackBean.getActionBaseSoundtrackID(), 0);
         sondtrack_record_load_bar.setVisibility(View.INVISIBLE);
         isStatus.setVisibility(View.VISIBLE);
@@ -374,6 +368,9 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             public void run() {
                 if (!isPause) {
                     tttime = tttime + 100;
+                    if(mediaPlayer!=null){
+                        Log.e("当前时间","当前时间  "+tttime+"   播放器时间 "+mediaPlayer.getCurrentPosition()+"   播放器状态 "+mediaPlayer.isPlaying());
+                    }
                     if (audiotime != null) {
                         final String time = new SimpleDateFormat("mm:ss").format(tttime);
                         Message ms=Message.obtain();
@@ -384,7 +381,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
                     Log.e("refreshTime", " " + tttime);
                 }
             }
-        }, 0, 100);
+        }, 100, 100);
     }
 
 
@@ -455,6 +452,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         }
         return false;
     }
+
 
     private AudioRecorder audioRecorder;
 

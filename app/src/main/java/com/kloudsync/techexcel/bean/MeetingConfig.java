@@ -62,6 +62,15 @@ public class MeetingConfig {
     private int systemType = 0;// 1 是教育
     private boolean isSyncing = false;
     private boolean IsMeetingPause;
+    private int roleInLession;
+
+    public int getRoleInLession() {
+        return roleInLession;
+    }
+
+    public void setRoleInLession(int roleInLession) {
+        this.roleInLession = roleInLession;
+    }
 
     public boolean isMeetingPause() {
         return IsMeetingPause;

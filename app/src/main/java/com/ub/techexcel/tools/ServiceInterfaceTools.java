@@ -3466,5 +3466,25 @@ public class ServiceInterfaceTools {
 
     }
 
+    public JSONObject syncGetRecurringMeetingItemList(String meetingId, int listType) {
+        String url = AppConfig.URL_PUBLIC + "RecurringMeeting/GetRecurringMeetingItemList?meetingID=" + meetingId + "&listType=" + listType + "&withAttach=1&withMember=1";
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetRecurringMeetingItemList", "url:" + url + ",response:" + response);
+        return response;
+
+    }
+
+    public JSONObject syncGetCourseRole(String lessonID) {
+        String url = AppConfig.URL_PUBLIC + "Lesson/Item?lessonID=" + lessonID;
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetCourseRole", "url:" + url + ",response:" + response);
+        return response;
+
+    }
+
+//    https://api.peertime.cn/peertime/V1/Lesson/Item?lessonID=1983850
+
+//      https://api.peertime.cn/peertime/V1/RecurringMeeting/GetRecurringMeetingItemList?meetingID=1984186&listType=0&withMember=1&withAttach=1&pageIndex=0&pageSize=10
+
 
 }

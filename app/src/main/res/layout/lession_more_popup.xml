@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bottom_dialog_border"
+
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:background="@drawable/bottom_dialog_border"
+        android:id="@+id/morell"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_marginLeft="18dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp"
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:singleLine="true"
+            android:textColor="#999999"
+            android:textSize="14sp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            />
+
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#fff7f7f7"/>
+
+
+
+
+        <LinearLayout
+            android:id="@+id/open"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="18dp"
+                    android:src="@drawable/icon_startmeeting" />
+
+                <TextView
+                    android:id="@+id/startmeetingcontext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="5dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/Open"
+                    android:textColor="@color/darkgrey" />
+            </LinearLayout>
+
+
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#fff7f7f7"/>
+        </LinearLayout>
+
+
+
+
+
+
+        <LinearLayout
+
+            android:id="@+id/editmeeting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="18dp"
+                    android:src="@drawable/editdddd" />
+
+                <TextView
+                    android:id="@+id/editcontext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="5dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/Edit"
+                    android:textColor="@color/darkgrey" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#fff7f7f7"/>
+
+
+        </LinearLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/delete"
+                android:orientation="horizontal"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="18dp"
+                    android:src="@drawable/trash_favor" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawablePadding="5dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/mtdelete"
+                    android:textColor="@color/darkgrey" />
+            </LinearLayout>
+
+
+
+
+
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="17sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:gravity="center"
+        android:background="#e6ffffff"
+        android:text="@string/Cancel"
+        android:textColor="#3C77FB" />
+
+
+</LinearLayout>

@@ -123,9 +123,9 @@ public class JoinMeetingPopup implements View.OnClickListener {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String meetingId = roomet.getText().toString().trim();
-                if(!TextUtils.isEmpty(meetingId)){
+                if (!TextUtils.isEmpty(meetingId)) {
                     joinroom2.setBackgroundResource(R.drawable.do_join_bg);
-                }else {
+                } else {
                     joinroom2.setBackgroundResource(R.drawable.join_bg);
                 }
             }
@@ -141,11 +141,11 @@ public class JoinMeetingPopup implements View.OnClickListener {
     @SuppressLint("NewApi")
     public void show() {
         defaultMeetingRoom = mContext.getSharedPreferences(AppConfig.LOGININFO,
-                MODE_PRIVATE).getString("join_meeting_room","");
-        if(!TextUtils.isEmpty(defaultMeetingRoom)){
+                MODE_PRIVATE).getString("join_meeting_room", "");
+        if (!TextUtils.isEmpty(defaultMeetingRoom)) {
             roomet.setText(defaultMeetingRoom);
             joinroom2.setBackgroundResource(R.drawable.do_join_bg);
-        }else {
+        } else {
             joinroom2.setBackgroundResource(R.drawable.join_bg);
         }
 
@@ -170,145 +170,148 @@ public class JoinMeetingPopup implements View.OnClickListener {
 
 
     Disposable disposable;
-    private void doJoin(final String meetingRoom){
+
+    private void doJoin(final String meetingRoom) {
         loadingDialog.show();
-	    loadingDialog.setCancelable(true);
+        loadingDialog.setCancelable(true);
 //        loadingDialog.setCanceledOnTouchOutside(true);
         Observable.just(meetingRoom).observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
             @Override
             public void accept(String meetingId) throws Exception {
                 JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/CheckClassRoomExist?classroomID=" + meetingId);
-                Log.e("do_join",AppConfig.URL_PUBLIC + "Lesson/CheckClassRoomExist?classRoomID=" + meetingId + ",result:" + result);
-	            if(result.has("RetCode")){
-		            int retCode = result.getInt("RetCode");
-		            if(retCode == 0){
-			            // 说明会议id 存在
+                Log.e("do_join", AppConfig.URL_PUBLIC + "Lesson/CheckClassRoomExist?classRoomID=" + meetingId + ",result:" + result);
+                if (result.has("RetCode")) {
+                    int retCode = result.getInt("RetCode");
+                    if (retCode == 0) {
+                        // 说明会议id 存在
 //                        joinMeeting.setRole(MeetingConfig.MeetingRole.MEMBER);
-			            if(result.has("RetData")){
-				            if(result.getInt("RetData") == 1){
-					            // 会议id存在
-					            final EventJoinMeeting joinMeeting = new EventJoinMeeting();
-					            joinMeeting.setMeetingId(meetingRoom);
-					            disposable = Observable.just(joinMeeting).observeOn(Schedulers.newThread()).doOnNext(new Consumer<EventJoinMeeting>() {
-						            @Override
-						            public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
-							            JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomLessonID?classRoomID=" + meetingRoom);
-							            Log.e("do_join",AppConfig.URL_PUBLIC + "Lesson/GetClassRoomLessonID?classRoomID=" + meetingRoom + ",result:" + result);
-							            if(result.has("RetCode")){
-								            int retCode = result.getInt("RetCode");
-								            if(retCode == 0){
-									            joinMeeting.setLessionId(result.getInt("RetData"));
-									            joinMeeting.setMeetingId(meetingRoom);
-									            joinMeeting.setOrginalMeetingId(meetingRoom);
+                        if (result.has("RetData")) {
+                            if (result.getInt("RetData") == 1) {
+                                // 会议id存在
+                                final EventJoinMeeting joinMeeting = new EventJoinMeeting();
+                                joinMeeting.setMeetingId(meetingRoom);
+                                disposable = Observable.just(joinMeeting).observeOn(Schedulers.newThread()).doOnNext(new Consumer<EventJoinMeeting>() {
+                                    @Override
+                                    public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+                                        JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomLessonID?classRoomID=" + meetingRoom);
+                                        Log.e("do_join", AppConfig.URL_PUBLIC + "Lesson/GetClassRoomLessonID?classRoomID=" + meetingRoom + ",result:" + result);
+                                        if (result.has("RetCode")) {
+                                            int retCode = result.getInt("RetCode");
+                                            if (retCode == 0) {
+                                                joinMeeting.setLessionId(result.getInt("RetData"));
+                                                joinMeeting.setMeetingId(meetingRoom);
+                                                joinMeeting.setOrginalMeetingId(meetingRoom);
 //                        joinMeeting.setRole(MeetingConfig.MeetingRole.MEMBER);
-								            }
-							            }
-						            }
-					            }).doOnNext(new Consumer<EventJoinMeeting>() {
-						            @Override
-						            public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
-							            if(joinMeeting.getLessionId() <= 0){
-								            JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomTeacherID?classroomID=" + meetingRoom);
-								            Log.e("do_join",AppConfig.URL_PUBLIC + "Lesson/GetClassRoomTeacherID?classroomID=" + meetingRoom + ",result:" + result);
-								            if(result.has("RetCode")){
-									            int retCode = result.getInt("RetCode");
-									            if(retCode == 0){
-										            int hostId = result.getInt("RetData");
-										            eventJoinMeeting.setHostId(hostId);
-									            }
-								            }
-							            }
-						            }
-					            })
-//                                        .doOnNext(new Consumer<EventJoinMeeting>() {
-//                                            @Override
-//                                            public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
-//                                                if(eventJoinMeeting.getHostId() > 0 && eventJoinMeeting.getLessionId() == -1){
-////                    EventBus.getDefault().post(eventJoinMeeting);
-//                                                    JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/UpcomingLessonList?teacherID=" + eventJoinMeeting.getHostId());
-//                                                    Log.e("do_join",AppConfig.URL_PUBLIC + "Lesson/UpcomingLessonList?teacherID=" + eventJoinMeeting.getHostId() + ",result:" + result);
-//                                                    if(result.has("RetCode")){
-//                                                        int retCode = result.getInt("RetCode");
-//                                                        if(retCode == 0){
-//                                                            JSONArray jsonArray = result.getJSONArray("RetData");
-//                                                            if(jsonArray != null && jsonArray.length() > 0){
-//                                                                JSONObject data = jsonArray.getJSONObject(0);
-//                                                                if(data.has("IsOnGoing")){
-//                                                                    int isOnGoing = data.getInt("IsOnGoing");
-//                                                                    if(isOnGoing == 1){
-//                                                                        if(data.has("LessonID")){
-//                                                                            eventJoinMeeting.setLessionId(data.getInt("LessonID"));
-//                                                                            eventJoinMeeting.setMeetingId(data.getInt("LessonID")+"");
-//                                                                        }
-//                                                                    }
-//                                                                }
-//                                                            }
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
-//
-//                                        })
+                                            }
+                                        }
+                                    }
+                                }).doOnNext(new Consumer<EventJoinMeeting>() {
+                                    @Override
+                                    public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+                                        if (joinMeeting.getLessionId() <= 0) {
+                                            JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/GetClassRoomTeacherID?classroomID=" + meetingRoom);
+                                            Log.e("do_join", AppConfig.URL_PUBLIC + "Lesson/GetClassRoomTeacherID?classroomID=" + meetingRoom + ",result:" + result);
+                                            if (result.has("RetCode")) {
+                                                int retCode = result.getInt("RetCode");
+                                                if (retCode == 0) {
+                                                    int hostId = result.getInt("RetData");
+                                                    eventJoinMeeting.setHostId(hostId);
+                                                }
+                                            }
+                                        }
 
-							            .doOnNext(new Consumer<EventJoinMeeting>() {
-								            @Override
-								            public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+                                    }
+                                }).doOnNext(new Consumer<EventJoinMeeting>() {
+                                    @Override
+                                    public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+                                        if (eventJoinMeeting.getHostId() > 0 && eventJoinMeeting.getLessionId() == -1) {
+//                    EventBus.getDefault().post(eventJoinMeeting);
+                                            JSONObject result = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/UpcomingLessonList?teacherID=" + eventJoinMeeting.getHostId());
+                                            Log.e("do_join", AppConfig.URL_PUBLIC + "Lesson/UpcomingLessonList?teacherID=" + eventJoinMeeting.getHostId() + ",result:" + result);
+                                            if (result.has("RetCode")) {
+                                                int retCode = result.getInt("RetCode");
+                                                if (retCode == 0) {
+                                                    JSONArray jsonArray = result.getJSONArray("RetData");
+                                                    if (jsonArray != null && jsonArray.length() > 0) {
+                                                        for (int i = 0; i < jsonArray.length(); ++i) {
+                                                            JSONObject data = jsonArray.getJSONObject(i);
+                                                            if (data.has("IsOnGoing")) {
+                                                                int isOnGoing = data.getInt("IsOnGoing");
+                                                                if (isOnGoing == 1) {
+                                                                    if (data.has("LessonID")) {
+                                                                        eventJoinMeeting.setLessionId(data.getInt("LessonID"));
+                                                                        eventJoinMeeting.setMeetingId(data.getInt("LessonID") + "");
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
 
-									            if(eventJoinMeeting.getLessionId() != -1){
-										            JSONObject result = ServiceInterfaceTools.getinstance().syncGetJoinMeetingDefaultStatus(eventJoinMeeting.getOrginalMeetingId());
-										            if(result.has("code")){
-											            int code = result.getInt("code");
-											            if(code == 0){
-												            JSONObject data = result.getJSONObject("data");
-												            eventJoinMeeting.setRole(data.getInt("role"));
-											            }
-										            }
-									            }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }).doOnNext(new Consumer<EventJoinMeeting>() {
+                                    @Override
+                                    public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+
+                                        if (eventJoinMeeting.getLessionId() != -1) {
+                                            JSONObject result = ServiceInterfaceTools.getinstance().syncGetJoinMeetingDefaultStatus(eventJoinMeeting.getOrginalMeetingId());
+                                            if (result.has("code")) {
+                                                int code = result.getInt("code");
+                                                if (code == 0) {
+                                                    JSONObject data = result.getJSONObject("data");
+                                                    eventJoinMeeting.setRole(data.getInt("role"));
+                                                }
+                                            }
+                                        }
 
 
-								            }
-							            }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<EventJoinMeeting>() {
-								            @Override
-								            public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
-									            hideLoadingDialog();
-									            EventBus.getDefault().post(eventJoinMeeting);
-								            }
-							            }).subscribe();
-				            }else {
+                                    }
+                                }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<EventJoinMeeting>() {
+                                    @Override
+                                    public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
+                                        hideLoadingDialog();
+                                        EventBus.getDefault().post(eventJoinMeeting);
+                                    }
+                                }).subscribe();
+                            } else {
 
-					            Observable.just("loading_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-						            @Override
-						            public void accept(String s) throws Exception {
-							            hideLoadingDialog();
-							            Toast.makeText(mContext,"输入正确的会议ID",Toast.LENGTH_SHORT).show();
-						            }
-					            });
-				            }
-			            }
+                                Observable.just("loading_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                                    @Override
+                                    public void accept(String s) throws Exception {
+                                        hideLoadingDialog();
+                                        Toast.makeText(mContext, "输入正确的会议ID", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
 
-		            }else {
-			            // 会议id不合法或者不存在
-			            Observable.just("loading_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-				            @Override
-				            public void accept(String s) throws Exception {
-					            hideLoadingDialog();
-					            Toast.makeText(mContext,"输入正确的会议ID",Toast.LENGTH_SHORT).show();
-				            }
-			            });
+                    } else {
+                        // 会议id不合法或者不存在
+                        Observable.just("loading_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                hideLoadingDialog();
+                                Toast.makeText(mContext, "输入正确的会议ID", Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
-		            }
-	            } else {
-		            hideLoadingDialog();
-	            }
+                    }
+                } else {
+                    hideLoadingDialog();
+                }
 
             }
         }).subscribe();
 
     }
 
-    private void hideLoadingDialog(){
-        if(loadingDialog != null){
-            if(loadingDialog.isShowing()){
+    private void hideLoadingDialog() {
+        if (loadingDialog != null) {
+            if (loadingDialog.isShowing()) {
                 loadingDialog.cancel();
             }
         }
@@ -323,12 +326,12 @@ public class JoinMeetingPopup implements View.OnClickListener {
                     InputMethodManager imm = (InputMethodManager)
                             mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(roomet.getWindowToken(), 0);
-	                roomid = roomet.getText().toString().trim();
+                    roomid = roomet.getText().toString().trim();
                     if (!TextUtils.isEmpty(roomid)) {
 //                        checkClassRoomExist(roomid);
                         roomid = roomid.toUpperCase();
                         mContext.getSharedPreferences(AppConfig.LOGININFO,
-                                MODE_PRIVATE).edit().putString("join_meeting_room",roomid).commit();
+                                MODE_PRIVATE).edit().putString("join_meeting_room", roomid).commit();
 //                        mActivity.startService()
                         startWBService();
                         doJoin(roomid);
@@ -352,7 +355,7 @@ public class JoinMeetingPopup implements View.OnClickListener {
         Intent service = new Intent(mContext, SocketService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mContext.startForegroundService(service);
-        }else {
+        } else {
             mContext.startService(service);
         }
     }

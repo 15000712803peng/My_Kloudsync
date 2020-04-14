@@ -494,7 +494,7 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         int screenW = dm.widthPixels;
-        width = screenW / 3;
+        width = screenW / 2;
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) inprogressunderline.getLayoutParams();
         lp.width = width / 2; //设置滑动条的宽度为屏幕的1/6
         lp.leftMargin = width / 4;
@@ -583,7 +583,7 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
         @Override
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
-            bundle.putInt("type", position + 1);
+            bundle.putInt("type", position);
             CourseListFragment fragment = new CourseListFragment();
             fragment.setArguments(bundle);
             return fragment;
