@@ -1,4 +1,5 @@
 package com.kloudsync.techexcel.frgment;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -26,9 +28,11 @@ import com.ub.techexcel.adapter.ServiceAdapter2;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.service.ConnectService;
 import com.ub.techexcel.tools.MeetingMoreOperationPopup;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -36,6 +40,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -222,7 +227,7 @@ public class MeetingFragment extends MyFragment {
 
                                 // --------
                                 intent.putExtra("meeting_id", bean.getId() + "");
-                                intent.putExtra("meeting_type", MeetingType.UPCOMINGMEETING);
+	                            intent.putExtra("meeting_type", MeetingType.UPCOMINGMEETING);
                                 intent.putExtra("meeting_role", bean.getRoleinlesson());
                                 try {
                                     intent.putExtra("lession_id", Integer.parseInt(bean.getId() + ""));
@@ -262,9 +267,9 @@ public class MeetingFragment extends MyFragment {
 //                            intent.putExtra("isInstantMeeting", 0);
 //                            intent.putExtra("isStartCourse", true);
 //                            startActivity(intent);
-                            if(onStartMeetingCallBackListener!=null){
-                                onStartMeetingCallBackListener.startMeetingCallBack();
-                            }
+	                        if (onStartMeetingCallBackListener != null) {
+		                        onStartMeetingCallBackListener.startMeetingCallBack();
+	                        }
                         }
 
                         @Override
@@ -411,13 +416,17 @@ public class MeetingFragment extends MyFragment {
         return diff;
     }
 
-    /**开始会议接口回调*/
-    public interface OnStartMeetingCallBackListener{
-        void startMeetingCallBack();
-    }
-    OnStartMeetingCallBackListener onStartMeetingCallBackListener;
-    public void setOnStartMeetingCallBackListener(OnStartMeetingCallBackListener onStartMeetingCallBackListener){
-        this.onStartMeetingCallBackListener=onStartMeetingCallBackListener;
-    }
+	/**
+	 * 开始会议接口回调
+	 */
+	public interface OnStartMeetingCallBackListener {
+		void startMeetingCallBack();
+	}
+
+	OnStartMeetingCallBackListener onStartMeetingCallBackListener;
+
+	public void setOnStartMeetingCallBackListener(OnStartMeetingCallBackListener onStartMeetingCallBackListener) {
+		this.onStartMeetingCallBackListener = onStartMeetingCallBackListener;
+	}
 
 }

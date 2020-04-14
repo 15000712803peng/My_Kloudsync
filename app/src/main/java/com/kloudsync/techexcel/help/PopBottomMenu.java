@@ -57,7 +57,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_file:
-                if(meetingConfig.getType() == MeetingType.MEETING){
+	            if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
                     if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
                         return;
                     }
@@ -104,8 +104,8 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_sync:
-                if(meetingConfig.getType() == MeetingType.MEETING){
-                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID) && !meetingConfig.isMeetingPause()) {
+	            if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
+		            if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
                         return;
                     }
                 }
@@ -251,20 +251,20 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 break;
             case MeetingType.SYNCROOM:
                 break;
-             case MeetingType.UPCOMINGMEETING:
-                 menuFile.setVisibility(View.VISIBLE);
-                 menuNote.setVisibility(View.VISIBLE);
-                 menuSync.setVisibility(View.VISIBLE);
-                 menuStartMeeting.setVisibility(View.VISIBLE);
-                 menuTv.setVisibility(View.VISIBLE);
-                 menuClose.setVisibility(View.VISIBLE);
+	        case MeetingType.UPCOMINGMEETING:
+		        menuFile.setVisibility(View.VISIBLE);
+		        menuNote.setVisibility(View.VISIBLE);
+		        menuSync.setVisibility(View.VISIBLE);
+		        menuStartMeeting.setVisibility(View.VISIBLE);
+		        menuTv.setVisibility(View.VISIBLE);
+		        menuClose.setVisibility(View.VISIBLE);
 
-                 menuMember.setVisibility(View.GONE);
-                 menuChat.setVisibility(View.GONE);
-                 menuShare.setVisibility(View.GONE);
-                 menuSetting.setVisibility(View.GONE);
-                 menuMember.setVisibility(View.GONE);
-                 break;
+		        menuMember.setVisibility(View.GONE);
+		        menuChat.setVisibility(View.GONE);
+		        menuShare.setVisibility(View.GONE);
+		        menuSetting.setVisibility(View.GONE);
+		        menuMember.setVisibility(View.GONE);
+		        break;
         }
     }
 

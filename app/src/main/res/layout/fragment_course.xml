@@ -29,8 +29,7 @@
             android:layout_height="wrap_content"
             android:text="@string/Meeting"
             android:textColor="@color/brunette"
-            android:textSize="15sp"
-            />
+            android:textSize="15sp" />
 
         <RelativeLayout
             android:id="@+id/search_layout"
@@ -70,8 +69,6 @@
     </LinearLayout>
 
 
-
-
     <LinearLayout
         android:layout_marginTop="12dp"
         android:layout_width="match_parent"
@@ -79,7 +76,6 @@
         android:paddingRight="5dp"
         android:layout_height="128dp"
         android:orientation="horizontal">
-
 
 
         <com.kloudsync.techexcel.ui.MaskViewGroup
@@ -94,6 +90,7 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content">
+
             <RelativeLayout
                 android:id="@+id/lin_join"
                 android:layout_width="match_parent"
@@ -106,7 +103,7 @@
                 <ImageView
                     android:layout_width="@dimen/dp_88"
                     android:src="@drawable/meeting_join_btn_bg"
-                    android:layout_height="@dimen/dp_69"/>
+                    android:layout_height="@dimen/dp_69" />
 
                 <ImageView
                     android:layout_centerHorizontal="true"
@@ -191,7 +188,6 @@
         </com.kloudsync.techexcel.ui.MaskViewGroup>
 
 
-
         <com.kloudsync.techexcel.ui.MaskViewGroup
             app:containerCornerRadius="16dp"
             app:containerDeltaLength="5dp"
@@ -218,7 +214,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
                     android:src="@drawable/meeting_start_btn_bg"
-                    android:layout_height="@dimen/dp_81"/>
+                    android:layout_height="@dimen/dp_81" />
 
                 <ImageView
                     android:layout_centerHorizontal="true"
@@ -284,7 +280,6 @@
         </RelativeLayout>
 
     </LinearLayout>
-
 
 
     <LinearLayout

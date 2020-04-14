@@ -586,12 +586,12 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
             bundle.putInt("type", position + 1);
             MeetingFragment fragment = new MeetingFragment();
             fragment.setArguments(bundle);
-            fragment.setOnStartMeetingCallBackListener(new MeetingFragment.OnStartMeetingCallBackListener() {
-                @Override
-                public void startMeetingCallBack() {
-                    doStartMeeting(AppConfig.ClassRoomID);
-                }
-            });
+	        fragment.setOnStartMeetingCallBackListener(new MeetingFragment.OnStartMeetingCallBackListener() {
+		        @Override
+		        public void startMeetingCallBack() {
+			        doStartMeeting(AppConfig.ClassRoomID);
+		        }
+	        });
             return fragment;
         }
 
@@ -747,8 +747,10 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
         finished.setTextColor(getResources().getColor(R.color.c5));
     }
 
-    /**开始会议*/
-    public void doStartMeeting(final String meetingRoom) {
+	/**
+	 * 开始会议
+	 */
+	public void doStartMeeting(final String meetingRoom) {
 
         final EventStartMeeting startMeeting = new EventStartMeeting();
         Observable.just(startMeeting).observeOn(Schedulers.io()).doOnNext(new Consumer<EventStartMeeting>() {

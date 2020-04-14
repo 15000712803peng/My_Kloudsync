@@ -1180,7 +1180,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if (meetingConfig.getType() != MeetingType.MEETING) {
             // 不是会议
         } else {
-            if (isPresenter()) {
+            if (isPresenter() && !meetingConfig.isMeetingPause()) {
                 SocketMessageManager.getManager(host).sendMessage_Soundtrack_Playing_Status(soundtrackDetail.getSoundtrackID() + "", status, time);
             }
         }

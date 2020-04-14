@@ -2,7 +2,6 @@ package com.kloudsync.techexcel.school;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -29,20 +28,17 @@ import com.kloudsync.techexcel.bean.AppName;
 import com.kloudsync.techexcel.bean.Company;
 import com.kloudsync.techexcel.bean.CompanyAccountInfo;
 import com.kloudsync.techexcel.bean.CompanySubsystem;
-import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DialogSelectSchool;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.School;
-import com.kloudsync.techexcel.response.InvitationsResponse;
 import com.kloudsync.techexcel.search.ui.OrganizationSearchActivity;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.ui.InvitationsActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
 import com.kloudsync.techexcel.view.ClearEditText;
-import com.ub.kloudsync.activity.SwitchSpaceActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
@@ -51,7 +47,6 @@ import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -149,33 +144,33 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         ServiceInterfaceTools.getinstance().getCompanyDisplayNameList(url, ServiceInterfaceTools.GETCOMPANYDISPLAYNAMELIST, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
-                final JSONObject jsonObject = (JSONObject) object;
-                Observable.just("request_company_count_info").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
-                    @Override
-                    public void accept(String s) throws Exception {
-                        JSONObject response = ServiceInterfaceTools.getinstance().syncGetCompanyAccountInfo();
-                        if (response.has("code")) {
-                            int code = response.getInt("code");
-                            if (code == 0) {
-                                if (response.has("data")) {
-                                    CompanyAccountInfo accountInfo = new Gson().fromJson(response.getJSONObject("data").toString(), CompanyAccountInfo.class);
-                                    if (accountInfo != null) {
-                                        Log.e("processLogin", "system_type:" + accountInfo.getSystemType() + ",-" + accountInfo.getCompanyName());
-                                        AppConfig.systemType = accountInfo.getSystemType();
-                                        sharedPreferences.edit().putInt("system_type", accountInfo.getSystemType()).commit();
-                                    }
-                                }
-                            }
+	            final JSONObject jsonObject = (JSONObject) object;
+	            Observable.just("request_company_count_info").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+		            @Override
+		            public void accept(String s) throws Exception {
+			            JSONObject response = ServiceInterfaceTools.getinstance().syncGetCompanyAccountInfo();
+			            if (response.has("code")) {
+				            int code = response.getInt("code");
+				            if (code == 0) {
+					            if (response.has("data")) {
+						            CompanyAccountInfo accountInfo = new Gson().fromJson(response.getJSONObject("data").toString(), CompanyAccountInfo.class);
+						            if (accountInfo != null) {
+							            Log.e("processLogin", "system_type:" + accountInfo.getSystemType() + ",-" + accountInfo.getCompanyName());
+							            AppConfig.systemType = accountInfo.getSystemType();
+							            sharedPreferences.edit().putInt("system_type", accountInfo.getSystemType()).commit();
+						            }
+					            }
+				            }
 
-                            CustomSyncRoomTool.getInstance(SwitchOrganizationActivity.this).setCustomSyncRoomContent(jsonObject);
-                            MainActivity.RESUME = true;
+				            CustomSyncRoomTool.getInstance(SwitchOrganizationActivity.this).setCustomSyncRoomContent(jsonObject);
+				            MainActivity.RESUME = true;
 
-                            EventBus.getDefault().post(new TeamSpaceBean());
+				            EventBus.getDefault().post(new TeamSpaceBean());
 //                EventBus.getDefault().post(new EventRefreshTab());
-                            finish();
-                        }
-                    }
-                }).subscribe();
+				            finish();
+			            }
+		            }
+	            }).subscribe();
 
             }
         });
@@ -615,23 +610,23 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 try {
                     JSONObject jsonObject = new JSONObject(response.body().toString());
-                    if (jsonObject.getString("msg").equals("success")) {
+	                if (jsonObject.getString("msg").equals("success")) {
                         Gson gson = new Gson();
-                        List<AppName> appCNNameList = new ArrayList<AppName>();
-                        List<AppName> appENNameList = new ArrayList<AppName>();
-                        List<AppName> appNameList = gson.fromJson(jsonObject.getString("data"), new TypeToken<List<AppName>>() {
-                        }.getType());
-                        App.appNames = appNameList;
-                        for (AppName appName : appNameList) {
-                            if (appName.getLanguageId() == 0) {
+		                List<AppName> appCNNameList = new ArrayList<AppName>();
+		                List<AppName> appENNameList = new ArrayList<AppName>();
+		                List<AppName> appNameList = gson.fromJson(jsonObject.getString("data"), new TypeToken<List<AppName>>() {
+		                }.getType());
+		                App.appNames = appNameList;
+		                for (AppName appName : appNameList) {
+			                if (appName.getLanguageId() == 0) {
                                 appCNNameList.add(appName);
-                            } else {
+			                } else {
                                 appENNameList.add(appName);
                             }
                         }
-                        App.appCNNames = appCNNameList;
-                        App.appENNames = appENNameList;
-                        System.out.println("App.appNames->" + App.appENNames.size());
+		                App.appCNNames = appCNNameList;
+		                App.appENNames = appENNameList;
+		                System.out.println("App.appNames->" + App.appENNames.size());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
