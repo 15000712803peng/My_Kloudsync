@@ -34,7 +34,7 @@ public class AppConfig {
     public static String URL_LIVEDOC = "https://livedoc.peertime.cn/TxLiveDocumentApi/api/";
     public static String URL_PUBLIC_AUDIENCE = "https://wss.peertime.cn/";
 
-//    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
+	//    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
     //     正式
     public static String URL_PUBLIC = "https://api.peertime.cn/peertime/V1/";
     public static String URL_MEETING_BASE = "https://wss.peertime.cn/MeetingServer/";
@@ -70,7 +70,7 @@ public class AppConfig {
     public static final String SHARE_DOCUMENT = "https://kloud.cn/document/";
     public static final String SHARE_SYNC = "https://kloud.cn/sync/";
     public static final String SHARE_RECORD = "https://kloud.cn/record/";
-//    public static final String SHARE_RECORD = "https://kloudsync.peertime.cn/record/";
+	//    public static final String SHARE_RECORD = "https://kloudsync.peertime.cn/record/";
     public static final String SHARE_ATTACHMENT = "https://kloud.cn/attachment/";
     public static final String SHARE_LIVE = "https://kloud.cn/live/";
 
@@ -317,6 +317,7 @@ public class AppConfig {
     public static boolean IsInMeeting = false;
 
 	public static final int COMPANY_MODEL = 0;//公司模式(机构)
-	public static final int SCKOOL_MODEL = 0;//学校模式(机构)
+	public static final int SCKOOL_MODEL = 1;//学校模式(机构)
+	public static int systemType;
 
 }

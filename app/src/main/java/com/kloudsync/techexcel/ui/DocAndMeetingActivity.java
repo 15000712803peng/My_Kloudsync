@@ -791,19 +791,19 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             meetingConfig.setCurrentDocumentPage(page);
             meetingConfig.setPageNumber(meetingConfig.getDocument().getDocumentPages().indexOf(page) + 1);
         }
-	    if (bottomFilePop != null && bottomFilePop.isShowing()) {
-		    bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
-		    bottomFilePop.removeTempDoc();
-	    } else {
-		    menuIcon.setVisibility(View.VISIBLE);
-	    }
+
         //notify change file
         notifyDocumentChanged();
         meetingDefaultDocument.setVisibility(View.GONE);
         web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         web.loadUrl("javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
         web.loadUrl("javascript:Record()", null);
-
+	    if (bottomFilePop != null && bottomFilePop.isShowing()) {
+		    bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
+		    bottomFilePop.removeTempDoc();
+	    } else {
+		    menuIcon.setVisibility(View.VISIBLE);
+	    }
     }
 
     private boolean isAudience() {
@@ -1259,6 +1259,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     try {
                         int noteId = socketMessage.getData().getJSONObject("retData").getInt("noteId");
                         if (noteLayout.getVisibility() == View.VISIBLE) {
+
                             if (noteWeb != null) {
                                 followShowNote(noteId);
                             }
@@ -5222,7 +5223,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     }
 
                     if (dataJson.has("lessonId")) {
-                        meetingConfig.setLessionId(Integer.parseInt(dataJson.getString("lessonId")));
+	                    if (Integer.parseInt(dataJson.getString("lessonId")) > 0) {
+		                    meetingConfig.setLessionId(Integer.parseInt(dataJson.getString("lessonId")));
+	                    }
                     }
 
                     Log.e("JOIN_MEETING", "join_meeting_message:" + documents);

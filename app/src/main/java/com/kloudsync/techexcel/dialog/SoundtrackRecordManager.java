@@ -664,7 +664,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             }
         });
 
-	    if (false) {  //是否暂停会议
+	    if (meetingConfig.isMeetingPause()) {  //是否暂停会议
 		    addsoundtolesson(soundtrackBean.getSoundtrackID() + "");
 	    }
         if (audioplaytimer != null) {

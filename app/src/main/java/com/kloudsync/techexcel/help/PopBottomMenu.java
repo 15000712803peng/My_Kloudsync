@@ -237,6 +237,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 menuNote.setVisibility(View.VISIBLE);
                 menuSync.setVisibility(View.VISIBLE);
                 menuTv.setVisibility(View.VISIBLE);
+
                 menuStartMeeting.setVisibility(View.GONE);
                 menuShare.setVisibility(View.GONE);
                 menuClose.setVisibility(View.GONE);
@@ -250,6 +251,20 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 break;
             case MeetingType.SYNCROOM:
                 break;
+	        case MeetingType.UPCOMINGMEETING:
+		        menuFile.setVisibility(View.VISIBLE);
+		        menuNote.setVisibility(View.VISIBLE);
+		        menuSync.setVisibility(View.VISIBLE);
+		        menuStartMeeting.setVisibility(View.VISIBLE);
+		        menuTv.setVisibility(View.VISIBLE);
+		        menuClose.setVisibility(View.VISIBLE);
+
+		        menuMember.setVisibility(View.GONE);
+		        menuChat.setVisibility(View.GONE);
+		        menuShare.setVisibility(View.GONE);
+		        menuSetting.setVisibility(View.GONE);
+		        menuMember.setVisibility(View.GONE);
+		        break;
         }
     }
 

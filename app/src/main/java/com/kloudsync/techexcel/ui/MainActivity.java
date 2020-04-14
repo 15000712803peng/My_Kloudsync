@@ -66,6 +66,8 @@ import com.kloudsync.techexcel.dialog.message.ShareMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.SystemMessageItemProvider;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.kloudsync.techexcel.frgment.ContactFragment;
+import com.kloudsync.techexcel.frgment.CourseFragment;
+import com.kloudsync.techexcel.frgment.MyFragment;
 import com.kloudsync.techexcel.frgment.PersonalCenterFragment;
 import com.kloudsync.techexcel.frgment.ProjectOneFragment;
 import com.kloudsync.techexcel.frgment.ServiceFragment;
@@ -429,15 +431,15 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                                         dialog.dismiss();
                                     }
                                 }).setCancelable(false).setNegativeButton(
-                                        getResources().getString(R.string.update),
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(
-                                                    DialogInterface dialog,
-                                                    int which) {
-                                                PgyUpdateManager.downLoadApk(appBean.getDownloadURL());
-                                            }
-                                        }).show();
+		                        getResources().getString(R.string.update),
+		                        new DialogInterface.OnClickListener() {
+			                        @Override
+			                        public void onClick(
+					                        DialogInterface dialog,
+					                        int which) {
+				                        PgyUpdateManager.downLoadApk(appBean.getDownloadURL());
+			                        }
+		                        }).show();
                     }
 
                     @Override
@@ -530,7 +532,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         spaceFrame = findViewById(R.id.frame_tab_space);
         initTabs();
         RongConnect();
-        setBindViewText();
+//        setBindViewText();
     }
 
     private void initTabs() {
@@ -555,11 +557,22 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     private void setTabName() {
         String[] tab = getResources().getStringArray(R.array.tabname);
         for (int i = 0; i < tvIDs.length; i++) {
-            if (tvs.get(i) == syncroomTab) {
-                tvs.get(i).setText(CustomSyncRoomTool.getInstance(this).getCustomyinxiang());
+	        TextView tabText = tvs.get(i);
+	        if (tabText == syncroomTab) {
+		        tabText.setText(CustomSyncRoomTool.getInstance(this).getCustomyinxiang());
+	        } else if (tabText == meetingTab) {
+
+		        if (AppConfig.systemType == 0) {
+			        tabText.setText(R.string.meeting);
+		        } else {
+			        tabText.setText(R.string.course);
+
+		        }
             } else {
-                tvs.get(i).setText(tab[i]);
+		        tabText.setText(tab[i]);
             }
+
+
         }
 
     }
@@ -634,7 +647,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             } else {
                 changeTeamFragment((TextView) v);
             }
-            setBindViewText();
+//            setBindViewText();
 
         }
     }
@@ -678,7 +691,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     SpaceDocumentsFragment spaceDocumentsFragment;
     TopicFragment topicFragment;
     TwoToOneFragment twoToOneFragment;
-    ServiceFragment serviceFragment;
+	MyFragment serviceFragment;
     PersonalCenterFragment personalCenterFragment;
     ProjectOneFragment projectOneFragment;
 
@@ -686,7 +699,13 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         documentsFragment = new TeamDocumentsFragment();
         spaceDocumentsFragment = new SpaceDocumentsFragment();
         twoToOneFragment = new TwoToOneFragment();
-        serviceFragment = new ServiceFragment();
+	    if (AppConfig.systemType == 0) {
+		    serviceFragment = new ServiceFragment();
+	    } else {
+		    serviceFragment = new CourseFragment();
+
+	    }
+
         topicFragment = new TopicFragment();
         personalCenterFragment = new PersonalCenterFragment();
         projectOneFragment = new ProjectOneFragment();
@@ -1901,7 +1920,13 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 String chat = getBindViewText(1005);
                 chatTab.setText(TextUtils.isEmpty(chat) ? getString(R.string.dialogue) : chat);
                 String meeting = getBindViewText(1007);
-                meetingTab.setText(TextUtils.isEmpty(meeting) ? getString(R.string.Meeting) : meeting);
+	            if (AppConfig.systemType == 0) {
+		            meetingTab.setText(TextUtils.isEmpty(meeting) ? getString(R.string.course) : meeting);
+
+	            } else {
+		            meetingTab.setText(TextUtils.isEmpty(meeting) ? getString(R.string.Meeting) : meeting);
+
+	            }
                 String syncroom = getBindViewText(1001);
                 syncroomTab.setText(TextUtils.isEmpty(syncroom) ? getString(R.string.community) : syncroom);
             }
@@ -1913,7 +1938,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     public void handleBluetoothNote(EventOpenOrCloseBluethoothNote note) {
 
         if (!TextUtils.isEmpty(note.getNoteId())) {
-            if(note.getStatus() == 1){
+	        if (note.getStatus() == 1) {
                 Observable.just(note.getNoteId()).observeOn(Schedulers.io()).map(new Function<String, Note>() {
                     @Override
                     public Note apply(String noteId) throws Exception {

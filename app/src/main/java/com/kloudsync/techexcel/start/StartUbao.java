@@ -26,10 +26,9 @@ import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.AppName;
+import com.kloudsync.techexcel.bean.CompanyAccountInfo;
 import com.kloudsync.techexcel.bean.LoginData;
-import com.kloudsync.techexcel.bean.LoginResult;
 import com.kloudsync.techexcel.bean.RongCloudData;
-import com.kloudsync.techexcel.bean.UserPreferenceData;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.KloudPerssionManger;
@@ -38,10 +37,8 @@ import com.kloudsync.techexcel.tool.SystemUtil;
 import com.kloudsync.techexcel.ui.MainActivity;
 import com.ub.service.activity.SocketService;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
-import com.ub.techexcel.tools.Tools;
 import com.umeng.analytics.MobclickAgent;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -275,44 +272,63 @@ public class StartUbao extends Activity {
     String rongCloudUrl = "";
 
     private void processLogin(final String name, final String password, final String phoneNumber) {
-        loginDisposable = Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, String>() {
-            @Override
-            public String apply(String o) throws Exception {
-                try {
-                    Response<NetworkResponse<LoginData>> response = ServiceInterfaceTools.getinstance().login(name, password).execute();
-                    Log.e("processLogin", "LoginData,success:" + response.isSuccessful() + ",body:" + response.body());
-                    if (response == null || !response.isSuccessful() || response.body() == null || response.body().getRetCode() != 0) {
-                        Observable.just("go_to_login").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-                            @Override
-                            public void accept(String s) throws Exception {
-                                Intent intent = new Intent(getApplicationContext(),
-                                        LoginActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
+	    loginDisposable = Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, String>() {
+		    @Override
+		    public String apply(String o) throws Exception {
 
-                    } else {
-                        if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
-                            saveLoginData(response.body().getRetData());
-                            rongCloudUrl = AppConfig.URL_PUBLIC + "RongCloudUserToken";
-                            editor.putString("name", name);
-                            editor.putString("telephone", phoneNumber);
-                            editor.putString("password", LoginGet.getBase64Password(password));
-                            editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
-                            editor.commit();
-                        } else {
+			    try {
+				    Response<NetworkResponse<LoginData>> response = ServiceInterfaceTools.getinstance().login(name, password).execute();
+				    Log.e("processLogin", "LoginData,success:" + response.isSuccessful() + ",body:" + response.body());
+				    if (response == null || !response.isSuccessful() || response.body() == null || response.body().getRetCode() != 0) {
+					    Observable.just("go_to_login").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+						    @Override
+						    public void accept(String s) throws Exception {
+							    Intent intent = new Intent(getApplicationContext(),
+									    LoginActivity.class);
+							    startActivity(intent);
+							    finish();
+						    }
+					    });
 
-                        }
-                    }
-                } catch (UnknownHostException e) {
+				    } else {
+					    if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
+						    saveLoginData(response.body().getRetData());
+						    rongCloudUrl = AppConfig.URL_PUBLIC + "RongCloudUserToken";
+						    editor.putString("name", name);
+						    editor.putString("telephone", phoneNumber);
+						    editor.putString("password", LoginGet.getBase64Password(password));
+						    editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
+						    editor.commit();
+					    } else {
 
-                } catch (SocketTimeoutException exception) {
+					    }
+				    }
+			    } catch (UnknownHostException e) {
 
-                }
-                return rongCloudUrl;
-            }
-        }).map(new Function<String, String>() {
+			    } catch (SocketTimeoutException exception) {
+
+			    }
+			    return rongCloudUrl;
+		    }
+	    }).doOnNext(new Consumer<String>() {
+		    @Override
+		    public void accept(String s) throws Exception {
+			    JSONObject response = ServiceInterfaceTools.getinstance().syncGetCompanyAccountInfo();
+			    if (response.has("code")) {
+				    int code = response.getInt("code");
+				    if (code == 0) {
+					    if (response.has("data")) {
+						    CompanyAccountInfo accountInfo = new Gson().fromJson(response.getJSONObject("data").toString(), CompanyAccountInfo.class);
+						    if (accountInfo != null) {
+							    Log.e("processLogin", "system_type:" + accountInfo.getSystemType() + ",-" + accountInfo.getCompanyName());
+							    AppConfig.systemType = accountInfo.getSystemType();
+							    sharedPreferences.edit().putInt("system_type", accountInfo.getSystemType()).commit();
+						    }
+					    }
+				    }
+			    }
+		    }
+	    }).map(new Function<String, String>() {
             @Override
             public String apply(String s) throws Exception {
                 if (loginDisposable == null || loginDisposable.isDisposed()) {

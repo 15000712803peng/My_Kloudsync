@@ -189,7 +189,7 @@
 
     <string name="language">多语言环境</string>
     <string name="language2">语言</string>
-    <string name="course">我的课程模板</string>
+    <string name="course">课程</string>
     <string name="course2">系统课程模板</string>
     <string name="credit">我的课程</string>
     <string name="saved">我的收藏</string>
@@ -807,6 +807,7 @@
     <string name="about">关于</string>
     <string name="privacy_statement">隐私声明</string>
     <string name="create_new_sync">创建音想</string>
+    <string name="select_more_sync">+ 选择音想</string>
     <string name="sync">同步</string>
     <string name="invite_new">邀请</string>
     <string name="invite_new_new">邀请</string>
@@ -979,5 +980,6 @@
     <string name="no_soundtrack">没有音想数据</string>
     <string name="waiting_meeting_start">等待主持人开启会议</string>
     <string name="meeting_not_stated">会议还没有开始</string>
+    <string name="meeting">会议</string>
 
 </resources>
