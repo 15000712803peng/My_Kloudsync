@@ -38,13 +38,14 @@ public class CourseListActivity extends Activity implements View.OnClickListener
     private int schoolId;
     private boolean isMyschool;
     private int lessontype;
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
                 case AppConfig.LOAD_FINISH:
-                    courseAdapter = new CourseAdapter(CourseListActivity.this, courseLessons);
+//                    courseAdapter = new CourseAdapter(CourseListActivity.this, courseLessons);
                     listView.setAdapter(courseAdapter);
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override

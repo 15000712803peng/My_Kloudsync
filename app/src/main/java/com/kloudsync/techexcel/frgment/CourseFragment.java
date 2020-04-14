@@ -343,7 +343,6 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
         }
     };
 
-
     /**
      * 确认结束课程
      */
@@ -359,6 +358,7 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
                 dialog.dismiss();
             }
         });
+
         windov.findViewById(R.id.yes).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -532,7 +532,7 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
 //        viewList.add(allView2);
 //        viewList.add(allView3);
 
-        mViewPager.setAdapter(new MeetingAdapter(getChildFragmentManager()));
+        mViewPager.setAdapter(new Adapter(getChildFragmentManager()));
 //        mViewPager.setCurrentItem(0);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -574,9 +574,9 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
     }
 
 
-    class MeetingAdapter extends FragmentPagerAdapter {
+    class Adapter extends FragmentPagerAdapter {
 
-        public MeetingAdapter(FragmentManager fm) {
+        public Adapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -584,14 +584,14 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
             bundle.putInt("type", position + 1);
-            MeetingFragment fragment = new MeetingFragment();
+            CourseListFragment fragment = new CourseListFragment();
             fragment.setArguments(bundle);
             return fragment;
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
     }
 

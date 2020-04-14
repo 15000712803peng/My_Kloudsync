@@ -33,8 +33,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.CompanyAccountInfo;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
 import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventDoc;
@@ -331,26 +333,53 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         LoginGet lg = new LoginGet();
         lg.setSchoolTeamGetListener(new LoginGet.SchoolTeamGetListener() {
             @Override
-            public void getST(School school) {
+            public void getST(final School school) {
                 Log.e("GetShoolInfo", "school:" + school);
-                if (school != null) {
-                    TeamSpaceBean teamSpaceBean = school.getTeamSpaceBean();
-                    AppConfig.SchoolID = school.getSchoolID();
-                    editor.putInt("SchoolID", school.getSchoolID());
-                    editor.putString("SchoolName", school.getSchoolName());
-                    if (teamSpaceBean != null) {
-                        editor.putString("teamname", teamSpaceBean.getName());
-                        editor.putInt("teamid", teamSpaceBean.getItemID());
+                Observable.just("init_company_info").doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        if (school != null) {
+                            TeamSpaceBean teamSpaceBean = school.getTeamSpaceBean();
+                            AppConfig.SchoolID = school.getSchoolID();
+                            editor.putInt("SchoolID", school.getSchoolID());
+                            editor.putString("SchoolName", school.getSchoolName());
+                            if (teamSpaceBean != null) {
+                                editor.putString("teamname", teamSpaceBean.getName());
+                                editor.putInt("teamid", teamSpaceBean.getItemID());
+                            }
+                            editor.commit();
+                        } else {
+                            editor.putString("SchoolName", "");
+                            editor.putString("teamname", "");
+                            editor.putInt("teamid", -1);
+                            editor.commit();
+                        }
                     }
-                    editor.commit();
-                } else {
-                    editor.putString("SchoolName", "");
-                    editor.putString("teamname", "");
-                    editor.putInt("teamid", -1);
-                    editor.commit();
-                }
+                }).observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        JSONObject response = ServiceInterfaceTools.getinstance().syncGetCompanyAccountInfo();
+                        if (response.has("code")) {
+                            int code = response.getInt("code");
+                            if (code == 0) {
+                                if (response.has("data")) {
+                                    CompanyAccountInfo accountInfo = new Gson().fromJson(response.getJSONObject("data").toString(), CompanyAccountInfo.class);
+                                    if (accountInfo != null) {
+                                        Log.e("processLogin", "system_type:" + accountInfo.getSystemType() + ",-" + accountInfo.getCompanyName());
+                                        AppConfig.systemType = accountInfo.getSystemType();
+                                        sharedPreferences.edit().putInt("system_type", accountInfo.getSystemType()).commit();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        initDatas();
+                    }
+                }).subscribe();
 
-                initDatas();
             }
         });
         lg.GetUserPreference(this, 10001 + "");
@@ -704,7 +733,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             serviceFragment = new ServiceFragment();
         } else {
             serviceFragment = new CourseFragment();
-
         }
 
         topicFragment = new TopicFragment();
@@ -715,6 +743,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         } else {
             syncroomTab.setVisibility(View.GONE);
         }
+
         mTabs.add(documentsFragment);
         mTabs.add(twoToOneFragment);
         mTabs.add(serviceFragment);
@@ -723,6 +752,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         changeTeamFragment(documentTab);
         Log.e("user_info", "user_token:" + AppConfig.UserToken + ",company_id:" + AppConfig.SchoolID);
         isOpenYinxiang();
+        setTabName();
     }
 
     private void isOpenYinxiang() {

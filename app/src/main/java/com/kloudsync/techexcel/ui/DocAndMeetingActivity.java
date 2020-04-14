@@ -1257,7 +1257,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     try {
                         int noteId = socketMessage.getData().getJSONObject("retData").getInt("noteId");
                         if (noteLayout.getVisibility() == View.VISIBLE) {
-
                             if (noteWeb != null) {
                                 followShowNote(noteId);
                             }

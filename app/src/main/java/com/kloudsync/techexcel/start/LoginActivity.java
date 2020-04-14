@@ -375,24 +375,6 @@ public class LoginActivity extends Activity implements OnClickListener {
                 }
                 return rongCloudUrl;
             }
-        }).doOnNext(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                JSONObject response = ServiceInterfaceTools.getinstance().syncGetCompanyAccountInfo();
-                if(response.has("code")){
-                    int code = response.getInt("code");
-                    if(code == 0){
-                        if(response.has("data")){
-                            CompanyAccountInfo accountInfo = new Gson().fromJson(response.getJSONObject("data").toString(),CompanyAccountInfo.class);
-                            if(accountInfo != null){
-                                Log.e("processLogin","system_type:" + accountInfo.getSystemType() + ",-" + accountInfo.getCompanyName());
-                                AppConfig.systemType = accountInfo.getSystemType();
-                                sharedPreferences.edit().putInt("system_type",accountInfo.getSystemType()).commit();
-                            }
-                        }
-                    }
-                }
-            }
         }).map(new Function<String, String>() {
             @Override
             public String apply(String s) throws Exception {

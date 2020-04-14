@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#eeffffff"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    >
+
+
+
+    <com.kloudsync.techexcel.ui.MaskViewGroup
+        app:containerCornerRadius="16dp"
+        app:containerDeltaLength="10dp"
+        app:containerShadowColor="#3327347d"
+        app:containerShadowRadius="6dp"
+        app:deltaX="0dp"
+        app:deltaY="3dp"
+        app:enable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="75dp"
+            android:layout_height="110dp"
+            android:background="@drawable/meeting_card"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+
+
+            <TextView
+                android:id="@+id/month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="JUN"
+                android:textColor="#ff333333"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_marginTop="3dp"
+                android:background="@drawable/time_divider"
+                android:layout_width="22dp"
+                android:layout_height="1dp"/>
+
+            <TextView
+                android:id="@+id/day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="24"
+                android:textColor="#ff333333"
+                android:textSize="36sp" />
+
+        </LinearLayout>
+
+    </com.kloudsync.techexcel.ui.MaskViewGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="12333"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:layout_marginRight="10dp"
+                android:id="@+id/moreoperation"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:padding="4dp"
+                android:src="@drawable/more_favor" />
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp">
+
+            <TextView
+                android:id="@+id/host"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="Host:"
+                android:textColor="#666666"
+                android:textSize="12sp" />
+
+
+        </RelativeLayout>
+
+
+
+        <TextView
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:id="@+id/date"
+            android:textColor="#666666"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Meeting time:16:23-16:25(0:2:0)"
+            android:textSize="12sp" />
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Attendee:"
+                android:textColor="#666666"
+                android:textSize="12sp" />
+
+            <HorizontalScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="3dp"
+                android:scrollbars="none">
+
+                <TextView
+                    android:id="@+id/attendee"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Attendee:"
+                    android:textColor="#666666"
+                    android:textSize="12sp" />
+            </HorizontalScrollView>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
