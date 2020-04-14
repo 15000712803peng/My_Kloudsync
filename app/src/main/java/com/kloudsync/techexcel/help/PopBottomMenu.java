@@ -57,7 +57,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_file:
-                if(meetingConfig.getType() == MeetingType.MEETING){
+	            if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
                     if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
                         return;
                     }
@@ -104,8 +104,8 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_sync:
-                if(meetingConfig.getType() == MeetingType.MEETING){
-                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID) && !meetingConfig.isMeetingPause()) {
+	            if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
+		            if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
                         return;
                     }
                 }

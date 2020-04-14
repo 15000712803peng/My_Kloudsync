@@ -143,7 +143,7 @@ public class MeetingPauseManager implements View.OnClickListener {
 			mMeetingPauseTitle.setText(R.string.the_meeting_is_suspended);
 			mMeetingPauseMinTitle.setText(R.string.meeting_suspended);
 			setTipInfo(tipsText);
-			if (isPresenter()) {
+			if (isHost()) {
 				mMeetingResumeBtn.setText(R.string.resume_meeting);
 				mMeetingResumeBtn.setVisibility(View.VISIBLE);
 			} else {
@@ -153,7 +153,7 @@ public class MeetingPauseManager implements View.OnClickListener {
 			mMeetingPauseTitle.setText(R.string.practice_time);
 			mMeetingPauseMinTitle.setText(R.string.practice_in_class);
 			setTipInfo(tipsText);
-			if (isPresenter()) {//如果是老师
+			if (isHost()) {//如果是老师
 				mMeetingResumeBtn.setText(R.string.continue_class);
 				mMeetingResumeBtn.setVisibility(View.VISIBLE);
 			} else {
@@ -165,7 +165,7 @@ public class MeetingPauseManager implements View.OnClickListener {
 	public void setTipInfo(String tips) {
 		mStringBuilder.clear();
 		mStringBuilder.clearSpans();
-		if (isPresenter()) {
+		if (isHost()) {
 			tips += "\t\t\t";
 			mStringBuilder.append(tips);
 			mStringBuilder.setSpan(mImageSpan, tips.length() - 2, tips.length() - 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -187,8 +187,8 @@ public class MeetingPauseManager implements View.OnClickListener {
 	 *
 	 * @return
 	 */
-	private boolean isPresenter() {
-		if (/*mMeetingConfig.getMeetingHostId().equals(AppConfig.UserID) ||*/mMeetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+	private boolean isHost() {
+		if (mMeetingConfig.getMeetingHostId().equals(AppConfig.UserID) /*||mMeetingConfig.getPresenterId().equals(AppConfig.UserID)*/) {
 			return true;
 		}
 		return false;
@@ -204,7 +204,7 @@ public class MeetingPauseManager implements View.OnClickListener {
 		if (mMeetingConfig.getSystemType() == AppConfig.COMPANY_MODEL) {//如果是会议模式
 			mMeetingPauseTitle.setText(R.string.the_meeting_is_suspended);
 			mMeetingPauseMinTitle.setText(R.string.meeting_suspended);
-			if (isPresenter()) {
+			if (isHost()) {
 				mMeetingResumeBtn.setText(R.string.resume_meeting);
 				mMeetingResumeBtn.setVisibility(View.VISIBLE);
 			} else {
@@ -213,7 +213,7 @@ public class MeetingPauseManager implements View.OnClickListener {
 		} else {//如果是课堂模式
 			mMeetingPauseTitle.setText(R.string.practice_time);
 			mMeetingPauseMinTitle.setText(R.string.practice_in_class);
-			if (isPresenter()) {//如果是老师
+			if (isHost()) {//如果是老师
 				mMeetingResumeBtn.setText(R.string.continue_class);
 				mMeetingResumeBtn.setVisibility(View.VISIBLE);
 			} else {
@@ -352,7 +352,7 @@ public class MeetingPauseManager implements View.OnClickListener {
 	/**
 	 * 开始计时
 	 */
-	private void startMeetingPauseTime() {
+	public void startMeetingPauseTime() {
 		if (mPauseTimer == null && mPauseTimerTask == null) {
 			mPauseTimer = new Timer();
 			mPauseTimerTask = new TimerTask() {
