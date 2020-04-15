@@ -342,14 +342,16 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 					jsonObject.put("Type", 0);
 					jsonObject.put("LessonID", 0);
 					jsonObject.put("ItemID", 0);
-					jsonObject.put("ActionBaseSoundtrackID", actionBaseSoundtrackID);
-
 					int musicType=checkBox.isChecked() ? 1 : 0;
 					if(musicType==0){
 						if(!TextUtils.isEmpty(recordfavorite.getAttachmentID())){
 							musicType=1;
 						}
 					}
+					if(checkBox.isChecked()){ //录制新声音
+						actionBaseSoundtrackID=0;
+					}
+					jsonObject.put("ActionBaseSoundtrackID", actionBaseSoundtrackID);
 					jsonObject.put("MusicType",musicType);  //0是伴奏，1是演唱
 					JSONObject returnjson = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Soundtrack/CreateSoundtrack", jsonObject);
 					Log.e("hhh", jsonObject.toString() + "      " + returnjson.toString());
@@ -441,35 +443,12 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 				dismiss();
 				createSoundtrack(true);
 				break;
-			case R.id.delete1:
-				favorite = new Document();
-				backgroundAudioLayout.setVisibility(View.INVISIBLE);
-
-				addaudio.setVisibility(View.VISIBLE);
-				bgname.setVisibility(View.INVISIBLE);
-				setCreateSyncText();
-				break;
 			case R.id.moreOpation:
 				showOperationsPop(moreOpation,isAccompanyOrMusic,selectAccompanyType);
 				break;
 			case R.id.morerecordnewvoice:
 				showOperationsNewPop(morerecordnewvoice);
 				break;
-//			case R.id.isaccompanytv:   //重新同步
-//				if (isAccompanyOrMusic == 1) {
-//					isAccompanyOrMusic = 0;
-//					actionBaseSoundtrackID=0;
-//					isaccompanytv_gou.setVisibility(View.VISIBLE);
-//					checkBox.setChecked(false);
-//					delete2();
-//					ishiddenll.setVisibility(View.GONE);
-//				} else {
-//					isAccompanyOrMusic = 1;
-//					actionBaseSoundtrackID=lastSoundtrack.getSoundtrackID();
-//					isaccompanytv_gou.setVisibility(View.GONE);
-//					ishiddenll.setVisibility(View.VISIBLE);
-//				}
-//				break;
 			default:
 				break;
 		}
@@ -487,6 +466,7 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 		accompanyMoreOperations.setSoundtrackOperationListener(this);
 		accompanyMoreOperations.show(moreOpation,isAccompanyOrMusic,selectAccompanyType);
 	}
+
 	private void showOperationsNewPop(View moreOpation) {
 		if (accompanyMoreOperations != null) {
 			if (accompanyMoreOperations.isShowing()) {
@@ -553,7 +533,7 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 	}
 
 
-	private int isAccompanyOrMusic = 1;
+	private int isAccompanyOrMusic = 1;  //是否重新同步
 
 	private String getBindViewText(int fileId) {
 		String appBindName = "";
