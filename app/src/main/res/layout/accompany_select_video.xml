@@ -242,7 +242,6 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="文件名"
-
             android:textSize="14sp" />
 
         <TextView
@@ -252,7 +251,6 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="时长"
-
             android:textSize="14sp" />
 
         <TextView
@@ -261,7 +259,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="文件大小"
+            android:text="录制人"
             android:textSize="14sp" />
     </LinearLayout>
 

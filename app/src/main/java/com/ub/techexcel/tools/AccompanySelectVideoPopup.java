@@ -47,6 +47,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 	private LinearLayout isshowfileupload;
 	private TextView cancelText;
 	private TextView tv1,tv2;
+	private TextView fileSize;
 
 	public void getPopwindow(Context context) {
 		this.mContext = context;
@@ -95,6 +96,8 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 		listView2 = view.findViewById(R.id.listview2);
 		tv1 = view.findViewById(R.id.tv1);
 		tv2 = view.findViewById(R.id.tv2);
+		fileSize = view.findViewById(R.id.filesize);
+
 
 		accompanyll = view.findViewById(R.id.accompanyll);
 		accompanymusicll = view.findViewById(R.id.accompanymusicll);
@@ -232,6 +235,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				isshowfileupload.setVisibility(View.INVISIBLE);
 				tv1.setTextColor(mContext.getResources().getColor(R.color.skyblue));
 				tv2.setTextColor(mContext.getResources().getColor(R.color.txt_color1));
+				fileSize.setText("录制人");
 				break;
 			case R.id.accompanymusicll:
 				selectPosition = -1;
@@ -243,6 +247,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				isshowfileupload.setVisibility(View.VISIBLE);
 				tv1.setTextColor(mContext.getResources().getColor(R.color.txt_color1));
 				tv2.setTextColor(mContext.getResources().getColor(R.color.skyblue));
+				fileSize.setText("文件大小");
 				break;
 			case R.id.save:
 				if (accompanyll_line.getVisibility() == View.VISIBLE) {
@@ -397,7 +402,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 			}
 			holder.name.setText(mDatas.get(position).getTitle());
 			holder.time.setText(mDatas.get(position).getDuration());
-			holder.size.setText("");
+			holder.size.setText(mDatas.get(position).getUserName());
 			if (selectPosition == position) {
 				holder.imageview.setImageResource(R.drawable.finish_a);
 			} else {
