@@ -6,6 +6,8 @@ import android.util.Log;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.help.MeetingPauseManager;
+import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.Md5Tool;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
@@ -128,6 +130,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                 heartBeatMessage.put("changeNumber", 0);
 
                 MeetingConfig meetingConfig = DocAndMeetingActivity.meetingConfig;
+	            MeetingPauseManager meetingPauseManager = DocAndMeetingActivity.mMeetingPauseManager;
                 Log.e("KloundWebClientManager", "meetingConfig:" + meetingConfig + "1");
 
                 if (meetingConfig != null && (meetingConfig.getType() == MeetingType.MEETING && meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER
@@ -143,6 +146,15 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
                     heartBeatMessage.put("microphoneStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isMicroOn() ? 2 : 3);
                     heartBeatMessage.put("cameraStatus", MeetingSettingCache.getInstance(context).getMeetingSetting().isCameraOn() ? 2 : 3);
                     heartBeatMessage.put("screenStatus", 0);
+	                if (meetingPauseManager != null) {
+		                heartBeatMessage.put("ifPause", meetingConfig.isMeetingPause());
+		                heartBeatMessage.put("pauseDuration", meetingPauseManager.getPauseTime());
+		                String pauseTipsText = "";
+		                if (meetingConfig.isMeetingPause()) {
+			                pauseTipsText = LoginGet.getBase64Password(meetingPauseManager.getPauseTipsText());
+		                }
+		                heartBeatMessage.put("pauseMsg", pauseTipsText);
+	                }
                 }
 
                 Log.e("KloundWebClientManager", "send heart beat message:" + heartBeatMessage.toString());
@@ -157,7 +169,7 @@ public class KloudWebClientManager implements KloudWebClient.OnClientEventListen
 
                 e.printStackTrace();
             } catch (Exception e) {
-
+	            Log.e("KloundWebClientManager", "send heart beat message,exception:" + e);
             }
         }
     }

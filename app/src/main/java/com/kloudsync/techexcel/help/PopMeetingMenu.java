@@ -425,7 +425,6 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                     EventBus.getDefault().post(bean);
                 } else {
                     ToastUtils.show(host, bean.getMsg());
-                    return;
                 }
             }
         }).observeOn(Schedulers.io()).map(new Function<MeetingPauseOrResumBean, MeetingPauseOrResumBean>() {

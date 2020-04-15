@@ -178,8 +178,12 @@ public class MeetingPauseManager implements View.OnClickListener {
 	}
 
 	public String getPauseTipsText() {
-		String tipsText = mMeetingPauseTips.getText().toString();
+		String tipsText = mMeetingPauseTips.getText().toString().replaceAll("\t", "");
 		return tipsText;
+	}
+
+	public long getPauseTime() {
+		return mPauseTime;
 	}
 
 	/**
