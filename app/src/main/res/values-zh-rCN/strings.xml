@@ -981,5 +981,6 @@
     <string name="waiting_meeting_start">等待主持人开启会议</string>
     <string name="meeting_not_stated">会议还没有开始</string>
     <string name="meeting">会议</string>
+    <string name="Open">打开</string>
 
 </resources>

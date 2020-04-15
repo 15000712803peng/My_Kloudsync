@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +15,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventSoundtrackList;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.SoundTrack;
+import com.kloudsync.techexcel.filepicker.FilePickerActivity;
 import com.kloudsync.techexcel.help.SoundtrackManager;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.kloudsync.activity.Document;
 
 import java.util.ArrayList;
@@ -40,14 +44,14 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 	private AudiosAdapter1 adapter1;
 	private AudiosAdapter adapter2;
 	private ListView listView1, listView2;
-
 	private LinearLayout accompanyll, accompanymusicll;
 	private View accompanyll_line, accompanymusicll_line;
-
 	private View view;
-	private ImageView cancel;
-	private TextView uploadfile;
+	private LinearLayout uploadfile,selectfile;
+	private LinearLayout isshowfileupload;
 	private TextView cancelText;
+	private TextView tv1,tv2;
+	private TextView fileSize;
 
 	public void getPopwindow(Context context) {
 		this.mContext = context;
@@ -94,7 +98,11 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 		view = layoutInflater.inflate(R.layout.accompany_select_video, null);
 		listView1 = view.findViewById(R.id.listview1);
 		listView2 = view.findViewById(R.id.listview2);
-		cancel = view.findViewById(R.id.image_close);
+		tv1 = view.findViewById(R.id.tv1);
+		tv2 = view.findViewById(R.id.tv2);
+		fileSize = view.findViewById(R.id.filesize);
+
+
 		accompanyll = view.findViewById(R.id.accompanyll);
 		accompanymusicll = view.findViewById(R.id.accompanymusicll);
 		accompanyll_line = view.findViewById(R.id.accompanyll_line);
@@ -103,14 +111,10 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 		accompanyll.setOnClickListener(this);
 
 		uploadfile = view.findViewById(R.id.uploadfile);
+		isshowfileupload = view.findViewById(R.id.isshowfileupload);
+		selectfile = view.findViewById(R.id.selectfile);
 		cancelText = view.findViewById(R.id.cancel);
 		cancelText.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				dismiss();
-			}
-		});
-		cancel.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				dismiss();
@@ -143,6 +147,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 
 		view.findViewById(R.id.save).setOnClickListener(this);
 		uploadfile.setOnClickListener(this);
+		selectfile.setOnClickListener(this);
 
 		mPopupWindow = new Dialog(mContext, R.style.my_dialog);
 		mPopupWindow.setContentView(view);
@@ -172,8 +177,8 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 			if (role == 2) { //老师身份  都显示
 
 			} else {   // 学生身份  只能看伴奏带
-				accompanymusicll.setVisibility(View.GONE);
-				listView2.setVisibility(View.GONE);
+//				accompanymusicll.setVisibility(View.GONE);
+//				listView2.setVisibility(View.GONE);
 			}
 			getData(meetingConfig);
 		}
@@ -231,7 +236,10 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				listView1.setVisibility(View.VISIBLE);
 				listView2.setVisibility(View.GONE);
 				adapter1.notifyDataSetChanged();
-				uploadfile.setVisibility(View.INVISIBLE);
+				isshowfileupload.setVisibility(View.INVISIBLE);
+				tv1.setTextColor(mContext.getResources().getColor(R.color.skyblue));
+				tv2.setTextColor(mContext.getResources().getColor(R.color.txt_color1));
+				fileSize.setText("录制人");
 				break;
 			case R.id.accompanymusicll:
 				selectPosition = -1;
@@ -240,7 +248,10 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				listView1.setVisibility(View.GONE);
 				listView2.setVisibility(View.VISIBLE);
 				adapter2.notifyDataSetChanged();
-				uploadfile.setVisibility(View.VISIBLE);
+				isshowfileupload.setVisibility(View.VISIBLE);
+				tv1.setTextColor(mContext.getResources().getColor(R.color.txt_color1));
+				tv2.setTextColor(mContext.getResources().getColor(R.color.skyblue));
+				fileSize.setText("文件大小");
 				break;
 			case R.id.save:
 				if (accompanyll_line.getVisibility() == View.VISIBLE) {
@@ -259,6 +270,16 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 			case R.id.uploadfile:
 				dismiss();
 				mFavoritePoPListener.uploadFile();
+				break;
+			case R.id.selectfile:
+				MyFavoriteVideoPopup favoritePopup = new MyFavoriteVideoPopup(mContext);
+				favoritePopup.setFavoritePoPListener(new MyFavoriteVideoPopup.FavoriteVideoPoPListener() {
+					@Override
+					public void save(Document document) {
+//						Toast.makeText(mContext,document.getTitle(),Toast.LENGTH_LONG).show();
+					}
+				});
+				favoritePopup.StartPop(selectfile);
 				break;
 		}
 	}
@@ -392,7 +413,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 			}
 			holder.name.setText(mDatas.get(position).getTitle());
 			holder.time.setText(mDatas.get(position).getDuration());
-			holder.size.setText("");
+			holder.size.setText(mDatas.get(position).getUserName());
 			if (selectPosition == position) {
 				holder.imageview.setImageResource(R.drawable.finish_a);
 			} else {

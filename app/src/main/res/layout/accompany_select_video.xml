@@ -8,25 +8,47 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="45dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="选择一个伴奏"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="选择伴奏音想文件"
             android:textColor="@color/txt_color1"
-            android:textSize="14sp" />
+            android:textSize="15sp" />
 
-        <ImageView
-            android:id="@+id/image_close"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="12dp"
-            android:padding="2dp"
-            android:src="@drawable/close" />
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/save"
+                android:layout_width="90dp"
+                android:layout_height="35dp"
+                android:background="@drawable/peertimeselect_bg2"
+                android:gravity="center"
+                android:text="@string/satOk"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/cancel"
+                android:layout_marginLeft="10dp"
+                android:layout_width="90dp"
+                android:layout_height="35dp"
+                android:background="@drawable/peertimeselect_bg3"
+                android:gravity="center"
+                android:text="@string/Cancel"
+                android:textColor="@color/skyblue"
+                android:textSize="15sp" />
+
+        </LinearLayout>
     </RelativeLayout>
 
     <TextView
@@ -36,32 +58,33 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:paddingTop="5dp"
-        android:layout_width="match_parent"
+        android:paddingTop="10dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/accompanyll"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:layout_width="match_parent"
-            android:layout_weight="1"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="visible">
 
             <TextView
-
+                android:id="@+id/tv1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="6dp"
                 android:text="伴奏音想"
+                android:textColor="@color/skyblue"
                 android:textSize="14sp" />
 
             <View
                 android:id="@+id/accompanyll_line"
                 android:layout_width="100dp"
-                android:layout_height="3dp"
-
+                android:layout_height="2dp"
                 android:layout_marginTop="3dp"
                 android:background="@color/skyblue" />
         </LinearLayout>
@@ -70,22 +93,23 @@
             android:id="@+id/accompanymusicll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="visible">
-
             <TextView
+                android:id="@+id/tv2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="6dp"
                 android:text="伴奏音乐"
+                android:textColor="@color/txt_color1"
                 android:textSize="14sp" />
-
             <View
                 android:id="@+id/accompanymusicll_line"
                 android:layout_width="100dp"
-                android:layout_height="3dp"
+                android:layout_height="2dp"
                 android:layout_marginTop="3dp"
                 android:visibility="invisible"
                 android:background="@color/skyblue" />
@@ -94,10 +118,121 @@
 
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:background="@color/bgColor" />
+
+    <RelativeLayout
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <RelativeLayout
+            android:id="@+id/search_layout"
+            android:layout_width="match_parent"
+            android:layout_marginRight="185dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:background="@drawable/seach_bg_v2"
+            android:gravity="center_vertical"
+            android:paddingLeft="13dp"
+           >
+
+            <ImageView
+                android:id="@+id/icon_search"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/searchicon"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/txt_promp_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/icon_search"
+                android:singleLine="true"
+                android:text="@string/Search_Contact"
+                android:textColor="@color/newgrey"
+                android:textSize="13sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/isshowfileupload"
+            android:layout_marginRight="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/uploadfile"
+                android:orientation="horizontal"
+                android:layout_width="80dp"
+                android:gravity="center"
+                android:background="@drawable/peertimeselect_bg3"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/accompany_upload"
+                    android:layout_height="18dp"></ImageView>
+                <TextView
+                    android:layout_marginLeft="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:text="@string/upload"
+                    android:visibility="visible"
+                    android:textColor="@color/skyblue"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/selectfile"
+                android:orientation="horizontal"
+                android:layout_marginLeft="10dp"
+                android:layout_width="80dp"
+                android:gravity="center"
+                android:background="@drawable/peertimeselect_bg3"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/accompany_select"
+                    android:layout_height="18dp"></ImageView>
+                <TextView
+                    android:layout_marginLeft="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:text="@string/select2"
+                    android:visibility="visible"
+                    android:textColor="@color/skyblue"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="36dp"
-        android:background="@color/bgColor"
+
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -108,7 +243,6 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="文件名"
-            android:textColor="@color/black"
             android:textSize="14sp" />
 
         <TextView
@@ -118,7 +252,6 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="时长"
-            android:textColor="@color/black"
             android:textSize="14sp" />
 
         <TextView
@@ -127,8 +260,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="文件大小"
-            android:textColor="@color/black"
+            android:text="录制人"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -158,55 +290,7 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/uploadfile"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/peertimeselect_bg2"
-            android:gravity="center"
-            android:text="@string/upload"
-            android:visibility="invisible"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/cancel"
-                android:layout_width="80dp"
-                android:layout_height="30dp"
-                android:background="@drawable/peertimeselect_bg"
-                android:gravity="center"
-                android:text="@string/Cancel"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/save"
-                android:layout_width="80dp"
-                android:layout_height="30dp"
-                android:layout_marginLeft="20dp"
-                android:background="@drawable/peertimeselect_bg2"
-                android:gravity="center"
-                android:text="@string/satOk"
-                android:textColor="@color/white"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-    </RelativeLayout>
 
 
 </LinearLayout>

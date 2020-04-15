@@ -440,7 +440,7 @@
         <activity
             android:launchMode="singleTop"
             android:name="com.kloudsync.techexcel.filepicker.FilePickerActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="sensor" />
         <activity
             android:launchMode="singleTop"
             android:name=".personal.AboutWebActivity"
@@ -782,11 +782,21 @@
 
         <activity
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.kloudsync.techexcel.ui.LessionActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="sensor"
+            />
+
+
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:name="com.kloudsync.techexcel.ui.NoteViewActivityV2"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="sensor" />
+            android:screenOrientation="sensor"/>
 
         <activity
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
@@ -1111,6 +1121,8 @@
             android:name=".personal.CurrentNoteActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+
+
 
 
         <!--

@@ -125,9 +125,9 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     private boolean isSeeking;
     private boolean isPlaying;
     private boolean isClosed;
-	private int MESSAGE_CHECK_LOADING = 1;
+    private int MESSAGE_CHECK_LOADING = 1;
 
-	private Handler reinitHandler;
+    private Handler reinitHandler;
 
     private void resetStatus() {
         isSeeking = false;
@@ -171,7 +171,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
-	    reinitHandler.sendEmptyMessageDelayed(MESSAGE_CHECK_LOADING, 2000);
+        reinitHandler.sendEmptyMessageDelayed(MESSAGE_CHECK_LOADING, 2000);
         this.soundtrackDetail = soundtrackDetail;
         totalTime = soundtrackDetail.getDuration();
         int max = (int) (totalTime / 100);
@@ -206,27 +206,27 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         this.host = host;
         this.soundtrackPlayLayout = view;
         initManager(view);
-	    reinitHandler = new Handler(host.getMainLooper()) {
-		    @Override
-		    public void handleMessage(Message msg) {
-			    super.handleMessage(msg);
-			    int what = msg.what;
-			    if (what == MESSAGE_CHECK_LOADING) {
-				    if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
-					    Log.e("check_loading", "count:" + count + "，isloading，" + isLoading());
-					    reinitHandler.sendEmptyMessageDelayed(MESSAGE_CHECK_LOADING, 1200);
-					    if (isLoading()) {
-						    count++;
-						    if (count >= 15) {
-							    followClose();
-						    }
-					    } else {
-						    count = 0;
-					    }
-				    }
-			    }
-		    }
-	    };
+        reinitHandler = new Handler(host.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                int what = msg.what;
+                if (what == MESSAGE_CHECK_LOADING) {
+                    if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
+                        Log.e("check_loading", "count:" + count + "，isloading，" + isLoading());
+                        reinitHandler.sendEmptyMessageDelayed(MESSAGE_CHECK_LOADING, 1200);
+                        if (isLoading()) {
+                            count++;
+                            if (count >= 15) {
+                                followClose();
+                            }
+                        } else {
+                            count = 0;
+                        }
+                    }
+                }
+            }
+        };
         //TODO
         //  SoundtrackDigitalNoteManager.getInstance(host).initViews(meetingConfig, smallNoteLayout, smallNoteWeb, mainNoteWeb);
     }
@@ -675,8 +675,8 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
 //                    }
 //                }
             }
-	        if (count % 3 == 0) {
-                notifySoundtrackPlayStatus(soundtrackDetail,TYPE_SOUNDTRACK_FOLLOW,playTime);
+            if (count % 3 == 0) {
+                notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_FOLLOW, playTime);
             }
             Log.e("check_background_play", "isPlaying:" + backgroundMusicManager.isPlaying());
 
@@ -1034,7 +1034,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         }
         notifySoundtrackPlayStatus(soundtrackDetail, TYPE_SOUNDTRACK_RESTART, playTime);
         soundtrackAudioManager.restart();
-        if(backgroundMusicManager != null){
+        if (backgroundMusicManager != null) {
             backgroundMusicManager.restart();
         }
         //SoundtrackBackgroundMusicManager.getInstance(host).restart();
@@ -1064,7 +1064,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             }
         }
 
-	    reinitHandler.removeMessages(MESSAGE_CHECK_LOADING);
+        reinitHandler.removeMessages(MESSAGE_CHECK_LOADING);
 
     }
 

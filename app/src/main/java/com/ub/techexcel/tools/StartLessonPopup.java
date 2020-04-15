@@ -22,7 +22,6 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.service.ConnectService;
-import com.ub.techexcel.adapter.CourseAdapter;
 import com.ub.techexcel.bean.CourseLesson;
 
 import org.json.JSONArray;
@@ -47,7 +46,7 @@ public class StartLessonPopup {
     private TextView textview;
     private ListView listview;
     private List<CourseLesson> courseLessons = new ArrayList<>();
-    private CourseAdapter courseAdapter;
+//    private CourseAdapter courseAdapter;
     private boolean isLecture = false;
     private Handler handler = new Handler() {
         @Override
@@ -57,8 +56,8 @@ public class StartLessonPopup {
                 case 0x1102:
                     textview.setText("Lecture List");
                     isLecture = true;
-                    courseAdapter = new CourseAdapter(mContext, (List<CourseLesson>) msg.obj);
-                    listview.setAdapter(courseAdapter);
+//                    courseAdapter = new CourseAdapter(mContext, (List<CourseLesson>) msg.obj);
+//                    listview.setAdapter(courseAdapter);
                     break;
             }
         }
@@ -92,8 +91,8 @@ public class StartLessonPopup {
 
         textview.setText("Course List");
         isLecture = false;
-        courseAdapter = new CourseAdapter(mContext, courseLessons);
-        listview.setAdapter(courseAdapter);
+//        courseAdapter = new CourseAdapter(mContext, courseLessons);
+//        listview.setAdapter(courseAdapter);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

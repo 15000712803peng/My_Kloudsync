@@ -351,6 +351,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             finish();
             return;
         }
+
         Log.e("DocAndMeetingActivity", "on_create");
         meetingSettingCache = MeetingSettingCache.getInstance(this);
         writeNoteBlankPageImage();
@@ -1270,7 +1271,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     try {
                         int noteId = socketMessage.getData().getJSONObject("retData").getInt("noteId");
                         if (noteLayout.getVisibility() == View.VISIBLE) {
-
                             if (noteWeb != null) {
                                 followShowNote(noteId);
                             }
@@ -5147,6 +5147,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (data == null) {
             return;
         }
+
         if (meetingConfig.getMeetingStatus() == 0) {
             return;
         }

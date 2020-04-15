@@ -1854,8 +1854,8 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
 
     @Override
     public void menuStartMeetingClicked() {
-
-
+        setResult(2);
+        finish();
     }
 
     @Override
@@ -2869,5 +2869,4 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         MeetingKit.getInstance().setEncoderConfigurationBaseMode();
 //        SocketMessageManager.getManager(this).sendMessage_MyNoteActionFrame(actions, meetingConfig, note);
     }
-
 }

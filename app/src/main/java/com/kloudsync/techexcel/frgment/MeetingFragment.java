@@ -235,7 +235,7 @@ public class MeetingFragment extends MyFragment {
                                 }catch (Exception e){
 
                                 }
-                                startActivity(intent);
+                                startActivityForResult(intent,1);
                             }
 
 
@@ -428,5 +428,27 @@ public class MeetingFragment extends MyFragment {
 	public void setOnStartMeetingCallBackListener(OnStartMeetingCallBackListener onStartMeetingCallBackListener) {
 		this.onStartMeetingCallBackListener = onStartMeetingCallBackListener;
 	}
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(onStartMeetingCallBackListener!=null){
+            onStartMeetingCallBackListener.startMeetingCallBack();
+        }
+    }
+
+    public void reLoadMeetings(){
+        Observable.just(1).observeOn(Schedulers.io()).map(new Function<Integer, List<ServiceBean>>() {
+            @Override
+            public List<ServiceBean> apply(Integer integer) throws Exception {
+                return requestMeetings();
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<ServiceBean>>() {
+            @Override
+            public void accept(List<ServiceBean> serviceBeans) throws Exception {
+                loadMeeting(serviceBeans);
+            }
+        });
+    }
 
 }

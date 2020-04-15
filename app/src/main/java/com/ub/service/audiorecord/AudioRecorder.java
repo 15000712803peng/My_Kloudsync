@@ -97,7 +97,7 @@ public class AudioRecorder {
         }
         Log.d("AudioRecorder", "===startRecord===" + audioRecord.getState());
         audioRecord.startRecording();
-
+//       audioRecord.getState();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -106,6 +106,14 @@ public class AudioRecorder {
         }).start();
 
     }
+
+    public int  getInitStatus(){
+        if(audioRecord!=null){
+            return audioRecord.getState();
+        }
+        return   AudioRecord.STATE_UNINITIALIZED;
+    }
+
 
     /**
      * 暂停录音

@@ -29,8 +29,10 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.MemberRoleDialog;
 import com.kloudsync.techexcel.response.NetworkResponse;
+import com.kloudsync.techexcel.start.LoginActivity;
 import com.kloudsync.techexcel.tool.ContactsTool;
 import com.kloudsync.techexcel.ui.MainActivity;
+import com.kloudsync.techexcel.ui.WelcomeAndCreateActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -166,6 +168,41 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
 	    }, 1000);
     }
 
+
+    private List<String> getPhones(){
+        List<String> phones=new ArrayList<>();
+        int count=phoneItemsParentLayout.getChildCount();
+        for(int i=0;i<count;i++){
+            View v=phoneItemsParentLayout.getChildAt(0);
+            if(v instanceof LinearLayout){
+                View childLin=((LinearLayout) v).getChildAt(0);
+                if(childLin instanceof LinearLayout){//itemlayout布局
+                    int m=((LinearLayout) childLin).getChildCount();
+                    for(int j=0;j<m;j++){
+                        View child=((LinearLayout) childLin).getChildAt(j);
+                        if(child instanceof EditText){
+                            String phone=((EditText) child).getText().toString();
+                            if (!TextUtils.isEmpty(phone)) {
+                                boolean isContain=false;
+                                for(int k=0;k<phones.size();k++){
+                                    if(phone.equals(phones.get(k))){
+                                        isContain=true;
+                                        break;
+                                    }
+                                }
+                                if(!isContain){
+                                    phones.add(phone);
+                                    phoneItems.get(i).setPhoneNumber(phone);
+                                    inviteItems.add(phoneItems.get(i));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return phones;
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -182,7 +219,7 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
                 goToMainActivity();
                 break;
             case R.id.txt_invite:
-                List<String> phoneNumbers = fetchInivtePhoneNumbers();
+                List<String> phoneNumbers = getPhones();
                 if (phoneNumbers.size() == 0) {
                     Toast.makeText(getApplicationContext(), "please enter or select least one phone number", Toast.LENGTH_SHORT).show();
                 } else {
@@ -218,7 +255,11 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
     private void goToMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("FromOrganization",true);
         startActivity(intent);
+        LoginActivity.instance.finish();
+        WelcomeAndCreateActivity.instance.finish();
+        CreateOrganizationActivityV2.instance.finish();
         finish();
     }
 

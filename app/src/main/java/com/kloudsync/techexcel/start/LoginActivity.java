@@ -345,55 +345,37 @@ public class LoginActivity extends Activity implements OnClickListener {
     private void processLogin(final String name, final String password, final String phoneNumber) {
 
         loadingDialog.show();
-	    loginDisposable = Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, String>() {
-		    @Override
-		    public String apply(String o) throws Exception {
-			    try {
-				    Response<NetworkResponse<LoginData>> response = ServiceInterfaceTools.getinstance().login(name, password).execute();
-				    if (response == null || !response.isSuccessful() || response.body() == null) {
-					    sendEventLoginFail("network error");
-				    } else {
-					    if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
-						    saveLoginData(response.body().getRetData());
-						    rongCloudUrl = AppConfig.URL_PUBLIC + "RongCloudUserToken";
-						    editor.putString("name", name);
-						    editor.putString("telephone", phoneNumber);
-						    editor.putString("password", LoginGet.getBase64Password(password));
-						    editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
-						    editor.commit();
-					    } else {
-						    sendEventLoginFail(response.body().getErrorMessage());
-						    if (loginDisposable != null && !loginDisposable.isDisposed()) {
-							    loginDisposable.dispose();
-						    }
-					    }
-				    }
-			    } catch (UnknownHostException e) {
-				    sendEventLoginFail("network error");
-			    } catch (SocketTimeoutException exception) {
-				    sendEventLoginFail("network error");
-			    }
-			    return rongCloudUrl;
-		    }
-	    }).doOnNext(new Consumer<String>() {
-		    @Override
-		    public void accept(String s) throws Exception {
-			    JSONObject response = ServiceInterfaceTools.getinstance().syncGetCompanyAccountInfo();
-			    if (response.has("code")) {
-				    int code = response.getInt("code");
-				    if (code == 0) {
-					    if (response.has("data")) {
-						    CompanyAccountInfo accountInfo = new Gson().fromJson(response.getJSONObject("data").toString(), CompanyAccountInfo.class);
-						    if (accountInfo != null) {
-							    Log.e("processLogin", "system_type:" + accountInfo.getSystemType() + ",-" + accountInfo.getCompanyName());
-							    AppConfig.systemType = accountInfo.getSystemType();
-							    sharedPreferences.edit().putInt("system_type", accountInfo.getSystemType()).commit();
-						    }
-					    }
-				    }
-			    }
-		    }
-	    }).map(new Function<String, String>() {
+        loginDisposable = Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, String>() {
+            @Override
+            public String apply(String o) throws Exception {
+                try {
+                    Response<NetworkResponse<LoginData>> response = ServiceInterfaceTools.getinstance().login(name, password).execute();
+                    if (response == null || !response.isSuccessful() || response.body() == null) {
+                        sendEventLoginFail("network error");
+                    } else {
+                        if (response.body().getRetCode() == AppConfig.RETCODE_SUCCESS) {
+                            saveLoginData(response.body().getRetData());
+                            rongCloudUrl = AppConfig.URL_PUBLIC + "RongCloudUserToken";
+                            editor.putString("name", name);
+                            editor.putString("telephone", phoneNumber);
+                            editor.putString("password", LoginGet.getBase64Password(password));
+                            editor.putInt("countrycode", AppConfig.COUNTRY_CODE);
+                            editor.commit();
+                        } else {
+                            sendEventLoginFail(response.body().getErrorMessage());
+                            if (loginDisposable != null && !loginDisposable.isDisposed()) {
+                                loginDisposable.dispose();
+                            }
+                        }
+                    }
+                } catch (UnknownHostException e) {
+                    sendEventLoginFail("network error");
+                } catch (SocketTimeoutException exception) {
+                    sendEventLoginFail("network error");
+                }
+                return rongCloudUrl;
+            }
+        }).map(new Function<String, String>() {
             @Override
             public String apply(String s) throws Exception {
                 if (loginDisposable == null || loginDisposable.isDisposed()) {

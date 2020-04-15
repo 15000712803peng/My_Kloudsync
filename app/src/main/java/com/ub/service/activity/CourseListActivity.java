@@ -30,7 +30,7 @@ import java.util.List;
  * Created by wang on 2018/2/8.
  */
 
-public class CourseListActivity extends Activity implements View.OnClickListener {
+public class CourseListActivity extends Activity implements View.OnClickListener{
     private LinearLayout backll;
     private List<CourseLesson> courseLessons = new ArrayList<>();
     private ListView listView;
@@ -38,13 +38,14 @@ public class CourseListActivity extends Activity implements View.OnClickListener
     private int schoolId;
     private boolean isMyschool;
     private int lessontype;
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
                 case AppConfig.LOAD_FINISH:
-                    courseAdapter = new CourseAdapter(CourseListActivity.this, courseLessons);
+//                    courseAdapter = new CourseAdapter(CourseListActivity.this, courseLessons);
                     listView.setAdapter(courseAdapter);
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
