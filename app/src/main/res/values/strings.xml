@@ -725,7 +725,7 @@ Please input the cell phone number to add the contact
     <string name="cancel">cancel</string>
     <string name="invite">Invite</string>
     <string name="nofile">nofile</string>
-    <string name="upload">upload</string>
+    <string name="upload">Upload</string>
     <string name="uploadsuccess">uploadsuccess</string>
     <string name="uploadfailure">uploadfailure</string>
     <string name="downfailed">downfailed</string>

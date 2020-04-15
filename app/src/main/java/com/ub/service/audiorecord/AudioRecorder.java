@@ -97,7 +97,7 @@ public class AudioRecorder {
         }
         Log.d("AudioRecorder", "===startRecord===" + audioRecord.getState());
         audioRecord.startRecording();
-        audioRecord.getState();
+//       audioRecord.getState();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -113,7 +113,6 @@ public class AudioRecorder {
         }
         return   AudioRecord.STATE_UNINITIALIZED;
     }
-
 
 
     /**

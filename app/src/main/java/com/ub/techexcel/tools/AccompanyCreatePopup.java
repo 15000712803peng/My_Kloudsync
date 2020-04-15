@@ -42,7 +42,7 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by wang on 2017/9/18.
  */
 
-public class AccompanyCreatePopup implements View.OnClickListener {
+public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMoreOperations.OnSoundtrackOperationListener {
 
 	public Context mContext;
 	public int width;
@@ -52,7 +52,6 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 	private TextView addaudio, addrecord;
 	//    private CheckBox checkBox1, checkBox2;
 	private EditText edittext;
-	private ImageView delete1, delete2;
 
 	private TextView recordsync, cancel;
 	private Document favorite = new Document();
@@ -62,7 +61,8 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 	private static FavoritePoPListener mFavoritePoPListener;
 	private TextView recordname;
 	private TextView bgname;
-	private LinearLayout backgroundAudioLayout;
+	private RelativeLayout backgroundAudioLayout;
+	private ImageView moreOpation,morerecordnewvoice;
 	private LinearLayout recordMyVoiceLayout;
 	private RelativeLayout voiceItemLayout;
 	private LinearLayout addVoiceLayout;
@@ -71,9 +71,9 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 	private TextView tv_bg_audio, tv_record_voice;
 	private SharedPreferences sharedPreferences;
 
-	private TextView isaccompanytv;
-	private ImageView isaccompanytv_gou;
 
+
+	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -85,6 +85,8 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 			super.handleMessage(msg);
 		}
 	};
+
+
 
 
 	public interface FavoritePoPListener {
@@ -149,11 +151,11 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 		addrecord = (TextView) view.findViewById(R.id.addrecord);
 		recordname = (TextView) view.findViewById(R.id.recordname);
 		bgname = (TextView) view.findViewById(R.id.bgname);
-		isaccompanytv = (TextView) view.findViewById(R.id.isaccompanytv);
-		isaccompanytv.setOnClickListener(this);
-		isaccompanytv.setOnClickListener(this);
-		isaccompanytv_gou = view.findViewById(R.id.isaccompanytv_gou);
-		backgroundAudioLayout = (LinearLayout) view.findViewById(R.id.layout_background_audio);
+		backgroundAudioLayout = (RelativeLayout) view.findViewById(R.id.layout_background_audio);
+		moreOpation = view.findViewById(R.id.moreOpation);
+		moreOpation.setOnClickListener(this);
+		morerecordnewvoice = view.findViewById(R.id.morerecordnewvoice);
+		morerecordnewvoice.setOnClickListener(this);
 		edittext = (EditText) view.findViewById(R.id.edittext);
 		String time = new SimpleDateFormat("yyyyMMdd_hh:mm").format(new Date());
 		String name = AppConfig.UserName + "_" + time;
@@ -178,10 +180,6 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 			}
 		});
 //        setBindViewText();
-		delete1 = (ImageView) view.findViewById(R.id.delete1);
-		delete2 = (ImageView) view.findViewById(R.id.delete2);
-		delete1.setOnClickListener(this);
-		delete2.setOnClickListener(this);
 
 		recordsync = (TextView) view.findViewById(R.id.recordsync);
 		recordsync.setOnClickListener(this);
@@ -205,14 +203,15 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 
 
 	private int actionBaseSoundtrackID;
+	private int selectAccompanyType=0;
 
 	public void setAudioBean(Document favorite) {
+		selectAccompanyType=0;
 		this.favorite = favorite;
 		actionBaseSoundtrackID = Integer.parseInt(favorite.getItemID());
-		delete1.setVisibility(View.VISIBLE);
 		addaudio.setVisibility(View.INVISIBLE);
 		backgroundAudioLayout.setVisibility(View.VISIBLE);
-		isaccompanytv.setText("制作同步音乐伴奏带");
+
 		if (favorite != null) {
 			bgname.setVisibility(View.VISIBLE);
 			bgname.setText(favorite.getTitle());
@@ -221,11 +220,11 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 	}
 
 
-	private SoundTrack lastSoundtrack = new SoundTrack();
+	private SoundTrack  lastSoundtrack=new SoundTrack();
 	public void setAudioBean1(final SoundTrack soundTrack) {
-		lastSoundtrack = soundTrack;
+		selectAccompanyType=1;
+		lastSoundtrack=soundTrack;
 		actionBaseSoundtrackID = soundTrack.getSoundtrackID();
-		isaccompanytv.setText("重新同步");
 		ServiceInterfaceTools.getinstance().getSoundItem(AppConfig.URL_PUBLIC + "Soundtrack/Item?soundtrackID=" + actionBaseSoundtrackID,
 				ServiceInterfaceTools.GETSOUNDITEM,
 				new ServiceInterfaceListener() {
@@ -241,13 +240,14 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 						setCreateSyncText();
 					}
 				});
-		delete1.setVisibility(View.VISIBLE);
 		addaudio.setVisibility(View.INVISIBLE);
 		backgroundAudioLayout.setVisibility(View.VISIBLE);
+
+
 	}
 
 	public void setRecordBean1(final SoundTrack soundTrack) {
-		delete2.setVisibility(View.VISIBLE);
+		morerecordnewvoice.setVisibility(View.VISIBLE);
 		addrecord.setVisibility(View.INVISIBLE);
 		addVoiceLayout.setVisibility(View.INVISIBLE);
 		ServiceInterfaceTools.getinstance().getSoundItem(AppConfig.URL_PUBLIC + "Soundtrack/Item?soundtrackID=" + soundTrack.getSoundtrackID(),
@@ -263,7 +263,6 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 						recordfavorite.setTitle(soundTrack.getTitle());
 
 						voiceItemLayout.setVisibility(View.VISIBLE);
-						recordname.setVisibility(View.VISIBLE);
 						recordname.setText(recordfavorite.getTitle());
 						setCreateSyncText();
 					}
@@ -273,12 +272,10 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 
 	public void setRecordBean(Document favorite) {
 		this.recordfavorite = favorite;
-		delete2.setVisibility(View.VISIBLE);
 		addrecord.setVisibility(View.INVISIBLE);
 		addVoiceLayout.setVisibility(View.INVISIBLE);
 		if (recordfavorite != null) {
 			voiceItemLayout.setVisibility(View.VISIBLE);
-			recordname.setVisibility(View.VISIBLE);
 			recordname.setText(recordfavorite.getTitle());
 		}
 		setCreateSyncText();
@@ -326,7 +323,7 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 
 	private SoundtrackBean soundtrackBean = new SoundtrackBean();
 
-	private void createSoundtrack() {
+	private void createSoundtrack(final boolean issend) {
 		new ApiTask(new Runnable() {
 			@Override
 			public void run() {
@@ -347,13 +344,13 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 					jsonObject.put("ItemID", 0);
 					jsonObject.put("ActionBaseSoundtrackID", actionBaseSoundtrackID);
 
-					int musicType = checkBox.isChecked() ? 1 : 0;
-					if (musicType == 0) {
-						if (!TextUtils.isEmpty(recordfavorite.getAttachmentID())) {
-							musicType = 1;
+					int musicType=checkBox.isChecked() ? 1 : 0;
+					if(musicType==0){
+						if(!TextUtils.isEmpty(recordfavorite.getAttachmentID())){
+							musicType=1;
 						}
 					}
-					jsonObject.put("MusicType", musicType);  //0是伴奏，1是演唱
+					jsonObject.put("MusicType",musicType);  //0是伴奏，1是演唱
 					JSONObject returnjson = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Soundtrack/CreateSoundtrack", jsonObject);
 					Log.e("hhh", jsonObject.toString() + "      " + returnjson.toString());
 					if (returnjson.getInt("RetCode") == 0) {
@@ -412,7 +409,10 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 						Message msg3 = Message.obtain();
 						msg3.obj = soundtrackBean;
 						msg3.what = 0x1001;
-						handler.sendMessage(msg3);
+						if(issend){
+							handler.sendMessage(msg3);
+						}
+
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -439,44 +439,111 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 				break;
 			case R.id.recordsync:
 				dismiss();
-				createSoundtrack();
+				createSoundtrack(true);
 				break;
 			case R.id.delete1:
 				favorite = new Document();
 				backgroundAudioLayout.setVisibility(View.INVISIBLE);
-				delete1.setVisibility(View.INVISIBLE);
+
 				addaudio.setVisibility(View.VISIBLE);
 				bgname.setVisibility(View.INVISIBLE);
 				setCreateSyncText();
 				break;
-			case R.id.delete2:
-				delete2();
+			case R.id.moreOpation:
+				showOperationsPop(moreOpation,isAccompanyOrMusic,selectAccompanyType);
 				break;
-			case R.id.isaccompanytv:   //重新同步
-				if (isAccompanyOrMusic == 1) {
-					isAccompanyOrMusic = 0;
-					actionBaseSoundtrackID = 0;
-					isaccompanytv_gou.setVisibility(View.VISIBLE);
-					checkBox.setChecked(false);
-					delete2();
-					ishiddenll.setVisibility(View.GONE);
-				} else {
-					isAccompanyOrMusic = 1;
-					actionBaseSoundtrackID = lastSoundtrack.getSoundtrackID();
-					isaccompanytv_gou.setVisibility(View.GONE);
-					ishiddenll.setVisibility(View.VISIBLE);
-				}
+			case R.id.morerecordnewvoice:
+				showOperationsNewPop(morerecordnewvoice);
 				break;
+//			case R.id.isaccompanytv:   //重新同步
+//				if (isAccompanyOrMusic == 1) {
+//					isAccompanyOrMusic = 0;
+//					actionBaseSoundtrackID=0;
+//					isaccompanytv_gou.setVisibility(View.VISIBLE);
+//					checkBox.setChecked(false);
+//					delete2();
+//					ishiddenll.setVisibility(View.GONE);
+//				} else {
+//					isAccompanyOrMusic = 1;
+//					actionBaseSoundtrackID=lastSoundtrack.getSoundtrackID();
+//					isaccompanytv_gou.setVisibility(View.GONE);
+//					ishiddenll.setVisibility(View.VISIBLE);
+//				}
+//				break;
 			default:
 				break;
 		}
 	}
 
+	private  AccompanyMoreOperations accompanyMoreOperations;
+	private void showOperationsPop(View moreOpation,int isAccompanyOrMusic,int selectAccompanyType) {
+		if (accompanyMoreOperations != null) {
+			if (accompanyMoreOperations.isShowing()) {
+				accompanyMoreOperations.dismiss();
+				accompanyMoreOperations = null;
+			}
+		}
+		accompanyMoreOperations = new AccompanyMoreOperations(mContext);
+		accompanyMoreOperations.setSoundtrackOperationListener(this);
+		accompanyMoreOperations.show(moreOpation,isAccompanyOrMusic,selectAccompanyType);
+	}
+	private void showOperationsNewPop(View moreOpation) {
+		if (accompanyMoreOperations != null) {
+			if (accompanyMoreOperations.isShowing()) {
+				accompanyMoreOperations.dismiss();
+				accompanyMoreOperations = null;
+			}
+		}
+		accompanyMoreOperations = new AccompanyMoreOperations(mContext);
+		accompanyMoreOperations.setSoundtrackOperationListener(this);
+		accompanyMoreOperations.showNewVoice(moreOpation);
+	}
+
+	@Override
+	public void syncAccompany() {
+		isAccompanyOrMusic = 0;  //点击同步了
+		actionBaseSoundtrackID=0;
+		checkBox.setChecked(false);
+		delete2();
+		ishiddenll.setVisibility(View.GONE);
+	}
+
+	@Override
+	public void cancel() {
+		isAccompanyOrMusic = 1;  // 取消同步
+		actionBaseSoundtrackID=lastSoundtrack.getSoundtrackID();
+		ishiddenll.setVisibility(View.VISIBLE);
+	}
+	@Override
+	public void cancelNewVoice() {
+		delete2();
+	}
+
+	@Override
+	public void sync() {  //保存为伴奏（无动作）
+		isAccompanyOrMusic = 0;  //点击同步了
+		actionBaseSoundtrackID=0;
+		checkBox.setChecked(false);
+		delete2();
+		ishiddenll.setVisibility(View.GONE);
+		dismiss();
+		createSoundtrack(false);
+	}
+
+	@Override
+	public void delete() {  //删除已选的伴奏
+		favorite = new Document();
+		backgroundAudioLayout.setVisibility(View.INVISIBLE);
+		addaudio.setVisibility(View.VISIBLE);
+		bgname.setVisibility(View.INVISIBLE);
+		setCreateSyncText();
+	}
+
+
 	private void delete2() {
 		recordfavorite = new Document();
 		voiceItemLayout.setVisibility(View.INVISIBLE);
 		addVoiceLayout.setVisibility(View.VISIBLE);
-		delete2.setVisibility(View.INVISIBLE);
 		if (checkBox.isChecked()) {
 			addrecord.setVisibility(View.INVISIBLE);
 		} else {
@@ -486,7 +553,7 @@ public class AccompanyCreatePopup implements View.OnClickListener {
 	}
 
 
-	private int isAccompanyOrMusic = 1;//0是伴奏，1是演唱
+	private int isAccompanyOrMusic = 1;
 
 	private String getBindViewText(int fileId) {
 		String appBindName = "";

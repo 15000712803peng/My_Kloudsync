@@ -9,6 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="25dp"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -62,6 +63,15 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <TextView
+                android:paddingLeft="8dp"
+               android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:text="标题："
+                android:textColor="@color/txt_color1" />
+
+
             <EditText
                 android:id="@+id/edittext"
                 android:layout_width="0dp"
@@ -71,8 +81,7 @@
                 android:background="@color/white"
                 android:hint="请输入伴奏音乐/演唱标题"
                 android:imeOptions="flagNoExtractUi"
-                android:paddingBottom="6dp"
-                android:paddingLeft="10dp"
+                android:paddingLeft="5dp"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
 
@@ -128,10 +137,8 @@
                     android:text="@string/ispublic"
                     android:textColor="@color/skyblue"
                     android:textSize="14sp" />
-
             </LinearLayout>
         </RelativeLayout>
-
 
         <TextView
             android:id="@+id/tv_bg_audio"
@@ -144,84 +151,50 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
+            android:paddingLeft="8dp"
             android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/addaudio"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="25dp"
-                android:layout_marginTop="8dp"
-                android:paddingLeft="8dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/accompany_bg_shape"
                 android:text="+ 选择一个伴奏"
                 android:visibility="visible"
                 android:textColor="@color/skyblue"
                 android:textSize="14sp" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/layout_background_audio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+
                 android:visibility="invisible">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/bgname"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:visibility="visible">
+                    android:ellipsize="end"
+                    android:layout_marginRight="35dp"
+                    android:text="ssssss"
+                    android:singleLine="true"
+                    android:textSize="13sp" />
 
-                    <TextView
-                        android:id="@+id/bgname"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:text="ssssss"
-                        android:singleLine="true"
-                        android:textSize="13sp" />
-
-                    <ImageView
-                        android:id="@+id/delete1"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_toRightOf="@+id/bgname"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="6dp"
-                        android:padding="2dp"
-                        android:src="@drawable/trash_favor" />
+                <ImageView
+                    android:id="@+id/moreOpation"
+                    android:layout_width="30dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:padding="2dp"
+                    android:src="@drawable/accompany_more" />
+            </RelativeLayout>
 
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginLeft="10dp"
-                        android:layout_toRightOf="@+id/delete1"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/isaccompanytv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            android:text="制作同步音乐伴奏带"
-                            android:singleLine="true"
-                            android:textColor="@color/skyblue"
-                            android:textSize="13sp" />
-
-                        <ImageView
-                            android:id="@+id/isaccompanytv_gou"
-                            android:layout_width="15dp"
-                            android:src="@drawable/dui"
-                            android:layout_marginLeft="5dp"
-                            android:visibility="gone"
-                            android:layout_height="15dp" />
-
-                    </LinearLayout>
-
-
-                </RelativeLayout>
-
-            </LinearLayout>
 
         </RelativeLayout>
 
@@ -265,6 +238,7 @@
                         android:id="@+id/layout_add_voice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingLeft="8dp"
                         android:orientation="vertical">
 
                         <LinearLayout
@@ -275,7 +249,7 @@
                             android:gravity="center_vertical"
                             android:visibility="visible"
                             android:orientation="horizontal"
-                            android:paddingLeft="8dp">
+                          >
 
                             <CheckBox
                                 android:id="@+id/checkboxx"
@@ -292,17 +266,17 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="8dp"
-                                android:text="录制演唱"
+                                android:text="录制新声音"
                                 android:textColor="@color/skyblue"
                                 android:textSize="14sp" />
                         </LinearLayout>
 
                         <TextView
                             android:id="@+id/addrecord"
-                            android:layout_width="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="10dp"
-                            android:paddingTop="2dp"
+                            android:background="@drawable/accompany_bg_shape"
                             android:text="@string/mtAddFile"
                             android:textColor="@color/skyblue"
                             android:textSize="14sp"
@@ -313,7 +287,7 @@
                         android:id="@+id/layout_voice_item"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="8dp"
+                        android:paddingLeft="8dp"
                         android:visibility="invisible">
 
                         <TextView
@@ -321,18 +295,23 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:singleLine="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="35dp"
                             android:text="@string/mtYxName"
                             android:textSize="13sp" />
 
                         <ImageView
-                            android:id="@+id/delete2"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_toRightOf="@+id/recordname"
+
+                            android:id="@+id/morerecordnewvoice"
+                            android:layout_width="30dp"
+                            android:visibility="visible"
+                            android:layout_height="40dp"
+                            android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
-                            android:layout_marginLeft="6dp"
                             android:padding="2dp"
-                            android:src="@drawable/trash_favor" />
+                            android:src="@drawable/accompany_more" />
+
+
                     </RelativeLayout>
 
                 </RelativeLayout>

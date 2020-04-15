@@ -40,14 +40,13 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 	private AudiosAdapter1 adapter1;
 	private AudiosAdapter adapter2;
 	private ListView listView1, listView2;
-
 	private LinearLayout accompanyll, accompanymusicll;
 	private View accompanyll_line, accompanymusicll_line;
-
 	private View view;
-	private ImageView cancel;
-	private TextView uploadfile;
+	private LinearLayout uploadfile,selectfile;
+	private LinearLayout isshowfileupload;
 	private TextView cancelText;
+	private TextView tv1,tv2;
 
 	public void getPopwindow(Context context) {
 		this.mContext = context;
@@ -94,7 +93,9 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 		view = layoutInflater.inflate(R.layout.accompany_select_video, null);
 		listView1 = view.findViewById(R.id.listview1);
 		listView2 = view.findViewById(R.id.listview2);
-		cancel = view.findViewById(R.id.image_close);
+		tv1 = view.findViewById(R.id.tv1);
+		tv2 = view.findViewById(R.id.tv2);
+
 		accompanyll = view.findViewById(R.id.accompanyll);
 		accompanymusicll = view.findViewById(R.id.accompanymusicll);
 		accompanyll_line = view.findViewById(R.id.accompanyll_line);
@@ -103,14 +104,10 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 		accompanyll.setOnClickListener(this);
 
 		uploadfile = view.findViewById(R.id.uploadfile);
+		isshowfileupload = view.findViewById(R.id.isshowfileupload);
+		selectfile = view.findViewById(R.id.selectfile);
 		cancelText = view.findViewById(R.id.cancel);
 		cancelText.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				dismiss();
-			}
-		});
-		cancel.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				dismiss();
@@ -143,6 +140,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 
 		view.findViewById(R.id.save).setOnClickListener(this);
 		uploadfile.setOnClickListener(this);
+		selectfile.setOnClickListener(this);
 
 		mPopupWindow = new Dialog(mContext, R.style.my_dialog);
 		mPopupWindow.setContentView(view);
@@ -172,8 +170,8 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 			if (role == 2) { //老师身份  都显示
 
 			} else {   // 学生身份  只能看伴奏带
-				accompanymusicll.setVisibility(View.GONE);
-				listView2.setVisibility(View.GONE);
+//				accompanymusicll.setVisibility(View.GONE);
+//				listView2.setVisibility(View.GONE);
 			}
 			getData(meetingConfig);
 		}
@@ -231,7 +229,9 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				listView1.setVisibility(View.VISIBLE);
 				listView2.setVisibility(View.GONE);
 				adapter1.notifyDataSetChanged();
-				uploadfile.setVisibility(View.INVISIBLE);
+				isshowfileupload.setVisibility(View.INVISIBLE);
+				tv1.setTextColor(mContext.getResources().getColor(R.color.skyblue));
+				tv2.setTextColor(mContext.getResources().getColor(R.color.txt_color1));
 				break;
 			case R.id.accompanymusicll:
 				selectPosition = -1;
@@ -240,7 +240,9 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				listView1.setVisibility(View.GONE);
 				listView2.setVisibility(View.VISIBLE);
 				adapter2.notifyDataSetChanged();
-				uploadfile.setVisibility(View.VISIBLE);
+				isshowfileupload.setVisibility(View.VISIBLE);
+				tv1.setTextColor(mContext.getResources().getColor(R.color.txt_color1));
+				tv2.setTextColor(mContext.getResources().getColor(R.color.skyblue));
 				break;
 			case R.id.save:
 				if (accompanyll_line.getVisibility() == View.VISIBLE) {
@@ -259,6 +261,9 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 			case R.id.uploadfile:
 				dismiss();
 				mFavoritePoPListener.uploadFile();
+				break;
+			case R.id.selectfile:
+
 				break;
 		}
 	}
