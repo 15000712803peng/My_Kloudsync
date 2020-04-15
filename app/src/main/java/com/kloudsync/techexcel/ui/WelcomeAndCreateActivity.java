@@ -60,6 +60,7 @@ import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSIO
  */
 
 public class WelcomeAndCreateActivity extends BaseActivity implements View.OnClickListener {
+    public static WelcomeAndCreateActivity instance=null;
     private TextView createText;
     private TextView joinMeetingText;
     private TextView backText;
@@ -123,6 +124,7 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
 
     @Override
     protected void initView() {
+	    instance=this;
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         startWBService();
@@ -511,7 +513,7 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
 			case 2:
 				title = "创建新的公司/机构";
 				content = "创建属于自己的公司/机构";
-				about = "点击这里前往帮助中心，查看详细步骤》";
+				about = getApplicationContext().getResources().getString(R.string.click_help);
 				tv_guide_next.setVisibility(View.VISIBLE);
 				tv_guide_previous.setVisibility(View.VISIBLE);
 				tv_guide_previous.setText("再看一次");

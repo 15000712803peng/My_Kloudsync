@@ -126,6 +126,9 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
     private TextView tv_schedule_meeting,tv_start_meeting;
     private SharedPreferences sharedPreferences;
 
+    private MeetingFragment upcomingFragment;
+    private int REQUEST_NEW_MEETING=0x001;
+
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -532,6 +535,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
 //        viewList.add(allView2);
 //        viewList.add(allView3);
 
+        initUpComingFragment();
         mViewPager.setAdapter(new MeetingAdapter(getChildFragmentManager()));
 //        mViewPager.setCurrentItem(0);
 
@@ -573,7 +577,15 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
 
     }
 
-
+    private void initUpComingFragment(){
+        upcomingFragment = new MeetingFragment();
+        upcomingFragment.setOnStartMeetingCallBackListener(new MeetingFragment.OnStartMeetingCallBackListener() {
+            @Override
+            public void startMeetingCallBack() {
+                doStartMeeting(AppConfig.ClassRoomID);
+            }
+        });
+    }
     class MeetingAdapter extends FragmentPagerAdapter {
 
         public MeetingAdapter(FragmentManager fm) {
@@ -584,14 +596,13 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
             bundle.putInt("type", position + 1);
-            MeetingFragment fragment = new MeetingFragment();
+            MeetingFragment fragment;
+            if(position==0){
+                fragment=upcomingFragment;
+            }else {
+                fragment= new MeetingFragment();
+            }
             fragment.setArguments(bundle);
-	        fragment.setOnStartMeetingCallBackListener(new MeetingFragment.OnStartMeetingCallBackListener() {
-		        @Override
-		        public void startMeetingCallBack() {
-			        doStartMeeting(AppConfig.ClassRoomID);
-		        }
-	        });
             return fragment;
         }
 
@@ -601,6 +612,13 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==REQUEST_NEW_MEETING){
+            upcomingFragment.reLoadMeetings();
+        }
+    }
 
     private void GetCourseBroad() {
         RefreshNotify();
@@ -692,7 +710,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
                 break;
             case R.id.lin_schedule:
                 Intent schintent = new Intent(getActivity(), NewMeetingActivity.class);
-                startActivity(schintent);
+                startActivityForResult(schintent,REQUEST_NEW_MEETING);
                 getActivity().overridePendingTransition(R.anim.tran_in5, R.anim.tran_out5);
                 break;
             case R.id.changeschool:

@@ -440,7 +440,7 @@
         <activity
             android:launchMode="singleTop"
             android:name="com.kloudsync.techexcel.filepicker.FilePickerActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="sensor" />
         <activity
             android:launchMode="singleTop"
             android:name=".personal.AboutWebActivity"
