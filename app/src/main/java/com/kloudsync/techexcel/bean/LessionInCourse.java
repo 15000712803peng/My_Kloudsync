@@ -11,7 +11,7 @@ public class LessionInCourse {
     private int StudentCount;
     private String StudentNames;
     private int FileCount;
-    private long MeetingID;
+    private int MeetingID;
     private long MeetingItemID;
     private int DisplayIndex;
     private String Title;
@@ -22,6 +22,15 @@ public class LessionInCourse {
     private int ItemType;
     private long RealMeetingID;
     private int RealMeetingStatus;
+    private int dateType;
+
+    public int getDateType() {
+        return dateType;
+    }
+
+    public void setDateType(int dateType) {
+        this.dateType = dateType;
+    }
 
     public int getTeacherCount() {
         return TeacherCount;
@@ -63,11 +72,11 @@ public class LessionInCourse {
         FileCount = fileCount;
     }
 
-    public long getMeetingID() {
+    public int getMeetingID() {
         return MeetingID;
     }
 
-    public void setMeetingID(long meetingID) {
+    public void setMeetingID(int meetingID) {
         MeetingID = meetingID;
     }
 
@@ -149,5 +158,28 @@ public class LessionInCourse {
 
     public void setRealMeetingStatus(int realMeetingStatus) {
         RealMeetingStatus = realMeetingStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "LessionInCourse{" +
+                "TeacherCount=" + TeacherCount +
+                ", TeacherNames='" + TeacherNames + '\'' +
+                ", StudentCount=" + StudentCount +
+                ", StudentNames='" + StudentNames + '\'' +
+                ", FileCount=" + FileCount +
+                ", MeetingID=" + MeetingID +
+                ", MeetingItemID=" + MeetingItemID +
+                ", DisplayIndex=" + DisplayIndex +
+                ", Title='" + Title + '\'' +
+                ", StartTime='" + StartTime + '\'' +
+                ", EndTime='" + EndTime + '\'' +
+                ", Notes='" + Notes + '\'' +
+                ", Status=" + Status +
+                ", ItemType=" + ItemType +
+                ", RealMeetingID=" + RealMeetingID +
+                ", RealMeetingStatus=" + RealMeetingStatus +
+                ", dateType=" + dateType +
+                '}';
     }
 }

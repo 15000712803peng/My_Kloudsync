@@ -223,8 +223,8 @@ import retrofit2.Response;
  * Created by tonyan on 2019/11/19.
  */
 
-public class LessionActivity extends BaseWebActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
-        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener {
+public class LessionActivity extends BaseLessionActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
+        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener, PrepareLessionDialog.OnPreparedOptionsListener {
 
     public static final String SUNDTRACKBEAN = "sundtrackbean";
     public static MeetingConfig meetingConfig;
@@ -263,6 +263,12 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
     @Bind(R.id.layout_meeting_default_document)
     RelativeLayout meetingDefaultDocument;
 
+    @Bind(R.id.prepared_layout_invite)
+    LinearLayout preparedInviteLayout;
+
+    @Bind(R.id.layout_teach_prepared)
+    RelativeLayout preparedDefaultDocument;
+
     @Bind(R.id.txt_meeting_id)
     TextView meetingIdText;
 
@@ -300,6 +306,9 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
 
     @Bind(R.id._layout_share)
     LinearLayout _shareLayout;
+
+    @Bind(R.id.prepared_layout_share)
+    LinearLayout preparedShareLayout;
 
     @Bind(R.id.txt_role)
     TextView roleText;
@@ -360,69 +369,81 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
         gson = new Gson();
         pageCache = DocumentPageCache.getInstance(this);
         //--
+        if (meetingConfig.getRoleInLession() == 2) {
+            // 老师备课
+            Log.e("check_role_in_lession", "showCoursePreparedDialog");
+            showCoursePreparedDialog();
+        }
         menuManager = BottomMenuManager.getInstance(this, meetingConfig);
         menuManager.setBottomMenuOperationsListener(this);
         menuManager.setMenuIcon(menuIcon);
+        messageManager = SocketMessageManager.getManager(LessionActivity.this);
+        messageManager.registerMessageReceiver();
+        handleRejoinMeetingBecauseFailed();
         initWeb();
         soundtrackPlayManager = new SoundtrackPlayManager(this, meetingConfig, soundtrackPlayLayout);
         bottomFilePop = new PopBottomFile(this);
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         /*获取机构类型*/
-        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
-        MeetingServiceTools.getInstance().getAccountInfo(url, MeetingServiceTools.GETACCOUNTINFO, new ServiceInterfaceListener() {
-            @Override
-            public void getServiceReturnData(Object object) {
-                AccountSettingBean accountSettingBean = (AccountSettingBean) object;
-                meetingConfig.setSystemType(accountSettingBean.getSystemType());
+//        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
+//        MeetingServiceTools.getInstance().getAccountInfo(url, MeetingServiceTools.GETACCOUNTINFO, new ServiceInterfaceListener() {
+//            @Override
+//            public void getServiceReturnData(Object object) {
+//                AccountSettingBean accountSettingBean = (AccountSettingBean) object;
+//                meetingConfig.setSystemType(accountSettingBean.getSystemType());
+//
 
-                messageManager = SocketMessageManager.getManager(LessionActivity.this);
-                messageManager.registerMessageReceiver();
-                handleRejoinMeetingBecauseFailed();
-                if (meetingConfig.getType() != MeetingType.MEETING) {
-                    messageManager.sendMessage_JoinMeeting(meetingConfig);
-                } else {
-                    if (Tools.isOrientationPortrait(LessionActivity.this)) {
-//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    }
-                    //是meeting
+//                handleRejoinMeetingBecauseFailed();
+//                if (meetingConfig.getType() != MeetingType.MEETING) {
+//                    messageManager.sendMessage_JoinMeeting(meetingConfig);
+//
+//                } else {
+//                    if (Tools.isOrientationPortrait(LessionActivity.this)) {
+////                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//                    }
+//                    //是meeting
+//
+//                    if (meetingConfig.getLessionId() == -1) {
+//                        messageManager.sendMessage_JoinMeeting(meetingConfig);
+//                        // 会议还没有开始
+//                        return;
+//                    }
+//
+//                    MeetingKit.getInstance().init(LessionActivity.this, meetingConfig);
+//                    String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
+//                    MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
+//                        @Override
+//                        public void getServiceReturnData(Object object) {
+//                            if (meetingConfig == null) {
+//                                return;
+//                            }
+//                            TvDevice tvDevice = (TvDevice) object;
+//                            if (tvDevice != null) {
+//                                if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
+//                                    openWarningInfo(0);
+//                                } else {
+//                                    if (meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE) {
+//                                        showAudiencePromptDialog();
+//                                        messageManager.sendMessage_JoinMeeting(meetingConfig);
+////                                MeetingKit.getInstance().startMeeting();
+//                                    } else {
+//                                        MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
+//                                    }
+//                                }
+//                            } else {
+//                                MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
+//
+//                            }
+//                        }
+//                    });
+//                }
+//            }
+//        });
 
-                    if (meetingConfig.getLessionId() == -1) {
-                        messageManager.sendMessage_JoinMeeting(meetingConfig);
-                        // 会议还没有开始
-                        return;
-                    }
 
-                    MeetingKit.getInstance().init(LessionActivity.this, meetingConfig);
-                    String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
-                    MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
-                        @Override
-                        public void getServiceReturnData(Object object) {
-                            if (meetingConfig == null) {
-                                return;
-                            }
-                            TvDevice tvDevice = (TvDevice) object;
-                            if (tvDevice != null) {
-                                if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
-                                    openWarningInfo(0);
-                                } else {
-                                    if (meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE) {
-                                        showAudiencePromptDialog();
-                                        messageManager.sendMessage_JoinMeeting(meetingConfig);
-//                                MeetingKit.getInstance().startMeeting();
-                                    } else {
-                                        MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
-                                    }
-                                }
-                            } else {
-                                MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
-
-                            }
-                        }
-                    });
-                }
-            }
-        });
+//
+//        }
         mSoundtrackBean = (SoundtrackBean) getIntent().getSerializableExtra(SUNDTRACKBEAN);
 
     }
@@ -576,6 +597,7 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
 
     private ConnectionChangedListener connectionChangedListener = new ConnectionChangedListener();
 
+
     private class ConnectionChangedListener implements ConnectionClassManager.ConnectionClassStateChangeListener {
         @Override
         public void onBandwidthStateChange(ConnectionQuality connectionQuality) {
@@ -595,6 +617,7 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
 
     @Override
     protected void onResume() {
+
         ConnectionClassManager.getInstance().register(connectionChangedListener);
         if (menuManager != null) {
             menuManager.setMenuIcon(menuIcon);
@@ -650,6 +673,7 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
         if (meetingConfig == null) {
             meetingConfig = new MeetingConfig();
         }
+
         meetingConfig.setType(data.getIntExtra("meeting_type", MeetingType.DOC));
         meetingConfig.setMeetingId(data.getStringExtra("meeting_id"));
         meetingConfig.setLessionId(data.getIntExtra("lession_id", 0));
@@ -659,6 +683,9 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
         meetingConfig.setUserToken(UserData.getUserToken(this));
         meetingConfig.setFromMeeting(data.getBooleanExtra("from_meeting", false));
         meetingConfig.setSpaceId(getIntent().getIntExtra("space_id", 0));
+        int roleInLession = getIntent().getIntExtra("lession_role", 0);
+        Log.e("check_role_in_lession", "role:" + roleInLession);
+        meetingConfig.setRoleInLession(roleInLession);
         meetingConfig.setHost(getIntent().getBooleanExtra("is_host", false));
         return meetingConfig;
     }
@@ -795,6 +822,7 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
         //notify change file
         notifyDocumentChanged();
         meetingDefaultDocument.setVisibility(View.GONE);
+        preparedDefaultDocument.setVisibility(View.GONE);
         web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         web.loadUrl("javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
         web.loadUrl("javascript:Record()", null);
@@ -1488,23 +1516,23 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
             }
             // handle 自己声网的状态
 
-            if(meetingSettingCache.getMeetingSetting().isMicroOn()){
-                if(helloMessage.getMicrophoneStatus() != 2){
-                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,true,meetingSettingCache.getMeetingSetting().isCameraOn());
+            if (meetingSettingCache.getMeetingSetting().isMicroOn()) {
+                if (helloMessage.getMicrophoneStatus() != 2) {
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig, true, meetingSettingCache.getMeetingSetting().isCameraOn());
                 }
-            }else {
-                if(helloMessage.getMicrophoneStatus() == 2){
-                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,false,meetingSettingCache.getMeetingSetting().isCameraOn());
+            } else {
+                if (helloMessage.getMicrophoneStatus() == 2) {
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig, false, meetingSettingCache.getMeetingSetting().isCameraOn());
                 }
             }
 
-            if(meetingSettingCache.getMeetingSetting().isCameraOn()){
-                if(helloMessage.getCameraStatus() != 2){
-                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,meetingSettingCache.getMeetingSetting().isMicroOn(),true);
+            if (meetingSettingCache.getMeetingSetting().isCameraOn()) {
+                if (helloMessage.getCameraStatus() != 2) {
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig, meetingSettingCache.getMeetingSetting().isMicroOn(), true);
                 }
-            }else {
-                if(helloMessage.getCameraStatus() == 2){
-                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,meetingSettingCache.getMeetingSetting().isMicroOn(),false);
+            } else {
+                if (helloMessage.getCameraStatus() == 2) {
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig, meetingSettingCache.getMeetingSetting().isMicroOn(), false);
                 }
             }
 
@@ -3388,8 +3416,10 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
         createBlankPageLayout.setOnClickListener(this);
         inviteLayout.setOnClickListener(this);
         shareLayout.setOnClickListener(this);
+        preparedInviteLayout.setOnClickListener(this);
         _inviteLayout.setOnClickListener(this);
         _shareLayout.setOnClickListener(this);
+        preparedShareLayout.setOnClickListener(this);
         meetingMenuMemberImage.setOnClickListener(this);
         CameraTouchListener cameraTouchListener = new CameraTouchListener();
         cameraTouchListener.setCameraLayout(cameraLayout);
@@ -3424,12 +3454,14 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
                 break;
             case R.id._layout_invite:
             case R.id.layout_invite:
+            case R.id.prepared_layout_invite:
                 Intent intent = new Intent(this, AddMeetingMemberActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
             case R.id.layout_share:
             case R.id._layout_share:
+
                 if (meetingConfig.getType() != MeetingType.MEETING) {
                     return;
                 }
@@ -3444,6 +3476,13 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
                     showShareDocInMeetingDialog();
                 }
 
+                break;
+            case R.id.prepared_layout_share:
+                if (bottomFilePop != null) {
+                    menuIcon.setEnabled(false);
+                    menuIcon.setImageResource(R.drawable.shape_transparent);
+                    bottomFilePop.openAndShowAdd(web, this);
+                }
                 break;
             case R.id.layout_create_blank_page:
                 reqeustNewBlankPage();
@@ -4590,7 +4629,6 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
     }
 
 
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveEventSoundSync(EventSoundSync eventSoundSync) {
         Log.e("syncing---", eventSoundSync.getSoundtrackID() + "  " + eventSoundSync.getStatus() + "  " + eventSoundSync.getTime());
@@ -4779,7 +4817,7 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
 
     @Override
     public void onCameraFrameClick(AgoraMember member) {
-        if(!isPresenter()){
+        if (!isPresenter()) {
             return;
         }
         handleFullScreenCamera(cameraAdapter);
@@ -5124,15 +5162,17 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
 
 
     PrepareLessionDialog prepareLessionDialog;
-    private void showCoursePreparedDialog(){
-        if(prepareLessionDialog != null){
-            if(prepareLessionDialog.isShowing()){
+
+    private void showCoursePreparedDialog() {
+        if (prepareLessionDialog != null) {
+            if (prepareLessionDialog.isShowing()) {
                 prepareLessionDialog.dismiss();
                 prepareLessionDialog = null;
             }
         }
 
         prepareLessionDialog = new PrepareLessionDialog(this);
+        prepareLessionDialog.setOnPreparedOptionsListener(this);
         prepareLessionDialog.show();
     }
 
@@ -5144,7 +5184,6 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
             return;
         }
 
-        showCoursePreparedDialog();
 
         if (data.has("retCode")) {
 
@@ -5189,7 +5228,7 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
                     }
 
                     if (dataJson.has("lessonId")) {
-                        if(Integer.parseInt(dataJson.getString("lessonId")) > 0){
+                        if (Integer.parseInt(dataJson.getString("lessonId")) > 0) {
                             meetingConfig.setLessionId(Integer.parseInt(dataJson.getString("lessonId")));
                         }
                     }
@@ -5204,7 +5243,15 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
                     if (meetingConfig.getType() == MeetingType.DOC) {
                         meetingLayout.setVisibility(View.GONE);
                         meetingMenu.setVisibility(View.GONE);
-                        requestDocumentsAndShowPage();
+                        if (AppConfig.UserID.equals(joinMeetingMessage.getUserId())) {
+                            if (meetingConfig.getRoleInLession() == 2) {
+                                // 老师进来备课
+                                hideEnterLoading();
+                                preparedDefaultDocument.setVisibility(View.VISIBLE);
+
+                            }
+                        }
+
                     } else if (meetingConfig.getType() == MeetingType.MEETING) {
                         waitingMeetingLayout.setVisibility(View.GONE);
                         if (dataJson.has("presenterSessionId")) {
@@ -5322,7 +5369,6 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
             MeetingPauseManager.getInstance(this, meetingConfig).hide();
         }
     }
-
 
 
     private void showWatingMeeting() {
@@ -5649,6 +5695,29 @@ public class LessionActivity extends BaseWebActivity implements PopBottomMenu.Bo
     public void eventStartJoinMeeting(EventSendJoinMeetingMessage joinMeetingMessage) {
         this.joinMeetingMessage = joinMeetingMessage;
         rejoinHandler.obtainMessage(MESSAGE_JOIN_TIME).sendToTarget();
+    }
+
+    @Override
+    public void onPreparedClosed() {
+        finish();
+    }
+
+    @Override
+    public void onPreparedLession() {
+        meetingConfig.setMeetingId(meetingConfig.getMeetingId() + "," + AppConfig.UserID);
+        if (messageManager != null) {
+            messageManager.sendMessage_JoinMeeting(meetingConfig);
+        }
+    }
+
+    @Override
+    public void onTryLession() {
+
+    }
+
+    @Override
+    public void onStartLession() {
+
     }
 
 }

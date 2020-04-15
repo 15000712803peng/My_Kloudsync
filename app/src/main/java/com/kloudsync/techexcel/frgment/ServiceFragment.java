@@ -891,8 +891,18 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
     }
 
     private void startMeetingBeforeCheckPession() {
+
         if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
-            showStartMeetingDialog();
+//            showStartMeetingDialog();
+            if (!Tools.isFastClick()) {
+                if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
+                    Toast.makeText(getActivity(), "你加入的课堂不存在!", Toast.LENGTH_LONG).show();
+                } else {
+//                                    getClassRoomLessonID(AppConfig.ClassRoomID);
+                    doStartMeeting(AppConfig.ClassRoomID);
+                }
+            }
+
         } else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{
                     Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING);

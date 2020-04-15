@@ -18,6 +18,7 @@ import android.widget.ListView;
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.Course;
+import com.kloudsync.techexcel.bean.CourseItemData;
 import com.kloudsync.techexcel.bean.EventStartMeeting;
 import com.kloudsync.techexcel.bean.LessionInCourse;
 import com.kloudsync.techexcel.bean.MeetingType;
@@ -31,6 +32,7 @@ import com.kloudsync.techexcel.ui.LessionActivity;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.ub.service.activity.MeetingPropertyActivity;
 import com.ub.techexcel.adapter.CourseAdapter;
+import com.ub.techexcel.adapter.LessionAdapter;
 import com.ub.techexcel.adapter.ServiceAdapter2;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.service.ConnectService;
@@ -112,12 +114,12 @@ public class CourseListFragment extends MyFragment implements CourseLessionMoreO
             public List<Course> apply(Integer integer) throws Exception {
                 return requestCourses();
             }
-        }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<Course>>() {
+        }).map(new Function<List<Course>, List<LessionInCourse>>() {
             @Override
-            public void accept(List<Course> serviceBeans) throws Exception {
-                loadCourses(serviceBeans);
+            public List<LessionInCourse> apply(List<Course> courses) throws Exception {
+                return getAllLessions(courses);
             }
-        });
+        }).subscribe();
 
     }
 
@@ -168,6 +170,42 @@ public class CourseListFragment extends MyFragment implements CourseLessionMoreO
 
     }
 
+    public List<LessionInCourse> getAllLessions(final List<Course> courses) {
+        final List<LessionInCourse> allLessions = new ArrayList<>();
+        String[] meetingIds = new String[courses.size()];
+
+        for (int i = 0; i < courses.size(); ++i) {
+            meetingIds[i] = courses.get(i).getMeetingID() + "";
+        }
+
+        Observable.fromArray(meetingIds).observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String meetingId) throws Exception {
+                if (!TextUtils.isEmpty(meetingId) && !meetingId.equals("0")) {
+                    JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetRecurringMeetingItemList(meetingId, type);
+                    if (jsonObject.has("RetCode")) {
+                        if (jsonObject.getInt("RetCode") == 0) {
+                            CourseItemData itemData = new Gson().fromJson(jsonObject.toString(), CourseItemData.class);
+                            if (itemData.getRetData() != null && itemData.getRetData().size() > 0) {
+                                allLessions.addAll(itemData.getRetData());
+                            }
+                        }
+                    }
+                }
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                loadLessions(allLessions);
+            }
+        }).subscribe();
+
+        return allLessions;
+
+
+
+    }
+
     public void loadCourses(List<Course> courses) {
         if (courses == null || courses.size() == 0) {
             noMeetingLayout.setVisibility(View.VISIBLE);
@@ -184,6 +222,23 @@ public class CourseListFragment extends MyFragment implements CourseLessionMoreO
         }
     }
 
+    public void loadLessions(List<LessionInCourse> lessions) {
+        Log.e("loadLessions","lessions:" + lessions.size());
+        if (lessions == null || lessions.size() == 0) {
+            noMeetingLayout.setVisibility(View.VISIBLE);
+            meetingList.setVisibility(View.GONE);
+        } else {
+            noMeetingLayout.setVisibility(View.GONE);
+            meetingList.setVisibility(View.VISIBLE);
+            lessions = _sortBydata(lessions);
+            lessionAdapter = new LessionAdapter(getActivity(), lessions, true, 0);
+            lessionAdapter.setType(type);
+            lessionAdapter.setLessionOptionsListener(this);
+            meetingList.setAdapter(lessionAdapter);
+
+        }
+    }
+
 
     private void shareDocumentDialog(final ServiceBean document) {
         final PopShareMeeting psk = new PopShareMeeting();
@@ -192,6 +247,7 @@ public class CourseListFragment extends MyFragment implements CourseLessionMoreO
     }
 
     CourseAdapter courseAdapter;
+    LessionAdapter lessionAdapter;
 
     private List<Course> sortBydata(List<Course> serviceBeanList) {
         Collections.sort(serviceBeanList, new Comparator<Course>() {
@@ -216,6 +272,52 @@ public class CourseListFragment extends MyFragment implements CourseLessionMoreO
 
         for (Course bean : serviceBeanList) {
             String planedsatrtdate = bean.getStartDate();
+            if (TextUtils.isEmpty(planedsatrtdate)) {
+                bean.setDateType(4);
+            } else {
+                long today = System.currentTimeMillis();
+                long planed = Long.parseLong(planedsatrtdate);
+                long diff = diffTime();
+                long xx = planed - today;
+                if (xx < 0) {
+                    bean.setDateType(4);//今天之前的  已结束的
+                } else if (xx >= 0 && xx < diff) {
+                    bean.setDateType(1); //今天的
+//                    bean.setMins((int) (xx / 1000 / 60));
+                } else if (xx >= diff && xx < 86400000 * 2) {
+                    bean.setDateType(2); //明天的
+                } else if (xx >= 86400000 * 2) {
+                    bean.setDateType(3);//后天及以后
+                }
+            }
+        }
+        return serviceBeanList;
+
+    }
+
+    private List<LessionInCourse> _sortBydata(List<LessionInCourse> serviceBeanList) {
+        Collections.sort(serviceBeanList, new Comparator<LessionInCourse>() {
+            @Override
+            public int compare(LessionInCourse s1, LessionInCourse s2) {
+                String x1 = s1.getStartTime();
+                String x2 = s2.getStartTime();
+                if (TextUtils.isEmpty(x1)) {
+                    x1 = "0";
+                }
+                if (TextUtils.isEmpty(x2)) {
+                    x2 = "0";
+                }
+                if (Long.parseLong(x1) > Long.parseLong(x2)) {
+                    return -1;
+                } else if (Long.parseLong(x1) == Long.parseLong(x2)) {
+                    return 0;
+                }
+                return 1;
+            }
+        });
+
+        for (LessionInCourse bean : serviceBeanList) {
+            String planedsatrtdate = bean.getStartTime();
             if (TextUtils.isEmpty(planedsatrtdate)) {
                 bean.setDateType(4);
             } else {
@@ -321,18 +423,18 @@ public class CourseListFragment extends MyFragment implements CourseLessionMoreO
         Observable.just(lession).observeOn(Schedulers.io()).map(new Function<LessionInCourse, JSONObject>() {
             @Override
             public JSONObject apply(LessionInCourse lessionInCourse) throws Exception {
-                return ServiceInterfaceTools.getinstance().syncGetCourseRole(lession.getMeetingID()+"");
+                return ServiceInterfaceTools.getinstance().syncGetCourseRole(lession.getMeetingID() + "");
             }
         }).doOnNext(new Consumer<JSONObject>() {
             @Override
             public void accept(JSONObject jsonObject) throws Exception {
-                if(jsonObject.has("RetCode")){
-                    if(jsonObject.getInt("RetCode") == 0){
-                        if(jsonObject.has("RetData")){
+                if (jsonObject.has("RetCode")) {
+                    if (jsonObject.getInt("RetCode") == 0) {
+                        if (jsonObject.has("RetData")) {
                             JSONObject retData = jsonObject.getJSONObject("RetData");
-                            if(retData != null && retData.has("RoleInLesson")){
+                            if (retData != null && retData.has("RoleInLesson")) {
                                 int role = retData.getInt("RoleInLesson");
-                                startLession(lession,role);
+                                startLession(lession, role);
                             }
                         }
                     }
@@ -341,7 +443,8 @@ public class CourseListFragment extends MyFragment implements CourseLessionMoreO
         }).subscribe();
     }
 
-    public void startLession(LessionInCourse lessionInCourse,int role) {
+    public void startLession(LessionInCourse lessionInCourse, int role) {
+        Log.e("startLession","lession:" +  lessionInCourse + ",role:" + role);
         Intent intent = new Intent(getActivity(), LessionActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //-----
@@ -350,7 +453,7 @@ public class CourseListFragment extends MyFragment implements CourseLessionMoreO
         intent.putExtra("lession_id", lessionInCourse.getMeetingID());
         intent.putExtra("is_host", true);
         intent.putExtra("from_meeting", true);
-        intent.putExtra("lession_role",role);
+        intent.putExtra("lession_role", role);
         startActivity(intent);
     }
 

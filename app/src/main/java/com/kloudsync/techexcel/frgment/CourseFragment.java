@@ -123,7 +123,7 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
     private RelativeLayout search_layout;
     private ImageView switchCompanyImage;
 
-    private TextView tv_schedule_meeting,tv_start_meeting;
+    private TextView tv_schedule_meeting, tv_start_meeting;
     private SharedPreferences sharedPreferences;
 
     @SuppressLint("HandlerLeak")
@@ -854,12 +854,12 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
         startActivity(intent);
     }
 
-	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void toastRequestFaileMessage(EventRequestFailed eventRequestFailed) {
-		Toast.makeText(getActivity(), eventRequestFailed.getCode() + "," + eventRequestFailed.getMessage(), Toast.LENGTH_LONG).show();
-	}
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void toastRequestFaileMessage(EventRequestFailed eventRequestFailed) {
+        Toast.makeText(getActivity(), eventRequestFailed.getCode() + "," + eventRequestFailed.getMessage(), Toast.LENGTH_LONG).show();
+    }
 
-    private void goToWatingMeeting(EventJoinMeeting eventJoinMeeting){
+    private void goToWatingMeeting(EventJoinMeeting eventJoinMeeting) {
         Intent intent = new Intent(getActivity(), DocAndMeetingActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //-----
@@ -883,7 +883,15 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
 
     private void startMeetingBeforeCheckPession() {
         if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
-            showStartMeetingDialog();
+            if (!Tools.isFastClick()) {
+                if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {
+                    Toast.makeText(getActivity(), "你加入的课堂不存在!", Toast.LENGTH_LONG).show();
+                } else {
+//                                    getClassRoomLessonID(AppConfig.ClassRoomID);
+                    doStartMeeting(AppConfig.ClassRoomID);
+                }
+            }
+//            showStartMeetingDialog();
         } else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{
                     Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING);
@@ -961,18 +969,18 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
 
         String regex = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{3,12}$";
 
-        if(TextUtils.isEmpty(classRoomId)){
-            Toast.makeText(getActivity(),"会议id不能是空",Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(classRoomId)) {
+            Toast.makeText(getActivity(), "会议id不能是空", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if((classRoomId.length() < 3)){
-            Toast.makeText(getActivity(),"会议id的长度需要大于等于3",Toast.LENGTH_SHORT).show();
+        if ((classRoomId.length() < 3)) {
+            Toast.makeText(getActivity(), "会议id的长度需要大于等于3", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if(!StringUtils.hasChar(classRoomId)){
-            Toast.makeText(getActivity(),"会议id至少包含一个字母",Toast.LENGTH_SHORT).show();
+        if (!StringUtils.hasChar(classRoomId)) {
+            Toast.makeText(getActivity(), "会议id至少包含一个字母", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -1020,22 +1028,23 @@ public class CourseFragment extends MyFragment implements View.OnClickListener {
             }
         }).start(ThreadManager.getManager());
     }
-    private String getBindViewText(int fileId){
-        String appBindName="";
-        int language = sharedPreferences.getInt("language",1);
-        if(language==1&&App.appENNames!=null){
-            for(int i=0;i<App.appENNames.size();i++){
-                if(fileId==App.appENNames.get(i).getFieldId()){
-                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
-                    appBindName=App.appENNames.get(i).getFieldName();
+
+    private String getBindViewText(int fileId) {
+        String appBindName = "";
+        int language = sharedPreferences.getInt("language", 1);
+        if (language == 1 && App.appENNames != null) {
+            for (int i = 0; i < App.appENNames.size(); i++) {
+                if (fileId == App.appENNames.get(i).getFieldId()) {
+                    System.out.println("Name->" + App.appENNames.get(i).getFieldName());
+                    appBindName = App.appENNames.get(i).getFieldName();
                     break;
                 }
             }
-        }else if(language==2&&App.appCNNames!=null){
-            for(int i=0;i<App.appCNNames.size();i++){
-                if(fileId==App.appCNNames.get(i).getFieldId()){
-                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
-                    appBindName=App.appCNNames.get(i).getFieldName();
+        } else if (language == 2 && App.appCNNames != null) {
+            for (int i = 0; i < App.appCNNames.size(); i++) {
+                if (fileId == App.appCNNames.get(i).getFieldId()) {
+                    System.out.println("Name->" + App.appCNNames.get(i).getFieldName());
+                    appBindName = App.appCNNames.get(i).getFieldName();
                     break;
                 }
             }
