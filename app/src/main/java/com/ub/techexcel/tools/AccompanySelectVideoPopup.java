@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +15,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventSoundtrackList;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.SoundTrack;
+import com.kloudsync.techexcel.filepicker.FilePickerActivity;
 import com.kloudsync.techexcel.help.SoundtrackManager;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.kloudsync.activity.Document;
 
 import java.util.ArrayList;
@@ -268,7 +272,14 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				mFavoritePoPListener.uploadFile();
 				break;
 			case R.id.selectfile:
-
+				MyFavoriteVideoPopup favoritePopup = new MyFavoriteVideoPopup(mContext);
+				favoritePopup.setFavoritePoPListener(new MyFavoriteVideoPopup.FavoriteVideoPoPListener() {
+					@Override
+					public void save(Document document) {
+//						Toast.makeText(mContext,document.getTitle(),Toast.LENGTH_LONG).show();
+					}
+				});
+				favoritePopup.StartPop(selectfile);
 				break;
 		}
 	}
