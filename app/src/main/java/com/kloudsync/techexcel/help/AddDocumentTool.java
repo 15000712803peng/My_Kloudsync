@@ -209,7 +209,7 @@ public class AddDocumentTool {
     }
 
 
-    public static void addDocumentToFavoriteMp3(final Activity activity, String filePath, final DocumentUploadTool.DocUploadDetailLinstener uploadDetailLinstener) {
+    public static void addDocumentToFavoriteMp3(final Activity activity, String filePath, final int attachmentId, final DocumentUploadTool.DocUploadDetailLinstener uploadDetailLinstener) {
         final JSONObject jsonobject = null;
         String url = null;
         final File file = new File(filePath);
@@ -218,7 +218,7 @@ public class AddDocumentTool {
             try {
                 url = AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadFileWithHash?Title="
                         + URLEncoder.encode(LoginGet.getBase64Password(file.getName()), "UTF-8") +
-                        "&Hash=" + fileHash;
+                        "&Hash=" + fileHash+"&BindAttachmentID=" + attachmentId;
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -245,7 +245,7 @@ public class AddDocumentTool {
 
                             DocumentUploadTool uploadTool = new DocumentUploadTool(activity);
                             uploadTool.setUploadDetailLinstener(uploadDetailLinstener);
-                            uploadTool.uploadFileFavoritemp3(activity, targetFolderKey, field, file);
+                            uploadTool.uploadFileFavoritemp3(activity, targetFolderKey, field, file,attachmentId);
 
 
                         } else if (retcode.equals(AppConfig.Upload_Exist + "")) { //不要重复上传

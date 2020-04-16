@@ -726,8 +726,9 @@ Please input the cell phone number to add the contact
     <string name="invite">Invite</string>
     <string name="nofile">nofile</string>
     <string name="upload">Upload</string>
-    <string name="uploadsuccess">uploadsuccess</string>
-    <string name="uploadfailure">uploadfailure</string>
+    <string name="uploadsuccess">Upload Success</string>
+    <string name="uploadfailure">Upload Failure</string>
+    <string name="uploading">Uploading</string>
     <string name="downfailed">downfailed</string>
     <string name="to_be_allocated">to be allocated</string>
     <string name="weight">weight(kg)</string>

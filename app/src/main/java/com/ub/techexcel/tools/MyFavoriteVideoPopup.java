@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.info.ConvertingResult;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.kloudsync.activity.Document;
 
@@ -111,6 +114,26 @@ public class MyFavoriteVideoPopup {
             public void onClick(View view) {
                 if(selectPosition>0&&selectPosition<list.size()){
                     mFavoritePoPListener.save(list.get(selectPosition));
+
+
+//                    ConvertingResult convertingResult=new ConvertingResult();
+//                    convertingResult.setFileName(fileNamecon);
+//                    convertingResult.setCount(1);
+//                    ServiceInterfaceTools.getinstance().uploadFavoriteNewFile(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
+//                            ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
+//                            fileName, "", fileHash,
+//                            convertingResult, field, new ServiceInterfaceListener() {
+//                                @Override
+//                                public void getServiceReturnData(Object object) {
+//                                    Log.e("UploadMp3File", "FavoriteAttachment/UploadNewFile");
+//                                    if (uploadDetailLinstener != null) {
+//                                        uploadDetailLinstener.uploadFinished(object);
+//                                    }
+//                                }
+//                            }
+//                    );
+
+
                 }
                 mPopupWindow.dismiss();
             }

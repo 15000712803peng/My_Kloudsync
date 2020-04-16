@@ -46,10 +46,10 @@
                     android:id="@+id/cancel"
                     android:layout_width="100dp"
                     android:layout_height="40dp"
-                    android:background="@drawable/blue_cycle_bg"
+                    android:background="@drawable/peertimeselect_bg3"
                     android:gravity="center"
                     android:text="@string/Cancel"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/skyblue" />
             </LinearLayout>
 
 
@@ -170,7 +170,6 @@
                 android:id="@+id/layout_background_audio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:visibility="invisible">
 
                 <TextView
@@ -234,8 +233,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <LinearLayout
-                        android:id="@+id/layout_add_voice"
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingLeft="8dp"
@@ -271,17 +269,74 @@
                                 android:textSize="14sp" />
                         </LinearLayout>
 
+                        <LinearLayout
+                            android:id="@+id/uploadsoundfilell"
+                            android:layout_width="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="6dp"
+                            android:visibility="invisible"
+                            android:layout_height="wrap_content">
+
+                       <LinearLayout
+                           android:id="@+id/uploadsoundfile"
+                           android:layout_width="wrap_content"
+                           android:orientation="horizontal"
+                           android:layout_marginTop="5dp"
+                           android:background="@drawable/accompany_bg_shape"
+                           android:layout_height="wrap_content">
+
+                           <ImageView
+                               android:layout_width="18dp"
+                               android:layout_gravity="center_vertical"
+                               android:src="@drawable/accompany_create_record"
+                               android:layout_height="18dp"></ImageView>
+
                         <TextView
-                            android:id="@+id/addrecord"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginLeft="5dp"
+
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/accompany_bg_shape"
-                            android:text="@string/mtAddFile"
+                            android:text="录制新声音"
                             android:textColor="@color/skyblue"
                             android:textSize="14sp"
-                            android:visibility="invisible" />
-                    </LinearLayout>
+                            android:visibility="visible" />
+                       </LinearLayout>
+
+
+
+                        <LinearLayout
+                            android:id="@+id/selectsoundfile"
+                            android:layout_width="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginLeft="10dp"
+                            android:background="@drawable/accompany_bg_shape"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_gravity="center_vertical"
+                                android:src="@drawable/accompany_create_music"
+                                android:layout_height="18dp"></ImageView>
+
+                        <TextView
+                            android:layout_marginLeft="10dp"
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="上传声音文件"
+                            android:textColor="@color/skyblue"
+                            android:textSize="14sp"
+                            android:visibility="visible" />
+
+                        </LinearLayout>
+
+
+
+                        </LinearLayout>
+
+
+                    </RelativeLayout>
 
                     <RelativeLayout
                         android:id="@+id/layout_voice_item"
