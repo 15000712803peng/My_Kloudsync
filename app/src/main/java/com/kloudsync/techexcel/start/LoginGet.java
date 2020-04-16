@@ -923,6 +923,17 @@ public class LoginGet {
         URL_MYFAVOURTES = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + type;
         newThreadGetResultBytoken(URL_MYFAVOURTES, AppConfig.MY_FAVOURITES);
     }
+    public void MyFavoriteRequestNew(Context context, int type,int attachmentId) {
+        mContext = context;
+        sharedPreferences = mContext.getSharedPreferences(AppConfig.LOGININFO,
+                mContext.MODE_PRIVATE);
+        int SchoolId = sharedPreferences.getInt("SchoolID", -1);
+//        URL_MYFAVOURTES = AppConfig.URL_PUBLIC + "EventAttachment/MyFavoriteAttachments?type=" + type;
+//        URL_MYFAVOURTES = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachments";
+        URL_MYFAVOURTES = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + type+"&BindAttachmentID=" + attachmentId;
+        Log.e("MY_FAVOURITES", URL_MYFAVOURTES + "");
+        newThreadGetResultBytoken(URL_MYFAVOURTES, AppConfig.MY_FAVOURITES);
+    }
 
     /**
      * 获取所有自己的群组消息

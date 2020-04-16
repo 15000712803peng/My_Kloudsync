@@ -238,8 +238,10 @@ public class DocumentUploadTool {
 
     boolean isNeedConvert=true;
     String fileNamecon;
-    public void uploadFileFavoritemp3(final Context context, String targetFolderKey1, int field1, File file) {
+    int bindAttachmentID=0;
+    public void uploadFileFavoritemp3(final Context context, String targetFolderKey1, int field1, File file,int bindAttachmentID) {
         this.mContext = context;
+        this.bindAttachmentID=bindAttachmentID;
         this.targetFolderKey = targetFolderKey1;
         this.field = field1;
         this.mfile = file;
@@ -387,7 +389,7 @@ public class DocumentUploadTool {
                                     ServiceInterfaceTools.getinstance().uploadFavoriteNewFile(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
                                             ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
                                             fileName, "", fileHash,
-                                            convertingResult, field, new ServiceInterfaceListener() {
+                                            convertingResult, field, bindAttachmentID,new ServiceInterfaceListener() {
                                                 @Override
                                                 public void getServiceReturnData(Object object) {
                                                     Log.e("UploadMp3File", "FavoriteAttachment/UploadNewFile");
@@ -563,7 +565,7 @@ public class DocumentUploadTool {
                                 ServiceInterfaceTools.getinstance().uploadFavoriteNewFile(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
                                         ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
                                         fileName, "", fileHash,
-                                        convertingResult, field, new ServiceInterfaceListener() {
+                                        convertingResult, field, bindAttachmentID,new ServiceInterfaceListener() {
                                             @Override
                                             public void getServiceReturnData(Object object) {
                                                 Log.e("UploadMp3File", "FavoriteAttachment/UploadNewFile");

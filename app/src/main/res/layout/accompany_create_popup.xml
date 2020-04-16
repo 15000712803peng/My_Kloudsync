@@ -46,10 +46,10 @@
                     android:id="@+id/cancel"
                     android:layout_width="100dp"
                     android:layout_height="40dp"
-                    android:background="@drawable/blue_cycle_bg"
+                    android:background="@drawable/peertimeselect_bg3"
                     android:gravity="center"
                     android:text="@string/Cancel"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/skyblue" />
             </LinearLayout>
 
 

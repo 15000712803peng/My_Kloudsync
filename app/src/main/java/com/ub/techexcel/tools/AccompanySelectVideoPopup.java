@@ -196,8 +196,8 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				adapter2.notifyDataSetChanged();
 			}
 		});
-		loginGet.MyFavoriteRequest(mContext, 3);
-
+		loginGet.MyFavoriteRequestNew(mContext, 3,0);
+//		loginGet.MyFavoriteRequestNew(mContext, 3,meetingConfig.getDocument().getAttachmentID());
 		SoundtrackManager.getInstance().requestSoundtrackList(meetingConfig, this);
 
 	}
