@@ -513,7 +513,8 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
 			case 2:
 				title = "创建新的公司/机构";
 				content = "创建属于自己的公司/机构";
-				about = getApplicationContext().getResources().getString(R.string.click_help);
+//				about = getApplicationContext().getResources().getString(R.string.click_help);
+                                about = "";
 				tv_guide_next.setVisibility(View.VISIBLE);
 				tv_guide_previous.setVisibility(View.VISIBLE);
 				tv_guide_previous.setText("再看一次");

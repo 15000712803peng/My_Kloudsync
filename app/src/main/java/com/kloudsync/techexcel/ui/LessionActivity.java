@@ -84,8 +84,10 @@ import com.kloudsync.techexcel.bean.EventShowFullAgora;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
 import com.kloudsync.techexcel.bean.EventShowNotePage;
 import com.kloudsync.techexcel.bean.EventSocketMessage;
+import com.kloudsync.techexcel.bean.EventStartMeeting;
 import com.kloudsync.techexcel.bean.HelloMessage;
 import com.kloudsync.techexcel.bean.JoinMeetingMessage;
+import com.kloudsync.techexcel.bean.LessionInCourse;
 import com.kloudsync.techexcel.bean.MeetingChangeBean;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
@@ -181,6 +183,7 @@ import com.ub.techexcel.tools.MeetingWarningDialog;
 import com.ub.techexcel.tools.PrepareLessionDialog;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
+import com.ub.techexcel.tools.StudentLessionDialog;
 import com.ub.techexcel.tools.Tools;
 import com.ub.techexcel.tools.UserSoundtrackDialog;
 import com.ub.techexcel.tools.YinxiangCreatePopup;
@@ -224,7 +227,7 @@ import retrofit2.Response;
  */
 
 public class LessionActivity extends BaseLessionActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
-        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener, PrepareLessionDialog.OnPreparedOptionsListener {
+        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener, PrepareLessionDialog.OnPreparedOptionsListener, StudentLessionDialog.OnStudentPreparedOptionsListener {
 
     public static final String SUNDTRACKBEAN = "sundtrackbean";
     public static MeetingConfig meetingConfig;
@@ -344,6 +347,8 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
     private int joinTime = 0;
     private EventSendJoinMeetingMessage joinMeetingMessage;
 
+    private LessionInCourse lessionInCourse;
+
     @Override
     public void showErrorPage() {
 
@@ -366,13 +371,21 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
         //----
         RealMeetingSetting realMeetingSetting = MeetingSettingCache.getInstance(this).getMeetingSetting();
         meetingConfig = getConfig();
+        String _lessionInCourse = getIntent().getStringExtra("lession_in_course");
+
         gson = new Gson();
+        if(!TextUtils.isEmpty(_lessionInCourse)){
+            lessionInCourse = gson.fromJson(_lessionInCourse,LessionInCourse.class);
+        }
+
         pageCache = DocumentPageCache.getInstance(this);
         //--
         if (meetingConfig.getRoleInLession() == 2) {
             // 老师备课
             Log.e("check_role_in_lession", "showCoursePreparedDialog");
             showCoursePreparedDialog();
+        } else {
+            showStudentPreparedDialog();
         }
         menuManager = BottomMenuManager.getInstance(this, meetingConfig);
         menuManager.setBottomMenuOperationsListener(this);
@@ -385,61 +398,50 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
         bottomFilePop = new PopBottomFile(this);
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
-        /*获取机构类型*/
-//        String url = AppConfig.URL_MEETING_BASE + "company/account_info?companyId=" + AppConfig.SchoolID;
-//        MeetingServiceTools.getInstance().getAccountInfo(url, MeetingServiceTools.GETACCOUNTINFO, new ServiceInterfaceListener() {
-//            @Override
-//            public void getServiceReturnData(Object object) {
-//                AccountSettingBean accountSettingBean = (AccountSettingBean) object;
-//                meetingConfig.setSystemType(accountSettingBean.getSystemType());
+        handleRejoinMeetingBecauseFailed();
+//        if (meetingConfig.getType() != MeetingType.MEETING) {
+//            messageManager.sendMessage_JoinMeeting(meetingConfig);
 //
-
-//                handleRejoinMeetingBecauseFailed();
-//                if (meetingConfig.getType() != MeetingType.MEETING) {
-//                    messageManager.sendMessage_JoinMeeting(meetingConfig);
-//
-//                } else {
-//                    if (Tools.isOrientationPortrait(LessionActivity.this)) {
+//        } else {
+//            if (Tools.isOrientationPortrait(LessionActivity.this)) {
 ////                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//                    }
-//                    //是meeting
+//            }
+//            //是meeting
 //
-//                    if (meetingConfig.getLessionId() == -1) {
-//                        messageManager.sendMessage_JoinMeeting(meetingConfig);
-//                        // 会议还没有开始
+//            if (meetingConfig.getLessionId() == -1) {
+//                messageManager.sendMessage_JoinMeeting(meetingConfig);
+//                // 会议还没有开始
+//                return;
+//            }
+//
+//            MeetingKit.getInstance().init(LessionActivity.this, meetingConfig);
+//            String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
+//            MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
+//                @Override
+//                public void getServiceReturnData(Object object) {
+//                    if (meetingConfig == null) {
 //                        return;
 //                    }
-//
-//                    MeetingKit.getInstance().init(LessionActivity.this, meetingConfig);
-//                    String url = AppConfig.URL_MEETING_BASE + "member/member_on_other_device?meetingId=" + meetingConfig.getMeetingId();
-//                    MeetingServiceTools.getInstance().getMemberOnOtherDevice(url, MeetingServiceTools.MEMBERONOTHERDEVICE, new ServiceInterfaceListener() {
-//                        @Override
-//                        public void getServiceReturnData(Object object) {
-//                            if (meetingConfig == null) {
-//                                return;
-//                            }
-//                            TvDevice tvDevice = (TvDevice) object;
-//                            if (tvDevice != null) {
-//                                if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
-//                                    openWarningInfo(0);
-//                                } else {
-//                                    if (meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE) {
-//                                        showAudiencePromptDialog();
-//                                        messageManager.sendMessage_JoinMeeting(meetingConfig);
+//                    TvDevice tvDevice = (TvDevice) object;
+//                    if (tvDevice != null) {
+//                        if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
+//                            openWarningInfo(0);
+//                        } else {
+//                            if (meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE) {
+//                                showAudiencePromptDialog();
+//                                messageManager.sendMessage_JoinMeeting(meetingConfig);
 ////                                MeetingKit.getInstance().startMeeting();
-//                                    } else {
-//                                        MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
-//                                    }
-//                                }
 //                            } else {
 //                                MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
-//
 //                            }
 //                        }
-//                    });
+//                    } else {
+//                        MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
+//
+//                    }
 //                }
-//            }
-//        });
+//            });
+//        }
 
 
 //
@@ -5170,10 +5172,23 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
                 prepareLessionDialog = null;
             }
         }
-
         prepareLessionDialog = new PrepareLessionDialog(this);
         prepareLessionDialog.setOnPreparedOptionsListener(this);
-        prepareLessionDialog.show();
+        prepareLessionDialog.show(lessionInCourse);
+    }
+
+    StudentLessionDialog studentPrepareLessionDialog;
+
+    private void showStudentPreparedDialog() {
+        if (studentPrepareLessionDialog != null) {
+            if (studentPrepareLessionDialog.isShowing()) {
+                studentPrepareLessionDialog.dismiss();
+                studentPrepareLessionDialog = null;
+            }
+        }
+        studentPrepareLessionDialog = new StudentLessionDialog(this);
+        studentPrepareLessionDialog.setOnPreparedOptionsListener(this);
+        studentPrepareLessionDialog.show(lessionInCourse);
     }
 
     public void handleMessageJoinMeeting(JSONObject data) {
@@ -5704,20 +5719,37 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
 
     @Override
     public void onPreparedLession() {
-        meetingConfig.setMeetingId(meetingConfig.getMeetingId() + "," + AppConfig.UserID);
+//        meetingConfig.setMeetingId(meetingConfig.getMeetingId() + "," + AppConfig.UserID);
         if (messageManager != null) {
-            messageManager.sendMessage_JoinMeeting(meetingConfig);
+            messageManager.sendMessage_JoinMeeting(meetingConfig, meetingConfig.getMeetingId() + "," + AppConfig.UserID);
         }
     }
 
     @Override
     public void onTryLession() {
-
+        meetingConfig.setHost(true);
+        meetingConfig.setType(MeetingType.MEETING);
+        MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
     }
 
     @Override
     public void onStartLession() {
+        meetingConfig.setHost(true);
+        meetingConfig.setType(MeetingType.MEETING);
+        MeetingKit.getInstance().prepareJoin(LessionActivity.this, meetingConfig);
 
+    }
+
+    @Override
+    public void onStudentPreparedClosed() {
+        finish();
+    }
+
+    @Override
+    public void onStudentPreparedLession() {
+        if (messageManager != null) {
+            messageManager.sendMessage_JoinMeeting(meetingConfig, meetingConfig.getMeetingId() + "," + AppConfig.UserID);
+        }
     }
 
 }

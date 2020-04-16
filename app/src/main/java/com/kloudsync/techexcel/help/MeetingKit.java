@@ -160,6 +160,8 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         settingDialog.show(host, meetingConfig);
     }
 
+
+
     public void startMeeting() {
         Log.e("MeetingKit", "start_meeting");
 //        meetingConfig.setRole(MeetingConfig.MeetingRole.HOST);
@@ -300,6 +302,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             @Override
             public void accept(String s) throws Exception {
                 JSONObject response = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/UpgradeToNormalLesson?lessonID=" + newMeetingId, null);
+                Log.e("UpgradeToNormalLession","url:" + AppConfig.URL_PUBLIC + "Lesson/UpgradeToNormalLesson?lessonID=" + newMeetingId + ",response:" + response);
                 if (response != null && response.getInt("RetCode") == 0) {
                     SocketMessageManager.getManager(host).sendMessage_LeaveMeeting(meetingConfig);
                     SocketMessageManager.getManager(host).sendMessage_startMeeting(meetingConfig, newMeetingId);

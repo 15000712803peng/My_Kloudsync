@@ -66,6 +66,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class CreateOrganizationActivityV2 extends AppCompatActivity implements View.OnClickListener, SelectCompanyLogoDialog.LogoOptionsListener {
 
+
     private RelativeLayout backLayout,rl_organization_upload;
     private LinearLayout ll_code;
     private CheckBox cb_code;

@@ -17,12 +17,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
+                android:id="@+id/txt_course_name"
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:background="@drawable/lession_name_border"
-                android:text="文学 课时1.文言文"
+                android:text=""
                 android:textColor="#ffff9500"
                 android:textSize="12sp"
                 android:layout_width="wrap_content"
@@ -50,14 +51,12 @@
 
         <TextView
             android:layout_marginTop="5dp"
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="作为老师，您可以"
+            android:text="作为学生，您可以"
             android:textColor="#ff3d78fb"
             android:textSize="11sp"
             />
-
 
         <RelativeLayout
             android:layout_marginTop="13dp"
@@ -126,7 +125,6 @@
         </RelativeLayout>
 
 
-
         <RelativeLayout
             android:layout_marginTop="16dp"
             android:background="@drawable/lession_options_border"
@@ -172,7 +170,6 @@
 
 
     </LinearLayout>
-
 
 
 </RelativeLayout>

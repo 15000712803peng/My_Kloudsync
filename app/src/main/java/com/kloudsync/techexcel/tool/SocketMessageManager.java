@@ -136,6 +136,31 @@ public class SocketMessageManager {
         }
     }
 
+    public void sendMessage_JoinMeeting(MeetingConfig config ,String meetingId) {
+
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "JOIN_MEETING");
+            message.put("sessionId", config.getUserToken());
+            message.put("meetingId", meetingId);
+            message.put("meetingPassword", "");
+            message.put("clientVersion", "v20140605.0");
+            message.put("role", config.getRole());
+//            message.put("role", 1);
+            message.put("mode", 0);
+            message.put("type", config.getType());
+            message.put("lessonId", config.getLessionId());
+            message.put("isInstantMeeting", 1);
+            if (config.getDocument() != null) {
+                message.put("itemId", config.getDocument().getItemID());
+            }
+            sendEventJoinMeeting("");
+            doSendMessage(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendMessage_startMeeting(MeetingConfig config, String newMeetingId) {
 
         try {

@@ -259,7 +259,7 @@ public class CreateOrganizationInviteActivity extends AppCompatActivity implemen
         startActivity(intent);
         LoginActivity.instance.finish();
         WelcomeAndCreateActivity.instance.finish();
-        CreateOrganizationActivityV2.instance.finish();
+//        CreateOrganizationActivityV2.instance.finish();
         finish();
     }
 

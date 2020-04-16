@@ -454,6 +454,7 @@ public class CourseListFragment extends MyFragment implements CourseLessionMoreO
         intent.putExtra("is_host", true);
         intent.putExtra("from_meeting", true);
         intent.putExtra("lession_role", role);
+        intent.putExtra("lession_in_course",new Gson().toJson(lessionInCourse));
         startActivity(intent);
     }
 
