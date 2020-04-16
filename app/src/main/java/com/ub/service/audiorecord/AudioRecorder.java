@@ -97,7 +97,7 @@ public class AudioRecorder {
         }
         Log.d("AudioRecorder", "===startRecord===" + audioRecord.getState());
         audioRecord.startRecording();
-
+//       audioRecord.getState();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -106,6 +106,14 @@ public class AudioRecorder {
         }).start();
 
     }
+
+    public int  getInitStatus(){
+        if(audioRecord!=null){
+            return audioRecord.getState();
+        }
+        return   AudioRecord.STATE_UNINITIALIZED;
+    }
+
 
     /**
      * 暂停录音
@@ -218,6 +226,7 @@ public class AudioRecorder {
         //将录音状态设置成正在录音状态
         status = Status.STATUS_START;
         while (status == Status.STATUS_START) {
+            Log.e("ddddddd",(audioRecord==null)+"  "+audiodata.length+"  "+bufferSizeInBytes);
             readsize = audioRecord.read(audiodata, 0, bufferSizeInBytes);
             if (AudioRecord.ERROR_INVALID_OPERATION != readsize && fos != null) {
                 try {

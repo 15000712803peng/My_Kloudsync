@@ -11,11 +11,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingType;
+import com.kloudsync.techexcel.config.AppConfig;
 
 public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickListener {
 
@@ -24,7 +24,6 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     private PopupWindow bottomMenuWindow;
     //--
     private ImageView menuIcon;
-
     private RelativeLayout menuClose;
     private RelativeLayout menuFile;
     private RelativeLayout menuStartMeeting;
@@ -35,11 +34,20 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     private RelativeLayout menuSync;
     private RelativeLayout menuSetting;
     private RelativeLayout menuShare;
+    private RelativeLayout menuPlayMeetingRecord;
+
     //----
     private MeetingConfig meetingConfig;
+    private boolean isShowMeetingRecordPlay;
+
+
+    public void setShowMeetingRecordPlay(boolean showMeetingRecordPlay) {
+        isShowMeetingRecordPlay = showMeetingRecordPlay;
+    }
 
     @Override
     public void onClick(View v) {
+
         switch (v.getId()) {
             case R.id.bottom_menu_close:
                 hide();
@@ -49,6 +57,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_file:
+	            if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
+                    if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+                        return;
+                    }
+                }
                 hide();
                 if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuFileClicked();
@@ -67,6 +80,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_notes:
+                if(meetingConfig.getType() == MeetingType.MEETING){
+                    if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+                        return;
+                    }
+                }
                 hide();
                 if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuNoteClicked();
@@ -86,6 +104,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_sync:
+	            if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
+		            if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                        return;
+                    }
+                }
                 hide();
                 if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuSyncClicked();
@@ -95,9 +118,18 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
 
             case R.id.bottom_menu_chat:
                 hide();
-                if(bottomMenuOperationsListener != null){
+                if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuChatClicked();
                 }
+                break;
+
+            case R.id.bottom_menu_play_meeting_record:
+                hide();
+                if (bottomMenuOperationsListener != null) {
+                    bottomMenuOperationsListener.menuPlayMeetingRecordClicked();
+                }
+                break;
+            default:
                 break;
         }
     }
@@ -116,9 +148,12 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
         void menuScanTvClicked();
 
         void menuMeetingMembersClicked();
+
         void menuChatClicked();
 
         void menuSyncClicked();
+
+        void menuPlayMeetingRecordClicked();
 
     }
 
@@ -164,6 +199,8 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
         menuSetting.setOnClickListener(this);
         menuShare = popupWindow.findViewById(R.id.bottom_menu_share);
         menuShare.setOnClickListener(this);
+        menuPlayMeetingRecord = popupWindow.findViewById(R.id.bottom_menu_play_meeting_record);
+        menuPlayMeetingRecord.setOnClickListener(this);
         width = (int) (mContext.getResources().getDisplayMetrics().widthPixels);
         bottomMenuWindow = new PopupWindow(popupWindow, LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, false);
@@ -179,6 +216,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     }
 
     private void initMenu(int meetingType) {
+
         switch (meetingType) {
             case MeetingType.DOC:
                 menuFile.setVisibility(View.VISIBLE);
@@ -199,18 +237,34 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 menuNote.setVisibility(View.VISIBLE);
                 menuSync.setVisibility(View.VISIBLE);
                 menuTv.setVisibility(View.VISIBLE);
+
                 menuStartMeeting.setVisibility(View.GONE);
                 menuShare.setVisibility(View.GONE);
                 menuClose.setVisibility(View.GONE);
+                menuSetting.setVisibility(View.GONE);
                 //------
                 menuMember.setVisibility(View.VISIBLE);
                 menuChat.setVisibility(View.VISIBLE);
-                menuSetting.setVisibility(View.VISIBLE);
+
                 break;
             case MeetingType.SYNCBOOK:
                 break;
             case MeetingType.SYNCROOM:
                 break;
+	        case MeetingType.UPCOMINGMEETING:
+		        menuFile.setVisibility(View.VISIBLE);
+		        menuNote.setVisibility(View.VISIBLE);
+		        menuSync.setVisibility(View.VISIBLE);
+		        menuStartMeeting.setVisibility(View.VISIBLE);
+		        menuTv.setVisibility(View.VISIBLE);
+		        menuClose.setVisibility(View.VISIBLE);
+
+		        menuMember.setVisibility(View.GONE);
+		        menuChat.setVisibility(View.GONE);
+		        menuShare.setVisibility(View.GONE);
+		        menuSetting.setVisibility(View.GONE);
+		        menuMember.setVisibility(View.GONE);
+		        break;
         }
     }
 
@@ -218,6 +272,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     public void show(ImageView menu, PopBottomMenu.BottomMenuOperationsListener bottomMenuOperationsListener) {
         this.menuIcon = menu;
         this.bottomMenuOperationsListener = bottomMenuOperationsListener;
+        if (isShowMeetingRecordPlay) {
+            menuPlayMeetingRecord.setVisibility(View.VISIBLE);
+        } else {
+            menuPlayMeetingRecord.setVisibility(View.GONE);
+        }
         bottomMenuWindow.showAtLocation(menu, Gravity.BOTTOM | Gravity.LEFT,
                 width - mContext.getResources().getDimensionPixelSize(R.dimen.fab_margin),
                 mContext.getResources().getDimensionPixelSize(R.dimen.menu_bottom_margin));

@@ -114,7 +114,7 @@
                 android:textStyle="bold"
                 android:paddingLeft="20dp"
                 android:textSize="16dp"
-                android:text="联系人"
+                android:text="@string/my_contact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -123,6 +123,7 @@
                 android:layout_height="wrap_content" />
 
             <ImageView
+                android:visibility="gone"
                 android:id="@+id/image_filter_contact"
                 android:layout_marginRight="16dp"
                 android:layout_width="20dp"
@@ -155,7 +156,7 @@
                 android:visibility="gone"
                 android:layout_marginTop="12dp"
                 android:textColor="@color/black"
-                android:text="还没有添加联系人"
+                android:text="@string/no_contract"
                 android:padding="12dp"
                 android:layout_centerHorizontal="true"
                 android:textSize="16dp"

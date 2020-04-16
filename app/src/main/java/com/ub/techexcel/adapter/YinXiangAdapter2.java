@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.Tools;
 
@@ -24,11 +25,13 @@ public class YinXiangAdapter2 extends RecyclerView.Adapter<RecyclerView.ViewHold
     private List<SoundtrackBean> allList;
     private Context mContext;
     private Uri defaultImageUri;
+	private MeetingConfig meetingConfig;
 
-    public YinXiangAdapter2(Context context, List<SoundtrackBean> mlist, List<SoundtrackBean> allList) {
+	public YinXiangAdapter2(Context context, List<SoundtrackBean> mlist, List<SoundtrackBean> allList, MeetingConfig meetingConfig) {
         this.mContext = context;
         this.mlist = mlist;
         this.allList = allList;
+		this.meetingConfig = meetingConfig;
 
         for (int i = 0; i < allList.size(); i++) {
             SoundtrackBean soundtrackBean = allList.get(i);
@@ -59,6 +62,15 @@ public class YinXiangAdapter2 extends RecyclerView.Adapter<RecyclerView.ViewHold
         holder.duration.setText(soundtrackBean.getDuration());
 
         holder.checkbox.setChecked(soundtrackBean.isCheck());
+
+
+	    if (meetingConfig.getSystemType() == 0) {
+		    holder.soundtype.setVisibility(View.GONE);
+	    } else {  //教育
+		    holder.soundtype.setVisibility(View.VISIBLE);
+	    }
+	    holder.soundtype.setText(soundtrackBean.getMusicType() == 0 ? "伴奏音乐" : "演唱");
+
         if (soundtrackBean.isCheck()) {
             holder.checkbox.setEnabled(false);
         } else {
@@ -90,6 +102,7 @@ public class YinXiangAdapter2 extends RecyclerView.Adapter<RecyclerView.ViewHold
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView username;
+	    TextView soundtype;
         TextView duration;
         SimpleDraweeView image;
         CheckBox checkbox;
@@ -98,6 +111,7 @@ public class YinXiangAdapter2 extends RecyclerView.Adapter<RecyclerView.ViewHold
             super(view);
             title = (TextView) view.findViewById(R.id.title);
             username = (TextView) view.findViewById(R.id.username);
+	        soundtype = (TextView) view.findViewById(R.id.soundtype);
             duration = (TextView) view.findViewById(R.id.duration);
             image = (SimpleDraweeView) view.findViewById(R.id.image);
             checkbox = (CheckBox) view.findViewById(R.id.checkbox);

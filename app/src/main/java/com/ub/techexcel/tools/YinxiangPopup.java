@@ -30,6 +30,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -188,12 +189,12 @@ public class YinxiangPopup implements View.OnClickListener {
                 dismiss();
 
 //                InviteOthersPopup inviteOthersPopup = new InviteOthersPopup();
-//                inviteOthersPopup.getPopwindow(mContext);
+//                inviteOthersPopup.getPopwindow(mActivity);
 //                inviteOthersPopup.setFavoritePoPListener(new InviteOthersPopup.FavoritePoPListener() {
 //                    @Override
 //                    public void select(List<Customer> list) {
 //                        SharedInAppPopup sharedInAppPopup = new SharedInAppPopup();
-//                        sharedInAppPopup.getPopwindow(mContext);
+//                        sharedInAppPopup.getPopwindow(mActivity);
 //                        sharedInAppPopup.setFavoritePoPListener(new SharedInAppPopup.FavoritePoPListener() {
 //                            @Override
 //                            public void select(List<Customer> list) {
@@ -239,7 +240,7 @@ public class YinxiangPopup implements View.OnClickListener {
         mPopupWindow.getWindow().setGravity(Gravity.RIGHT);
         WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
 //        DisplayMetrics dm = new DisplayMetrics();
-//        (((Activity)mContext).getWindowManager()).getDefaultDisplay().getRealMetrics(dm);
+//        (((Activity)mActivity).getWindowManager()).getDefaultDisplay().getRealMetrics(dm);
         View root = ((Activity) mContext).getWindow().getDecorView();
         params.height = root.getMeasuredHeight();
         mPopupWindow.getWindow().setAttributes(params);
@@ -316,7 +317,7 @@ public class YinxiangPopup implements View.OnClickListener {
                         List<SoundtrackBean> oo = (List<SoundtrackBean>) object;
                         allList.clear();
                         allList.addAll(oo);
-                        yinXiangAdapter2 = new YinXiangAdapter2(mContext, mlist, allList);
+	                    yinXiangAdapter2 = new YinXiangAdapter2(mContext, mlist, allList, new MeetingConfig());
                         allrecycleview.setAdapter(yinXiangAdapter2);
                     }
                 }, isHidden, ishavepresenter);

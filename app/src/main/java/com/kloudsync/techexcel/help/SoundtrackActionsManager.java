@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
@@ -15,13 +16,11 @@ import com.kloudsync.techexcel.bean.EventPlayWebVedio;
 import com.kloudsync.techexcel.bean.MediaPlayPage;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
-import com.kloudsync.techexcel.bean.PreloadPage;
 import com.kloudsync.techexcel.bean.WebVedio;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
-import com.kloudsync.techexcel.tool.RecordingPageCache;
 import com.kloudsync.techexcel.tool.SyncWebActionsCache;
 import com.ub.techexcel.bean.PartWebActions;
 import com.ub.techexcel.bean.WebAction;
@@ -33,7 +32,6 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xwalk.core.XWalkView;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -66,7 +64,7 @@ public class SoundtrackActionsManager {
     private List<MediaPlayPage> mediaPlayPages = new ArrayList<>();
     private int recordId;
     private volatile long totalTime = 0;
-    private XWalkView web;
+    private WebView web;
     private SurfaceView surfaceView;
     private WebVedioManager webVedioManager;
     private String downloadUrlPre = "";
@@ -74,12 +72,13 @@ public class SoundtrackActionsManager {
     private MeetingConfig meetingConfig;
     private RelativeLayout webVedioPlayLayout;
     private SyncWebActionsCache webActionsCache;
+	private DocumentPage currentDocumentPage;
 
     public void setUserVedioManager(UserVedioManager userVedioManager) {
         this.userVedioManager = userVedioManager;
     }
 
-    public void setWeb(XWalkView web, MeetingConfig meetingConfig) {
+    public void setWeb(WebView web, MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
         this.web = web;
     }
@@ -119,7 +118,6 @@ public class SoundtrackActionsManager {
         }
         return instance;
     }
-
 
     public void setPlayTime(final long playTime) {
         this.playTime = playTime;
@@ -362,13 +360,15 @@ public class SoundtrackActionsManager {
         action.setExecuted(true);
         try {
             JSONObject data = new JSONObject(action.getData());
-            Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
+//            Log.e("doExecuteAction", "action," + action + ",playtime:" + playTime);
             if (data.getInt("type") == 2) {
                 isLoadingPage = true;
                 downLoadDocumentPageAndShow(data.getInt("page"));
+
             } else {
-                web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                web.load("javascript:Record()", null);
+	            Log.e("doExecuteAction", "action," + action.getData() + ",playtime:" + playTime);
+                web.loadUrl("javascript:PlayActionByTxt('" + action.getData() + "')", null);
+                web.loadUrl("javascript:Record()", null);
             }
 //                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
 
@@ -381,6 +381,11 @@ public class SoundtrackActionsManager {
 
     private int currentPage = -1;
 
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
     public void doChangePageAction(WebAction action) {
         try {
             JSONObject data = new JSONObject(action.getData());
@@ -391,11 +396,17 @@ public class SoundtrackActionsManager {
 //                    return;
 //                }
                 isLoadingPage = true;
-                downLoadDocumentPageAndShow(page);
-                currentPage = page;
+                /*if(currentPage == page){
+
+                    //--
+                }else {*/
+                    downLoadDocumentPageAndShow(page);
+//                }
+
+
             } else {
-                web.load("javascript:PlayActionByTxt('" + action.getData() + "')", null);
-                web.load("javascript:Record()", null);
+                web.loadUrl("javascript:PlayActionByTxt('" + action.getData() + "')", null);
+                web.loadUrl("javascript:Record()", null);
             }
 //                    Log.e("execute_action","action:" + action.getTime() + "--" + action.getData());
 
@@ -642,13 +653,13 @@ public class SoundtrackActionsManager {
 
     public void release() {
         currentPage = -1;
-        if (web != null) {
-            web.removeAllViews();
-            web.onDestroy();
-            web = null;
-        }
+//        if (web != null) {
+//            web.removeAllViews();
+//            web.destroy();
+//            web = null;
+//        }
         webActions.clear();
-        currentPartWebActions =  null;
+        currentPartWebActions = null;
         mediaPlayPages.clear();
         requests.clear();
         if (webVedioManager != null) {
@@ -658,11 +669,12 @@ public class SoundtrackActionsManager {
     }
 
     private void downLoadDocumentPageAndShow(final int pageNumber) {
-
+        if(meetingConfig == null || meetingConfig.getDocument() == null){
+            return;
+        }
         Observable.just(meetingConfig.getDocument()).observeOn(Schedulers.io()).map(new Function<MeetingDocument, Object>() {
             @Override
             public Object apply(MeetingDocument document) throws Exception {
-
                 DocumentPage page = document.getDocumentPages().get(pageNumber - 1);
                 queryAndDownLoadPageToShow(page, true);
                 return page;
@@ -674,9 +686,13 @@ public class SoundtrackActionsManager {
         Observable.just(documentPage).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentPage>() {
             @Override
             public void accept(DocumentPage page) throws Exception {
-                web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-                web.load("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
-                web.load("javascript:Record()", null);
+	            if (web == null) {
+                    return;
+                }
+	            Log.e("showCurrentPage", "page:" + documentPage);
+	            web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+                web.loadUrl("javascript:ShowPDF('" + documentPage.getShowingPath() + "'," + (documentPage.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
+                web.loadUrl("javascript:Record()", null);
             }
         }).subscribe();
 

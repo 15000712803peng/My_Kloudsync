@@ -85,7 +85,7 @@ public class SyncRoomNoteListAdapter extends RecyclerView.Adapter<SyncRoomNoteLi
             @Override
             public void onClick(View v) {
 //                NoteOperatorPopup noteOperatorPopup = new NoteOperatorPopup();
-//                noteOperatorPopup.getPopwindow(mContext);
+//                noteOperatorPopup.getPopwindow(mActivity);
 //                noteOperatorPopup.setFavoritePoPListener(new NoteOperatorPopup.FavoritePoPListener() {
 //                    @Override
 //                    public void delete() {

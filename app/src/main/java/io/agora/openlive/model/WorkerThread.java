@@ -9,16 +9,22 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
+
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.File;
+
 import io.agora.commom.Constant;
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.videoprp.AgoraYuvEnhancer;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class WorkerThread extends Thread {
     private final static Logger log = LoggerFactory.getLogger(WorkerThread.class);
@@ -209,7 +215,7 @@ public class WorkerThread extends Thread {
         mEngineConfig.mClientRole = cRole;
         mEngineConfig.mVideoProfile = vProfile;
 
-        mRtcEngine.setVideoProfile(mEngineConfig.mVideoProfile, false);
+//        mRtcEngine.setVideoProfile(mEngineConfig.mVideoProfile, false);
 
         mRtcEngine.setClientRole(cRole);
 
@@ -295,12 +301,20 @@ public class WorkerThread extends Thread {
     }
 
     public WorkerThread(Context context) {
+
         this.mContext = context;
-
         this.mEngineConfig = new EngineConfig();
+        if (TextUtils.isEmpty(AppConfig.UserID)) {
+            AppConfig.UserID = context.getSharedPreferences(AppConfig.LOGININFO,
+                    MODE_PRIVATE).getString("UserID", "");
+        }
+        try {
+            this.mEngineConfig.mUid = Integer.parseInt(AppConfig.UserID);
+        }catch (Exception e){
 
-        this.mEngineConfig.mUid = Integer.parseInt(AppConfig.UserID);
+        }
 
         this.mEngineEventHandler = new MyEngineEventHandler(mContext, this.mEngineConfig);
+
     }
 }

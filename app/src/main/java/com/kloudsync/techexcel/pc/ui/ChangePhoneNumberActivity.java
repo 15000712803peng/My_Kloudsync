@@ -69,7 +69,6 @@ public class ChangePhoneNumberActivity extends Activity {
 				if (MainActivity.instance != null) {
 					MainActivity.instance.finish();
 				}
-				SettingActivity.settingActivity.finish();
 				AccountActivity.accountActivity.finish();
 
 				startActivity(new Intent(ChangePhoneNumberActivity.this,

@@ -1,6 +1,7 @@
 package com.ub.techexcel.tools;
 
 
+import com.google.gson.JsonObject;
 import com.kloudsync.techexcel.bean.DocumentData;
 import com.kloudsync.techexcel.bean.DocumentDetail;
 import com.kloudsync.techexcel.bean.FavoriteData;
@@ -12,7 +13,6 @@ import com.kloudsync.techexcel.bean.params.AcceptInvitationsParams;
 import com.kloudsync.techexcel.bean.params.InviteMultipleParams;
 import com.kloudsync.techexcel.bean.params.InviteTeamAdminParams;
 import com.kloudsync.techexcel.bean.params.InviteToCompanyParams;
-import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.MyFriend;
 import com.kloudsync.techexcel.response.BindTvStatusResponse;
 import com.kloudsync.techexcel.response.CompanyContactsResponse;
@@ -189,6 +189,9 @@ public interface TempleteCourse_interface {
     @GET()
     Call<DevicesResponse> getBindTvs(@Url String url, @Header("UserToken") String userToken);
 
+    @GET()
+    Call<JsonObject> getAppNames(@Url String url, @Header("UserToken") String userToken);
+
    @POST()
     Call<BindTvStatusResponse> changeBindTvStatus(@Url String url, @Header("UserToken") String userToken, @Query("status") int status);
 
@@ -205,9 +208,5 @@ public interface TempleteCourse_interface {
 
     @GET()
     Call<ResponseBody> getLessionIdByItemId(@Url String url, @Header("UserToken") String userToken);
-
-
-
-
 
 }

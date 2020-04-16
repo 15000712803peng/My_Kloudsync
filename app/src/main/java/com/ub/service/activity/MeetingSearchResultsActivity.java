@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.ub.techexcel.adapter.ServiceAdapter2;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.tools.MeetingMoreOperationPopup;
@@ -86,7 +87,7 @@ public class MeetingSearchResultsActivity extends Activity implements View.OnCli
 
                                 @Override
                                 public void startMeeting() {
-                                    Intent intent = new Intent(MeetingSearchResultsActivity.this, WatchCourseActivity2.class);
+                                    Intent intent = new Intent(MeetingSearchResultsActivity.this, MeetingViewActivity.class);
                                     intent.putExtra("userid", bean.getUserId());
                                     intent.putExtra("meetingId", bean.getId() + "");
                                     intent.putExtra("filemeetingId", bean.getId() + "");

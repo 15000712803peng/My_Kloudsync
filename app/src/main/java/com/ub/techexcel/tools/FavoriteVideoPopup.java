@@ -69,7 +69,7 @@ public class FavoriteVideoPopup {
             savevideo.setVisibility(View.VISIBLE);
             uploadfile.setVisibility(View.VISIBLE);
         }else if(type==3){
-            uploadfile.setVisibility(View.INVISIBLE);
+            uploadfile.setVisibility(View.VISIBLE);
             savevideo.setTextColor(mContext.getResources().getColor(R.color.black));
             savevideo.setVisibility(View.GONE);
         }
@@ -102,7 +102,7 @@ public class FavoriteVideoPopup {
 
         void save(int type, boolean isYinxiang);
 
-        void uploadFile();
+        void uploadFile(int type);
 
         void dismiss();
 
@@ -171,25 +171,32 @@ public class FavoriteVideoPopup {
         uploadfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                mFavoritePoPListener.uploadFile();
+                mFavoritePoPListener.uploadFile(type);
             }
         });
 
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
         mPopupWindow.setContentView(view);
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
-        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5 + 80;
-        View root = ((Activity) mContext).getWindow().getDecorView();
-        params.height = mContext.getResources().getDisplayMetrics().heightPixels * 4 / 5 - 30;
-        mPopupWindow.getWindow().setAttributes(params);
+
     }
 
     @SuppressLint("NewApi")
     public void StartPop(View v) {
         if (mPopupWindow != null) {
             mFavoritePoPListener.open();
+
+	        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
+	        if (Tools.isOrientationPortrait((Activity) mContext)) {
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.width = root.getMeasuredWidth() * 9 / 10;
+		        params.height = mContext.getResources().getDisplayMetrics().heightPixels * 1 / 2;
+	        } else {
+		        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.height = root.getMeasuredHeight() * 4 / 5 + 30;
+	        }
+
             mPopupWindow.show();
         }
     }

@@ -13,7 +13,7 @@ public class SoundtrackBean implements Serializable {
     private String userName;
     private String avatarUrl;
     private String duration;
-    private String attachmentId;
+    private int attachmentId;
 
     private boolean isCheck = false;
     private boolean isHidden = false;
@@ -31,6 +31,24 @@ public class SoundtrackBean implements Serializable {
     private int fileId;
     private String path;
     private int isPublic ;
+	private int actionBaseSoundtrackID;
+	private int MusicType;
+
+	public int getMusicType() {
+		return MusicType;
+	}
+
+	public void setMusicType(int musicType) {
+		MusicType = musicType;
+	}
+
+	public int getActionBaseSoundtrackID() {
+		return actionBaseSoundtrackID;
+	}
+
+	public void setActionBaseSoundtrackID(int actionBaseSoundtrackID) {
+		this.actionBaseSoundtrackID = actionBaseSoundtrackID;
+	}
 
     public int getIsPublic() {
         return isPublic;
@@ -104,11 +122,11 @@ public class SoundtrackBean implements Serializable {
         this.createdDate = createdDate;
     }
 
-    public String getAttachmentId() {
+    public int getAttachmentId() {
         return attachmentId;
     }
 
-    public void setAttachmentId(String attachmentId) {
+    public void setAttachmentId(int attachmentId) {
         this.attachmentId = attachmentId;
     }
 

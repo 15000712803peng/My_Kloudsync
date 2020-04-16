@@ -34,8 +34,7 @@ public class AppConfig {
     public static String URL_LIVEDOC = "https://livedoc.peertime.cn/TxLiveDocumentApi/api/";
     public static String URL_PUBLIC_AUDIENCE = "https://wss.peertime.cn/";
 
-//    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
-
+	//    public static String URL_PUBLIC = "https://testapi.peertime.cn/peertime/V1/";
     //     正式
     public static String URL_PUBLIC = "https://api.peertime.cn/peertime/V1/";
     public static String URL_MEETING_BASE = "https://wss.peertime.cn/MeetingServer/";
@@ -48,6 +47,7 @@ public class AppConfig {
 //    public static String COURSE_SOCKET = "wss://testwss.peertime.cn:8443/MeetingServer/websocket";
 //    public static String liveToken = "01427aa4-396e-44b7-82ab-84d802099bb0";
 //    public static String  wssServer = "https://testwss.peertime.cn:8443/MeetingServer";
+//    public static String URL_MEETING_BASE = "https://testwss.peertime.cn/MeetingServer/";
 
 
     public static String URL_IMAGE = "http://ub.servicewise.net.cn/CWKnowledgeWise/ImagePreview.aspx?ProjectID=49&FileID=";
@@ -70,12 +70,15 @@ public class AppConfig {
     public static final String SHARE_DOCUMENT = "https://kloud.cn/document/";
     public static final String SHARE_SYNC = "https://kloud.cn/sync/";
     public static final String SHARE_RECORD = "https://kloud.cn/record/";
-//    public static final String SHARE_RECORD = "https://kloudsync.peertime.cn/record/";
+	//    public static final String SHARE_RECORD = "https://kloudsync.peertime.cn/record/";
     public static final String SHARE_ATTACHMENT = "https://kloud.cn/attachment/";
     public static final String SHARE_LIVE = "https://kloud.cn/live/";
 
 
     public static String LOGININFO = "LOGININFO";
+    public static String EVERPENINFO = "EVERPENINFO";
+    public static String KLOUDWEBNOTEACTIONSCACHE = "KLOUDWEBNOTEACTIONSCACHE";
+    public static String NEWBOOKPAGES = "NEWBOOKPAGES";
     public static String COMMONUSEDINFO = "COMMONUSEDINFO";
     public static String Name = "UBAO小博士";
     public static String Robot = "Robot";
@@ -123,7 +126,6 @@ public class AppConfig {
     public static int SchoolID;
     public static String selectedSubSystemId;
     public static int deviceType;
-
     public static int Online;
     public static final int LOGIN = 1;
     public static final int NETERROR = 2;
@@ -208,6 +210,7 @@ public class AppConfig {
     public static final int GET_INVITATIONS = 70;
     public static final int COMPANY_SUBSYSTEMS = 71;
     public static final int UUSERBINDTVINFO = 72;
+	public static final int UPLOADPENDATA = 73;
 
     //  汪雄峰
 //	public final static String targetUrl = "http://ub.servicewise.net.cn/CWKnowledgeWise/Preview.aspx?49,3602";  //正式版
@@ -313,5 +316,8 @@ public class AppConfig {
 
     public static boolean IsInMeeting = false;
 
+	public static final int COMPANY_MODEL = 0;//公司模式(机构)
+	public static final int SCKOOL_MODEL = 1;//学校模式(机构)
+	public static int systemType;
 
 }

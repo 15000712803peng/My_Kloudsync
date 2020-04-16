@@ -3,13 +3,16 @@ package com.kloudsync.techexcel.dialog;
 import android.app.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,10 +25,14 @@ import android.widget.TextView;
 
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventRefreshMembers;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.frgment.MeetingMembersFragment;
 import com.ub.service.activity.AddMeetingMemberActivity;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class MeetingMembersDialog extends DialogFragment implements View.OnClickListener,ViewPager.OnPageChangeListener {
     public Activity host;
@@ -39,6 +46,7 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
     private TextView indicator1,indicator2,indicator3;
     private ImageView backImage;
     private ImageView addImage;
+    private SharedPreferences sharedPreferences;
 
     public MeetingMembersDialog(){
 
@@ -47,6 +55,7 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
     public void init(Activity host,MeetingConfig meetingConfig){
         this.host = host;
         this.meetingConfig = meetingConfig;
+        sharedPreferences = host.getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
     }
 
     @Override
@@ -92,7 +101,6 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         membersPager.setAdapter(membersAdapter);
         getDialog().getWindow().setGravity(Gravity.RIGHT);
         getDialog().getWindow().setWindowAnimations(R.style.anination3);
-
         init();
 
     }
@@ -208,21 +216,26 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
     }
 
     private void init(){
-        membersPager.setSaveEnabled(false);
-        membersPager.addOnPageChangeListener(this);
-        tab1.setText("参会者" +"(" + meetingConfig.getMeetingMembers().size() + ")");
-        tab2.setText("旁听者" +"(" + meetingConfig.getMeetingAuditor().size() + ")");
-        tab3.setText("被邀请人" +"(" + meetingConfig.getMeetingInvitors().size() + ")");
-        if(meetingConfig.getMeetingInvitors().size() > 0){
-            invitorsTab.setVisibility(View.VISIBLE);
-        }else {
-            invitorsTab.setVisibility(View.GONE);
-        }
-        if(membersAdapter != null){
-            membersAdapter.notifyDataSetChanged();
-        }
+        try {
+            membersPager.setSaveEnabled(false);
+            membersPager.addOnPageChangeListener(this);
+//            tab1.setText("主讲人" +"(" + meetingConfig.getMeetingMembers().size() + ")");
+//            tab2.setText("参会者" +"(" + meetingConfig.getMeetingAuditor().size() + ")");
+//            tab3.setText("被邀请人" +"(" + meetingConfig.getMeetingInvitors().size() + ")");
+            if(meetingConfig.getMeetingInvitors().size() > 0){
+                invitorsTab.setVisibility(View.VISIBLE);
+            }else {
+                invitorsTab.setVisibility(View.GONE);
+            }
+            if(membersAdapter != null){
+                membersAdapter.notifyDataSetChanged();
+            }
+            initIndicators();
+        }catch (Exception e){
 
-        initIndicators();
+        }
+        setBindViewText();
+
     }
 
     private void initIndicators(){
@@ -255,4 +268,35 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         }
     }
 
+    private String getBindViewText(int fileId){
+        String appBindName="";
+        int language = sharedPreferences.getInt("language",1);
+        if(language==1&&App.appENNames!=null){
+            for(int i=0;i<App.appENNames.size();i++){
+                if(fileId==App.appENNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
+                    appBindName=App.appENNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }else if(language==2&&App.appCNNames!=null){
+            for(int i=0;i<App.appCNNames.size();i++){
+                if(fileId==App.appCNNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
+                    appBindName=App.appCNNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }
+        return appBindName;
+    }
+    private void setBindViewText(){
+        String member=getBindViewText(1024);
+        tab1.setText(TextUtils.isEmpty(member)? "主讲人" +"(" + meetingConfig.getMeetingMembers().size() + ")":member+"(" + meetingConfig.getMeetingMembers().size() + ")");
+        String auditor=getBindViewText(1025);
+        tab2.setText(TextUtils.isEmpty(auditor)? "参会者" +"(" + meetingConfig.getMeetingAuditor().size() + ")":auditor +"(" + meetingConfig.getMeetingAuditor().size() + ")");
+        String invitors=getBindViewText(1026);
+        tab3.setText(TextUtils.isEmpty(auditor)? "被邀请人" +"(" + meetingConfig.getMeetingInvitors().size() + ")":invitors +"(" + meetingConfig.getMeetingInvitors().size() + ")");
+
+    }
 }

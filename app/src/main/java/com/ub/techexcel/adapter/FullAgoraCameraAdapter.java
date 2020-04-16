@@ -21,8 +21,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventShowFullAgora;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.view.CircleImageView;
-import com.ub.service.activity.WatchCourseActivity2;
-import com.ub.service.activity.WatchCourseActivity3;
+
 import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.AgoraMember;
 
@@ -92,15 +91,20 @@ public class FullAgoraCameraAdapter extends RecyclerView.Adapter<FullAgoraCamera
 
         SurfaceView target = member.getSurfaceView();
         holderView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
-        if (!member.isMuteVideo() && target != null) {
-            target.setVisibility(View.VISIBLE);
-            stripSurfaceView(target);
-            Log.e("FullAgoraCameraAdapter", "add_surface_view:" + framelayoutHeight);
-            holderView.addView(target, 0, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
+        if (!member.isMuteVideo()) {
+            if(target != null){
+                target.setVisibility(View.VISIBLE);
+                stripSurfaceView(target);
+                Log.e("FullAgoraCameraAdapter", "add_surface_view:" + framelayoutHeight);
+                holderView.addView(target, 0, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, framelayoutHeight));
+            }
+
         } else {
-            Log.e("FullAgoraCameraAdapter", "surface_view_gone");
-            stripSurfaceView(target);
-            target.setVisibility(View.INVISIBLE);
+            if(target != null){
+                Log.e("FullAgoraCameraAdapter", "surface_view_gone");
+                stripSurfaceView(target);
+                target.setVisibility(View.INVISIBLE);
+            }
         }
 
         if (TextUtils.isEmpty(member.getUserName())) {

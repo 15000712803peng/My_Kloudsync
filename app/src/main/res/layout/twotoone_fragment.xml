@@ -159,6 +159,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
                         <TextView
+                            android:id="@+id/tv_chat"
                             android:paddingBottom="3dp"
                             android:paddingTop="3dp"
                             android:paddingLeft="22dp"
@@ -203,6 +204,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
                         <TextView
+                            android:id="@+id/tv_contact"
                             android:paddingBottom="3dp"
                             android:paddingTop="3dp"
                             android:paddingLeft="22dp"

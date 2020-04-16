@@ -19,24 +19,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.OrganizationAdapterV2;
+import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.AppName;
 import com.kloudsync.techexcel.bean.Company;
+import com.kloudsync.techexcel.bean.CompanyAccountInfo;
 import com.kloudsync.techexcel.bean.CompanySubsystem;
-import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.DialogSelectSchool;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.School;
-import com.kloudsync.techexcel.response.InvitationsResponse;
 import com.kloudsync.techexcel.search.ui.OrganizationSearchActivity;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.ui.InvitationsActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
 import com.kloudsync.techexcel.view.ClearEditText;
-import com.ub.kloudsync.activity.SwitchSpaceActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
@@ -45,13 +47,15 @@ import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -131,6 +135,7 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
                 getCompanyNameList();
             }
         });
+
         lg.GetUserPreference(this, 10001 + "");
     }
 
@@ -139,12 +144,34 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         ServiceInterfaceTools.getinstance().getCompanyDisplayNameList(url, ServiceInterfaceTools.GETCOMPANYDISPLAYNAMELIST, new ServiceInterfaceListener() {
             @Override
             public void getServiceReturnData(Object object) {
-                JSONObject jsonObject = (JSONObject) object;
-                CustomSyncRoomTool.getInstance(SwitchOrganizationActivity.this).setCustomSyncRoomContent(jsonObject);
-                MainActivity.RESUME = true;
-                EventBus.getDefault().post(new TeamSpaceBean());
+	            final JSONObject jsonObject = (JSONObject) object;
+	            Observable.just("request_company_count_info").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+		            @Override
+		            public void accept(String s) throws Exception {
+			            JSONObject response = ServiceInterfaceTools.getinstance().syncGetCompanyAccountInfo();
+			            if (response.has("code")) {
+				            int code = response.getInt("code");
+				            if (code == 0) {
+					            if (response.has("data")) {
+						            CompanyAccountInfo accountInfo = new Gson().fromJson(response.getJSONObject("data").toString(), CompanyAccountInfo.class);
+						            if (accountInfo != null) {
+							            Log.e("processLogin", "system_type:" + accountInfo.getSystemType() + ",-" + accountInfo.getCompanyName());
+							            AppConfig.systemType = accountInfo.getSystemType();
+							            sharedPreferences.edit().putInt("system_type", accountInfo.getSystemType()).commit();
+						            }
+					            }
+				            }
+
+				            CustomSyncRoomTool.getInstance(SwitchOrganizationActivity.this).setCustomSyncRoomContent(jsonObject);
+				            MainActivity.RESUME = true;
+
+				            EventBus.getDefault().post(new TeamSpaceBean());
 //                EventBus.getDefault().post(new EventRefreshTab());
-                finish();
+				            finish();
+			            }
+		            }
+	            }).subscribe();
+
             }
         });
     }
@@ -240,6 +267,7 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         View headerView = getLayoutInflater().inflate(R.layout.organization_header, organiztionList, false);
         searchLayout = headerView.findViewById(R.id.search_layout);
         searchLayout.setOnClickListener(this);
+        searchLayout.setVisibility(View.GONE);//
         organiztionList.addHeaderView(headerView);
         organiztionList.setAdapter(sAdapter);
         organiztionList.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
@@ -306,11 +334,9 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
         invitationsLayout = (LinearLayout) headerView.findViewById(R.id.layout_invitations);
         invitationsText = (TextView) headerView.findViewById(R.id.txt_invitations);
         invitationsLayout.setOnClickListener(this);
-        titleText.setText(getResources().getString(R.string.pc_sorganization));
+        titleText.setText(getResources().getString(R.string.pc_sorganization_change));
         rightTitleText.setVisibility(View.GONE);
     }
-
-
 
 
     private int GetSaveInfo() {
@@ -379,6 +405,10 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
             case R.id.txt_ok:
                 if (sAdapter.getSelectCompany() != null) {
                     school = sAdapter.getSelectCompany();
+                    editor = sharedPreferences.edit();
+                    editor.putInt("SchoolID", school.getSchoolID());
+                    editor.commit();
+                    getAppNames(school.getSchoolID());
                     getMyTeamList();
                 }
 //                ShowPop(v);
@@ -425,7 +455,6 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
     }
 
     public void getMyTeamList() {
-
         TeamSpaceInterfaceTools.getinstance().getTeamSpaceList(AppConfig.URL_PUBLIC + "TeamSpace/List?companyID=" + school.getSchoolID() + "&type=1&parentID=0",
                 TeamSpaceInterfaceTools.GETTEAMSPACELIST, new TeamSpaceInterfaceListener() {
                     @Override
@@ -575,4 +604,39 @@ public class SwitchOrganizationActivity extends Activity implements View.OnClick
 
     private List<Company> companies;
 
+    private void getAppNames(int id) {
+        ServiceInterfaceTools.getinstance().getAppNames(id).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body().toString());
+	                if (jsonObject.getString("msg").equals("success")) {
+                        Gson gson = new Gson();
+		                List<AppName> appCNNameList = new ArrayList<AppName>();
+		                List<AppName> appENNameList = new ArrayList<AppName>();
+		                List<AppName> appNameList = gson.fromJson(jsonObject.getString("data"), new TypeToken<List<AppName>>() {
+		                }.getType());
+		                App.appNames = appNameList;
+		                for (AppName appName : appNameList) {
+			                if (appName.getLanguageId() == 0) {
+                                appCNNameList.add(appName);
+			                } else {
+                                appENNameList.add(appName);
+                            }
+                        }
+		                App.appCNNames = appCNNameList;
+		                App.appENNames = appENNameList;
+		                System.out.println("App.appNames->" + App.appENNames.size());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                System.out.println(t.getLocalizedMessage());
+            }
+        });
+    }
 }

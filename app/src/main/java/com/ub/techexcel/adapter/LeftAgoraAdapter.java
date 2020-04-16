@@ -13,8 +13,6 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.ub.service.activity.WatchCourseActivity2;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.AgoraBean;
 import com.kloudsync.techexcel.R;
 
@@ -86,19 +84,19 @@ public class LeftAgoraAdapter extends RecyclerView.Adapter<LeftAgoraAdapter.View
             @Override
             public void onClick(View view) {
                 if (mListener != null) {
-                    if (WatchCourseActivity2.watch2instance) {
-                        if (WatchCourseActivity2.mViewType == 0) {
-                            mListener.onItemDoubleClick(agoraBean);
-                        } else if (WatchCourseActivity2.mViewType == 2) {
-                            mListener.onSwitchVideo(agoraBean);
-                        }
-                    } else if (WatchCourseActivity3.watch3instance) {
-                        if (WatchCourseActivity3.mViewType == 0) {
-                            mListener.onItemDoubleClick(agoraBean);
-                        } else if (WatchCourseActivity3.mViewType == 2) {
-                            mListener.onSwitchVideo(agoraBean);
-                        }
-                    }
+//                    if (WatchCourseActivity2.watch2instance) {
+//                        if (WatchCourseActivity2.mViewType == 0) {
+//                            mListener.onItemDoubleClick(agoraBean);
+//                        } else if (WatchCourseActivity2.mViewType == 2) {
+//                            mListener.onSwitchVideo(agoraBean);
+//                        }
+//                    } else if (WatchCourseActivity3.watch3instance) {
+//                        if (WatchCourseActivity3.mViewType == 0) {
+//                            mListener.onItemDoubleClick(agoraBean);
+//                        } else if (WatchCourseActivity3.mViewType == 2) {
+//                            mListener.onSwitchVideo(agoraBean);
+//                        }
+//                    }
                 }
             }
         });

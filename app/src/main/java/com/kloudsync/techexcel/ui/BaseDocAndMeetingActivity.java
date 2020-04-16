@@ -9,6 +9,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,7 +22,6 @@ import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.ub.techexcel.bean.AgoraMember;
 
 import org.greenrobot.eventbus.EventBus;
-import org.xwalk.core.XWalkView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -35,10 +35,10 @@ public abstract class BaseDocAndMeetingActivity extends FragmentActivity {
     protected KloudLoadingView loadingView;
 
     @Bind(R.id.web)
-    protected XWalkView web;
+    protected WebView web;
 
     @Bind(R.id.web_note)
-    protected XWalkView noteWeb;
+    protected WebView noteWeb;
 
     @Bind(R.id.menu)
     protected ImageView menuIcon;
@@ -78,6 +78,7 @@ public abstract class BaseDocAndMeetingActivity extends FragmentActivity {
         EventBus.getDefault().register(this);
         showEnterLoading();
         initData();
+//        Toast.makeText(this,"on_create",Toast.LENGTH_SHORT).show();
         singleFullScreenImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,13 +151,10 @@ public abstract class BaseDocAndMeetingActivity extends FragmentActivity {
             singleMemberIcon.setVisibility(View.VISIBLE);
             singleVedioStatusImage.setImageResource(R.drawable.icon_command_webcam_disable);
 
-
         } else {
             singleMemberIcon.setVisibility(View.GONE);
             singleVedioStatusImage.setImageResource(R.drawable.icon_command_webcam_enable);
         }
-
-
     }
 
     protected final void stripSurfaceView(SurfaceView view) {

@@ -59,6 +59,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.kloudsync.techexcel.config.AppConfig.ClassRoomID;
+
 public class LoginGet {
 
     private static String URL_LOGIN;
@@ -142,10 +144,10 @@ public class LoginGet {
                     if (result != null) {
                         mJsonCustomer(result);
                     } else {
-                        Toast.makeText(
-                                mContext,
-                                mContext.getResources().getString(R.string.No_Data),
-                                Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(
+//                                mContext,
+//                                mContext.getResources().getString(R.string.No_Data),
+//                                Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case AppConfig.SchoolContact:
@@ -407,8 +409,8 @@ public class LoginGet {
                         mJsonSA(result);
                     } else {
 //                        Toast.makeText(
-//                                mContext,
-//                                mContext.getResources().getString(R.string.No_Data),
+//                                mActivity,
+//                                mActivity.getResources().getString(R.string.No_Data),
 //                                Toast.LENGTH_SHORT).show();
                     }
                     break;
@@ -419,8 +421,8 @@ public class LoginGet {
                         mJsonPU(result);
                     } else {
 //                        Toast.makeText(
-//                                mContext,
-//                                mContext.getResources().getString(R.string.No_Data),
+//                                mActivity,
+//                                mActivity.getResources().getString(R.string.No_Data),
 //                                Toast.LENGTH_SHORT).show();
                     }
                     break;
@@ -464,8 +466,8 @@ public class LoginGet {
 //        ServiceInterfaceTools.getinstance().getInvitations().enqueue(new Callback<InvitationsResponse>() {
 //            @Override
 //            public void onResponse(Call<InvitationsResponse> call, Response<InvitationsResponse> response) {
-//                sharedPreferences = mContext.getSharedPreferences(AppConfig.LOGININFO,
-//                        mContext.MODE_PRIVATE);
+//                sharedPreferences = mActivity.getSharedPreferences(AppConfig.LOGININFO,
+//                        mActivity.MODE_PRIVATE);
 //                if (response != null && response.isSuccessful()) {
 //                    List<Company> companies = response.body().getRetData();
 //                    if (companies != null && companies.size() > 0 && !sharedPreferences.getBoolean("isLogIn", false)) {
@@ -921,6 +923,17 @@ public class LoginGet {
         URL_MYFAVOURTES = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + type;
         newThreadGetResultBytoken(URL_MYFAVOURTES, AppConfig.MY_FAVOURITES);
     }
+    public void MyFavoriteRequestNew(Context context, int type,int attachmentId) {
+        mContext = context;
+        sharedPreferences = mContext.getSharedPreferences(AppConfig.LOGININFO,
+                mContext.MODE_PRIVATE);
+        int SchoolId = sharedPreferences.getInt("SchoolID", -1);
+//        URL_MYFAVOURTES = AppConfig.URL_PUBLIC + "EventAttachment/MyFavoriteAttachments?type=" + type;
+//        URL_MYFAVOURTES = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachments";
+        URL_MYFAVOURTES = AppConfig.URL_PUBLIC + "FavoriteAttachment/MyFavoriteAttachmentsNew?type=" + type+"&BindAttachmentID=" + attachmentId;
+        Log.e("MY_FAVOURITES", URL_MYFAVOURTES + "");
+        newThreadGetResultBytoken(URL_MYFAVOURTES, AppConfig.MY_FAVOURITES);
+    }
 
     /**
      * 获取所有自己的群组消息
@@ -1051,9 +1064,8 @@ public class LoginGet {
 
     @SuppressLint("NewApi")
     public static String getBase64Password(String passsword) {
-        String enToStr = Base64.encodeToString(passsword.getBytes(), Base64.DEFAULT);
+        String enToStr = Base64.encodeToString(passsword.getBytes(), Base64.NO_WRAP);
         return enToStr;
-
     }
 
     /**
@@ -1063,9 +1075,8 @@ public class LoginGet {
      * @return
      */
     public static String DecodeBase64Password(String passsword) {
-        byte[] decodeBytes = Base64.decode(passsword, Base64.DEFAULT);
+        byte[] decodeBytes = Base64.decode(passsword, Base64.NO_WRAP);
         return new String(decodeBytes);
-
     }
 
     public static synchronized void newThreadLiveGetResult(final String URL, final int config) {
@@ -1261,15 +1272,16 @@ public class LoginGet {
                 editor.putInt("UserID", UserID);
 //                editor.putBoolean("isLogIn", true);
                 editor.putString("UserToken", UserToken);
+                editor.putString("MeetingId",ClassRoomID);
                 editor.putString("Name", Name);
 //                if (-1 == x || !isLogIn) {
 //                    editor.putInt("SchoolID", AppConfig.SchoolID);
 //                }
                 editor.commit();
 				
-				/*Intent intent = new Intent(mContext, MainActivity.class);
-				mContext.startActivity(intent);
-				((Activity) mContext).finish();*/
+				/*Intent intent = new Intent(mActivity, MainActivity.class);
+				mActivity.startActivity(intent);
+				((Activity) mActivity).finish();*/
                 URL_RONGTOKEN = AppConfig.URL_PUBLIC + "RongCloudUserToken";
                 newThreadGetResultBytoken(URL_RONGTOKEN, AppConfig.RONGUSERTOKEN);
             } else {
@@ -1316,12 +1328,12 @@ public class LoginGet {
                 AppConfig.RongUserToken = UserToken;
                 AppConfig.RongUserID = RongUserID;
 
-                /*Intent intent = new Intent(mContext, MainActivity.class);
-                mContext.startActivity(intent);
-                if (!((Activity) mContext).equals(StartUbao.class)) {
-                    ((Activity) mContext).finish();
+                /*Intent intent = new Intent(mActivity, MainActivity.class);
+                mActivity.startActivity(intent);
+                if (!((Activity) mActivity).equals(StartUbao.class)) {
+                    ((Activity) mActivity).finish();
                 }
-                ((Activity) mContext).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);*/
+                ((Activity) mActivity).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);*/
 
                 String url = AppConfig.URL_PUBLIC + "RongCloud/OnlineStatus";
                 newThreadGetResultBytoken(url, AppConfig.OnlineStatus);
@@ -2087,7 +2099,7 @@ public class LoginGet {
             ((Activity) mContext).finish();
         }
 //        wechatFilePaht = "";
-//        ((Activity) mContext).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);
+//        ((Activity) mActivity).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);
     }
 
     private static void goToInvitationsActivity(List<Company> companies) {
@@ -2098,7 +2110,7 @@ public class LoginGet {
         if (!((Activity) mContext).equals(StartUbao.class)) {
             ((Activity) mContext).finish();
         }
-//        ((Activity) mContext).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);
+//        ((Activity) mActivity).overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);
     }
 
 
@@ -2398,7 +2410,7 @@ public class LoginGet {
             } else {
                 /*String ErrorMessage = obj.getString("ErrorMessage");
                 String DetailMessage = obj.getString("DetailMessage");
-                Toast.makeText(mContext, ErrorMessage, Toast.LENGTH_SHORT).show();*/
+                Toast.makeText(mActivity, ErrorMessage, Toast.LENGTH_SHORT).show();*/
             }
 
         } catch (Exception e) {

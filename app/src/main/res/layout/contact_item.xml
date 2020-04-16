@@ -96,11 +96,12 @@
             </LinearLayout>
 
             <ImageView
+                android:layout_marginRight="18dp"
                 android:id="@+id/img_chat"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:layout_alignParentRight="true"
-                android:padding="14dp"
+                android:padding="5dp"
                 android:src="@drawable/contact_chat" />
         </RelativeLayout>
     </LinearLayout>

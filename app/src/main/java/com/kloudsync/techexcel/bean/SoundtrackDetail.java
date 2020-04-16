@@ -5,7 +5,6 @@ package com.kloudsync.techexcel.bean;
  */
 
 public class SoundtrackDetail {
-
     private int SoundtrackID;
     private String Title;
     private int AttachmentID;

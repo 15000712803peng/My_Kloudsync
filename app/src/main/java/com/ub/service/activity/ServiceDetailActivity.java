@@ -21,6 +21,7 @@ import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
+import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.service.ConnectService;
 
@@ -195,7 +196,7 @@ public class ServiceDetailActivity extends Activity implements OnClickListener {
                 }
                 break;
             case R.id.opencourse:
-                intent = new Intent(ServiceDetailActivity.this, WatchCourseActivity2.class);
+                intent = new Intent(ServiceDetailActivity.this, MeetingViewActivity.class);
                 intent.putExtra("userid", bean.getUserId());
                 intent.putExtra("meetingId", bean.getId() + "");
                 intent.putExtra("teacherid", bean.getTeacherId());
@@ -206,7 +207,7 @@ public class ServiceDetailActivity extends Activity implements OnClickListener {
                 startActivity(intent);
                 break;
             case R.id.startcourse:
-                intent = new Intent(ServiceDetailActivity.this, WatchCourseActivity2.class);
+                intent = new Intent(ServiceDetailActivity.this, MeetingViewActivity.class);
                 intent.putExtra("userid", bean.getUserId());
                 intent.putExtra("meetingId", bean.getId() + "");
                 intent.putExtra("teacherid", bean.getTeacherId());

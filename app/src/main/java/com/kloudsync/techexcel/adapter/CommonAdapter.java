@@ -31,6 +31,10 @@ public abstract class CommonAdapter<T> extends BaseAdapter {
 		return mDatas.size();
 	}
 
+	public List<T> getmDatas() {
+		return mDatas;
+	}
+
 	@Override
 	public T getItem(int position) {
 		// TODO Auto-generated method stub

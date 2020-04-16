@@ -9,6 +9,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
@@ -173,6 +175,11 @@ enum WARN_CODE_TYPE
     /** 1021: Audio Device Module: the recording device fails.
     */
     WARN_ADM_RECORD_MALFUNCTION = 1021,
+
+	  /** 1025: Call is interrupted by system events such as phone call or siri (iOS) etc.
+    */
+    WARN_ADM_CALL_INTERRUPTION = 1025,
+
     /** 1029: During a call, the audio session category should be set to 
      * AVAudioSessionCategoryPlayAndRecord, and RtcEngine monitors this value. 
      * If the audio session category is set to other values, this warning code 
@@ -729,11 +736,12 @@ enum ERROR_CODE_TYPE
     ERR_ADM_NO_PLAYOUT_DEVICE = 1360,
 
     // VDM error code starts from 1500
+    /** 1500: Video Device Module: There is no camera device.
+     */
+    ERR_VDM_CAMERA_NO_DEVICE = 1500,
     /** 1501: Video Device Module: The camera is unauthorized.
      */
     ERR_VDM_CAMERA_NOT_AUTHORIZED = 1501,
-
-	// VDM error code starts from 1500
 	/** **DEPRECATED** 1502: Video Device Module: The camera in use.
      
      Deprecated as of v2.4.1. Use LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY(3) in the \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback instead.

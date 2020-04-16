@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.kloudsync.techexcel.config.AppConfig;
-import com.ub.service.activity.WatchCourseActivity3;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

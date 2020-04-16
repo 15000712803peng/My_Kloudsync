@@ -30,9 +30,7 @@
             android:layout_centerInParent="true"
             android:background="@color/white"
             android:gravity="center"
-            android:text=""
-            android:textColor="@color/darkgrey"
-            android:textSize="16sp" />
+            style="@style/CommonTitltTextStyle"/>
 
 
         <RelativeLayout

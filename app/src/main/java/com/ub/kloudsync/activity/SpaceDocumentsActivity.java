@@ -67,10 +67,11 @@ import com.kloudsync.techexcel.tool.DocumentUploadTool;
 import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.Md5Tool;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
-import com.ub.service.activity.WatchCourseActivity3;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
 import com.ub.techexcel.bean.LineItem;
 import com.ub.techexcel.bean.ServiceBean;
+import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.FileUtils;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
@@ -116,6 +117,7 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
     private static final int REQUEST_CODE_CHANGESPACE = 3;
     private static final int REQUEST_EDIT_SPACE = 4;
     private static final int REQUEST_MOVE_DOCUMENT = 5;
+	private SoundtrackBean mTempClickedSoundtrackBean;
 
 
     UploadFileDialog uploadFileDialog;
@@ -152,7 +154,7 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
     };
 
     private void GoToVIew() {
-        Intent intent = new Intent(SpaceDocumentsActivity.this, WatchCourseActivity3.class);
+        Intent intent = new Intent(SpaceDocumentsActivity.this, DocAndMeetingActivity.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", bean.getId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);
@@ -168,7 +170,7 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
     }
 
     private void GoToVIew(Document lesson) {
-        Intent intent = new Intent(SpaceDocumentsActivity.this, WatchCourseActivity3.class);
+        Intent intent = new Intent(SpaceDocumentsActivity.this, DocAndMeetingActivity.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", lesson.getLessonId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);
@@ -178,7 +180,9 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
         intent.putExtra("isInstantMeeting", 1);
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
+	    intent.putExtra(DocAndMeetingActivity.SUNDTRACKBEAN, mTempClickedSoundtrackBean);
         startActivity(intent);
+	    mTempClickedSoundtrackBean = null;
     }
 
     private void ViewdoHaha(final String meetingID) {
@@ -339,7 +343,7 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
                             }
 
                             @Override
-                            public void share(int s, Document teamSpaceBeanFile) {
+                            public void share(int s, Document teamSpaceBeanFile, SoundtrackBean soundtrackBean) {
                                 ShareKloudSync(teamSpaceBeanFile, s);
 
                             }
@@ -358,6 +362,13 @@ public class SpaceDocumentsActivity extends Activity implements View.OnClickList
                             public void deleteRefresh() {
                                 getSpaceList();
                             }
+
+	                        @Override
+	                        public void playDocSoundTrackItem(Document document, SoundtrackBean soundtrackBean) {
+		                        mTempClickedSoundtrackBean = soundtrackBean;
+		                        getTempLesson(document);
+
+	                        }
                         });
 
                     }

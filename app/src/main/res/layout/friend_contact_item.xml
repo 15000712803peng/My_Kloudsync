@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
     >
     <LinearLayout
         android:paddingTop="12dp"
@@ -83,12 +84,15 @@
             </LinearLayout>
 
             <ImageView
+                android:layout_marginRight="18dp"
                 android:id="@+id/img_chat"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_alignParentRight="true"
-                android:padding="14dp"
+                android:padding="4dp"
                 android:src="@drawable/contact_chat" />
+
+
         </RelativeLayout>
     </LinearLayout>
 

@@ -40,10 +40,11 @@ import com.kloudsync.techexcel.search.view.VDocumentSearch;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.TeamSpaceBean;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.DocumentAdapter;
+import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -76,6 +77,7 @@ public class DocumentSearchActivity extends BaseActivity implements VDocumentSea
     private TextView messageText;
     int currentTeamId;
     SharedPreferences userPreferences;
+	private SoundtrackBean mTempClickedSoundtrackBean;
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -100,7 +102,7 @@ public class DocumentSearchActivity extends BaseActivity implements VDocumentSea
     };
 
     private void watchCourse(Document document) {
-        Intent intent = new Intent(this, WatchCourseActivity3.class);
+        Intent intent = new Intent(this, DocAndMeetingActivity.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", document.getLessonId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);
@@ -110,7 +112,9 @@ public class DocumentSearchActivity extends BaseActivity implements VDocumentSea
         intent.putExtra("isInstantMeeting", 1);
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
+	    intent.putExtra(DocAndMeetingActivity.SUNDTRACKBEAN, mTempClickedSoundtrackBean);
         startActivity(intent);
+	    mTempClickedSoundtrackBean = null;
     }
 
     @Override
@@ -318,6 +322,14 @@ public class DocumentSearchActivity extends BaseActivity implements VDocumentSea
             public void deleteRefresh() {
                 editCompleted();
             }
+
+	        @Override
+	        public void playDocSoundTrackItem(Document teamSpaceBeanFile, SoundtrackBean soundtrackBean) {
+		        mTempClickedSoundtrackBean = soundtrackBean;
+		        getTempLesson(teamSpaceBeanFile);
+	        }
+
+
         });
 
     }

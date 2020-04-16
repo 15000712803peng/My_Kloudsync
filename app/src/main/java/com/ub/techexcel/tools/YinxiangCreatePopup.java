@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
@@ -31,6 +34,8 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by wang on 2017/9/18.
@@ -61,13 +66,15 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     private RelativeLayout voiceItemLayout;
     private LinearLayout addVoiceLayout;
     private CheckBox isPublic;
+    private TextView tv_bg_audio, tv_record_voice;
+    private SharedPreferences sharedPreferences;
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0x1001:
-                    mFavoritePoPListener.syncorrecord(true, soundtrackBean);
+                    mFavoritePoPListener.syncorrecord(checkBox.isChecked(), soundtrackBean);
                     break;
             }
             super.handleMessage(msg);
@@ -124,11 +131,14 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         }
     }
     public void initPopuptWindow() {
+        sharedPreferences = mContext.getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         view = layoutInflater.inflate(R.layout.yinxiang_create_popup, null);
         close = (ImageView) view.findViewById(R.id.close);
         cancel = (TextView) view.findViewById(R.id.cancel);
         cancel.setOnClickListener(this);
+        tv_record_voice = (TextView) view.findViewById(R.id.tv_record_voice);
+        tv_bg_audio = (TextView) view.findViewById(R.id.tv_bg_audio);
         addaudio = (TextView) view.findViewById(R.id.addaudio);
         addrecord = (TextView) view.findViewById(R.id.addrecord);
         recordname = (TextView) view.findViewById(R.id.recordname);
@@ -138,7 +148,9 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         backgroundAudioLayout = (LinearLayout) view.findViewById(R.id.layout_background_audio);
         edittext = (EditText) view.findViewById(R.id.edittext);
         String time = new SimpleDateFormat("yyyyMMdd_hh:mm").format(new Date());
-        edittext.setText(AppConfig.UserName + "_" + time);
+        String name=AppConfig.UserName + "_" + time;
+//        edittext.setText(name);
+//        edittext.setSelection(name.length());
         voiceItemLayout = view.findViewById(R.id.layout_voice_item);
         checkBox = (CheckBox) view.findViewById(R.id.checkboxx);
         isPublic = (CheckBox) view.findViewById(R.id.isPublic);
@@ -157,23 +169,8 @@ public class YinxiangCreatePopup implements View.OnClickListener {
             }
 
         });
-//        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                delete2.setVisibility(View.GONE);
-//                recordname.setVisibility(View.GONE);
-//                recordtime.setVisibility(View.GONE);
-//                recordfavorite = new Document();
-//
-//                if (isChecked) {
-//                    addrecord.setVisibility(View.GONE);
-//                    recordsync.setText("Record & Sync");
-//                } else {
-//                    addrecord.setVisibility(View.VISIBLE);
-//                    recordsync.setText("Sync");
-//                }
-//            }
-//        });
+
+        setBindViewText();
         delete1 = (ImageView) view.findViewById(R.id.delete1);
         delete2 = (ImageView) view.findViewById(R.id.delete2);
         delete1.setOnClickListener(this);
@@ -189,12 +186,14 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         mPopupWindow = new Dialog(mContext, R.style.my_dialog);
         mPopupWindow.setContentView(view);
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
-        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
-        View root = ((Activity) mContext).getWindow().getDecorView();
-        params.height = root.getMeasuredHeight() * 4 / 5 + 30;
-        mPopupWindow.getWindow().setAttributes(params);
 
+    }
+
+    private void setBindViewText(){
+        String voice=getBindViewText(1020);
+        tv_record_voice.setText(TextUtils.isEmpty(voice)? "录制新的声音":"录制" +voice);
+        String audio=getBindViewText(1018);
+        tv_bg_audio.setText(TextUtils.isEmpty(audio)? "开启背景音频":"开启"+audio);
     }
 
 
@@ -222,7 +221,6 @@ public class YinxiangCreatePopup implements View.OnClickListener {
 //        checkBox.setVisibility(View.INVISIBLE);
 //        checkBox.setChecked(false);
 //        recordsync.setText("Sync");
-
         if (recordfavorite != null) {
             voiceItemLayout.setVisibility(View.VISIBLE);
             recordname.setVisibility(View.VISIBLE);
@@ -237,6 +235,17 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     public void StartPop(View v, String attachmentId) {
         if (mPopupWindow != null) {
 
+	        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
+	        if (Tools.isOrientationPortrait((Activity) mContext)) {
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.width = root.getMeasuredWidth() * 9 / 10;
+		        // params.height =mContext.getResources().getDisplayMetrics().heightPixels * 3 / 5;
+	        } else {
+		        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
+		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.height = root.getMeasuredHeight() * 4 / 5 + 30;
+	        }
+	        mPopupWindow.getWindow().setAttributes(params);
             this.attachmentId = attachmentId;
             mPopupWindow.show();
         }
@@ -247,9 +256,19 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     }
 
     public void dismiss() {
+        hideSoftKeyboard(mContext,edittext);
         if (mPopupWindow != null) {
             mPopupWindow.dismiss();
         }
+    }
+
+    /**
+     * 隐藏软键盘(有输入框)
+     */
+    public static void hideSoftKeyboard( Context context, EditText mEditText) {
+        InputMethodManager inputmanger = (InputMethodManager) context
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputmanger.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
     }
 
     private SoundtrackBean soundtrackBean = new SoundtrackBean();
@@ -260,30 +279,18 @@ public class YinxiangCreatePopup implements View.OnClickListener {
             public void run() {
                 try {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("AttachmentID", Integer.parseInt(attachmentId));
-
-                    if (recordfavorite == null) {
-                        recordfavorite = new Document();
-                        recordfavorite.setAttachmentID(0 + "");
-                    }
-                    jsonObject.put("SelectedAudioAttachmentID", recordfavorite.getAttachmentID());
-                    jsonObject.put("SelectedAudioTitle", recordfavorite.getAttachmentID().equals("0") ? "" : recordfavorite.getTitle());
-                    if (favorite == null) {
-                        favorite = new Document();
-                        favorite.setAttachmentID(0 + "");
-                    }
-
-                    jsonObject.put("BackgroudMusicAttachmentID", favorite.getAttachmentID());
 
                     jsonObject.put("Title", edittext.getText().toString());
-                    jsonObject.put("EnableBackgroud", 1);
-                    jsonObject.put("EnableSelectVoice", 1);
-//                    jsonObject.put("EnableRecordNewVoice", checkBox.isChecked() ? 1 : 0);
-                    jsonObject.put("EnableRecordNewVoice",
-                            1);
-                    jsonObject.put("SelectedAudioTitle", recordfavorite.getAttachmentID().equals("0") ? "" : recordfavorite.getTitle());
-                    jsonObject.put("BackgroudMusicTitle", favorite.getAttachmentID().equals("0") ? "" : favorite.getTitle());
-                    jsonObject.put("IsPublic", isPublic.isChecked()?1:0);
+	                jsonObject.put("AttachmentID", Integer.parseInt(attachmentId));
+	                jsonObject.put("BackgroudMusicAttachmentID", TextUtils.isEmpty(favorite.getAttachmentID()) ? 0 : favorite.getAttachmentID());
+	                jsonObject.put("SelectedAudioAttachmentID", TextUtils.isEmpty(recordfavorite.getAttachmentID()) ? 0 : recordfavorite.getAttachmentID());
+	                jsonObject.put("EnableBackgroud", TextUtils.isEmpty(favorite.getAttachmentID()) ? 0 : 1);
+	                jsonObject.put("EnableSelectVoice", TextUtils.isEmpty(recordfavorite.getAttachmentID()) ? 0 : 1);
+                    jsonObject.put("EnableRecordNewVoice", checkBox.isChecked() ? 1 : 0);
+	                jsonObject.put("SelectedAudioTitle", recordfavorite.getTitle());
+	                jsonObject.put("BackgroudMusicTitle", favorite.getTitle());
+	                jsonObject.put("IsPublic", 1);
+
                     JSONObject returnjson = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Soundtrack/CreateSoundtrack", jsonObject);
                     Log.e("hhh", jsonObject.toString() + "      " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
@@ -296,6 +303,8 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                         soundtrackBean.setAvatarUrl(jsonObject1.getString("AvatarUrl"));
                         soundtrackBean.setDuration(jsonObject1.getString("Duration"));
                         soundtrackBean.setCreatedDate(jsonObject1.getString("CreatedDate"));
+                        soundtrackBean.setAttachmentId(jsonObject1.getInt("AttachmentID"));
+                        soundtrackBean.setIsPublic(jsonObject1.getInt("IsPublic"));
 
                         JSONObject pathinfo=jsonObject1.getJSONObject("PathInfo");
                         soundtrackBean.setFileId(pathinfo.getInt("FileID"));
@@ -388,14 +397,32 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                     addrecord.setVisibility(View.VISIBLE);
                 }
                 setCreateSyncText();
-//                addrecord.setVisibility(View.VISIBLE);
-//                recordname.setVisibility(View.INVISIBLE);
-//                recordtime.setVisibility(View.INVISIBLE);
-//                recordsync.setText("Sync");
                 break;
             default:
                 break;
         }
     }
 
+    private String getBindViewText(int fileId){
+        String appBindName="";
+        int language = sharedPreferences.getInt("language",1);
+        if(language==1&&App.appENNames!=null){
+            for(int i=0;i<App.appENNames.size();i++){
+                if(fileId==App.appENNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
+                    appBindName=App.appENNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }else if(language==2&&App.appCNNames!=null){
+            for(int i=0;i<App.appCNNames.size();i++){
+                if(fileId==App.appCNNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
+                    appBindName=App.appCNNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }
+        return appBindName;
+    }
 }

@@ -21,14 +21,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.AppName;
+import com.kloudsync.techexcel.bean.CompanyAccountInfo;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.LoginResult;
 import com.kloudsync.techexcel.bean.RongCloudData;
 import com.kloudsync.techexcel.bean.UserPreferenceData;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DeviceManager;
+import com.kloudsync.techexcel.help.KloudPerssionManger;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.tool.SystemUtil;
 import com.kloudsync.techexcel.ui.MainActivity;
@@ -42,6 +47,8 @@ import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
@@ -50,9 +57,12 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.kloudsync.techexcel.config.AppConfig.ClassRoomID;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_PHONE_STATE;
 
 public class StartUbao extends Activity {
 
@@ -69,8 +79,6 @@ public class StartUbao extends Activity {
 
     public static StartUbao instance;
     String wechatFilePath;
-    private static final int REQUEST_PERMISSION_PHONE_STATE = 1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -254,6 +262,7 @@ public class StartUbao extends Activity {
         } else {
             config.locale = locale;
         }
+
         res.updateConfiguration(config, dm);
     }
 
@@ -270,10 +279,11 @@ public class StartUbao extends Activity {
         loginDisposable = Observable.just("request").observeOn(Schedulers.io()).map(new Function<String, String>() {
             @Override
             public String apply(String o) throws Exception {
+
                 try {
                     Response<NetworkResponse<LoginData>> response = ServiceInterfaceTools.getinstance().login(name, password).execute();
                     Log.e("processLogin", "LoginData,success:" + response.isSuccessful() + ",body:" + response.body());
-                    if (response == null || !response.isSuccessful() || response.body() == null) {
+                    if (response == null || !response.isSuccessful() || response.body() == null || response.body().getRetCode() != 0) {
                         Observable.just("go_to_login").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                             @Override
                             public void accept(String s) throws Exception {
@@ -319,7 +329,7 @@ public class StartUbao extends Activity {
                                 RongCloudData data = response.body().getRetData();
                                 AppConfig.RongUserToken = data.getUserToken();
                                 AppConfig.RongUserID = data.getRongCloudUserID();
-                                goToMainActivity();
+                                getAppNames();
 
                             }
                         }
@@ -355,6 +365,7 @@ public class StartUbao extends Activity {
         editor.putString("UserID", AppConfig.UserID);
         editor.putString("UserToken", AppConfig.UserToken);
         editor.putString("Name", AppConfig.UserName);
+        editor.putString("MeetingId",ClassRoomID);
         editor.commit();
     }
 
@@ -368,12 +379,10 @@ public class StartUbao extends Activity {
 
     }
 
-    private boolean isPermissionPhoneStateGranted() {
-        return PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
-    }
+
 
     private void doWithPermissionChecked(){
-        if(isPermissionPhoneStateGranted()){
+        if(KloudPerssionManger.isPermissionPhoneStateGranted(this)){
             initIfPermissionGranted();
             requestPermissionText.setVisibility(View.GONE);
         }else {
@@ -398,5 +407,44 @@ public class StartUbao extends Activity {
             }
 
         }
+    }
+
+    private void getAppNames() {
+        int mId=sharedPreferences.getInt("SchoolID",0);
+        int id=mId==0?AppConfig.SchoolID:mId;
+        ServiceInterfaceTools.getinstance().getAppNames(id).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body().toString());
+                    if(jsonObject.getString("msg").equals("success")){
+                        Gson gson = new Gson();
+                        List<AppName> appCNNameList=new ArrayList<AppName>();
+                        List<AppName> appENNameList=new ArrayList<AppName>();
+                        List<AppName> appNameList= gson.fromJson(jsonObject.getString("data"), new TypeToken<List<AppName>>(){}.getType());
+                        App.appNames=appNameList;
+                        for(AppName appName:appNameList){
+                            if(appName.getLanguageId()==0){
+                                appCNNameList.add(appName);
+                            }else {
+                                appENNameList.add(appName);
+                            }
+                        }
+                        App.appCNNames=appCNNameList;
+                        App.appENNames=appENNameList;
+                        System.out.println("App.appNames->"+App.appENNames.size());
+                        goToMainActivity();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                System.out.println(t.getLocalizedMessage());
+                goToMainActivity();
+            }
+        });
     }
 }

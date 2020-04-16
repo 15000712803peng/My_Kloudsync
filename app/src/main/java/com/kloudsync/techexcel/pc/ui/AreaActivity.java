@@ -81,14 +81,7 @@ public class AreaActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id._shareicontext:
-			// 弹出软键盘
-			// 键盘
-			@SuppressWarnings("static-access")
-			final InputMethodManager inputManager = (InputMethodManager) editText
-					.getContext().getSystemService(this.INPUT_METHOD_SERVICE);
-			inputManager.showSoftInput(editText, 0);
-			break;
+
 		case R.id.imgback:
 			finish();
 			break;

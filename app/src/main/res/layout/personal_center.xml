@@ -629,6 +629,7 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/pc_note"
                     android:layout_width="100dp"
                     android:layout_height="match_parent"
@@ -663,7 +664,6 @@
                     android:id="@+id/img_digital_note"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
                     android:src="@drawable/icon_digital_pen" />
 
@@ -671,22 +671,63 @@
                     android:id="@+id/tv_digital_note"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/img_digital_note"
                     android:text="@string/my_digital_note"
                     android:textColor="@color/pc_black_text"
                     android:textSize="16sp" />
 
+                <TextView
+                    android:id="@+id/tv_personal_pen_status"
+                    android:layout_width="wrap_content"
+                    android:textSize="@dimen/sp_14"
+                    android:layout_toLeftOf="@+id/iv_digital_note_arrow"
+                    android:layout_marginRight="@dimen/dp_10"
+                    android:textColor="@color/colorFont99"
+                    android:layout_height="wrap_content" />
 
                 <ImageView
+                    android:id="@+id/iv_digital_note_arrow"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
                     android:padding="2dp"
                     android:src="@drawable/arrow2" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_alignLeft="@id/tv_digital_note"
+                    android:layout_alignRight="@id/tv_personal_pen_status"
+                    android:orientation="horizontal"
+                    android:layout_below="@id/tv_digital_note"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tv_personal_pen_source"
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
+                    android:textSize="@dimen/sp_11"
+                        android:singleLine="true"
+                        android:layout_marginRight="@dimen/dp_5"
+                        android:ellipsize="end"
+                        android:layout_marginTop="@dimen/dp_10"
+                    android:textColor="@color/colorFont99"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_personal_pen_current_status"
+                    android:textSize="@dimen/sp_11"
+                    android:gravity="right"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:textColor="@color/colorFont99"
+                    android:layout_alignTop="@id/tv_personal_pen_source"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content" />
+                </LinearLayout>
             </RelativeLayout>
 
 

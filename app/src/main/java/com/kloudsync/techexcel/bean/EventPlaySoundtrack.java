@@ -6,6 +6,7 @@ package com.kloudsync.techexcel.bean;
 
 public class EventPlaySoundtrack {
 
+    private SoundTrack soundTrack;
     private SoundtrackDetail soundtrackDetail;
 
     public SoundtrackDetail getSoundtrackDetail() {
@@ -14,5 +15,13 @@ public class EventPlaySoundtrack {
 
     public void setSoundtrackDetail(SoundtrackDetail soundtrackDetail) {
         this.soundtrackDetail = soundtrackDetail;
+    }
+
+    public SoundTrack getSoundTrack() {
+        return soundTrack;
+    }
+
+    public void setSoundTrack(SoundTrack soundTrack) {
+        this.soundTrack = soundTrack;
     }
 }

@@ -82,6 +82,9 @@
                     android:textColor="@color/red" />
 
                 <ImageView
+                    android:paddingTop="2dp"
+                    android:layout_marginLeft="3dp"
+
                     android:layout_gravity="center_vertical"
                     android:id="@+id/image_folder"
                     android:layout_width="12dp"
@@ -98,7 +101,7 @@
                 android:layout_height="60dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:padding="7dp"
+                android:padding="13dp"
                 android:src="@drawable/more_favor" />
         </LinearLayout>
 

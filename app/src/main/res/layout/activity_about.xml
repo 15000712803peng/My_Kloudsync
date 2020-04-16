@@ -49,9 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
-            android:textColor="@color/darkgrey"
-            android:textSize="14sp"
+            style="@style/PersonInfoTextLabelStyle"
             android:text="@string/privacy_statement"
             />
 
@@ -66,12 +64,12 @@
     </RelativeLayout>
 
     <TextView
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="25dp"
         android:layout_weight="1"
         android:gravity="bottom|center_horizontal"
-        android:textSize="10dp"
+        android:textSize="12sp"
         android:text="Copyright 2019 Kloud.com All rights reserved."
-        android:textColor="@color/txt_color1"
+        android:textColor="#A2A2A2"
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 

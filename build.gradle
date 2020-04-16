@@ -2,8 +2,8 @@
 
 buildscript {
     repositories {
-        jcenter()
         google()
+        jcenter()
     }
     dependencies {
 
@@ -15,8 +15,8 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
         google()
+        jcenter()
         maven { url  "http://dl.bintray.com/onyx-intl/maven" }
         maven { url "https://jitpack.io" }
         maven {url  "https://dl.bintray.com/rongcloud/maven"}

@@ -68,6 +68,8 @@ public class DocumentAdapter extends RecyclerView.Adapter<DocumentAdapter.Recycl
         void dismiss();
 
         void deleteRefresh();
+
+	    void playDocSoundTrackItem(Document teamSpaceBeanFile, SoundtrackBean soundtrackBean);
     }
 
     public void setOnItemLectureListener(OnItemLectureListener onItemLectureListener) {
@@ -240,7 +242,7 @@ public class DocumentAdapter extends RecyclerView.Adapter<DocumentAdapter.Recycl
             viewHolder.operation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+	                onItemLectureListener.playDocSoundTrackItem(teamSpaceBeanFile, soundtrackBean);
                 }
             });
             viewHolder.morepopup.setOnClickListener(new View.OnClickListener() {
@@ -249,6 +251,11 @@ public class DocumentAdapter extends RecyclerView.Adapter<DocumentAdapter.Recycl
                     DocumentYinXiangPopup documentYinXiangPopup = new DocumentYinXiangPopup();
                     documentYinXiangPopup.getPopwindow(context);
                     documentYinXiangPopup.setFavoritePoPListener(new DocumentYinXiangPopup.FavoritePoPListener() {
+	                    @Override
+	                    public void play() {
+		                    onItemLectureListener.playDocSoundTrackItem(teamSpaceBeanFile, soundtrackBean);
+	                    }
+
                         @Override
                         public void share() {
                             onItemLectureListener.share(soundtrackBean.getSoundtrackID(), teamSpaceBeanFile);

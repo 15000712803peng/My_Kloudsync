@@ -7,6 +7,7 @@ public class AccountSettingBean {
     private String webAddress;
 
     private String verifyEmailAddress;
+	private int systemType;
 
     public String getWebAddress() {
         return webAddress;
@@ -31,4 +32,12 @@ public class AccountSettingBean {
     public void setSchoolName(String schoolName) {
         SchoolName = schoolName;
     }
+
+	public int getSystemType() {
+		return systemType;
+	}
+
+	public void setSystemType(int systemType) {
+		this.systemType = systemType;
+	}
 }

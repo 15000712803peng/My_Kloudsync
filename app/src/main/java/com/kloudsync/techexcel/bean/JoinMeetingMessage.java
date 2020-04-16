@@ -16,6 +16,7 @@ public class JoinMeetingMessage {
     private int status;
     private String CurrentDocumentPage;
     private int currentMode;
+    private String currentMaxVideoUserId;
     private int currentLine;
     private int prepareMode;
     private String playAudioData;
@@ -35,6 +36,19 @@ public class JoinMeetingMessage {
     private String noteUserId;
     private int recordingStatus;
     private int shareNoteStatus;
+	private boolean ifPause;
+	private String pauseMsg;
+	private long pauseDuration;
+
+
+
+    public String getCurrentMaxVideoUserId() {
+        return currentMaxVideoUserId;
+    }
+
+    public void setCurrentMaxVideoUserId(String currentMaxVideoUserId) {
+        this.currentMaxVideoUserId = currentMaxVideoUserId;
+    }
 
     public String getInvitedUserIds() {
         return invitedUserIds;
@@ -268,6 +282,31 @@ public class JoinMeetingMessage {
         this.shareNoteStatus = shareNoteStatus;
     }
 
+	public boolean isIfPause() {
+		return ifPause;
+	}
+
+	public void setIfPause(boolean ifPause) {
+		this.ifPause = ifPause;
+	}
+
+	public String getPauseMsg() {
+		return pauseMsg;
+	}
+
+	public void setPauseMsg(String pauseMsg) {
+		this.pauseMsg = pauseMsg;
+	}
+
+	public long getPauseDuration() {
+		return pauseDuration;
+	}
+
+	public void setPauseDuration(long pauseDuration) {
+		this.pauseDuration = pauseDuration;
+	}
+
+
     @Override
     public String toString() {
         return "JoinMeetingMessage{" +
@@ -281,6 +320,7 @@ public class JoinMeetingMessage {
                 ", status=" + status +
                 ", CurrentDocumentPage='" + CurrentDocumentPage + '\'' +
                 ", currentMode=" + currentMode +
+		        ", currentMaxVideoUserId='" + currentMaxVideoUserId + '\'' +
                 ", currentLine=" + currentLine +
                 ", prepareMode=" + prepareMode +
                 ", playAudioData='" + playAudioData + '\'' +
@@ -300,6 +340,9 @@ public class JoinMeetingMessage {
                 ", noteUserId='" + noteUserId + '\'' +
                 ", recordingStatus=" + recordingStatus +
                 ", shareNoteStatus=" + shareNoteStatus +
+		        ", ifPause=" + ifPause +
+		        ", pauseMsg='" + pauseMsg + '\'' +
+		        ", pauseDuration=" + pauseDuration +
                 '}';
     }
 }

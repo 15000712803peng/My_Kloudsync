@@ -34,10 +34,11 @@ public class DocumentModel {
             @Override
             public void run() {
                 JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/Item?lessonID=" + meetingConfig.getLessionId());
-                Log.e("getDocuments","Lesson/Item?lessonID=" + meetingConfig.getLessionId() + ",result:" + response);
+                Log.e("getDocuments", "Lesson/Item?lessonID=" + meetingConfig.getLessionId() + ",result:" + response);
                 if (response == null) {
 
                 } else {
+
                     try {
                         JSONObject retData = response.getJSONObject("RetData");
                         Log.e("asyncGetDocumentDetail", "ret data:" + retData);
@@ -67,13 +68,13 @@ public class DocumentModel {
                                     List<DocumentPage> pages = new ArrayList<>();
                                     for (int j = 0; j < document.getPageCount(); ++j) {
                                         String pageUrl = "";
-                                        DocumentPage  page= new DocumentPage();
+                                        DocumentPage page = new DocumentPage();
                                         page.setPageNumber(j + 1);
                                         page.setDocumentId(document.getItemID());
                                         if (TextUtils.isEmpty(preUrl)) {
                                             page.setPageUrl(pageUrl);
                                         } else {
-                                            page.setPageUrl(preUrl + (j + 1)+"_4K" + endUrl);
+                                            page.setPageUrl(preUrl + (j + 1) + "_4K" + endUrl);
                                         }
                                         pages.add(page);
                                     }
@@ -82,7 +83,7 @@ public class DocumentModel {
                                 }
                                 EventMeetingDocuments meetingDocuments = new EventMeetingDocuments();
                                 meetingDocuments.setDocuments(documents);
-                                if(needShow){
+                                if (needShow) {
                                     EventBus.getDefault().post(meetingDocuments);
                                 }
 
@@ -105,6 +106,7 @@ public class DocumentModel {
             keyJson.put("Key", newPath);
             jsonObject.put("Key", keyJson);
             JSONObject returnjson = ConnectService.submitDataByJsonLive(url, jsonObject);
+            Log.e("syncQueryDocumentInDoc", "url:" + url + ",params:" + jsonObject + ",returnjson:" + returnjson);
             return returnjson;
         } catch (Exception e) {
             e.printStackTrace();
@@ -150,13 +152,13 @@ public class DocumentModel {
                                     List<DocumentPage> pages = new ArrayList<>();
                                     for (int j = 0; j < document.getPageCount(); ++j) {
                                         String pageUrl = "";
-                                        DocumentPage  page= new DocumentPage();
+                                        DocumentPage page = new DocumentPage();
                                         page.setPageNumber(j + 1);
                                         page.setDocumentId(document.getItemID());
                                         if (TextUtils.isEmpty(preUrl)) {
                                             page.setPageUrl(pageUrl);
                                         } else {
-                                            page.setPageUrl(preUrl + (j + 1)+"_4K" + endUrl);
+                                            page.setPageUrl(preUrl + (j + 1) + "_4K" + endUrl);
                                         }
                                         pages.add(page);
                                     }
@@ -180,72 +182,71 @@ public class DocumentModel {
         }).start(ThreadManager.getManager());
     }
 
-    public static EventRefreshDocs syncGetDocumentsInDocAndRefreshFileList(final MeetingConfig meetingConfig,final int itemId) {
+    public static EventRefreshDocs syncGetDocumentsInDocAndRefreshFileList(final MeetingConfig meetingConfig, final int itemId) {
 
         EventRefreshDocs refreshDocs = new EventRefreshDocs();
-            JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/Item?lessonID=" + meetingConfig.getLessionId());
-            if (response == null) {
+        JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/Item?lessonID=" + meetingConfig.getLessionId());
+        if (response == null) {
 
-            } else {
+        } else {
 
-                try {
-                    JSONObject retData = response.getJSONObject("RetData");
-                    Log.e("syncGetDocumentDetail", "ret data:" + retData);
-                    if (retData != null) {
-                        JSONArray array = retData.getJSONArray("AttachmentList");
-                        if (array != null) {
-                            Gson gson = new Gson();
-                            Log.e("array", "array:" + array);
-                            List<MeetingDocument> documents = new ArrayList<>();
-                            for (int i = 0; i < array.length(); ++i) {
-                                JSONObject jsonObject = array.getJSONObject(i);
-                                MeetingDocument document = gson.fromJson(jsonObject.toString(), MeetingDocument.class);
-                                String attachmentUrl = document.getAttachmentUrl();
-                                String preUrl = "";
-                                String endUrl = "";
-                                if (!TextUtils.isEmpty(attachmentUrl)) {
-                                    int index = attachmentUrl.lastIndexOf("<");
-                                    int index2 = attachmentUrl.lastIndexOf(">");
-                                    if (index > 0) {
-                                        preUrl = attachmentUrl.substring(0, index);
-                                    }
-                                    if (index2 > 0) {
-                                        endUrl = attachmentUrl.substring(index2 + 1, attachmentUrl.length());
-                                    }
+            try {
+                JSONObject retData = response.getJSONObject("RetData");
+                Log.e("syncGetDocumentDetail", "ret data:" + retData);
+                if (retData != null) {
+                    JSONArray array = retData.getJSONArray("AttachmentList");
+                    if (array != null) {
+                        Gson gson = new Gson();
+                        Log.e("array", "array:" + array);
+                        List<MeetingDocument> documents = new ArrayList<>();
+                        for (int i = 0; i < array.length(); ++i) {
+                            JSONObject jsonObject = array.getJSONObject(i);
+                            MeetingDocument document = gson.fromJson(jsonObject.toString(), MeetingDocument.class);
+                            String attachmentUrl = document.getAttachmentUrl();
+                            String preUrl = "";
+                            String endUrl = "";
+                            if (!TextUtils.isEmpty(attachmentUrl)) {
+                                int index = attachmentUrl.lastIndexOf("<");
+                                int index2 = attachmentUrl.lastIndexOf(">");
+                                if (index > 0) {
+                                    preUrl = attachmentUrl.substring(0, index);
                                 }
-
-                                List<DocumentPage> pages = new ArrayList<>();
-                                for (int j = 0; j < document.getPageCount(); ++j) {
-                                    String pageUrl = "";
-                                    DocumentPage  page= new DocumentPage();
-                                    page.setPageNumber(j + 1);
-                                    page.setDocumentId(document.getItemID());
-                                    if (TextUtils.isEmpty(preUrl)) {
-                                        page.setPageUrl(pageUrl);
-                                    } else {
-                                        page.setPageUrl(preUrl + (j + 1)+"_4K" + endUrl);
-                                    }
-                                    pages.add(page);
+                                if (index2 > 0) {
+                                    endUrl = attachmentUrl.substring(index2 + 1, attachmentUrl.length());
                                 }
-                                document.setDocumentPages(pages);
-                                documents.add(document);
                             }
 
-                            refreshDocs.setItemId(itemId);
-                            refreshDocs.setRefresh(true);
-                            refreshDocs.setDocuments(documents);
-                            EventBus.getDefault().post(refreshDocs);
+                            List<DocumentPage> pages = new ArrayList<>();
+                            for (int j = 0; j < document.getPageCount(); ++j) {
+                                String pageUrl = "";
+                                DocumentPage page = new DocumentPage();
+                                page.setPageNumber(j + 1);
+                                page.setDocumentId(document.getItemID());
+                                if (TextUtils.isEmpty(preUrl)) {
+                                    page.setPageUrl(pageUrl);
+                                } else {
+                                    page.setPageUrl(preUrl + (j + 1) + "_4K" + endUrl);
+                                }
+                                pages.add(page);
+                            }
+                            document.setDocumentPages(pages);
+                            documents.add(document);
                         }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
 
-            return refreshDocs;
+                        refreshDocs.setItemId(itemId);
+                        refreshDocs.setRefresh(true);
+                        refreshDocs.setDocuments(documents);
+                        EventBus.getDefault().post(refreshDocs);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return refreshDocs;
 
     }
-
 
 
 }

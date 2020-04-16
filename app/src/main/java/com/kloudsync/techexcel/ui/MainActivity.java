@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -22,6 +21,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -33,17 +33,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.bean.CompanyAccountInfo;
+import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForJoinMeetingGranted;
+import com.kloudsync.techexcel.bean.EventCameraAndStoragePermissionForStartMeetingGranted;
 import com.kloudsync.techexcel.bean.EventDoc;
+import com.kloudsync.techexcel.bean.EventOpenOrCloseBluethoothNote;
 import com.kloudsync.techexcel.bean.EventRefreshTab;
 import com.kloudsync.techexcel.bean.EventSpaceData;
 import com.kloudsync.techexcel.bean.EventSpaceFragment;
 import com.kloudsync.techexcel.bean.EventSyncBook;
 import com.kloudsync.techexcel.bean.EventSyncRoom;
+import com.kloudsync.techexcel.bean.EventViewDocInSpacePermissionGranted;
 import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.FollowInfo;
-import com.kloudsync.techexcel.bean.SyncBook;
 import com.kloudsync.techexcel.bean.UserPath;
 import com.kloudsync.techexcel.bean.params.EventCamera;
 import com.kloudsync.techexcel.bean.params.EventProjectFragment;
@@ -56,24 +61,29 @@ import com.kloudsync.techexcel.dialog.UploadFileDialog;
 import com.kloudsync.techexcel.dialog.message.CustomizeMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.FriendMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.GroupMessageItemProvider;
+import com.kloudsync.techexcel.dialog.message.HelloFriendMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.KnowledgeMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.SendFileMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.ShareMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.SystemMessageItemProvider;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.kloudsync.techexcel.frgment.ContactFragment;
+import com.kloudsync.techexcel.frgment.CourseFragment;
+import com.kloudsync.techexcel.frgment.MyFragment;
+import com.kloudsync.techexcel.frgment.PersonalCenterFragment;
 import com.kloudsync.techexcel.frgment.ProjectOneFragment;
+import com.kloudsync.techexcel.frgment.ServiceFragment;
 import com.kloudsync.techexcel.frgment.SpaceDocumentsFragment;
 import com.kloudsync.techexcel.frgment.SpaceSyncRoomFragment;
 import com.kloudsync.techexcel.frgment.TeamDocumentsFragment;
-import com.kloudsync.techexcel.frgment.PersonalCenterFragment;
-import com.kloudsync.techexcel.frgment.ServiceFragment;
 import com.kloudsync.techexcel.frgment.TopicFragment;
 import com.kloudsync.techexcel.frgment.TwoToOneFragment;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.ContactHelpInterface;
 import com.kloudsync.techexcel.help.EverPenManger;
 import com.kloudsync.techexcel.info.School;
+import com.kloudsync.techexcel.mvp.presenter.MainPresenter;
+import com.kloudsync.techexcel.mvp.view.IMainActivityView;
 import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.service.UploadService;
@@ -81,6 +91,8 @@ import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.CustomSyncRoomTool;
 import com.kloudsync.techexcel.tool.DensityUtil;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
+import com.kloudsync.techexcel.tool.ToastUtils;
+import com.kloudsync.techexcel.tool.UriTool;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -93,16 +105,17 @@ import com.pgyersdk.update.UpdateManagerListener;
 import com.pgyersdk.update.javabean.AppBean;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tqltech.tqlpencomm.Dot;
+import com.tqltech.tqlpencomm.PenCommAgent;
 import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.service.KloudWebClientManager;
-import com.ub.service.activity.NotifyActivity;
 import com.ub.service.activity.SocketService;
 import com.ub.service.activity.SyncBookActivity;
 import com.ub.service.activity.SyncRoomActivity;
-import com.ub.service.activity.WatchCourseActivity2;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.bean.EventViewDocPermissionGranted;
+import com.ub.techexcel.bean.Note;
 import com.ub.techexcel.tools.FileUtils;
+import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
@@ -111,22 +124,21 @@ import com.umeng.analytics.MobclickAgent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.rong.imkit.RongIM;
+import io.rong.imkit.fragment.BaseFragment;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.RongIMClient.ConnectCallback;
 import io.rong.imlib.RongIMClient.ErrorCode;
@@ -135,10 +147,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.kloudsync.techexcel.frgment.TeamDocumentsFragment.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_FOR_INSTALL_APK;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE;
+import static com.kloudsync.techexcel.help.KloudPerssionManger.REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE;
 
 
-public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener, OnClickListener {
+public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnDocSavedListener, AddDocToSpaceDialog.OnSpaceSelectedListener, OnClickListener, IMainActivityView {
 
     private List<TextView> tvs = new ArrayList<TextView>();
     private TextView tv_redcontact;
@@ -172,14 +189,14 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     private TextView documentTab, chatTab, meetingTab, syncroomTab, personalTab;
 
+
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
 
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case AppConfig.RONGCONNECT_ERROR:
-                    sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
-                            MODE_PRIVATE);
+                    sharedPreferences = getSharedPreferences(AppConfig.LOGININFO, MODE_PRIVATE);
                     editor = sharedPreferences.edit();
                     editor.putBoolean("isLogIn", false);
                     editor.commit();
@@ -215,16 +232,16 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                             getString(R.string.uploadfailure),
                             Toast.LENGTH_SHORT).show();
                     break;
-
                 default:
                     break;
             }
         }
-
-        ;
     };
 
     long systemTime = 0;
+    private EverPenManger mEverPenManger;
+    private MainPresenter mPresenter;
+    private PenCommAgent mBleManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,13 +255,15 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        EventBus.getDefault().register(this);
+
         editor.putBoolean("isLogIn", true).commit();
         fragmentManager = getSupportFragmentManager();
         setContentView(R.layout.activity_main);
 //        PgyUpdateManager.register(this);
         initView();
-        EverPenManger.getInstance(this).init();
+        mEverPenManger = EverPenManger.getInstance(this);
+        mEverPenManger.init();
+        mBleManager = mEverPenManger.getBleManager();
         requestRongCloudOnlineStatus();
         GetSchoolInfo();
         initUpdate();
@@ -261,7 +280,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             addWxDocDialog.setSavedListener(this);
             addWxDocDialog.show();
         }
-
+        mPresenter = new MainPresenter();
+        mPresenter.attachView(this);
+        mEverPenManger.addListener(mPresenter);
     }
 
     private void requestRongCloudOnlineStatus() {
@@ -312,26 +333,53 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         LoginGet lg = new LoginGet();
         lg.setSchoolTeamGetListener(new LoginGet.SchoolTeamGetListener() {
             @Override
-            public void getST(School school) {
+            public void getST(final School school) {
                 Log.e("GetShoolInfo", "school:" + school);
-                if (school != null) {
-                    TeamSpaceBean teamSpaceBean = school.getTeamSpaceBean();
-                    AppConfig.SchoolID = school.getSchoolID();
-                    editor.putInt("SchoolID", school.getSchoolID());
-                    editor.putString("SchoolName", school.getSchoolName());
-                    if(teamSpaceBean != null){
-                        editor.putString("teamname", teamSpaceBean.getName());
-                        editor.putInt("teamid", teamSpaceBean.getItemID());
+                Observable.just("init_company_info").doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        if (school != null) {
+                            TeamSpaceBean teamSpaceBean = school.getTeamSpaceBean();
+                            AppConfig.SchoolID = school.getSchoolID();
+                            editor.putInt("SchoolID", school.getSchoolID());
+                            editor.putString("SchoolName", school.getSchoolName());
+                            if (teamSpaceBean != null) {
+                                editor.putString("teamname", teamSpaceBean.getName());
+                                editor.putInt("teamid", teamSpaceBean.getItemID());
+                            }
+                            editor.commit();
+                        } else {
+                            editor.putString("SchoolName", "");
+                            editor.putString("teamname", "");
+                            editor.putInt("teamid", -1);
+                            editor.commit();
+                        }
                     }
-                    editor.commit();
-                } else {
-                    editor.putString("SchoolName", "");
-                    editor.putString("teamname", "");
-                    editor.putInt("teamid", -1);
-                    editor.commit();
-                }
+                }).observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        JSONObject response = ServiceInterfaceTools.getinstance().syncGetCompanyAccountInfo();
+                        if (response.has("code")) {
+                            int code = response.getInt("code");
+                            if (code == 0) {
+                                if (response.has("data")) {
+                                    CompanyAccountInfo accountInfo = new Gson().fromJson(response.getJSONObject("data").toString(), CompanyAccountInfo.class);
+                                    if (accountInfo != null) {
+                                        Log.e("processLogin", "system_type:" + accountInfo.getSystemType() + ",-" + accountInfo.getCompanyName());
+                                        AppConfig.systemType = accountInfo.getSystemType();
+                                        sharedPreferences.edit().putInt("system_type", accountInfo.getSystemType()).commit();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        initDatas();
+                    }
+                }).subscribe();
 
-                initDatas();
             }
         });
         lg.GetUserPreference(this, 10001 + "");
@@ -373,12 +421,13 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         service = new Intent(this, SocketService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(service);
-        }else {
+        } else {
             startService(service);
         }
     }
 
     ProgressDialog progressDialog;
+    Uri installUri;
 
     private void initUpdate() {
         // TODO Auto-generated method stub
@@ -411,17 +460,16 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                                         // TODO Auto-generated method stub
                                         dialog.dismiss();
                                     }
-                                })
-                                .setNegativeButton(
-                                        getResources().getString(R.string.update),
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(
-                                                    DialogInterface dialog,
-                                                    int which) {
-                                                PgyUpdateManager.downLoadApk(appBean.getDownloadURL());
-                                            }
-                                        }).show();
+                                }).setCancelable(false).setNegativeButton(
+                                getResources().getString(R.string.update),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(
+                                            DialogInterface dialog,
+                                            int which) {
+                                        PgyUpdateManager.downLoadApk(appBean.getDownloadURL());
+                                    }
+                                }).show();
                     }
 
                     @Override
@@ -446,13 +494,22 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
                     @Override
                     public void downloadSuccessful(Uri uri) {
-                        Log.e("pgyer", "download apk failed");
+                        Log.e("pgyer", "download apk success");
                         if (progressDialog != null) {
                             progressDialog.cancel();
                             progressDialog = null;
                         }
-                        PgyUpdateManager.installApk(uri);  // 使用蒲公英提供的安装方法提示用户 安装apk
 
+                        installUri = uri;
+                        Observable.just("install").observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                installApkBeforeCheckPermission(installUri);
+                            }
+                        }).subscribe();
+
+
+//                        PgyUpdateManager.installApk(uri);  // 使用蒲公英提供的安装方法提示用户 安装apk
                     }
 
                     @Override
@@ -474,6 +531,27 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 }).register();
     }
 
+    private void installApkBeforeCheckPermission(Uri uri) {
+//        if(KloudPerssionManger.isPermissionInstallApkGranted(this)){
+//            Toast.makeText(this,"permisson_granted",Toast.LENGTH_SHORT).show();
+//
+//        }else {
+//            Toast.makeText(this,"request_permission",Toast.LENGTH_SHORT).show();
+//            ActivityCompat.requestPermissions(this, new String[]{
+//                    Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.REQUEST_INSTALL_PACKAGES}, REQUEST_PERMISSION_FOR_INSTALL_APK);
+//        }
+
+//        PgyUpdateManager.installApk(uri);
+        String filePath = UriTool.getFilePathByUri(this, uri);
+        if (!TextUtils.isEmpty(filePath)) {
+            File file = new File(filePath);
+            if (file.exists()) {
+                installAPK(file);
+            }
+        }
+
+    }
+
     private void initView() {
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -484,6 +562,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         spaceFrame = findViewById(R.id.frame_tab_space);
         initTabs();
         RongConnect();
+//        setBindViewText();
     }
 
     private void initTabs() {
@@ -508,11 +587,22 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     private void setTabName() {
         String[] tab = getResources().getStringArray(R.array.tabname);
         for (int i = 0; i < tvIDs.length; i++) {
-            if (tvs.get(i) == syncroomTab) {
-                tvs.get(i).setText(CustomSyncRoomTool.getInstance(this).getCustomyinxiang());
+            TextView tabText = tvs.get(i);
+            if (tabText == syncroomTab) {
+                tabText.setText(CustomSyncRoomTool.getInstance(this).getCustomyinxiang());
+            } else if (tabText == meetingTab) {
+
+                if (AppConfig.systemType == 0) {
+                    tabText.setText(R.string.meeting);
+                } else {
+                    tabText.setText(R.string.course);
+
+                }
             } else {
-                tvs.get(i).setText(tab[i]);
+                tabText.setText(tab[i]);
             }
+
+
         }
 
     }
@@ -540,6 +630,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 RongIM.registerMessageTemplate(new SendFileMessageItemProvider());
 //				RongIM.registerMessageTemplate(new CourseMessageItemProvider());
                 RongIM.registerMessageTemplate(new ShareMessageItemProvider());
+                RongIM.registerMessageTemplate(new HelloFriendMessageItemProvider());
 
 //                initDatas();
                 if (RongIM.getInstance() != null
@@ -586,6 +677,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             } else {
                 changeTeamFragment((TextView) v);
             }
+//            setBindViewText();
 
         }
     }
@@ -629,14 +721,20 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     SpaceDocumentsFragment spaceDocumentsFragment;
     TopicFragment topicFragment;
     TwoToOneFragment twoToOneFragment;
-    ServiceFragment serviceFragment;
+    MyFragment serviceFragment;
     PersonalCenterFragment personalCenterFragment;
     ProjectOneFragment projectOneFragment;
+
     private void initDatas() {
         documentsFragment = new TeamDocumentsFragment();
         spaceDocumentsFragment = new SpaceDocumentsFragment();
         twoToOneFragment = new TwoToOneFragment();
-        serviceFragment = new ServiceFragment();
+        if (AppConfig.systemType == 0) {
+            serviceFragment = new ServiceFragment();
+        } else {
+            serviceFragment = new CourseFragment();
+        }
+
         topicFragment = new TopicFragment();
         personalCenterFragment = new PersonalCenterFragment();
         projectOneFragment = new ProjectOneFragment();
@@ -645,6 +743,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         } else {
             syncroomTab.setVisibility(View.GONE);
         }
+
         mTabs.add(documentsFragment);
         mTabs.add(twoToOneFragment);
         mTabs.add(serviceFragment);
@@ -653,6 +752,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         changeTeamFragment(documentTab);
         Log.e("user_info", "user_token:" + AppConfig.UserToken + ",company_id:" + AppConfig.SchoolID);
         isOpenYinxiang();
+        setTabName();
     }
 
     private void isOpenYinxiang() {
@@ -832,7 +932,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     public void onResume() {
         super.onResume();
-        WatchCourseActivity3.watch3instance = false;
+//        WatchCourseActivity3.watch3instance = false;
         SyncRoomActivity.syncroomInstance = false;
         SyncBookActivity.syncbookInstance = false;
         if (RESUME) {
@@ -860,14 +960,27 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             DisplayRed(false);
         }
 
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+
+
         AppConfig.isToPersonalCenter = false;
         AppConfig.isRefreshRed = false;
 
         MobclickAgent.onPageStart("MainActivity");
         MobclickAgent.onResume(this);
         Tools.keepSocketServiceOn(this);
+//        testNote();
         Log.e("time_interval", "interval:" + (System.currentTimeMillis() - systemTime));//统计时长
+    }
 
+
+    private void testNote() {
+        EventOpenOrCloseBluethoothNote note = new EventOpenOrCloseBluethoothNote();
+        note.setNoteId("1915234");
+        handleBluetoothNote(note);
     }
 
     public void onPause() {
@@ -875,6 +988,10 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         super.onPause();
         MobclickAgent.onPageEnd("MainActivity");
         MobclickAgent.onPause(this);
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+
 
     }
 
@@ -893,24 +1010,35 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         isOpenYinxiang();
     }
 
-
     @Override
     protected void onDestroy() {
         // TODO Auto-generated method stub
         super.onDestroy();
         instance = null;
+        mEverPenManger.startOrStopFindDevice(false);
+        if (mBleManager != null) {
+            mBleManager.ReqOfflineDataTransfer(false);
+        }
+        mEverPenManger.removeListener(mPresenter);
+        mEverPenManger.unBindService();
+        mBleManager = null;
+        mEverPenManger = null;
+        mPresenter.detachView();
+        mPresenter = null;
+        handler.removeCallbacksAndMessages(null);
         app.setMainActivityInstance(null);
         AppConfig.isUpdateCustomer = false;
         AppConfig.isUpdateDialogue = false;
         AppConfig.HASUPDATAINFO = false;
         stopService();
-        EventBus.getDefault().unregister(this);
+
         app.getThreadMgr().shutDown();
         KillFile();
+        System.gc();
     }
 
-    private void stopService(){
-        if(isServiceRunning(this, "com.ub.service.activity.SocketService")){
+    private void stopService() {
+        if (isServiceRunning(this, "com.ub.service.activity.SocketService")) {
             Intent service = new Intent(this, SocketService.class);
         }
     }
@@ -1360,9 +1488,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         Log.e("handleBindJoinMeeting", "info:" + followInfo);
 
         // -- 1:如果在会议里面
-        if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
-            return;
-        }
+//        if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
+//            return;
+//        }
 
         // -- 2:如果在document,syncroom ,或者 syncbook里面
 //        if((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
@@ -1405,9 +1533,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         Log.e("handleEnableTvFollow", "info:" + followInfo);
 
         // -- 1:如果在会议里面
-        if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
-            return;
-        }
+//        if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
+//            return;
+//        }
 
         // -- 2:如果在document,syncroom ,或者 syncbook里面
 //        if((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
@@ -1440,9 +1568,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 if (hasOwner) {
                     // 开启了同步
                     // 1: 如果正在会议里面，不用做额外处理
-                    if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
-                        return;
-                    }
+//                    if (WatchCourseActivity3.watch3instance && WatchCourseActivity3.isInMeeting) {
+//                        return;
+//                    }
 
                     if (messageJson.has("tvOwnerMeetingId")) {
                         followInfo.setMeetingId(messageJson.getString("tvOwnerMeetingId"));
@@ -1459,44 +1587,44 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                     }
 
                     // -- 2:如果在document,syncroom ,或者 syncbook里面
-                    Log.e("check_instance", "watch3instance:" + WatchCourseActivity3.watch3instance + "--syncroomInstance:" + SyncRoomActivity.syncroomInstance + "--syncbookInstance:" + SyncBookActivity.syncbookInstance);
-                    if ((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
-                            SyncBookActivity.syncbookInstance) {
-                        String _meetingId = "";
-                        if (WatchCourseActivity3.watch3instance) {
-                            _meetingId = WatchCourseActivity3.meetingId;
-                            Log.e("----", "one,meeting_id:" + _meetingId);
-                        }
-                        if (SyncBookActivity.syncbookInstance) {
-                            _meetingId = SyncBookActivity.meetingId;
-                            Log.e("----", "two,meeting_id:" + _meetingId);
-                        }
-                        if (SyncRoomActivity.syncroomInstance) {
-                            _meetingId = SyncRoomActivity.meetingId;
-                            Log.e("----", "three,meeting_id:" + _meetingId);
-                        }
-
-                        if (messageJson.has("tvBindUserId")) {
-                            String bindUserId = messageJson.getString("tvBindUserId");
-                            if (!TextUtils.isEmpty(bindUserId)) {
-                                if (TextUtils.isEmpty(followInfo.getMeetingId())) {
-                                    // 心跳中没有会议了
-//                                    sendLeaveMeetingMessage();
-                                    return;
-                                }
-                            }
-                        }
-
-                        if (!_meetingId.equals(messageJson.getString("tvOwnerMeetingId"))) {
-                            Log.e("----", "four,tvOwnerMeetingId:" + messageJson.getString("tvOwnerMeetingId"));
-                            sendLeaveMeetingMessage();
-                            followUser(followInfo.getMeetingId(), followInfo.getLessionId(), followInfo.getType());
-                        }
-                        return;
-                    }
+//                    Log.e("check_instance", "watch3instance:" + WatchCourseActivity3.watch3instance + "--syncroomInstance:" + SyncRoomActivity.syncroomInstance + "--syncbookInstance:" + SyncBookActivity.syncbookInstance);
+//                    if ((WatchCourseActivity3.watch3instance && !WatchCourseActivity3.isInMeeting) || SyncRoomActivity.syncroomInstance ||
+//                            SyncBookActivity.syncbookInstance) {
+//                        String _meetingId = "";
+//                        if (WatchCourseActivity3.watch3instance) {
+//                            _meetingId = WatchCourseActivity3.meetingId;
+//                            Log.e("----", "one,meeting_id:" + _meetingId);
+//                        }
+//                        if (SyncBookActivity.syncbookInstance) {
+//                            _meetingId = SyncBookActivity.meetingId;
+//                            Log.e("----", "two,meeting_id:" + _meetingId);
+//                        }
+//                        if (SyncRoomActivity.syncroomInstance) {
+//                            _meetingId = SyncRoomActivity.meetingId;
+//                            Log.e("----", "three,meeting_id:" + _meetingId);
+//                        }
+//
+//                        if (messageJson.has("tvBindUserId")) {
+//                            String bindUserId = messageJson.getString("tvBindUserId");
+//                            if (!TextUtils.isEmpty(bindUserId)) {
+//                                if (TextUtils.isEmpty(followInfo.getMeetingId())) {
+//                                    // 心跳中没有会议了
+////                                    sendLeaveMeetingMessage();
+//                                    return;
+//                                }
+//                            }
+//                        }
+//
+//                        if (!_meetingId.equals(messageJson.getString("tvOwnerMeetingId"))) {
+//                            Log.e("----", "four,tvOwnerMeetingId:" + messageJson.getString("tvOwnerMeetingId"));
+//                            sendLeaveMeetingMessage();
+//                            followUser(followInfo.getMeetingId(), followInfo.getLessionId(), followInfo.getType());
+//                        }
+//                        return;
+//                    }
 
                     // -- 没有在任何..
-                    if (!WatchCourseActivity3.watch3instance && !SyncRoomActivity.syncroomInstance ||
+                    if (!SyncRoomActivity.syncroomInstance ||
                             !SyncBookActivity.syncbookInstance)
                         if (messageJson.has("tvOwnerMeetingId")) {
                             followUser(followInfo.getMeetingId(), followInfo.getLessionId(), followInfo.getType());
@@ -1549,7 +1677,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             return;
         }
         if (type == 1 || type == 2) {
-            Intent intent = (type == 2) ? new Intent(this, WatchCourseActivity3.class) :
+            Intent intent = (type == 2) ? new Intent(this, DocAndMeetingActivity.class) :
                     new Intent(this, SyncRoomActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra("userid", AppConfig.UserID);
@@ -1565,7 +1693,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             intent.putExtra("type", type);
             startActivity(intent);
         } else if (type == 0) {
-            Intent intent = new Intent(this, WatchCourseActivity3.class);
+            Intent intent = new Intent(this, DocAndMeetingActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra("userid", AppConfig.UserID);
             intent.putExtra("meetingId", meetingId);
@@ -1609,7 +1737,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Subscribe
     public void doc(EventDoc doc) {
         Log.e("event_bus", "set doc:" + true);
-        WatchCourseActivity3.watch3instance = true;
+//        WatchCourseActivity3.watch3instance = true;
     }
 
     @Subscribe
@@ -1661,42 +1789,254 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE){
+        if (requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_granted");
                 EventViewDocPermissionGranted viewDocPermissionGranted = new EventViewDocPermissionGranted();
                 EventBus.getDefault().post(viewDocPermissionGranted);
 
-            } else if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED){
-                Log.e("check_permission","phone_READ_EXTERNAL_STORAGE_denied");
-                Toast.makeText(this,"查看文档需要访问sdcard的权限，请允许",Toast.LENGTH_SHORT).show();
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "查看文档需要访问sdcard的权限，请允许", Toast.LENGTH_SHORT).show();
             }
 
-        }else
-        if(requestCode ==spaceDocumentsFragment.REQUEST_PERMISSION_CAMERA){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    // 判断用户是否 点击了不再提醒。(检测该权限是否还可以申请)
-                    boolean i = shouldShowRequestPermissionRationale(permissions[0]);
-                    boolean j = shouldShowRequestPermissionRationale(permissions[1]);
-                    boolean k = shouldShowRequestPermissionRationale(permissions[2]);
-                    if (!i||!j||!k) {
-                        // 用户还是想用我的 APP 的
-                        // 提示用户去应用设置界面手动开启权限
-//                        showDialogTipUserGoToAppSettting();
-                    } else {
-                        Toast.makeText(this, "必要权限未开启", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                } else {
-                    EventBus.getDefault().post(new EventCamera());
+        } else if (requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                EventCameraAndStoragePermissionForJoinMeetingGranted joinMeetingGranted = new EventCameraAndStoragePermissionForJoinMeetingGranted();
+                EventBus.getDefault().post(joinMeetingGranted);
+
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED || grantResults[2] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "加入会议前请先同意必要的权限", Toast.LENGTH_SHORT).show();
+            }
+
+        } else if (requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                EventCameraAndStoragePermissionForStartMeetingGranted startMeetingGranted = new EventCameraAndStoragePermissionForStartMeetingGranted();
+                EventBus.getDefault().post(startMeetingGranted);
+
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED || grantResults[2] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "开始会议前请先同意必要的权限", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_UPLOADFILE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                EventCamera startMeetingGranted = new EventCamera();
+                EventBus.getDefault().post(startMeetingGranted);
+
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "开始会议需要访问相机，请允许", Toast.LENGTH_SHORT).show();
+            }
+
+        } else if (requestCode == REQUEST_PERMISSION_FOR_INSTALL_APK) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                if (installUri != null) {
+                    installApkBeforeCheckPermission(installUri);
                 }
+            }
+        } else if (requestCode == REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_FOR_VIWE_DOC_IN_SPACE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                EventViewDocInSpacePermissionGranted viewDocPermissionGranted = new EventViewDocInSpacePermissionGranted();
+                EventBus.getDefault().post(viewDocPermissionGranted);
+
+            } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "查看文档需要访问sdcard的权限，请允许", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
+    public void installAPK(File apkFile) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            //第二个参数需要与<provider>标签中的android:authorities属性相同
+            uri = FileProvider.getUriForFile(this, "com.kloudsync.techexcel.FileProvider", apkFile);
+        } else {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            uri = Uri.fromFile(apkFile);
+        }
+        intent.setDataAndType(uri, "application/vnd.android.package-archive");
+        startActivity(intent);
+    }
+
+    @Override
+    public void getBleManager(PenCommAgent bleManager) {
+        mBleManager = bleManager;
+    }
+
+    @Override
+    public void onConnected() {
+        if (personalCenterFragment != null) {
+            personalCenterFragment.setCurrentPenNameAndStatus(true);
+        }
+    }
+
+    @Override
+    public void onDisconnected() {
+        if (personalCenterFragment != null) {
+            personalCenterFragment.setCurrentPenNameAndStatus(false);
+        }
+    }
+
+    @Override
+    public void onConnectFailed() {
+        if (personalCenterFragment != null) {
+            personalCenterFragment.setCurrentPenNameAndStatus(false);
+        }
+    }
 
 
+    @Override
+    public void onReceiveDot(Dot dot) {
+       /* String uuid = UUID.randomUUID().toString() + System.currentTimeMillis();
+        NoteDotBean noteDotBean = new NoteDotBean();
+        noteDotBean.setDotId(uuid);
+        noteDotBean.setDot(dot);
+	    SyncWebNoteActionsCache.getInstance(this).cacheActions(noteDotBean);*/
+    }
+
+    @Override
+    public void onReceiveOfflineStrokes(Dot dot) {
+
+    }
+
+    @Override
+    public void toast(String msg) {
+        ToastUtils.show(this, msg);
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void dismissLoading() {
+
+    }
+
+    private String getBindViewText(int fileId) {
+        String appBindName = "";
+        int language = sharedPreferences.getInt("language", 1);
+        if (language == 1 && App.appENNames != null) {
+            for (int i = 0; i < App.appENNames.size(); i++) {
+                if (fileId == App.appENNames.get(i).getFieldId()) {
+                    System.out.println("Name->" + App.appENNames.get(i).getFieldName());
+                    appBindName = App.appENNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        } else if (language == 2 && App.appCNNames != null) {
+            for (int i = 0; i < App.appCNNames.size(); i++) {
+                if (fileId == App.appCNNames.get(i).getFieldId()) {
+                    System.out.println("Name->" + App.appCNNames.get(i).getFieldName());
+                    appBindName = App.appCNNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }
+        return appBindName;
+    }
+
+    private void setBindViewText() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String document = getBindViewText(1004);
+                documentTab.setText(TextUtils.isEmpty(document) ? getString(R.string.documents) : document);
+                String chat = getBindViewText(1005);
+                chatTab.setText(TextUtils.isEmpty(chat) ? getString(R.string.dialogue) : chat);
+                String meeting = getBindViewText(1007);
+                if (AppConfig.systemType == 0) {
+                    meetingTab.setText(TextUtils.isEmpty(meeting) ? getString(R.string.course) : meeting);
+
+                } else {
+                    meetingTab.setText(TextUtils.isEmpty(meeting) ? getString(R.string.Meeting) : meeting);
+
+                }
+                String syncroom = getBindViewText(1001);
+                syncroomTab.setText(TextUtils.isEmpty(syncroom) ? getString(R.string.community) : syncroom);
+            }
+        }, 500);
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void handleBluetoothNote(EventOpenOrCloseBluethoothNote note) {
+
+        if (!TextUtils.isEmpty(note.getNoteId())) {
+            if (note.getStatus() == 1) {
+                Observable.just(note.getNoteId()).observeOn(Schedulers.io()).map(new Function<String, Note>() {
+                    @Override
+                    public Note apply(String noteId) throws Exception {
+                        return MeetingServiceTools.getInstance().syncGetNoteByNoteId(noteId);
+                    }
+
+                }).doOnNext(new Consumer<Note>() {
+                    @Override
+                    public void accept(final Note note) throws Exception {
+                        if (note.getAttachmentID() > 0) {
+                            String title = note.getTitle();
+                            if (TextUtils.isEmpty(title)) {
+                                title = "";
+                            }
+                            String url = AppConfig.URL_PUBLIC
+                                    + "Lesson/AddTempLessonWithOriginalDocument?attachmentID=" + note.getAttachmentID()
+                                    + "&Title=" + URLEncoder.encode(LoginGet.getBase64Password(""), "UTF-8");
+                            JSONObject jsonObject = ServiceInterfaceTools.getinstance().syncGetTempLessonWithOriginalDocument(url);
+                            if (jsonObject.has("RetCode")) {
+                                if (jsonObject.getInt("RetCode") == 0) {
+                                    JSONObject data = jsonObject.getJSONObject("RetData");
+                                    final String lessionId = data.optLong("LessonID") + "";
+                                    final String itemId = data.optLong("ItemID") + "";
+                                    if (!TextUtils.isEmpty(lessionId)) {
+                                        Observable.just("view_note").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                                            @Override
+                                            public void accept(String s) throws Exception {
+                                                goToViewNote(lessionId, itemId, note);
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }).subscribe();
+            }
+
+        }
+    }
+
+    private void goToViewNote(String lessonId, String itemId, Note note) {
+        updateSocket();
+        Intent intent = new Intent(this, NoteViewActivityV2.class);
+//        Intent intent = new Intent(getActivity(), WatchCourseActivity3.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("userid", AppConfig.UserID);
+        //-----
+        intent.putExtra("meeting_id", Integer.parseInt(lessonId) + "," + AppConfig.UserID);
+//        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
+        intent.putExtra("document_id", itemId);
+        intent.putExtra("meeting_type", 2);
+        intent.putExtra("lession_id", Integer.parseInt(lessonId));
+        intent.putExtra("url", note.getAttachmentUrl());
+        intent.putExtra("note_id", note.getNoteID());
+        intent.putExtra("local_file_id", note.getLocalFileID());
+        startActivity(intent);
+    }
+
+    private void updateSocket() {
+        Intent service = new Intent(this, SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                context.startForegroundService(service);
+            startService(service);
+        } else {
+            startService(service);
+        }
+    }
 }

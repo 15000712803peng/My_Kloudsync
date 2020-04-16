@@ -4,13 +4,17 @@
     android:id="@+id/operation"
      android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/image"
-        android:layout_marginLeft="10dp"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_width="@dimen/dp_37"
+        android:layout_height="@dimen/dp_37"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:scaleType="center"
@@ -27,10 +31,10 @@
         android:id="@+id/sss"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="@dimen/dp_15"
         android:gravity="center_vertical"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_10"
         android:orientation="vertical">
 
 
@@ -39,47 +43,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="30dp"
-            android:layout_marginTop="2dp"
-            android:textSize="12sp"
+            android:textColor="@color/colorFont33"
+            android:textSize="@dimen/sp_13"
             android:text="" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:textSize="12sp"
-                android:id="@+id/username"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:textColor="@color/newgrey"
-                android:layout_toRightOf="@+id/image"
-                android:text="Bella" />
-
-            <TextView
-                android:textSize="12sp"
-                android:id="@+id/createdate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/newgrey"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:layout_toRightOf="@+id/image"
-                android:text="2014" />
-        </LinearLayout>
 
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp">
+            android:layout_marginBottom="@dimen/dp_3"
+            android:layout_marginTop="@dimen/dp_3">
 
             <TextView
-                android:textSize="12sp"
+                android:textSize="@dimen/sp_12"
                 android:id="@+id/duration"
+                android:textColor="@color/colorFont33"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -87,24 +65,61 @@
 
 
             <ImageView
-                android:layout_marginRight="3dp"
                 android:id="@+id/morepopup"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_15"
+                android:paddingLeft="@dimen/dp_5"
+                android:paddingRight="@dimen/dp_5"
+                android:layout_marginRight="@dimen/dp_28"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:padding="2dp"
                 android:src="@drawable/more_favor" />
 
         </RelativeLayout>
 
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:textSize="@dimen/sp_12"
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:textColor="@color/colorFont99"
+                android:layout_toRightOf="@+id/image"
+                android:text="Bella" />
+
+            <View
+                android:layout_width="@dimen/dp_1"
+                android:layout_marginLeft="@dimen/dp_9"
+                android:layout_marginRight="@dimen/dp_9"
+                android:layout_height="@dimen/dp_11"
+                android:background="@color/colorBGdd"/>
+
+            <TextView
+                android:textSize="@dimen/sp_12"
+                android:id="@+id/createdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorFont99"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/image"
+                android:text="2014" />
+        </LinearLayout>
     </LinearLayout>
 
+    </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="1.5px"
+        android:layout_height="@dimen/dp_05"
+        android:layout_marginLeft="@dimen/dp_67"
+        android:layout_marginRight="@dimen/dp_18"
         android:layout_below="@+id/sss"
-        android:background="@color/divider_line" />
+        android:background="@color/colorBGdd" />
 </LinearLayout>

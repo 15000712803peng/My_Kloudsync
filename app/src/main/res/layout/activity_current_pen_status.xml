@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBGf9">
+
+    <include layout="@layout/titlebar" />
+
+    <LinearLayout
+        android:id="@+id/lly_current_pen_status"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="@dimen/dp_17"
+        android:layout_marginTop="@dimen/dp_65"
+        android:layout_marginRight="@dimen/dp_17"
+        android:layout_marginBottom="@dimen/dp_24"
+        app:layout_goneMarginBottom="@dimen/dp_48"
+        android:background="@drawable/shape_white_all_radius_4"
+        android:gravity="center_horizontal"
+        android:elevation="@dimen/dp_5"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/tv_current_pen_tips"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/csl_titlebar">
+
+        <TextView
+            android:id="@+id/tv_current_connected_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_65"
+            android:textColor="@color/color3d78fb"
+            android:textSize="@dimen/sp_12" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_40"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_current_status_icon"
+                android:layout_width="@dimen/dp_16"
+                android:layout_height="@dimen/dp_16"
+                android:src="@drawable/current_pen_connected_icon" />
+
+            <TextView
+                android:id="@+id/tv_current_pen_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_9"
+                android:textColor="@color/colorFont33"
+                android:textSize="@dimen/sp_16" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_current_pen_source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_15"
+            android:background="@drawable/shape_gray_all_radius_5"
+            android:paddingLeft="@dimen/dp_11"
+            android:paddingTop="@dimen/dp_7"
+            android:paddingRight="@dimen/dp_11"
+            android:paddingBottom="@dimen/dp_7"
+            android:textColor="@color/c5"
+            android:textSize="@dimen/sp_12" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_1_05"
+            android:layout_marginLeft="@dimen/dp_29"
+            android:layout_marginTop="@dimen/dp_40"
+            android:layout_marginRight="@dimen/dp_29"
+            android:background="@drawable/shape_gray_dash_line"
+            android:layerType="software" />
+
+        <RelativeLayout
+            style="@style/CurrentPenInfoLlyStyle"
+            android:layout_marginTop="@dimen/dp_39">
+
+            <TextView
+                android:id="@+id/tv_current_pen_info_name"
+                style="@style/CurrentPenInfoTvStyle"
+                android:text="@string/battery_remaining" />
+
+            <ProgressBar
+                android:id="@+id/pb_current_pen_info"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_10"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dp_35"
+                android:layout_marginRight="@dimen/dp_15"
+                android:indeterminateOnly="false"
+                android:layout_toLeftOf="@+id/tv_current_pen_info_number"
+                android:layout_toRightOf="@+id/tv_current_pen_info_name"
+                android:max="100"
+                android:progressDrawable="@drawable/shape_current_pen_progress_red_horizontal" />
+
+            <TextView
+                android:id="@+id/tv_current_pen_info_number"
+                android:text="- -"
+                style="@style/CurrentPenInfoNumberStyle" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_1_05"
+            android:layout_marginLeft="@dimen/dp_29"
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginRight="@dimen/dp_29"
+            android:background="@drawable/shape_gray_dash_line"
+            android:layerType="software" />
+
+        <RelativeLayout
+            style="@style/CurrentPenInfoLlyStyle"
+            android:layout_marginTop="@dimen/dp_29">
+
+            <TextView
+                android:id="@+id/tv_current_pen_info_name2"
+                style="@style/CurrentPenInfoTvStyle"
+                android:text="@string/storage_remaining" />
+
+            <ProgressBar
+                android:id="@+id/pb_current_pen_info2"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_10"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dp_35"
+                android:indeterminateOnly="false"
+                android:layout_marginRight="@dimen/dp_15"
+                android:layout_toLeftOf="@+id/tv_current_pen_info_number2"
+                android:layout_toRightOf="@+id/tv_current_pen_info_name2"
+                android:max="100"
+                android:progressDrawable="@drawable/shape_current_pen_progress_blue_horizontal" />
+
+            <TextView
+                android:id="@+id/tv_current_pen_info_number2"
+                android:text="- -"
+                style="@style/CurrentPenInfoNumberStyle" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_1_05"
+            android:layout_marginLeft="@dimen/dp_29"
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginRight="@dimen/dp_29"
+            android:background="@drawable/shape_gray_dash_line"
+            android:layerType="software" />
+
+        <RelativeLayout
+            style="@style/CurrentPenInfoLlyStyle"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/dp_29">
+
+            <TextView
+                android:id="@+id/tv_current_pen_info_name3"
+                style="@style/CurrentPenInfoTvStyle"
+                android:text="@string/writing_length" />
+
+            <ProgressBar
+                android:id="@+id/pb_current_pen_info3"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_10"
+                android:layout_centerVertical="true"
+                android:indeterminateOnly="false"
+                android:layout_marginLeft="@dimen/dp_35"
+                android:layout_marginRight="@dimen/dp_15"
+                android:layout_toLeftOf="@+id/tv_current_pen_info_number3"
+                android:layout_toRightOf="@+id/tv_current_pen_info_name3"
+                android:max="100"
+                android:progressDrawable="@drawable/shape_current_pen_progress_blue_horizontal" />
+
+            <TextView
+                android:id="@+id/tv_current_pen_info_number3"
+                style="@style/CurrentPenInfoNumberStyle" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_25"
+        android:background="@drawable/shape_white_ovar"
+        android:elevation="@dimen/dp_6"
+        android:padding="@dimen/dp_25"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/csl_titlebar">
+
+        <ImageView
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_39"
+            android:src="@drawable/current_pen_status_img" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_current_pen_tips"
+        android:layout_width="match_parent"
+        app:layout_constraintBottom_toTopOf="@+id/tv_current_status_go_my_note"
+        android:layout_marginBottom="@dimen/dp_9"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/dp_15"
+        android:paddingRight="@dimen/dp_15"
+        android:textColor="@color/colore96161"
+        android:textSize="@dimen/sp_11"
+        android:text="@string/please_make_sure_the_electronic_pen"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:id="@+id/tv_current_status_go_my_note"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_45"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_marginRight="@dimen/dp_15"
+        android:gravity="center"
+        android:layout_marginBottom="@dimen/dp_52"
+        android:background="@drawable/shape_blue_all_radius_21"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_17"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/pb_current_status_loading"
+        android:layout_width="@dimen/dp_18"
+        android:layout_height="@dimen/dp_18"
+        android:layout_marginBottom="@dimen/dp_65"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

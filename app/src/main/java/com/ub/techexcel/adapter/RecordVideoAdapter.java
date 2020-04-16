@@ -18,8 +18,7 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
-import com.ub.service.activity.WatchCourseActivity2;
-import com.ub.service.activity.WatchCourseActivity3;
+
 import com.ub.techexcel.bean.AgoraBean;
 import com.ub.techexcel.bean.SectionVO;
 import com.ub.techexcel.bean.SoundtrackBean;

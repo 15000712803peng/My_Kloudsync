@@ -22,6 +22,7 @@
         android:layout_height="wrap_content" />
 
     <ImageView
+        android:visibility="gone"
         android:id="@+id/image_filter_contact"
         android:layout_marginRight="16dp"
         android:layout_width="20dp"

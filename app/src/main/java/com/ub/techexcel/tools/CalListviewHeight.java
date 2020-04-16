@@ -35,6 +35,8 @@ public class CalListviewHeight {
 
 	}
 
+
+
 	public static void setListViewHeight(ListView listView, BaseAdapter adapter,
 			int count) {
 		int totalHeight = 0;

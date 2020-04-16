@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingTop="@dimen/dp_12"
+    android:paddingLeft="@dimen/dp_15"
+    android:layout_marginTop="@dimen/dp_15"
+    android:paddingBottom="@dimen/dp_12"
+    android:id="@+id/csl_item_bluetooth_pen"
+    android:paddingRight="@dimen/dp_21"
+    android:background="@drawable/shape_white_all_radius_4"
+    android:layout_height="wrap_content">
+
+
+    <TextView
+        android:id="@+id/item_tv_bluetooth_pen_name"
+        android:layout_width="0dp"
+        android:textColor="@color/colorFont33"
+        android:textSize="@dimen/sp_16"
+        android:layout_marginRight="@dimen/dp_5"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/rly_item_bluetooth_pen"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:id="@+id/rly_item_bluetooth_pen"
+        android:layout_width="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:id="@+id/item_pb_bluetooth_pen"
+            android:layout_width="@dimen/dp_18"
+            android:visibility="gone"
+            android:layout_height="@dimen/dp_18" />
+
+        <ImageView
+            android:id="@+id/iv_item_bluetooth_pen_connected"
+            android:layout_width="@dimen/dp_18"
+            android:layout_height="@dimen/dp_18"
+            android:visibility="gone"
+            android:src="@drawable/enter_pairing_connected_status_icon"
+
+            />
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>

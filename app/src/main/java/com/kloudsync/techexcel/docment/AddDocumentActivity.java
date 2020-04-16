@@ -1,18 +1,19 @@
 package com.kloudsync.techexcel.docment;
 
 import android.Manifest;
-import android.content.ContentResolver;
+import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +30,9 @@ import com.kloudsync.techexcel.app.BaseActivity;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.UploadFileDialog;
+import com.kloudsync.techexcel.filepicker.FileEntity;
+import com.kloudsync.techexcel.filepicker.FilePickerActivity;
+import com.kloudsync.techexcel.filepicker.PickerManager;
 import com.kloudsync.techexcel.help.AddDocumentTool;
 import com.kloudsync.techexcel.help.DocChooseDialog;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
@@ -150,12 +154,23 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
         startActivityForResult(intent, REQUEST_SELECT_DOC);
     }
 
+
+
     @Override
     public void selectFromFiles() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
-        startActivityForResult(intent, REQUEST_SELECTED_FILE);
+//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//        intent.setType("application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document" +
+//                "|application/pdf|application/vnd.ms-powerpoint|application/vnd.openxmlformats-officedocument.presentationml.presentation");
+//        intent.addCategory(Intent.CATEGORY_OPENABLE);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+//        }
+//        startActivityForResult(intent, REQUEST_SELECTED_FILE);
+
+
+        Intent intent = new Intent(this, FilePickerActivity.class);
+        startActivityForResult(intent,REQUEST_SELECTED_FILE);
+
     }
 
     /**
@@ -261,11 +276,41 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
                     addDocSucc();
                     break;
                 case  REQUEST_SELECTED_FILE:
-                    if (Build.VERSION.SDK_INT>=19){
-                        handleImageOkKitKat(data);
-                    } else{
-                        handleImageBeforeKitKat(data);
+                    Log.e("buildversion",Build.VERSION.SDK_INT+"");
+//                    Uri uri = data.getData();
+//                    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
+//                       String path = getPath(this, uri);
+//                        uploadFile(path);
+//                    } else{
+//                        String path = getRealPathFromURI(uri);
+//                        uploadFile(path);
+//                    }
+
+
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                        //高于API19版本
+//                        String[] split = data.getData().getPath().split("\\:");
+//                        String p = "";
+//                        if (split.length >= 2) {
+//                            p = Environment.getExternalStorageDirectory() + "/" + split[1];
+//                            Log.e("buildversion",p+"");
+//                        }
+//                    } else {
+//                        //低于API19版本
+//                        Uri uri = data.getData();
+//                        Log.e("buildversion","  gg"+ uri.toString());
+//                    }
+
+
+                    List<FileEntity>  fff =PickerManager.getInstance().files;
+                    for (int i = 0; i < fff.size(); i++) {
+                        FileEntity fileEntity=fff.get(0);
+                        Log.e("buildversion",fileEntity.getPath()+"");
+                        uploadFile(fileEntity.getPath());
                     }
+
+
+
                     break;
                 case REQUEST_SELECTED_CAMERA:
                     if (cameraFile != null && cameraFile.exists()) {
@@ -277,49 +322,126 @@ public class AddDocumentActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
-    private void handleImageBeforeKitKat(Intent data) {
-        Uri uri = data.getData();
-        String imagePath = getImagePath(uri,null);
-        uploadFile(imagePath);
+
+    public String getRealPathFromURI(Uri contentUri) {
+        String res = null;
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+        if(null!=cursor&&cursor.moveToFirst()){;
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            res = cursor.getString(column_index);
+            cursor.close();
+        }
+        return res;
     }
 
-    public String getImagePath(Uri uri,String selection) {
-        String path = null;
-        Cursor cursor = getContentResolver().query(uri,null,selection,null,null);   //内容提供器
-        if (cursor!=null){
-            if (cursor.moveToFirst()){
-                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));   //获取路径
+    /**
+     * 专为Android4.4设计的从Uri获取文件绝对路径，以前的方法已不好使
+     */
+    @SuppressLint("NewApi")
+    public String getPath(final Context context, final Uri uri) {
+
+        final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+
+        // DocumentProvider
+        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+            // ExternalStorageProvider
+            if (isExternalStorageDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                if ("primary".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                }
+            }
+            // DownloadsProvider
+            else if (isDownloadsDocument(uri)) {
+
+                final String id = DocumentsContract.getDocumentId(uri);
+                final Uri contentUri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+
+                return getDataColumn(context, contentUri, null, null);
+            }
+            // MediaProvider
+            else if (isMediaDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+
+                final String selection = "_id=?";
+                final String[] selectionArgs = new String[]{split[1]};
+
+                return getDataColumn(context, contentUri, selection, selectionArgs);
             }
         }
-        cursor.close();
-        return path;
+        // MediaStore (and general)
+        else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            return getDataColumn(context, uri, null, null);
+        }
+        // File
+        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+        return null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private void handleImageOkKitKat(Intent data) {
-        String imagePath=null;
-        Uri uri = data.getData();
-        Log.d("uri=intent.getData :",""+uri);
-        if (DocumentsContract.isDocumentUri(this,uri)){
-            String docId = DocumentsContract.getDocumentId(uri);        //数据表里指定的行
-            Log.d("getDocumentId(uri) :",""+docId);
-            Log.d("uri.getAuthority() :",""+uri.getAuthority());
-            if ("com.android.providers.media.documents".equals(uri.getAuthority())){
-                String id = docId.split(":")[1];
-                String selection = MediaStore.Images.Media._ID + "=" + id;
-                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,selection);
-            }
-            else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
-                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),Long.valueOf(docId));
-                imagePath = getImagePath(contentUri,null);
-            }
 
+    public String getDataColumn(Context context, Uri uri, String selection,
+                                String[] selectionArgs) {
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = {column};
+        Log.e("buildversion",uri.toString());
+        try {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
+                    null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int column_index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(column_index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
         }
-        else if ("content".equalsIgnoreCase(uri.getScheme())){
-            imagePath = getImagePath(uri,null);
-        }
-        uploadFile(imagePath);
+        return null;
     }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is ExternalStorageProvider.
+     */
+    public boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is DownloadsProvider.
+     */
+    public boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is MediaProvider.
+     */
+    public boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+
 
     private void  uploadFile(String path){
         if(TextUtils.isEmpty(path)){

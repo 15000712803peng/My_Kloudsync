@@ -4,16 +4,16 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.kloudsync.techexcel.app.App;
-import com.kloudsync.techexcel.bean.DocumentPage;
 import com.kloudsync.techexcel.bean.EventNote;
 import com.kloudsync.techexcel.bean.EventNotePageActions;
 import com.kloudsync.techexcel.bean.EventOpenNote;
 import com.kloudsync.techexcel.bean.EventPageActions;
+import com.kloudsync.techexcel.bean.EventPageActionsForSoundtrack;
 import com.kloudsync.techexcel.bean.EventPageNotes;
+import com.kloudsync.techexcel.bean.EventPageNotesForSoundtrack;
 import com.kloudsync.techexcel.bean.EventSelectNote;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.NoteDetail;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.NoteSelectedDialog;
@@ -42,32 +42,80 @@ import io.reactivex.schedulers.Schedulers;
 
 public class PageActionsAndNotesMgr {
 
-    public static void requestActionsAndNote(MeetingConfig config) {
-        Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageActions>() {
+	public static void requestActionsAndNote(MeetingConfig config) {
+		Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageActions>() {
+			@Override
+			public EventPageActions apply(MeetingConfig config) throws Exception {
+				return MeetingServiceTools.getInstance().syncGetPageActions(config);
+			}
+		}).doOnNext(new Consumer<EventPageActions>() {
+			@Override
+			public void accept(EventPageActions eventPageActions) throws Exception {
+				EventBus.getDefault().post(eventPageActions);
+			}
+		}).subscribe();
+
+		if(config.getType() != MeetingType.MEETING){
+                    Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageNotes>() {
+                        @Override
+                        public EventPageNotes apply(MeetingConfig config) throws Exception {
+                            return MeetingServiceTools.getInstance().syncGetPageNotes(config);
+                        }
+                    }).doOnNext(new Consumer<EventPageNotes>() {
+                        @Override
+                        public void accept(EventPageNotes eventPageNotes) throws Exception {
+                            EventBus.getDefault().post(eventPageNotes);
+                        }
+                    }).subscribe();
+                }
+
+
+	}
+
+	public static void requestActionsAndNoteForSoundtrack(MeetingConfig config, final String pageNumber, final String attachmentId, final String itemId, final String soundtrackID) {
+		Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageActionsForSoundtrack>() {
+			@Override
+			public EventPageActionsForSoundtrack apply(MeetingConfig config) throws Exception {
+				return MeetingServiceTools.getInstance().syncGetPageActions(config, pageNumber, attachmentId, itemId, soundtrackID);
+			}
+		}).doOnNext(new Consumer<EventPageActionsForSoundtrack>() {
+			@Override
+			public void accept(EventPageActionsForSoundtrack eventPageActions) throws Exception {
+				EventBus.getDefault().post(eventPageActions);
+			}
+		}).subscribe();
+
+		Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageNotesForSoundtrack>() {
+			@Override
+			public EventPageNotesForSoundtrack apply(MeetingConfig config) throws Exception {
+				return MeetingServiceTools.getInstance().syncGetPageNotesForSoundtrack(attachmentId, pageNumber);
+			}
+		}).doOnNext(new Consumer<EventPageNotesForSoundtrack>() {
+			@Override
+			public void accept(EventPageNotesForSoundtrack eventPageNotes) throws Exception {
+				EventBus.getDefault().post(eventPageNotes);
+			}
+		}).subscribe();
+
+	}
+
+    public static void requestActionsAndNoteForSoundtrackByTime(MeetingConfig config, final String pageNumber, final String soundtrackID, final long time) {
+        Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageActionsForSoundtrack>() {
             @Override
-            public EventPageActions apply(MeetingConfig config) throws Exception {
-                return MeetingServiceTools.getInstance().syncGetPageActions(config);
+            public EventPageActionsForSoundtrack apply(MeetingConfig config) throws Exception {
+                return MeetingServiceTools.getInstance().syncGetPageActionsInSountrackByTime(time, Integer.parseInt(pageNumber), soundtrackID);
             }
-        }).doOnNext(new Consumer<EventPageActions>() {
+        }).doOnNext(new Consumer<EventPageActionsForSoundtrack>() {
             @Override
-            public void accept(EventPageActions eventPageActions) throws Exception {
+            public void accept(EventPageActionsForSoundtrack eventPageActions) throws Exception {
                 EventBus.getDefault().post(eventPageActions);
             }
         }).subscribe();
 
-        Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventPageNotes>() {
-            @Override
-            public EventPageNotes apply(MeetingConfig config) throws Exception {
-                return MeetingServiceTools.getInstance().syncGetPageNotes(config);
-            }
-        }).doOnNext(new Consumer<EventPageNotes>() {
-            @Override
-            public void accept(EventPageNotes eventPageNotes) throws Exception {
-                EventBus.getDefault().post(eventPageNotes);
-            }
-        }).subscribe();
 
     }
+
+//    https://api.peertime.cn/peertime/V1/Soundtrack/PageActions?soundtrackID=37402&time=30008&pageNumber=2
 
     public static void requestActionsForNotePage(MeetingConfig config, final Note note) {
         Observable.just(config).observeOn(Schedulers.io()).map(new Function<MeetingConfig, EventNotePageActions>() {
@@ -90,10 +138,11 @@ public class PageActionsAndNotesMgr {
         new ApiTask(new Runnable() {
             @Override
             public void run() {
-                JSONObject jsonObject = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC +
-                        "Lesson/SaveInstantLesson?lessonID=" + config.getLessionId(), null);
-                Log.e("save_changed", "jsonObject:" + jsonObject);
-
+                String url=AppConfig.URL_MEETING_BASE +
+                        "lesson/save_instant_lesson?lessonId=" + config.getLessionId();
+                JSONObject jsonObject = ConnectService.submitDataByJson(url, null);
+                Log.e("startRecording", url+"  "+jsonObject.toString());
+               //https://wss.peertime.cn/MeetingServer/lesson/save_instant_lesson?lessonId=1950010
             }
         }).start(ThreadManager.getManager());
     }

@@ -217,7 +217,6 @@ public class PopShareKloudSync {
 
         }
 
-
     }
 
     private void goToShare(Document document, final int id) {
@@ -248,6 +247,7 @@ public class PopShareKloudSync {
         if (null == mClipboard) {
             mClipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
         }
+
         mClipboard.setPrimaryClip(ClipData.newPlainText(null, url));
         Toast.makeText(mContext, "Copy link success!", Toast.LENGTH_LONG).show();
     }
@@ -267,7 +267,6 @@ public class PopShareKloudSync {
                 return lruCache.get(key);
             }
         };
-
 
         if (document.isMe()) {
             weiXinShare(document, null, id, st);
@@ -377,18 +376,21 @@ public class PopShareKloudSync {
      * @param st       true：对话 false:朋友圈
      */
     private void weiXinShare(Document document, Bitmap b, int id, final boolean st) {
-        String url = AppConfig.SHARE_DOCUMENT + document.getItemID();
-        if (id > 0) {
-            url = AppConfig.SHARE_SYNC + id;
-        }
 
-        if (record && id > 0) {
-            url = AppConfig.SHARE_RECORD + id;
-        }
-        if (document.isMe()) {
-            url = linshiUrl;
-        }
         if (isWXAppInstalledAndSupported(WeiXinApi.getInstance().GetApi())) {
+
+            String url = AppConfig.SHARE_DOCUMENT + document.getItemID();
+            if (id > 0) {
+                url = AppConfig.SHARE_SYNC + id;
+            }
+
+            if (record && id > 0) {
+                url = AppConfig.SHARE_RECORD + id;
+            }
+            if (document.isMe()) {
+                url = linshiUrl;
+            }
+
             WXWebpageObject webpage = new WXWebpageObject();
             webpage.webpageUrl = url;
             final WXMediaMessage msg = new WXMediaMessage(webpage);
@@ -403,7 +405,7 @@ public class PopShareKloudSync {
             Log.e("hahaha", url + "  " + (null == thumb));
             if (null == thumb) {
                 thumb = BitmapFactory.decodeResource(mContext.getResources(),
-                        R.drawable.logo);
+                        R.drawable.app_icon);
             }
             Log.e("hahaha", url + "  " + (null == thumb));
 

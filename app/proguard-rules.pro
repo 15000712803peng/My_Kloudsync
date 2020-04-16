@@ -87,3 +87,6 @@
 
 -dontwarn org.xwalk.core.**
 -keep class org.xwalk.core.** { *;}
+
+#wlmedia播放器
+-keep class com.ywl5320.wlmedia.* {*;}

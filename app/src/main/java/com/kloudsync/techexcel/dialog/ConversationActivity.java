@@ -30,7 +30,7 @@ import com.kloudsync.techexcel.info.GroupInfo;
 import com.kloudsync.techexcel.info.Knowledge;
 import com.kloudsync.techexcel.info.RobotInfo;
 import com.kloudsync.techexcel.start.LoginGet;
-import com.ub.service.activity.WatchCourseActivity2;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.service.ConnectService;
 
@@ -164,7 +164,7 @@ public class ConversationActivity extends FragmentActivity {
     };
 
     private void GoToVIew() {
-        Intent intent = new Intent(ConversationActivity.this, WatchCourseActivity2.class);
+        Intent intent = new Intent(ConversationActivity.this, DocAndMeetingActivity.class);
         intent.putExtra("userid", bean.getUserId());
         intent.putExtra("meetingId", bean.getId() + "");
         intent.putExtra("teacherid", bean.getTeacherId());
@@ -860,11 +860,13 @@ public class ConversationActivity extends FragmentActivity {
                 SendRobotMessage(myTextMessage.getContent());
                 return message;
             }
-            if (flag_friend && (ConversationType.PRIVATE == mConversationType)) {
-                Toast.makeText(getApplicationContext(), "对方不是你的好友",
-                        Toast.LENGTH_LONG).show();
-                return null;
-            }
+//            if (flag_friend && (ConversationType.PRIVATE == mConversationType)) {
+//                Log.e("check_friend_messaeg","is_friend:" + mConversationType);
+//                Toast.makeText(getApplicationContext(), "对方不是你的好友",
+//                        Toast.LENGTH_LONG).show();
+//                return null;
+//            }
+
             if (ConversationType.SYSTEM == mConversationType) {
                 Toast.makeText(getApplicationContext(), "暂不支持与小博士聊天",
                         Toast.LENGTH_LONG).show();

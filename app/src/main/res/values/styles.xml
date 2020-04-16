@@ -21,6 +21,7 @@
         <item name="android:statusBarColor" tools:ignore="NewApi">@color/white</item>
         <item name="android:windowAnimationStyle">@style/AnimationActivity</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <!--<item name="android:windowIsTranslucent">true</item>-->
@@ -33,7 +34,6 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
-
 
     <style name="ThemeActivity2" mce_bogus="1" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:statusBarColor" tools:ignore="NewApi">@color/nocolor</item>
@@ -148,12 +148,6 @@
         <item name="android:colorForeground">@color/grey</item>
     </style>
 
-    <!-- 雄风 汪 -->
-    <style name="anination">
-        <item name="android:windowEnterAnimation">@anim/enter</item>
-        <item name="android:windowExitAnimation">@anim/out</item>
-    </style>
-
     <style name="anination2">
         <item name="android:windowEnterAnimation">@anim/enter2</item>
         <item name="android:windowExitAnimation">@anim/out2</item>
@@ -162,11 +156,6 @@
     <style name="anination3">
         <item name="android:windowEnterAnimation">@anim/yinrightin</item>
         <item name="android:windowExitAnimation">@anim/yinrightout</item>
-    </style>
-
-    <style name="anination4">
-        <item name="android:windowEnterAnimation">@anim/yinleftin</item>
-        <item name="android:windowExitAnimation">@anim/yinleftout</item>
     </style>
 
     <style name="FullscreenTheme" parent="AppTheme">
@@ -191,6 +180,19 @@
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <style name="ThemeAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@color/white</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:backgroundDimEnabled">true</item>
     </style>
 
     <style name="dialogwindowAnim" mce_bogus="1" parent="android:Animation">
@@ -237,6 +239,30 @@
 
     </style>
 
+    <style name="dialog_soundtrack" parent="@android:style/Theme.Dialog">
+        <item name="android:windowNoTitle">true</item><!--无标题-->
+
+        <item name="android:padding">0dp</item>
+
+        <item name="android:windowFrame">@null</item>
+        <!--是否在悬浮Activity之上  -->
+        <item name="android:windowIsFloating">true</item>
+
+        <item name="android:windowIsTranslucent">true</item>
+
+        <!--阴影  -->
+
+        <!--透明背景-->
+        <item name="android:background">@android:color/transparent</item>
+        <!--窗口背景透明-->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!--弹窗背景是否变暗-->
+
+
+
+
+    </style>
+
     <style name="loading_dialog_style">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowFrame">@null</item>
@@ -266,26 +292,26 @@
     </style>
 
     <declare-styleable name="ShadowViewGroup">
-        <attr name="containerShadowColor" format="color"/>
-        <attr name="containerShadowRadius" format="dimension"/>
-        <attr name="containerDeltaLength" format="dimension"/>
-        <attr name="containerCornerRadius" format="dimension"/>
-        <attr name="deltaX" format="dimension"/>
-        <attr name="deltaY" format="dimension"/>
-        <attr name="enable" format="boolean"/>
+        <attr name="containerShadowColor" format="color" />
+        <attr name="containerShadowRadius" format="dimension" />
+        <attr name="containerDeltaLength" format="dimension" />
+        <attr name="containerCornerRadius" format="dimension" />
+        <attr name="deltaX" format="dimension" />
+        <attr name="deltaY" format="dimension" />
+        <attr name="enable" format="boolean" />
     </declare-styleable>
     <declare-styleable name="ShadowTextView">
-        <attr name="shadowTextColor" format="color"/>
-        <attr name="shadowBgStartColor" format="color"/>
-        <attr name="shadowBgEndColor" format="color"/>
-        <attr name="shadowSelectEndColor" format="color"/>
-        <attr name="shadowStartColor" format="color"/>
-        <attr name="shadowSelectStartColor" format="color"/>
-        <attr name="shadowEndColor" format="color"/>
-        <attr name="shadowTextRadius" format="dimension"/>
-        <attr name="shadowTextCornerRadius" format="dimension"/>
-        <attr name="shadowTextSize" format="dimension"/>
-        <attr name="shadowText" format="string"/>
+        <attr name="shadowTextColor" format="color" />
+        <attr name="shadowBgStartColor" format="color" />
+        <attr name="shadowBgEndColor" format="color" />
+        <attr name="shadowSelectEndColor" format="color" />
+        <attr name="shadowStartColor" format="color" />
+        <attr name="shadowSelectStartColor" format="color" />
+        <attr name="shadowEndColor" format="color" />
+        <attr name="shadowTextRadius" format="dimension" />
+        <attr name="shadowTextCornerRadius" format="dimension" />
+        <attr name="shadowTextSize" format="dimension" />
+        <attr name="shadowText" format="string" />
     </declare-styleable>
 
     <style name="KloudLoadingView">
@@ -312,7 +338,131 @@
         <item name="indicatorName">BallPulseIndicator</item>
     </style>
 
+    <style name="PersonInfoTextLabelStyle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/pc_black_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginLeft">21dp</item>
+    </style>
 
+    <style name="PersonInfoTextContentStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/rc_text_color_secondary</item>
+    </style>
+
+    <style name="PersonInfoLineStyle">
+        <item name="android:layout_marginLeft">21dp</item>
+        <item name="android:layout_marginRight">21dp</item>
+        <item name="android:background">#F7F7F7</item>
+        <item name="android:layout_height">1.5dp</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <!--  注册页面编辑框父布局样式  -->
+    <style name="RegisterMvgLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="CommonButtonStyle">
+        <item name="android:layout_marginLeft">15dp</item>
+        <item name="android:layout_marginRight">15dp</item>
+        <item name="android:background">@drawable/bg_login_btn</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <!--开始会议设置数据父布局样式-->
+    <style name="ScheduleMeetingSettingLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/dp_55</item>
+        <item name="android:layout_marginTop">@dimen/dp_10</item>
+        <item name="android:paddingLeft">@dimen/dp_18</item>
+        <item name="android:paddingRight">@dimen/dp_16</item>
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <!--开始会议设置数据名称样式-->
+    <style name="ScheduleMeetingSettingNameStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_marginRight">@dimen/dp_15</item>
+        <item name="android:textColor">@color/colorFont33</item>
+    </style>
+
+    <!--开始会议设置数据样式-->
+    <style name="ScheduleMeetingSettingDataStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_marginLeft">@dimen/dp_10</item>
+        <item name="android:layout_marginRight">@dimen/dp_10</item>
+        <item name="android:textColor">@color/color3d78fa</item>
+    </style>
+
+    <!--开始会议设置箭头图标样式-->
+    <style name="ScheduleMeetingArrowIconStyle">
+        <item name="android:layout_width">@dimen/dp_25</item>
+        <item name="android:layout_height">@dimen/dp_25</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:src">@drawable/right_arrow</item>
+    </style>
+
+
+    <style name="CommonTitltTextStyle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/darkgrey</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!--当前蓝牙笔信息父布局样式-->
+    <style name="CurrentPenInfoLlyStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/dp_39</item>
+        <item name="android:layout_marginRight">@dimen/dp_39</item>
+    </style>
+
+    <!--当前蓝牙笔详细信息名称样式-->
+    <style name="CurrentPenInfoTvStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textColor">@color/colorFont33</item>
+        <item name="android:textSize">@dimen/sp_14</item>
+    </style>
+
+    <!--当前蓝牙笔详细信息数值样式-->
+    <style name="CurrentPenInfoNumberStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:textColor">@color/colorFont33</item>
+        <item name="android:textSize">@dimen/sp_19</item>
+    </style>
+
+    <style name="PenSeetingTextViewStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingLeft">@dimen/dp_20</item>
+        <item name="android:paddingTop">@dimen/dp_12</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textColor">@color/colorFont33</item>
+        <item name="android:paddingBottom">@dimen/dp_12</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="PenSeetingDividerStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@color/colorDividerEc</item>
+        <item name="android:layout_height">@dimen/dp_05</item>
+    </style>
 
 
 </resources>

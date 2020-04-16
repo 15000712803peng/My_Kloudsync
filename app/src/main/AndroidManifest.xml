@@ -59,6 +59,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
 
     <application
 
@@ -73,7 +75,7 @@
 
         <meta-data
             android:name="android.max_aspect"
-            android:value="2.1" />
+            android:value="2.4" />
 
         <activity
             android:name=".start.StartUbao"
@@ -326,6 +328,8 @@
             android:launchMode="singleTop"
             android:name=".personal.LanguageActivity"
             android:screenOrientation="portrait" />
+
+
         <activity
             android:launchMode="singleTop"
             android:name=".dialog.SaveFavoritesActivity"
@@ -427,10 +431,16 @@
             android:launchMode="singleTop"
             android:name=".pc.ui.AboutActivity"
             android:screenOrientation="portrait" />
+
+
         <activity
             android:launchMode="singleTop"
             android:name=".personal.AboutActivity2"
             android:screenOrientation="portrait" />
+        <activity
+            android:launchMode="singleTop"
+            android:name="com.kloudsync.techexcel.filepicker.FilePickerActivity"
+            android:screenOrientation="sensor" />
         <activity
             android:launchMode="singleTop"
             android:name=".personal.AboutWebActivity"
@@ -602,17 +612,22 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name="com.ub.service.activity.NetWorkChangReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
 
-
-        <!--<provider-->
-            <!--android:name="android.support.v4.content.FileProvider"-->
-            <!--android:authorities="com.kloudsync.techexcel.FileProvider"-->
-            <!--android:exported="false"-->
-            <!--android:grantUriPermissions="true">-->
-            <!--<meta-data-->
-                <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
-                <!--android:resource="@xml/rc_file_path" />-->
-        <!--</provider>-->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.kloudsync.techexcel.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/rc_file_path" />
+        </provider>
 
 
         <!-- 测试key -->
@@ -673,9 +688,6 @@
 
         <!-- 雄风 汪 -->
 
-        <activity
-            android:name="com.ub.service.activity.AddServiceFinish"
-            android:screenOrientation="portrait" />
         <activity
             android:name="com.ub.service.activity.ServiceDetailActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -762,11 +774,47 @@
         <activity
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:name="com.kloudsync.techexcel.ui.DocAndMeetingActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="sensor"
+            />
+
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.kloudsync.techexcel.ui.LessionActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="sensor"
+            />
+
+
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.kloudsync.techexcel.ui.NoteViewActivityV2"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="sensor"/>
+
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.kloudsync.techexcel.ui.MeetingViewActivity"
             android:configChanges="orientation|keyboardHidden|keyboard"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="landscape"
-             />
+            />
+
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="com.kloudsync.techexcel.ui.NoteViewActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="landscape"
+            />
 
         <service android:name="com.ub.service.activity.SocketService" />
 
@@ -857,9 +905,6 @@
             android:name=".pc.ui.QualificationsActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".pc.ui.SettingActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".pc.ui.EvaluationManagementActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -916,9 +961,6 @@
             android:name=".pc.ui.ShowUserInfoActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".contact.HealthManagemActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.ub.service.activity.SelectLessonTypeActivity"
             android:screenOrientation="portrait" />
 
@@ -951,6 +993,13 @@
             android:name="com.kloudsync.techexcel.search.ui.ContactSearchActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.kloudsync.techexcel.search.ui.ContactSearchAndAddActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
+
 
         <activity
             android:name=".search.ui.SpaceSearchActivity"
@@ -1042,9 +1091,39 @@
             android:name=".personal.SyncTvActivity"
             android:launchMode="singleTop" />
 
-        <service android:name="com.kloudsync.techexcel.service.BluetoothLEService"
-            android:enabled="true"
-            />
+        <service
+            android:name=".service.BluetoothLEService"
+            android:enabled="true" />
+
+        <activity
+            android:name=".pc.ui.ContactDetailActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.EnterPairingActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.CurrentPenStatusActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.PenSeetingActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.SwitchPenActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".personal.CurrentNoteActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
+
+
 
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for

@@ -38,12 +38,13 @@ import com.kloudsync.techexcel.search.view.VTeamAndDocSearch;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.KloudCache;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.kloudsync.activity.Document;
 import com.ub.kloudsync.activity.SpaceDocumentsActivity;
 import com.ub.kloudsync.activity.TeamSpaceBean;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.HomeDocumentAdapter;
 import com.ub.techexcel.adapter.SpaceAdapter;
+import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.service.ConnectService;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
@@ -84,6 +85,7 @@ public class TeamAndDocSearchActivity extends BaseActivity implements SpaceAdapt
     int teamID = -1;
     String teamName;
     private static final int REQUEST_MOVE_DOC = 1;
+	private SoundtrackBean mTempClickedSoundtrackBean;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -218,7 +220,7 @@ public class TeamAndDocSearchActivity extends BaseActivity implements SpaceAdapt
             }
 
             @Override
-            public void share(int s, Document teamSpaceBeanFile) {
+            public void share(int s, Document teamSpaceBeanFile, SoundtrackBean soundtrackBean) {
 
             }
 
@@ -236,6 +238,14 @@ public class TeamAndDocSearchActivity extends BaseActivity implements SpaceAdapt
             public void deleteRefresh() {
 
             }
+
+	        @Override
+	        public void playDocSoundTrackItem(Document document, SoundtrackBean soundtrackBean) {
+		        if (!Tools.isFastClick()) {
+			        mTempClickedSoundtrackBean = soundtrackBean;
+			        getTempLesson(document);
+		        }
+	        }
         });
     }
 
@@ -532,7 +542,7 @@ public class TeamAndDocSearchActivity extends BaseActivity implements SpaceAdapt
     };
 
     private void goToCourse(Document document) {
-        Intent intent = new Intent(this, WatchCourseActivity3.class);
+        Intent intent = new Intent(this, DocAndMeetingActivity.class);
         intent.putExtra("userid", AppConfig.UserID);
         intent.putExtra("meetingId", document.getLessonId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);
@@ -542,7 +552,9 @@ public class TeamAndDocSearchActivity extends BaseActivity implements SpaceAdapt
         intent.putExtra("isInstantMeeting", 0);
         intent.putExtra("teacherid", AppConfig.UserID.replace("-", ""));
         intent.putExtra("isStartCourse", true);
+	    intent.putExtra(DocAndMeetingActivity.SUNDTRACKBEAN, mTempClickedSoundtrackBean);
         startActivity(intent);
+	    mTempClickedSoundtrackBean = null;
     }
 
     private void asyncSearch(String searchStr) {

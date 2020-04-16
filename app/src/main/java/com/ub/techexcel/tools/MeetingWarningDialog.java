@@ -1,7 +1,6 @@
 package com.ub.techexcel.tools;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.Gravity;
@@ -9,14 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventClose;
 import com.kloudsync.techexcel.bean.MeetingConfig;
-import com.kloudsync.techexcel.tool.MeetingSettingCache;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -111,9 +107,9 @@ public class MeetingWarningDialog implements View.OnClickListener {
                 break;
             case R.id.txt_cancel:
                 dismiss();
-                if(meetingConfig.isFromMeeting() && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST){
+//                if(meetingConfig.isFromMeeting() && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST){
                     EventBus.getDefault().post(new EventClose());
-                }
+//                }
                 break;
         }
     }

@@ -2,23 +2,21 @@ package com.ub.service.activity;
 
 import android.content.Context;
 import android.util.Log;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 
 
 import com.ub.techexcel.bean.LineItem;
 
-import org.xwalk.core.XWalkView;
-
-
-
 public class NoteWebviewBridge {
 
 
-    private XWalkView noteXwalkview;
+    private WebView noteXwalkview;
     private  Context context;
     private LineItem notebook;
 
 
-    public NoteWebviewBridge(XWalkView noteXwalkview, Context context,LineItem notebook) {
+    public NoteWebviewBridge(WebView noteXwalkview, Context context,LineItem notebook) {
         this.noteXwalkview=noteXwalkview;
         this.context=context;
         this.notebook=notebook;
@@ -26,7 +24,7 @@ public class NoteWebviewBridge {
 
 
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterLoadPageFunction() {
         Log.e("当前文档信息", "url  " +"afterLoadPageFunction");
 
@@ -34,13 +32,13 @@ public class NoteWebviewBridge {
 
     }
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void userSettingChangeFunction(final String opt) {
 
     }
 
 
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void preLoadFileFunction(final String url, final int currentpageNum, final boolean showLoading) {
 
     }
@@ -48,7 +46,7 @@ public class NoteWebviewBridge {
     /**
      * 获取每一页上的 Action
      */
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterChangePageFunction(final String pageNum, int type) {
         Log.e("webview-afterChangePage", pageNum + "  " + type);
 
@@ -58,7 +56,7 @@ public class NoteWebviewBridge {
     /**
      * pdf 加载完成
      */
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void afterLoadFileFunction() {
 
 
@@ -70,7 +68,7 @@ public class NoteWebviewBridge {
      *
      * @param diff
      */
-    @org.xwalk.core.JavascriptInterface
+    @JavascriptInterface
     public void autoChangeFileFunction(int diff) {
 
 

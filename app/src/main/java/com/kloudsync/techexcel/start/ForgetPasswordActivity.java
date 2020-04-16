@@ -72,14 +72,14 @@ public class ForgetPasswordActivity extends ActivityWrapper implements OnClickLi
                     Toast.makeText(
                             ForgetPasswordActivity.this,
                             getResources().getString(R.string.No_networking),
-                            1000).show();
+                            Toast.LENGTH_LONG).show();
 
                     break;
                 case AppConfig.NETERROR:
                     Toast.makeText(
                             ForgetPasswordActivity.this,
                             getResources().getString(R.string.NETWORK_ERROR),
-                            1000).show();
+                            Toast.LENGTH_LONG).show();
 
                     break;
                 case AppConfig.FAILED:

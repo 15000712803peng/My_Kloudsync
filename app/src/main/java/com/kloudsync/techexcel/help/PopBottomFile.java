@@ -26,8 +26,6 @@ import android.widget.Toast;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
 import com.kloudsync.techexcel.bean.MeetingDocument;
-import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
-import com.ub.service.activity.WatchCourseActivity3;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -83,6 +81,14 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
                     bottomFileOperationsListener.addFromPictures();
                 }
                 break;
+            case R.id.fileststem_library:
+                if(uploadLayout != null){
+                    uploadLayout.setVisibility(View.GONE);
+                }
+                if(bottomFileOperationsListener != null){
+                    bottomFileOperationsListener.addFromFileSystem();
+                }
+                break;
             case R.id.save_file:
                 if(uploadLayout != null){
                     uploadLayout.setVisibility(View.GONE);
@@ -115,6 +121,7 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
         void addFromTeam();
         void addFromCamera();
         void addFromPictures();
+        void addFromFileSystem();
         void addFromFavorite();
         void addBlankFile();
     }
@@ -153,6 +160,7 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
 
         RelativeLayout take_photo = (RelativeLayout) view.findViewById(R.id.take_photo);
         RelativeLayout file_library = (RelativeLayout) view.findViewById(R.id.file_library);
+        RelativeLayout fileststem_library = (RelativeLayout) view.findViewById(R.id.fileststem_library);
         RelativeLayout favorite_file = (RelativeLayout) view.findViewById(R.id.save_file);
         RelativeLayout team_file = (RelativeLayout) view.findViewById(R.id.team_document);
         RelativeLayout blank_file = (RelativeLayout) view.findViewById(R.id.blank_file);
@@ -165,6 +173,8 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
         take_photo.setOnClickListener(this);
 
         file_library.setOnClickListener(this);
+
+        fileststem_library.setOnClickListener(this);
 
         favorite_file.setOnClickListener(this);
 
@@ -243,6 +253,11 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
         if(adapter != null){
             adapter.removeTempDoc();
         }
+    }
+
+    public void openAndShowAdd(View view,BottomFileOperationsListener bottomFileOperationsListener){
+        show(view,bottomFileOperationsListener);
+        uploadLayout.setVisibility(View.VISIBLE);
     }
 
 }

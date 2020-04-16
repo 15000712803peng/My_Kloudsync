@@ -78,13 +78,15 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
 
         void onRealItem(Document document, View view);
 
-        void share(int s, Document document);
+        void share(int s, Document document,SoundtrackBean soundtrackBean);
 
         void open();
 
         void dismiss();
 
         void deleteRefresh();
+
+        void playDocSoundTrackItem(Document document, SoundtrackBean soundtrackBean);
     }
 
     public void setOnItemLectureListener(OnItemLectureListener onItemLectureListener) {
@@ -110,6 +112,8 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
             documentIcon.setImageResource(R.drawable.icon_pdf);
         }else if(name.endsWith(".doc") || name.endsWith(".DOC") || name.endsWith(".docx") || name.endsWith(".DOCX")){
             documentIcon.setImageResource(R.drawable.icon_doc);
+        }else if (name.endsWith(".xls")||name.endsWith(".XLS")){
+            documentIcon.setImageResource(R.drawable.icon_xls);
         }else{
             documentIcon.setImageResource(R.drawable.file);
         }
@@ -135,6 +139,7 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
                 }
             }
         });
+
         holder.morepopup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,10 +148,14 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
                 }
             }
         });
+
         String createData = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Long.parseLong(item.getCreatedDate()));
         holder.createdata.setText("" + createData);
         holder.listView.setVisibility(View.GONE);
-//        holder.documentOwner.setText(item.getCreatedByName());
+        if (!TextUtils.isEmpty(item.getCreatedByName())) {
+            holder.documentOwner.setText(item.getCreatedByName());
+        }
+
         int syncCount = item.getSyncCount();
         holder.tv_num_value.setText(item.getSyncCount() + "");
         setDocumentIcon(item.getTitle(),holder.documentIcon);
@@ -155,15 +164,16 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
         } else {
             holder.syncll.setVisibility(View.VISIBLE);
         }
+
         holder.syncll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (holder.listView.getVisibility() == View.VISIBLE) {
                     holder.listView.setVisibility(View.GONE);
-                    holder.imageFolder.setImageResource(R.drawable.arrow_down);
+//                    holder.imageFolder.setImageResource(R.drawable.arrow_down);
                 } else {
                     holder.listView.setVisibility(View.VISIBLE);
-                    holder.imageFolder.setImageResource(R.drawable.arrow_up);
+//                    holder.imageFolder.setImageResource(R.drawable.arrow_up);
                     getSoundtrack(item, holder.listView);
                 }
             }
@@ -278,11 +288,11 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
             String createData = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(Long.parseLong(soundtrackBean.getCreatedDate()));
             viewHolder.createdate.setText("" + createData);
 
-            viewHolder.duration.setText("Duration: " + soundtrackBean.getDuration());
+            viewHolder.duration.setText(context.getResources().getString(R.string.schDuration)+": "+ soundtrackBean.getDuration());
             viewHolder.operation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    onItemLectureListener.playDocSoundTrackItem(document, soundtrackBean);
                 }
             });
             viewHolder.morepopup.setOnClickListener(new View.OnClickListener() {
@@ -292,8 +302,13 @@ public class HomeDocumentAdapter extends RecyclerView.Adapter<HomeDocumentAdapte
                     documentYinXiangPopup.getPopwindow(context);
                     documentYinXiangPopup.setFavoritePoPListener(new DocumentYinXiangPopup.FavoritePoPListener() {
                         @Override
+                        public void play() {
+                            onItemLectureListener.playDocSoundTrackItem(document, soundtrackBean);
+                        }
+
+                        @Override
                         public void share() {
-                            onItemLectureListener.share(soundtrackBean.getSoundtrackID(), document);
+                            onItemLectureListener.share(soundtrackBean.getSoundtrackID(), document,soundtrackBean);
                         }
 
                         @Override

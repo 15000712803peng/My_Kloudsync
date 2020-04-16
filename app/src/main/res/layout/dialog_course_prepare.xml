@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rc_white_bg_shape"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_centerInParent="true"
+        android:paddingBottom="26dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/txt_course_name"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:background="@drawable/lession_name_border"
+                android:text=""
+                android:textColor="#ffff9500"
+                android:textSize="12sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:id="@+id/image_close"
+                android:padding="4dp"
+                android:src="@drawable/prepare_close"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_width="22dp"
+                android:layout_height="22dp" />
+        </RelativeLayout>
+
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="课程开始时间：2020/04/13 周三 08:00"
+            android:textColor="#ff191836"
+            android:textSize="14sp"
+            />
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="作为学生，您可以"
+            android:textColor="#ff3d78fb"
+            android:textSize="11sp"
+            />
+
+        <RelativeLayout
+            android:layout_marginTop="13dp"
+            android:background="@drawable/lession_options_border"
+            android:padding="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginRight="12dp"
+                android:id="@+id/prompt1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="让您在课程课件、已收藏的文件或从硬盘中增加\n文档，也可以做标注，录音想和记笔记。"
+                android:textColor="#ff191836"
+                android:textSize="11sp"
+                />
+
+            <TextView
+                android:id="@+id/txt_prepare"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_corner_blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="备课"
+                android:textColor="#ffffffff"
+                android:textSize="14sp"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="16dp"
+            android:background="@drawable/lession_options_border"
+            android:padding="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginRight="12dp"
+                android:id="@+id/prompt2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="试讲并录制一堂课，用于练习上课和分享，或者\n用于上课时的播课。"
+                android:textColor="#ff191836"
+                android:textSize="11sp"
+                />
+
+            <TextView
+                android:id="@+id/txt_try"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_corner_blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="试讲"
+                android:textColor="#ffffffff"
+                android:textSize="14sp"
+                />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_marginTop="16dp"
+            android:background="@drawable/lession_options_border"
+            android:padding="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginRight="12dp"
+                android:id="@+id/prompt3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="愿您的课总是最棒的"
+                android:textColor="#ff191836"
+                android:textSize="11sp"
+                />
+
+            <TextView
+                android:layout_marginTop="4dp"
+                android:layout_below="@id/prompt3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(一个没有学生的课会自动录为试讲课)。"
+                android:textColor="#ff75788a"
+                android:textSize="10sp"
+                />
+
+            <TextView
+                android:id="@+id/txt_start"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_corner_blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="开始上课"
+                android:textColor="#ffffffff"
+                android:textSize="12sp"
+                />
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

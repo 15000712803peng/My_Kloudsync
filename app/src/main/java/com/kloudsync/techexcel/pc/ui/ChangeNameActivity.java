@@ -1,46 +1,32 @@
 package com.kloudsync.techexcel.pc.ui;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Base64;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
-import com.kloudsync.techexcel.help.ApiTask;
-import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.CustomerYu;
-import com.ub.techexcel.service.ConnectService;
-import com.umeng.analytics.MobclickAgent;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import com.kloudsync.techexcel.view.ClearEditText;
 public class ChangeNameActivity extends Activity {
 
 	private ImageView tv_back;
-	private TextView tv_name;
+	private TextView tv_name,tv_cancel;
 	private TextView tv_pc_done;
-	private EditText pc_fist_name, pc_middle_name, pc_last_name;
-    private LinearLayout pi_ll_mname;
+	private ClearEditText pc_fist_name;
 
 	private SharedPreferences sharedPreferences;
 	private  int language;
 	private String FirstName;
-	private String MiddleName;
-	private String LastName;
+
 	private String FullName;
 
 	private CustomerYu customerYu;
@@ -61,15 +47,11 @@ public class ChangeNameActivity extends Activity {
 	private void initView() {
 		tv_back = (ImageView) findViewById(R.id.tv_back);
 		tv_name = (TextView) findViewById(R.id.tv_name);
+		tv_cancel = (TextView) findViewById(R.id.tv_cancel);
 
-		pc_fist_name = (EditText) findViewById(R.id.pc_fist_name);
-		pc_middle_name = (EditText) findViewById(R.id.pc_middle_name);
-		pc_last_name = (EditText) findViewById(R.id.pc_last_name);
-        pi_ll_mname = (LinearLayout) findViewById(R.id.pi_ll_mname);
+		pc_fist_name = (ClearEditText) findViewById(R.id.pc_fist_name);
 
-		pc_fist_name.setText(customerYu.getFirstName());
-		pc_middle_name.setText(customerYu.getMiddleName());
-		pc_last_name.setText(customerYu.getLastName());
+		pc_fist_name.setText(customerYu.getFullName());
 
 		tv_pc_done = (TextView) findViewById(R.id.tv_pc_done);
 
@@ -80,25 +62,42 @@ public class ChangeNameActivity extends Activity {
 				MODE_PRIVATE);
 		language = sharedPreferences.getInt("language",1);
 
-		ChangeNameLanguage();
-
 		tv_back.setOnClickListener(new myOnClick());
 		tv_pc_done.setOnClickListener(new myOnClick());
+		tv_cancel.setOnClickListener(new myOnClick());
+		pc_fist_name.addTextChangedListener(new MyTextWatch());
 
 	}
 
-	private void ChangeNameLanguage() {
-		if(language == 1){
-			//英文
+	protected class MyTextWatch implements TextWatcher {
 
-		}else {
-			// 中文
-            pi_ll_mname.setVisibility(View.GONE);
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+									  int after) {
+			// TODO Auto-generated method stub
+
 		}
 
-		// startActivity(new Intent(Intent.ACTION_VIEW,uri));
-	}
+		@SuppressLint("NewApi")
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+								  int count) {
+			if (pc_fist_name.getText().length() > 0
+					&& !pc_fist_name.getText().toString().equals(FullName)) {
+				tv_pc_done.setAlpha(1.0f);
+				tv_pc_done.setEnabled(true);
+			} else {
+				tv_pc_done.setAlpha(0.6f);
+				tv_pc_done.setEnabled(false);
+			}
+		}
 
+		@Override
+		public void afterTextChanged(Editable s) {
+			// TODO Auto-generated method stub
+
+		}
+	}
 	private class myOnClick implements OnClickListener {
 		Intent intent = new Intent();
 
@@ -106,16 +105,13 @@ public class ChangeNameActivity extends Activity {
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
 			switch (v.getId()) {
-				case R.id.tv_back:
+				case R.id.tv_cancel:
 					finish();
 					break;
 
 				case R.id.tv_pc_done:
 					FirstName = pc_fist_name.getText().toString();
-					MiddleName = pc_middle_name.getText().toString();
-					LastName = pc_last_name.getText().toString();
-
-					FullName = FirstName+MiddleName+LastName+"";
+					FullName = FirstName;
 
 					Log.e("老余/Choices",FullName + "");
 
@@ -124,16 +120,6 @@ public class ChangeNameActivity extends Activity {
 						customerYu.setFirstName("");
 					}else{
 						customerYu.setFirstName(FirstName);
-					}
-					if(MiddleName == null){
-						customerYu.setMiddleName("");
-					}else{
-						customerYu.setMiddleName(MiddleName);
-					}
-					if(LastName == null){
-						customerYu.setLastName("");
-					}else{
-						customerYu.setLastName(LastName);
 					}
 					customerYu.setFullName(FullName);
 

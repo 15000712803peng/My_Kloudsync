@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="200dp"
-    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/white"
     android:orientation="vertical">
 
@@ -10,6 +10,7 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
+            android:id="@+id/ll1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="visible">
@@ -48,11 +49,63 @@
                 android:layout_width="match_parent"
                 android:layout_height="1.5px" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/list_soundtrack"
+            <RelativeLayout
+                android:layout_below="@+id/top_divider"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/top_divider"></android.support.v7.widget.RecyclerView>
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:padding="10dp"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:visibility="visible"
+                        android:id="@+id/layout_loading"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ProgressBar
+                            android:layout_centerInParent="true"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:indeterminateBehavior="repeat"
+                            android:indeterminateDrawable="@drawable/dialog_loading"
+                            android:indeterminateOnly="true" />
+
+                        <TextView
+                            android:layout_marginLeft="6dp"
+                            android:textSize="14sp"
+                            android:textColor="@color/tab_gray"
+                            android:text="@string/rc_notice_data_is_loading"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/txt_no_data"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="6dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/tab_gray"
+                        android:text="@string/no_soundtrack"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+
+                </RelativeLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:visibility="invisible"
+                    android:id="@+id/list_soundtrack"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -68,7 +121,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="10dp"
-                    android:text="+ Select Mode Sound"
+                    android:text="@string/select_more_sync"
                     android:textColor="@color/skyblue"
                     android:textSize="14sp" />
 
@@ -86,10 +139,8 @@
                     android:orientation="horizontal"
                     android:background="@color/txt_blue"
                     android:padding="5dp">
-
-
-
                     <TextView
+                        android:id="@+id/createsynctext"
                         android:gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -134,7 +185,7 @@
                 android:layout_below="@id/view_divider"
                 android:id="@+id/allrecycleview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="70dp"
                 android:layout_marginTop="5dp"
                 android:visibility="visible"></android.support.v7.widget.RecyclerView>

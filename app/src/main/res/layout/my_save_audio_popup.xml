@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/rc_white_bg_shape"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_height="45dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="选择伴奏音乐文件"
+            android:textColor="@color/txt_color1"
+            android:textSize="15sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/save"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:background="@drawable/peertimeselect_bg2"
+                android:gravity="center"
+                android:text="@string/satOk"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/cancel"
+                android:layout_marginLeft="20dp"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:background="@drawable/peertimeselect_bg3"
+                android:gravity="center"
+                android:text="@string/Cancel"
+                android:textColor="@color/skyblue"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"
+        android:background="@color/bgColor" />
+
+    <RelativeLayout
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <RelativeLayout
+            android:id="@+id/search_layout"
+            android:layout_width="match_parent"
+            android:layout_marginRight="185dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:background="@drawable/seach_bg_v2"
+            android:gravity="center_vertical"
+            android:paddingLeft="13dp"
+            >
+
+            <ImageView
+                android:id="@+id/icon_search"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/searchicon"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/txt_promp_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@id/icon_search"
+                android:singleLine="true"
+                android:text="@string/Search_Contact"
+                android:textColor="@color/newgrey"
+                android:textSize="13sp" />
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="文件名"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/totalTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="时长"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/filesize"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="文件大小"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0px"
+        android:scrollbars="none"></ListView>
+
+
+</LinearLayout>

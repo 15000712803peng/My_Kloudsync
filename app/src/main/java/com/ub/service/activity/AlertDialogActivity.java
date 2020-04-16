@@ -8,23 +8,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.kloudsync.techexcel.bean.EventJoinMeeting;
-import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingType;
-import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.bean.NotifyBean;
-import com.ub.techexcel.bean.SendMessageBean;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import io.reactivex.Observable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by wang on 2017/11/17.

@@ -7,6 +7,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -14,6 +15,7 @@ import android.graphics.Rect;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -21,24 +23,26 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.*;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventCreateSync;
 import com.kloudsync.techexcel.bean.EventPlaySoundtrack;
 import com.kloudsync.techexcel.bean.EventSoundtrackList;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.bean.SoundtrackDetail;
 import com.kloudsync.techexcel.bean.SoundtrackDetailData;
 import com.kloudsync.techexcel.config.AppConfig;
-import com.kloudsync.techexcel.dialog.ShareSyncDialog;
 import com.kloudsync.techexcel.dialog.ShareSyncInAppDialog;
-import com.kloudsync.techexcel.dialog.SoundtrackPlayDialog;
 import com.kloudsync.techexcel.docment.WeiXinApi;
 import com.kloudsync.techexcel.help.SoundtrackManager;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -46,18 +50,23 @@ import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.tencent.mm.sdk.openapi.WXWebpageObject;
 import com.ub.techexcel.adapter.SoundtrackAdapter;
+import com.ub.techexcel.adapter.YinXiangAdapter2;
 import com.ub.techexcel.bean.SoundtrackBean;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class UserSoundtrackDialog implements View.OnClickListener, DialogInterface.OnDismissListener, SoundtrackManager.OnSoundtrackResponse, PopSoundtrackOperations.OnSoundtrackOperationListener, SoundtrackAdapter.OnSoundtrackClickedListener, SoundtrackShareDialog.OnSoundtrackShareOptionsClickListener {
@@ -67,10 +76,20 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
     public Dialog dialog;
     private View view;
     private ImageView close;
+    private TextView selectmore;
     private MeetingConfig meetingConfig;
     private RecyclerView soundtrackListView;
     private SoundtrackAdapter soundtrackAdapter;
     private LinearLayout createLayout;
+    private RelativeLayout ll1,ll2;
+    private RelativeLayout backimg;
+    private TextView ok;
+    private RecyclerView allrecycleview;
+    private SharedPreferences sharedPreferences;
+    private TextView createsynctext;
+	private TextView noDataText;
+
+	private LinearLayout loadingLayout;
 
     private void init() {
         if (null != dialog) {
@@ -87,33 +106,81 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
     }
 
     public void initPopuptWindow() {
+        sharedPreferences = host.getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
         LayoutInflater layoutInflater = LayoutInflater.from(host);
         view = layoutInflater.inflate(R.layout.dialog_soundtrack, null);
         close = (ImageView) view.findViewById(R.id.close);
+        selectmore=view.findViewById(R.id.selectmore);
+        ll1 = (RelativeLayout) view.findViewById(R.id.ll1);
+        ll2 = (RelativeLayout) view.findViewById(R.id.ll2);
+	    loadingLayout = view.findViewById(R.id.layout_loading);
+        createsynctext = (TextView) view.findViewById(R.id.createsynctext);
+	    noDataText = view.findViewById(R.id.txt_no_data);
+        ok = (TextView) view.findViewById(R.id.ok);
+        ok.setOnClickListener(this);
+        backimg = (RelativeLayout) view.findViewById(R.id.layout_back);
+        backimg.setOnClickListener(this);
+        selectmore.setOnClickListener(this);
         close.setOnClickListener(this);
         createLayout = view.findViewById(R.id.layout_create);
         createLayout.setOnClickListener(this);
         soundtrackListView = view.findViewById(R.id.list_soundtrack);
         soundtrackListView.setLayoutManager(new LinearLayoutManager(host, RecyclerView.VERTICAL, false));
+        allrecycleview = (RecyclerView) view.findViewById(R.id.allrecycleview);
+        allrecycleview.setLayoutManager(new LinearLayoutManager(host, RecyclerView.VERTICAL, false));
         dialog = new Dialog(host, R.style.my_dialog);
         dialog.setContentView(view);
-        dialog.getWindow().setGravity(Gravity.RIGHT);
         dialog.setOnDismissListener(this);
         WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
         View root = host.getWindow().getDecorView();
-        params.height = root.getMeasuredHeight();
+        if (Tools.isOrientationPortrait(host)) {
+            //竖屏
+            Log.e("check_oritation", "oritation:portrait");
+            dialog.getWindow().setWindowAnimations(R.style.PopupAnimation5);
+            dialog.getWindow().setGravity(Gravity.BOTTOM);
+            params.width = host.getResources().getDisplayMetrics().widthPixels;
+            params.height = Tools.dip2px(host, 420);
+        } else {
+            Log.e("check_oritation", "oritation:landscape");
+            dialog.getWindow().setGravity(Gravity.RIGHT);
+            params.height = root.getMeasuredHeight();
+            params.width = Tools.dip2px(host, 300);
+            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            dialog.getWindow().setWindowAnimations(R.style.anination3);
+        }
+        String str=getBindViewText(1035);
+        if(!TextUtils.isEmpty(str)){
+            createsynctext.setText(str);
+        }
         dialog.getWindow().setAttributes(params);
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        dialog.getWindow().setWindowAnimations(R.style.anination3);
+
     }
 
     @SuppressLint("NewApi")
     public void show(MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
+
         SoundtrackManager.getInstance().requestSoundtrackList(meetingConfig, this);
+
+        if (meetingConfig.getType() == MeetingType.MEETING) {
+
+
+	        selectmore.setVisibility(View.VISIBLE);
+            if (meetingConfig.isMeetingPause()) {
+                createLayout.setVisibility(View.VISIBLE);
+            } else {
+                createLayout.setVisibility(View.GONE);
+            }
+
+
+        }else{
+            selectmore.setVisibility(View.GONE);
+            createLayout.setVisibility(View.VISIBLE);
+        }
         if (dialog != null) {
             dialog.show();
         }
+
     }
 
     public boolean isShowing() {
@@ -135,17 +202,71 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
             case R.id.close:
                 dismiss();
                 break;
-
             case R.id.layout_create:
                 EventBus.getDefault().post(new EventCreateSync());
                 dismiss();
                 break;
-
+            case R.id.selectmore:
+                ll1.setVisibility(View.GONE);
+                ll2.setVisibility(View.VISIBLE);
+	            if (meetingConfig.getDocument() != null) {
+		            getSoundtrack2(meetingConfig.getDocument().getAttachmentID() + "");
+	            }
+                break;
+            case R.id.ok:
+                ll1.setVisibility(View.VISIBLE);
+                ll2.setVisibility(View.GONE);
+                String soundids = "";
+                for (int i = 0; i < allList.size(); i++) {
+                    SoundtrackBean soundtrackBean = allList.get(i);
+                    if (soundtrackBean.isCheck()) {
+                        soundids = soundids + soundtrackBean.getSoundtrackID() + ",";
+                    }
+                }
+                if (!TextUtils.isEmpty(soundids)) {
+                    addsoundtolesson(soundids.substring(0, soundids.length() - 1));
+                }
+                break;
+            case R.id.layout_back:
+                ll1.setVisibility(View.VISIBLE);
+                ll2.setVisibility(View.GONE);
+                break;
             default:
                 break;
         }
     }
 
+
+    private List<SoundtrackBean> allList=new ArrayList<>();
+    private YinXiangAdapter2 yinXiangAdapter2;
+    public void getSoundtrack2(final String attachmentid) {
+        if (TextUtils.isEmpty(attachmentid)) {
+            return;
+        }
+        String url = AppConfig.URL_PUBLIC + "Soundtrack/List?attachmentID=" + attachmentid;
+        ServiceInterfaceTools.getinstance().getSoundList(url, ServiceInterfaceTools.GETSOUNDLIST,
+                new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        List<SoundtrackBean> oo = (List<SoundtrackBean>) object;
+                        allList.clear();
+                        allList.addAll(oo);
+	                    yinXiangAdapter2 = new YinXiangAdapter2(host, new ArrayList<SoundtrackBean>(), allList, meetingConfig);
+                        allrecycleview.setAdapter(yinXiangAdapter2);
+                    }
+                }, false, true);
+
+    }
+    private void addsoundtolesson(final String soundtrackIDs) {
+        String url = AppConfig.URL_PUBLIC + "LessonSoundtrack?lessonID=" + meetingConfig.getLessionId() + "&soundtrackIDs=" + soundtrackIDs;
+        ServiceInterfaceTools.getinstance().addSoundToLesson(url, ServiceInterfaceTools.ADDSOUNDTOLESSON,
+                new ServiceInterfaceListener() {
+                    @Override
+                    public void getServiceReturnData(Object object) {
+                        SoundtrackManager.getInstance().requestSoundtrackList(meetingConfig, UserSoundtrackDialog.this);
+                    }
+                });
+    }
 
     @Override
     public void onDismiss(DialogInterface dialog) {
@@ -157,15 +278,28 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
         Observable.just(soundtrackList).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<EventSoundtrackList>() {
             @Override
             public void accept(EventSoundtrackList soundtrackList) throws Exception {
-                if (soundtrackList.getSoundTracks() != null && soundtrackList.getSoundTracks().size() >= 0) {
-                    if (soundtrackAdapter == null) {
-                        soundtrackAdapter = new SoundtrackAdapter(host);
-                        soundtrackAdapter.setSoundTracks(soundtrackList.getSoundTracks());
-                        soundtrackListView.setAdapter(soundtrackAdapter);
-                    } else {
-                        soundtrackAdapter.setSoundTracks(soundtrackList.getSoundTracks());
-                    }
-                    soundtrackAdapter.setOnSoundtrackClickedListener(UserSoundtrackDialog.this);
+	            loadingLayout.setVisibility(View.GONE);
+	            if (soundtrackList.getSoundTracks() != null) {
+		            if (soundtrackList.getSoundTracks().size() >= 0) {
+			            soundtrackListView.setVisibility(View.VISIBLE);
+			            noDataText.setVisibility(View.GONE);
+			            if (soundtrackAdapter == null) {
+				            soundtrackAdapter = new SoundtrackAdapter(host, meetingConfig);
+				            soundtrackAdapter.setSoundTracks(soundtrackList.getSoundTracks());
+				            soundtrackListView.setAdapter(soundtrackAdapter);
+
+			            } else {
+				            soundtrackAdapter.setSoundTracks(soundtrackList.getSoundTracks());
+			            }
+			            soundtrackAdapter.setOnSoundtrackClickedListener(UserSoundtrackDialog.this);
+		            } else {
+			            soundtrackListView.setVisibility(View.INVISIBLE);
+			            noDataText.setVisibility(View.VISIBLE);
+		            }
+
+	            } else {
+		            soundtrackListView.setVisibility(View.INVISIBLE);
+		            noDataText.setVisibility(View.VISIBLE);
                 }
             }
         }).subscribe();
@@ -205,7 +339,11 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
 
     @Override
     public void playSoundTrack(SoundTrack soundTrack) {
-        requestDetailAndPlay(soundTrack);
+        EventPlaySoundtrack playSoundtrack = new EventPlaySoundtrack();
+        playSoundtrack.setSoundTrack(soundTrack);
+        EventBus.getDefault().post(playSoundtrack);
+        dismiss();
+//        requestDetailAndPlay(soundTrack);
     }
 
     @Override
@@ -434,32 +572,28 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
 
     }
 
-    private void requestDetailAndPlay(final SoundTrack soundTrack) {
-        Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, SoundtrackDetailData>() {
-            @Override
-            public SoundtrackDetailData apply(SoundTrack soundtrack) throws Exception {
-                SoundtrackDetailData soundtrackDetailData = new SoundtrackDetailData();
-                JSONObject response = ServiceInterfaceTools.getinstance().syncGetSoundtrackDetail(soundTrack);
-                if(response.has("RetCode")){
-                    if(response.getInt("RetCode") == 0){
-                        SoundtrackDetail soundtrackDetail = new Gson().fromJson(response.getJSONObject("RetData").toString(),SoundtrackDetail.class);
-                        soundtrackDetailData.setSoundtrackDetail(soundtrackDetail);
 
-                    }
-                }
-                return soundtrackDetailData;
-            }
-        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<SoundtrackDetailData>() {
-            @Override
-            public void accept(SoundtrackDetailData soundtrackDetailData) throws Exception {
-                if(soundtrackDetailData.getSoundtrackDetail() != null){
-                    EventPlaySoundtrack soundtrack = new EventPlaySoundtrack();
-                    soundtrack.setSoundtrackDetail(soundtrackDetailData.getSoundtrackDetail());
-                    EventBus.getDefault().post(soundtrack);
-                    dismiss();
+
+    private String getBindViewText(int fileId){
+        String appBindName="";
+        int language = sharedPreferences.getInt("language",1);
+        if(language==1&&App.appENNames!=null){
+            for(int i=0;i<App.appENNames.size();i++){
+                if(fileId==App.appENNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
+                    appBindName=App.appENNames.get(i).getFieldName();
+                    break;
                 }
             }
-        }).subscribe();
+        }else if(language==2&&App.appCNNames!=null){
+            for(int i=0;i<App.appCNNames.size();i++){
+                if(fileId==App.appCNNames.get(i).getFieldId()){
+                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
+                    appBindName=App.appCNNames.get(i).getFieldName();
+                    break;
+                }
+            }
+        }
+        return appBindName;
     }
-
 }

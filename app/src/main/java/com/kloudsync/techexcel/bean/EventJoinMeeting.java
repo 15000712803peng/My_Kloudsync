@@ -6,10 +6,19 @@ package com.kloudsync.techexcel.bean;
 
 public class EventJoinMeeting {
     private String meetingId;
-    private int lessionId;
+	private int lessionId = -1;
     private int role = 1;
     private int hostId;
     private String orginalMeetingId;
+    private boolean isHost;
+
+    public boolean isHost() {
+        return isHost;
+    }
+
+    public void setHost(boolean host) {
+        isHost = host;
+    }
 
     public String getOrginalMeetingId() {
         return orginalMeetingId;

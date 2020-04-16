@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,20 +27,21 @@ import org.greenrobot.eventbus.EventBus;
  * Created by wang on 2017/9/18.
  */
 
-public class MeetingSettingDialog implements View.OnClickListener{
+public class MeetingSettingDialog implements View.OnClickListener {
 
     private Activity host;
     private Dialog settingDialog;
     private View view;
     private TextView startText;
-    private ImageView microImage,cameraImage;
-    private TextView microText,cameraText;
+    private ImageView microImage, cameraImage;
+    private TextView microText, cameraText;
     private boolean isStartMeeting;
     private TextView closeText;
     private MeetingConfig meetingConfig;
 
     private LinearLayout tabTitlesLayout;
     private LinearLayout recordingLayout;
+    private CheckBox isOpenRecord;
 
     public boolean isStartMeeting() {
         return isStartMeeting;
@@ -49,9 +51,10 @@ public class MeetingSettingDialog implements View.OnClickListener{
         isStartMeeting = startMeeting;
     }
 
-    public interface OnUserOptionsListener{
-        void onUserStart();
-        void onUserJoin();
+    public interface OnUserOptionsListener {
+        void onUserStart(boolean isrecord);
+
+        void onUserJoin(boolean isrecord);
     }
 
     private OnUserOptionsListener onUserOptionsListener;
@@ -60,7 +63,7 @@ public class MeetingSettingDialog implements View.OnClickListener{
         this.onUserOptionsListener = onUserOptionsListener;
     }
 
-    public  MeetingSettingDialog(Activity host) {
+    public MeetingSettingDialog(Activity host) {
         this.host = host;
         getPopupWindowInstance(host);
     }
@@ -84,6 +87,7 @@ public class MeetingSettingDialog implements View.OnClickListener{
         closeText.setOnClickListener(this);
         tabTitlesLayout = view.findViewById(R.id.layout_tab_titles);
         recordingLayout = view.findViewById(R.id.layout_recording);
+        isOpenRecord = view.findViewById(R.id.isOpenRecord);
         microText = view.findViewById(R.id.txt_micro);
         cameraImage = view.findViewById(R.id.image_camera);
         cameraImage.setOnClickListener(this);
@@ -103,29 +107,29 @@ public class MeetingSettingDialog implements View.OnClickListener{
 
     }
 
-    private void init(MeetingSettingCache settingCache){
+    private void init(MeetingSettingCache settingCache) {
 
-        if(settingCache.getMeetingSetting().isMicroOn()){
+        if (settingCache.getMeetingSetting().isMicroOn()) {
             microImage.setImageResource(R.drawable.sound_on1);
             microText.setText(R.string.satOn);
-        }else {
+        } else {
             microImage.setImageResource(R.drawable.sound_off1);
             microText.setText(R.string.satOff);
         }
 
-        if(settingCache.getMeetingSetting().isCameraOn()){
+        if (settingCache.getMeetingSetting().isCameraOn()) {
             cameraImage.setImageResource(R.drawable.cam_on2);
             cameraText.setText(R.string.satOn);
-        }else {
+        } else {
             cameraImage.setImageResource(R.drawable.cam_off2);
             cameraText.setText(R.string.satOff);
         }
 
-        if(meetingConfig.isFromMeeting() && meetingConfig.getRole() != MeetingConfig.MeetingRole.HOST){
+        if (meetingConfig.isFromMeeting() && !meetingConfig.isHost()) {
             recordingLayout.setVisibility(View.GONE);
             tabTitlesLayout.setVisibility(View.GONE);
             closeText.setVisibility(View.GONE);
-        }else {
+        } else {
             recordingLayout.setVisibility(View.VISIBLE);
             tabTitlesLayout.setVisibility(View.VISIBLE);
             closeText.setVisibility(View.VISIBLE);
@@ -134,7 +138,7 @@ public class MeetingSettingDialog implements View.OnClickListener{
     }
 
     @SuppressLint("NewApi")
-    public void show(Activity host,MeetingConfig meetingConfig) {
+    public void show(Activity host, MeetingConfig meetingConfig) {
         this.host = host;
         this.meetingConfig = meetingConfig;
         if (settingDialog != null && !settingDialog.isShowing()) {
@@ -145,7 +149,7 @@ public class MeetingSettingDialog implements View.OnClickListener{
     }
 
     public boolean isShowing() {
-        if(settingDialog != null){
+        if (settingDialog != null) {
             return settingDialog.isShowing();
         }
         return false;
@@ -162,24 +166,23 @@ public class MeetingSettingDialog implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.txt_start:
-                if(isStartMeeting){
-                    if(onUserOptionsListener != null){
-                        onUserOptionsListener.onUserStart();
+                if (isStartMeeting) {
+                    if (onUserOptionsListener != null) {
+                        onUserOptionsListener.onUserStart(isOpenRecord.isChecked());
                     }
-                }else {
-                    if(onUserOptionsListener != null){
-                        onUserOptionsListener.onUserJoin();
+                } else {
+                    if (onUserOptionsListener != null) {
+                        onUserOptionsListener.onUserJoin(isOpenRecord.isChecked());
                     }
                 }
-
                 dismiss();
                 break;
             case R.id.image_micro:
                 boolean isMicroOn = getSettingCache(host).getMeetingSetting().isMicroOn();
-                if(!isMicroOn){
+                if (!isMicroOn) {
                     microImage.setImageResource(R.drawable.sound_on1);
                     microText.setText(R.string.satOn);
-                }else {
+                } else {
                     microImage.setImageResource(R.drawable.sound_off1);
                     microText.setText(R.string.satOff);
                 }
@@ -188,17 +191,17 @@ public class MeetingSettingDialog implements View.OnClickListener{
                 break;
             case R.id.image_camera:
                 boolean isCameraOn = getSettingCache(host).getMeetingSetting().isCameraOn();
-                if(!isCameraOn){
+                if (!isCameraOn) {
                     cameraImage.setImageResource(R.drawable.cam_on2);
                     cameraText.setText(R.string.satOn);
-                }else {
+                } else {
                     cameraImage.setImageResource(R.drawable.cam_off2);
                     cameraText.setText(R.string.satOff);
                 }
                 getSettingCache(host).setCameraOn(!isCameraOn);
                 break;
             case R.id.txt_cancel:
-                if(meetingConfig.isFromMeeting() && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST){
+                if (meetingConfig.isFromMeeting() && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
                     EventBus.getDefault().post(new EventClose());
                 }
                 dismiss();

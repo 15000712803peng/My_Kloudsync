@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -129,6 +130,7 @@ public class FriendContactAdapter extends BaseAdapter {
                     contactHolder = new ContactHolder();
                     contactHolder.img = convertView.findViewById(R.id.img_head);
                     contactHolder.name = convertView.findViewById(R.id.name);
+                    contactHolder.chatImage = convertView.findViewById(R.id.img_chat);
                     convertView.setTag(contactHolder);
                 } else {
                     contactHolder = (ContactHolder) convertView.getTag();
@@ -144,7 +146,13 @@ public class FriendContactAdapter extends BaseAdapter {
                     contactHolder.img.setImageURI(imageUri);
                     contactHolder.name.setText(friendContact.getUserName());
 
+                    if(friendContact.getStatus() == 1){
+                        contactHolder.chatImage.setVisibility(View.VISIBLE);
+                    }else {
+                        contactHolder.chatImage.setVisibility(View.GONE);
+                    }
 
+//                    if(friendContact.is)
 
                 }
 
@@ -157,7 +165,6 @@ public class FriendContactAdapter extends BaseAdapter {
 //                holder.setViewVisible(R.id.tv_sort, View.GONE);
 //            }
 //
-//            holder.setViewVisible(R.id.img_chat, customer.isEnableChat() ? View.VISIBLE : View.GONE);
                 // 绑定数据
                 break;
         }
@@ -189,6 +196,7 @@ public class FriendContactAdapter extends BaseAdapter {
     class ContactHolder {
         public SimpleDraweeView img;
         public TextView name;
+        public ImageView chatImage;
     }
 
 }

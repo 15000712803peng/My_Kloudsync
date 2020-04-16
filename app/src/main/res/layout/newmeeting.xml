@@ -5,7 +5,6 @@
     android:orientation="vertical"
     >
 
-
     <LinearLayout
         android:background="@drawable/bottom_dialog_border"
         android:orientation="vertical"
@@ -14,7 +13,6 @@
 
         <LinearLayout
             android:background="@drawable/bottom_dialog_border"
-
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -24,13 +22,13 @@
                 android:layout_height="wrap_content"></LinearLayout>
 
             <TextView
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="18dp"
-                android:textSize="14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="18dp"
+                android:layout_marginTop="20dp"
                 android:text="@string/join3"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
             <TextView
                 android:layout_marginLeft="18dp"
@@ -47,7 +45,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:layout_marginTop="10dp"
-                android:paddingBottom="25dp"
+                android:paddingBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -67,8 +65,8 @@
 
                 <TextView
                     android:id="@+id/joinroom2"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
+                    android:paddingLeft="22dp"
+                    android:paddingRight="22dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="18dp"
                     android:paddingTop="12dp"
@@ -76,12 +74,74 @@
                     android:background="@drawable/join_bg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/join2"
+                    android:text="@string/_join"
                     android:textColor="#ffffffff"
                     android:textSize="15sp"
                     />
             </LinearLayout>
         </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@color/white"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="16dp"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:src="@drawable/register_yellow_tips_icon"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="该会议需要密码验证"
+                     android:layout_marginLeft="5dp"
+                    android:textColor="@color/c2"
+                    android:textSize="12sp"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/editrel"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/enter_meeting_bg"
+                android:visibility="visible"
+                android:layout_height="45dp">
+
+                <EditText
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:background="@null"
+                    android:hint="请输入会议密码"
+                    android:textSize="14sp"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:textColor="#3C77FB"
+                    android:layout_alignParentRight="true"
+                    android:text="@string/satOk"
+                    android:layout_height="wrap_content"/>
+
+            </RelativeLayout>
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/cancel"

@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rc_white_bg_shape"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="25dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_height="40dp">
+
+            <TextView
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:text="创建新伴奏/演唱"
+                android:textSize="16sp"
+                android:layout_centerVertical="true"
+                android:textColor="@color/skyblue"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/recordsync"
+                    android:layout_width="100dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_create_sync"
+                    android:gravity="center"
+                    android:text="@string/mtRecordSync"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/cancel"
+                    android:layout_width="100dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/peertimeselect_bg3"
+                    android:gravity="center"
+                    android:text="@string/Cancel"
+                    android:textColor="@color/skyblue" />
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:paddingLeft="8dp"
+               android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:text="标题："
+                android:textColor="@color/txt_color1" />
+
+
+            <EditText
+                android:id="@+id/edittext"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:hint="请输入伴奏音乐/演唱标题"
+                android:imeOptions="flagNoExtractUi"
+                android:paddingLeft="5dp"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/close"
+                android:visibility="gone"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="6dp"
+                android:padding="2dp"
+                android:src="@drawable/close" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider_line" />
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/isPublic"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/bg_box"
+                    android:button="@android:color/transparent"
+                    android:checked="false"
+                    android:visibility="visible" />
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/ispublic"
+                    android:textColor="@color/skyblue"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_bg_audio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:paddingLeft="8dp"
+            android:text="启用伴奏"
+            android:textColor="@color/txt_color1" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:paddingLeft="8dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/addaudio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="25dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/accompany_bg_shape"
+                android:text="+ 选择一个伴奏"
+                android:visibility="visible"
+                android:textColor="@color/skyblue"
+                android:textSize="14sp" />
+
+            <RelativeLayout
+                android:id="@+id/layout_background_audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="invisible">
+
+                <TextView
+                    android:id="@+id/bgname"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:layout_marginRight="35dp"
+                    android:text="ssssss"
+                    android:singleLine="true"
+                    android:textSize="13sp" />
+
+                <ImageView
+                    android:id="@+id/moreOpation"
+                    android:layout_width="30dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:padding="2dp"
+                    android:src="@drawable/accompany_more" />
+            </RelativeLayout>
+
+
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/ishiddenll"
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1.5px"
+                android:background="@color/divider_line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:paddingLeft="8dp"
+                    android:text="录制演唱"
+                    android:textColor="@color/txt_color1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="8dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/layout_record_my_voice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center_vertical"
+                            android:visibility="visible"
+                            android:orientation="horizontal"
+                          >
+
+                            <CheckBox
+                                android:id="@+id/checkboxx"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:background="@drawable/bg_box"
+                                android:button="@android:color/transparent"
+                                android:checked="true"
+                                android:clickable="false"
+                                android:visibility="visible" />
+
+                            <TextView
+                                android:id="@+id/tv_record_voice"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="8dp"
+                                android:text="录制新声音"
+                                android:textColor="@color/skyblue"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/uploadsoundfilell"
+                            android:layout_width="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="6dp"
+                            android:visibility="invisible"
+                            android:layout_height="wrap_content">
+
+                       <LinearLayout
+                           android:id="@+id/uploadsoundfile"
+                           android:layout_width="wrap_content"
+                           android:orientation="horizontal"
+                           android:layout_marginTop="5dp"
+                           android:background="@drawable/accompany_bg_shape"
+                           android:layout_height="wrap_content">
+
+                           <ImageView
+                               android:layout_width="18dp"
+                               android:layout_gravity="center_vertical"
+                               android:src="@drawable/accompany_create_record"
+                               android:layout_height="18dp"></ImageView>
+
+                        <TextView
+                            android:layout_marginLeft="5dp"
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="录制新声音"
+                            android:textColor="@color/skyblue"
+                            android:textSize="14sp"
+                            android:visibility="visible" />
+                       </LinearLayout>
+
+
+
+                        <LinearLayout
+                            android:id="@+id/selectsoundfile"
+                            android:layout_width="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginLeft="10dp"
+                            android:background="@drawable/accompany_bg_shape"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_gravity="center_vertical"
+                                android:src="@drawable/accompany_create_music"
+                                android:layout_height="18dp"></ImageView>
+
+                        <TextView
+                            android:layout_marginLeft="10dp"
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="上传声音文件"
+                            android:textColor="@color/skyblue"
+                            android:textSize="14sp"
+                            android:visibility="visible" />
+
+                        </LinearLayout>
+
+
+
+                        </LinearLayout>
+
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/layout_voice_item"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="8dp"
+                        android:visibility="invisible">
+
+                        <TextView
+                            android:id="@+id/recordname"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:singleLine="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="35dp"
+                            android:text="@string/mtYxName"
+                            android:textSize="13sp" />
+
+                        <ImageView
+
+                            android:id="@+id/morerecordnewvoice"
+                            android:layout_width="30dp"
+                            android:visibility="visible"
+                            android:layout_height="40dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:padding="2dp"
+                            android:src="@drawable/accompany_more" />
+
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>
