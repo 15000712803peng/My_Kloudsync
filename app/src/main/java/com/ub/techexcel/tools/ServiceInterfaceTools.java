@@ -1621,6 +1621,41 @@ public class ServiceInterfaceTools {
             }
         }).start(ThreadManager.getManager());
     }
+    public void uploadFavoriteNewFile(final String url, final int code, final String fileName,
+                                      final String Description,
+                                      final String key, final ConvertingResult convertingResult, final int fieldId,final int bindAttachmentID,
+                                      ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("Title", fileName);
+                    jsonObject.put("Description", Description);
+                    jsonObject.put("Hash", key);
+                    jsonObject.put("FileID", fieldId);
+                    jsonObject.put("PageCount", convertingResult.getCount());
+                    jsonObject.put("FileName", convertingResult.getFileName());
+                    jsonObject.put("SchoolID", -1);
+                    jsonObject.put("BindAttachmentID", bindAttachmentID);
+//                    jsonObject.put("SchoolID", AppConfig.SchoolID);
+//                    jsonObject.put("FolderID", convertingResult.getFileName());
+                    JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("hhh", url + jsonObject.toString() + "  " + returnjson.toString());
+                    if (returnjson.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.what = code;
+                        msg3.obj = "";
+                        handler.sendMessage(msg3);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start(ThreadManager.getManager());
+    }
 
 
     public void uploadFavoritevideo(final String url, final int code, final String fileName,

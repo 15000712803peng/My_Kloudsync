@@ -1154,9 +1154,7 @@
 
     <include
         layout="@layout/meeting_pause_layout"
-        android:layout_below="@id/layout_real_meeting"
-        android:layout_marginTop="@dimen/dp_10"
-        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

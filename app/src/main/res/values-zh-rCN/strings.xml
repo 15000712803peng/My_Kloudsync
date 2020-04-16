@@ -725,6 +725,7 @@
     <string name="upload">上传</string>
     <string name="uploadsuccess">上传成功</string>
     <string name="uploadfailure">上传失败</string>
+    <string name="uploading">正在上传</string>
     <string name="downfailed">下载头像失败</string>
     <string name="to_be_allocated">待分配</string>
     <string name="weight">体重(kg)</string>
@@ -888,6 +889,7 @@
     <string name="meeting_pause_tips">会议暂停中,您可以继续浏览文档或者休息一下</string>
     <string name="the_content_can_not_be_blank">内容不能为空</string>
     <string name="no_document">无文档</string>
+    <string name="error_syncing_documents">同步文档出错</string>
 
     <!--音想-->
     <!--我-->
@@ -962,6 +964,8 @@
 
     <string name="my_contact">我的联系人</string>
 
+    <string name="click_help">点击这里前往帮助中心，查看详细步骤》</string>
+
     <string-array name="time_duration">
         <item>15分钟</item>
         <item>30分钟</item>
@@ -982,5 +986,7 @@
     <string name="meeting_not_stated">会议还没有开始</string>
     <string name="meeting">会议</string>
     <string name="Open">打开</string>
+
+    <string name="phone_needs">手机号需要8到11位</string>
 
 </resources>

@@ -471,32 +471,101 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         }
     }
 
-
+   private  File uploadAudiofile;
 
     private void stopAudioRecord() {
-        if (audioRecorder != null) {
+        uploadAudioPopupdate.StartPop(soundtrackBean);
+        if (audioRecorder != null&&isrecordvoice) {
             audioRecorder.stopRecord(new RecordEndListener() {
                 @Override
                 public void endRecord(String fileName) {
                     Log.e("syncing---", "录音结束，开始上传 " + fileName);
-                    File file = com.ub.service.audiorecord.FileUtils.getWavFile(fileName);
-                    if (file != null) {
-                        Log.e("syncing---", file.getAbsolutePath() + "   " + file.getName());
-                        UploadAudioTool.getManager(mContext).uploadAudio(file,soundtrackBean,uploadAudioPopupdate,meetingConfig,SoundtrackRecordManager.this);
-                    }
+                    uploadAudiofile = FileUtils.getWavFile(fileName);
+                    stopRecordDocumentAction();
                 }
             });
+        }else{
+            stopRecordDocumentAction();
         }
     }
 
+
+    private List<DocumentAction> uploaddocumentActionsList=new ArrayList<>();
+
+    private void stopRecordDocumentAction(){
+        if(documentActionList.size()>0){
+            try {
+                final List<List<JSONObject>> subAryList = GZipUtil.fetchList(documentActionList);
+                uploaddocumentActionsList=GZipUtil.getDocumentactionList(subAryList,soundtrackBean);
+                Log.e("syncing---docu","分片大小  "+subAryList.size()+"   分组大小 "+uploaddocumentActionsList.size());
+                if(uploaddocumentActionsList.size()>0){
+                    executeUploadDocument(uploaddocumentActionsList.get(0));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private void  executeUploadDocument(DocumentAction documentAction){
+        Observable.just(documentAction).observeOn(Schedulers.io()).map(new Function<DocumentAction, DocumentAction>() {
+            @Override
+            public DocumentAction apply(DocumentAction documentAction) throws Exception {
+                String url=AppConfig.URL_MEETING_BASE+"sync_action/upload_all_actions";
+                int retcode=  ServiceInterfaceTools.getinstance().uploadAllactions2(url, documentAction);
+                Log.e("syncing---docu","返回值  "+retcode);
+                if(retcode==0){
+                    return documentAction;
+                }
+                return null;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentAction>() {
+            @Override
+            public void accept(DocumentAction documentAction) throws Exception {
+                if(documentAction!=null){
+                    if(isrecordvoice){
+                        uploadAudioPopupdate.setProgress1(documentAction.getTotal(), documentAction.getIndex());
+                    }else{
+                        uploadAudioPopupdate.setProgress(documentAction.getTotal(), documentAction.getIndex());
+                    }
+                    if(documentAction.getIndex()==uploaddocumentActionsList.size()){ //  上传文档动作成功
+                        if (isrecordvoice) {   // 完成录音
+                            Log.e("syncing---docu","开始上传录音");
+                            if (uploadAudiofile != null) {
+                                UploadAudioTool.getManager(mContext).uploadAudio(uploadAudiofile,soundtrackBean,uploadAudioPopupdate,meetingConfig,SoundtrackRecordManager.this);
+                            }
+                        }else{
+                            Log.e("syncing---docu","笔记动作");
+                            stopRecordNoteAction(); //笔记动作
+                        }
+                    }else{
+                        Log.e("syncing---docu","开始上传下一个音想动作"+documentAction.getIndex());
+                        if(documentAction.getIndex()<uploaddocumentActionsList.size()){
+                            DocumentAction nextdocumentAction=uploaddocumentActionsList.get(documentAction.getIndex());
+                            executeUploadDocument(nextdocumentAction);
+                        }
+                    }
+                }
+            }
+        }).subscribe();
+    }
+
+
+
     @Override
     public void uploadAudioSuccess() {
+        if(uploadAudioPopupdate!=null){
+            uploadAudioPopupdate.setUploadStaus(0);
+        }
         stopRecordNoteAction();
     }
 
     @Override
     public void uploadAudioFail() {
-
+        if(uploadAudioPopupdate!=null){
+            uploadAudioPopupdate.setUploadStaus(1);
+        }
     }
 
     private void stopRecordNoteAction(){
@@ -532,67 +601,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
 
-
-    private List<DocumentAction> uploaddocumentActionsList=new ArrayList<>();
-
-    private void stopRecordDocumentAction(){
-        uploadAudioPopupdate.StartPop(soundtrackBean);
-        if(documentActionList.size()>0){
-            try {
-                final List<List<JSONObject>> subAryList = GZipUtil.fetchList(documentActionList);
-                uploaddocumentActionsList=GZipUtil.getDocumentactionList(subAryList,soundtrackBean);
-                Log.e("syncing---docu","分片大小  "+subAryList.size()+"   分组大小 "+uploaddocumentActionsList.size());
-                if(uploaddocumentActionsList.size()>0){
-                    executeUploadDocument(uploaddocumentActionsList.get(0));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-
-    private void   executeUploadDocument(DocumentAction documentAction){
-        Observable.just(documentAction).observeOn(Schedulers.io()).map(new Function<DocumentAction, DocumentAction>() {
-            @Override
-            public DocumentAction apply(DocumentAction documentAction) throws Exception {
-                String url=AppConfig.URL_MEETING_BASE+"sync_action/upload_all_actions";
-                int retcode=  ServiceInterfaceTools.getinstance().uploadAllactions2(url, documentAction);
-                Log.e("syncing---docu","返回值  "+retcode);
-                if(retcode==0){
-                    return documentAction;
-                }
-                return null;
-            }
-        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<DocumentAction>() {
-            @Override
-            public void accept(DocumentAction documentAction) throws Exception {
-                  if(documentAction!=null){
-                      if(isrecordvoice){
-                          uploadAudioPopupdate.setProgress1(documentAction.getTotal(), documentAction.getIndex());
-                      }else{
-                          uploadAudioPopupdate.setProgress(documentAction.getTotal(), documentAction.getIndex());
-                      }
-                      if(documentAction.getIndex()==uploaddocumentActionsList.size()){ //  上传文档动作成功
-                          if (isrecordvoice) {   // 完成录音
-                              Log.e("syncing---docu","开始上传录音");
-                              stopAudioRecord();
-                          }else{
-                              Log.e("syncing---docu","笔记动作");
-                              stopRecordNoteAction(); //笔记动作
-                          }
-                      }else{
-                          Log.e("syncing---docu","开始上传下一个音想动作"+documentAction.getIndex());
-                          if(documentAction.getIndex()<uploaddocumentActionsList.size()){
-                              DocumentAction nextdocumentAction=uploaddocumentActionsList.get(documentAction.getIndex());
-                              executeUploadDocument(nextdocumentAction);
-                          }
-                      }
-                  }
-            }
-        }).subscribe();
-    }
 
 
 
@@ -665,10 +673,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         if(audiosyncll!=null&&audiosyncll.getVisibility()==View.VISIBLE){
             closeAudioSync();
             StopMedia();
-            if (isrecordvoice) {
-                pauseOrStartAudioRecord();
-            }
-            stopRecordDocumentAction();
+            stopAudioRecord();
             instance=null;
         }
     }

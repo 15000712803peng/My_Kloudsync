@@ -227,6 +227,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     public static final String SUNDTRACKBEAN = "sundtrackbean";
     public static MeetingConfig meetingConfig;
+    public static MeetingPauseManager mMeetingPauseManager;
     private SocketMessageManager messageManager;
     //---
     private BottomMenuManager menuManager;
@@ -335,6 +336,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private EventSendJoinMeetingMessage joinMeetingMessage;
 	private String mTipsText;
 	private long mPauseDuration;
+    private volatile boolean mSwitchShowDocument;
 
     @Override
     public void showErrorPage() {
@@ -358,6 +360,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         //----
         RealMeetingSetting realMeetingSetting = MeetingSettingCache.getInstance(this).getMeetingSetting();
         meetingConfig = getConfig();
+        mMeetingPauseManager = MeetingPauseManager.getInstance(this, meetingConfig);
         gson = new Gson();
         pageCache = DocumentPageCache.getInstance(this);
         //--
@@ -472,12 +475,20 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        RelativeLayout.LayoutParams layoutParams = null;
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是竖屏", Toast.LENGTH_SHORT).show();
+            layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.addRule(RelativeLayout.BELOW, R.id.layout_real_meeting);
         }
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是横屏", Toast.LENGTH_SHORT).show();
+            layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
         }
+        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_9);
+        mRlyMeetingPauseLayout.setLayoutParams(layoutParams);
     }
 
     AudiencePromptDialog audiencePromptDialog;
@@ -778,6 +789,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         // 所有文档的data
         Log.e("refreshDocuments", "documents:" + documents);
         this.documents = refreshDocs.getDocuments();
+        if (mIsMeetingPause && !mSwitchShowDocument) {//如果是会议暂停并且不是自己添加文档则不自动切换文档
+            if (bottomFilePop != null && bottomFilePop.isShowing()) {
+                bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
+                bottomFilePop.removeTempDoc();
+            }
+            return;
+        }
+        mSwitchShowDocument = false;
         changeDocument(documents.get(documents.indexOf(new MeetingDocument(refreshDocs.getItemId()))), refreshDocs.getPageNumber());
     }
 
@@ -1407,6 +1426,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         noteLayout.setVisibility(View.GONE);
                     }
                 }
+            }
+
+            /*处理文档*/
+            if (!helloMessage.isIfPause() && helloMessage.getCurrentItemId() != meetingConfig.getDocument().getItemID()) {
+                changeDocument((int) helloMessage.getCurrentItemId(), helloMessage.getCurrentPageNumber());
             }
 
             // ---处理presenter
@@ -2609,6 +2633,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     private synchronized void queryAndDownLoadPageToShow(final MeetingDocument document, final int pageNumber, final boolean needRedownload) {
+        if (pageNumber - 1 >= document.getDocumentPages().size()) {
+            ToastUtils.show(this, R.string.error_syncing_documents);
+            return;
+        }
         final DocumentPage _page = document.getDocumentPages().get(pageNumber - 1);
         String pageUrl = _page.getPageUrl();
         String downloadUrl = pageUrl;
@@ -3958,6 +3986,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     private void addDocSucc(int newItemid) {
+        mSwitchShowDocument = true;
         DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, newItemid, 1);
         if (bottomFilePop != null && bottomFilePop.isShowing()) {
             runOnUiThread(new Runnable() {
@@ -5163,7 +5192,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (TextUtils.isEmpty(newDocumentId)) {
             return;
         }
-
         final String _id = newDocumentId;
         Observable.just(meetingConfig).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingConfig>() {
             @Override
