@@ -79,6 +79,7 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
     private TextView enterText;
     private boolean fromAppSetting;
     private boolean mIsShowCode=false;
+    public static CreateOrganizationActivityV2 instance = null;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -252,6 +253,7 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
         setContentView(R.layout.activity_create_organization);
         fromAppSetting = getIntent().getBooleanExtra("from_app_setting",false);
         initView();
