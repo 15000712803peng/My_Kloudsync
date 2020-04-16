@@ -12,7 +12,6 @@ import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -50,7 +49,8 @@ public class MeetingPauseManager implements View.OnClickListener {
 	private TextView mMeetingPauseTips;
 	private EditText mMeetingPauseEditTips;
 	private TextView mMeetingPauseTime;
-	private Button mMeetingResumeBtn;
+	private RelativeLayout mRlyMeetingResume;
+	private TextView mMeetingResumeBtn;
 	private MeetingConfig mMeetingConfig;
 	private SpannableStringBuilder mStringBuilder;
 	private ImageSpan mImageSpan;
@@ -97,6 +97,7 @@ public class MeetingPauseManager implements View.OnClickListener {
 		mTipsEditCancle = activity.findViewById(R.id.tv_edit_pause_tips_cancle);
 		mMeetingPauseEditTips = activity.findViewById(R.id.et_meeting_pause_tips_text);
 		mMeetingPauseTime = activity.findViewById(R.id.tv_meeting_pause_time);
+		mRlyMeetingResume = activity.findViewById(R.id.rly_meeting_resume);
 		mMeetingResumeBtn = activity.findViewById(R.id.btn_meeting_resume);
 
 		mMeetingPauseMinLayout = activity.findViewById(R.id.rly_meeting_pause_minimize);
@@ -107,10 +108,10 @@ public class MeetingPauseManager implements View.OnClickListener {
 		mTipsEditCancle.setOnClickListener(this);
 		mMeetingPauseMinimize.setOnClickListener(this);
 		mMeetingPausebig.setOnClickListener(this);
-		mMeetingResumeBtn.setOnClickListener(this);
+		mRlyMeetingResume.setOnClickListener(this);
 		mStringBuilder = new SpannableStringBuilder();
-		Drawable drawable = activity.getResources().getDrawable(R.drawable.ic_launcher);
-		int widthiAndHeight = activity.getResources().getDimensionPixelOffset(R.dimen.dp_20);
+		Drawable drawable = activity.getResources().getDrawable(R.drawable.meeting_pause_edit_tips_icon);
+		int widthiAndHeight = activity.getResources().getDimensionPixelOffset(R.dimen.dp_14);
 		drawable.setBounds(0, 0, widthiAndHeight, widthiAndHeight);
 		mImageSpan = new ImageSpan(drawable);
 		mClickableSpan = new ClickableSpan() {
@@ -210,18 +211,18 @@ public class MeetingPauseManager implements View.OnClickListener {
 			mMeetingPauseMinTitle.setText(R.string.meeting_suspended);
 			if (isHost()) {
 				mMeetingResumeBtn.setText(R.string.resume_meeting);
-				mMeetingResumeBtn.setVisibility(View.VISIBLE);
+				mRlyMeetingResume.setVisibility(View.VISIBLE);
 			} else {
-				mMeetingResumeBtn.setVisibility(View.GONE);
+				mRlyMeetingResume.setVisibility(View.GONE);
 			}
 		} else {//如果是课堂模式
 			mMeetingPauseTitle.setText(R.string.practice_time);
 			mMeetingPauseMinTitle.setText(R.string.practice_in_class);
 			if (isHost()) {//如果是老师
 				mMeetingResumeBtn.setText(R.string.continue_class);
-				mMeetingResumeBtn.setVisibility(View.VISIBLE);
+				mRlyMeetingResume.setVisibility(View.VISIBLE);
 			} else {
-				mMeetingResumeBtn.setVisibility(View.GONE);
+				mRlyMeetingResume.setVisibility(View.GONE);
 			}
 		}
 
@@ -261,7 +262,7 @@ public class MeetingPauseManager implements View.OnClickListener {
 			case R.id.iv_meeting_pause_minimize:
 				showMinLayout();
 				break;
-			case R.id.btn_meeting_resume:
+			case R.id.rly_meeting_resume:
 				if (mImm.isActive()) {
 					mMeetingPauseEditTips.setFocusable(false);
 					mMeetingPauseEditTips.setFocusableInTouchMode(false);
@@ -395,6 +396,7 @@ public class MeetingPauseManager implements View.OnClickListener {
 		String hours;
 		String minute;
 		String second;
+		String pauseTime;
 		if (!(h > 9)) {
 			hours = "0" + h;
 		} else {
@@ -411,7 +413,11 @@ public class MeetingPauseManager implements View.OnClickListener {
 		} else {
 			second = String.valueOf(s);
 		}
-		String pauseTime = hours + ":" + minute + ":" + second;
+		if (h <= 0) {
+			pauseTime = minute + ":" + second;
+		} else {
+			pauseTime = hours + ":" + minute + ":" + second;
+		}
 		mMeetingPauseTime.setText(pauseTime);
 		mMeetingPauseMinTime.setText(pauseTime);
 	}
@@ -439,6 +445,7 @@ public class MeetingPauseManager implements View.OnClickListener {
 		mMeetingPauseTips = null;
 		mMeetingPauseEditTips = null;
 		mMeetingPauseTime = null;
+		mRlyMeetingResume = null;
 		mMeetingResumeBtn = null;
 		mMeetingConfig = null;
 		mStringBuilder = null;

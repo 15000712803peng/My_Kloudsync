@@ -888,6 +888,7 @@
     <string name="meeting_pause_tips">会议暂停中,您可以继续浏览文档或者休息一下</string>
     <string name="the_content_can_not_be_blank">内容不能为空</string>
     <string name="no_document">无文档</string>
+    <string name="error_syncing_documents">同步文档出错</string>
 
     <!--音想-->
     <!--我-->

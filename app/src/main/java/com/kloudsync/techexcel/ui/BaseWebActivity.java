@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.ui;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -22,7 +23,6 @@ import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.ub.techexcel.bean.AgoraMember;
 
 import org.greenrobot.eventbus.EventBus;
-
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -67,7 +67,8 @@ public abstract class BaseWebActivity extends FragmentActivity {
 
     @Bind(R.id.single_member_icon)
     ImageView singleMemberIcon;
-
+    @Bind(R.id.rly_meeting_pause_layout)
+    RelativeLayout mRlyMeetingPauseLayout;
     protected AgoraMember currentAgoraMember;
 
     @Override
@@ -78,6 +79,7 @@ public abstract class BaseWebActivity extends FragmentActivity {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         showEnterLoading();
+        initView();
         initData();
 //        Toast.makeText(this,"on_create",Toast.LENGTH_SHORT).show();
         singleFullScreenImage.setOnClickListener(new View.OnClickListener() {
@@ -86,6 +88,23 @@ public abstract class BaseWebActivity extends FragmentActivity {
                 hideAgoraFull();
             }
         });
+    }
+
+    private void initView() {
+        Configuration configuration = getResources().getConfiguration();
+        RelativeLayout.LayoutParams layoutParams = null;
+        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+//            Toast.makeText(DocAndMeetingActivity.this,"现在是竖屏", Toast.LENGTH_SHORT).show();
+            layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.addRule(RelativeLayout.BELOW, R.id.layout_real_meeting);
+        } else if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            Toast.makeText(DocAndMeetingActivity.this,"现在是横屏", Toast.LENGTH_SHORT).show();
+            layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+        }
+        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_9);
+        mRlyMeetingPauseLayout.setLayoutParams(layoutParams);
     }
 
     public void showEnterLoading() {

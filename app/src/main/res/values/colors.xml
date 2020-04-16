@@ -165,6 +165,8 @@
     <color name="color3d78fb">#3D78FB</color>
     <color name="colorf4f5fb">#F4F5FB</color>
     <color name="colorBG16">#161616</color>
+    <color name="color191836">#191836</color>
+    <color name="colorFonteef2fa">#EEF2FA</color>
     <color name="colorRegisterYellowTips">#FEA33D</color>
     <color name="colorRegisterRedTips">#FF616A</color>
     <color name="colorRegisterEditRedFrame">#FB6363</color>
