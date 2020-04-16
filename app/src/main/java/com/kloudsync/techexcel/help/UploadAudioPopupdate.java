@@ -29,7 +29,7 @@ public class UploadAudioPopupdate implements View.OnClickListener{
     public int width;
     public Dialog mPopupWindow;
     private View view;
-    private TextView recordsync,cancel;
+    private TextView recordsync,cancel,uploadstaus;
     private EditText edittext;
     private RoundProgressBar roundProgressBar;
     private SoundtrackBean soundtrackBean = new SoundtrackBean();
@@ -45,6 +45,7 @@ public class UploadAudioPopupdate implements View.OnClickListener{
         view = layoutInflater.inflate(R.layout.uploadaudiopopudata, null);
         recordsync=view.findViewById(R.id.recordsync);
         cancel=view.findViewById(R.id.cancel);
+        uploadstaus=view.findViewById(R.id.uploadstaus);
         recordsync.setOnClickListener(this);
         cancel.setOnClickListener(this);
         edittext=view.findViewById(R.id.edittext);
@@ -63,6 +64,16 @@ public class UploadAudioPopupdate implements View.OnClickListener{
         }
         mPopupWindow.getWindow().setAttributes(params);
 
+    }
+
+
+
+    public void setUploadStaus(int retCode){
+        if(retCode==0){
+            uploadstaus.setText(mContext.getResources().getText(R.string.uploadsuccess));
+        }else if(retCode==1){
+            uploadstaus.setText(mContext.getResources().getText(R.string.uploadfailure));
+        }
     }
 
 

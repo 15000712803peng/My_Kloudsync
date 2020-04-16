@@ -24,6 +24,7 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
+import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManagerConfiguration;
 import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -104,6 +105,10 @@ public class UploadAudioNoteActionTool {
                 s3.setRegion(com.amazonaws.regions.Region.getRegion(ud.getRegionName()));
                 com.amazonaws.services.s3.model.PutObjectRequest request = new com.amazonaws.services.s3.model.PutObjectRequest(ud.getBucketName(), objectkey, mfile);
                 TransferManager tm = new TransferManager(s3);
+                TransferManagerConfiguration transferManagerConfiguration=new TransferManagerConfiguration();
+                transferManagerConfiguration.setMultipartUploadThreshold(1*100*1024);
+                tm.setConfiguration(transferManagerConfiguration);
+
                 com.amazonaws.services.s3.model.ObjectMetadata objectMetadata=new com.amazonaws.services.s3.model.ObjectMetadata();
                 objectMetadata.setContentType("application/json");
                 request.setMetadata(objectMetadata);

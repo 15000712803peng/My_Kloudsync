@@ -726,8 +726,9 @@ Please input the cell phone number to add the contact
     <string name="invite">Invite</string>
     <string name="nofile">nofile</string>
     <string name="upload">Upload</string>
-    <string name="uploadsuccess">uploadsuccess</string>
-    <string name="uploadfailure">uploadfailure</string>
+    <string name="uploadsuccess">Upload Success</string>
+    <string name="uploadfailure">Upload Failure</string>
+    <string name="uploading">Uploading</string>
     <string name="downfailed">downfailed</string>
     <string name="to_be_allocated">to be allocated</string>
     <string name="weight">weight(kg)</string>
@@ -897,6 +898,8 @@ Please input the cell phone number to add the contact
     <string name="meeting_pause_tips">You can continue to browse the document while the meeting is suspended or take a break</string>
     <string name="the_content_can_not_be_blank">the content can not be blank</string>
     <string name="no_document">No document</string>
+    <string name="error_syncing_documents">Error syncing documents</string>
+
     <!--音想-->
     <!--我-->
     <string name="stay_tuned">Stay tuned</string>

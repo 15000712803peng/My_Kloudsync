@@ -49,7 +49,7 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 	public Dialog mPopupWindow;
 	private View view;
 	private ImageView close;
-	private TextView addaudio, addrecord;
+	private TextView addaudio;
 	//    private CheckBox checkBox1, checkBox2;
 	private EditText edittext;
 
@@ -64,14 +64,14 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 	private RelativeLayout backgroundAudioLayout;
 	private ImageView moreOpation,morerecordnewvoice;
 	private LinearLayout recordMyVoiceLayout;
+	private LinearLayout uploadsoundfilell;
+	private LinearLayout uploadsoundfile;
+	private LinearLayout selectsoundfile;
 	private RelativeLayout voiceItemLayout;
-	private LinearLayout addVoiceLayout;
 	private LinearLayout ishiddenll;
 	private CheckBox isPublic;
 	private TextView tv_bg_audio, tv_record_voice;
 	private SharedPreferences sharedPreferences;
-
-
 
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
@@ -148,7 +148,7 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 		tv_record_voice = (TextView) view.findViewById(R.id.tv_record_voice);
 		tv_bg_audio = (TextView) view.findViewById(R.id.tv_bg_audio);
 		addaudio = (TextView) view.findViewById(R.id.addaudio);
-		addrecord = (TextView) view.findViewById(R.id.addrecord);
+		selectsoundfile = (LinearLayout) view.findViewById(R.id.selectsoundfile);
 		recordname = (TextView) view.findViewById(R.id.recordname);
 		bgname = (TextView) view.findViewById(R.id.bgname);
 		backgroundAudioLayout = (RelativeLayout) view.findViewById(R.id.layout_background_audio);
@@ -165,16 +165,19 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 		checkBox = (CheckBox) view.findViewById(R.id.checkboxx);
 		isPublic = (CheckBox) view.findViewById(R.id.isPublic);
 		recordMyVoiceLayout = view.findViewById(R.id.layout_record_my_voice);
-		addVoiceLayout = view.findViewById(R.id.layout_add_voice);
+		uploadsoundfilell = view.findViewById(R.id.uploadsoundfilell);
+		uploadsoundfile = view.findViewById(R.id.uploadsoundfile);
 		ishiddenll = view.findViewById(R.id.ishiddenll);
 		recordMyVoiceLayout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				checkBox.setChecked(!checkBox.isChecked());
 				if (checkBox.isChecked()) {
-					addrecord.setVisibility(View.INVISIBLE);
+					uploadsoundfilell.setVisibility(View.INVISIBLE);
+					recordMyVoiceLayout.setVisibility(View.VISIBLE);
 				} else {
-					addrecord.setVisibility(View.VISIBLE);
+					uploadsoundfilell.setVisibility(View.VISIBLE);
+					recordMyVoiceLayout.setVisibility(View.INVISIBLE);
 				}
 				setCreateSyncText();
 			}
@@ -183,9 +186,10 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 
 		recordsync = (TextView) view.findViewById(R.id.recordsync);
 		recordsync.setOnClickListener(this);
+		uploadsoundfile.setOnClickListener(this);
 		close.setOnClickListener(this);
 		addaudio.setOnClickListener(this);
-		addrecord.setOnClickListener(this);
+		selectsoundfile.setOnClickListener(this);
 		setCreateSyncText();
 //        recordsync.setText("Sync");
 		mPopupWindow = new Dialog(mContext, R.style.my_dialog);
@@ -247,21 +251,21 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 	}
 
 	public void setRecordBean1(final SoundTrack soundTrack) {
+
 		morerecordnewvoice.setVisibility(View.VISIBLE);
-		addrecord.setVisibility(View.INVISIBLE);
-		addVoiceLayout.setVisibility(View.INVISIBLE);
+		uploadsoundfilell.setVisibility(View.INVISIBLE);
+		recordMyVoiceLayout.setVisibility(View.INVISIBLE);
+
 		ServiceInterfaceTools.getinstance().getSoundItem(AppConfig.URL_PUBLIC + "Soundtrack/Item?soundtrackID=" + soundTrack.getSoundtrackID(),
 				ServiceInterfaceTools.GETSOUNDITEM,
 				new ServiceInterfaceListener() {
 					@Override
 					public void getServiceReturnData(Object object) {
 						SoundtrackBean soundtrackBean = (SoundtrackBean) object;
-
 						recordfavorite = new Document();
 						recordfavorite.setAttachmentID(soundtrackBean.getBackgroudMusicAttachmentID() + "");
 						recordfavorite.setItemID("0");
 						recordfavorite.setTitle(soundTrack.getTitle());
-
 						voiceItemLayout.setVisibility(View.VISIBLE);
 						recordname.setText(recordfavorite.getTitle());
 						setCreateSyncText();
@@ -272,8 +276,9 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 
 	public void setRecordBean(Document favorite) {
 		this.recordfavorite = favorite;
-		addrecord.setVisibility(View.INVISIBLE);
-		addVoiceLayout.setVisibility(View.INVISIBLE);
+		uploadsoundfilell.setVisibility(View.INVISIBLE);
+		recordMyVoiceLayout.setVisibility(View.INVISIBLE);
+
 		if (recordfavorite != null) {
 			voiceItemLayout.setVisibility(View.VISIBLE);
 			recordname.setText(recordfavorite.getTitle());
@@ -433,7 +438,7 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 			case R.id.addaudio:
 				mFavoritePoPListener.addaudio(0);
 				break;
-			case R.id.addrecord:
+			case R.id.selectsoundfile:
 				mFavoritePoPListener.addrecord(1);
 				break;
 			case R.id.cancel:
@@ -448,6 +453,10 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 				break;
 			case R.id.morerecordnewvoice:
 				showOperationsNewPop(morerecordnewvoice);
+				break;
+			case R.id.uploadsoundfile:
+				checkBox.setChecked(true);
+				delete2();
 				break;
 			default:
 				break;
@@ -523,11 +532,13 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 	private void delete2() {
 		recordfavorite = new Document();
 		voiceItemLayout.setVisibility(View.INVISIBLE);
-		addVoiceLayout.setVisibility(View.VISIBLE);
 		if (checkBox.isChecked()) {
-			addrecord.setVisibility(View.INVISIBLE);
+			uploadsoundfilell.setVisibility(View.INVISIBLE);
+			recordMyVoiceLayout.setVisibility(View.VISIBLE);
 		} else {
-			addrecord.setVisibility(View.VISIBLE);
+			uploadsoundfilell.setVisibility(View.VISIBLE);
+			recordMyVoiceLayout.setVisibility(View.INVISIBLE);
+
 		}
 		setCreateSyncText();
 	}

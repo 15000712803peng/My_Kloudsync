@@ -77,6 +77,7 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
+import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManagerConfiguration;
 import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -5978,6 +5979,9 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 s3.setRegion(com.amazonaws.regions.Region.getRegion(ud.getRegionName()));
                 com.amazonaws.services.s3.model.PutObjectRequest request = new com.amazonaws.services.s3.model.PutObjectRequest(ud.getBucketName(), MD5Hash, mfile);
                 TransferManager tm = new TransferManager(s3);
+                TransferManagerConfiguration transferManagerConfiguration=new TransferManagerConfiguration();
+                transferManagerConfiguration.setMultipartUploadThreshold(1*100*1024);
+                tm.setConfiguration(transferManagerConfiguration);
                 request.setCannedAcl(CannedAccessControlList.PublicRead);
                 request.setGeneralProgressListener(new ProgressListener() {
                     @Override
@@ -6068,7 +6072,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
                 MD5Hash, path, recordDirectory);
         //设置false,取消时，不删除断点记录文件，如果不进行设置，默认true，是会删除断点记录文件，下次再进行上传时会重新上传。
         request.setDeleteUploadOnCancelling(false);
-        request.setPartSize(1 * 1024 * 1024);
+        request.setPartSize(1 * 100* 1024);
         // 设置上传过程回调
         request.setProgressCallback(new OSSProgressCallback<ResumableUploadRequest>() {
             @Override

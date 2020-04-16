@@ -739,7 +739,7 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
         });
     }
     private void  uploadMp3file(String path){
-        AddDocumentTool.addDocumentToFavoriteMp3(this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
+        AddDocumentTool.addDocumentToFavoriteMp3(this, path,0, new DocumentUploadTool.DocUploadDetailLinstener() {
             @Override
             public void uploadStart() {
                 runOnUiThread(new Runnable() {
