@@ -962,6 +962,8 @@
 
     <string name="my_contact">我的联系人</string>
 
+    <string name="click_help">点击这里前往帮助中心，查看详细步骤》</string>
+
     <string-array name="time_duration">
         <item>15分钟</item>
         <item>30分钟</item>
