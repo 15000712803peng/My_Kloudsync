@@ -985,4 +985,6 @@
     <string name="meeting">会议</string>
     <string name="Open">打开</string>
 
+    <string name="phone_needs">手机号需要8到11位</string>
+
 </resources>
