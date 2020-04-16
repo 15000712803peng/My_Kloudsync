@@ -322,20 +322,20 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     @Bind(R.id.layout_waiting_meeting)
     RelativeLayout waitingMeetingLayout;
-	AgoraCameraAdapter cameraAdapter;
-	FullAgoraCameraAdapter fullCameraAdapter;
-	Gson gson;
-	private SharedPreferences sharedPreferences;
-	private SurfaceView surfaceView;
-	private MeetingSettingCache meetingSettingCache;
-	private boolean mIsMeetingPause;
+    AgoraCameraAdapter cameraAdapter;
+    FullAgoraCameraAdapter fullCameraAdapter;
+    Gson gson;
+    private SharedPreferences sharedPreferences;
+    private SurfaceView surfaceView;
+    private MeetingSettingCache meetingSettingCache;
+    private boolean mIsMeetingPause;
 
     private Handler rejoinHandler;
     private static final int MESSAGE_JOIN_TIME = 1;
     private int joinTime = 0;
     private EventSendJoinMeetingMessage joinMeetingMessage;
-	private String mTipsText;
-	private long mPauseDuration;
+    private String mTipsText;
+    private long mPauseDuration;
     private volatile boolean mSwitchShowDocument;
 
     @Override
@@ -713,7 +713,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             soundtrackPlayManager.followClose();
         }
 
-	    MeetingPauseManager.getInstance(this, meetingConfig).destory();
+        MeetingPauseManager.getInstance(this, meetingConfig).destory();
         if (meetingConfig != null) {
             meetingConfig.reset();
         }
@@ -818,12 +818,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         web.loadUrl("javascript:ShowPDF('" + page.getShowingPath() + "'," + (page.getPageNumber()) + ",''," + meetingConfig.getDocument().getAttachmentID() + "," + false + ")", null);
         web.loadUrl("javascript:Record()", null);
-	    if (bottomFilePop != null && bottomFilePop.isShowing()) {
-		    bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
-		    bottomFilePop.removeTempDoc();
-	    } else {
-		    menuIcon.setVisibility(View.VISIBLE);
-	    }
+        if (bottomFilePop != null && bottomFilePop.isShowing()) {
+            bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
+            bottomFilePop.removeTempDoc();
+        } else {
+            menuIcon.setVisibility(View.VISIBLE);
+        }
     }
 
     private boolean isAudience() {
@@ -1337,9 +1337,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
                 //{"action":"MEETING_STATUS","retCode":"1","meetingId":"M11","status":"1","changeNumber":"3"}
                 break;
-	        case SocketMessageManager.MEETING_CHANGE:
-		        handleMessageMeetingChange(socketMessage.getData());
-		        break;
+            case SocketMessageManager.MEETING_CHANGE:
+                handleMessageMeetingChange(socketMessage.getData());
+                break;
         }
     }
 
@@ -1436,7 +1436,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             // ---处理presenter
             if (!TextUtils.isEmpty(helloMessage.getCurrentPresenter()) && !TextUtils.isEmpty(AppConfig.UserID)) {
                 meetingConfig.justSetPresenterId(helloMessage.getCurrentPresenter());
-	            if (helloMessage.getCurrentPresenter().equals(AppConfig.UserID) || mIsMeetingPause) {
+                if (helloMessage.getCurrentPresenter().equals(AppConfig.UserID) || mIsMeetingPause) {
                     web.loadUrl("javascript:ShowToolbar(" + true + ")", null);
                     web.loadUrl("javascript:Record()", null);
                     noteWeb.loadUrl("javascript:ShowToolbar(" + true + ")", null);
@@ -1493,7 +1493,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             // handle soundtrack
 
             String audioData = helloMessage.getPlayAudioData();
-	        if (!meetingConfig.getPresenterId().equals(AppConfig.UserID) && !mIsMeetingPause) {
+            if (!meetingConfig.getPresenterId().equals(AppConfig.UserID) && !mIsMeetingPause) {
                 if (TextUtils.isEmpty(audioData)) {
                     // 没有soundtrack的信息
                     if (soundtrackPlayLayout.getVisibility() == View.VISIBLE) {
@@ -1533,25 +1533,25 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
             }
 
-	        /*会议暂停与恢复*/
-	        if (helloMessage.isIfPause() && !mIsMeetingPause) {
-		        mIsMeetingPause = helloMessage.isIfPause();
-		        meetingConfig.setMeetingPause(mIsMeetingPause);
-		        String tipsText = Tools.getFromBase64(helloMessage.getPauseMsg());
-		        long pauseDuration = helloMessage.getPauseDuration();
-		        MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo(tipsText);
-		        MeetingPauseManager.getInstance(DocAndMeetingActivity.this, meetingConfig).setPauseTime(pauseDuration);
-		        MeetingPauseManager.getInstance(this, meetingConfig).showBigLayout();
-		        handleWebUISetting();
-	        } else if (!helloMessage.isIfPause() && mIsMeetingPause) {
-		        mIsMeetingPause = helloMessage.isIfPause();
-		        meetingConfig.setMeetingPause(mIsMeetingPause);
-		        MeetingPauseManager.getInstance(this, meetingConfig).hide();
-		        handleWebUISetting();
-		        if (bottomFilePop != null && bottomFilePop.isShowing()) {
-			        bottomFilePop.hide();
-		        }
-	        }
+            /*会议暂停与恢复*/
+            if (helloMessage.isIfPause() && !mIsMeetingPause) {
+                mIsMeetingPause = helloMessage.isIfPause();
+                meetingConfig.setMeetingPause(mIsMeetingPause);
+                String tipsText = Tools.getFromBase64(helloMessage.getPauseMsg());
+                long pauseDuration = helloMessage.getPauseDuration();
+                MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo(tipsText);
+                MeetingPauseManager.getInstance(DocAndMeetingActivity.this, meetingConfig).setPauseTime(pauseDuration);
+                MeetingPauseManager.getInstance(this, meetingConfig).showBigLayout();
+                handleWebUISetting();
+            } else if (!helloMessage.isIfPause() && mIsMeetingPause) {
+                mIsMeetingPause = helloMessage.isIfPause();
+                meetingConfig.setMeetingPause(mIsMeetingPause);
+                MeetingPauseManager.getInstance(this, meetingConfig).hide();
+                handleWebUISetting();
+                if (bottomFilePop != null && bottomFilePop.isShowing()) {
+                    bottomFilePop.hide();
+                }
+            }
         }
 
     }
@@ -1783,67 +1783,67 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     private void delayLoadMembersAndRefresh(final AgoraMember agoraMember) {
 
-	    Observable.just("delay_load").delay(500, TimeUnit.MILLISECONDS).observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
-		    @Override
-		    public void accept(String s) throws Exception {
-			    JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.MEMBER);
-			    if (result.has("code")) {
-				    if (result.getInt("code") == 0) {
-					    Log.e("delay_load", "one:" + agoraMember);
-					    List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
-					    }.getType());
-					    if (members != null) {
-						    for (MeetingMember member : members) {
+        Observable.just("delay_load").delay(500, TimeUnit.MILLISECONDS).observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.MEMBER);
+                if (result.has("code")) {
+                    if (result.getInt("code") == 0) {
+                        Log.e("delay_load", "one:" + agoraMember);
+                        List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
+                        }.getType());
+                        if (members != null) {
+                            for (MeetingMember member : members) {
 
-							    if (member.getRole() == 2) {
-								    meetingConfig.setMeetingHostId(member.getUserId() + "");
-							    }
+                                if (member.getRole() == 2) {
+                                    meetingConfig.setMeetingHostId(member.getUserId() + "");
+                                }
 
-							    if (member.getPresenter() == 1) {
-								    meetingConfig.setPresenterId(member.getUserId() + "");
-								    meetingConfig.setPresenterSessionId(member.getSessionId() + "");
-							    }
-						    }
-						    Collections.sort(members);
-						    meetingConfig.setMeetingMembers(members);
-					    }
+                                if (member.getPresenter() == 1) {
+                                    meetingConfig.setPresenterId(member.getUserId() + "");
+                                    meetingConfig.setPresenterSessionId(member.getSessionId() + "");
+                                }
+                            }
+                            Collections.sort(members);
+                            meetingConfig.setMeetingMembers(members);
+                        }
 
-					    for (MeetingMember member : meetingConfig.getMeetingMembers()) {
-						    if ((member.getUserId() + "").equals(AppConfig.UserID)) {
-							    agoraMember.setUserName(member.getUserName());
-							    agoraMember.setIconUrl(member.getAvatarUrl());
-							    Log.e("check_audio", "audio_status1:" + member.getMicrophoneStatus());
-							    agoraMember.setMuteVideo(member.getCameraStatus() != 2);
-							    agoraMember.setMuteAudio(member.getMicrophoneStatus() != 2);
-							    agoraMember.setIsMember(1);
-						    }
-					    }
-					    Log.e("delay_load", "two:" + agoraMember);
-					    if (cameraAdapter != null) {
-						    Log.e("delay_load", "three");
-						    Observable.just("refresh_main").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
-							    @Override
-							    public void accept(String s) throws Exception {
-								    cameraAdapter.refreshMyAgoraStatus(agoraMember);
-							    }
-						    });
+                        for (MeetingMember member : meetingConfig.getMeetingMembers()) {
+                            if ((member.getUserId() + "").equals(AppConfig.UserID)) {
+                                agoraMember.setUserName(member.getUserName());
+                                agoraMember.setIconUrl(member.getAvatarUrl());
+                                Log.e("check_audio", "audio_status1:" + member.getMicrophoneStatus());
+                                agoraMember.setMuteVideo(member.getCameraStatus() != 2);
+                                agoraMember.setMuteAudio(member.getMicrophoneStatus() != 2);
+                                agoraMember.setIsMember(1);
+                            }
+                        }
+                        Log.e("delay_load", "two:" + agoraMember);
+                        if (cameraAdapter != null) {
+                            Log.e("delay_load", "three");
+                            Observable.just("refresh_main").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                                @Override
+                                public void accept(String s) throws Exception {
+                                    cameraAdapter.refreshMyAgoraStatus(agoraMember);
+                                }
+                            });
 
-					    }
-				    }
-			    }
-		    }
-	    }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
-		    @Override
-		    public void accept(String s) throws Exception {
-			    if (mIsMeetingPause) {
-				    MeetingPauseManager pauseManager = MeetingPauseManager.getInstance(DocAndMeetingActivity.this, meetingConfig);
-				    pauseManager.setTipInfo(mTipsText);
+                        }
+                    }
+                }
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                if (mIsMeetingPause) {
+                    MeetingPauseManager pauseManager = MeetingPauseManager.getInstance(DocAndMeetingActivity.this, meetingConfig);
+                    pauseManager.setTipInfo(mTipsText);
 //                    pauseManager.setPauseTime(mPauseDuration);
-				    pauseManager.showBigLayout();
-				    handleWebUISetting();
-			    }
-		    }
-	    }).subscribe();
+                    pauseManager.showBigLayout();
+                    handleWebUISetting();
+                }
+            }
+        }).subscribe();
     }
 
     private EventShareScreen shareScreen;
@@ -2336,14 +2336,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         handleWebUISetting();
     }
 
-	/**
-	 * 显示或隐藏web的按钮
-	 */
-	private void handleWebUISetting() {
+    /**
+     * 显示或隐藏web的按钮
+     */
+    private void handleWebUISetting() {
         if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
-		if (isPresenter() || mIsMeetingPause) {
+        if (isPresenter() || mIsMeetingPause) {
             // show left right arrow
             web.loadUrl("javascript:ShowToolbar(" + true + ")", null);
             web.loadUrl("javascript:Record()", null);
@@ -2926,7 +2926,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (meetingConfig.getCurrentDocumentPage() != null) {
             meetingConfig.getCurrentDocumentPage().setPageNumber(pageNum);
         }
-	    /*是否直接播放音想*/
+        /*是否直接播放音想*/
         if (mSoundtrackBean != null) {
             SoundTrack soundTrack = new SoundTrack();
             soundTrack.setSoundtrackID(mSoundtrackBean.getSoundtrackID());
@@ -2967,12 +2967,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         return false;
     }
 
-	/**
-	 * 发送翻页,产生的笔记数据消息
-	 *
-	 * @param actions
-	 */
-	private void notifyMyWebActions(String actions) {
+    /**
+     * 发送翻页,产生的笔记数据消息
+     *
+     * @param actions
+     */
+    private void notifyMyWebActions(String actions) {
         if (messageManager == null) {
             messageManager = SocketMessageManager.getManager(this);
             messageManager.registerMessageReceiver();
@@ -2989,7 +2989,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
         } else {
             Log.e("notifyMyWebActions", "role:" + meetingConfig.getRole());
-	        if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())|| mIsMeetingPause) {
+            if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())|| mIsMeetingPause) {
                 return;
             }
             messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
@@ -3017,17 +3017,17 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
     }
 
-	/**
-	 * 发送切换文档消息
-	 */
-	private void notifyDocumentChanged() {
+    /**
+     * 发送切换文档消息
+     */
+    private void notifyDocumentChanged() {
         if (meetingConfig.getType() != MeetingType.MEETING) {
             if (messageManager != null) {
                 messageManager.sendMessage_DocumentShowed(meetingConfig);
             }
         } else {
             if (!TextUtils.isEmpty(meetingConfig.getPresenterSessionId())) {
-	            if (AppConfig.UserID.equals(meetingConfig.getPresenterId())&& !mIsMeetingPause) {
+                if (AppConfig.UserID.equals(meetingConfig.getPresenterId())&& !mIsMeetingPause) {
                     if (meetingConfig.isInRealMeeting()) {
                         if (messageManager != null) {
                             messageManager.sendMessage_DocumentShowed(meetingConfig);
@@ -3895,7 +3895,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private UploadFileDialog uploadFileDialog;
 
     private void uploadMp3file(String path) {
-        AddDocumentTool.addDocumentToFavoriteMp3(this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
+        AddDocumentTool.addDocumentToFavoriteMp3(this, path, meetingConfig.getDocument().getAttachmentID(),new DocumentUploadTool.DocUploadDetailLinstener() {
             @Override
             public void uploadStart() {
                 runOnUiThread(new Runnable() {
@@ -4546,29 +4546,29 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private void showCreateAccompanyDialog() {
         accompanyCreatePopup = new AccompanyCreatePopup();
         accompanyCreatePopup.getPopwindow(DocAndMeetingActivity.this);
-	    accompanyCreatePopup.setFavoritePoPListener(new AccompanyCreatePopup.FavoritePoPListener() {
-		    @Override
-		    public void addrecord(int ii) {
-			    isrecord = ii;
-			    openAccompanyMusicPop(meetingConfig.getRole());
-		    }
+        accompanyCreatePopup.setFavoritePoPListener(new AccompanyCreatePopup.FavoritePoPListener() {
+            @Override
+            public void addrecord(int ii) {
+                isrecord = ii;
+                openAccompanyMusicPop(meetingConfig.getRole());
+            }
 
-		    @Override
-		    public void addaudio(int ii) {
-			    isrecord = ii;
-			    openAccompanyMusicPop(meetingConfig.getRole());
-		    }
+            @Override
+            public void addaudio(int ii) {
+                isrecord = ii;
+                openAccompanyMusicPop(meetingConfig.getRole());
+            }
 
-		    @Override
-		    public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean) {  //录制音响
-			    soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
-			    soundtrackRecordManager.setInitParams(checked, soundtrackBean, audiosyncll, web, timeshow, meetingConfig);
-		    }
-	    });
-	    if (meetingConfig.getDocument() == null) {
-		    ToastUtils.show(this, R.string.no_document);
-		    return;
-	    }
+            @Override
+            public void syncorrecord(boolean checked, SoundtrackBean soundtrackBean) {  //录制音响
+                soundtrackRecordManager = SoundtrackRecordManager.getManager(DocAndMeetingActivity.this);
+                soundtrackRecordManager.setInitParams(checked, soundtrackBean, audiosyncll, web, timeshow, meetingConfig);
+            }
+        });
+        if (meetingConfig.getDocument() == null) {
+            ToastUtils.show(this, R.string.no_document);
+            return;
+        }
         accompanyCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
     }
 
@@ -4851,19 +4851,19 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     //------Camera vedio options
 
-	/**
-	 * 所有成员头像模式
-	 * @param member
-	 */
-	@Override
-	public void onCameraFrameClick(AgoraMember member) {
-		if (mIsMeetingPause)return;
-		if(!isPresenter()){
-			return;
-		}
-		handleFullScreenCamera(cameraAdapter);
+    /**
+     * 所有成员头像模式
+     * @param member
+     */
+    @Override
+    public void onCameraFrameClick(AgoraMember member) {
+        if (mIsMeetingPause)return;
+        if(!isPresenter()){
+            return;
+        }
+        handleFullScreenCamera(cameraAdapter);
 //        showAgoraFull(member);
-	}
+    }
 
     private void handleFullScreenCamera(AgoraCameraAdapter cameraAdapter) {
         if (cameraAdapter == null || cameraAdapter.getUsers().size() == 0) {
@@ -5252,9 +5252,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     }
 
                     if (dataJson.has("lessonId")) {
-	                    if (Integer.parseInt(dataJson.getString("lessonId")) > 0) {
-		                    meetingConfig.setLessionId(Integer.parseInt(dataJson.getString("lessonId")));
-	                    }
+                        if (Integer.parseInt(dataJson.getString("lessonId")) > 0) {
+                            meetingConfig.setLessionId(Integer.parseInt(dataJson.getString("lessonId")));
+                        }
                     }
 
                     Log.e("JOIN_MEETING", "join_meeting_message:" + documents);
@@ -5308,14 +5308,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                                 }
                             }
                             //                            delayRefreshAgoraList();
-	                        if (joinMeetingMessage.isIfPause()) {//会议是暂停的
-		                        mIsMeetingPause = true;
+                            if (joinMeetingMessage.isIfPause()) {//会议是暂停的
+                                mIsMeetingPause = true;
                                 meetingConfig.setMeetingPause(mIsMeetingPause);
-		                        mTipsText = Tools.getFromBase64(joinMeetingMessage.getPauseMsg());
-		                        mPauseDuration = joinMeetingMessage.getPauseDuration();
-		                        MeetingPauseManager.getInstance(DocAndMeetingActivity.this, meetingConfig).setPauseTime(mPauseDuration);
-		                        MeetingPauseManager.getInstance(DocAndMeetingActivity.this, meetingConfig).startMeetingPauseTime();
-	                        }
+                                mTipsText = Tools.getFromBase64(joinMeetingMessage.getPauseMsg());
+                                mPauseDuration = joinMeetingMessage.getPauseDuration();
+                                MeetingPauseManager.getInstance(DocAndMeetingActivity.this, meetingConfig).setPauseTime(mPauseDuration);
+                                MeetingPauseManager.getInstance(DocAndMeetingActivity.this, meetingConfig).startMeetingPauseTime();
+                            }
                         }
 
                         MeetingKit.getInstance().requestMeetingMembers(meetingConfig, false);
@@ -5335,61 +5335,61 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
     }
 
-	/**
-	 * 暂停,恢复会议,更新暂停会议信息
-	 *
-	 * @param data
-	 */
-	private void handleMessageMeetingChange(JSONObject data) {
-		if (data == null) return;
-		MeetingChangeBean meetingChangeBean = gson.fromJson(data.toString(), MeetingChangeBean.class);
-		if (meetingChangeBean.getRetCode() == null) return;
-		if (meetingChangeBean.getRetCode().equals("0")) {
-			MeetingChangeBean.RetDataBean meetingChangeRetData = meetingChangeBean.getRetData();
-			int type = meetingChangeRetData.getType();
-			switch (type) {
-				case 1://暂停会议
-					mIsMeetingPause = true;
+    /**
+     * 暂停,恢复会议,更新暂停会议信息
+     *
+     * @param data
+     */
+    private void handleMessageMeetingChange(JSONObject data) {
+        if (data == null) return;
+        MeetingChangeBean meetingChangeBean = gson.fromJson(data.toString(), MeetingChangeBean.class);
+        if (meetingChangeBean.getRetCode() == null) return;
+        if (meetingChangeBean.getRetCode().equals("0")) {
+            MeetingChangeBean.RetDataBean meetingChangeRetData = meetingChangeBean.getRetData();
+            int type = meetingChangeRetData.getType();
+            switch (type) {
+                case 1://暂停会议
+                    mIsMeetingPause = true;
                     meetingConfig.setMeetingPause(mIsMeetingPause);
 //                    MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo("");
                     MeetingPauseManager.getInstance(this, meetingConfig).showBigLayout();
-					handleWebUISetting();
+                    handleWebUISetting();
                     break;
-				case 2://恢复会议
-					mIsMeetingPause = false;
+                case 2://恢复会议
+                    mIsMeetingPause = false;
                     meetingConfig.setMeetingPause(mIsMeetingPause);
                     MeetingPauseManager.getInstance(this, meetingConfig).hide();
-					handleWebUISetting();
-					if (bottomFilePop != null && bottomFilePop.isShowing()) {
-						bottomFilePop.hide();
-					}
+                    handleWebUISetting();
+                    if (bottomFilePop != null && bottomFilePop.isShowing()) {
+                        bottomFilePop.hide();
+                    }
                     break;
-				case 3://更新暂停信息
-					String tipsText = meetingChangeRetData.getValue();
-					if (tipsText == null && TextUtils.isEmpty(tipsText)) return;
-					tipsText = Tools.getFromBase64(tipsText);
-					MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo(tipsText);
-					break;
-			}
-		}
-	}
+                case 3://更新暂停信息
+                    String tipsText = meetingChangeRetData.getValue();
+                    if (tipsText == null && TextUtils.isEmpty(tipsText)) return;
+                    tipsText = Tools.getFromBase64(tipsText);
+                    MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo(tipsText);
+                    break;
+            }
+        }
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void eventMeetingPauseOrResume(MeetingPauseOrResumBean meetingPauseOrResumBean) {
         mIsMeetingPause = meetingPauseOrResumBean.isPause();
         meetingConfig.setMeetingPause(mIsMeetingPause);
-	    if (mIsMeetingPause) {
-		    hideAgoraFull();
-		    if (meetingConfig.getSystemType() == AppConfig.COMPANY_MODEL) {//如果是会议模式
-			    MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo(getString(R.string.meeting_pause_tips));
-		    } else {//如果是课堂模式
-			    MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo(getString(R.string.class_pause_tips));
-		    }
-		    MeetingPauseManager.getInstance(this, meetingConfig).showBigLayout();
-	    } else {
-		    MeetingPauseManager.getInstance(this, meetingConfig).hide();
-	    }
-	    handleWebUISetting();
+        if (mIsMeetingPause) {
+            hideAgoraFull();
+            if (meetingConfig.getSystemType() == AppConfig.COMPANY_MODEL) {//如果是会议模式
+                MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo(getString(R.string.meeting_pause_tips));
+            } else {//如果是课堂模式
+                MeetingPauseManager.getInstance(this, meetingConfig).setTipInfo(getString(R.string.class_pause_tips));
+            }
+            MeetingPauseManager.getInstance(this, meetingConfig).showBigLayout();
+        } else {
+            MeetingPauseManager.getInstance(this, meetingConfig).hide();
+        }
+        handleWebUISetting();
     }
 
 
