@@ -252,7 +252,6 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 
 	public void setRecordBean1(final SoundTrack soundTrack) {
 
-
 		morerecordnewvoice.setVisibility(View.VISIBLE);
 		uploadsoundfilell.setVisibility(View.INVISIBLE);
 		recordMyVoiceLayout.setVisibility(View.INVISIBLE);
@@ -457,8 +456,7 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 				break;
 			case R.id.uploadsoundfile:
 				checkBox.setChecked(true);
-				uploadsoundfilell.setVisibility(View.INVISIBLE);
-				recordMyVoiceLayout.setVisibility(View.VISIBLE);
+				delete2();
 				break;
 			default:
 				break;
