@@ -958,7 +958,7 @@ Please input the cell phone number to add the contact
     <string name="hello_friend_summary">say hello</string>
     <string name="join_compnay">join a company</string>
     <string name="input_invite_code">Please type in company invite code</string>
-    <string name="_join">Join</string>
+    <string name="_join">Join Meeting</string>
     <string name="hint_input_invite_code">Please type in company invite code</string>
     <string name="scan_tv">Scanning TV devices</string>
     <string name="_meeting_id">Meeting id:</string>
