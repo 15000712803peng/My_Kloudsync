@@ -2988,6 +2988,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
 
         } else {
+            if (meetingConfig.isSyncing()) {
+                if (!TextUtils.isEmpty(actions)) {
+                    SoundtrackRecordManager.getManager(this).recordDocumentAction(actions);
+                }
+            }
             Log.e("notifyMyWebActions", "role:" + meetingConfig.getRole());
             if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())|| mIsMeetingPause) {
                 return;
