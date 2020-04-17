@@ -186,8 +186,11 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 	}
 
 
+	private MeetingConfig mMeetingConfig;
+
 	public void getData(final MeetingConfig meetingConfig) {
 		selectPosition = -1;
+		this.mMeetingConfig=meetingConfig;
 		LoginGet loginGet = new LoginGet();
 		loginGet.setMyFavoritesGetListener(new LoginGet.MyFavoritesGetListener() {
 			@Override
@@ -197,8 +200,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				adapter2.notifyDataSetChanged();
 			}
 		});
-		loginGet.MyFavoriteRequestNew(mContext, 3,0);
-//		loginGet.MyFavoriteRequestNew(mContext, 3,meetingConfig.getDocument().getAttachmentID());
+		loginGet.MyFavoriteRequestNew(mContext, 3,meetingConfig.getDocument().getAttachmentID());
 
 		MeetingConfig meetingConfig1=new MeetingConfig();
 		meetingConfig1.setType(MeetingType.DOC);
@@ -273,7 +275,6 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				}
 				break;
 			case R.id.uploadfile:
-				dismiss();
 				mFavoritePoPListener.uploadFile();
 				break;
 			case R.id.selectfile:
@@ -281,12 +282,28 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				favoritePopup.setFavoritePoPListener(new MyFavoriteVideoPopup.FavoriteVideoPoPListener() {
 					@Override
 					public void save(Document document) {
-//						Toast.makeText(mContext,document.getTitle(),Toast.LENGTH_LONG).show();
+                          getData(mMeetingConfig);
+//						mFavoritePoPListener.save(document);
+//						mPopupWindow.dismiss();
 					}
 				});
-				favoritePopup.StartPop(selectfile);
+				favoritePopup.StartPop(selectfile,mMeetingConfig);
 				break;
 		}
+	}
+
+
+	public void  notifyUploadSuccess(){
+		LoginGet loginGet = new LoginGet();
+		loginGet.setMyFavoritesGetListener(new LoginGet.MyFavoritesGetListener() {
+			@Override
+			public void getFavorite(ArrayList<Document> list) {
+				list2.clear();
+				list2.addAll(list);
+				adapter2.notifyDataSetChanged();
+			}
+		});
+		loginGet.MyFavoriteRequestNew(mContext, 3,mMeetingConfig.getDocument().getAttachmentID());
 	}
 
 

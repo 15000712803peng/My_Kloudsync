@@ -2718,6 +2718,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     private synchronized void changeDocument(MeetingDocument document, int pageNumber) {
         Log.e("changeDocument", "document:" + document);
+        if(meetingConfig.isSyncing()){
+            return;
+        }
         downLoadDocumentPageAndShow(document, pageNumber);
     }
 
@@ -3944,7 +3947,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage(getResources().getString(R.string.create_success)).create().show();
+                        if (uploadFileDialog != null) {
+                            uploadFileDialog.cancel();
+                        }
+                        if(accompanySelectVideoPopup!=null){
+                            accompanySelectVideoPopup.notifyUploadSuccess();
+                        }
                     }
                 });
             }
@@ -4608,7 +4616,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
                 @Override
                 public void uploadFile() {  //上传音频文件
-                    accompanySelectVideoPopup.dismiss();
                     Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
                     intent.putExtra("fileType", 1);
                     startActivityForResult(intent, REQUEST_SELECTED_MP3_FILE);

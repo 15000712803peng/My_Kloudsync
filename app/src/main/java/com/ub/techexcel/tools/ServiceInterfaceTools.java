@@ -162,6 +162,7 @@ public class ServiceInterfaceTools {
     public static final int GETLOGINUSERINFO = 0x1161;
     public static final int UPDATETITLEANDVISIBILITY = 0x1162;
     public static final int UPLOADALLACTIONS = 0x1163;
+    public static final int BINDATTACHMENT = 0x1164;
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
 
@@ -344,6 +345,35 @@ public class ServiceInterfaceTools {
         }).start();
     }
 
+
+    public void bindAttachment(final String url, final int code, final int bindAttachmentId, final Document documentAction, ServiceInterfaceListener serviceInterfaceListener) {
+        putInterface(code, serviceInterfaceListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("itemId", documentAction.getAttachmentID());
+                    jsonObject.put("bindAttachmentId", bindAttachmentId);
+                    JSONObject jsonObject1 = ConnectService.submitDataByJson(url, jsonObject);
+                    Log.e("hhh", url + "   \n  " + jsonObject.toString() + "   \n  " + jsonObject1.toString());
+                    if (jsonObject1.getInt("RetCode") == 0) {
+                        Message msg3 = Message.obtain();
+                        msg3.obj = "";
+                        msg3.what = code;
+                        handler.sendMessage(msg3);
+                    } else {
+                        Message msg3 = Message.obtain();
+                        msg3.what = ERRORMESSAGE;
+                        msg3.obj = jsonObject1.getString("ErrorMessage");
+                        handler.sendMessage(msg3);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
 
     public int uploadAllactions2(final String url, final DocumentAction documentAction) {
         try {

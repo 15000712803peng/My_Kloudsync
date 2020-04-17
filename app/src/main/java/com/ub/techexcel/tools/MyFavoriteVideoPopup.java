@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.info.ConvertingResult;
 import com.kloudsync.techexcel.start.LoginGet;
@@ -112,30 +113,19 @@ public class MyFavoriteVideoPopup {
         view.findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(selectPosition>0&&selectPosition<list.size()){
-                    mFavoritePoPListener.save(list.get(selectPosition));
-
-
-//                    ConvertingResult convertingResult=new ConvertingResult();
-//                    convertingResult.setFileName(fileNamecon);
-//                    convertingResult.setCount(1);
-//                    ServiceInterfaceTools.getinstance().uploadFavoriteNewFile(AppConfig.URL_PUBLIC + "FavoriteAttachment/UploadNewFile",
-//                            ServiceInterfaceTools.UPLOADFAVORITENEWFILE,
-//                            fileName, "", fileHash,
-//                            convertingResult, field, new ServiceInterfaceListener() {
-//                                @Override
-//                                public void getServiceReturnData(Object object) {
-//                                    Log.e("UploadMp3File", "FavoriteAttachment/UploadNewFile");
-//                                    if (uploadDetailLinstener != null) {
-//                                        uploadDetailLinstener.uploadFinished(object);
-//                                    }
-//                                }
-//                            }
-//                    );
-
-
+                if(selectPosition>=0&&selectPosition<list.size()){
+                    final Document document=list.get(selectPosition);
+//                    https://api.peertime.cn/peertime/V1/FavoriteAttachment/BindAttachment?itemId=44904&bindAttachmentId=80484
+                    String url=AppConfig.URL_PUBLIC+"FavoriteAttachment/BindAttachment?itemId="+document.getItemID()+"&bindAttachmentId="+mMeetingConfig.getDocument().getAttachmentID();
+                    ServiceInterfaceTools.getinstance().bindAttachment(url, ServiceInterfaceTools.BINDATTACHMENT, mMeetingConfig.getDocument().getAttachmentID(),document, new ServiceInterfaceListener() {
+                        @Override
+                        public void getServiceReturnData(Object object) {
+                            mPopupWindow.dismiss();
+                            mFavoritePoPListener.save(document);
+                        }
+                    });
                 }
-                mPopupWindow.dismiss();
+
             }
         });
 
@@ -146,8 +136,12 @@ public class MyFavoriteVideoPopup {
 
     }
 
+
+    private MeetingConfig mMeetingConfig;
+
     @SuppressLint("NewApi")
-    public void StartPop(View v) {
+    public void StartPop(View v, MeetingConfig meetingConfig) {
+        this.mMeetingConfig=meetingConfig;
         if (mPopupWindow != null) {
             WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
             if (Tools.isOrientationPortrait((Activity) mContext)) {
