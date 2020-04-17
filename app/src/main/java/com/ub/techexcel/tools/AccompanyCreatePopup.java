@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
@@ -69,7 +70,7 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 	private LinearLayout selectsoundfile;
 	private RelativeLayout voiceItemLayout;
 	private LinearLayout ishiddenll;
-	private CheckBox isPublic;
+	private Switch isPublic;
 	private TextView tv_bg_audio, tv_record_voice;
 	private SharedPreferences sharedPreferences;
 
@@ -163,7 +164,7 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 //        edittext.setSelection(name.length());
 		voiceItemLayout = view.findViewById(R.id.layout_voice_item);
 		checkBox = (CheckBox) view.findViewById(R.id.checkboxx);
-		isPublic = (CheckBox) view.findViewById(R.id.isPublic);
+		isPublic = (Switch) view.findViewById(R.id.isPublic);
 		recordMyVoiceLayout = view.findViewById(R.id.layout_record_my_voice);
 		uploadsoundfilell = view.findViewById(R.id.uploadsoundfilell);
 		uploadsoundfile = view.findViewById(R.id.uploadsoundfile);
@@ -343,7 +344,7 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 					jsonObject.put("EnableRecordNewVoice", checkBox.isChecked() ? 1 : 0);
 					jsonObject.put("SelectedAudioTitle", recordfavorite.getTitle());
 					jsonObject.put("BackgroudMusicTitle", favorite.getTitle());
-					jsonObject.put("IsPublic", 1);
+					jsonObject.put("IsPublic", isPublic.isChecked()?1:0);
 					jsonObject.put("Type", 0);
 					jsonObject.put("LessonID", 0);
 					jsonObject.put("ItemID", 0);

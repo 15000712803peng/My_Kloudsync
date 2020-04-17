@@ -555,9 +555,6 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
 
     @Override
     public void uploadAudioSuccess() {
-        if(uploadAudioPopupdate!=null){
-            uploadAudioPopupdate.setUploadStaus(0);
-        }
         stopRecordNoteAction();
     }
 
@@ -569,6 +566,9 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     }
 
     private void stopRecordNoteAction(){
+        if(uploadAudioPopupdate!=null){
+            uploadAudioPopupdate.setUploadStaus(0);
+        }
         uploadAudioPopupdate.setCanChangTitle();
         if(noteActionList.size()>0){
             final JSONArray jsonArray=new JSONArray();

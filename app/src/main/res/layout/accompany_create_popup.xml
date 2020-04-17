@@ -85,6 +85,38 @@
                 android:textColor="@color/black"
                 android:textSize="14sp" />
 
+
+            <LinearLayout
+                android:visibility="visible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ispublic"
+                    android:textColor="@color/skyblue"
+                    android:textSize="14sp" />
+
+                <Switch
+                    android:layout_marginLeft="8dp"
+                    android:id="@+id/isPublic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:checked="true"
+                    android:thumb="@drawable/thumb"
+                    android:track="@drawable/track" />
+
+
+            </LinearLayout>
+
+
+
             <ImageView
                 android:id="@+id/close"
                 android:visibility="gone"
@@ -112,32 +144,7 @@
             android:orientation="horizontal">
 
 
-            <LinearLayout
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
 
-                <CheckBox
-                    android:id="@+id/isPublic"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:background="@drawable/bg_box"
-                    android:button="@android:color/transparent"
-                    android:checked="false"
-                    android:visibility="visible" />
-
-                <TextView
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:text="@string/ispublic"
-                    android:textColor="@color/skyblue"
-                    android:textSize="14sp" />
-            </LinearLayout>
         </RelativeLayout>
 
         <TextView
