@@ -101,16 +101,16 @@
                     android:textColor="@color/skyblue"
                     android:textSize="14sp" />
 
-                <Switch
+
+                <com.kloudsync.techexcel.view.UISwitchButton
                     android:layout_marginLeft="8dp"
                     android:id="@+id/isPublic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="72dp"
+                    android:layout_height="42dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:checked="true"
-                    android:thumb="@drawable/thumb"
-                    android:track="@drawable/track" />
+                    android:layout_marginRight="12dp"
+                    />
 
 
             </LinearLayout>

@@ -28,6 +28,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.view.UISwitchButton;
 import com.ub.kloudsync.activity.Document;
 import com.ub.techexcel.bean.SoundtrackBean;
 
@@ -70,7 +71,7 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 	private LinearLayout selectsoundfile;
 	private RelativeLayout voiceItemLayout;
 	private LinearLayout ishiddenll;
-	private Switch isPublic;
+	private UISwitchButton isPublic;
 	private TextView tv_bg_audio, tv_record_voice;
 	private SharedPreferences sharedPreferences;
 
@@ -164,7 +165,8 @@ public class AccompanyCreatePopup implements View.OnClickListener , AccompanyMor
 //        edittext.setSelection(name.length());
 		voiceItemLayout = view.findViewById(R.id.layout_voice_item);
 		checkBox = (CheckBox) view.findViewById(R.id.checkboxx);
-		isPublic = (Switch) view.findViewById(R.id.isPublic);
+		isPublic = (UISwitchButton) view.findViewById(R.id.isPublic);
+		isPublic.setChecked(true);
 		recordMyVoiceLayout = view.findViewById(R.id.layout_record_my_voice);
 		uploadsoundfilell = view.findViewById(R.id.uploadsoundfilell);
 		uploadsoundfile = view.findViewById(R.id.uploadsoundfile);
