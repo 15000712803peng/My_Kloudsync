@@ -226,9 +226,9 @@ public class MyFavoriteVideoPopup {
             holder.time.setText(mDatas.get(position).getDuration());
             holder.size.setText(mDatas.get(position).getSize());
             if (selectPosition == position) {
-                holder.imageview.setImageResource(R.drawable.finish_a);
+                holder.imageview.setImageResource(R.drawable.accompany_select);
             } else {
-                holder.imageview.setImageResource(R.drawable.finish_d);
+                holder.imageview.setImageResource(R.drawable.accompany_unselect);
             }
             return convertView;
         }

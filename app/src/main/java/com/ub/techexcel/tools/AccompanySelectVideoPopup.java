@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventSoundtrackList;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.filepicker.FilePickerActivity;
 import com.kloudsync.techexcel.help.SoundtrackManager;
@@ -198,7 +199,11 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 		});
 		loginGet.MyFavoriteRequestNew(mContext, 3,0);
 //		loginGet.MyFavoriteRequestNew(mContext, 3,meetingConfig.getDocument().getAttachmentID());
-		SoundtrackManager.getInstance().requestSoundtrackList(meetingConfig, this);
+
+		MeetingConfig meetingConfig1=new MeetingConfig();
+		meetingConfig1.setType(MeetingType.DOC);
+		meetingConfig1.setDocument(meetingConfig.getDocument());
+		SoundtrackManager.getInstance().requestSoundtrackList(meetingConfig1, this);
 
 	}
 
@@ -345,9 +350,9 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 			holder.time.setText(mDatas.get(position).getDuration());
 			holder.size.setText(mDatas.get(position).getSize());
 			if (selectPosition == position) {
-				holder.imageview.setImageResource(R.drawable.finish_a);
+				holder.imageview.setImageResource(R.drawable.accompany_select);
 			} else {
-				holder.imageview.setImageResource(R.drawable.finish_d);
+				holder.imageview.setImageResource(R.drawable.accompany_unselect);
 			}
 			return convertView;
 		}
@@ -415,9 +420,9 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 			holder.time.setText(mDatas.get(position).getDuration());
 			holder.size.setText(mDatas.get(position).getUserName());
 			if (selectPosition == position) {
-				holder.imageview.setImageResource(R.drawable.finish_a);
+				holder.imageview.setImageResource(R.drawable.accompany_select);
 			} else {
-				holder.imageview.setImageResource(R.drawable.finish_d);
+				holder.imageview.setImageResource(R.drawable.accompany_unselect);
 			}
 			return convertView;
 		}
