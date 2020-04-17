@@ -3787,7 +3787,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             if (suff.equals("mp3")) {
                                 uploadMp3file(path);
                             } else {
-                                Toast.makeText(DocAndMeetingActivity.this, "请上传音频文件", Toast.LENGTH_LONG).show();
+                                Toast.makeText(DocAndMeetingActivity.this, "请选择音频文件上传", Toast.LENGTH_LONG).show();
                             }
                         }
                     }

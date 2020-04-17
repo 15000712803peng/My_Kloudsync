@@ -58,7 +58,7 @@ public class FileAllFragment extends Fragment {
         if(bundle!=null){
             fileType = bundle.getInt("fileType");
             if(fileType==1){  //带音频文件
-                mFileTypes = new String[]{"txt", "text", "doc", "docx", "dotx", "pdf", "ppt", "pptx", "potx", "ppsx", "xls", "xlsx", "xltx", "jpg", "png", "svg", "gif","mp3"};
+                mFileTypes = new String[]{"txt", "text", "doc", "docx", "dotx", "pdf", "ppt", "pptx", "potx", "ppsx", "xls", "xlsx", "xltx", "jpg", "png", "svg", "gif","mp3","m4a"};
             }
         }
         initData();

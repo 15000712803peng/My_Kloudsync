@@ -73,6 +73,7 @@ public class FileScannerTask extends AsyncTask<Void, Void, List<FileEntity>> {
                     + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
                     + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
                     + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
+                    + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
                     + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? ";
             selectionArgs = new String[]{
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension("text"),
@@ -93,6 +94,7 @@ public class FileScannerTask extends AsyncTask<Void, Void, List<FileEntity>> {
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension("png"),
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension("svg"),
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension("gif"),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("m4a"),
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension("mp3")
             };
         }else{
