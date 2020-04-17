@@ -4796,7 +4796,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             @Override
             public void uploadFile(int type) {
-                favoritePopup.dismiss();
                 Intent intent = new Intent(DocAndMeetingActivity.this, FilePickerActivity.class);
                 intent.putExtra("fileType", 1);
                 startActivityForResult(intent, REQUEST_SELECTED_MP3_FILE);
