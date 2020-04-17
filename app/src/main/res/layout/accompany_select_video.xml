@@ -210,7 +210,7 @@
                 <ImageView
                     android:layout_width="18dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/accompany_select"
+                    android:src="@drawable/accompany_select2"
                     android:layout_height="18dp"></ImageView>
                 <TextView
                     android:layout_marginLeft="8dp"

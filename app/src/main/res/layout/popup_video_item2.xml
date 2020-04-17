@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <LinearLayout
@@ -22,15 +23,15 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="20dp"
                 android:id="@+id/imageview"
-                android:layout_width="12dp"
-                android:layout_height="12dp" />
+                android:src="@drawable/accompany_select"
+                android:layout_width="22dp"
+                android:layout_height="22dp" />
 
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginLeft="6dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
                 android:singleLine="true"
                 android:text="name"
                 android:textSize="14sp" />
