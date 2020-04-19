@@ -1210,6 +1210,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         addDocToSpaceDialog = new AddDocToSpaceDialog(this);
         addDocToSpaceDialog.setOnSpaceSelectedListener(this);
         addDocToSpaceDialog.show();
+        AppConfig.wechatFilePath="";
     }
 
     @Override
@@ -1220,6 +1221,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     @Override
     public void onSaveFavorite(String path) {
+        AppConfig.wechatFilePath="";
         AddDocumentTool.addDocumentToFavorite(this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
             @Override
             public void uploadStart() {
