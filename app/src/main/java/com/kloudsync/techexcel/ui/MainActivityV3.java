@@ -1039,6 +1039,11 @@ public class MainActivityV3 extends FragmentActivity implements AddWxDocDialog.O
         addDocToSpaceDialog.show();
     }
 
+    @Override
+    public void onCancel() {
+        AppConfig.wechatFilePath="";
+    }
+
 
     @Override
     public void onSaveFavorite(String path) {

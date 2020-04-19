@@ -86,6 +86,8 @@ public class AppConfig {
     public static String Authorization = "Bearer AtI_QF93Lyo.cwA.2Dg.bOhGvdCxY1Fo_kOs6ronW0cBuutC6ummvuje8QHfbr4";
     public static String conversationId = "3qprO91tUkgFRAZTdb6rPj";
     public static String Sharelive = "https://peertime.cn/live?share=";
+    public static String wechatFilePath = "";
+
 
     public static String RongUserID;
     public static String UserToken;
