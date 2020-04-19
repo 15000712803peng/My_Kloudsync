@@ -1203,6 +1203,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     @Override
     public void onSaveSpace(String path) {
+        AppConfig.wechatFilePath="";
         this.filePath = path;
         if (addDocToSpaceDialog != null) {
             addDocToSpaceDialog.dismiss();
@@ -1210,7 +1211,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         addDocToSpaceDialog = new AddDocToSpaceDialog(this);
         addDocToSpaceDialog.setOnSpaceSelectedListener(this);
         addDocToSpaceDialog.show();
-        AppConfig.wechatFilePath="";
+
     }
 
     @Override
