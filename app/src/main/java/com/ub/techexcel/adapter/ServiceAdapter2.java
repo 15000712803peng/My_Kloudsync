@@ -154,8 +154,8 @@ public class ServiceAdapter2 extends BaseAdapter {
 
         holder.day.setText(day);
         holder.month.setText(getMonth(month));
-        holder.date.setText("Meeting time: "+start + " - " + end + "(" +dd+")" );
-        holder.host.setText("Host: " + bean.getTeacherName());
+        holder.date.setText(context.getString(R.string.meeting_time)+start + " - " + end + "(" +dd+")" );
+        holder.host.setText(context.getString(R.string.host) + bean.getTeacherName());
         holder.attendee.setText(bean.getUserName());
         return convertView;
 

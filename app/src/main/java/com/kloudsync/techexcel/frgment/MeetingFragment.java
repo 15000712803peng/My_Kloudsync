@@ -174,7 +174,9 @@ public class MeetingFragment extends MyFragment {
         } else {
             noMeetingLayout.setVisibility(View.GONE);
             meetingList.setVisibility(View.VISIBLE);
-            meetings = sortBydata(meetings);
+            if(type!=1){
+                meetings = sortBydata(meetings);
+            }
             meetingAdapter = new ServiceAdapter2(getActivity(), meetings, true, 0);
             meetingList.setAdapter(meetingAdapter);
             meetingAdapter.setOnModifyServiceListener(new ServiceAdapter2.OnModifyServiceListener() {

@@ -283,6 +283,8 @@ public class JoinMeetingPopup implements View.OnClickListener {
                                     @Override
                                     public void accept(String s) throws Exception {
                                         hideLoadingDialog();
+                                        mContext.getSharedPreferences(AppConfig.LOGININFO,
+                                                MODE_PRIVATE).edit().putString("join_meeting_room", "").commit();
                                         Toast.makeText(mContext, "输入正确的会议ID", Toast.LENGTH_SHORT).show();
                                     }
                                 });
@@ -295,6 +297,8 @@ public class JoinMeetingPopup implements View.OnClickListener {
                             @Override
                             public void accept(String s) throws Exception {
                                 hideLoadingDialog();
+                                mContext.getSharedPreferences(AppConfig.LOGININFO,
+                                        MODE_PRIVATE).edit().putString("join_meeting_room", "").commit();
                                 Toast.makeText(mContext, "输入正确的会议ID", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -334,7 +338,13 @@ public class JoinMeetingPopup implements View.OnClickListener {
                                 MODE_PRIVATE).edit().putString("join_meeting_room", roomid).commit();
 //                        mActivity.startService()
                         startWBService();
-                        doJoin(roomid);
+                        if (roomid.equals(AppConfig.ClassRoomID)) {
+                            mContext.getSharedPreferences(AppConfig.LOGININFO,
+                                    MODE_PRIVATE).edit().putString("join_meeting_room", "").commit();
+                            Toast.makeText(mContext, "这是您自己的会议ID", Toast.LENGTH_LONG).show();
+                        }else {
+                            doJoin(roomid);
+                        }
                     } else {
                         Toast.makeText(mContext, mContext.getString(R.string.joinroom), Toast.LENGTH_LONG).show();
                     }

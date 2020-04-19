@@ -121,6 +121,7 @@ public class MeetingMoreOperationPopup implements View.OnClickListener {
 
             if (syncRoomBean.getRoleinlesson()!=2){
                 delete.setVisibility(View.GONE);
+                edit.setVisibility(View.GONE);
             }
             mPopupWindow.show();
             mFavoritePoPListener.open();
