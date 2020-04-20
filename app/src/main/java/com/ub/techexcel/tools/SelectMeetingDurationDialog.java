@@ -114,6 +114,12 @@ public class SelectMeetingDurationDialog implements View.OnClickListener {
                 }
             }
         });
+        view.findViewById(R.id.tv_smd_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
         mPopupWindow.setContentView(view);
         mPopupWindow.getWindow().setGravity(Gravity.BOTTOM);
         WindowManager.LayoutParams lp = mPopupWindow.getWindow().getAttributes();

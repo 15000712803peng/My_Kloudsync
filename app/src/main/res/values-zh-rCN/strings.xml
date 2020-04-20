@@ -997,5 +997,6 @@
     <string name="host">主持人:</string>
     <string name="meeting_time">会议时间:</string>
     <string name="attendee">参会人员:</string>
+    <string name="join_meeting">加入会议</string>
 
 </resources>

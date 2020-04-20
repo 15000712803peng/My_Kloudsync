@@ -1029,5 +1029,6 @@ Please input the cell phone number to add the contact
     <string name="host">Host:</string>
     <string name="meeting_time">Meeting time:</string>
     <string name="attendee">Attendee:</string>
+    <string name="join_meeting">Join Meeting</string>
 
 </resources>

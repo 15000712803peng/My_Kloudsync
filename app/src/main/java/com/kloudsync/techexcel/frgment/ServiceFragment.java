@@ -698,7 +698,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
                 break;
             case R.id.search_layout:
                 Intent searchIntnt = new Intent(getActivity(), MeetingSearchResultsActivity.class);
-                searchIntnt.putExtra("type", mViewPager.getCurrentItem());
+                searchIntnt.putExtra("type", mViewPager.getCurrentItem()+1);
                 startActivity(searchIntnt);
                 break;
             case R.id.lin_myroom:
