@@ -287,6 +287,11 @@
     <string name="UserNotExist">用户不存在</string>
 
     <string name="Choice">选择</string>
+
+    <string name="weixinChoice">选择文件保存到</string>
+    <string name="weixinmysave">我的收藏</string>
+    <string name="weixinmydocument">文档空间</string>
+
     <string name="Albums">从文件中选择</string>
 
     <string name="Uploading">更新中</string>

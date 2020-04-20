@@ -282,6 +282,10 @@
     <string name="UserNotExist">User not exist.</string>
 
     <string name="Choice">Choice</string>
+    <string name="weixinChoice">Choice</string>
+    <string name="weixinmysave">Save to My Favorite</string>
+    <string name="weixinmydocument">Save to Document Space</string>
+
     <string name="Albums">From albums</string>
     <string name="Albums2">From Video</string>
     <string name="_Albums">Albums</string>

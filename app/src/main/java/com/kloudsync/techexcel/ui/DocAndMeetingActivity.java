@@ -106,6 +106,8 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
+import com.kloudsync.techexcel.dialog.AddWxDocDialog;
+import com.kloudsync.techexcel.dialog.AddWxDocDialog.OnDocSavedListener;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
@@ -140,6 +142,7 @@ import com.kloudsync.techexcel.help.ShareDocumentDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
+import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.CameraTouchListener;
@@ -626,9 +629,112 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             menuIcon.setEnabled(true);
         }
         Tools.keepSocketServiceOn(this);
+        isUploadWeixinFile();
         super.onResume();
     }
 
+    AddWxDocDialog addWxDocDialog;
+    private void isUploadWeixinFile(){
+        if (!TextUtils.isEmpty(AppConfig.wechatFilePath)) {
+            if (addWxDocDialog != null) {
+                addWxDocDialog.dismiss();
+                addWxDocDialog = null;
+            }
+            addWxDocDialog = new AddWxDocDialog(this, AppConfig.wechatFilePath);
+            addWxDocDialog.setInVisible();
+            addWxDocDialog.setSavedListener(new OnDocSavedListener() {
+                @Override
+                public void onSaveSpace(String path) {
+
+                }
+
+                @Override
+                public void onSaveFavorite(String path) {
+                    AppConfig.wechatFilePath="";
+                    AddDocumentTool.addDocumentToFavorite(DocAndMeetingActivity.this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
+                        @Override
+                        public void uploadStart() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null) {
+                                        uploadFileDialog.cancel();
+                                    }
+                                    uploadFileDialog = new UploadFileDialog(DocAndMeetingActivity.this);
+                                    uploadFileDialog.setTile("uploading");
+                                    uploadFileDialog.show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void uploadFile(final int progress) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                                        uploadFileDialog.setProgress(progress);
+                                    }
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void convertFile(final int progress) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                                        uploadFileDialog.setTile("Converting");
+                                        uploadFileDialog.setProgress(progress);
+                                    }
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void uploadFinished(Object result) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                                        uploadFileDialog.cancel();
+                                        Toast.makeText(getApplicationContext(), "add favorite success", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void uploadError(final String message) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                                        uploadFileDialog.cancel();
+                                    }
+                                    String errorMessage = message;
+                                    if (TextUtils.isEmpty(errorMessage)) {
+                                        errorMessage = getString(R.string.operate_failure);
+                                    }
+                                    Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancel() {
+                    AppConfig.wechatFilePath="";
+                }
+            });
+            addWxDocDialog.show();
+
+        }
+    }
     @SuppressLint("JavascriptInterface")
     private void initWeb() {
 //        web.setZOrderOnTop(false);

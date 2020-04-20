@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:gravity="center"
-            android:text="@string/Choice"
+            android:text="@string/weixinChoice"
             android:textColor="@color/newgrey"
             android:textSize="15sp" />
 
@@ -31,7 +31,7 @@
             android:gravity="center"
             android:background="@drawable/whiteblue_back"
             android:textColor="@color/txt_blue"
-            android:text="Save to Document Space"
+            android:text="@string/weixinmydocument"
             android:textSize="15sp" />
 
         <View
@@ -46,7 +46,7 @@
             android:gravity="center"
             android:background="@drawable/whiteblue_back"
             android:textColor="@color/txt_blue"
-            android:text="Save to My Favorite"
+            android:text="@string/weixinmysave"
             android:textSize="15sp" />
 
     </LinearLayout>
