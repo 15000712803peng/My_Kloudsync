@@ -27,6 +27,8 @@ public class AddWxDocDialog implements View.OnClickListener {
 
         void onSaveFavorite(String path);
 
+        void onCancel();
+
     }
 
     private OnDocSavedListener savedListener;
@@ -89,6 +91,9 @@ public class AddWxDocDialog implements View.OnClickListener {
                 dialog.dismiss();
                 break;
             case R.id.txt_cancel:
+                if (savedListener != null) {
+                    savedListener.onCancel();
+                }
                 dialog.dismiss();
                 break;
             default:

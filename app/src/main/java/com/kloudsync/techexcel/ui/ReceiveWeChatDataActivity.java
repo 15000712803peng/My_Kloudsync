@@ -61,17 +61,18 @@ public class ReceiveWeChatDataActivity extends Activity {
         final Intent lanchIntent = getPackageManager()
                 .getLaunchIntentForPackage(getPackageName());
         lanchIntent.putExtra("wechat_data_path", filePath);
+        AppConfig.wechatFilePath=filePath;
 
         if (!isLogIn) {
-            Log.e("check_dialog", "one");
+            Log.e("check_dialog", "one  "+filePath);
             startActivity(lanchIntent);
 
         } else {
             if (((App) getApplication()).getMainActivityInstance() == null) {
-                Log.e("check_dialog", "two");
+                Log.e("check_dialog", "two  "+filePath);
                 startActivity(lanchIntent);
             } else {
-                Log.e("check_dialog", "three");
+                Log.e("check_dialog", "three  "+ filePath);
                 EventWxFilePath path = new EventWxFilePath();
                 path.setPath(filePath);
                 EventBus.getDefault().post(path);

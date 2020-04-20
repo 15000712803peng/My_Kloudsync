@@ -270,19 +270,35 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         startWBService();
         initWxApi();
 //        GetMyPermission();
-        String wechatFilePath = getIntent().getStringExtra("wechat_data_path");
-        if (!TextUtils.isEmpty(wechatFilePath)) {
+//        String wechatFilePath = getIntent().getStringExtra("wechat_data_path");
+//        Log.e("check_dialog===", wechatFilePath+" ");
+//        if (!TextUtils.isEmpty(wechatFilePath)) {
+//            if (addWxDocDialog != null) {
+//                addWxDocDialog.dismiss();
+//                addWxDocDialog = null;
+//            }
+//            addWxDocDialog = new AddWxDocDialog(this, wechatFilePath);
+//            addWxDocDialog.setSavedListener(this);
+//
+//            addWxDocDialog.show();
+//        }
+        mPresenter = new MainPresenter();
+        mPresenter.attachView(this);
+        mEverPenManger.addListener(mPresenter);
+    }
+
+
+    private void isUploadweixinFile(){
+        if (!TextUtils.isEmpty(AppConfig.wechatFilePath)) {
             if (addWxDocDialog != null) {
                 addWxDocDialog.dismiss();
                 addWxDocDialog = null;
             }
-            addWxDocDialog = new AddWxDocDialog(this, wechatFilePath);
+            addWxDocDialog = new AddWxDocDialog(this, AppConfig.wechatFilePath);
             addWxDocDialog.setSavedListener(this);
             addWxDocDialog.show();
+
         }
-        mPresenter = new MainPresenter();
-        mPresenter.attachView(this);
-        mEverPenManger.addListener(mPresenter);
     }
 
     private void requestRongCloudOnlineStatus() {
@@ -974,6 +990,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         Tools.keepSocketServiceOn(this);
 //        testNote();
         Log.e("time_interval", "interval:" + (System.currentTimeMillis() - systemTime));//统计时长
+        isUploadweixinFile();
     }
 
 
@@ -1048,13 +1065,13 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void fromWeChat(EventWxFilePath filePath) {
         Log.e("check_dialog", "show dialog");
-        if (addWxDocDialog != null) {
-            addWxDocDialog.dismiss();
-            addWxDocDialog = null;
-        }
-        addWxDocDialog = new AddWxDocDialog(this, filePath.getPath());
-        addWxDocDialog.setSavedListener(this);
-        addWxDocDialog.show();
+//        if (addWxDocDialog != null) {
+//            addWxDocDialog.dismiss();
+//            addWxDocDialog = null;
+//        }
+//        addWxDocDialog = new AddWxDocDialog(this, filePath.getPath());
+//        addWxDocDialog.setSavedListener(this);
+//        addWxDocDialog.show();
 
     }
 
@@ -1186,6 +1203,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     @Override
     public void onSaveSpace(String path) {
+        AppConfig.wechatFilePath="";
         this.filePath = path;
         if (addDocToSpaceDialog != null) {
             addDocToSpaceDialog.dismiss();
@@ -1193,11 +1211,18 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         addDocToSpaceDialog = new AddDocToSpaceDialog(this);
         addDocToSpaceDialog.setOnSpaceSelectedListener(this);
         addDocToSpaceDialog.show();
+
+    }
+
+    @Override
+    public void onCancel() {
+         AppConfig.wechatFilePath="";
     }
 
 
     @Override
     public void onSaveFavorite(String path) {
+        AppConfig.wechatFilePath="";
         AddDocumentTool.addDocumentToFavorite(this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
             @Override
             public void uploadStart() {
@@ -1275,6 +1300,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             }
         });
     }
+
+
 
     private FragmentManager fragmentManager;
     private TextView currentTabText;

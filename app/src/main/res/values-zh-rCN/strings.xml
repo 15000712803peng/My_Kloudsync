@@ -950,7 +950,7 @@
     <string name="wechat">微信</string>
     <string name="moment">朋友圈</string>
     <string name="scan_to_download_app">扫描二维码，下载APP</string>
-    <string name="login_name_tip">手机号登录请输入完整号码：如 +16267807552</string>
+    <string name="login_name_tip">手机号登录请输入完整号码：如 +8616267807552</string>
 
     <string name="join_compnay">加入一个公司</string>
     <string name="input_invite_code">请输入公司邀请码</string>
@@ -988,5 +988,9 @@
     <string name="Open">打开</string>
 
     <string name="phone_needs">手机号需要8到11位</string>
+
+    <string name="host">主持人:</string>
+    <string name="meeting_time">会议时间:</string>
+    <string name="attendee">参会人员:</string>
 
 </resources>

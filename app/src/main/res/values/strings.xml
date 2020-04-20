@@ -969,7 +969,7 @@ Please input the cell phone number to add the contact
     <string name="wechat">Wechat</string>
     <string name="moment">Moment</string>
     <string name="scan_to_download_app">Scan QR code to download app</string>
-    <string name="login_name_tip">Phone # format as +16267807552</string>
+    <string name="login_name_tip">Phone # format as +8616267807552</string>
 
     <string name="my_contact">My contact</string>
 
@@ -1020,5 +1020,10 @@ Please input the cell phone number to add the contact
     <string name="Open">Open</string>
 
     <string name="phone_needs">Phone number needs 8 to 11 digits</string>
+
+
+    <string name="host">Host:</string>
+    <string name="meeting_time">Meeting time:</string>
+    <string name="attendee">Attendee:</string>
 
 </resources>
