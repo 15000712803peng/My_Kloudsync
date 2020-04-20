@@ -127,6 +127,7 @@ import com.kloudsync.techexcel.help.BottomMenuManager;
 import com.kloudsync.techexcel.help.ChatManager;
 import com.kloudsync.techexcel.help.DeviceManager;
 import com.kloudsync.techexcel.help.DocVedioManager;
+import com.kloudsync.techexcel.help.FollowSpearkerModeManager;
 import com.kloudsync.techexcel.help.MeetingKit;
 import com.kloudsync.techexcel.help.MeetingPauseManager;
 import com.kloudsync.techexcel.help.NoteViewManager;
@@ -145,6 +146,7 @@ import com.kloudsync.techexcel.tool.CameraTouchListener;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
+import com.kloudsync.techexcel.tool.FollowSpearkerTouchListener;
 import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.QueryLocalNoteTool;
@@ -223,7 +225,7 @@ import retrofit2.Response;
  */
 
 public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
-        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener {
+        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener,FollowSpearkerModeManager.OnSpeakerAgoraStatusChanged{
 
     public static final String SUNDTRACKBEAN = "sundtrackbean";
     public static MeetingConfig meetingConfig;
@@ -322,6 +324,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     @Bind(R.id.layout_waiting_meeting)
     RelativeLayout waitingMeetingLayout;
+    @Bind(R.id.layout_follow_speaker)
+    RelativeLayout speakerLayout;
+    @Bind(R.id.layout_speaker_container)
+    RelativeLayout speakerContainer;
     AgoraCameraAdapter cameraAdapter;
     FullAgoraCameraAdapter fullCameraAdapter;
     Gson gson;
@@ -337,6 +343,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private String mTipsText;
     private long mPauseDuration;
     private volatile boolean mSwitchShowDocument;
+    private FollowSpearkerModeManager followSpearkerModeManager;
+
 
     @Override
     public void showErrorPage() {
@@ -587,6 +595,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     private ConnectionChangedListener connectionChangedListener = new ConnectionChangedListener();
+
+
 
     private class ConnectionChangedListener implements ConnectionClassManager.ConnectionClassStateChangeListener {
         @Override
@@ -1340,6 +1350,34 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             case SocketMessageManager.MEETING_CHANGE:
                 handleMessageMeetingChange(socketMessage.getData());
                 break;
+
+            case SocketMessageManager.MEETING_MEMBER_SPEAKING:
+                handleMemberSpeakingMessage(socketMessage.getData());
+                break;
+        }
+    }
+
+    private void handleMemberSpeakingMessage(JSONObject data){
+        if(data != null){
+            if(data.has("retData")){
+                try {
+                    JSONObject retData = data.getJSONObject("retData");
+                    if(retData.has("userId")){
+                        String userid = retData.getString("userId");
+                        if(meetingConfig.getType() == MeetingType.MEETING){
+                            for(AgoraMember agoraMember : meetingConfig.getAgoraMembers()){
+                                if((agoraMember.getUserId() +"").equals(userid)){
+                                    if(followSpearkerModeManager != null){
+                                        followSpearkerModeManager.showSpeakerView(agoraMember);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -1429,7 +1467,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
 
             /*处理文档*/
-            if (!helloMessage.isIfPause() && helloMessage.getCurrentItemId() != meetingConfig.getDocument().getItemID()) {
+            if (!helloMessage.isIfPause() && meetingConfig.getDocument() != null && helloMessage.getCurrentItemId() != meetingConfig.getDocument().getItemID()) {
                 changeDocument((int) helloMessage.getCurrentItemId(), helloMessage.getCurrentPageNumber());
             }
 
@@ -1513,23 +1551,23 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
             // handle 自己声网的状态
 
-            if(meetingSettingCache.getMeetingSetting().isMicroOn()){
-                if(helloMessage.getMicrophoneStatus() != 2){
-                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,true,meetingSettingCache.getMeetingSetting().isCameraOn());
+            if (meetingSettingCache.getMeetingSetting().isMicroOn()) {
+                if (helloMessage.getMicrophoneStatus() != 2) {
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig, true, meetingSettingCache.getMeetingSetting().isCameraOn());
                 }
-            }else {
-                if(helloMessage.getMicrophoneStatus() == 2){
-                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,false,meetingSettingCache.getMeetingSetting().isCameraOn());
+            } else {
+                if (helloMessage.getMicrophoneStatus() == 2) {
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig, false, meetingSettingCache.getMeetingSetting().isCameraOn());
                 }
             }
 
-            if(meetingSettingCache.getMeetingSetting().isCameraOn()){
-                if(helloMessage.getCameraStatus() != 2){
-                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,meetingSettingCache.getMeetingSetting().isMicroOn(),true);
+            if (meetingSettingCache.getMeetingSetting().isCameraOn()) {
+                if (helloMessage.getCameraStatus() != 2) {
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig, meetingSettingCache.getMeetingSetting().isMicroOn(), true);
                 }
-            }else {
-                if(helloMessage.getCameraStatus() == 2){
-                    messageManager.sendMessage_AgoraStatusChange(meetingConfig,meetingSettingCache.getMeetingSetting().isMicroOn(),false);
+            } else {
+                if (helloMessage.getCameraStatus() == 2) {
+                    messageManager.sendMessage_AgoraStatusChange(meetingConfig, meetingSettingCache.getMeetingSetting().isMicroOn(), false);
                 }
             }
 
@@ -1773,6 +1811,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             if (meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
                 messageManager.sendMessage_AgoraStatusChange(meetingConfig, isMicroOn, isCameraOn);
                 delayLoadMembersAndRefresh(member);
+                if(followSpearkerModeManager != null){
+                    followSpearkerModeManager.showHostView(member);
+                }
                 return;
             }
         }
@@ -2718,7 +2759,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     private synchronized void changeDocument(MeetingDocument document, int pageNumber) {
         Log.e("changeDocument", "document:" + document);
-        if(meetingConfig.isSyncing()){
+        if (meetingConfig.isSyncing()) {
             return;
         }
         downLoadDocumentPageAndShow(document, pageNumber);
@@ -2997,7 +3038,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
             }
             Log.e("notifyMyWebActions", "role:" + meetingConfig.getRole());
-            if (!AppConfig.UserID.equals(meetingConfig.getPresenterId())|| mIsMeetingPause) {
+            if (!AppConfig.UserID.equals(meetingConfig.getPresenterId()) || mIsMeetingPause) {
                 return;
             }
             messageManager.sendMessage_MyActionFrame(actions, meetingConfig);
@@ -3035,7 +3076,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         } else {
             if (!TextUtils.isEmpty(meetingConfig.getPresenterSessionId())) {
-                if (AppConfig.UserID.equals(meetingConfig.getPresenterId())&& !mIsMeetingPause) {
+                if (AppConfig.UserID.equals(meetingConfig.getPresenterId()) && !mIsMeetingPause) {
                     if (meetingConfig.isInRealMeeting()) {
                         if (messageManager != null) {
                             messageManager.sendMessage_DocumentShowed(meetingConfig);
@@ -3422,6 +3463,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
+        MeetingKit.getInstance().setOnSpeakerAgoraStatusChanged(this);
         keepScreenWake();
         MeetingRecordManager.getManager(this).initRecording(recordstatus, messageManager, meetingConfig);
         MeetingKit.getInstance().startMeeting();
@@ -3471,6 +3513,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         CameraTouchListener cameraTouchListener = new CameraTouchListener();
         cameraTouchListener.setCameraLayout(cameraLayout);
         toggleCameraLayout.setOnTouchListener(cameraTouchListener);
+        followSpearkerModeManager = new FollowSpearkerModeManager();
+        followSpearkerModeManager.setSpeakerContainer(speakerContainer);
+        followSpearkerModeManager.initViews(this,true);
+
     }
 
     @Override
@@ -3903,7 +3949,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private UploadFileDialog uploadFileDialog;
 
     private void uploadMp3file(String path) {
-        AddDocumentTool.addDocumentToFavoriteMp3(this, path, meetingConfig.getDocument().getAttachmentID(),new DocumentUploadTool.DocUploadDetailLinstener() {
+        AddDocumentTool.addDocumentToFavoriteMp3(this, path, meetingConfig.getDocument().getAttachmentID(), new DocumentUploadTool.DocUploadDetailLinstener() {
             @Override
             public void uploadStart() {
                 runOnUiThread(new Runnable() {
@@ -3950,7 +3996,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         if (uploadFileDialog != null) {
                             uploadFileDialog.cancel();
                         }
-                        if(accompanySelectVideoPopup!=null){
+                        if (accompanySelectVideoPopup != null) {
                             accompanySelectVideoPopup.notifyUploadSuccess();
                         }
                     }
@@ -4676,7 +4722,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
 
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveEventSoundSync(EventSoundSync eventSoundSync) {
         Log.e("syncing---", eventSoundSync.getSoundtrackID() + "  " + eventSoundSync.getStatus() + "  " + eventSoundSync.getTime());
@@ -4864,12 +4909,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     /**
      * 所有成员头像模式
+     *
      * @param member
      */
     @Override
     public void onCameraFrameClick(AgoraMember member) {
-        if (mIsMeetingPause)return;
-        if(!isPresenter()){
+        if (mIsMeetingPause) return;
+        if (!isPresenter()) {
             return;
         }
         handleFullScreenCamera(cameraAdapter);
@@ -5404,7 +5450,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
 
-
     private void showWatingMeeting() {
         hideEnterLoading();
         waitingMeetingLayout.setVisibility(View.VISIBLE);
@@ -5729,6 +5774,24 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     public void eventStartJoinMeeting(EventSendJoinMeetingMessage joinMeetingMessage) {
         this.joinMeetingMessage = joinMeetingMessage;
         rejoinHandler.obtainMessage(MESSAGE_JOIN_TIME).sendToTarget();
+    }
+
+    @Override
+    public void onSpeakerAudioStatusChanged(int uid, boolean isMuted) {
+        if(followSpearkerModeManager != null && followSpearkerModeManager.getCurrentAgoraMember() != null){
+            if(followSpearkerModeManager.getCurrentAgoraMember().getUserId() == uid){
+                followSpearkerModeManager.onSpeakerAudioChanged(isMuted);
+            }
+        }
+    }
+
+    @Override
+    public void onSpeakerVideoStatusChanged(int uid, boolean isMuted) {
+        if(followSpearkerModeManager != null && followSpearkerModeManager.getCurrentAgoraMember() != null){
+            if(followSpearkerModeManager.getCurrentAgoraMember().getUserId() == uid){
+                followSpearkerModeManager.onSpeakerVideoChanged(isMuted);
+            }
+        }
     }
 
 }

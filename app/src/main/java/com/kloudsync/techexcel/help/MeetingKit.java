@@ -161,7 +161,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
 
-
     public void startMeeting() {
         Log.e("MeetingKit", "start_meeting");
 //        meetingConfig.setRole(MeetingConfig.MeetingRole.HOST);
@@ -302,7 +301,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             @Override
             public void accept(String s) throws Exception {
                 JSONObject response = ConnectService.submitDataByJson(AppConfig.URL_PUBLIC + "Lesson/UpgradeToNormalLesson?lessonID=" + newMeetingId, null);
-                Log.e("UpgradeToNormalLession","url:" + AppConfig.URL_PUBLIC + "Lesson/UpgradeToNormalLesson?lessonID=" + newMeetingId + ",response:" + response);
+                Log.e("UpgradeToNormalLession", "url:" + AppConfig.URL_PUBLIC + "Lesson/UpgradeToNormalLesson?lessonID=" + newMeetingId + ",response:" + response);
                 if (response != null && response.getInt("RetCode") == 0) {
                     SocketMessageManager.getManager(host).sendMessage_LeaveMeeting(meetingConfig);
                     SocketMessageManager.getManager(host).sendMessage_startMeeting(meetingConfig, newMeetingId);
@@ -325,6 +324,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onJoinChannelSuccess(String channel, final int uid, int elapsed) {
+        Log.e("MeetingKit", "onJoinChannelSuccess，uid" + uid);
         isStarted = true;
 //        EventAgoraLog agoraLog = new EventAgoraLog();
 //        agoraLog.setMessage("JoinChannelSuccess:channel," + channel + ",uid:" + uid);
@@ -401,13 +401,13 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             currentNetworkQuality = txQuality; //上行网络质量，基于上行视频的发送码率、上行丢包率、平均往返时延和网络抖动计算
             if (currentNetworkQuality == NetWorkQuality.QUALITY_UNKNOWN ||
                     currentNetworkQuality == NetWorkQuality.QUALITY_EXCELLENT ||
-                    currentNetworkQuality == NetWorkQuality.QUALITY_GOOD){
-                if(meetingConfig != null){
+                    currentNetworkQuality == NetWorkQuality.QUALITY_GOOD) {
+                if (meetingConfig != null) {
                     meetingConfig.setNetWorkFine(true);
                 }
             } else if (currentNetworkQuality == NetWorkQuality.QUALITY_VBAD || currentNetworkQuality == NetWorkQuality.QUALITY_VBAD ||
-                    currentNetworkQuality == NetWorkQuality.QUALITY_DOWN){
-                if(meetingConfig != null){
+                    currentNetworkQuality == NetWorkQuality.QUALITY_DOWN) {
+                if (meetingConfig != null) {
                     meetingConfig.setNetWorkFine(false);
                 }
             }
@@ -457,6 +457,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         eventMute.setMuteVedio(muted);
         eventMute.setAgoraMember(member);
         EventBus.getDefault().post(eventMute);
+        if (onSpeakerAgoraStatusChanged != null) {
+            onSpeakerAgoraStatusChanged.onSpeakerVideoStatusChanged(uid, muted);
+        }
     }
 
     @Override
@@ -469,6 +472,9 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         eventMute.setMuteAudio(muted);
         eventMute.setAgoraMember(member);
         EventBus.getDefault().post(eventMute);
+        if (onSpeakerAgoraStatusChanged != null) {
+            onSpeakerAgoraStatusChanged.onSpeakerAudioStatusChanged(uid, muted);
+        }
 
     }
 
@@ -478,7 +484,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     }
 
 
-	public void postShareScreenDelay(final int uid) {
+    public void postShareScreenDelay(final int uid) {
 //        if(meetingConfig.getMode() != 3){
 //            return;
 //        }
@@ -543,7 +549,6 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                         Log.e("check_share_screen_onUserJoined", "uid:" + uid);
                         meetingConfig.setShareScreenUid(uid);
                         postShareScreen(meetingConfig.getShareScreenUid());
-
                     } else {
                         //  成员的camera
                         refreshMembersAndPost(meetingConfig, uid, false);
@@ -557,11 +562,27 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     public void setShareScreenStream(EventShareScreen eventShareScreen) {
 
         getRtcManager().rtcEngine().setupRemoteVideo(new VideoCanvas(eventShareScreen.getShareView(), VideoCanvas.RENDER_MODE_HIDDEN, eventShareScreen.getUid()));
-
     }
+
+    private long lastSpeakTime;
+    private boolean selfIsSpeaker;
 
     @Override
     public void onAudioVolumeIndication(IRtcEngineEventHandler.AudioVolumeInfo[] speakers, int totalVolume) {
+        for (IRtcEngineEventHandler.AudioVolumeInfo info : speakers) {
+            //0代表本地用户
+            if (info.uid == 0 && info.volume >= 100) { //自己是否说话了
+                Log.e("onAudioVolumeIndication", info.uid + "  " + info.volume);
+                selfIsSpeaker = true;
+                break;
+            }
+        }
+
+        long inteval = System.currentTimeMillis() - lastSpeakTime;
+        if (inteval > 20000 && selfIsSpeaker) {
+            lastSpeakTime = System.currentTimeMillis();
+            SocketMessageManager.getManager(host).sendMessage_MemberSpeaking();
+        }
 
     }
 
@@ -987,11 +1008,8 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
                         disableAudioAndVideoStream();
                     }
                 }
-                if (isSelf) {
-                    EventBus.getDefault().post(agoraMember);
-                } else {
-                    EventBus.getDefault().post(agoraMember);
-                }
+                Log.e("MeetingKit", "refreshMembersAndPost，post agora member");
+                EventBus.getDefault().post(agoraMember);
 
             }
         }).subscribe();
@@ -1098,10 +1116,19 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     }
 
-    public void refreshMeetingMenu(){
-        if(popMeetingMenu != null && popMeetingMenu.isShowing()){
+    public void refreshMeetingMenu() {
+        if (popMeetingMenu != null && popMeetingMenu.isShowing()) {
             popMeetingMenu.refreshStatus();
         }
     }
 
+    private FollowSpearkerModeManager.OnSpeakerAgoraStatusChanged onSpeakerAgoraStatusChanged;
+
+    public FollowSpearkerModeManager.OnSpeakerAgoraStatusChanged getOnSpeakerAgoraStatusChanged() {
+        return onSpeakerAgoraStatusChanged;
+    }
+
+    public void setOnSpeakerAgoraStatusChanged(FollowSpearkerModeManager.OnSpeakerAgoraStatusChanged onSpeakerAgoraStatusChanged) {
+        this.onSpeakerAgoraStatusChanged = onSpeakerAgoraStatusChanged;
+    }
 }

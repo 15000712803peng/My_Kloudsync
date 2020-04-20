@@ -65,6 +65,7 @@ public class StudentLessionDialog implements View.OnClickListener {
         prepareText = view.findViewById(R.id.txt_prepare);
         courseNameText = view.findViewById(R.id.txt_course_name);
         prepareText.setOnClickListener(this);
+        closeImage.setOnClickListener(this);
         mPopupWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
         if (Tools.isOrientationPortrait((Activity) mContext)) {

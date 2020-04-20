@@ -18,9 +18,6 @@ import com.kloudsync.techexcel.view.CircleImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by wang on 2017/8/18.
- */
 
 public class MeetingMembersAdapter extends RecyclerView.Adapter<MeetingMembersAdapter.ViewHolder> {
     private LayoutInflater inflater;

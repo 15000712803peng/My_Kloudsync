@@ -239,6 +239,20 @@ public class MyEngineEventHandler {
         public void onWarning(int warn) {
             log.debug("onWarning " + warn);
         }
+
+        @Override
+        public void onActiveSpeaker(int uid) {
+            super.onActiveSpeaker(uid);
+            Log.e(TAG,"onActiveSpeaker = " + uid +uid);
+        }
+
+
+
+        @Override
+        public void onRemoteAudioStats(RemoteAudioStats stats) {
+            super.onRemoteAudioStats(stats);
+            Log.e(TAG,"onRemoteAudioStats = uid:" + stats.uid + ",quality:" + stats.quality);
+        }
     };
 
 }

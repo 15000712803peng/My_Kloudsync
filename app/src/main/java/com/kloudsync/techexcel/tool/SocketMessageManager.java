@@ -56,6 +56,7 @@ public class SocketMessageManager {
     public static final String MESSAGE_HELLO = "HELLO";
     public static final String MESSAGE_MEETING_STATUS = "MEETING_STATUS";
     public static final String MEETING_CHANGE = "MEETING_CHANGE";
+    public static final String MEETING_MEMBER_SPEAKING = "MEMBER_SPEAKING";
     public static final int MESSAGE_VIDEO_PAUSE = 0;
     public static final int MESSAGE_VIDEO_PLAY = 1;
     public static final int MESSAGE_VIDEO_CLOSE = 2;
@@ -136,7 +137,7 @@ public class SocketMessageManager {
         }
     }
 
-    public void sendMessage_JoinMeeting(MeetingConfig config ,String meetingId) {
+    public void sendMessage_JoinMeeting(MeetingConfig config, String meetingId) {
 
         try {
             JSONObject message = new JSONObject();
@@ -181,6 +182,20 @@ public class SocketMessageManager {
             }
             doSendMessage(message.toString());
             sendEventJoinMeeting(newMeetingId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessage_MemberSpeaking() {
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", "MEMBER_SPEAKING");
+            message.put("retCode", 0);
+            JSONObject retDataObj = new JSONObject();
+            retDataObj.put("userId", AppConfig.UserID);
+            message.put("retData", retDataObj);
+            doSendMessage(message.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

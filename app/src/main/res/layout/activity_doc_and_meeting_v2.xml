@@ -680,10 +680,11 @@
     <RelativeLayout
         android:id="@+id/layout_real_meeting"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:visibility="gone">
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/layout_camera"
             android:layout_marginTop="20dp"
             android:layout_marginLeft="10dp"
@@ -808,6 +809,13 @@
                 android:layout_width="38dp"
                 android:layout_height="38dp" />
 
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_speaker_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <include layout="@layout/speaker_camera_large_item"/>
         </RelativeLayout>
 
 
@@ -1154,7 +1162,9 @@
 
     <include
         layout="@layout/meeting_pause_layout"
-        android:layout_centerHorizontal="true"
+        android:layout_below="@id/layout_real_meeting"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_marginLeft="@dimen/dp_10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
