@@ -63,7 +63,10 @@
             android:id="@+id/meetingname"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:hint="@string/schName"
+            android:gravity="right|center_vertical"
             android:background="@color/white"
+            android:paddingRight="15dp"
             android:textColor="@color/schedule_select"
             android:textSize="16sp" />
     </LinearLayout>
@@ -243,7 +246,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="40dp"
-        android:background="@color/skyblue"
+        android:background="@drawable/selector_blue_gray_all_radius_21"
         android:gravity="center"
         android:text="@string/rc_cs_submit"
         android:textColor="@color/white"
