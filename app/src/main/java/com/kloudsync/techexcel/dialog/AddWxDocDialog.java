@@ -59,10 +59,12 @@ public class AddWxDocDialog implements View.OnClickListener {
         width = mContext.getResources().getDisplayMetrics().widthPixels;
         dialog.setContentView(view);
         dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setWindowAnimations(R.style.PopupAnimation5);
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
         lp.width = mContext.getResources().getDisplayMetrics().widthPixels;
         dialog.getWindow().setAttributes(lp);
+
     }
 
     public  void setInVisible(){

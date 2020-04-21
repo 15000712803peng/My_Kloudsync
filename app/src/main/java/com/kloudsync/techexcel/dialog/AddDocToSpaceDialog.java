@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -25,6 +26,7 @@ import com.ub.kloudsync.activity.TeamSpaceBean;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceListener;
 import com.ub.kloudsync.activity.TeamSpaceInterfaceTools;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
+import com.ub.techexcel.tools.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,7 @@ public class AddDocToSpaceDialog implements View.OnClickListener, HeaderRecycler
     private RecyclerView spaceList;
     private SpaceAdapter spaceAdapter;
     private ImageView spaceCloseImage;
+    private TextView txt_cancel1,txt_cancel2;
 
     public interface OnSpaceSelectedListener {
         void onSpaceSelected(int spaceId);
@@ -82,6 +85,10 @@ public class AddDocToSpaceDialog implements View.OnClickListener, HeaderRecycler
         selectSpaceView = layoutInflater.inflate(R.layout.view_select_space, null);
         viewFlipper = view.findViewById(R.id.view_flipper);
         teamList = selectTeamView.findViewById(R.id.list_team);
+        txt_cancel1 = selectTeamView.findViewById(R.id.txt_cancel1);
+        txt_cancel2 = selectSpaceView.findViewById(R.id.txt_cancel2);
+        txt_cancel1.setOnClickListener(this);
+        txt_cancel2.setOnClickListener(this);
         teamList.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
         spaceList = selectSpaceView.findViewById(R.id.list_space);
         spaceList.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
@@ -104,7 +111,16 @@ public class AddDocToSpaceDialog implements View.OnClickListener, HeaderRecycler
         heigth = (int) (mContext.getResources().getDisplayMetrics().heightPixels * (0.7f));
         viewFlipper = view.findViewById(R.id.view_flipper);
         dialog.setContentView(view);
-        dialog.getWindow().setGravity(Gravity.CENTER);
+        if(Tools.isOrientationPortrait((Activity) mContext)){
+            width = (int) (mContext.getResources().getDisplayMetrics().widthPixels * (1.0f));
+            heigth = (int) (mContext.getResources().getDisplayMetrics().heightPixels * (0.7f));
+            dialog.getWindow().setGravity(Gravity.BOTTOM);
+        }else{
+            width = (int) (mContext.getResources().getDisplayMetrics().widthPixels * (0.8f));
+            heigth = (int) (mContext.getResources().getDisplayMetrics().heightPixels * (0.7f));
+            dialog.getWindow().setGravity(Gravity.CENTER);
+        }
+
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
         lp.width = width;
         lp.height = heigth;
@@ -128,6 +144,12 @@ public class AddDocToSpaceDialog implements View.OnClickListener, HeaderRecycler
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.img_close:
+                dismiss();
+                break;
+            case R.id.txt_cancel1:
+                dismiss();
+                break;
+            case R.id.txt_cancel2:
                 dismiss();
                 break;
             case R.id.image_back:

@@ -297,7 +297,6 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             addWxDocDialog = new AddWxDocDialog(this, AppConfig.wechatFilePath);
             addWxDocDialog.setSavedListener(this);
             addWxDocDialog.show();
-
         }
     }
 
@@ -1176,11 +1175,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        addDocSucc();
                         if (uploadFileDialog != null) {
                             uploadFileDialog.cancel();
                         }
-                        new CenterToast.Builder(getApplicationContext()).setSuccess(true).setMessage(getResources().getString(R.string.create_success)).create().show();
                         EventBus.getDefault().post(new TeamSpaceBean());
                     }
                 });
@@ -1222,83 +1219,8 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
 
     @Override
     public void onSaveFavorite(String path) {
-        AppConfig.wechatFilePath="";
-        AddDocumentTool.addDocumentToFavorite(this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
-            @Override
-            public void uploadStart() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (uploadFileDialog != null) {
-                            uploadFileDialog.cancel();
-                        }
-                        uploadFileDialog = new UploadFileDialog(MainActivity.this);
-                        uploadFileDialog.setTile("uploading");
-                        uploadFileDialog.show();
-                    }
-                });
-            }
-
-            @Override
-            public void uploadFile(final int progress) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
-                            uploadFileDialog.setProgress(progress);
-                        }
-                    }
-                });
-
-            }
-
-            @Override
-            public void convertFile(final int progress) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
-                            uploadFileDialog.setTile("Converting");
-                            uploadFileDialog.setProgress(progress);
-                        }
-                    }
-                });
-
-            }
-
-            @Override
-            public void uploadFinished(Object result) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
-                            uploadFileDialog.cancel();
-                            Toast.makeText(getApplicationContext(), "add favorite success", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this, PersonalCollectionActivity.class);
-                            startActivity(intent);
-
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void uploadError(final String message) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
-                            uploadFileDialog.cancel();
-                        }
-                        String errorMessage = message;
-                        if (TextUtils.isEmpty(errorMessage)) {
-                            errorMessage = getString(R.string.operate_failure);
-                        }
-                        Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
+        Intent intent = new Intent(MainActivity.this, PersonalCollectionActivity.class);
+        startActivity(intent);
     }
 
 

@@ -655,6 +655,9 @@
     <string name="selectcoursee">选择课程</string>
     <string name="ispublic">公开</string>
     <string name="uploadaudiosuccess">上传文件成功</string>
+    <string name="uploadfile">上传文件</string>
+    <string name="selectteam">选择团队</string>
+    <string name="selectspace">选择空间</string>
 
     <string name="upcoming">即将开始</string>
     <string name="pastdue">已过期</string>

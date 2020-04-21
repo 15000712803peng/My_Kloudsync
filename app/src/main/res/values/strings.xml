@@ -659,6 +659,9 @@ Please input the cell phone number to add the contact
     <string name="selectcoursee">Select Course</string>
     <string name="ispublic">IsPublic</string>
     <string name="uploadaudiosuccess">upload file success</string>
+    <string name="uploadfile">Upload File</string>
+    <string name="selectteam">Select Team</string>
+    <string name="selectspace">Select Space</string>
 
 
     <!-- 迪凯 余 -->

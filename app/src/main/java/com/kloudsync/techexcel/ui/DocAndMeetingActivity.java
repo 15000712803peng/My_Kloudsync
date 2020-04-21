@@ -345,6 +345,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private long mPauseDuration;
     private volatile boolean mSwitchShowDocument;
     private FollowSpearkerModeManager followSpearkerModeManager;
+    public static DocAndMeetingActivity instance=null;
 
 
     @Override
@@ -360,7 +361,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             finish();
             return;
         }
-
+        instance=this;
         Log.e("DocAndMeetingActivity", "on_create");
         meetingSettingCache = MeetingSettingCache.getInstance(this);
         writeNoteBlankPageImage();
@@ -832,6 +833,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             meetingConfig.reset();
         }
         meetingConfig = null;
+        instance=null;
     }
 
     private synchronized void getMeetingMembers(JSONArray users) {
