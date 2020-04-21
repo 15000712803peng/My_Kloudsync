@@ -142,14 +142,12 @@ import com.kloudsync.techexcel.help.ShareDocumentDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.help.UserData;
 import com.kloudsync.techexcel.info.Uploadao;
-import com.kloudsync.techexcel.personal.PersonalCollectionActivity;
 import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.CameraTouchListener;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
-import com.kloudsync.techexcel.tool.FollowSpearkerTouchListener;
 import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.QueryLocalNoteTool;
@@ -490,15 +488,15 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是竖屏", Toast.LENGTH_SHORT).show();
             layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.addRule(RelativeLayout.BELOW, R.id.layout_real_meeting);
+	        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_70);
         }
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是横屏", Toast.LENGTH_SHORT).show();
             layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+	        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_9);
 
         }
-        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_9);
         mRlyMeetingPauseLayout.setLayoutParams(layoutParams);
     }
 

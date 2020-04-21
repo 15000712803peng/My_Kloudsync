@@ -96,14 +96,14 @@ public abstract class BaseWebActivity extends FragmentActivity {
         if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是竖屏", Toast.LENGTH_SHORT).show();
             layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.addRule(RelativeLayout.BELOW, R.id.layout_real_meeting);
+	        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_70);
         } else if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是横屏", Toast.LENGTH_SHORT).show();
             layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+	        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_9);
 
         }
-        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_9);
         mRlyMeetingPauseLayout.setLayoutParams(layoutParams);
     }
 
