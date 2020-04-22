@@ -1034,7 +1034,6 @@ Please input the cell phone number to add the contact
     <string name="attendee">Attendee:</string>
     <string name="join_meeting">Join Meeting</string>
 
-    <string name="duration_default">45mins</string>
 
     <string name="duration_default">45mins</string>
     <string name="invite_as_member">Invite as member</string>

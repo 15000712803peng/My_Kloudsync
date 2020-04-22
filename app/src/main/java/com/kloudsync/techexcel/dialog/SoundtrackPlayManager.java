@@ -833,7 +833,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
     @JavascriptInterface
     public void afterLoadFileFunction() {
         SoundtrackActionsManagerV2.getInstance(host).setLoadingPage(false);
-        SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
+//        SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
         host.runOnUiThread(new Runnable() {
             @Override
             public void run() {
