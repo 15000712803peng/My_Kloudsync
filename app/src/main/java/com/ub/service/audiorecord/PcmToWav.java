@@ -28,7 +28,7 @@ public class PcmToWav {
      * @return true|false
      */
     public static boolean mergePCMFilesToWAVFile(List<String> filePathList,
-                                                 String destinationPath) {
+                                                 String destinationPath, AudioRecorder.AudioConfig audioConfig) {
         File[] file = new File[filePathList.size()];
         byte buffer[] = null;
 
@@ -40,19 +40,41 @@ public class PcmToWav {
             TOTAL_SIZE += file[i].length();
         }
 
-        // 填入参数，比特率等等。这里用的是16位单声道 8000 hz
+
+
+//        @param sampleRate    采样率,也就是录制时使用的频率  SamplesPerSec
+//         * @param channels      audioRecord的频道数量  Channels
+//         * @param sampleBits    位宽  BitsPerSample
+//
+//        this.blockAlign = (short) (channels * sampleBits / 8);
+//        this.byteRate = sampleRate * sampleBits / 8 * channels;
+
+
+
         WaveHeader header = new WaveHeader();
         // 长度字段 = 内容的大小（TOTAL_SIZE) +
         // 头部字段的大小(不包括前面4字节的标识符RIFF以及fileLength本身的4字节)
         header.fileLength = TOTAL_SIZE + (44 - 8);
         header.FmtHdrLeth = 16;
-        header.BitsPerSample = 16;
-        header.Channels = 2;
+        header.BitsPerSample = (short) audioConfig.getSampleBits();
+        header.Channels = (short) audioConfig.getChannels();
         header.FormatTag = 0x0001;
-        header.SamplesPerSec = 8000;
+        header.SamplesPerSec = audioConfig.getSampleRate();
         header.BlockAlign = (short) (header.Channels * header.BitsPerSample / 8);
         header.AvgBytesPerSec = header.BlockAlign * header.SamplesPerSec;
         header.DataHdrLeth = TOTAL_SIZE;
+
+// 填入参数，比特率等等。这里用的是16位单声道 8000 hz
+//        header.fileLength = TOTAL_SIZE + (44 - 8);
+//        header.FmtHdrLeth = 16;
+//        header.BitsPerSample = 16;
+//        header.Channels = 2;
+//        header.FormatTag = 0x0001;
+//        header.SamplesPerSec = 8000;
+//        header.BlockAlign = (short) (header.Channels * header.BitsPerSample / 8);
+//        header.AvgBytesPerSec = header.BlockAlign * header.SamplesPerSec;
+//        header.DataHdrLeth = TOTAL_SIZE;
+
 
         byte[] h = null;
         try {

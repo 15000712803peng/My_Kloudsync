@@ -527,12 +527,15 @@
     <string name="mtIsound">在这里输入音想名称...</string>
     <string name="mtYxName">名称</string>
     <string name="mtRNVoice">录制新的声音</string>
+    <string name="mtHighVoice">高保真</string>
     <string name="mtSyncRecord">同步</string>
     <string name="mtCancel">退出</string>
     <string name="mtRecordSync">录制 &#038; 同步</string>
     <string name="syncname">音想名称</string>
     <string name="hidden">隐藏</string>
-
+    <string name="spanstand">标准</string>
+    <string name="spanhd">高清</string>
+    <string name="spanuhd">超高清</string>
 
     <!--yinxiangoperatorpopup界面-->
     <string name="mtShareApp">分享到App</string>

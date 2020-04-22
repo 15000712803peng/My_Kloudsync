@@ -13,12 +13,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
@@ -68,6 +73,7 @@ public class YinxiangCreatePopup implements View.OnClickListener {
     private CheckBox isPublic;
     private TextView tv_bg_audio, tv_record_voice;
     private SharedPreferences sharedPreferences;
+    private Spinner spinner;
 
     private Handler handler = new Handler() {
         @Override
@@ -130,12 +136,31 @@ public class YinxiangCreatePopup implements View.OnClickListener {
             recordsync.setText(R.string.sync);
         }
     }
+
+    private int selectVoiceQuality=0;
+
     public void initPopuptWindow() {
         sharedPreferences = mContext.getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         view = layoutInflater.inflate(R.layout.yinxiang_create_popup, null);
         close = (ImageView) view.findViewById(R.id.close);
         cancel = (TextView) view.findViewById(R.id.cancel);
+        spinner=view.findViewById(R.id.xz_sn_type);
+        ArrayAdapter  adapter = ArrayAdapter.createFromResource(mContext, R.array.xzname, R.layout.spinner_item);
+        //设置下拉列表的风格
+        adapter.setDropDownViewResource(R.layout.dropdown_stytle);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectVoiceQuality=position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         cancel.setOnClickListener(this);
         tv_record_voice = (TextView) view.findViewById(R.id.tv_record_voice);
         tv_bg_audio = (TextView) view.findViewById(R.id.tv_bg_audio);
@@ -305,6 +330,8 @@ public class YinxiangCreatePopup implements View.OnClickListener {
                         soundtrackBean.setCreatedDate(jsonObject1.getString("CreatedDate"));
                         soundtrackBean.setAttachmentId(jsonObject1.getInt("AttachmentID"));
                         soundtrackBean.setIsPublic(jsonObject1.getInt("IsPublic"));
+
+                        soundtrackBean.setVoiceQuality(selectVoiceQuality);
 
                         JSONObject pathinfo=jsonObject1.getJSONObject("PathInfo");
                         soundtrackBean.setFileId(pathinfo.getInt("FileID"));

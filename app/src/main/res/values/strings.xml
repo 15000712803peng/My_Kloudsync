@@ -481,11 +481,18 @@
     <string name="mtIsound">Input sound name here...</string>
     <string name="mtYxName">Name</string>
     <string name="mtRNVoice">Record new voice</string>
+    <string name="mtHighVoice">High Fidelity</string>
     <string name="mtSyncRecord">Sync</string>
     <string name="mtCancel">Cancel</string>
     <string name="mtRecordSync">Record &#038; Sync</string>
     <string name="syncname">Sync Name</string>
     <string name="hidden">Hidden</string>
+
+
+
+    <string name="spanstand">Standard</string>
+    <string name="spanhd">High Definition</string>
+    <string name="spanuhd">Ultra HD</string>
 
 
     <!--yinxiangoperatorpopup界面-->

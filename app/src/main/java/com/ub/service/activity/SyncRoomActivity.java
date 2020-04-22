@@ -5372,7 +5372,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
             if (audioRecorder.getStatus() == AudioRecorder.Status.STATUS_NO_READY) {
                 Log.e("audioooooooooo", "startAudioRecord");
                 String fileName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-                audioRecorder.createDefaultAudio(fileName);
+                audioRecorder.createDefaultAudio(fileName,0);
                 audioRecorder.startRecord(null);
             }
         } catch (IllegalStateException e) {
