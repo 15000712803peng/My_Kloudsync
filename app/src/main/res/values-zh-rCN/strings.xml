@@ -1002,5 +1002,8 @@
     <string name="attendee">参会人员:</string>
     <string name="join_meeting">加入会议</string>
     <string name="duration_default">45分钟</string>
+    <string name="invite_as_member">邀请为成员</string>
+    <string name="invite_as_admin">邀请为用户</string>
+    <string name="admin">用户</string>
 
 </resources>

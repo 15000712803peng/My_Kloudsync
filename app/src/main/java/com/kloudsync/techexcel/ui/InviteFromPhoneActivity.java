@@ -168,7 +168,7 @@ public class InviteFromPhoneActivity extends Activity implements View.OnClickLis
         }
 
         if (phone.length() < 7 || phone.length() > 11) {
-            Toast.makeText(getApplicationContext(), "手机号需要8到11位", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.phone_needs), Toast.LENGTH_SHORT).show();
             return;
         }
         Observable.just("Request").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {

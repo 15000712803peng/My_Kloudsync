@@ -1036,4 +1036,9 @@ Please input the cell phone number to add the contact
 
     <string name="duration_default">45mins</string>
 
+    <string name="duration_default">45mins</string>
+    <string name="invite_as_member">Invite as member</string>
+    <string name="invite_as_admin">Invite as admin user</string>
+    <string name="admin">admin</string>
+
 </resources>
