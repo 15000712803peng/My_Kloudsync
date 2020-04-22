@@ -25,10 +25,17 @@ public class AudioRecorder {
     //44100是目前的标准，但是某些设备仍然支持22050，16000，11025
     //采样频率一般共分为22.05KHz、44.1KHz、48KHz三个等级
     private final static int AUDIO_SAMPLE_RATE = 16000;
+    private final static int AUDIO_SAMPLE_RATE2= 32000;
+    private final static int AUDIO_SAMPLE_RATE3= 48000;
     //声道 单声道
     private final static int AUDIO_CHANNEL = AudioFormat.CHANNEL_IN_MONO;
+    private final static int AUDIO_CHANNEL2 = AudioFormat.CHANNEL_IN_MONO;
+    private final static int AUDIO_CHANNEL3= AudioFormat.CHANNEL_IN_STEREO;
     //编码
     private final static int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+    private final static int AUDIO_ENCODING2 = AudioFormat.ENCODING_PCM_16BIT;
+    private final static int AUDIO_ENCODING3= AudioFormat.ENCODING_PCM_16BIT;
+
     // 缓冲区字节大小
     private int bufferSizeInBytes = 0;
 
@@ -72,13 +79,30 @@ public class AudioRecorder {
      *
      * @param fileName 文件名
      */
-    public void createDefaultAudio(String fileName) {
+    public void createDefaultAudio(String fileName,int isHighFidelity) {
         // 获得缓冲区字节大小
-        bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE,
-                AUDIO_CHANNEL, AUDIO_ENCODING);
-        audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, bufferSizeInBytes);
-        this.fileName = fileName;
-        status = Status.STATUS_READY;
+        Log.e("isHighFidelity",isHighFidelity+"");
+        if(isHighFidelity==0){
+            bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE,
+                    AUDIO_CHANNEL, AUDIO_ENCODING);
+            audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, bufferSizeInBytes);
+            this.fileName = fileName;
+            status = Status.STATUS_READY;
+        } if(isHighFidelity==1){
+            bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE2,
+                    AUDIO_CHANNEL2, AUDIO_ENCODING2);
+            audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE2, AUDIO_CHANNEL2, AUDIO_ENCODING2, bufferSizeInBytes);
+            this.fileName = fileName;
+            status = Status.STATUS_READY;
+        } else{
+            bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE3,
+                    AUDIO_CHANNEL3, AUDIO_ENCODING3);
+            audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE3, AUDIO_CHANNEL3, AUDIO_ENCODING3, bufferSizeInBytes);
+            this.fileName = fileName;
+            status = Status.STATUS_READY;
+        }
+
+
     }
 
 

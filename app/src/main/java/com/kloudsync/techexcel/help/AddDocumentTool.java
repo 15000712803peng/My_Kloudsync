@@ -83,7 +83,6 @@ public class AddDocumentTool {
     }
 
 
-
     public static void addDocumentInDoc(final Activity activity,final File file,final String lessonId ,final DocumentUploadTool.DocUploadDetailLinstener uploadDetailLinstener) {
         final JSONObject jsonobject = null;
         String url = null;
