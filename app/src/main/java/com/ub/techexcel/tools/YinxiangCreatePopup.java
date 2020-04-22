@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -145,6 +146,10 @@ public class YinxiangCreatePopup implements View.OnClickListener {
         close = (ImageView) view.findViewById(R.id.close);
         cancel = (TextView) view.findViewById(R.id.cancel);
         spinner=view.findViewById(R.id.xz_sn_type);
+        ArrayAdapter  adapter = ArrayAdapter.createFromResource(mContext, R.array.xzname, R.layout.spinner_item);
+        //设置下拉列表的风格
+        adapter.setDropDownViewResource(R.layout.dropdown_stytle);
+        spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

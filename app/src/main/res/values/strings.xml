@@ -488,11 +488,11 @@
     <string name="syncname">Sync Name</string>
     <string name="hidden">Hidden</string>
 
-    <string name="spanstand">标准</string>
-    <string name="spanhd">高清</string>
-    <string name="spanuhd">超高清</string>
 
 
+    <string name="spanstand">Standard</string>
+    <string name="spanhd">High Definition</string>
+    <string name="spanuhd">Ultra HD</string>
 
 
     <!--yinxiangoperatorpopup界面-->

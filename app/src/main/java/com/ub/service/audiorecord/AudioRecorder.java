@@ -88,21 +88,19 @@ public class AudioRecorder {
             audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, bufferSizeInBytes);
             this.fileName = fileName;
             status = Status.STATUS_READY;
-        } if(isHighFidelity==1){
+        }else if(isHighFidelity==1){
             bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE2,
                     AUDIO_CHANNEL2, AUDIO_ENCODING2);
             audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE2, AUDIO_CHANNEL2, AUDIO_ENCODING2, bufferSizeInBytes);
             this.fileName = fileName;
             status = Status.STATUS_READY;
-        } else{
+        } else if(isHighFidelity==2){
             bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE3,
                     AUDIO_CHANNEL3, AUDIO_ENCODING3);
             audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE3, AUDIO_CHANNEL3, AUDIO_ENCODING3, bufferSizeInBytes);
             this.fileName = fileName;
             status = Status.STATUS_READY;
         }
-
-
     }
 
 
