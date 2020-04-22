@@ -1001,5 +1001,6 @@
     <string name="meeting_time">会议时间:</string>
     <string name="attendee">参会人员:</string>
     <string name="join_meeting">加入会议</string>
+    <string name="duration_default">45分钟</string>
 
 </resources>

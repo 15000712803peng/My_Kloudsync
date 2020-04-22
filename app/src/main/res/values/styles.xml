@@ -414,6 +414,14 @@
         <item name="android:src">@drawable/right_arrow</item>
     </style>
 
+    <style name="ScheduleMeetingAddMemberIconStyle">
+        <item name="android:layout_width">@dimen/dp_25</item>
+        <item name="android:layout_height">@dimen/dp_25</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:src">@drawable/icon_add_member</item>
+    </style>
+
 
     <style name="CommonTitltTextStyle">
         <item name="android:textSize">16sp</item>
