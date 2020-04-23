@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.usage.UsageEvents;
 import android.content.Context;
+import android.content.Intent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,9 @@ public class MeetingSettingDialog implements View.OnClickListener {
     private LinearLayout tabTitlesLayout;
     private LinearLayout recordingLayout;
     private CheckBox isOpenRecord;
+    private LinearLayout systemaudioll,thirdaudioll;
+    private TextView systemtv,systemtvline,thirdaudiotv,thirdaudiotvline;
+    private LinearLayout openwenxin;
 
     public boolean isStartMeeting() {
         return isStartMeeting;
@@ -97,6 +101,16 @@ public class MeetingSettingDialog implements View.OnClickListener {
         settingDialog = new Dialog(host, R.style.my_dialog);
         settingDialog.setContentView(view);
         settingDialog.setCancelable(false);
+        systemaudioll=view.findViewById(R.id.systemaudioll);
+        thirdaudioll=view.findViewById(R.id.thirdaudioll);
+        systemtv=view.findViewById(R.id.systemtv);
+        systemtv.setOnClickListener(this);
+        systemtvline=view.findViewById(R.id.systemtvline);
+        thirdaudiotv=view.findViewById(R.id.thirdaudiotv);
+        thirdaudiotv.setOnClickListener(this);
+        thirdaudiotvline=view.findViewById(R.id.thirdaudiotvline);
+        openwenxin=view.findViewById(R.id.openwenxin);
+        openwenxin.setOnClickListener(this);
 
         Window window = settingDialog.getWindow();
         WindowManager.LayoutParams lp = window.getAttributes();
@@ -127,11 +141,11 @@ public class MeetingSettingDialog implements View.OnClickListener {
 
         if (meetingConfig.isFromMeeting() && !meetingConfig.isHost()) {
             recordingLayout.setVisibility(View.GONE);
-            tabTitlesLayout.setVisibility(View.GONE);
+//            tabTitlesLayout.setVisibility(View.GONE);
             closeText.setVisibility(View.GONE);
         } else {
             recordingLayout.setVisibility(View.VISIBLE);
-            tabTitlesLayout.setVisibility(View.VISIBLE);
+//            tabTitlesLayout.setVisibility(View.VISIBLE);
             closeText.setVisibility(View.VISIBLE);
         }
 
@@ -203,6 +217,39 @@ public class MeetingSettingDialog implements View.OnClickListener {
             case R.id.txt_cancel:
                 if (meetingConfig.isFromMeeting() && meetingConfig.getRole() == MeetingConfig.MeetingRole.HOST) {
                     EventBus.getDefault().post(new EventClose());
+                }
+                dismiss();
+                break;
+
+            case R.id.systemtv:
+                systemaudioll.setVisibility(View.VISIBLE);
+                systemtv.setTextColor(host.getResources().getColor(R.color.skyblue));
+                systemtvline.setVisibility(View.VISIBLE);
+
+                thirdaudioll.setVisibility(View.GONE);
+                thirdaudiotv.setTextColor(host.getResources().getColor(R.color.black));
+                thirdaudiotvline.setVisibility(View.GONE);
+                break;
+            case R.id.thirdaudiotv:
+                systemaudioll.setVisibility(View.GONE);
+                systemtv.setTextColor(host.getResources().getColor(R.color.black));
+                systemtvline.setVisibility(View.GONE);
+
+                thirdaudioll.setVisibility(View.VISIBLE);
+                thirdaudiotv.setTextColor(host.getResources().getColor(R.color.skyblue));
+                thirdaudiotvline.setVisibility(View.VISIBLE);
+                break;
+            case R.id.openwenxin:
+                if (isStartMeeting) {
+                    if (onUserOptionsListener != null) {
+                        meetingConfig.setThirdAudio(true);
+                        onUserOptionsListener.onUserStart(isOpenRecord.isChecked());
+                    }
+                } else {
+                    if (onUserOptionsListener != null) {
+                        meetingConfig.setThirdAudio(true);
+                        onUserOptionsListener.onUserJoin(isOpenRecord.isChecked());
+                    }
                 }
                 dismiss();
                 break;
