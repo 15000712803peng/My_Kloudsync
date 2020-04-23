@@ -3226,6 +3226,11 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
     }
 
     @Override
+    public void menuSettingClicked() {
+
+    }
+
+    @Override
     public void menuChatClicked() {
         showChatPop();
     }

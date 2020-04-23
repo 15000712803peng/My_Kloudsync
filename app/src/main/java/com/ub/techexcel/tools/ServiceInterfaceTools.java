@@ -1651,9 +1651,10 @@ public class ServiceInterfaceTools {
             }
         }).start(ThreadManager.getManager());
     }
+
     public void uploadFavoriteNewFile(final String url, final int code, final String fileName,
                                       final String Description,
-                                      final String key, final ConvertingResult convertingResult, final int fieldId,final int bindAttachmentID,
+                                      final String key, final ConvertingResult convertingResult, final int fieldId, final int bindAttachmentID,
                                       ServiceInterfaceListener serviceInterfaceListener) {
         putInterface(code, serviceInterfaceListener);
         new ApiTask(new Runnable() {
@@ -3545,6 +3546,22 @@ public class ServiceInterfaceTools {
         Log.e("syncGetCourseRole", "url:" + url + ",response:" + response);
         return response;
 
+    }
+
+//    https://testapi.peertime.cn/MeetingServer/meeting/change_camera_display_mode?mode=1
+
+    public JSONObject syncChangeCameraDisplayMode(int mode) {
+        JSONObject params = new JSONObject();
+        try {
+            params.put("mode", mode);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String url = AppConfig.URL_MEETING_BASE + "meeting/change_camera_display_mode?mode=" + mode;
+        JSONObject response = ConnectService.submitDataByJson(url, params);
+        Log.e("syncChangeCameraDisplayMode","url:" + url + ",response:" + response);
+        return response;
     }
 
 //    https://api.peertime.cn/peertime/V1/Lesson/Item?lessonID=1983850

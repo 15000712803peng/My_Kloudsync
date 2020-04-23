@@ -15,10 +15,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <FrameLayout
+            android:padding="2dp"
             android:id="@+id/speaker_view_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/darkblack2"></FrameLayout>
+            android:background="@color/tab_gray"></FrameLayout>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -65,6 +66,7 @@
 
 
     <ImageView
+        android:id="@+id/arrow_expand"
         android:layout_centerVertical="true"
         android:src="@drawable/follow_spkear_arrow_right"
         android:layout_width="30dp"

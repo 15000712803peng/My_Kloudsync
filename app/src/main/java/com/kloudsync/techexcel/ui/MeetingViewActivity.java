@@ -1889,6 +1889,11 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     }
 
     @Override
+    public void menuSettingClicked() {
+
+    }
+
+    @Override
     public void menuChatClicked() {
         showChatPop();
     }

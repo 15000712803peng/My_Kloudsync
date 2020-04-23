@@ -57,8 +57,8 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_file:
-	            if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
-                    if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+                if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
+                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
                         return;
                     }
                 }
@@ -80,8 +80,8 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_notes:
-                if(meetingConfig.getType() == MeetingType.MEETING){
-                    if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+                if (meetingConfig.getType() == MeetingType.MEETING) {
+                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
                         return;
                     }
                 }
@@ -104,8 +104,8 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_sync:
-	            if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
-		            if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
+                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
                         return;
                     }
                 }
@@ -129,12 +129,19 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                     bottomMenuOperationsListener.menuPlayMeetingRecordClicked();
                 }
                 break;
+            case R.id.bottom_menu_setting:
+                hide();
+                if (bottomMenuOperationsListener != null) {
+                    bottomMenuOperationsListener.menuSettingClicked();
+                }
+                break;
             default:
                 break;
         }
     }
 
     public interface BottomMenuOperationsListener {
+
         void menuClosedClicked();
 
         void menuFileClicked();
@@ -154,6 +161,8 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
         void menuSyncClicked();
 
         void menuPlayMeetingRecordClicked();
+
+        void menuSettingClicked();
 
     }
 
@@ -241,30 +250,37 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 menuStartMeeting.setVisibility(View.GONE);
                 menuShare.setVisibility(View.GONE);
                 menuClose.setVisibility(View.GONE);
-                menuSetting.setVisibility(View.GONE);
                 //------
                 menuMember.setVisibility(View.VISIBLE);
                 menuChat.setVisibility(View.VISIBLE);
+
+                // -----
+
+                if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID) || meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                    menuSetting.setVisibility(View.VISIBLE);
+                } else {
+                    menuSetting.setVisibility(View.GONE);
+                }
 
                 break;
             case MeetingType.SYNCBOOK:
                 break;
             case MeetingType.SYNCROOM:
                 break;
-	        case MeetingType.UPCOMINGMEETING:
-		        menuFile.setVisibility(View.VISIBLE);
-		        menuNote.setVisibility(View.VISIBLE);
-		        menuSync.setVisibility(View.VISIBLE);
-		        menuStartMeeting.setVisibility(View.VISIBLE);
-		        menuTv.setVisibility(View.VISIBLE);
-		        menuClose.setVisibility(View.VISIBLE);
+            case MeetingType.UPCOMINGMEETING:
+                menuFile.setVisibility(View.VISIBLE);
+                menuNote.setVisibility(View.VISIBLE);
+                menuSync.setVisibility(View.VISIBLE);
+                menuStartMeeting.setVisibility(View.VISIBLE);
+                menuTv.setVisibility(View.VISIBLE);
+                menuClose.setVisibility(View.VISIBLE);
 
-		        menuMember.setVisibility(View.GONE);
-		        menuChat.setVisibility(View.GONE);
-		        menuShare.setVisibility(View.GONE);
-		        menuSetting.setVisibility(View.GONE);
-		        menuMember.setVisibility(View.GONE);
-		        break;
+                menuMember.setVisibility(View.GONE);
+                menuChat.setVisibility(View.GONE);
+                menuShare.setVisibility(View.GONE);
+                menuSetting.setVisibility(View.GONE);
+                menuMember.setVisibility(View.GONE);
+                break;
         }
     }
 

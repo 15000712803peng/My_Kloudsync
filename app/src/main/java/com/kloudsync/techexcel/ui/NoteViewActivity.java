@@ -1710,6 +1710,11 @@ public class NoteViewActivity extends BaseMeetingViewActivity implements PopBott
     }
 
     @Override
+    public void menuSettingClicked() {
+
+    }
+
+    @Override
     public void menuChatClicked() {
 
     }
