@@ -131,11 +131,6 @@ public class MeetingFragment extends MyFragment {
         return parseData(returnJson);
     }
 
-//    private void getTest(){
-//        JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers("1987431", MeetingConfig.MeetingRole.MEMBER);
-//        System.out.print(result);
-//    }
-
     private List<ServiceBean> parseData(JSONObject returnJson) {
         try {
             int retCode = returnJson.getInt("RetCode");
@@ -158,6 +153,8 @@ public class MeetingFragment extends MyFragment {
                         bean.setTeacherName(service.getString("TeacherNames"));
                         bean.setFinished(service.getInt("IsFinished") == 1 ? true : false);
                         bean.setStudentCount(service.getInt("StudentCount"));
+                        JSONArray jsonArray = service.getJSONArray("MemberList");
+                        bean.setMembers(jsonArray.toString());
                         mList.add(bean);
                     }
                     break;
@@ -199,7 +196,6 @@ public class MeetingFragment extends MyFragment {
 
                         @Override
                         public void view() {
-//                            Toast.makeText(getActivity(),type+"",Toast.LENGTH_LONG).show();
                             if (type == 3 || type == 2) {
                                 Intent intent = new Intent(getActivity(), MeetingViewActivity.class);
                                 intent.putExtra("userid", bean.getUserId());

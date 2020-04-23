@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,9 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.kloudsync.techexcel.adapter.AttendeeAdapter;
+import com.kloudsync.techexcel.bean.Attendee;
 import com.kloudsync.techexcel.tool.TextTool;
 import com.ub.kloudsync.activity.DocumentEditYinXiangPopup;
 import com.ub.kloudsync.activity.DocumentYinXiangPopup;
@@ -29,6 +36,7 @@ import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import org.feezu.liuli.timeselector.Utils.TextUtil;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -101,7 +109,10 @@ public class ServiceAdapter2 extends BaseAdapter {
             holder.title = (TextView) convertView.findViewById(R.id.title);
             holder.date = (TextView) convertView.findViewById(R.id.date);
             holder.host = (TextView) convertView.findViewById(R.id.host);
-            holder.attendee = (TextView) convertView.findViewById(R.id.attendee);
+            holder.tv_attendee = (TextView) convertView.findViewById(R.id.tv_attendee);
+            holder.tv_persons = (TextView) convertView.findViewById(R.id.tv_persons);
+            holder.rv_attendee = (RecyclerView) convertView.findViewById(R.id.rv_attendee);
+            holder.rv_attendee.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
             holder.moreoperation = (ImageView) convertView.findViewById(R.id.moreoperation);
             convertView.setTag(holder);
         } else {
@@ -156,7 +167,34 @@ public class ServiceAdapter2 extends BaseAdapter {
         holder.month.setText(getMonth(month));
         holder.date.setText(context.getString(R.string.meeting_time)+start + " - " + end + "(" +dd+")" );
         holder.host.setText(context.getString(R.string.host) + bean.getTeacherName());
-        holder.attendee.setText(bean.getUserName());
+        JSONArray jsonArray = JSONArray.parseArray(bean.getMembers());
+        List<Attendee> attendees=new ArrayList<Attendee>();
+        if (jsonArray != null) {
+            for(int i = 0; i < jsonArray.size(); i++) {
+                Attendee attendee=new Attendee();
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                attendee.setMemberName(jsonObject.getString("MemberName"));
+                attendee.setAvatarUrl(jsonObject.getString("AvatarUrl"));
+                attendee.setRole(jsonObject.getInteger("Role"));
+                if(attendee.getRole()==1){
+                    attendees.add(attendee);
+                }
+            }
+        }
+        if(attendees.size()>0){
+            holder.rv_attendee.setAdapter(new AttendeeAdapter(context,attendees));
+            holder.tv_persons.setText(attendees.size()+"人");
+            holder.tv_attendee.setVisibility(View.GONE);
+            if(attendees.size()>7){
+                holder.rv_attendee.setLayoutParams(new LinearLayout.LayoutParams(RecyclerView.LayoutParams.FILL_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT, 1.0f));
+
+            }
+        }else {
+            holder.rv_attendee.setVisibility(View.GONE);
+            holder.tv_persons.setVisibility(View.GONE);
+            holder.tv_attendee.setText("暂无参会人员信息");
+        }
+
         return convertView;
 
     }
@@ -193,11 +231,9 @@ public class ServiceAdapter2 extends BaseAdapter {
 
 
     class ViewHolder {
-
-        TextView day, month, title, date, host, attendee;
+        TextView day, month, title, date, host,tv_attendee,tv_persons;
         ImageView moreoperation;
-
+        RecyclerView rv_attendee;
     }
-
 }
 

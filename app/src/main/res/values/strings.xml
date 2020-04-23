@@ -990,18 +990,18 @@ Please input the cell phone number to add the contact
     <string name="my_contact">My contact</string>
 
     <string-array name="time_duration">
-        <item>15mininutes</item>
-        <item>30mins</item>
-        <item>45mins</item>
-        <item>60mins</item>
-        <item>90mins(1.5H)</item>
-        <item>120mins(2H)</item>
-        <item>180mins(3H)</item>
-        <item>240mins(4H)</item>
-        <item>300mins(5H)</item>
-        <item>360mins(6H)</item>
-        <item>420mins(7H)</item>
-        <item>480mins(8H)</item>
+        <item>15min</item>
+        <item>30min</item>
+        <item>45min</item>
+        <item>60min</item>
+        <item>90min(1.5H)</item>
+        <item>120min(2H)</item>
+        <item>180min(3H)</item>
+        <item>240min(4H)</item>
+        <item>300min(5H)</item>
+        <item>360min(6H)</item>
+        <item>420min(7H)</item>
+        <item>480min(8H)</item>
     </string-array>
 
     <integer-array name="time_millsecends">
@@ -1044,7 +1044,7 @@ Please input the cell phone number to add the contact
     <string name="join_meeting">Join Meeting</string>
 
 
-    <string name="duration_default">45mins</string>
+    <string name="duration_default">45min</string>
     <string name="invite_as_member">Invite as member</string>
     <string name="invite_as_admin">Invite as admin user</string>
     <string name="admin">admin</string>
