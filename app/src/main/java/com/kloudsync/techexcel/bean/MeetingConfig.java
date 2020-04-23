@@ -63,6 +63,15 @@ public class MeetingConfig {
     private boolean isSyncing = false;
     private boolean IsMeetingPause;
     private int roleInLession;
+    private boolean isThirdAudio=false;
+
+    public boolean isThirdAudio() {
+        return isThirdAudio;
+    }
+
+    public void setThirdAudio(boolean thirdAudio) {
+        isThirdAudio = thirdAudio;
+    }
 
     public int getRoleInLession() {
         return roleInLession;

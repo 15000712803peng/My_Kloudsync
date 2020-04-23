@@ -408,7 +408,9 @@
     <string name="invite_attendee">Invite attendee</string>
     <!--进入弹出窗口-->
     <string name="satOptions">Select Audio Tool Options</string>
-    <string name="satSystem">System</string>
+    <string name="satSystem">System audio</string>
+    <string name="thirdaudio">Third-party audio</string>
+    <string name="thirdaudiopromat">Currently choose do not support video format,you can use Skype,WeChat or other software for voice synchronization,please go to a third-party software to open voice conversation.</string>
     <string name="kCall">KloudCall</string>
     <string name="satExternal">External</string>
     <string name="satOn">Turn On</string>

@@ -3569,11 +3569,21 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
-        MeetingKit.getInstance().setOnSpeakerAgoraStatusChanged(this);
+        if(meetingConfig.isThirdAudio()){  //打开微信
+            Intent lan =getPackageManager().getLaunchIntentForPackage("com.tencent.mm");
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setComponent(lan.getComponent());
+            startActivity(intent);
+        }else{
+            MeetingKit.getInstance().setOnSpeakerAgoraStatusChanged(this);
+            MeetingKit.getInstance().startMeeting();
+            meetingLayout.setVisibility(View.VISIBLE);
+        }
         keepScreenWake();
         MeetingRecordManager.getManager(this).initRecording(recordstatus, messageManager, meetingConfig);
-        MeetingKit.getInstance().startMeeting();
-        meetingLayout.setVisibility(View.VISIBLE);
+
         meetingMenu.setVisibility(View.VISIBLE);
         waitingMeetingLayout.setVisibility(View.GONE);
         menuIcon.setImageResource(R.drawable.icon_menu);
@@ -3583,6 +3593,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
         String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
         ChatManager.getManager(this, meetingIndetifier).joinChatRoom(getResources().getString(R.string.Classroom) + meetingConfig.getLessionId());
+
+
 
         //处理刚进来就是屏幕共享的情况
 //        Observable.just("handle_web_share").delay(10000,TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
