@@ -33,8 +33,17 @@ public class SoundtrackBean implements Serializable {
     private int isPublic ;
 	private int actionBaseSoundtrackID;
 	private int MusicType;
+	private int voiceQuality;
 
-	public int getMusicType() {
+    public int getVoiceQuality() {
+        return voiceQuality;
+    }
+
+    public void setVoiceQuality(int voiceQuality) {
+        this.voiceQuality = voiceQuality;
+    }
+
+    public int getMusicType() {
 		return MusicType;
 	}
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="xzname">
+        　　
+        <item>@string/spanstand</item>　　　　　
+        <item>@string/spanhd</item>　　　　　
+        <item>@string/spanuhd</item>
+        　　　　
+    </string-array>
+</resources>

@@ -464,7 +464,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         try {
             if (audioRecorder.getStatus() == AudioRecorder.Status.STATUS_NO_READY) {
                 String fileName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-                audioRecorder.createDefaultAudio(fileName);
+                audioRecorder.createDefaultAudio(fileName,soundtrackBean.getVoiceQuality());
             }
         } catch (IllegalStateException e) {
             Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();

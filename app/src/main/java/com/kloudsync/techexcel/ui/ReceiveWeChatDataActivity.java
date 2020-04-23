@@ -194,6 +194,7 @@ public class ReceiveWeChatDataActivity extends Activity implements AddDocToSpace
                             uploadFileDialog.cancel();
                         }
                         EventBus.getDefault().post(new TeamSpaceBean());
+                        //打开document
                         finish();
                     }
                 });
