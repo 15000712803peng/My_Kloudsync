@@ -14,7 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +34,7 @@ public class ChangePhoneNumberActivity extends Activity {
 
 	private TextView tv_cphone, tv_reset, tv_sendcheckcode,tv_name;
 	private EditText et_telephone, et_checkcode;
-	private LinearLayout img_back;
+	private ImageView img_back;
 
 	private SharedPreferences sharedPreferences;
 	private SharedPreferences.Editor editor;
@@ -113,7 +113,7 @@ public class ChangePhoneNumberActivity extends Activity {
 		tv_sendcheckcode = (TextView) findViewById(R.id.tv_sendcheckcode);
 		et_telephone = (EditText) findViewById(R.id.et_telephone);
 		et_checkcode = (EditText) findViewById(R.id.et_checkcode);
-		img_back = (LinearLayout) findViewById(R.id.img_back);
+		img_back = findViewById(R.id.img_back);
 		
 		tv_name.setText("修改密码");
 		tv_reset.setEnabled(false);

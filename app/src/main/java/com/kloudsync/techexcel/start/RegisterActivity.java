@@ -234,9 +234,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
                 intent.putExtra(AboutWebActivity.ZHURL,zhUrl);
                 startActivity(intent);
                 break;
-            case R.id.tv_reset:
-
-                break;
             case R.id.tv_sendcheckcode:
                 GetCheckCode();
                 break;
@@ -292,8 +289,8 @@ public class RegisterActivity extends Activity implements OnClickListener {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            int pwdLength = pwdEdit.getText().length();
             String pwd = pwdEdit.getText().toString().trim();
+            int pwdLength = pwdEdit.getText().length();
             //含有数字
             final String NUMBER = ".*[0-9].*";
             //含有大小写字母

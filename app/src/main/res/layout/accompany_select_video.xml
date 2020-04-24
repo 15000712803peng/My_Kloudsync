@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:text="选择伴奏音想文件"
+            android:text="@string/selectaccompanyfile"
             android:textColor="@color/txt_color1"
             android:textSize="15sp" />
 
@@ -77,7 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="6dp"
-                android:text="伴奏音想"
+                android:text="@string/accompanysync"
                 android:textColor="@color/skyblue"
                 android:textSize="14sp" />
 
@@ -103,7 +103,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="6dp"
-                android:text="伴奏音乐"
+                android:text="@string/accompanymusic"
                 android:textColor="@color/txt_color1"
                 android:textSize="14sp" />
             <View
@@ -242,7 +242,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="文件名"
+            android:text="@string/accompanyfilename"
             android:textSize="14sp" />
 
         <TextView
@@ -251,7 +251,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="时长"
+            android:text="@string/accompanyfiletime"
             android:textSize="14sp" />
 
         <TextView
@@ -260,7 +260,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="录制人"
+            android:text="@string/accompanyfilewho"
             android:textSize="14sp" />
     </LinearLayout>
 
