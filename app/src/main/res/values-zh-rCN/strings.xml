@@ -882,6 +882,13 @@
     <string name="password_reset">密码已重置</string>
     <string name="base_enter">确定</string>
     <string name="base_cancel">取消</string>
+    <string name="forget_password_tips_text">8～14位密码，必须包含字母、数字、符号中至少2种</string>
+    <string name="reset_failed">重置失败</string>
+    <string name="passwords_are_inconsistent">密码不一致</string>
+    <string name="reset_login_password">重置登录密码</string>
+    <string name="recover_password">找回密码</string>
+
+
     <!--文档-->
     <string name="please_input_new_folder_name">请输入新建文件夹名称</string>
     <string name="name_cannot_be_empty">名称不能为空</string>

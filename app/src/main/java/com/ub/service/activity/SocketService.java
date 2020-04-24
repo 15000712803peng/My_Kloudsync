@@ -89,8 +89,10 @@ public class SocketService extends Service implements KloudWebClientManager.OnMe
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			//数字是随便写的“40”，
-			nm.createNotificationChannel(new NotificationChannel("40", "App Service", NotificationManager.IMPORTANCE_DEFAULT));
-			NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "40");
+			NotificationChannel channel = new NotificationChannel("41", "App Service", NotificationManager.IMPORTANCE_DEFAULT);
+			channel.setSound(null, null);
+			nm.createNotificationChannel(channel);
+			NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "41");
 			//其中的2，是也随便写的，正式项目也是随便写
 			startForeground(2, builder.build());
 		}

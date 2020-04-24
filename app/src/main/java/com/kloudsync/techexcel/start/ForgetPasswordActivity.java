@@ -9,9 +9,13 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +25,7 @@ import com.kloudsync.techexcel.app.ActivityWrapper;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
+import com.kloudsync.techexcel.tool.ToastUtils;
 import com.kloudsync.techexcel.ui.MainActivity;
 import com.ub.techexcel.service.ConnectService;
 import com.umeng.analytics.MobclickAgent;
@@ -31,10 +36,14 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+
 public class ForgetPasswordActivity extends ActivityWrapper implements OnClickListener {
 
-    private TextView tv_cphone, tv_reset, tv_sendcheckcode;
-    private EditText et_telephone, et_password, et_checkcode;
+    private static final int PASSWORD_HIDE = 1;
+    private static final int PASSWORD_NOT_HIDE = 2;
+    private TextView tv_cphone, tv_sendcheckcode, mTitle;
+    private Button mBtnReset, mBtnNext;
+    private EditText et_telephone, et_password, et_checkcode, mEtEnterPwd;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private String telephone;
@@ -42,8 +51,10 @@ public class ForgetPasswordActivity extends ActivityWrapper implements OnClickLi
     private String AccessCode;
     RelativeLayout backLayout;
     private View divider;
-    private TextView titleText;
+    //    private TextView titleText;
     private TextView rightTitleText;
+    private LinearLayout mLlyEnterPwd, mLlyForgetPwdCode;
+    private ImageView mIvNewClearPwd, mIvEnterClearPwd, mIvClearCode;
 
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -60,7 +71,11 @@ public class ForgetPasswordActivity extends ActivityWrapper implements OnClickLi
                     break;
                 case AppConfig.ACCESSCODE:
                     AccessCode = (String) msg.obj;
-                    ChangePassword();
+                    mTitle.setText(R.string.reset_login_password);
+                    mLlyForgetPwdCode.setVisibility(View.GONE);
+                    mBtnNext.setVisibility(View.GONE);
+                    mLlyEnterPwd.setVisibility(View.VISIBLE);
+                    mBtnReset.setVisibility(View.VISIBLE);
                     break;
                 case AppConfig.NotExist:
                     Toast.makeText(
@@ -109,6 +124,7 @@ public class ForgetPasswordActivity extends ActivityWrapper implements OnClickLi
 
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -119,8 +135,16 @@ public class ForgetPasswordActivity extends ActivityWrapper implements OnClickLi
 
 
     private void initView() {
+        mTitle = findViewById(R.id.tv_forgetpassword_title);
+        mLlyForgetPwdCode = findViewById(R.id.lly_forgetpassword_code);
+        mLlyEnterPwd = findViewById(R.id.lly_forgetpassword_enter_pwd);
+        mEtEnterPwd = findViewById(R.id.et_enter_password);
+        mBtnNext = findViewById(R.id.btn_forgetpwd_next);
+        mIvNewClearPwd = findViewById(R.id.iv_new_clear_pwd);
+        mIvEnterClearPwd = findViewById(R.id.iv_enter_clear_pwd);
+        mIvClearCode = findViewById(R.id.iv_clear_code);
         tv_cphone = (TextView) findViewById(R.id.tv_cphone);
-        tv_reset = (TextView) findViewById(R.id.tv_reset);
+        mBtnReset = findViewById(R.id.btn_reset);
         tv_sendcheckcode = (TextView) findViewById(R.id.tv_sendcheckcode);
         et_telephone = (EditText) findViewById(R.id.et_telephone);
         et_password = (EditText) findViewById(R.id.et_password);
@@ -128,19 +152,26 @@ public class ForgetPasswordActivity extends ActivityWrapper implements OnClickLi
 
         AppConfig.COUNTRY_CODE = 86;
         tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
-        tv_reset.setEnabled(false);
+        mBtnReset.setEnabled(false);
         setEditChangeInput();
-        tv_reset.setOnClickListener(this);
+        mBtnReset.setOnClickListener(this);
         tv_sendcheckcode.setOnClickListener(this);
         tv_cphone.setOnClickListener(this);
         backLayout = findViewById(R.id.layout_back);
         backLayout.setOnClickListener(this);
-        titleText = findViewById(R.id.tv_title);
+        mBtnNext.setOnClickListener(this);
+        mIvNewClearPwd.setOnClickListener(this);
+        mIvEnterClearPwd.setOnClickListener(this);
+        mIvClearCode.setOnClickListener(this);
+//        titleText = findViewById(R.id.tv_title);
         divider = findViewById(R.id.title_divider);
         divider.setVisibility(View.GONE);
         rightTitleText = findViewById(R.id.txt_right_title);
         rightTitleText.setVisibility(View.INVISIBLE);
-        titleText.setText(R.string.reset_pwd);
+//        titleText.setText(R.string.reset_pwd);
+        mTitle.setText(R.string.recover_password);
+        mBtnNext.setEnabled(false);
+        mBtnReset.setEnabled(false);
     }
 
 
@@ -148,14 +179,17 @@ public class ForgetPasswordActivity extends ActivityWrapper implements OnClickLi
         et_telephone.addTextChangedListener(new myTextWatch());
         et_password.addTextChangedListener(new myTextWatch());
         et_checkcode.addTextChangedListener(new myTextWatch());
-
+        mEtEnterPwd.addTextChangedListener(new myTextWatch());
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.tv_reset:
+            case R.id.btn_forgetpwd_next:
                 GetAccessCode();
+                break;
+            case R.id.btn_reset:
+                ChangePassword();
                 break;
             case R.id.tv_sendcheckcode:
                 GetCheckCode();
@@ -164,7 +198,26 @@ public class ForgetPasswordActivity extends ActivityWrapper implements OnClickLi
                 GotoChangeCode();
                 break;
             case R.id.layout_back:
-                finish();
+                if (mLlyForgetPwdCode.getVisibility() == View.VISIBLE) {
+                    finish();
+                } else {
+                    mTitle.setText(R.string.recover_password);
+                    mLlyForgetPwdCode.setVisibility(View.VISIBLE);
+                    mLlyEnterPwd.setVisibility(View.GONE);
+                    mBtnNext.setVisibility(View.VISIBLE);
+                    mBtnReset.setVisibility(View.GONE);
+                    et_password.setText("");
+                    mEtEnterPwd.setText("");
+                }
+                break;
+            case R.id.iv_clear_code:
+                et_checkcode.setText("");
+                break;
+            case R.id.iv_new_clear_pwd:
+                et_password.setText("");
+                break;
+            case R.id.iv_enter_clear_pwd:
+                mEtEnterPwd.setText("");
                 break;
             default:
                 break;
@@ -185,14 +238,48 @@ public class ForgetPasswordActivity extends ActivityWrapper implements OnClickLi
         @Override
         public void onTextChanged(CharSequence s, int start, int before,
                                   int count) {
-            if (et_password.getText().length() > 0
-                    && et_telephone.getText().length() > 0
-                    && et_checkcode.getText().length() > 0) {
-                tv_reset.setAlpha(1.0f);
-                tv_reset.setEnabled(true);
+            if (et_checkcode.getText().toString().trim().length() > 0) {
+                mIvClearCode.setVisibility(View.VISIBLE);
             } else {
-                tv_reset.setAlpha(0.6f);
-                tv_reset.setEnabled(false);
+                mIvClearCode.setVisibility(View.GONE);
+            }
+            if (et_telephone.getText().length() > 0
+                    && et_checkcode.getText().length() > 0) {
+                mBtnNext.setEnabled(true);
+            } else {
+                mBtnNext.setEnabled(false);
+                return;
+            }
+
+            String pwd = et_password.getText().toString().trim();
+            String enterPwd = mEtEnterPwd.getText().toString().trim();
+            int pwdLength = pwd.length();
+            int enterPwdLength = enterPwd.length();
+            if (pwdLength > 0) {
+                mIvNewClearPwd.setVisibility(View.VISIBLE);
+            } else {
+                mIvNewClearPwd.setVisibility(View.GONE);
+            }
+            if (enterPwdLength > 0) {
+                mIvEnterClearPwd.setVisibility(View.VISIBLE);
+            } else {
+                mIvEnterClearPwd.setVisibility(View.GONE);
+            }
+            //含有数字
+            final String NUMBER = ".*[0-9].*";
+            //含有大小写字母
+            final String CASE = ".*[a-zA-Z].*";
+            //特殊符号
+            final String REGSYMBOL = ".*[~!@#$%^&*()_+|<>,.?/:;'\\[\\]{}\"].*";
+            int hasNumber = pwd.matches(NUMBER) ? 1 : 0;
+            int hasCase = pwd.matches(CASE) ? 1 : 0;
+            int hasSymbol = pwd.matches(REGSYMBOL) ? 1 : 0;
+            if (pwdLength > 7 && pwdLength < 15 && hasNumber + hasCase + hasSymbol >= 2 && enterPwdLength > 0) {
+//                tv_reset.setAlpha(1.0f);
+                mBtnReset.setEnabled(true);
+            } else {
+//                tv_reset.setAlpha(0.6f);
+                mBtnReset.setEnabled(false);
             }
 
         }
@@ -226,16 +313,21 @@ public class ForgetPasswordActivity extends ActivityWrapper implements OnClickLi
         if (time < 0) {
             tv_sendcheckcode.setEnabled(true);
             tv_sendcheckcode.setText(getResources().getString(R.string.Resend_CheckCode));
-            tv_sendcheckcode.setTextColor(getResources().getColor(R.color.skyblue));
+//            tv_sendcheckcode.setTextColor(getResources().getColor(R.color.skyblue));
         } else {
             tv_sendcheckcode.setEnabled(false);
             tv_sendcheckcode.setText(time + "s");
-            tv_sendcheckcode.setTextColor(getResources().getColor(R.color.newgrey));
+//            tv_sendcheckcode.setTextColor(getResources().getColor(R.color.newgrey));
         }
     }
 
     protected void ChangePassword() {
-
+        String newPwd = et_password.getText().toString().trim();
+        String enterPwd = mEtEnterPwd.getText().toString().trim();
+        if (!newPwd.equals(enterPwd)) {
+            ToastUtils.showInCenter(this, getString(R.string.reset_failed), getString(R.string.passwords_are_inconsistent));
+            return;
+        }
 
         final JSONObject jsonObject = format();
         new ApiTask(new Runnable() {
@@ -430,6 +522,25 @@ public class ForgetPasswordActivity extends ActivityWrapper implements OnClickLi
             default:
                 break;
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mLlyForgetPwdCode.getVisibility() == View.VISIBLE) {
+                finish();
+            } else {
+                mTitle.setText(R.string.recover_password);
+                mLlyForgetPwdCode.setVisibility(View.VISIBLE);
+                mLlyEnterPwd.setVisibility(View.GONE);
+                mBtnNext.setVisibility(View.VISIBLE);
+                mBtnReset.setVisibility(View.GONE);
+                et_password.setText("");
+                mEtEnterPwd.setText("");
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     public void onResume() {
