@@ -346,4 +346,13 @@ public class ServiceBean implements Serializable {
 		this.comment = comment;
 	}
 
+	public String members;
+
+	public String getMembers() {
+		return members;
+	}
+
+	public void setMembers(String members) {
+		this.members = members;
+	}
 }
