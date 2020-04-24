@@ -107,6 +107,9 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.config.RealMeetingSetting;
 import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
+import com.kloudsync.techexcel.dialog.AddWxDocDialog;
+import com.kloudsync.techexcel.dialog.AddWxDocDialog.OnDocSavedListener;
+import com.kloudsync.techexcel.dialog.AddWxDocDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
@@ -337,6 +340,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private SurfaceView surfaceView;
     private MeetingSettingCache meetingSettingCache;
     private boolean mIsMeetingPause;
+
     private Handler rejoinHandler;
     private static final int MESSAGE_JOIN_TIME = 1;
     private int joinTime = 0;
@@ -345,6 +349,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private long mPauseDuration;
     private volatile boolean mSwitchShowDocument;
     private FollowSpearkerModeManager followSpearkerModeManager;
+    public static DocAndMeetingActivity instance=null;
+
 
     @Override
     public void showErrorPage() {
@@ -359,6 +365,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             finish();
             return;
         }
+        instance=this;
 
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
@@ -389,6 +396,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             public void getServiceReturnData(Object object) {
                 AccountSettingBean accountSettingBean = (AccountSettingBean) object;
                 meetingConfig.setSystemType(accountSettingBean.getSystemType());
+
                 messageManager = SocketMessageManager.getManager(DocAndMeetingActivity.this);
                 messageManager.registerMessageReceiver();
                 handleRejoinMeetingBecauseFailed();
@@ -488,15 +496,15 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是竖屏", Toast.LENGTH_SHORT).show();
             layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.addRule(RelativeLayout.BELOW, R.id.layout_real_meeting);
+	        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_70);
         }
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是横屏", Toast.LENGTH_SHORT).show();
             layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        }
+	        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_9);
 
-        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_9);
+        }
         mRlyMeetingPauseLayout.setLayoutParams(layoutParams);
     }
 
@@ -598,6 +606,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private ConnectionChangedListener connectionChangedListener = new ConnectionChangedListener();
 
 
+
     private class ConnectionChangedListener implements ConnectionClassManager.ConnectionClassStateChangeListener {
         @Override
         public void onBandwidthStateChange(ConnectionQuality connectionQuality) {
@@ -626,9 +635,112 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             menuIcon.setEnabled(true);
         }
         Tools.keepSocketServiceOn(this);
+        isUploadWeixinFile();
         super.onResume();
     }
 
+    AddWxDocDialog addWxDocDialog;
+    private void isUploadWeixinFile(){
+        if (!TextUtils.isEmpty(AppConfig.wechatFilePath)) {
+            if (addWxDocDialog != null) {
+                addWxDocDialog.dismiss();
+                addWxDocDialog = null;
+            }
+            addWxDocDialog = new AddWxDocDialog(this, AppConfig.wechatFilePath);
+            addWxDocDialog.setInVisible();
+            addWxDocDialog.setSavedListener(new OnDocSavedListener() {
+                @Override
+                public void onSaveSpace(String path) {
+
+                }
+
+                @Override
+                public void onSaveFavorite(String path) {
+                    AppConfig.wechatFilePath="";
+                    AddDocumentTool.addDocumentToFavorite(DocAndMeetingActivity.this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
+                        @Override
+                        public void uploadStart() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null) {
+                                        uploadFileDialog.cancel();
+                                    }
+                                    uploadFileDialog = new UploadFileDialog(DocAndMeetingActivity.this);
+                                    uploadFileDialog.setTile("uploading");
+                                    uploadFileDialog.show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void uploadFile(final int progress) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                                        uploadFileDialog.setProgress(progress);
+                                    }
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void convertFile(final int progress) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                                        uploadFileDialog.setTile("Converting");
+                                        uploadFileDialog.setProgress(progress);
+                                    }
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void uploadFinished(Object result) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                                        uploadFileDialog.cancel();
+                                        Toast.makeText(getApplicationContext(), "add favorite success", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void uploadError(final String message) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                                        uploadFileDialog.cancel();
+                                    }
+                                    String errorMessage = message;
+                                    if (TextUtils.isEmpty(errorMessage)) {
+                                        errorMessage = getString(R.string.operate_failure);
+                                    }
+                                    Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancel() {
+                    AppConfig.wechatFilePath="";
+                }
+            });
+            addWxDocDialog.show();
+
+        }
+    }
     @SuppressLint("JavascriptInterface")
     private void initWeb() {
 //        web.setZOrderOnTop(false);
@@ -728,6 +840,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             meetingConfig.reset();
         }
         meetingConfig = null;
+        instance=null;
     }
 
     private synchronized void getMeetingMembers(JSONArray users) {
@@ -2456,6 +2569,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             noteWeb.loadUrl("javascript:FromApp('" + key + "'," + _data + ")", null);
 
         } else {
+
             // show left right arrow
             web.loadUrl("javascript:ShowToolbar(" + false + ")", null);
             web.loadUrl("javascript:StopRecord()", null);
@@ -3064,6 +3178,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             messageManager = SocketMessageManager.getManager(this);
             messageManager.registerMessageReceiver();
         }
+
         if (meetingConfig.getType() != MeetingType.MEETING) {
             if (meetingConfig.isSyncing()) {
                 if (!TextUtils.isEmpty(actions)) {
@@ -3524,11 +3639,21 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
-        MeetingKit.getInstance().setOnSpeakerAgoraStatusChanged(this);
+        if(meetingConfig.isThirdAudio()){  //打开微信
+            Intent lan =getPackageManager().getLaunchIntentForPackage("com.tencent.mm");
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setComponent(lan.getComponent());
+            startActivity(intent);
+        }else{
+            MeetingKit.getInstance().setOnSpeakerAgoraStatusChanged(this);
+            MeetingKit.getInstance().startMeeting();
+            meetingLayout.setVisibility(View.VISIBLE);
+        }
         keepScreenWake();
         MeetingRecordManager.getManager(this).initRecording(recordstatus, messageManager, meetingConfig);
-        MeetingKit.getInstance().startMeeting();
-        meetingLayout.setVisibility(View.VISIBLE);
+
         meetingMenu.setVisibility(View.VISIBLE);
         waitingMeetingLayout.setVisibility(View.GONE);
         menuIcon.setImageResource(R.drawable.icon_menu);
@@ -3538,6 +3663,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
         String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
         ChatManager.getManager(this, meetingIndetifier).joinChatRoom(getResources().getString(R.string.Classroom) + meetingConfig.getLessionId());
+
+
 
         //处理刚进来就是屏幕共享的情况
 //        Observable.just("handle_web_share").delay(10000,TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
@@ -5381,6 +5508,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     }
 
                     Log.e("JOIN_MEETING", "join_meeting_message:" + documents);
+
 
                     if (joinMeetingMessage.getNoteId() > 0 && !TextUtils.isEmpty(joinMeetingMessage.getNotePageId())) {
                         followShowNote((int) joinMeetingMessage.getNoteId());

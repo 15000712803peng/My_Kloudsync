@@ -28,6 +28,7 @@ import com.ub.techexcel.adapter.ServiceAdapter2;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.service.ConnectService;
 import com.ub.techexcel.tools.MeetingMoreOperationPopup;
+import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,7 +93,6 @@ public class MeetingFragment extends MyFragment {
         }
 
         loadMeetings();
-
         return view;
     }
 
@@ -130,6 +130,11 @@ public class MeetingFragment extends MyFragment {
         Log.e("Lesson/List", url + "  " + returnJson.toString());
         return parseData(returnJson);
     }
+
+//    private void getTest(){
+//        JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers("1987431", MeetingConfig.MeetingRole.MEMBER);
+//        System.out.print(result);
+//    }
 
     private List<ServiceBean> parseData(JSONObject returnJson) {
         try {
@@ -174,7 +179,9 @@ public class MeetingFragment extends MyFragment {
         } else {
             noMeetingLayout.setVisibility(View.GONE);
             meetingList.setVisibility(View.VISIBLE);
-            if(type!=1){
+            if(type==1){
+                ListSort(meetings);
+            }else {
                 meetings = sortBydata(meetings);
             }
             meetingAdapter = new ServiceAdapter2(getActivity(), meetings, true, 0);
@@ -452,5 +459,28 @@ public class MeetingFragment extends MyFragment {
             }
         });
     }
+
+    private static void ListSort(List<ServiceBean> list) {
+        Collections.sort(list, new Comparator<ServiceBean>() {
+            @Override
+            public int compare(ServiceBean o1, ServiceBean o2) {
+                try {
+                    String x1 = o1.getPlanedStartDate();
+                    String x2 = o2.getPlanedStartDate();
+                    if (Long.parseLong(x1) < Long.parseLong(x2)) {
+                        return -1;
+                    } else if (Long.parseLong(x1) > Long.parseLong(x2)) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        });
+    }
+
 
 }

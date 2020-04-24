@@ -47,7 +47,7 @@ public class MeetingSearchResultsActivity extends Activity implements View.OnCli
 
     private List<ServiceBean> mList1 = new ArrayList<>();
 
-    private int type=0;   //  0,  1, 2
+    private int type=0;   //
 
     private ServiceAdapter2 serviceAdapter;
 
@@ -140,13 +140,13 @@ public class MeetingSearchResultsActivity extends Activity implements View.OnCli
         et_search.addTextChangedListener(this);
         statustxt=findViewById(R.id.statustxt);
         switch (type){
-            case 0:
+            case 1:
                 statustxt.setText(getString(R.string.upcoming));
                 break;
-            case 1:
+            case 2:
                 statustxt.setText(getString(R.string.pastdue));
                 break;
-            case 2:
+            case 3:
                 statustxt.setText(getString(R.string.pastfinish));
                 break;
         }

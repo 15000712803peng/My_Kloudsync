@@ -50,6 +50,7 @@ public class AddWxDocDialog implements View.OnClickListener {
         view = layoutInflater.inflate(R.layout.dialog_add_wx_doc, null);
         dialog = new Dialog(mContext, R.style.bottom_dialog);
         saveInSpaceText = view.findViewById(R.id.txt_save_in_space);
+        saveInSpaceText.setVisibility(View.VISIBLE);
         saveInFavoriteText = view.findViewById(R.id.txt_save_in_favorite);
         cancelText = view.findViewById(R.id.txt_cancel);
         saveInFavoriteText.setOnClickListener(this);
@@ -58,10 +59,18 @@ public class AddWxDocDialog implements View.OnClickListener {
         width = mContext.getResources().getDisplayMetrics().widthPixels;
         dialog.setContentView(view);
         dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setWindowAnimations(R.style.PopupAnimation5);
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
         lp.width = mContext.getResources().getDisplayMetrics().widthPixels;
         dialog.getWindow().setAttributes(lp);
+
+    }
+
+    public  void setInVisible(){
+        if(saveInSpaceText!=null){
+            saveInSpaceText.setVisibility(View.GONE);
+        }
     }
 
     public boolean isShowing() {

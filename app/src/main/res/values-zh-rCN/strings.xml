@@ -287,6 +287,11 @@
     <string name="UserNotExist">用户不存在</string>
 
     <string name="Choice">选择</string>
+
+    <string name="weixinChoice">选择文件保存到</string>
+    <string name="weixinmysave">我的收藏</string>
+    <string name="weixinmydocument">文档空间</string>
+
     <string name="Albums">从文件中选择</string>
 
     <string name="Uploading">更新中</string>
@@ -433,7 +438,7 @@
     <!--安排会议-->
     <string name="schStart">开始日期</string>
     <string name="start_time">开始时间</string>
-    <string name="schName">会议主题</string>
+    <string name="schName">会议名称</string>
     <string name="schEnd">结束日期</string>
     <string name="end_time">结束时间</string>
     <string name="schDuration">时长</string>
@@ -444,8 +449,10 @@
     <string name="schduration">请选择时长</string>
     <string name="invite_attendee">邀请参会者</string>
     <!--进入弹窗-->
-    <string name="satOptions">选择音频工具选项</string>
-    <string name="satSystem">系统</string>
+    <string name="satOptions">选择音频工具</string>
+    <string name="satSystem">系统音视频</string>
+    <string name="thirdaudio">第三音视频</string>
+    <string name="thirdaudiopromat">当前选择不支持视频，可使用Skype,WeChat等软件进行语音同步，请前往第三方软件开启语音对话</string>
     <string name="kCall">Kloud电话</string>
     <string name="satExternal">外部工具</string>
     <string name="satOn">启用</string>
@@ -522,12 +529,15 @@
     <string name="mtIsound">在这里输入音想名称...</string>
     <string name="mtYxName">名称</string>
     <string name="mtRNVoice">录制新的声音</string>
+    <string name="mtHighVoice">高保真</string>
     <string name="mtSyncRecord">同步</string>
     <string name="mtCancel">退出</string>
     <string name="mtRecordSync">录制 &#038; 同步</string>
     <string name="syncname">音想名称</string>
     <string name="hidden">隐藏</string>
-
+    <string name="spanstand">标准</string>
+    <string name="spanhd">高清</string>
+    <string name="spanuhd">超高清</string>
 
     <!--yinxiangoperatorpopup界面-->
     <string name="mtShareApp">分享到App</string>
@@ -650,6 +660,9 @@
     <string name="selectcoursee">选择课程</string>
     <string name="ispublic">公开</string>
     <string name="uploadaudiosuccess">上传文件成功</string>
+    <string name="uploadfile">上传文件</string>
+    <string name="selectteam">选择团队</string>
+    <string name="selectspace">选择空间</string>
 
     <string name="upcoming">即将开始</string>
     <string name="pastdue">已过期</string>
@@ -992,5 +1005,10 @@
     <string name="host">主持人:</string>
     <string name="meeting_time">会议时间:</string>
     <string name="attendee">参会人员:</string>
+    <string name="join_meeting">加入会议</string>
+    <string name="duration_default">45分钟</string>
+    <string name="invite_as_member">邀请为成员</string>
+    <string name="invite_as_admin">邀请为用户</string>
+    <string name="admin">用户</string>
 
 </resources>

@@ -65,7 +65,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
+            android:hint="@string/schName"
+            android:gravity="right|center_vertical"
             android:textColor="@color/colorFont33"
+            android:paddingRight="15dp"
             android:textSize="@dimen/sp_14" />
     </LinearLayout>
 
@@ -183,9 +186,9 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:layout_marginRight="@dimen/dp_35"
             android:gravity="center_vertical|right"
             android:textColor="@color/colorFont99"
+            android:text="@string/duration_default"
             android:textSize="@dimen/sp_14" />
 
         <ImageView
@@ -334,7 +337,7 @@
 
         <ImageView
             android:id="@+id/as_contact"
-            style="@style/ScheduleMeetingArrowIconStyle"/>
+            style="@style/ScheduleMeetingAddMemberIconStyle"/>
 
     </RelativeLayout>
 

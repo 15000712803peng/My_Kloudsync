@@ -50,6 +50,7 @@ import com.kloudsync.techexcel.tool.FileGetTool;
 import com.kloudsync.techexcel.tool.Md5Tool;
 import com.kloudsync.techexcel.tool.NetWorkHelp;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
+import com.kloudsync.techexcel.ui.MainActivity;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.HttpHandler;
@@ -214,7 +215,7 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
     private void GoToVIew(Document lesson) {
         Intent intent = new Intent(this, DocAndMeetingActivity.class);
         intent.putExtra("userid", AppConfig.UserID);
-        intent.putExtra("meetingId", lesson.getLessonId() + "," + AppConfig.UserID);
+        intent.putExtra("meeting_id", lesson.getLessonId() + "," + AppConfig.UserID);
         intent.putExtra("isTeamspace", true);
         intent.putExtra("yinxiangmode", 0);
         intent.putExtra("identity", 2);
@@ -224,10 +225,17 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
         intent.putExtra("isStartCourse", true);
         intent.putExtra("document", lesson);
 	    intent.putExtra(DocAndMeetingActivity.SUNDTRACKBEAN, mTempClickedSoundtrackBean);
-//        Intent intent = new Intent(this, MeetingActivity.class);
-//        intent.putExtra("host_id",AppConfig.UserID);
-//        intent.putExtra("meeting_id", lesson.getLessonId() + "," + AppConfig.UserID);
-//        intent.putExtra("meeting_role", 2);
+
+
+        //-----
+        intent.putExtra("meeting_id", Integer.parseInt(lesson.getLessonId()) + "," + AppConfig.UserID);
+//        intent.putExtra("meeting_id", "Doc-" + AppConfig.UserID);
+        intent.putExtra("document_id", lesson.getTempItemId());
+        intent.putExtra("meeting_type", 2);
+        intent.putExtra("lession_id", Integer.parseInt(lesson.getLessonId()));
+        intent.putExtra(DocAndMeetingActivity.SUNDTRACKBEAN, mTempClickedSoundtrackBean);
+
+
         startActivity(intent);
 	    mTempClickedSoundtrackBean = null;
     }
@@ -297,6 +305,97 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
     }
 
 
+    @Override
+    protected void onResume() {
+        isuploadweixindocument();
+        super.onResume();
+    }
+
+    private void isuploadweixindocument(){
+        if(TextUtils.isEmpty(AppConfig.wechatFilePath)){
+            return;
+        }
+        AddDocumentTool.addDocumentToFavorite(this,  AppConfig.wechatFilePath, new DocumentUploadTool.DocUploadDetailLinstener() {
+            @Override
+            public void uploadStart() {
+                AppConfig.wechatFilePath="";
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null) {
+                            uploadFileDialog.cancel();
+                        }
+                        uploadFileDialog = new UploadFileDialog(PersonalCollectionActivity.this);
+                        uploadFileDialog.setTile("uploading");
+                        uploadFileDialog.show();
+                    }
+                });
+            }
+
+            @Override
+            public void uploadFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void convertFile(final int progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.setTile("Converting");
+                            uploadFileDialog.setProgress(progress);
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void uploadFinished(Object result) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.cancel();
+                            getFavoriteDocuments(true);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void uploadError(final String message) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
+                            uploadFileDialog.cancel();
+                        }
+                        String errorMessage = message;
+                        if (TextUtils.isEmpty(errorMessage)) {
+                            errorMessage = getString(R.string.operate_failure);
+                        }
+                        Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
+
+
+
+
+
     private void getSchoolID() {
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
@@ -308,11 +407,11 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
 
 
     private void getData() {
-        getFavoriteDocuments();
+        getFavoriteDocuments(false);
 
     }
 
-    private void getFavoriteDocuments() {
+    private void getFavoriteDocuments(final boolean isShow) {
         ServiceInterfaceTools.getinstance().getFavoriteDocuments().enqueue(new Callback<NetworkResponse<FavoriteDocumentResponse>>() {
             @Override
             public void onResponse(Call<NetworkResponse<FavoriteDocumentResponse>> call, Response<NetworkResponse<FavoriteDocumentResponse>> response) {
@@ -323,6 +422,10 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
                             favoriteList = new ArrayList<>();
                         }
                         fAdapter.UpdateRV(favoriteList);
+                        if(favoriteList.size()>0&&isShow){
+                            onItemClick(favoriteList.get(favoriteList.size()-1));
+                        }
+
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.operate_failure, Toast.LENGTH_SHORT).show();
                     }
@@ -914,6 +1017,7 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        instance=null;
         EventBus.getDefault().unregister(this);
     }
 

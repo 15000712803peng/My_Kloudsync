@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -698,7 +699,7 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
                 break;
             case R.id.search_layout:
                 Intent searchIntnt = new Intent(getActivity(), MeetingSearchResultsActivity.class);
-                searchIntnt.putExtra("type", mViewPager.getCurrentItem());
+                searchIntnt.putExtra("type", mViewPager.getCurrentItem()+1);
                 startActivity(searchIntnt);
                 break;
             case R.id.lin_myroom:
@@ -1091,5 +1092,30 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
         },500);
     }
 
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean hasPermissionDismiss = false;//有权限没有通过
+        if (requestCode==REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_START_MEETING){
+            for (int i=0;i<grantResults.length;i++){
+                if (grantResults[i]==-1){
+                    hasPermissionDismiss=true;
+                    break;
+                }
+            }
+            if(!hasPermissionDismiss){
+                doStartMeeting(AppConfig.ClassRoomID);
+            }
+        }else if(requestCode==REQUEST_PERMISSION_CAMERA_AND_WRITE_EXTERNSL_FOR_JOIN_MEETING){
+            for (int i=0;i<grantResults.length;i++){
+                if (grantResults[i]==-1){
+                    hasPermissionDismiss=true;
+                    break;
+                }
+            }
+            if(!hasPermissionDismiss){
+                showJoinMeetingDialog();
+            }
+        }
+    }
 }

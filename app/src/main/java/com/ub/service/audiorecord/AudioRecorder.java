@@ -24,11 +24,18 @@ public class AudioRecorder {
     //采用频率
     //44100是目前的标准，但是某些设备仍然支持22050，16000，11025
     //采样频率一般共分为22.05KHz、44.1KHz、48KHz三个等级
-    private final static int AUDIO_SAMPLE_RATE = 16000;
+    private final static int AUDIO_SAMPLE_RATE = 12000;
+    private final static int AUDIO_SAMPLE_RATE2= 32000;
+    private final static int AUDIO_SAMPLE_RATE3= 48000;
     //声道 单声道
     private final static int AUDIO_CHANNEL = AudioFormat.CHANNEL_IN_MONO;
+    private final static int AUDIO_CHANNEL2 = AudioFormat.CHANNEL_IN_MONO;
+    private final static int AUDIO_CHANNEL3= AudioFormat.CHANNEL_IN_STEREO;
     //编码
-    private final static int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+    private final static int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_8BIT;
+    private final static int AUDIO_ENCODING2 = AudioFormat.ENCODING_PCM_16BIT;
+    private final static int AUDIO_ENCODING3= AudioFormat.ENCODING_PCM_16BIT;
+
     // 缓冲区字节大小
     private int bufferSizeInBytes = 0;
 
@@ -72,13 +79,73 @@ public class AudioRecorder {
      *
      * @param fileName 文件名
      */
-    public void createDefaultAudio(String fileName) {
+
+    private AudioConfig audioConfig=null;
+    public void createDefaultAudio(String fileName,int isHighFidelity) {
         // 获得缓冲区字节大小
-        bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE,
-                AUDIO_CHANNEL, AUDIO_ENCODING);
-        audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, bufferSizeInBytes);
-        this.fileName = fileName;
-        status = Status.STATUS_READY;
+        Log.e("isHighFidelity",isHighFidelity+"");
+        if(isHighFidelity==0){
+            bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE,
+                    AUDIO_CHANNEL, AUDIO_ENCODING);
+            audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, bufferSizeInBytes);
+            audioConfig=new AudioConfig(AUDIO_SAMPLE_RATE,1,8);
+            this.fileName = fileName;
+            status = Status.STATUS_READY;
+        }else if(isHighFidelity==1){
+            bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE2,
+                    AUDIO_CHANNEL2, AUDIO_ENCODING2);
+            audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE2, AUDIO_CHANNEL2, AUDIO_ENCODING2, bufferSizeInBytes);
+            audioConfig=new AudioConfig(AUDIO_SAMPLE_RATE2,1,16);
+            this.fileName = fileName;
+            status = Status.STATUS_READY;
+        } else if(isHighFidelity==2){
+            bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE3,
+                    AUDIO_CHANNEL3, AUDIO_ENCODING3);
+            audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE3, AUDIO_CHANNEL3, AUDIO_ENCODING3, bufferSizeInBytes);
+            audioConfig=new AudioConfig(AUDIO_SAMPLE_RATE3,2,16);
+            this.fileName = fileName;
+            status = Status.STATUS_READY;
+        }
+    }
+
+
+
+    class AudioConfig{
+        private  int sampleRate;
+
+        private int channels;
+
+        private int sampleBits;
+
+        public AudioConfig(int sampleRate, int channels, int sampleBits) {
+            this.sampleRate = sampleRate;
+            this.channels = channels;
+            this.sampleBits = sampleBits;
+        }
+
+        public int getSampleRate() {
+            return sampleRate;
+        }
+
+        public void setSampleRate(int sampleRate) {
+            this.sampleRate = sampleRate;
+        }
+
+        public int getChannels() {
+            return channels;
+        }
+
+        public void setChannels(int channels) {
+            this.channels = channels;
+        }
+
+        public int getSampleBits() {
+            return sampleBits;
+        }
+
+        public void setSampleBits(int sampleBits) {
+            this.sampleBits = sampleBits;
+        }
     }
 
 
@@ -258,7 +325,7 @@ public class AudioRecorder {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (PcmToWav.mergePCMFilesToWAVFile(filePaths, FileUtils.getWavFileAbsolutePath(fileName))) {
+                if (PcmToWav.mergePCMFilesToWAVFile(filePaths, FileUtils.getWavFileAbsolutePath(fileName),audioConfig)) {
                     //操作成功
                     listener.endRecord(fileName);
                 } else {
