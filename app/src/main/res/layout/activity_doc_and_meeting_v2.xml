@@ -970,16 +970,38 @@
         android:src="@drawable/icon_command"
         android:visibility="gone" />
 
-    <ImageView
-        android:id="@+id/meeting_menu_member"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+
+
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="12dp"
-        android:layout_marginRight="56dp"
-        android:src="@drawable/icon_menu_audience"
-        android:visibility="gone" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/image_meeting_hands_up"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginRight="2dp"
+            android:src="@drawable/no_hands_up" />
+
+        <ImageView
+            android:padding="3dp"
+            android:id="@+id/meeting_menu_member"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginRight="56dp"
+            android:src="@drawable/icon_menu_audience"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+
+
 
     <com.kloudsync.techexcel.view.TipTextView
         android:id="@+id/txt_top_tip"

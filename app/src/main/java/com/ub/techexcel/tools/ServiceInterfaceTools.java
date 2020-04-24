@@ -2,6 +2,7 @@ package com.ub.techexcel.tools;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -3564,6 +3565,12 @@ public class ServiceInterfaceTools {
         return response;
     }
 
+    public JSONObject syncGetUserDetail(String UserID) {
+        String url = AppConfig.URL_PUBLIC + "User/Customer?UserID=" + UserID;
+        JSONObject response = ConnectService.getIncidentbyHttpGet(url);
+        Log.e("syncGetUserDetail","url:" + url + ",response:" + response);
+        return response;
+    }
 //    https://api.peertime.cn/peertime/V1/Lesson/Item?lessonID=1983850
 
 //      https://api.peertime.cn/peertime/V1/RecurringMeeting/GetRecurringMeetingItemList?meetingID=1984186&listType=0&withMember=1&withAttach=1&pageIndex=0&pageSize=10

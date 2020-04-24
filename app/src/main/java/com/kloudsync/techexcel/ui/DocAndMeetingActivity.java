@@ -333,6 +333,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     RelativeLayout speakerLayout;
     @Bind(R.id.layout_speaker_container)
     RelativeLayout speakerContainer;
+    @Bind(R.id.image_meeting_hands_up)
+    ImageView handsUpImage;
+
     AgoraCameraAdapter cameraAdapter;
     FullAgoraCameraAdapter fullCameraAdapter;
     Gson gson;
@@ -349,7 +352,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private long mPauseDuration;
     private volatile boolean mSwitchShowDocument;
     private FollowSpearkerModeManager followSpearkerModeManager;
-    public static DocAndMeetingActivity instance=null;
+    public static DocAndMeetingActivity instance = null;
 
 
     @Override
@@ -365,7 +368,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             finish();
             return;
         }
-        instance=this;
+        instance = this;
 
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
@@ -496,13 +499,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是竖屏", Toast.LENGTH_SHORT).show();
             layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-	        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_70);
+            layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_70);
         }
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是横屏", Toast.LENGTH_SHORT).show();
             layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-	        layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_9);
+            layoutParams.topMargin = getResources().getDimensionPixelOffset(R.dimen.dp_9);
 
         }
         mRlyMeetingPauseLayout.setLayoutParams(layoutParams);
@@ -606,7 +609,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private ConnectionChangedListener connectionChangedListener = new ConnectionChangedListener();
 
 
-
     private class ConnectionChangedListener implements ConnectionClassManager.ConnectionClassStateChangeListener {
         @Override
         public void onBandwidthStateChange(ConnectionQuality connectionQuality) {
@@ -640,7 +642,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     AddWxDocDialog addWxDocDialog;
-    private void isUploadWeixinFile(){
+
+    private void isUploadWeixinFile() {
         if (!TextUtils.isEmpty(AppConfig.wechatFilePath)) {
             if (addWxDocDialog != null) {
                 addWxDocDialog.dismiss();
@@ -656,7 +659,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
                 @Override
                 public void onSaveFavorite(String path) {
-                    AppConfig.wechatFilePath="";
+                    AppConfig.wechatFilePath = "";
                     AddDocumentTool.addDocumentToFavorite(DocAndMeetingActivity.this, path, new DocumentUploadTool.DocUploadDetailLinstener() {
                         @Override
                         public void uploadStart() {
@@ -734,13 +737,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
                 @Override
                 public void onCancel() {
-                    AppConfig.wechatFilePath="";
+                    AppConfig.wechatFilePath = "";
                 }
             });
             addWxDocDialog.show();
 
         }
     }
+
     @SuppressLint("JavascriptInterface")
     private void initWeb() {
 //        web.setZOrderOnTop(false);
@@ -840,7 +844,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             meetingConfig.reset();
         }
         meetingConfig = null;
-        instance=null;
+        instance = null;
     }
 
     private synchronized void getMeetingMembers(JSONArray users) {
@@ -1438,28 +1442,29 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                        handleAgoraStatusInHelloMessage(helloJson);
                         HelloMessage helloMessage = gson.fromJson(helloJson,
                                 HelloMessage.class);
-                        handleMessageHelloMessage(helloMessage);
+                        handleMessageHelloMessage(helloMessage, helloJson);
                         Log.e("check_hello_message", "hello_message:" + helloMessage);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
                 break;
+
             case SocketMessageManager.MESSAGE_MEETING_STATUS:
-                JSONObject meetingStatusObj = socketMessage.getData();
-
-                if (!meetingConfig.isHost()) {
-                    handleMessageMeetingStatus(meetingStatusObj);
-                }
-
-                if (meetingStatusObj.has("status")) {
-                    try {
-                        int status = meetingStatusObj.getInt("status");
-                        meetingConfig.setMeetingStatus(status);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
+//                JSONObject meetingStatusObj = socketMessage.getData();
+//
+//                if (!meetingConfig.isHost()) {
+//                    handleMessageMeetingStatus(meetingStatusObj);
+//                }
+//
+//                if (meetingStatusObj.has("status")) {
+//                    try {
+//                        int status = meetingStatusObj.getInt("status");
+//                        meetingConfig.setMeetingStatus(status);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
                 //{"action":"MEETING_STATUS","retCode":"1","meetingId":"M11","status":"1","changeNumber":"3"}
                 break;
             case SocketMessageManager.MEETING_CHANGE:
@@ -1550,7 +1555,10 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
     }
 
-    private void handleMessageHelloMessage(HelloMessage helloMessage) {
+    private static final int TAG_HAVE_HANDS_UP = 1;
+    private static final int TAG_NO_HANDS_UP = 2;
+
+    private void handleMessageHelloMessage(HelloMessage helloMessage, String data) {
         if (helloMessage == null) {
             return;
         }
@@ -1562,6 +1570,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             if (meetingConfig.getMeetingStatus() == 0) {
                 // 等待会议开启的状态
                 return;
+            }
+
+
+            JSONObject jsonData = null;
+            try {
+                jsonData = new JSONObject(data);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
             meetingMenu.setVisibility(View.VISIBLE);
@@ -1630,6 +1646,15 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
             }
 
+            // 处理role
+
+            if (jsonData != null && jsonData.has("role")) {
+                meetingConfig.setRole(jsonData.optInt("role"));
+                if (jsonData.has("handStatus")) {
+                    meetingConfig.setHandStatus(jsonData.optInt("handStatus"));
+                }
+            }
+
             if (meetingConfig.getRole() != MeetingConfig.MeetingRole.HOST && meetingConfig.getRole() != MeetingConfig.MeetingRole.MEMBER) {
                 // 自己不是host也不是主讲人
                 if (menuIcon.getVisibility() == View.VISIBLE && meetingConfig.getMeetingStatus() != 0) {
@@ -1643,8 +1668,27 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     if (meetingMenuMemberImage.getVisibility() == View.VISIBLE) {
                         menuIcon.setVisibility(View.VISIBLE);
                         meetingMenuMemberImage.setVisibility(View.GONE);
+                        handsUpImage.setVisibility(View.GONE);
                     }
                 }
+            }
+
+            if (meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE) {
+
+                handsUpImage.setVisibility(View.VISIBLE);
+                if (meetingConfig.getHandStatus() == 1) {
+                    // 已举手
+                    handsUpImage.setVisibility(View.VISIBLE);
+                    handsUpImage.setImageResource(R.drawable.have_handes_up);
+                    handsUpImage.setTag(TAG_HAVE_HANDS_UP);
+                } else {
+                    handsUpImage.setVisibility(View.VISIBLE);
+                    handsUpImage.setImageResource(R.drawable.no_hands_up);
+                    handsUpImage.setTag(TAG_NO_HANDS_UP);
+                }
+            } else {
+                handsUpImage.setImageResource(R.drawable.no_hands_up);
+                handsUpImage.setVisibility(View.GONE);
             }
 
             // handle soundtrack
@@ -2474,6 +2518,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 isMember = true;
                 menuIcon.setVisibility(View.VISIBLE);
                 meetingMenuMemberImage.setVisibility(View.GONE);
+                handsUpImage.setTag(TAG_NO_HANDS_UP);
+                handsUpImage.setImageResource(R.drawable.no_hands_up);
+                handsUpImage.setVisibility(View.GONE);
                 if (cameraAdapter != null) {
                     int index = meetingConfig.getAgoraMembers().indexOf(new AgoraMember(Integer.parseInt(userId)));
                     Log.e("check_me", "index:" + index);
@@ -2493,6 +2540,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 MeetingKit.getInstance().disableAudioAndVideoStream();
                 menuIcon.setVisibility(View.GONE);
                 meetingMenuMemberImage.setVisibility(View.VISIBLE);
+                handsUpImage.setVisibility(View.VISIBLE);
             }
         }
 
@@ -3423,6 +3471,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             @Override
             public void getServiceReturnData(Object object) {
                 TvDevice tvDevice = (TvDevice) object;
+                meetingConfig.setHost(true);
                 if (tvDevice != null) {
                     if (!TextUtils.isEmpty(tvDevice.getUserID())) { //已经有其他地方开启了会议
                         openWarningInfo(1);
@@ -3639,14 +3688,14 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         if (meetingConfig.getType() != MeetingType.MEETING) {
             return;
         }
-        if(meetingConfig.isThirdAudio()){  //打开微信
-            Intent lan =getPackageManager().getLaunchIntentForPackage("com.tencent.mm");
+        if (meetingConfig.isThirdAudio()) {  //打开微信
+            Intent lan = getPackageManager().getLaunchIntentForPackage("com.tencent.mm");
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setComponent(lan.getComponent());
             startActivity(intent);
-        }else{
+        } else {
             MeetingKit.getInstance().setOnSpeakerAgoraStatusChanged(this);
             MeetingKit.getInstance().startMeeting();
             meetingLayout.setVisibility(View.VISIBLE);
@@ -3663,7 +3712,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
         String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
         ChatManager.getManager(this, meetingIndetifier).joinChatRoom(getResources().getString(R.string.Classroom) + meetingConfig.getLessionId());
-
 
 
         //处理刚进来就是屏幕共享的情况
@@ -3698,6 +3746,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         _inviteLayout.setOnClickListener(this);
         _shareLayout.setOnClickListener(this);
         meetingMenuMemberImage.setOnClickListener(this);
+        handsUpImage.setOnClickListener(this);
         CameraTouchListener cameraTouchListener = new CameraTouchListener();
         cameraTouchListener.setCameraLayout(cameraLayout);
         toggleCameraLayout.setOnTouchListener(cameraTouchListener);
@@ -3767,7 +3816,35 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
                 showMembersDialog();
                 break;
+            case R.id.image_meeting_hands_up:
+                if (handsUpImage.getTag() != null) {
+                    final int handsUp = (int) handsUpImage.getTag();
+                    if (handsUp == TAG_NO_HANDS_UP) {
+                        Observable.just("hands_up").observeOn(Schedulers.io()).map(new Function<String, JSONObject>() {
+                            @Override
+                            public JSONObject apply(String s) throws Exception {
+                                return ServiceInterfaceTools.getinstance().
+                                        syncHandUpOrDown(1, null);
+                            }
+                        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<JSONObject>() {
+                            @Override
+                            public void accept(JSONObject response) throws Exception {
+                                if (response.has("code")) {
+                                    if (response.getInt("code") == 0) {
+                                        handsUpImage.setImageResource(R.drawable.have_handes_up);
+                                        handsUpImage.setTag(TAG_HAVE_HANDS_UP);
+                                    }
+                                }
+                            }
+                        }).subscribe();
+                    }
+                }
+                break;
         }
+    }
+
+    private void handsUpAndRefresh() {
+
     }
 
     ShareDocInMeetingDialog shareDocInMeetingDialog;
