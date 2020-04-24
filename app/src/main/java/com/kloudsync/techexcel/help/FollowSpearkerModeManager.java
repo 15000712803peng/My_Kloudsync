@@ -293,7 +293,7 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         if (member.isMuteAudio()) {
             audioStatusImage.setImageResource(R.drawable.microphone);
         } else {
-            audioStatusImage.setImageResource(R.drawable.icon_command_mic_enabel);
+            audioStatusImage.setImageResource(R.drawable.microphone_enable);
         }
 
         if (TextUtils.isEmpty(member.getIconUrl())) {
@@ -320,9 +320,9 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         if (this.currentAgoraMember != null) {
             this.currentAgoraMember.setMuteAudio(isMuted);
             if (currentAgoraMember.isMuteAudio()) {
-                audioStatusImage.setImageResource(R.drawable.icon_command_mic_disable);
+                audioStatusImage.setImageResource(R.drawable.microphone);
             } else {
-                audioStatusImage.setImageResource(R.drawable.icon_command_mic_enabel);
+                audioStatusImage.setImageResource(R.drawable.microphone_enable);
                 currentAgoraMember.setHaveShowUnMuteAudioImage(true);
             }
         }

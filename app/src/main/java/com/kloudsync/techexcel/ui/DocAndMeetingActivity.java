@@ -1891,7 +1891,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         String data = pageActions.getData();
         if (!TextUtils.isEmpty(data)) {
             if (pageActions.getPageNumber() == meetingConfig.getPageNumber()) {
-//                Log.e("check_play_txt","PlayActionByArray:" + data);
+                Log.e("check_play_txt", "PlayActionByArray:" + data);
                 web.loadUrl("javascript:PlayActionByArray(" + data + "," + 0 + ")", null);
             }
         }

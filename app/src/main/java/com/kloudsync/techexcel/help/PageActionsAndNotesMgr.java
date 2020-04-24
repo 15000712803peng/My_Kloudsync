@@ -69,7 +69,6 @@ public class PageActionsAndNotesMgr {
                     }).subscribe();
                 }
 
-
 	}
 
 	public static void requestActionsAndNoteForSoundtrack(MeetingConfig config, final String pageNumber, final String attachmentId, final String itemId, final String soundtrackID) {

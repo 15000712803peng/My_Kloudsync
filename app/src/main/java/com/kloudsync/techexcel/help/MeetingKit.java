@@ -573,7 +573,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             //0代表本地用户
             if (info.uid == 0 && info.volume >= 100) { //自己是否说话了
                 Log.e("onAudioVolumeIndication", info.uid + "  " + info.volume);
-                selfIsSpeaker = true;
+                if(!settingCache.getMeetingSetting().isMicroOn()){
+                    selfIsSpeaker = false;
+                }else {
+                    selfIsSpeaker = true;
+                }
                 break;
             }
         }
