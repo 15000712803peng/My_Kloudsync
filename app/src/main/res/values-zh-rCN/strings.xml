@@ -539,6 +539,28 @@
     <string name="spanhd">高清</string>
     <string name="spanuhd">超高清</string>
 
+    <string name="createnewaccompany">创建新伴奏/演唱</string>
+    <string name="accompanytitle">标题: </string>
+    <string name="accompanytitlehidden">请输入伴奏音乐/演唱标题</string>
+    <string name="startaccompant">启用伴奏</string>
+    <string name="selectaccompant">+ 选择一个伴奏</string>
+    <string name="startaccompantrecord">录制演唱</string>
+    <string name="startaccompantnewrecord">录制新声音</string>
+    <string name="uploadvoicefile">上传声音文件</string>
+    <string name="selectaccompanyfile">选择伴奏音想文件</string>
+    <string name="accompanysync">伴奏音想</string>
+    <string name="accompanymusic">伴奏音乐</string>
+    <string name="accompanyfilename">文件名</string>
+    <string name="accompanyfiletime">时长</string>
+    <string name="accompanyfilewho">录制人</string>
+    <string name="accompanyfilesize">文件大小</string>
+
+    <string name="makesyncaccompany">制作同步伴奏带</string>
+    <string name="saveaccompany">保存为伴奏</string>
+    <string name="resyncaccompany">重新同步伴奏带</string>
+    <string name="selectcompanimenmusicfile">选择伴奏音乐文件</string>
+
+
     <!--yinxiangoperatorpopup界面-->
     <string name="mtShareApp">分享到App</string>
     <string name="mtShareWechat">分享到微信</string>
@@ -823,6 +845,7 @@
     <string name="create_new_sync">创建音想</string>
     <string name="select_more_sync">+ 选择音想</string>
     <string name="sync">同步</string>
+    <string name="soundsync">音想</string>
     <string name="invite_new">邀请</string>
     <string name="invite_new_new">邀请</string>
     <string name="invite_skip">跳过</string>

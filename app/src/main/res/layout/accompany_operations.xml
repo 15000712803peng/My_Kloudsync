@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:gravity="center"
-                    android:text="制作同步伴奏带"
+                    android:text="@string/makesyncaccompany"
                     android:textColor="@color/txt_color1"
                     />
             </LinearLayout>
@@ -76,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:gravity="center"
-                    android:text="保存为伴奏"
+                    android:text="@string/saveaccompany"
                     android:textColor="@color/txt_color1"
                      />
             </LinearLayout>

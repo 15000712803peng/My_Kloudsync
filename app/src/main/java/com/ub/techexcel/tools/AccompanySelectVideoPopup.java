@@ -246,7 +246,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				isshowfileupload.setVisibility(View.INVISIBLE);
 				tv1.setTextColor(mContext.getResources().getColor(R.color.skyblue));
 				tv2.setTextColor(mContext.getResources().getColor(R.color.txt_color1));
-				fileSize.setText("录制人");
+				fileSize.setText(mContext.getString(R.string.accompanyfilewho));
 				break;
 			case R.id.accompanymusicll:
 				selectPosition = -1;
@@ -258,7 +258,7 @@ public class AccompanySelectVideoPopup implements View.OnClickListener, Soundtra
 				isshowfileupload.setVisibility(View.VISIBLE);
 				tv1.setTextColor(mContext.getResources().getColor(R.color.txt_color1));
 				tv2.setTextColor(mContext.getResources().getColor(R.color.skyblue));
-				fileSize.setText("文件大小");
+				fileSize.setText(mContext.getString(R.string.accompanyfilesize));
 				break;
 			case R.id.save:
 				if (accompanyll_line.getVisibility() == View.VISIBLE) {
