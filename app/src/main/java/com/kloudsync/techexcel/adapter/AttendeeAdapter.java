@@ -1,5 +1,7 @@
 package com.kloudsync.techexcel.adapter;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,7 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.Attendee;
@@ -34,7 +38,18 @@ public class AttendeeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         ViewHolder holder = (ViewHolder) viewHolder;
         holder.tv_item_attendee.setText(attendees.get(position).getMemberName());
-        Glide.with(mContext).load(attendees.get(position).getAvatarUrl()).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(holder.iv_item_attendee);
+        if(attendees.get(position).getAvatarUrl().equals("")){
+            holder.iv_item_attendee.setImageResource(R.drawable.icon_attendee_default);
+            holder.iv_item_attendee.setScaleType(ImageView.ScaleType.FIT_XY);
+        }else {
+            RequestOptions options = new RequestOptions()
+                    .placeholder(R.drawable.icon_attendee_default)
+                    .fallback( R.drawable.icon_attendee_default)
+                    .error(R.drawable.icon_attendee_default)
+                    //.bitmapTransform(new RoundedCorners(30))//设置圆角
+                    .bitmapTransform(new CircleCrop());//设置圆形
+            Glide.with(mContext).load(attendees.get(position).getAvatarUrl()).apply(options).into(holder.iv_item_attendee);
+        }
         holder.itemView.setTag(position);
     }
 
