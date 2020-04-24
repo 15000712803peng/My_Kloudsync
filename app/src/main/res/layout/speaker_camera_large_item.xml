@@ -10,25 +10,32 @@
     >
 
     <RelativeLayout
-        android:layout_marginLeft="15dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
         android:background="@drawable/gray_border"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <FrameLayout
+            android:padding="2dp"
             android:id="@+id/speaker_view_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/darkblack2"></FrameLayout>
+            android:background="@drawable/gray_border"></FrameLayout>
 
         <LinearLayout
             android:orientation="horizontal"
-            android:gravity="right|center_vertical"
+            android:gravity="center_vertical"
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="26dp">
 
+            <ImageView
+                android:id="@+id/image_audio_status"
+                android:src="@drawable/microphone"
+                android:layout_width="26dp"
+                android:layout_height="28dp" />
+
             <TextView
-                android:gravity="right"
                 android:id="@+id/txt_name"
                 android:ellipsize="end"
                 android:textSize="12dp"
@@ -36,14 +43,11 @@
                 android:singleLine="true"
                 android:textColor="@color/white"
                 android:text=""
+                android:layout_weight="1"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content" />
 
-            <ImageView
-                android:id="@+id/image_audio_status"
-                android:src="@drawable/icon_command_mic_disable"
-                android:layout_width="26dp"
-                android:layout_height="28dp" />
+
 
             <ImageView
                 android:id="@+id/image_speark_more"
@@ -65,6 +69,7 @@
 
 
     <ImageView
+        android:id="@+id/arrow_expand"
         android:layout_centerVertical="true"
         android:src="@drawable/follow_spkear_arrow_right"
         android:layout_width="30dp"

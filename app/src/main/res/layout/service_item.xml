@@ -123,31 +123,33 @@
 
 
         <LinearLayout
+            android:gravity="center_vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="53dp"
+            android:layout_marginRight="35dp"
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tv_attendee"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/attendee"
-                android:textColor="#666666"
+                android:textColor="#A2A2A2"
                 android:textSize="12sp" />
-
-            <HorizontalScrollView
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginLeft="3dp"
-                android:scrollbars="none">
-
-                <TextView
-                    android:id="@+id/attendee"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Attendee:"
-                    android:textColor="#666666"
-                    android:textSize="12sp" />
-            </HorizontalScrollView>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_attendee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/tv_persons"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:text="人"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_persons"
+                android:gravity="center"
+                android:textSize="11sp" />
         </LinearLayout>
 
 

@@ -63,6 +63,33 @@ public class MeetingConfig {
     private boolean isSyncing = false;
     private boolean IsMeetingPause;
     private int roleInLession;
+    private boolean isThirdAudio=false;
+    private AgoraMember hostAgora;
+    private int handStatus;
+
+    public int getHandStatus() {
+        return handStatus;
+    }
+
+    public void setHandStatus(int handStatus) {
+        this.handStatus = handStatus;
+    }
+
+    public AgoraMember getHostAgora() {
+        return hostAgora;
+    }
+
+    public void setHostAgora(AgoraMember hostAgora) {
+        this.hostAgora = hostAgora;
+    }
+
+    public boolean isThirdAudio() {
+        return isThirdAudio;
+    }
+
+    public void setThirdAudio(boolean thirdAudio) {
+        isThirdAudio = thirdAudio;
+    }
 
     public int getRoleInLession() {
         return roleInLession;

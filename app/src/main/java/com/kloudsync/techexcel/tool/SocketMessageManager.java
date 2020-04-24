@@ -191,10 +191,7 @@ public class SocketMessageManager {
         try {
             JSONObject message = new JSONObject();
             message.put("action", "MEMBER_SPEAKING");
-            message.put("retCode", 0);
-            JSONObject retDataObj = new JSONObject();
-            retDataObj.put("userId", AppConfig.UserID);
-            message.put("retData", retDataObj);
+            message.put("sessionId", AppConfig.UserToken);
             doSendMessage(message.toString());
         } catch (JSONException e) {
             e.printStackTrace();

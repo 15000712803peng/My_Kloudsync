@@ -427,7 +427,7 @@
     <string name="Completed">已结束</string>
     <string name="mycourse">我的课程</string>
     <string name="join">加入课程</string>
-    <string name="join2">参加会议</string>
+    <string name="join2">加入会议</string>
     <string name="joinroom">输入会议室ID</string>
     <string name="joinmyclass">加入我的课程</string>
     <string name="myklassid">我的课程ID:</string>
@@ -449,8 +449,10 @@
     <string name="schduration">请选择时长</string>
     <string name="invite_attendee">邀请参会者</string>
     <!--进入弹窗-->
-    <string name="satOptions">选择音频工具选项</string>
-    <string name="satSystem">系统</string>
+    <string name="satOptions">选择音频工具</string>
+    <string name="satSystem">系统音视频</string>
+    <string name="thirdaudio">第三音视频</string>
+    <string name="thirdaudiopromat">当前选择不支持视频，可使用Skype,WeChat等软件进行语音同步，请前往第三方软件开启语音对话</string>
     <string name="kCall">Kloud电话</string>
     <string name="satExternal">外部工具</string>
     <string name="satOn">启用</string>

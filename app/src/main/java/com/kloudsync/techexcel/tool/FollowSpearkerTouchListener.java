@@ -62,6 +62,20 @@ public class FollowSpearkerTouchListener implements View.OnTouchListener {
         }
     }
 
+    public int getLeft(){
+        if(spearkerLayout != null){
+             return spearkerLayout.getLeft();
+        }
+        return 0;
+    }
+
+    public int getTop(){
+        if(spearkerLayout != null){
+            return spearkerLayout.getTop();
+        }
+        return 0;
+    }
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         Log.e("FollowSpearkerTouchListener", "onTouch:" + event.getRawX());

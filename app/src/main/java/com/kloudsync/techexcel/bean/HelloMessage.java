@@ -15,7 +15,7 @@ public class HelloMessage {
     private int currentStatus;
     private boolean enableSync;
     private boolean hasOwner;
-	private boolean ifPause;
+    private boolean ifPause;
     private String lastMsgSessionId;
     private String lessonId;
     private int maxChangeNumber;
@@ -23,8 +23,8 @@ public class HelloMessage {
     private long noteId;
     private String notePageId;
     private String noteUserId;
-	private long pauseDuration;
-	private String pauseMsg;
+    private long pauseDuration;
+    private String pauseMsg;
     private String playAudioData;
     private String prevDocInfo;
     private long recordingId;
@@ -39,29 +39,29 @@ public class HelloMessage {
     private int microphoneStatus;
     private int cameraStatus;
 
-	public boolean isIfPause() {
-		return ifPause;
-	}
+    public boolean isIfPause() {
+        return ifPause;
+    }
 
-	public void setIfPause(boolean ifPause) {
-		this.ifPause = ifPause;
-	}
+    public void setIfPause(boolean ifPause) {
+        this.ifPause = ifPause;
+    }
 
-	public long getPauseDuration() {
-		return pauseDuration;
-	}
+    public long getPauseDuration() {
+        return pauseDuration;
+    }
 
-	public void setPauseDuration(long pauseDuration) {
-		this.pauseDuration = pauseDuration;
-	}
+    public void setPauseDuration(long pauseDuration) {
+        this.pauseDuration = pauseDuration;
+    }
 
-	public String getPauseMsg() {
-		return pauseMsg;
-	}
+    public String getPauseMsg() {
+        return pauseMsg;
+    }
 
-	public void setPauseMsg(String pauseMsg) {
-		this.pauseMsg = pauseMsg;
-	}
+    public void setPauseMsg(String pauseMsg) {
+        this.pauseMsg = pauseMsg;
+    }
 
     public int getMicrophoneStatus() {
         return microphoneStatus;
@@ -307,7 +307,7 @@ public class HelloMessage {
                 ", currentStatus=" + currentStatus +
                 ", enableSync=" + enableSync +
                 ", hasOwner=" + hasOwner +
-		        ", ifPause=" + ifPause +
+                ", ifPause=" + ifPause +
                 ", lastMsgSessionId='" + lastMsgSessionId + '\'' +
                 ", lessonId='" + lessonId + '\'' +
                 ", maxChangeNumber=" + maxChangeNumber +
@@ -315,8 +315,8 @@ public class HelloMessage {
                 ", noteId=" + noteId +
                 ", notePageId='" + notePageId + '\'' +
                 ", noteUserId='" + noteUserId + '\'' +
-		        ", pauseDuration=" + pauseDuration +
-		        ", pauseMsg='" + pauseMsg + '\'' +
+                ", pauseDuration=" + pauseDuration +
+                ", pauseMsg='" + pauseMsg + '\'' +
                 ", playAudioData='" + playAudioData + '\'' +
                 ", prevDocInfo='" + prevDocInfo + '\'' +
                 ", recordingId=" + recordingId +
@@ -328,8 +328,8 @@ public class HelloMessage {
                 ", tvOwnerMeetingItemId=" + tvOwnerMeetingItemId +
                 ", tvOwnerMeetingLessonId='" + tvOwnerMeetingLessonId + '\'' +
                 ", tvOwnerMeetingType=" + tvOwnerMeetingType +
-		        ", microphoneStatus=" + microphoneStatus +
-		        ", cameraStatus=" + cameraStatus +
+                ", microphoneStatus=" + microphoneStatus +
+                ", cameraStatus=" + cameraStatus +
                 '}';
     }
 }

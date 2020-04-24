@@ -11,84 +11,95 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginBottom="5dp"
         android:paddingRight="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_marginLeft="10dp"
             android:layout_centerVertical="true"
             android:layout_marginBottom="10dp"
             android:text="@string/satOptions" />
 
     </RelativeLayout>
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line" />
     <LinearLayout
         android:gravity="center"
         android:id="@+id/layout_tab_titles"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="5dp"
+        android:layout_height="40dp"
         android:orientation="horizontal">
 
+        <RelativeLayout
+
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:layout_height="match_parent">
         <TextView
-            android:id="@+id/systembtn"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
+            android:id="@+id/systemtv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/satSystem"
-            android:textColor="@color/blue" />
+            android:textColor="@color/skyblue" />
 
+            <TextView
+                android:id="@+id/systemtvline"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:layout_width="110dp"
+                android:background="@color/skyblue"
+                android:layout_height="2dp"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:layout_height="match_parent">
         <TextView
-            android:id="@+id/kloudcallbtn"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
+            android:id="@+id/thirdaudiotv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center"
-            android:text="@string/kCall"
-            android:textColor="@color/black" />
-
-        <LinearLayout
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:textColor="@color/black"
+            android:text="@string/thirdaudio"
+            />
 
             <TextView
-                android:id="@+id/externalbtn"
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                android:gravity="center"
-                android:text="@string/satExternal"
-                android:textColor="@color/black" />
+                android:id="@+id/thirdaudiotvline"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:layout_width="110dp"
+                android:visibility="gone"
+                android:background="@color/skyblue"
+                android:layout_height="2dp"/>
+        </RelativeLayout>
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="(skype,wechat...)"
-                android:textSize="10sp" />
-        </LinearLayout>
+
+
 
     </LinearLayout>
 
-    <TextView
-        android:layout_marginTop="2dp"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider_line" />
 
     <RelativeLayout
+        android:layout_marginTop="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
 
         <LinearLayout
             android:layout_centerHorizontal="true"
-            android:id="@+id/layout_center"
+            android:id="@+id/systemaudioll"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:layout_marginTop="12dp"
+            android:visibility="visible"
+            android:layout_height="120dp"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -160,7 +171,97 @@
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
+
         </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_centerHorizontal="true"
+            android:id="@+id/thirdaudioll"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:paddingLeft="10dp"
+                android:maxLines="3"
+                android:paddingRight="10dp"
+                android:textSize="10sp"
+                android:text="@string/thirdaudiopromat"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="45dp"
+                        android:background="@drawable/skypebg"
+                        android:gravity="center"
+                        android:layout_height="45dp">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:src="@drawable/skypeimage"
+                            android:layout_height="30dp"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textSize="12sp"
+                        android:text="Skype" />
+
+                </LinearLayout>
+                <LinearLayout
+
+                    android:id="@+id/openwenxin"
+                    android:layout_marginLeft="50dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="45dp"
+                        android:background="@drawable/weixinbg"
+                        android:gravity="center"
+                        android:layout_height="45dp">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:src="@drawable/weixinimage"
+                            android:layout_height="30dp"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textSize="12sp"
+                        android:text="WeChat" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
 
 
 

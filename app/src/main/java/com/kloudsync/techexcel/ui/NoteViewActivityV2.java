@@ -2803,6 +2803,11 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 	}
 
 	@Override
+	public void menuSettingClicked() {
+
+	}
+
+	@Override
 	public void menuChatClicked() {
 		showChatPop();
 	}

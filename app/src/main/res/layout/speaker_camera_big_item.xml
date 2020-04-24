@@ -11,24 +11,35 @@
     >
 
     <RelativeLayout
+        android:layout_marginTop="14dp"
         android:layout_marginLeft="14dp"
         android:background="@drawable/gray_border"
         android:layout_width="@dimen/speaker_big_width"
         android:layout_height="@dimen/speaker_big">
         <FrameLayout
+
+            android:padding="2dp"
             android:id="@+id/speaker_view_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/darkblack2"></FrameLayout>
+            android:background="@drawable/gray_border"></FrameLayout>
 
         <LinearLayout
             android:orientation="horizontal"
-            android:gravity="right|center_vertical"
+            android:gravity="center_vertical"
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="26dp">
 
+            <ImageView
+                android:id="@+id/image_audio_status"
+                android:src="@drawable/microphone"
+                android:layout_width="22dp"
+                android:layout_height="26dp" />
+
+
             <TextView
+                android:layout_weight="1"
                 android:gravity="right"
                 android:id="@+id/txt_name"
                 android:ellipsize="end"
@@ -40,11 +51,6 @@
                 android:layout_width="38dp"
                 android:layout_height="wrap_content" />
 
-            <ImageView
-                android:id="@+id/image_audio_status"
-                android:src="@drawable/icon_command_mic_disable"
-                android:layout_width="22dp"
-                android:layout_height="26dp" />
 
             <ImageView
                 android:id="@+id/image_speark_more"
@@ -66,6 +72,7 @@
 
 
     <ImageView
+        android:id="@+id/arrow_expand"
         android:layout_centerVertical="true"
         android:src="@drawable/follow_spkear_arrow_right"
         android:layout_width="@dimen/dp_28"
