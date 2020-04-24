@@ -489,12 +489,31 @@
     <string name="mtRecordSync">Record &#038; Sync</string>
     <string name="syncname">Sync Name</string>
     <string name="hidden">Hidden</string>
-
-
-
     <string name="spanstand">Standard</string>
     <string name="spanhd">High Definition</string>
     <string name="spanuhd">Ultra HD</string>
+
+    <string name="createnewaccompany">New accompaniment or singing</string>
+    <string name="accompanytitle">Title: </string>
+    <string name="accompanytitlehidden">Input sync name here...</string>
+    <string name="startaccompant">Enable the Accompaniment</string>
+    <string name="selectaccompant">+ Add an audio</string>
+    <string name="startaccompantrecord">Recorded singing</string>
+    <string name="startaccompantnewrecord">Record new voice</string>
+    <string name="uploadvoicefile">Add a recorded voice file</string>
+    <string name="selectaccompanyfile">Choose the accompaniment sound to file</string>
+    <string name="accompanysync">Sync</string>
+    <string name="accompanymusic">Audio file</string>
+    <string name="accompanyfilename">Title</string>
+    <string name="accompanyfiletime">Duration</string>
+    <string name="accompanyfilewho">Recorded by</string>
+    <string name="accompanyfilesize">File size</string>
+
+
+    <string name="makesyncaccompany">Sync this music</string>
+    <string name="resyncaccompany">Resync</string>
+    <string name="saveaccompany">Save</string>
+    <string name="selectcompanimenmusicfile">Select the accompaniment music file</string>
 
 
     <!--yinxiangoperatorpopup界面-->
@@ -845,6 +864,7 @@ Please input the cell phone number to add the contact
     <string name="create_new_sync">Create New Sync</string>
     <string name="select_more_sync">+ Select Mode Sound</string>
     <string name="sync">Sync</string>
+    <string name="soundsync">Sync</string>
     <string name="invite_new">invite new</string>
     <string name="invite_new_new">Invite new</string>
     <string name="invite_skip">Skip</string>

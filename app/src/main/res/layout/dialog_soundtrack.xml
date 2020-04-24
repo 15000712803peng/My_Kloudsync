@@ -28,7 +28,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="音想"
+                    android:text="@string/soundsync"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 

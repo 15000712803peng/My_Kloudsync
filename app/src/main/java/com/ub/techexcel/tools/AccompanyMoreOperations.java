@@ -115,10 +115,10 @@ public class AccompanyMoreOperations implements View.OnClickListener {
                 });
             }
             if(selectAccompanyType==0){ //伴奏音乐
-                synccontent.setText("制作同步伴奏带");
+                synccontent.setText(mContext.getString(R.string.makesyncaccompany));
                 syncllnoaction.setVisibility(View.VISIBLE);
             }else{  //伴奏音想
-                synccontent.setText("重新同步伴奏带");
+                synccontent.setText(mContext.getString(R.string.resyncaccompany));
                 syncllnoaction.setVisibility(View.GONE);
             }
             mPopupWindow.showAsDropDown(v);
