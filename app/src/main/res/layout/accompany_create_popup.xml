@@ -293,11 +293,10 @@
                                     android:textSize="14dp"
                                     android:background="@color/white"
                                     android:entries="@array/xzname"
+                                    android:dropDownVerticalOffset="2dp"
                                     android:popupBackground="@color/divider"
                                     android:spinnerMode="dropdown"
                                     />
-
-
 
                             </LinearLayout>
                         </LinearLayout>
