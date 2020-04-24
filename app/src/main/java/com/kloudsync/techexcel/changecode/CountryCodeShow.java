@@ -1,14 +1,31 @@
 package com.kloudsync.techexcel.changecode;
 
+import android.content.SharedPreferences;
+
+import com.kloudsync.techexcel.app.App;
+import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.info.CountryCodeInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kloudsync.techexcel.info.CountryCodeInfo;
+import static android.content.Context.MODE_PRIVATE;
 
 public class CountryCodeShow {
 	public static List<CountryCodeInfo> ccl = new ArrayList<CountryCodeInfo>();
-	
-	static{
+
+	static {
+		//获取当前语言
+		SharedPreferences sharedPreferences = App.getAppContext().getSharedPreferences(AppConfig.LOGININFO,
+				MODE_PRIVATE);
+		int language = sharedPreferences.getInt("language", 2);
+		if (language == 1) {
+			ccl.add(new CountryCodeInfo(1, "United States", "常用国家/地区"));
+			ccl.add(new CountryCodeInfo(86, "China", "常用国家/地区"));
+		} else if (language == 2) {
+			ccl.add(new CountryCodeInfo(86, "China", "常用国家/地区"));
+			ccl.add(new CountryCodeInfo(1, "United States", "常用国家/地区"));
+		}
 		ccl.add(new CountryCodeInfo(1, "United States", "常用国家/地区"));
 		ccl.add(new CountryCodeInfo(86, "China", "常用国家/地区"));
 		ccl.add(new CountryCodeInfo(81, "Japan", "常用国家/地区"));
@@ -182,7 +199,7 @@ public class CountryCodeShow {
 		ccl.add(new CountryCodeInfo(260, "Zambia", "Z"));
 		ccl.add(new CountryCodeInfo(263, "Zimbabwe", "Z"));
 
-		
+
 	}
 
 }

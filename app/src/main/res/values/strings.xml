@@ -921,6 +921,7 @@ Please input the cell phone number to add the contact
 	<string name="passwords_are_inconsistent">Passwords are inconsistent</string>
 	<string name="reset_login_password">Reset password</string>
 	<string name="recover_password">Reset password</string>
+	<string name="mobile_phone_country_code">+1</string>
     <!--文档-->
     <string name="please_input_new_folder_name">Please input new folder name</string>
     <string name="name_cannot_be_empty">Name cannot be empty</string>
