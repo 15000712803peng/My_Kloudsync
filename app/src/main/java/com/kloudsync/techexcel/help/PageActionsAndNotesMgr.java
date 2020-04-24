@@ -81,6 +81,11 @@ public class PageActionsAndNotesMgr {
 		}).doOnNext(new Consumer<EventPageActionsForSoundtrack>() {
 			@Override
 			public void accept(EventPageActionsForSoundtrack eventPageActions) throws Exception {
+				try {
+					Thread.sleep(350);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				EventBus.getDefault().post(eventPageActions);
 			}
 		}).subscribe();
@@ -108,6 +113,11 @@ public class PageActionsAndNotesMgr {
         }).doOnNext(new Consumer<EventPageActionsForSoundtrack>() {
             @Override
             public void accept(EventPageActionsForSoundtrack eventPageActions) throws Exception {
+	            try {
+		            Thread.sleep(350);
+	            } catch (InterruptedException e) {
+		            e.printStackTrace();
+	            }
                 EventBus.getDefault().post(eventPageActions);
             }
         }).subscribe();
