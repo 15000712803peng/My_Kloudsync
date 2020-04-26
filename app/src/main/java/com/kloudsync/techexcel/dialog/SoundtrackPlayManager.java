@@ -763,13 +763,25 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {
             @Override
             public void accept(List<WebAction> webActions) throws Exception {
-                for (WebAction action : webActions) {
+
+	            for (int i = 0; i < webActions.size() - 1; i++) {
+		            if ((webActions.get(i).getTime() <= _time && webActions.get(i + 1).getTime() > _time) || _time < webActions.get(0).getTime()) {
+			            Log.e("check_page_time", "seek_time:" + _time + ",action_time:" + webActions.get(i).getTime());
+			            SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(webActions.get(i));
+			            break;
+		            } else if (_time > webActions.get(webActions.size() - 1).getTime()) {
+			            SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(webActions.get(webActions.size() - 1));
+			            break;
+		            }
+	            }
+
+                /*for (WebAction action : webActions) {
                     if (action.getTime() >= _time) {
                         Log.e("check_page_time", "seek_time:" + _time + ",action_time:" + action.getTime());
                         SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(action);
                         break;
                     }
-                }
+                }*/
                 SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
             }
         }).subscribe();
@@ -794,13 +806,23 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
         Observable.just(pageActions).observeOn(Schedulers.io()).doOnNext(new Consumer<List<WebAction>>() {
             @Override
             public void accept(List<WebAction> webActions) throws Exception {
-                for (WebAction action : webActions) {
+	            for (int i = 0; i < webActions.size() - 1; i++) {
+		            if ((webActions.get(i).getTime() <= time && webActions.get(i + 1).getTime() > time) || time < webActions.get(0).getTime()) {
+			            Log.e("check_page_time", "seek_time:" + time + ",action_time:" + webActions.get(i).getTime());
+			            SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(webActions.get(i));
+			            break;
+		            } else if (time > webActions.get(webActions.size() - 1).getTime()) {
+			            SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(webActions.get(webActions.size() - 1));
+			            break;
+		            }
+	            }
+               /* for (WebAction action : webActions) {
                     if (action.getTime() >= time) {
                         Log.e("check_page_time", "seek_time:" + time + ",action_time:" + action.getTime());
                         SoundtrackActionsManagerV2.getInstance(host).doChangePageAction(action);
                         break;
                     }
-                }
+                }*/
 
                 SoundtrackActionsManagerV2.getInstance(host).setCurrentPartWebActions(null);
             }

@@ -912,8 +912,7 @@
     <string name="passwords_are_inconsistent">密码不一致</string>
     <string name="reset_login_password">重置登录密码</string>
     <string name="recover_password">找回密码</string>
-
-
+    <string name="mobile_phone_country_code">+86</string>
     <!--文档-->
     <string name="please_input_new_folder_name">请输入新建文件夹名称</string>
     <string name="name_cannot_be_empty">名称不能为空</string>
