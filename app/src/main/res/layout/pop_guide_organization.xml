@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/dp_45"
+    android:paddingRight="@dimen/dp_45">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="170dp"
+        android:background="@drawable/bg_guide_down"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_guide_title"
+            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="完善公司/机构信息"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_guide_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="15dp"
+            android:textSize="13dp"
+            android:textColor="#75788A"
+            android:layout_centerVertical="true"
+            android:text="1.名称/网址：均为必填项"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="20dp"
+            android:textSize="13dp"
+            android:layout_centerVertical="true"
+            android:textColor="#75788A"
+            android:text="2.启用公司邀请码：设置默认邀请码为您输入您的账户名称，支持修改"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:src="@drawable/icon_guide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tv_guide_about"
+                android:layout_marginLeft="6dp"
+                android:textSize="11sp"
+                android:text="点击这里前往帮助中心，查看详细步骤》"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>
+

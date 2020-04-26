@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,12 +19,17 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +39,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.SelectCompanyLogoDialog;
 import com.kloudsync.techexcel.dialog.UploadFileDialog;
 import com.kloudsync.techexcel.help.ApiTask;
+import com.kloudsync.techexcel.help.KeyboardStateObserver;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.tool.UploadFileTool;
 import com.kloudsync.techexcel.ui.MainActivity;
@@ -312,6 +319,25 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
                 }
             }
         });
+
+        initGuidePop();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showGuidePop(tv_submit);
+            }
+        },1000);
+        KeyboardStateObserver.getKeyboardStateObserver(this).
+                setKeyboardVisibilityListener(new KeyboardStateObserver.OnKeyboardVisibilityListener() {
+                    @Override
+                    public void onKeyboardShow() {
+                        guidePopupWindow.dismiss();
+                    }
+
+                    @Override
+                    public void onKeyboardHide() {
+                    }
+                });
     }
 
     SelectCompanyLogoDialog logoDialog;
@@ -700,6 +726,42 @@ public class CreateOrganizationActivityV2 extends AppCompatActivity implements V
 
     }
 
+    private PopupWindow guidePopupWindow;
+    private void initGuidePop() {
+        View guideView = LayoutInflater.from(this).inflate(R.layout.pop_guide_organization, null);
+        guideView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        Display display = getWindowManager().getDefaultDisplay();
+        int width = display.getWidth();
+        guidePopupWindow = new PopupWindow(guideView,
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        guidePopupWindow.setBackgroundDrawable(new BitmapDrawable());
+    }
+
+    private void showGuidePop(View v) {
+        final WindowManager.LayoutParams lp = CreateOrganizationActivityV2.this.getWindow().getAttributes();
+        lp.alpha = 0.5f;//代表透明程度，范围为0 - 1.0f
+        CreateOrganizationActivityV2.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        CreateOrganizationActivityV2.this.getWindow().setAttributes(lp);
+        //点击在按钮的中上方弹出popupWindow
+        int btnWidth = v.getMeasuredWidth();
+        int btnHeight = v.getMeasuredHeight();
+
+        int popWidth = guidePopupWindow.getContentView().getMeasuredWidth();
+        int popHeight = guidePopupWindow.getContentView().getMeasuredHeight();
+
+        final int xoff = (int) ((float) (btnWidth - popWidth) / 2);//PopupWindow的x偏移值
+        final int yoff = popHeight + btnHeight-40; //因为相对于按钮的上方，所以该值为负值
+        guidePopupWindow.showAsDropDown(v);
+
+        guidePopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                lp.alpha = 1.0f;
+                CreateOrganizationActivityV2.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                CreateOrganizationActivityV2.this.getWindow().setAttributes(lp);
+            }
+        });
+    }
 
 
 }
