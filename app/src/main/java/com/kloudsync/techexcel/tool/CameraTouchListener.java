@@ -15,10 +15,14 @@ public class CameraTouchListener implements View.OnTouchListener {
     private int startY;
     private int startX;
     private int endX, endY;
-    private LinearLayout cameraLayout;
+    private RelativeLayout cameraLayout;
+    private FollowSpearkerTouchListener followSpearkerTouchListener;
 
+    public void setFollowSpearkerTouchListener(FollowSpearkerTouchListener followSpearkerTouchListener) {
+        this.followSpearkerTouchListener = followSpearkerTouchListener;
+    }
 
-    public void setCameraLayout(LinearLayout cameraLayout) {
+    public void setCameraLayout(RelativeLayout cameraLayout) {
         this.cameraLayout = cameraLayout;
     }
 
@@ -63,6 +67,9 @@ public class CameraTouchListener implements View.OnTouchListener {
                     params.topMargin = cameraLayout.getTop();
                     params.setMargins(cameraLayout.getLeft(), cameraLayout.getTop(), 0, 0);
                     cameraLayout.setLayoutParams(params);
+                    if(followSpearkerTouchListener != null){
+                        followSpearkerTouchListener.layoutSpeaker(cameraLayout.getLeft(),cameraLayout.getTop());
+                    }
                     return true;
                 }
 
@@ -72,5 +79,16 @@ public class CameraTouchListener implements View.OnTouchListener {
         }
 
         return false;
+    }
+
+    public void layoutCamera(int left ,int top){
+        if(cameraLayout != null){
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.leftMargin = cameraLayout.getLeft();
+            params.topMargin = cameraLayout.getTop();
+            params.setMargins(left, top, 0, 0);
+            cameraLayout.setLayoutParams(params);
+        }
+
     }
 }

@@ -261,7 +261,7 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
     ImageView closeVedioImage;
 
     @Bind(R.id.layout_camera)
-    LinearLayout cameraLayout;
+    RelativeLayout cameraLayout;
 
     @Bind(R.id.layout_meeting_default_document)
     RelativeLayout meetingDefaultDocument;

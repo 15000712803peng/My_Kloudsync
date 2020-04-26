@@ -703,7 +703,7 @@
     <string name="agreement_title">康人协议</string>
     <string name="account_title">账户</string>
     <string name="pc_pomprt">此功能尚未开发完成，敬请期待！</string>
-    <string name="deviceprompt">同一账号不能同时进入同一房间，您有其他的设备进入这个房间，本设备将暂时退出房间。</string>
+    <string name="deviceprompt">同一账号不能同时进入同一房间，\n您有其他的设备进入这个房间，本设备\n将暂时退出房间。</string>
 
     <string name="pc_sorganization">选择组织</string>
 
@@ -1040,5 +1040,8 @@
     <string name="invite_as_member">邀请为成员</string>
     <string name="invite_as_admin">邀请为用户</string>
     <string name="admin">用户</string>
+
+    <string name="prompt">提醒</string>
+    <string name="i_know">知道了</string>
 
 </resources>

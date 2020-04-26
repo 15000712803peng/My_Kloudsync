@@ -4,9 +4,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -57,6 +59,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddDocToSpaceDialog;
 import com.kloudsync.techexcel.dialog.AddWxDocDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
+import com.kloudsync.techexcel.dialog.ExitMeetingDialog;
 import com.kloudsync.techexcel.dialog.UploadFileDialog;
 import com.kloudsync.techexcel.dialog.message.CustomizeMessageItemProvider;
 import com.kloudsync.techexcel.dialog.message.FriendMessageItemProvider;
@@ -285,6 +288,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         mPresenter = new MainPresenter();
         mPresenter.attachView(this);
         mEverPenManger.addListener(mPresenter);
+        registerReceiver(exitMeetngPromptReceiver,new IntentFilter("show_exit_meeting_dialog"));
     }
 
 
@@ -1047,6 +1051,7 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         AppConfig.isUpdateDialogue = false;
         AppConfig.HASUPDATAINFO = false;
         stopService();
+        unregisterReceiver(exitMeetngPromptReceiver);
 
         app.getThreadMgr().shutDown();
         KillFile();
@@ -1988,4 +1993,24 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
             startService(service);
         }
     }
+
+    ExitMeetingDialog exitMeetingDialog;
+
+    private void showMeetingExitDialog(){
+        if(exitMeetingDialog != null){
+            if(exitMeetingDialog.isShowing()){
+                exitMeetingDialog.hide();
+            }
+            exitMeetingDialog = null;
+        }
+        exitMeetingDialog = new ExitMeetingDialog(this);
+        exitMeetingDialog.show();
+    }
+
+    BroadcastReceiver exitMeetngPromptReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            showMeetingExitDialog();
+        }
+    };
 }

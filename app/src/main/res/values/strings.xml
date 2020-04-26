@@ -1073,5 +1073,7 @@ Please input the cell phone number to add the contact
     <string name="invite_as_member">Invite as member</string>
     <string name="invite_as_admin">Invite as admin user</string>
     <string name="admin">admin</string>
+    <string name="prompt">Prompt</string>
+    <string name="i_know">I know</string>
 
 </resources>

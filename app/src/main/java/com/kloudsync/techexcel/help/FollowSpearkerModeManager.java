@@ -21,6 +21,7 @@ import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.PopSpeakerWindowMore;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
+import com.kloudsync.techexcel.tool.CameraTouchListener;
 import com.kloudsync.techexcel.tool.FollowSpearkerTouchListener;
 import com.kloudsync.techexcel.view.CircleImageView;
 import com.ub.techexcel.bean.AgoraMember;
@@ -51,6 +52,11 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
     private ImageLoader imageLoader;
     private AgoraMember currentAgoraMember;
     private ImageView arrowExpanded;
+    private CameraTouchListener cameraTouchListener;
+
+    public FollowSpearkerModeManager(CameraTouchListener cameraTouchListener){
+        this.cameraTouchListener = cameraTouchListener;
+    }
 
     public AgoraMember getCurrentAgoraMember() {
         return currentAgoraMember;
@@ -87,7 +93,7 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         this.speakerLayout = speakerContainer.findViewById(R.id.layout_follow_speaker);
         sharedPreferences = context.getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
-        spearkerTouchListener = new FollowSpearkerTouchListener(context);
+        spearkerTouchListener = new FollowSpearkerTouchListener(context,cameraTouchListener);
         spearkerTouchListener.setSpeakerLayout(speakerLayout);
         speakerLayout.setOnTouchListener(spearkerTouchListener);
         speakerLayout.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +102,9 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
                 changeSizeMode();
             }
         });
+        if(cameraTouchListener != null){
+            cameraTouchListener.setFollowSpearkerTouchListener(spearkerTouchListener);
+        }
 
         speakerMoreImage = speakerLayout.findViewById(R.id.image_speark_more);
         speakerMoreImage.setOnClickListener(this);
@@ -247,8 +256,11 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
     }
 
     public void showSpeakerView(AgoraMember agoraMember) {
-
         Log.e("check_speaker_show", "speaker:" + agoraMember);
+        if(this.currentAgoraMember != null && (this.currentAgoraMember.getUserId() == agoraMember.getUserId())
+                && this.currentAgoraMember.isMuteVideo() == agoraMember.isMuteVideo()){
+            return;
+        }
         agoraMember.setMuteAudio(false);
         this.currentAgoraMember = agoraMember;
         fillViewByMember(agoraMember);

@@ -1,58 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="70dp"
-    android:layout_height="70dp"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/speaker_normal_width"
+    android:layout_height="@dimen/speaker_normal"
     android:padding="1dp"
-    android:background="@drawable/gray_border"
+    android:orientation="horizontal"
     >
 
-    <FrameLayout
-        android:id="@+id/video_view_container"
-        android:layout_width="68dp"
-        android:layout_height="68dp"
-        android:background="@color/darkblack2"></FrameLayout>
+    <RelativeLayout
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:gravity="right|center_vertical"
-        android:layout_alignParentBottom="true"
-        android:layout_width="70dp"
-        android:layout_height="23dp">
+        android:background="@drawable/gray_border"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <FrameLayout
+            android:padding="2dp"
+            android:id="@+id/video_view_container"
+            android:layout_width="@dimen/speaker_normal_width"
+            android:layout_height="@dimen/speaker_normal"
+            android:background="@drawable/gray_border"></FrameLayout>
 
-        <TextView
-            android:id="@+id/txt_name"
-            android:ellipsize="end"
-            android:textSize="8dp"
-            android:layout_marginLeft="2dp"
-            android:singleLine="true"
-            android:textColor="@color/white"
-            android:text="tonyanaegag"
-            android:layout_width="28dp"
-            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_width="@dimen/speaker_normal_width"
+            android:layout_height="23dp">
 
-        <ImageView
-            android:id="@+id/image_audio_status"
-            android:src="@drawable/icon_command_mic_disable"
-            android:layout_width="18dp"
-            android:layout_height="20dp" />
+            <ImageView
+                android:id="@+id/image_audio_status"
+                android:src="@drawable/microphone"
+                android:layout_width="18dp"
+                android:layout_height="20dp" />
 
-        <ImageView
-            android:id="@+id/image_vedio_status"
-            android:src="@drawable/icon_command_webcam_disable"
-            android:layout_width="18dp"
-            android:layout_height="20dp" />
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/txt_name"
+                android:ellipsize="end"
+                android:textSize="8dp"
+                android:layout_marginLeft="3dp"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:text=""
+                android:layout_width="38dp"
+                android:layout_height="wrap_content" />
 
-    </LinearLayout>
 
-    <com.kloudsync.techexcel.view.CircleImageView
-        android:id="@+id/member_icon"
-        android:layout_marginBottom="6dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:padding="2dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        />
+        </LinearLayout>
+        <com.kloudsync.techexcel.view.CircleImageView
+            android:id="@+id/member_icon"
+            android:layout_marginBottom="6dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:padding="2dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            />
+    </RelativeLayout>
 
-</RelativeLayout>
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"/>
+
+
+
+
+
+</LinearLayout>

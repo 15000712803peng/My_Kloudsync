@@ -111,9 +111,9 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             }
 
             if (user.isMuteAudio()) {
-                holder.audioStatusImage.setImageResource(R.drawable.icon_command_mic_disable);
+                holder.audioStatusImage.setImageResource(R.drawable.microphone);
             } else {
-                holder.audioStatusImage.setImageResource(R.drawable.icon_command_mic_enabel);
+                holder.audioStatusImage.setImageResource(R.drawable.microphone_enable);
                 user.setHaveShowUnMuteAudioImage(true);
             }
 
@@ -124,11 +124,9 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             }
 
             if (user.isMuteVideo()) {
-                holder.vedioStatusImage.setImageResource(R.drawable.icon_command_webcam_disable);
                 holder.iconImage.setVisibility(View.VISIBLE);
 
             } else {
-                holder.vedioStatusImage.setImageResource(R.drawable.icon_command_webcam_enable);
                 holder.iconImage.setVisibility(View.GONE);
             }
         }
@@ -209,14 +207,12 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             vedioFrame = view.findViewById(R.id.video_view_container);
             nameText = view.findViewById(R.id.txt_name);
             audioStatusImage = view.findViewById(R.id.image_audio_status);
-            vedioStatusImage = view.findViewById(R.id.image_vedio_status);
             iconImage = view.findViewById(R.id.member_icon);
         }
 
         public FrameLayout vedioFrame;
         public TextView nameText;
         public ImageView audioStatusImage;
-        public ImageView vedioStatusImage;
         public CircleImageView iconImage;
     }
 

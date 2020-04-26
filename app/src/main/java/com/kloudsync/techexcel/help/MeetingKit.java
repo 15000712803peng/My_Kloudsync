@@ -170,6 +170,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         rtcManager = RtcManager.getDefault(host);
         rtcManager.doConfigEngine(CLIENT_ROLE_BROADCASTER);
         Log.e("MeetingKit", "joinChannel:" + meetingConfig.getMeetingId());
+        getRtcManager().rtcEngine().enableAudioVolumeIndication(200, 3,false);
         getRtcManager().rtcEngine().enableWebSdkInteroperability(true);
         setEncoderConfigurationBaseMode();
 //        EventAgoraLog agoraLog = new EventAgoraLog();
@@ -569,21 +570,20 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void onAudioVolumeIndication(IRtcEngineEventHandler.AudioVolumeInfo[] speakers, int totalVolume) {
+        Log.e("onAudioVolumeIndication", "speakers");
         for (IRtcEngineEventHandler.AudioVolumeInfo info : speakers) {
             //0代表本地用户
-            if (info.uid == 0 && info.volume >= 100) { //自己是否说话了
-                Log.e("onAudioVolumeIndication", info.uid + "  " + info.volume);
-                if(!settingCache.getMeetingSetting().isMicroOn()){
-                    selfIsSpeaker = false;
-                }else {
-                    selfIsSpeaker = true;
-                }
+            Log.e("onAudioVolumeIndication", info.uid + "  " + info.volume);
+            if (info.uid == 0 && info.volume >= 60 && settingCache.getMeetingSetting().isMicroOn()) { //自己是否说话了
+//                Log.e("onAudioVolumeIndication", info.uid + "  " + info.volume);
+                selfIsSpeaker = true;
                 break;
             }
         }
 
         long inteval = System.currentTimeMillis() - lastSpeakTime;
-        if (inteval > 20000 && selfIsSpeaker) {
+        if (inteval > 2000 && selfIsSpeaker) {
+            selfIsSpeaker = false;
             lastSpeakTime = System.currentTimeMillis();
             SocketMessageManager.getManager(host).sendMessage_MemberSpeaking();
         }

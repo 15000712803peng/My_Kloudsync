@@ -686,20 +686,28 @@
             <include layout="@layout/speaker_camera_large_item" />
         </RelativeLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/layout_camera"
             android:layout_width="wrap_content"
             android:layout_height="70dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="20dp"
             android:orientation="horizontal"
             android:visibility="gone">
 
+
+
+            <android.support.v7.widget.RecyclerView
+
+                android:id="@+id/member_camera_list"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:layout_marginLeft="11dp"
+                android:visibility="visible" />
+
             <LinearLayout
                 android:id="@+id/layout_toggle_camera"
-                android:layout_width="20dp"
+                android:layout_width="wrap_content"
                 android:layout_height="70dp"
-                android:background="@color/black"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:textColor="@color/white"
@@ -707,20 +715,12 @@
 
                 <ImageView
                     android:id="@+id/image_toggle_camera"
-                    android:layout_width="12dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/eyeclose" />
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/spkear_arrow_left" />
             </LinearLayout>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/member_camera_list"
-                android:layout_width="wrap_content"
-                android:layout_height="70dp"
-                android:layout_marginLeft="1dp"
-                android:layout_toRightOf="@+id/toggle"
-                android:visibility="visible" />
-        </LinearLayout>
+        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/layout_full_camera"

@@ -24,6 +24,9 @@ public class FollowSpearkerTouchListener implements View.OnTouchListener {
     Context context;
     int width, height;
     private FrameLayout speakerViewLayout;
+    int screenWidth, screenHeight;
+    private CameraTouchListener cameraTouchListener;
+
 
 
     public void refreshBySetting() {
@@ -42,14 +45,17 @@ public class FollowSpearkerTouchListener implements View.OnTouchListener {
 
     boolean isMove;
 
-    public FollowSpearkerTouchListener(Context context) {
+    public FollowSpearkerTouchListener(Context context,CameraTouchListener cameraTouchListener) {
         this.context = context;
+        this.cameraTouchListener = cameraTouchListener;
+        screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        screenHeight = context.getResources().getDisplayMetrics().heightPixels;
     }
 
-    private void getSize(){
+    private void getSize() {
         String modeSetting = context.getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE).getString("speaker_size_mode", "small");
-        Log.e("getSize","mode_setting:" + modeSetting);
+        Log.e("getSize", "mode_setting:" + modeSetting);
         if (modeSetting.equals("small")) {
             width = context.getResources().getDimensionPixelSize(R.dimen.speaker_normal_width);
             height = context.getResources().getDimensionPixelSize(R.dimen.speaker_normal);
@@ -62,15 +68,15 @@ public class FollowSpearkerTouchListener implements View.OnTouchListener {
         }
     }
 
-    public int getLeft(){
-        if(spearkerLayout != null){
-             return spearkerLayout.getLeft();
+    public int getLeft() {
+        if (spearkerLayout != null) {
+            return spearkerLayout.getLeft();
         }
         return 0;
     }
 
-    public int getTop(){
-        if(spearkerLayout != null){
+    public int getTop() {
+        if (spearkerLayout != null) {
             return spearkerLayout.getTop();
         }
         return 0;
@@ -91,6 +97,8 @@ public class FollowSpearkerTouchListener implements View.OnTouchListener {
             case MotionEvent.ACTION_MOVE:
                 int moveX = (int) event.getRawX();
                 int moveY = (int) event.getRawY();
+
+
                 int move_bigX = moveX - startX;
                 int move_bigY = moveY - startY;
 
@@ -102,8 +110,11 @@ public class FollowSpearkerTouchListener implements View.OnTouchListener {
                     top += move_bigY;
                     int right = left + spearkerLayout.getWidth();
                     int bottom = top + spearkerLayout.getHeight();
-                    spearkerLayout.layout(left, top, right, bottom);
-                    isMove = true;
+                    if (left > 0 && top > 0 && right < screenWidth && bottom < screenHeight) {
+                        spearkerLayout.layout(left, top, right, bottom);
+                        isMove = true;
+                    }
+
                 }
                 startX = moveX;
                 startY = moveY;
@@ -117,6 +128,9 @@ public class FollowSpearkerTouchListener implements View.OnTouchListener {
                     params.topMargin = spearkerLayout.getTop();
                     params.setMargins(spearkerLayout.getLeft(), spearkerLayout.getTop(), 0, 0);
                     spearkerLayout.setLayoutParams(params);
+                    if(cameraTouchListener != null){
+                        cameraTouchListener.layoutCamera(spearkerLayout.getLeft(),spearkerLayout.getTop());
+                    }
                     return true;
                 }
 
@@ -126,5 +140,16 @@ public class FollowSpearkerTouchListener implements View.OnTouchListener {
         }
 
         return false;
+    }
+
+    public void layoutSpeaker(int left ,int top){
+        if(spearkerLayout != null){
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
+            params.leftMargin = spearkerLayout.getLeft();
+            params.topMargin = spearkerLayout.getTop();
+            params.setMargins(left, top, 0, 0);
+            spearkerLayout.setLayoutParams(params);
+        }
+
     }
 }
