@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bottom_dialog_border"
+    android:id="@+id/pop_layout"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:paddingRight="30dp"
+        android:paddingLeft="30dp"
+        android:paddingTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_pick_cancel"
+            android:text="取消"
+            android:textColor="#666666"
+            android:textSize="17sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:textColor="#3C77FB"
+            android:textSize="17sp"
+            android:layout_gravity="right"
+            android:id="@+id/tv_pick_confirm"
+            android:text="确定"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.kloudsync.techexcel.view.loopview.LoopView
+            android:layout_marginTop="50dp"
+            android:id="@+id/lv_pick_date"
+            android:layout_width="160dp"
+            android:layout_height="150dp"
+            app:awv_textsize="18"
+            />
+        <com.kloudsync.techexcel.view.loopview.LoopView
+            android:layout_marginTop="50dp"
+            android:id="@+id/lv_pick_one"
+            android:layout_width="50dp"
+            android:layout_height="150dp"
+            app:awv_textsize="18"
+            />
+        <com.kloudsync.techexcel.view.loopview.LoopView
+            android:layout_marginTop="50dp"
+            android:id="@+id/lv_pick_hour"
+            android:layout_width="45dp"
+            android:layout_height="150dp"
+            app:awv_textsize="18"
+            />
+        <com.kloudsync.techexcel.view.loopview.LoopView
+            android:layout_marginTop="50dp"
+            android:id="@+id/lv_pick_duration"
+            android:layout_width="45dp"
+            android:layout_height="150dp"
+            app:awv_textsize="18"
+            />
+    </LinearLayout>
+</RelativeLayout>
