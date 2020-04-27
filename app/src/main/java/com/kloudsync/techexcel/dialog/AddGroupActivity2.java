@@ -23,11 +23,13 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.GroupAdapter;
+import com.kloudsync.techexcel.bean.Attendee;
 import com.kloudsync.techexcel.help.SideBar;
 import com.kloudsync.techexcel.help.SideBar.OnTouchingLetterChangedListener;
 import com.kloudsync.techexcel.help.SideBarSortHelp;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.onyx.android.sdk.data.model.Consumer;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -52,6 +54,7 @@ public class AddGroupActivity2 extends Activity {
 
 	private InputMethodManager inputManager;
 	private Button mBtnYes;
+	private List<Attendee> attendees;
 
 
 	@Override
@@ -59,7 +62,7 @@ public class AddGroupActivity2 extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_groups);
-//		isAddGroup = getIntent().getBooleanExtra("isAddGroup", false);
+		attendees = (List<Attendee>) getIntent().getSerializableExtra("attendees");
 		initView();
 	}
 
@@ -138,8 +141,21 @@ public class AddGroupActivity2 extends Activity {
 			@Override
 			public void getContact(ArrayList<Customer> list) {
 				mlist = new ArrayList<Customer>();
-				mlist.addAll(list);
-
+				if(attendees==null||attendees.size()==0){
+					mlist.addAll(list);
+				}else {
+					for(int i=0;i<list.size();i++){
+						Customer customer=list.get(i);
+						for(int j=0;j<attendees.size();j++){
+							if(list.get(i).getUrl().equals(attendees.get(j).getAvatarUrl())){
+								customer.setHasSelected(true);
+								mSelectList.add(customer);
+								break;
+							}
+						}
+						mlist.add(customer);
+					}
+				}
 				gadapter = new GroupAdapter(AddGroupActivity2.this, mlist);
 				lv_group.setAdapter(gadapter);
 				lv_group.setOnItemClickListener(new myOnItem());
@@ -202,6 +218,10 @@ public class AddGroupActivity2 extends Activity {
 						mlist.get(position).setSelected(true);
 						mSelectList.add(cus);
 					}
+				}else {
+					cus.setHasSelected(false);
+					mlist.get(position).setSelected(false);
+					mSelectList.remove(cus);
 				}
 				gadapter.updateListView(mlist);
 			}
@@ -222,7 +242,6 @@ public class AddGroupActivity2 extends Activity {
 		public void onClick(View v) {
 			switch (v.getId()) {
 				case R.id.tv_back:
-
 					finish();
 					break;
 				case R.id.tv_sure:

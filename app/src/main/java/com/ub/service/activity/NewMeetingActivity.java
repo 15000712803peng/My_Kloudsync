@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.Attendee;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.AddGroupActivity2;
 import com.kloudsync.techexcel.help.ApiTask;
@@ -36,13 +37,16 @@ import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.view.DatePickPop;
 import com.kloudsync.techexcel.view.DurationPickPop;
 import com.ub.techexcel.adapter.NewMeetingContactAdapter;
+import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.tools.JoinMeetingPopup;
 import com.ub.techexcel.tools.SelectMeetingDurationDialog;
 
 import org.feezu.liuli.timeselector.TimeSelector;
+import org.feezu.liuli.timeselector.Utils.TextUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -73,26 +77,167 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
     private LinearLayout inputmeetingsecret;
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private long curDuration=45*1000*60;
+    private ServiceBean bean;
+    List<Attendee> attendees=new ArrayList<Attendee>();
+    private int index=0;
+
+    /**
+     * 新建会议的时候开始时间
+     * */
+    private long createMeetStartSecond;
+    /**
+     * 新建会议的时候结束时间
+     * */
+    private long createMeetEndSecond;
+    /**
+     * 编辑会议的时候开始时间
+     * */
+    private long editMeetStartSecond;
+    /**
+     * 编辑会议的时候结束时间
+     * */
+    private long editMeetEndSecond;
+
+    private boolean mIsFirstEnrer=true;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.newmeeting2);
-        // EventBus.getDefault().register(this);
+        bean = (ServiceBean) getIntent().getSerializableExtra("servicebean");
         initView();
+        if(bean!=null){
+            submit.setEnabled(true);
+            meetingname.setText(bean.getName());
+            if (!TextUtil.isEmpty(bean.getPlanedStartDate())) {
+                SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd");
+                String start = "0:00", end = "0:00";
+                String year = "";
+                editMeetStartSecond = Long.parseLong(bean.getPlanedStartDate());
+                editMeetEndSecond = Long.parseLong(bean.getPlanedEndDate());
+                Date curDate = new Date(editMeetStartSecond);
+                start = formatter.format(curDate);
+                year = formatter2.format(curDate);
+                meetingstartdate.setText(year + " " + start);
+                curDuration=Long.parseLong(bean.getPlanedEndDate()) - Long.parseLong(bean.getPlanedStartDate());
+                setDurationText((int)(curDuration/ (1000 * 60)));
 
+                com.alibaba.fastjson.JSONArray jsonArray = com.alibaba.fastjson.JSONArray.parseArray(bean.getMembers());
+
+                if (jsonArray != null) {
+                    for(int i = 0; i < jsonArray.size(); i++) {
+                        Attendee attendee=new Attendee();
+                        com.alibaba.fastjson.JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        attendee.setMemberName(jsonObject.getString("MemberName"));
+                        attendee.setAvatarUrl(jsonObject.getString("AvatarUrl"));
+                        attendee.setRole(jsonObject.getInteger("Role"));
+                        if(attendee.getRole()==1){
+                            attendees.add(attendee);
+                        }
+                    }
+                }
+                if (attendees.size() >= 3) {
+                    as_img_contact_one.setVisibility(View.VISIBLE);
+                    as_img_contact_two.setVisibility(View.VISIBLE);
+                    as_img_contact_three.setVisibility(View.VISIBLE);
+                    tv_p_schedule_size.setVisibility(View.VISIBLE);
+                    tv_p_schedule_size.setText(attendees.size() + "total");
+                    as_img_contact_one.setImageURI(Uri.parse(attendees.get(0).getAvatarUrl()));
+                    as_img_contact_two.setImageURI(Uri.parse(attendees.get(1).getAvatarUrl()));
+                    as_img_contact_three.setImageURI(Uri.parse(attendees.get(2).getAvatarUrl()));
+                } else if (attendees.size() >= 2) {
+                    as_img_contact_one.setVisibility(View.VISIBLE);
+                    as_img_contact_two.setVisibility(View.VISIBLE);
+                    tv_p_schedule_size.setVisibility(View.VISIBLE);
+                    tv_p_schedule_size.setText(attendees.size() + "total");
+                    as_img_contact_one.setImageURI(Uri.parse(attendees.get(0).getAvatarUrl()));
+                    as_img_contact_two.setImageURI(Uri.parse(attendees.get(1).getAvatarUrl()));
+                    as_img_contact_three.setVisibility(View.GONE);
+                } else if (attendees.size() >= 1) {
+                    as_img_contact_one.setVisibility(View.VISIBLE);
+                    tv_p_schedule_size.setVisibility(View.VISIBLE);
+                    tv_p_schedule_size.setText(attendees.size() + "total");
+                    as_img_contact_one.setImageURI(Uri.parse(attendees.get(0).getAvatarUrl()));
+                    as_img_contact_two.setVisibility(View.GONE);
+                    as_img_contact_three.setVisibility(View.GONE);
+                } else {
+                    as_img_contact_one.setVisibility(View.GONE);
+                    as_img_contact_two.setVisibility(View.GONE);
+                    as_img_contact_three.setVisibility(View.GONE);
+                    tv_p_schedule_size.setVisibility(View.GONE);
+                }
+            }
+        }else {
+            submit.setEnabled(false);
+        }
     }
 
+    private void setDurationText(int diff){
+        String[] durations = getResources().getStringArray(R.array.time_duration);
+        String text="";
+
+        switch (diff){
+            case 15:
+                index=0;
+                text=durations[0];
+                break;
+            case 30:
+                index=1;
+                text=durations[1];
+                break;
+            case 45:
+                index=2;
+                text=durations[2];
+                break;
+            case 60:
+                index=3;
+                text=durations[3];
+                break;
+            case 90:
+                index=4;
+                text=durations[4];
+                break;
+            case 120:
+                index=5;
+                text=durations[5];
+                break;
+            case 180:
+                index=6;
+                text=durations[6];
+                break;
+            case 240:
+                index=7;
+                text=durations[7];
+                break;
+            case 300:
+                index=8;
+                text=durations[8];
+                break;
+            case 360:
+                index=9;
+                text=durations[9];
+                break;
+            case 420:
+                index=10;
+                text=durations[10];
+                break;
+            case 480:
+                index=11;
+                text=durations[11];
+                break;
+
+        }
+        meetingduration.setText(text);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0x1101 && resultCode == 3) {
-
             customerList = (List<Customer>) data.getSerializableExtra("customerList");
-            /*newMeetingContactAdapter = new NewMeetingContactAdapter(this, customerList);
-            mRecyclerView.setAdapter(newMeetingContactAdapter);*/
             if (customerList.size() >= 3) {
                 as_img_contact_one.setVisibility(View.VISIBLE);
                 as_img_contact_two.setVisibility(View.VISIBLE);
@@ -147,7 +292,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
         cancel = (ImageView) findViewById(R.id.cancel);
         cancel.setOnClickListener(this);
         submit = findViewById(R.id.submit);
-        submit.setEnabled(false);
         submit.setOnClickListener(this);
         durationArrowImage = findViewById(R.id.image_duration_arrow);
         inputmeetingsecret = findViewById(R.id.inputmeetingsecret);
@@ -166,8 +310,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
         meetingname = (EditText) findViewById(R.id.meetingname);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm:ss");
         String time = simpleDateFormat.format(new Date());
-        //meetingname.setText(AppConfig.UserName + time);
-        //meetingname.setSelection((AppConfig.UserName + time).length());
         meetingduration = (TextView) findViewById(R.id.meetingduration);
         meetingduration.setOnClickListener(this);
         tv_p_schedule_size = (TextView) findViewById(R.id.tv_p_schedule_size);
@@ -182,15 +324,12 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
 
         startdaterl.setOnClickListener(this);
         enddaterl.setOnClickListener(this);
-        //mRecyclerView = (RecyclerView) findViewById(R.id.recycleview);
-
         as_img_contact_one = findViewById(R.id.as_img_contact_one);
         as_img_contact_two = findViewById(R.id.as_img_contact_two);
         as_img_contact_three = findViewById(R.id.as_img_contact_three);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         gridLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        //mRecyclerView.setLayoutManager(gridLayoutManager);
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         schoolId = sharedPreferences.getInt("SchoolID", -1);
@@ -203,13 +342,17 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int nameLength = meetingname.getText().toString().trim().length();
-                int startDateLength = meetingstartdate.getText().toString().trim().length();
-                int endDateLength = meetingenddate.toString().trim().length();
-                if (nameLength>0&&startDateLength>0&&endDateLength>0){
-                    submit.setEnabled(true);
+                if(mIsFirstEnrer){
+                    mIsFirstEnrer=false;
                 }else {
-                    submit.setEnabled(false);
+                    int nameLength = meetingname.getText().toString().trim().length();
+                    int startDateLength = meetingstartdate.getText().toString().trim().length();
+                    int endDateLength = meetingenddate.toString().trim().length();
+                    if (nameLength>0&&startDateLength>0&&endDateLength>0){
+                        submit.setEnabled(true);
+                    }else {
+                        submit.setEnabled(false);
+                    }
                 }
             }
 
@@ -231,20 +374,26 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             //开始时间
             case R.id.startdaterl:
                 //selectDate();
-                //showGuidePop();
                 showDatePop();
                 break;
             //结束时间
             case R.id.enddaterl:
-                selectTime();
+                //selectTime();
                 break;
             case R.id.as_rl_contact:
                 Intent intent3 = new Intent(this,
                         AddGroupActivity2.class);
+                if(bean!=null){
+                    intent3.putExtra("attendees", (Serializable) attendees);
+                }
                 startActivityForResult(intent3, 0x1101);
                 break;
             case R.id.submit:
-                submit();
+                if(bean!=null){
+                    editMeetingSubmit();
+                }else {
+                    submit();
+                }
                 break;
             case R.id.image_duration_arrow:
             case R.id.meetingduration:
@@ -253,129 +402,100 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 break;
         }
     }
-
-    long endsecond;
-
-    //结束时间
-    private void selectTime() {
-//        Calendar calendar = Calendar.getInstance();
-//        new TimePickerDialog(NewMeetingActivity.this, new TimePickerDialog.OnTimeSetListener() {
+//    //结束时间
+//    private void selectTime() {
+//        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+//        Date curDate = new Date(System.currentTimeMillis());
+//        String str = formatter.format(curDate);
+//        TimeSelector timeSelector = new TimeSelector(NewMeetingActivity.this, new TimeSelector.ResultHandler() {
 //            @Override
-//            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-//                meetingstarttime.setText(hourOfDay + ":" + minute);
-//            }
-//        }, calendar.get(Calendar.HOUR), Calendar.MINUTE, true).show();
-
-
-        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date curDate = new Date(System.currentTimeMillis());
-        String str = formatter.format(curDate);
-        TimeSelector timeSelector = new TimeSelector(NewMeetingActivity.this, new TimeSelector.ResultHandler() {
-            @Override
-            public void handle(String time) {
-                try {
-                    endsecond = formatter.parse(time).getTime();
-                    if (endsecond != 0) {
-                        meetingenddate.setVisibility(View.VISIBLE);
-                        if (endsecond > startsecond) {
-                            meetingenddate.setText(time);
-                            long duration = endsecond - startsecond;
-                            long days = duration / (1000 * 60 * 60 * 24);                       //以天为单位取整
-                            long hour = (duration % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);               //以小时为单位取整
-                            long min = duration % 86400000 % 3600000 / 60000;       //以分钟为单位取整
-                            long seconds = duration % 86400000 % 3600000 % 60000 / 1000;   //以秒为单位取整
-
-                            Log.e("laoyu", "天" + days + "小时" + hour + "分" + min);
-                            meetingduration.setText(days + "天" + hour + "时" + min + "分");
-                        } else {
-                            meetingenddate.setVisibility(View.GONE);
-                            Toast.makeText(NewMeetingActivity.this, "结束时间不能大于开始时间!", Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        meetingenddate.setVisibility(View.GONE);
-                    }
-
-                    int nameLength = meetingname.getText().toString().trim().length();
-                    int startDateLength = meetingstartdate.getText().toString().trim().length();
-                    int endDateLength = meetingenddate.toString().trim().length();
-                    if (nameLength>0&&startDateLength>0&&endDateLength>0){
-                        submit.setEnabled(true);
-                    }else {
-                        submit.setEnabled(false);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, str, "2030-12-31 00:00");
-        timeSelector.show();
-
-    }
-
-
-    long startsecond;
-
-    //开始时间
-    private void selectDate() {
-//        Calendar calendar = Calendar.getInstance();
-//        new DatePickerDialog(NewMeetingActivity.this,
-//                new DatePickerDialog.OnDateSetListener() {
-//                    @Override
-//                    public void onDateSet(DatePicker view, int year,
-//                                          int monthOfYear, int dayOfMonth) {
-//                        meetingstartdate.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
+//            public void handle(String time) {
+//                try {
+//                    endsecond = formatter.parse(time).getTime();
+//                    if (endsecond != 0) {
+//                        meetingenddate.setVisibility(View.VISIBLE);
+//                        if (endsecond > startsecond) {
+//                            meetingenddate.setText(time);
+//                            long duration = endsecond - startsecond;
+//                            long days = duration / (1000 * 60 * 60 * 24);                       //以天为单位取整
+//                            long hour = (duration % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);               //以小时为单位取整
+//                            long min = duration % 86400000 % 3600000 / 60000;       //以分钟为单位取整
+//                            long seconds = duration % 86400000 % 3600000 % 60000 / 1000;   //以秒为单位取整
+//
+//                            Log.e("laoyu", "天" + days + "小时" + hour + "分" + min);
+//                            meetingduration.setText(days + "天" + hour + "时" + min + "分");
+//                        } else {
+//                            meetingenddate.setVisibility(View.GONE);
+//                            Toast.makeText(NewMeetingActivity.this, "结束时间不能大于开始时间!", Toast.LENGTH_LONG).show();
+//                        }
+//                    } else {
+//                        meetingenddate.setVisibility(View.GONE);
 //                    }
+//
+//                    int nameLength = meetingname.getText().toString().trim().length();
+//                    int startDateLength = meetingstartdate.getText().toString().trim().length();
+//                    int endDateLength = meetingenddate.toString().trim().length();
+//                    if (nameLength>0&&startDateLength>0&&endDateLength>0){
+//                        submit.setEnabled(true);
+//                    }else {
+//                        submit.setEnabled(false);
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
 //                }
-//                , calendar.get(Calendar.YEAR)
-//                , calendar.get(Calendar.MONTH)
-//                , calendar.get(Calendar.DAY_OF_MONTH)).show();
-
-        Date curDate = new Date(System.currentTimeMillis());
-        String str = formatter.format(curDate);
-        TimeSelector timeSelector = new TimeSelector(NewMeetingActivity.this, new TimeSelector.ResultHandler() {
-            @Override
-            public void handle(String time) {
-                try {
-
-                    startsecond = formatter.parse(time).getTime();
-                    if (startsecond != 0) {
-                        meetingstartdate.setVisibility(View.VISIBLE);
-                        if (endsecond != 0) {
-                            if (endsecond > startsecond) {
-                                meetingstartdate.setText(time);
-                           /* long duration = endsecond - startsecond;
-                            long hour= duration  / 3600000;               //以小时为单位取整
-                            long min = duration % 86400000 % 3600000 / 60000;       //以分钟为单位取整
-                            long seconds = duration % 86400000 % 3600000 % 60000 / 1000;   //以秒为单位取整
-                            meetingduration.setText(hour+"小时");*/
-                            } else {
-                                meetingstartdate.setVisibility(View.GONE);
-                                Toast.makeText(NewMeetingActivity.this, "结束时间不能大于开始时间!", Toast.LENGTH_LONG).show();
-                            }
-                        } else {
-                            meetingstartdate.setText(time);
-                        }
-                    } else {
-                        meetingstartdate.setVisibility(View.GONE);
-                    }
-                    int nameLength = meetingname.getText().toString().trim().length();
-                    int startDateLength = meetingstartdate.getText().toString().trim().length();
-                    int endDateLength = meetingenddate.toString().trim().length();
-                    if (nameLength>0&&startDateLength>0&&endDateLength>0){
-                        submit.setEnabled(true);
-                    }else {
-                        submit.setEnabled(false);
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, str, "2030-12-31 00:00");
-        timeSelector.show();
-
-
-    }
+//            }
+//        }, str, "2030-12-31 00:00");
+//        timeSelector.show();
+//
+//    }
+//    //开始时间
+//    private void selectDate() {
+//        Date curDate = new Date(System.currentTimeMillis());
+//        String str = formatter.format(curDate);
+//        TimeSelector timeSelector = new TimeSelector(NewMeetingActivity.this, new TimeSelector.ResultHandler() {
+//            @Override
+//            public void handle(String time) {
+//                try {
+//
+//                    startsecond = formatter.parse(time).getTime();
+//                    if (startsecond != 0) {
+//                        meetingstartdate.setVisibility(View.VISIBLE);
+//                        if (endsecond != 0) {
+//                            if (endsecond > startsecond) {
+//                                meetingstartdate.setText(time);
+//                           /* long duration = endsecond - startsecond;
+//                            long hour= duration  / 3600000;               //以小时为单位取整
+//                            long min = duration % 86400000 % 3600000 / 60000;       //以分钟为单位取整
+//                            long seconds = duration % 86400000 % 3600000 % 60000 / 1000;   //以秒为单位取整
+//                            meetingduration.setText(hour+"小时");*/
+//                            } else {
+//                                meetingstartdate.setVisibility(View.GONE);
+//                                Toast.makeText(NewMeetingActivity.this, "结束时间不能大于开始时间!", Toast.LENGTH_LONG).show();
+//                            }
+//                        } else {
+//                            meetingstartdate.setText(time);
+//                        }
+//                    } else {
+//                        meetingstartdate.setVisibility(View.GONE);
+//                    }
+//                    int nameLength = meetingname.getText().toString().trim().length();
+//                    int startDateLength = meetingstartdate.getText().toString().trim().length();
+//                    int endDateLength = meetingenddate.toString().trim().length();
+//                    if (nameLength>0&&startDateLength>0&&endDateLength>0){
+//                        submit.setEnabled(true);
+//                    }else {
+//                        submit.setEnabled(false);
+//                    }
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }, str, "2030-12-31 00:00");
+//        timeSelector.show();
+//
+//
+//    }
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -392,23 +512,19 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
         }
     };
 
+    /**
+     * 新增会议
+     * */
     private void submit() {
         if (meetingname.length() == 0) {
             Toast.makeText(this, getResources().getString(R.string.schnames), Toast.LENGTH_LONG).show();
             return;
         }
-        if (startsecond == 0) {
+        if (createMeetStartSecond == 0) {
             Toast.makeText(this, getResources().getString(R.string.schdate), Toast.LENGTH_LONG).show();
             return;
         }
-
-//        if(durationData == null){
-//            Toast.makeText(this, getResources().getString(R.string.schduration), Toast.LENGTH_LONG).show();
-//            return;
-//        }
-        //Log.e("check_time","startsecond:" + startsecond + "time:"+ durationData.time);
-        endsecond = startsecond + curDuration;
-
+        createMeetEndSecond = createMeetStartSecond + curDuration;
         new ApiTask(new Runnable() {
             @Override
             public void run() {
@@ -416,8 +532,8 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("Title", meetingname.getText().toString());
                     jsonObject.put("Description", meetingduration.getText().toString());
-                    jsonObject.put("StartDate", startsecond);
-                    jsonObject.put("EndDate", endsecond);
+                    jsonObject.put("StartDate", createMeetStartSecond);
+                    jsonObject.put("EndDate", createMeetEndSecond);
                     jsonObject.put("LessonType", 5);
                     jsonObject.put("SchoolID", schoolId);
                     JSONArray jsonArray = new JSONArray();
@@ -453,6 +569,58 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
 
     }
 
+    /**
+     * 编辑会议
+     * */
+    private void editMeetingSubmit() {
+        editMeetEndSecond = editMeetStartSecond + curDuration;
+        new ApiTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("LessonID", bean.getId());
+                    jsonObject.put("Title", meetingname.getText().toString());
+                    jsonObject.put("Description", meetingduration.getText().toString());
+                    jsonObject.put("StartDate", editMeetStartSecond);
+                    jsonObject.put("EndDate", editMeetEndSecond);
+
+                    JSONArray jsonArray = new JSONArray();
+                    for (int i = 0; i < customerList.size(); i++) {
+                        JSONObject j = new JSONObject();
+                        j.put("LessonID", bean.getId());
+                        j.put("MemberID", customerList.get(i).getUserID());
+                        j.put("Role", 1);
+                        jsonArray.put(j);
+                    }
+                    JSONObject j2 = new JSONObject();
+                    j2.put("MemberID", AppConfig.UserID);
+                    j2.put("Role", 2);
+                    jsonArray.put(j2);
+                    jsonObject.put("LessonMembers", jsonArray);
+
+                    JSONArray jj = new JSONArray();
+                    jj.put(jsonObject);
+
+                    JSONObject returnJson = ConnectService.submitDataByJson4(AppConfig.URL_PUBLIC + "Lesson/CreateOrUpdateLessons", jj.toString());
+                    Log.e("CreateOrUpdateLessons", jj.toString() + "    " + returnJson.toString());
+                    int retCode = returnJson.getInt("RetCode");
+                    switch (retCode) {
+                        case 0:
+                            Message msg = Message.obtain();
+                            msg.what = 0x1001;
+                            handler.sendMessage(msg);
+                            break;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start(ThreadManager.getManager());
+
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -493,8 +661,12 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             @Override
             public void onTimeCallBack(String showTime, String valueTime) {
                 try{
+                    if(bean==null){//新增会议
+                        createMeetStartSecond = formatter.parse(valueTime).getTime();
+                    }else {//编辑会议
+                        editMeetStartSecond = formatter.parse(valueTime).getTime();
+                    }
                     meetingstartdate.setText(showTime);
-                    startsecond = formatter.parse(valueTime).getTime();
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -504,6 +676,11 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
 
     private void showDurationPop(){
         DurationPickPop durationPickPop=new DurationPickPop(this);
+        if(bean!=null){
+            durationPickPop.setInitPosition(index);
+        }else {
+            durationPickPop.setInitPosition(2);
+        }
         durationPickPop.show();
         durationPickPop.setOnDurationCallBackListener(new DurationPickPop.OnDurationCallBackListener() {
             @Override

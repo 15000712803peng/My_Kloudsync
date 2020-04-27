@@ -1,6 +1,8 @@
 package com.kloudsync.techexcel.bean;
 
-public class Attendee {
+import java.io.Serializable;
+
+public class Attendee implements Serializable {
     public String LessonID;
     public String	MemberID;
     public int	Role;
