@@ -179,7 +179,15 @@ public class AddDocumentTool {
                         final String ErrorMessage = responsedata
                                 .getString("ErrorMessage");
                         if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
-                            uploadDetailLinstener.uploadFinished("");
+                            JSONObject myjson=responsedata.getJSONObject("RetData");
+                            int attachmentId=myjson.getInt("AttachmentID");
+                            String title=myjson.getString("Title");
+                            int itemid=myjson.getInt("ItemID");
+                            Document document=new Document();
+                            document.setAttachmentID(attachmentId+"");
+                            document.setTitle(title);
+                            document.setItemID(itemid+"");
+                            uploadDetailLinstener.uploadFinished(document);
                         } else if (retcode.equals(AppConfig.Upload_NoExist + "")) { // 添加
                             JSONObject jsonObject = responsedata.getJSONObject("RetData");
                             String targetFolderKey = jsonObject.getString("Path");
