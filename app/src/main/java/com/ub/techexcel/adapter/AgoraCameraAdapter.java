@@ -51,7 +51,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     }
 
     public interface OnCameraOptionsListener {
-        void onCameraFrameClick(AgoraMember member);
+        void onCameraFrameClick(View itemView,AgoraMember member,int position);
     }
 
     @Override
@@ -61,8 +61,8 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        ViewHolder myHolder = holder;
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        final ViewHolder myHolder = holder;
         final AgoraMember user = users.get(position);
         holder.vedioFrame.removeAllViews();
         if (holder.vedioFrame.getChildCount() == 0) {
@@ -96,7 +96,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                 @Override
                 public void onClick(View v) {
                     if (onCameraOptionsListener != null) {
-                        onCameraOptionsListener.onCameraFrameClick(user);
+                        onCameraOptionsListener.onCameraFrameClick(myHolder.itemView,user,position);
                     }
 //                    showFull(user);
 

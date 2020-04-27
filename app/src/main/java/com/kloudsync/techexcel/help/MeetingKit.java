@@ -574,7 +574,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         for (IRtcEngineEventHandler.AudioVolumeInfo info : speakers) {
             //0代表本地用户
             Log.e("onAudioVolumeIndication", info.uid + "  " + info.volume);
-            if (info.uid == 0 && info.volume >= 60 && settingCache.getMeetingSetting().isMicroOn()) { //自己是否说话了
+            if (info.uid == 0 && info.volume >= 40 && settingCache.getMeetingSetting().isMicroOn()) { //自己是否说话了
 //                Log.e("onAudioVolumeIndication", info.uid + "  " + info.volume);
                 selfIsSpeaker = true;
                 break;
@@ -582,7 +582,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         }
 
         long inteval = System.currentTimeMillis() - lastSpeakTime;
-        if (inteval > 2000 && selfIsSpeaker) {
+        if (inteval > 380 && selfIsSpeaker) {
             selfIsSpeaker = false;
             lastSpeakTime = System.currentTimeMillis();
             SocketMessageManager.getManager(host).sendMessage_MemberSpeaking();
@@ -738,6 +738,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     @Override
     public void menuMoreClicked() {
+
+    }
+
+    @Override
+    public void menuWebcamOptionsClicked() {
 
     }
 

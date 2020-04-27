@@ -58,6 +58,7 @@ public class SocketMessageManager {
     public static final String MEETING_CHANGE = "MEETING_CHANGE";
     public static final String MEETING_MEMBER_SPEAKING = "MEMBER_SPEAKING";
     public static final String MEETING_USER_JOIN_MEETING_ON_OTHER_DEVICE = "USER_JOIN_MEETING_ON_OTHER_DEVICE";
+    public static final String MEETING_DISPLAY_SPEAKING_CAMERA = "DISPLAY_SPEAKING_CAMERA";
     public static final int MESSAGE_VIDEO_PAUSE = 0;
     public static final int MESSAGE_VIDEO_PLAY = 1;
     public static final int MESSAGE_VIDEO_CLOSE = 2;

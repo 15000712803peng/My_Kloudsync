@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.tool;
 
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,7 +11,7 @@ import android.widget.RelativeLayout;
  * Created by tonyan on 2020/4/12.
  */
 
-public class CameraTouchListener implements View.OnTouchListener {
+public class CameraRecyclerViewTouchListener implements RecyclerView.OnItemTouchListener {
 
     private int startY;
     private int startX;
@@ -28,9 +29,20 @@ public class CameraTouchListener implements View.OnTouchListener {
 
     boolean isMove;
 
+
+    public void layoutCamera(int left ,int top){
+        if(cameraLayout != null){
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.leftMargin = cameraLayout.getLeft();
+            params.topMargin = cameraLayout.getTop();
+            params.setMargins(left, top, 0, 0);
+            cameraLayout.setLayoutParams(params);
+        }
+
+    }
+
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        Log.e("CameraTouchListener","onTouch:" + event.getRawX());
+    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 startX = (int) event.getRawX();
@@ -80,14 +92,13 @@ public class CameraTouchListener implements View.OnTouchListener {
         return false;
     }
 
-    public void layoutCamera(int left ,int top){
-        if(cameraLayout != null){
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.leftMargin = cameraLayout.getLeft();
-            params.topMargin = cameraLayout.getTop();
-            params.setMargins(left, top, 0, 0);
-            cameraLayout.setLayoutParams(params);
-        }
+    @Override
+    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+    }
+
+    @Override
+    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
     }
 }

@@ -3559,6 +3559,7 @@ public class ServiceInterfaceTools {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         String url = AppConfig.URL_MEETING_BASE + "meeting/change_camera_display_mode?mode=" + mode;
         JSONObject response = ConnectService.submitDataByJson(url, params);
         Log.e("syncChangeCameraDisplayMode","url:" + url + ",response:" + response);

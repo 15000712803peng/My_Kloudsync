@@ -4823,7 +4823,7 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
     //------Camera vedio options
 
     @Override
-    public void onCameraFrameClick(AgoraMember member) {
+    public void onCameraFrameClick(View itemView,AgoraMember member,int position) {
         if (!isPresenter()) {
             return;
         }

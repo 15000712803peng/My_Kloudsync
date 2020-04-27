@@ -193,6 +193,40 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/meeting_webcan_view_options"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:padding="2dp"
+                    android:id="@+id/image_webcan_view_options"
+                    android:layout_width="17dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/icon_webcan_options" />
+
+                <TextView
+                    android:singleLine="true"
+                    android:id="@+id/txt_webcan_view_options"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="30dp"
+                    android:gravity="center"
+                    android:text="Webcan View Option"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/white" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
                 android:id="@+id/meeting_menu_leave"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,10 +22,12 @@ import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.PopSpeakerWindowMore;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
+import com.kloudsync.techexcel.tool.CameraRecyclerViewTouchListener;
 import com.kloudsync.techexcel.tool.CameraTouchListener;
 import com.kloudsync.techexcel.tool.FollowSpearkerTouchListener;
 import com.kloudsync.techexcel.view.CircleImageView;
 import com.ub.techexcel.bean.AgoraMember;
+import com.ub.techexcel.tools.PopMeetingWebcamOptions;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -45,17 +48,30 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
 
     private Context context;
     private RelativeLayout speakerLayout;
-    private ImageView speakerMoreImage;
     SharedPreferences sharedPreferences;
     FollowSpearkerTouchListener spearkerTouchListener;
     private RelativeLayout speakerContainer;
     private ImageLoader imageLoader;
     private AgoraMember currentAgoraMember;
-    private ImageView arrowExpanded;
     private CameraTouchListener cameraTouchListener;
+    private ImageView modeImage;
+    private MeetingConfig meetingConfig;
+    private CameraRecyclerViewTouchListener cameraRecyclerViewTouchListener;
 
-    public FollowSpearkerModeManager(CameraTouchListener cameraTouchListener){
+    public interface OnSpeakerViewClickedListener {
+        void onSpeakerViewCliced(View view);
+    }
+
+    private OnSpeakerViewClickedListener onSpeakerViewClickedListener;
+
+
+    public void setOnSpeakerViewClickedListener(OnSpeakerViewClickedListener onSpeakerViewClickedListener) {
+        this.onSpeakerViewClickedListener = onSpeakerViewClickedListener;
+    }
+
+    public FollowSpearkerModeManager(CameraTouchListener cameraTouchListener, CameraRecyclerViewTouchListener cameraRecyclerViewTouchListener) {
         this.cameraTouchListener = cameraTouchListener;
+        this.cameraRecyclerViewTouchListener = cameraRecyclerViewTouchListener;
     }
 
     public AgoraMember getCurrentAgoraMember() {
@@ -93,27 +109,32 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         this.speakerLayout = speakerContainer.findViewById(R.id.layout_follow_speaker);
         sharedPreferences = context.getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
-        spearkerTouchListener = new FollowSpearkerTouchListener(context,cameraTouchListener);
+        spearkerTouchListener = new FollowSpearkerTouchListener(context, cameraTouchListener);
         spearkerTouchListener.setSpeakerLayout(speakerLayout);
         speakerLayout.setOnTouchListener(spearkerTouchListener);
         speakerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeSizeMode();
+                if(onSpeakerViewClickedListener != null){
+                    onSpeakerViewClickedListener.onSpeakerViewCliced(v);
+                }
+//                changeSizeMode();
             }
         });
-        if(cameraTouchListener != null){
+        if (cameraTouchListener != null) {
             cameraTouchListener.setFollowSpearkerTouchListener(spearkerTouchListener);
         }
 
-        speakerMoreImage = speakerLayout.findViewById(R.id.image_speark_more);
-        speakerMoreImage.setOnClickListener(this);
+        if (cameraRecyclerViewTouchListener != null) {
+            cameraRecyclerViewTouchListener.setFollowSpearkerTouchListener(spearkerTouchListener);
+        }
+
         vedioFrame = speakerLayout.findViewById(R.id.speaker_view_container);
         nameText = speakerLayout.findViewById(R.id.txt_name);
         audioStatusImage = speakerLayout.findViewById(R.id.image_audio_status);
+        modeImage = speakerLayout.findViewById(R.id.img_mode);
+        modeImage.setOnClickListener(this);
         iconImage = speakerLayout.findViewById(R.id.member_icon);
-        arrowExpanded = speakerLayout.findViewById(R.id.arrow_expand);
-        arrowExpanded.setOnClickListener(this);
         if (currentAgoraMember != null) {
             fillViewByMember(currentAgoraMember);
         }
@@ -139,20 +160,15 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.image_speark_more:
-                showMorePopwindow();
-                break;
-            case R.id.arrow_expand:
-                Log.e("check_post", "post_expanded");
-                EventExpanedUserList expanedUserList = new EventExpanedUserList();
-                EventBus.getDefault().post(expanedUserList);
+            case R.id.img_mode:
+
                 break;
         }
     }
 
     PopSpeakerWindowMore windowMorePop;
 
-    private void showMorePopwindow() {
+    private void showMorePopwindow(View view) {
         if (windowMorePop != null) {
             if (windowMorePop.isShowing()) {
                 windowMorePop.dismiss();
@@ -161,7 +177,7 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         }
         windowMorePop = new PopSpeakerWindowMore((Activity) context);
         windowMorePop.setOnSizeSettingChanged(this);
-        windowMorePop.showAtBottom(speakerMoreImage);
+        windowMorePop.showAtBottom(view);
 
     }
 
@@ -171,7 +187,7 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         Activity activity = (Activity) context;
         int width = 0, height = 0;
         speakerContainer.removeAllViews();
-        width = context.getResources().getDimensionPixelSize(R.dimen.speaker_normal_width);
+        width = context.getResources().getDimensionPixelSize(R.dimen._speaker_normal_width);
         height = context.getResources().getDimensionPixelSize(R.dimen.speaker_normal);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
         if (spearkerTouchListener != null) {
@@ -223,6 +239,9 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
 
     public void showHostView(AgoraMember agoraMember) {
         Log.e("check_speaker_show", "speaker:" + agoraMember);
+        if (agoraMember == null) {
+            return;
+        }
         if (TextUtils.isEmpty(agoraMember.getUserName())) {
             Observable.just(agoraMember).observeOn(Schedulers.io()).doOnNext(new Consumer<AgoraMember>() {
                 @Override
@@ -257,8 +276,8 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
 
     public void showSpeakerView(AgoraMember agoraMember) {
         Log.e("check_speaker_show", "speaker:" + agoraMember);
-        if(this.currentAgoraMember != null && (this.currentAgoraMember.getUserId() == agoraMember.getUserId())
-                && this.currentAgoraMember.isMuteVideo() == agoraMember.isMuteVideo()){
+        if (this.currentAgoraMember != null && (this.currentAgoraMember.getUserId() == agoraMember.getUserId())
+                && this.currentAgoraMember.isMuteVideo() == agoraMember.isMuteVideo()) {
             return;
         }
         agoraMember.setMuteAudio(false);
@@ -348,15 +367,18 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         }
     }
 
-    public void hideArrowExpanded() {
-        if (arrowExpanded != null) {
-            arrowExpanded.setVisibility(View.INVISIBLE);
+    PopMeetingWebcamOptions popWebcamOptions;
+
+    private void showWebcamOtions(View view, MeetingConfig meetingConfig) {
+        if (popWebcamOptions != null) {
+            if (popWebcamOptions.isShowing()) {
+                popWebcamOptions.dismiss();
+                popWebcamOptions = null;
+            }
         }
+
+        popWebcamOptions = new PopMeetingWebcamOptions(context);
+        popWebcamOptions.show(view, meetingConfig);
     }
 
-    public void showArrowExpanded() {
-        if (arrowExpanded != null) {
-            arrowExpanded.setVisibility(View.VISIBLE);
-        }
-    }
 }

@@ -50,6 +50,7 @@ public class FollowSpearkerTouchListener implements View.OnTouchListener {
         this.cameraTouchListener = cameraTouchListener;
         screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+        getSize();
     }
 
     private void getSize() {
@@ -57,7 +58,7 @@ public class FollowSpearkerTouchListener implements View.OnTouchListener {
                 MODE_PRIVATE).getString("speaker_size_mode", "small");
         Log.e("getSize", "mode_setting:" + modeSetting);
         if (modeSetting.equals("small")) {
-            width = context.getResources().getDimensionPixelSize(R.dimen.speaker_normal_width);
+            width = context.getResources().getDimensionPixelSize(R.dimen._speaker_normal_width);
             height = context.getResources().getDimensionPixelSize(R.dimen.speaker_normal);
         } else if (modeSetting.equals("big")) {
             width = context.getResources().getDimensionPixelSize(R.dimen.speaker_big_width);
