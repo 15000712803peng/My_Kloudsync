@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="10dp"
-        android:text="Are you sure you want to delete the selected document?"
+        android:text="@string/DeleteFavoritePromet"
         android:textSize="13sp" />
 
     <View

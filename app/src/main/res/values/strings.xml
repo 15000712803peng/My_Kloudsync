@@ -330,6 +330,7 @@
 
     <string name="Edit">Edit</string>
     <string name="Delete">Delete</string>
+    <string name="DeleteFavoritePromet">Are you sure you want to delete the selected document?</string>
 
     <string name="Dialog_GunDan">Only one device can use the chat function at the same time. You have other devices that are using the chat function. This device will temporarily quit the chat.</string>
 
