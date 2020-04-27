@@ -853,11 +853,12 @@ public class DocumentUploadTool {
                         convertingResult, field, new ServiceInterfaceListener() {
                             @Override
                             public void getServiceReturnData(Object object) {
-                                Log.e("hhh", "FavoriteAttachment/UploadNewFile");
-//                                Toast.makeText(mActivity, "upload success", Toast.LENGTH_LONG).show();
-//                                updateGetListener.Update();
+                                Document document=null;
+                                if(object!=null){
+                                    document= (Document) object;
+                                }
                                 if (uploadDetailLinstener != null) {
-                                    uploadDetailLinstener.uploadFinished(object);
+                                    uploadDetailLinstener.uploadFinished(document);
                                 }
                             }
                         }

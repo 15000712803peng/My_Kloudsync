@@ -18,7 +18,7 @@
             android:gravity="center"
             android:textColor="@color/blue1"
             android:textSize="14sp"
-            android:text="add file from my saved files"
+            android:text="@string/addmeetingmysave"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:layout_centerVertical="true" />
@@ -52,8 +52,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center"
-
-            android:text="File Name"
+            android:text="@string/accompanyfilename"
             android:textColor="@color/black"
             android:textSize="14sp" />
 
@@ -64,7 +63,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
 
-            android:text="size"
+            android:text="@string/accompanyfilesize"
             android:textColor="@color/black"
             android:textSize="14sp" />
 
@@ -74,7 +73,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Time"
+            android:text="@string/accompanyfiletime"
             android:textColor="@color/black"
             android:textSize="14sp" />
     </LinearLayout>
@@ -106,8 +105,9 @@
                 android:id="@+id/cancel"
                 android:layout_width="80dp"
                 android:layout_height="30dp"
-                android:background="@drawable/peertimeselect_bg"
+                android:background="@drawable/peertimeselect_bg3"
                 android:gravity="center"
+                android:textColor="@color/skyblue"
                 android:text="@string/Cancel"
                 android:textSize="12sp" />
 

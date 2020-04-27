@@ -712,13 +712,16 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         }
 
                         @Override
-                        public void uploadFinished(Object result) {
+                        public void uploadFinished(final Object result) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
                                         uploadFileDialog.cancel();
-                                        Toast.makeText(getApplicationContext(), "add favorite success", Toast.LENGTH_SHORT).show();
+                                        if(result!=null){
+                                            Document document= (Document) result;
+                                            onFavoriteDocSelected(document.getItemID());
+                                        }
                                     }
                                 }
                             });

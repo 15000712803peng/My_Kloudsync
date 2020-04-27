@@ -554,6 +554,7 @@
     <string name="accompanyfiletime">时长</string>
     <string name="accompanyfilewho">录制人</string>
     <string name="accompanyfilesize">文件大小</string>
+    <string name="addmeetingmysave">从我的收藏选择</string>
 
     <string name="makesyncaccompany">制作同步伴奏带</string>
     <string name="saveaccompany">保存为伴奏</string>

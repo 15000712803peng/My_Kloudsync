@@ -508,6 +508,7 @@
     <string name="accompanyfiletime">Duration</string>
     <string name="accompanyfilewho">Recorded by</string>
     <string name="accompanyfilesize">File size</string>
+    <string name="addmeetingmysave">Add file from my save files</string>
 
 
     <string name="makesyncaccompany">Sync this music</string>
