@@ -10,6 +10,7 @@ import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
 import com.kloudsync.techexcel.tool.Md5Tool;
+import com.ub.kloudsync.activity.Document;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,7 +50,13 @@ public class AddDocumentTool {
                         final String errorMessage = responsedata
                                 .getString("ErrorMessage");
                         if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
-                            uploadDetailLinstener.uploadFinished("");
+                            JSONObject jsonObject=responsedata.getJSONObject("RetData");
+                            int attachmentId=jsonObject.getInt("AttachmentID");
+                            String title=jsonObject.getString("Title");
+                            Document document=new Document();
+                            document.setAttachmentID(attachmentId+"");
+                            document.setTitle(title);
+                            uploadDetailLinstener.uploadFinished(document);
                         } else if (retcode.equals(AppConfig.Upload_NoExist + "")) { // 添加
                             JSONObject jsonObject = responsedata.getJSONObject("RetData");
                             String targetFolderKey = jsonObject.getString("Path");
@@ -172,7 +179,15 @@ public class AddDocumentTool {
                         final String ErrorMessage = responsedata
                                 .getString("ErrorMessage");
                         if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
-                            uploadDetailLinstener.uploadFinished("");
+                            JSONObject myjson=responsedata.getJSONObject("RetData");
+                            int attachmentId=myjson.getInt("AttachmentID");
+                            String title=myjson.getString("Title");
+                            int itemid=myjson.getInt("ItemID");
+                            Document document=new Document();
+                            document.setAttachmentID(attachmentId+"");
+                            document.setTitle(title);
+                            document.setItemID(itemid+"");
+                            uploadDetailLinstener.uploadFinished(document);
                         } else if (retcode.equals(AppConfig.Upload_NoExist + "")) { // 添加
                             JSONObject jsonObject = responsedata.getJSONObject("RetData");
                             String targetFolderKey = jsonObject.getString("Path");

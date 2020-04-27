@@ -185,21 +185,16 @@ public class ServiceAdapter2 extends BaseAdapter {
             holder.rv_attendee.setAdapter(new AttendeeAdapter(context,attendees));
             holder.tv_persons.setText(attendees.size()+"人");
             holder.tv_attendee.setVisibility(View.GONE);
-            if(attendees.size()>7){
+            if(attendees.size()>6){
                 holder.rv_attendee.setLayoutParams(new LinearLayout.LayoutParams(RecyclerView.LayoutParams.FILL_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT, 1.0f));
-
             }
         }else {
             holder.rv_attendee.setVisibility(View.GONE);
             holder.tv_persons.setVisibility(View.GONE);
             holder.tv_attendee.setText("暂无参会人员信息");
         }
-
         return convertView;
-
     }
-
-
     public String getMonth(String monthnumber) {
         if (monthnumber.equals("01")) {
             return context.getResources().getString(R.string.mtJan);

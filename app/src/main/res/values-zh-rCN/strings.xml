@@ -331,6 +331,7 @@
 
     <string name="Edit">编辑</string>
     <string name="Delete">删除</string>
+    <string name="DeleteFavoritePromet">确认删除选择的文件?</string>
 
     <string name="Dialog_GunDan">同一时间只能有一端使用聊天功能，您有其他的设备正在使用聊天功能，本设备将暂时退出聊天</string>
 
@@ -554,6 +555,7 @@
     <string name="accompanyfiletime">时长</string>
     <string name="accompanyfilewho">录制人</string>
     <string name="accompanyfilesize">文件大小</string>
+    <string name="addmeetingmysave">从我的收藏选择</string>
 
     <string name="makesyncaccompany">制作同步伴奏带</string>
     <string name="saveaccompany">保存为伴奏</string>

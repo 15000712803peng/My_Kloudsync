@@ -33,6 +33,8 @@ import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.info.Customer;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.view.DatePickPop;
+import com.kloudsync.techexcel.view.DurationPickPop;
 import com.ub.techexcel.adapter.NewMeetingContactAdapter;
 import com.ub.techexcel.tools.JoinMeetingPopup;
 import com.ub.techexcel.tools.SelectMeetingDurationDialog;
@@ -69,6 +71,8 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
     private ImageView durationArrowImage;
     private CheckBox checkbox;
     private LinearLayout inputmeetingsecret;
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private long curDuration=45*1000*60;
 
 
     @Override
@@ -226,7 +230,9 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 break;
             //开始时间
             case R.id.startdaterl:
-                selectDate();
+                //selectDate();
+                //showGuidePop();
+                showDatePop();
                 break;
             //结束时间
             case R.id.enddaterl:
@@ -242,7 +248,8 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 break;
             case R.id.image_duration_arrow:
             case R.id.meetingduration:
-                showJoinMeetingDialog();
+                //showJoinMeetingDialog();
+                showDurationPop();
                 break;
         }
     }
@@ -323,7 +330,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
 //                , calendar.get(Calendar.MONTH)
 //                , calendar.get(Calendar.DAY_OF_MONTH)).show();
 
-        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date curDate = new Date(System.currentTimeMillis());
         String str = formatter.format(curDate);
         TimeSelector timeSelector = new TimeSelector(NewMeetingActivity.this, new TimeSelector.ResultHandler() {
@@ -396,12 +402,12 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             return;
         }
 
-        if(durationData == null){
-            Toast.makeText(this, getResources().getString(R.string.schduration), Toast.LENGTH_LONG).show();
-            return;
-        }
-        Log.e("check_time","startsecond:" + startsecond + "time:"+ durationData.time);
-        endsecond = startsecond + durationData.time;
+//        if(durationData == null){
+//            Toast.makeText(this, getResources().getString(R.string.schduration), Toast.LENGTH_LONG).show();
+//            return;
+//        }
+        //Log.e("check_time","startsecond:" + startsecond + "time:"+ durationData.time);
+        endsecond = startsecond + curDuration;
 
         new ApiTask(new Runnable() {
             @Override
@@ -479,5 +485,32 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
     public void onDuratonSelected(SelectMeetingDurationDialog.DurationData duration) {
         this.durationData= duration;
         meetingduration.setText(duration.duration);
+    }
+    public void showDatePop() {
+        DatePickPop datePickPop=new DatePickPop(this);
+        datePickPop.show();
+        datePickPop.setOnTimeCallBackListener(new DatePickPop.OnTimeCallBackListener() {
+            @Override
+            public void onTimeCallBack(String showTime, String valueTime) {
+                try{
+                    meetingstartdate.setText(showTime);
+                    startsecond = formatter.parse(valueTime).getTime();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void showDurationPop(){
+        DurationPickPop durationPickPop=new DurationPickPop(this);
+        durationPickPop.show();
+        durationPickPop.setOnDurationCallBackListener(new DurationPickPop.OnDurationCallBackListener() {
+            @Override
+            public void onDurationCallBack(String show, long value) {
+                meetingduration.setText(show);
+                curDuration=value;
+            }
+        });
     }
 }

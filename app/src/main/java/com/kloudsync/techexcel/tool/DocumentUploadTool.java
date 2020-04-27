@@ -834,10 +834,10 @@ public class DocumentUploadTool {
                                 @Override
                                 public void getServiceReturnData(Object object) {
                                     Log.e("hhh", "SpaceAttachment/UploadNewFile");
+                                    Document document= (Document) object;
                                     if (uploadDetailLinstener != null) {
-                                        uploadDetailLinstener.uploadFinished(object);
+                                        uploadDetailLinstener.uploadFinished(document);
                                     }
-                                    Toast.makeText(mContext, "upload success", Toast.LENGTH_LONG).show();
                                     EventBus.getDefault().post(new TeamSpaceBean());
                                 }
                             }
@@ -853,20 +853,19 @@ public class DocumentUploadTool {
                         convertingResult, field, new ServiceInterfaceListener() {
                             @Override
                             public void getServiceReturnData(Object object) {
-                                Log.e("hhh", "FavoriteAttachment/UploadNewFile");
-//                                Toast.makeText(mActivity, "upload success", Toast.LENGTH_LONG).show();
-//                                updateGetListener.Update();
+                                Document document=null;
+                                if(object!=null){
+                                    document= (Document) object;
+                                }
                                 if (uploadDetailLinstener != null) {
-                                    uploadDetailLinstener.uploadFinished(object);
+                                    uploadDetailLinstener.uploadFinished(document);
                                 }
                             }
                         }
                 );
 
             }
-            if (uploadDetailLinstener != null) {
-                uploadDetailLinstener.uploadFinished("");
-            }
+
         } else if (convertingResult.getCurrentStatus() == 3) { // Failed
             if (timer1 != null) {
                 timer1.cancel();

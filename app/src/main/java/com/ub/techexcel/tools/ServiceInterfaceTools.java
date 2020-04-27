@@ -1605,9 +1605,16 @@ public class ServiceInterfaceTools {
                     JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
                     Log.e("hhh", jsonObject.toString() + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
+
+                        JSONObject js=returnjson.getJSONObject("RetData");
+                        int attachmentId=js.getInt("AttachmentID");
+                        String title=js.getString("Title");
+                        Document document=new Document();
+                        document.setAttachmentID(attachmentId+"");
+                        document.setTitle(title);
                         Message msg3 = Message.obtain();
                         msg3.what = code;
-                        msg3.obj = "";
+                        msg3.obj = document;
                         handler.sendMessage(msg3);
                     }
 
@@ -1640,9 +1647,20 @@ public class ServiceInterfaceTools {
                     JSONObject returnjson = ConnectService.submitDataByJson(url, jsonObject);
                     Log.e("hhh", url + jsonObject.toString() + "  " + returnjson.toString());
                     if (returnjson.getInt("RetCode") == 0) {
+
+
+                        JSONObject myjson=returnjson.getJSONObject("RetData");
+                        int attachmentId=myjson.getInt("AttachmentID");
+                        String title=myjson.getString("Title");
+                        int itemid=myjson.getInt("ItemID");
+                        Document document=new Document();
+                        document.setAttachmentID(attachmentId+"");
+                        document.setTitle(title);
+                        document.setItemID(itemid+"");
+
                         Message msg3 = Message.obtain();
                         msg3.what = code;
-                        msg3.obj = "";
+                        msg3.obj = document;
                         handler.sendMessage(msg3);
                     }
 
