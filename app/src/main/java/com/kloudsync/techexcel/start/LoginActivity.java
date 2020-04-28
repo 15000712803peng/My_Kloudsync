@@ -126,6 +126,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         Log.e("eventChangeLanguage","eventChangeLanguage");
         finish();
         startActivity(getIntent());
+        MainActivity.RESUME=false;
 //        recreate();
     }
 
