@@ -24,6 +24,7 @@ import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.start.LoginGet;
 import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.ub.service.activity.MeetingPropertyActivity;
+import com.ub.service.activity.NewMeetingActivity;
 import com.ub.techexcel.adapter.ServiceAdapter2;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.service.ConnectService;
@@ -58,6 +59,8 @@ public class MeetingFragment extends MyFragment {
     String keyWord;
     private List<ServiceBean> mList = new ArrayList<>();
     LinearLayout noMeetingLayout;
+    private int REQUEST_VIEW=0X001;
+    private int REQUEST_EDIT=0X002;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,12 +76,6 @@ public class MeetingFragment extends MyFragment {
     @Override
     protected void lazyLoad() {
         Log.e("MeetingFragment", "lazyLoad");
-//        new ApiTask(new Runnable() {
-//            @Override
-//            public void run() {
-//                requestMeeting();
-//            }
-//        }).start(ThreadManager.getManager());
     }
 
     private View view;
@@ -240,7 +237,7 @@ public class MeetingFragment extends MyFragment {
                                 }catch (Exception e){
 
                                 }
-                                startActivityForResult(intent,1);
+                                startActivityForResult(intent,REQUEST_VIEW);
                             }
 
 
@@ -255,9 +252,14 @@ public class MeetingFragment extends MyFragment {
 //                                startActivity(shareintent);
                                 shareDocumentDialog(bean);
                             } else {
-                                Intent intent = new Intent(getActivity(), MeetingPropertyActivity.class);
-                                intent.putExtra("servicebean", bean);
-                                getActivity().startActivity(intent);
+                                //Intent intent = new Intent(getActivity(), MeetingPropertyActivity.class);
+//                                intent.putExtra("servicebean", bean);
+//                                getActivity().startActivity(intent);
+                                Intent schintent = new Intent(getActivity(), NewMeetingActivity.class);
+                                schintent.putExtra("servicebean", bean);
+                                startActivityForResult(schintent,REQUEST_EDIT);
+
+                                getActivity().overridePendingTransition(R.anim.tran_in5, R.anim.tran_out5);
                             }
                         }
 
@@ -437,8 +439,12 @@ public class MeetingFragment extends MyFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(onStartMeetingCallBackListener!=null){
-            onStartMeetingCallBackListener.startMeetingCallBack();
+        if(requestCode==REQUEST_VIEW){
+            if(onStartMeetingCallBackListener!=null){
+                onStartMeetingCallBackListener.startMeetingCallBack();
+            }
+        }else if(requestCode==REQUEST_EDIT){
+            reLoadMeetings();
         }
     }
 

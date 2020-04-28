@@ -421,7 +421,8 @@ public class StartUbao extends Activity {
                         Gson gson = new Gson();
                         List<AppName> appCNNameList=new ArrayList<AppName>();
                         List<AppName> appENNameList=new ArrayList<AppName>();
-                        List<AppName> appNameList= gson.fromJson(jsonObject.getString("data"), new TypeToken<List<AppName>>(){}.getType());
+                        JSONObject jsonObjectData=new JSONObject(jsonObject.getString("data"));
+                        List<AppName> appNameList= gson.fromJson(jsonObjectData.getString("items"), new TypeToken<List<AppName>>(){}.getType());
                         App.appNames=appNameList;
                         for(AppName appName:appNameList){
                             if(appName.getLanguageId()==0){

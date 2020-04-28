@@ -4,44 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorBGf7"
     android:orientation="vertical" >
-    
-   <!-- <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/green">
-        
-        <TextView 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:layout_centerInParent="true"
-            android:text="@string/Add_Group"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
-        
-        <TextView
-            android:id="@+id/tv_back"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
-            android:layout_alignParentLeft="true"
-            android:gravity="center"
-            android:drawableLeft="@drawable/return_arrow"
-            android:text="@string/Back"
-            android:textColor="@color/white"
-            android:textSize="15sp" />
-        
-        <TextView
-            android:id="@+id/tv_sure"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginRight="5dp"
-            android:layout_alignParentRight="true"
-            android:gravity="center"
-            android:text="@string/Yes"
-            android:textColor="@color/white"
-            android:textSize="15sp" />
-    </RelativeLayout>
--->
+
     <RelativeLayout
         android:id="@+id/rly_groups_title"
         android:layout_width="fill_parent"

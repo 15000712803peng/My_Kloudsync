@@ -140,4 +140,8 @@ public class DurationPickPop implements View.OnClickListener, DialogInterface.On
     public void setOnDurationCallBackListener(OnDurationCallBackListener onTimeCallBackListener) {
         this.onDurationCallBackListener = onTimeCallBackListener;
     }
+
+    public void setInitPosition(int index){
+        lv_pick_duration.setInitPosition(index);
+    }
 }
