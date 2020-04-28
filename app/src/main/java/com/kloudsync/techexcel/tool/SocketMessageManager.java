@@ -531,6 +531,17 @@ public class SocketMessageManager {
         }
     }
 
+    public void sendMessage_SelectSpeaker(String userId) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("actionType", 31);
+            message.put("userId", userId);
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", ""), ""));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendMessage_myNoteData(String pageIdentiﬁer, int noteId, SendWebScoketNoteBean sendWebNoteData) {
         String dataStr = Tools.getBase64(new Gson().toJson(sendWebNoteData));
         Log.e("SocketMessageManage", "sendMessage_myNoteData_dataStr = " + dataStr);

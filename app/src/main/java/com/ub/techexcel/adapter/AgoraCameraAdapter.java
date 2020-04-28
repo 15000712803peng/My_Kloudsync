@@ -1,6 +1,7 @@
 package com.ub.techexcel.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -90,8 +91,17 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                     target.setVisibility(View.INVISIBLE);
                 }
 
+            }
+
+            if(user.isSelect()){
+                holder.selectMemberContainer.setBackgroundResource(R.drawable.bg_select_member);
+                holder.selectPeopleImage.setImageResource(R.drawable.icon_select_people);
+            }else {
+                holder.selectMemberContainer.setBackgroundResource(R.drawable.shape_transparent);
+                holder.selectPeopleImage.setImageResource(R.drawable.shape_transparent);
 
             }
+
             myHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -208,12 +218,16 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             nameText = view.findViewById(R.id.txt_name);
             audioStatusImage = view.findViewById(R.id.image_audio_status);
             iconImage = view.findViewById(R.id.member_icon);
+            selectMemberContainer = view.findViewById(R.id.select_peple_container);
+            selectPeopleImage = view.findViewById(R.id.icon_select_people);
         }
 
         public FrameLayout vedioFrame;
         public TextView nameText;
         public ImageView audioStatusImage;
         public CircleImageView iconImage;
+        public RelativeLayout selectMemberContainer;
+        public ImageView selectPeopleImage;
     }
 
     public void reset() {
@@ -329,6 +343,17 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             _member.setMuteVideo(agoraMember.isMuteVideo());
             Log.e("refreshMyAgoraStatus","notifyItemChanged,user:" + this.users.get(index));
             notifyItemChanged(index);
+        }
+    }
+
+    public void clearSelectedMember(){
+        for(int i = 0 ; i < this.users.size(); ++i){
+            AgoraMember member = this.users.get(i);
+            if(member.isSelect()){
+                member.setSelect(false);
+                notifyItemChanged(i);
+                break;
+            }
         }
     }
 

@@ -64,11 +64,11 @@
 
     <ImageView
         android:id="@+id/img_mode"
-        android:padding="10dp"
         android:src="@drawable/user_info_expanded"
-        android:layout_centerVertical="true"
-        android:layout_width="45dp"
-        android:layout_height="45dp" />
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_alignTop="@+id/img_mode"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>

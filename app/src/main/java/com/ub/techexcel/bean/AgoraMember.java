@@ -26,6 +26,15 @@ public class AgoraMember implements Comparable<AgoraMember>,Serializable {
     private boolean tempHide;
     private boolean isSurfaceShowing;
     private boolean haveShowUnMuteAudioImage;
+    private boolean isSelected;
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
 
     public boolean isHaveShowUnMuteAudioImage() {
         return haveShowUnMuteAudioImage;
