@@ -232,7 +232,7 @@ import retrofit2.Response;
  */
 
 public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
-        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener, FollowSpearkerModeManager.OnSpeakerAgoraStatusChanged, PopMeetingWebcamOptions.OnDisplayModeChanged,FollowSpearkerModeManager.OnSpeakerViewClickedListener {
+        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener, FollowSpearkerModeManager.OnSpeakerAgoraStatusChanged, PopMeetingWebcamOptions.OnDisplayModeChanged, FollowSpearkerModeManager.OnSpeakerViewClickedListener {
 
     public static final String SUNDTRACKBEAN = "sundtrackbean";
     public static MeetingConfig meetingConfig;
@@ -772,8 +772,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                                 public void run() {
                                     if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
                                         uploadFileDialog.cancel();
-                                        if(result!=null){
-                                            Document document= (Document) result;
+                                        if (result != null) {
+                                            Document document = (Document) result;
                                             onFavoriteDocSelected(document.getItemID());
                                         }
                                     }
@@ -1557,6 +1557,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                handleMemberSpeakingMessage(socketMessage.getData());
                 break;
             case SocketMessageManager.MEETING_USER_JOIN_MEETING_ON_OTHER_DEVICE:
+
                 Intent intent = new Intent();
                 noSpeakingCount = 0;
                 intent.setAction("show_exit_meeting_dialog");
@@ -1579,7 +1580,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     }
 
     private void handleMemberSpeakingMessage(JSONObject data) {
-
+        if(speakerContainer.getVisibility() != View.VISIBLE){
+            return;
+        }
         if (data != null) {
             if (data.has("retData")) {
                 try {
@@ -2337,6 +2340,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     private void reloadAgoraMember() {
         List<AgoraMember> copyMembers = new ArrayList<>();
         for (AgoraMember member : meetingConfig.getAgoraMembers()) {
+            member.setSelect(false);
             if (member.getIsMember() == 1) {
                 if (!copyMembers.contains(member)) {
                     copyMembers.add(member);
@@ -3857,7 +3861,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         cameraRecyclerViewTouchListener.setCameraLayout(cameraLayout);
         cameraList.addOnItemTouchListener(cameraRecyclerViewTouchListener);
         toggleCameraLayout.setOnTouchListener(cameraTouchListener);
-        followSpearkerModeManager = new FollowSpearkerModeManager(cameraTouchListener,cameraRecyclerViewTouchListener);
+        followSpearkerModeManager = new FollowSpearkerModeManager(cameraTouchListener, cameraRecyclerViewTouchListener);
         followSpearkerModeManager.setSpeakerContainer(speakerContainer);
         followSpearkerModeManager.setOnSpeakerViewClickedListener(this);
         followSpearkerModeManager.initViews(this, true);
@@ -5313,9 +5317,28 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
      * @param member
      */
     @Override
-    public void onCameraFrameClick(View itemView,AgoraMember member,int position) {
-        if(position == 0){
+    public void onCameraFrameClick(View itemView, AgoraMember member, int position) {
+
+        if (position == 0) {
             showWebcamOtions(itemView);
+        } else {
+            if (isPresenter()) {
+
+                if (member.isSelect()) {
+                    // 点名
+                    Log.e("onCameraFrameClick","select_member");
+                    SocketMessageManager.getManager(this).sendMessage_SelectSpeaker(member.getUserId() + "");
+                    sharedPreferences.edit().putInt("display_mode",0).commit();
+                    member.setSelect(false);
+                    cameraAdapter.notifyItemChanged(position);
+                    handleDisplayMode(0);
+                } else {
+                    cameraAdapter.clearSelectedMember();
+                    member.setSelect(true);
+                    cameraAdapter.notifyItemChanged(position);
+                }
+            }
+
         }
 //        if (mIsMeetingPause) return;
 //        if (!isPresenter()) {
@@ -5339,7 +5362,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         popWebcamOptions = new PopMeetingWebcamOptions(this);
         popWebcamOptions.setOnDisplayModeChanged(this);
 
-        popWebcamOptions.show(view,meetingConfig);
+        popWebcamOptions.show(view, meetingConfig);
     }
 
 
@@ -5555,11 +5578,15 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
 
                 break;
+            case 31:
+                if(data.has("userId")){
+                    handleDisplayMode(0);
+                }
+                break;
             default:
                 break;
         }
     }
-
 
     private void handleDisplayMode(int mode) {
         Log.e("handleDisplayMode", "mode:" + mode);
@@ -5589,8 +5616,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             toggleCameraImage.setImageResource(R.drawable.user_info_collopse);
             speakerContainer.setVisibility(View.GONE);
         }
-
-
     }
 
 
