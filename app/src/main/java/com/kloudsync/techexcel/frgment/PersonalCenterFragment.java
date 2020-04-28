@@ -454,8 +454,8 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
     }
 
     private void GoToAbout() {
-//        intent = new Intent(getActivity(), AboutActivity2.class);
-        intent = new Intent(getActivity(), DrawerLayoutActivity.class);
+        intent = new Intent(getActivity(), AboutActivity2.class);
+//        intent = new Intent(getActivity(), DrawerLayoutActivity.class);
         startActivity(intent);
         /*intent = new Intent(getActivity(), AboutActivity2.class);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),

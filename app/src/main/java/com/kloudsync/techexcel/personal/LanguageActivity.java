@@ -21,9 +21,12 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.adapter.SearchSelectAdapter;
+import com.kloudsync.techexcel.bean.params.EventChangeLanguage;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.start.StartUbao;
 import com.kloudsync.techexcel.ui.MainActivity;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -141,6 +144,7 @@ public class LanguageActivity extends Activity {
 			AppConfig.LANGUAGEID = language;
 			StartUbao.updateLange(this,locale);
 			MainActivity.RESUME = true;
+			EventBus.getDefault().post(new EventChangeLanguage());
 		}
 		RefreshLanguage();
 //		Intent intent = new Intent();

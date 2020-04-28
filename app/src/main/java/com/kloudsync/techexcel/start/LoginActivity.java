@@ -6,21 +6,25 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,15 +38,18 @@ import com.kloudsync.techexcel.bean.LoginResult;
 import com.kloudsync.techexcel.bean.RongCloudData;
 import com.kloudsync.techexcel.bean.SimpleCompanyData;
 import com.kloudsync.techexcel.bean.UserPreferenceData;
+import com.kloudsync.techexcel.bean.params.EventChangeLanguage;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.LoadingDialog;
 import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.response.NetworkResponse;
+import com.kloudsync.techexcel.tool.DrawerLayoutManager;
 import com.kloudsync.techexcel.tool.StringUtils;
 import com.kloudsync.techexcel.tool.ToastUtils;
 import com.kloudsync.techexcel.ui.InvitationsActivity;
 import com.kloudsync.techexcel.ui.MainActivity;
 import com.kloudsync.techexcel.ui.WelcomeAndCreateActivity;
+import com.nineoldandroids.view.ViewHelper;
 import com.ub.service.activity.SocketService;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
@@ -90,6 +97,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     private static final int PASSWORD_HIDE = 1;
     private static final int PASSWORD_NOT_HIDE = 2;
 
+    private DrawerLayout mDrawerLayout;
 
     private void startWBService() {
         service = new Intent(getApplicationContext(), SocketService.class);
@@ -113,9 +121,20 @@ public class LoginActivity extends Activity implements OnClickListener {
         EventBus.getDefault().register(this);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void changeLanguage(EventChangeLanguage eventChangeLanguage){
+        Log.e("eventChangeLanguage","eventChangeLanguage");
+        finish();
+        startActivity(getIntent());
+//        recreate();
+    }
+
+
     private void initView() {
         loadingDialog = new LoadingDialog.Builder(this).build();
         tv_cphone = (TextView) findViewById(R.id.tv_cphone);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayoutManager.getManager(this).initDrawerLayout(mDrawerLayout);
         tv_login = (TextView) findViewById(R.id.tv_login);
         tv_atjoin = (TextView) findViewById(R.id.tv_atjoin);
         tv_fpass = (TextView) findViewById(R.id.txt_forget_pwd);
@@ -579,6 +598,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     public void onResume() {
         super.onResume();
+
     }
 
     public void onPause() {
