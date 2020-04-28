@@ -87,16 +87,17 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
 
     @SuppressLint("NewApi")
     public void show(View v,MeetingConfig meetingConfig) {
-        int mode = sharedPreferences.getInt("display_mode", 0);
         this.meetingConfig = meetingConfig;
+        int mode  = meetingConfig.getCameraDiplayMode();
         displayMode = mode;
         if (mode == 0) {
             twoLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
         } else if (mode == 1) {
-            threeLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
+            oneLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
         } else if (mode == 2) {
             oneLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
         }
+
         mPopupWindow.showAsDropDown(v, 0, dp2px(mContext, 5));
     }
 
@@ -129,6 +130,7 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
                     return;
                 }
 
+                meetingConfig.setCameraDiplayMode(2);
                 if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){
                     requestChangeDisplayMode(2);
                 }else {
@@ -143,6 +145,8 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
                     dismiss();
                     return;
                 }
+
+                meetingConfig.setCameraDiplayMode(0);
 
                 if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){
                     requestChangeDisplayMode(0);

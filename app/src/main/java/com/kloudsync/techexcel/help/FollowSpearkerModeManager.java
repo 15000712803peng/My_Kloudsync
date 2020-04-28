@@ -54,12 +54,13 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
     private ImageLoader imageLoader;
     private AgoraMember currentAgoraMember;
     private CameraTouchListener cameraTouchListener;
-    private ImageView modeImage;
+    private ImageView selectSpeakerImage;
     private MeetingConfig meetingConfig;
     private CameraRecyclerViewTouchListener cameraRecyclerViewTouchListener;
 
     public interface OnSpeakerViewClickedListener {
         void onSpeakerViewCliced(View view);
+        void onSelectSpeakerClicked(ImageView selectedImage);
     }
 
     private OnSpeakerViewClickedListener onSpeakerViewClickedListener;
@@ -132,8 +133,8 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         vedioFrame = speakerLayout.findViewById(R.id.speaker_view_container);
         nameText = speakerLayout.findViewById(R.id.txt_name);
         audioStatusImage = speakerLayout.findViewById(R.id.image_audio_status);
-        modeImage = speakerLayout.findViewById(R.id.img_mode);
-        modeImage.setOnClickListener(this);
+        selectSpeakerImage = speakerLayout.findViewById(R.id.img_mode);
+        selectSpeakerImage.setOnClickListener(this);
         iconImage = speakerLayout.findViewById(R.id.member_icon);
         if (currentAgoraMember != null) {
             fillViewByMember(currentAgoraMember);
@@ -161,7 +162,10 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_mode:
-
+            // select speaker
+                if(onSpeakerViewClickedListener != null){
+                    onSpeakerViewClickedListener.onSelectSpeakerClicked((ImageView) v);
+                }
                 break;
         }
     }
@@ -379,6 +383,10 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
 
         popWebcamOptions = new PopMeetingWebcamOptions(context);
         popWebcamOptions.show(view, meetingConfig);
+    }
+
+    public void expandListForselectSpeakerMemer(){
+
     }
 
 }

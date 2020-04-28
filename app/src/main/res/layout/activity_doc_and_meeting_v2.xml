@@ -679,6 +679,7 @@
         android:visibility="gone">
 
         <RelativeLayout
+            android:visibility="gone"
             android:id="@+id/layout_speaker_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -688,6 +689,7 @@
 
 
         <RelativeLayout
+            android:visibility="gone"
             android:id="@+id/layout_camera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -709,12 +711,25 @@
                 android:textColor="@color/white"
                 android:visibility="visible">
 
-                <ImageView
-                    android:id="@+id/image_toggle_camera"
-                    android:src="@drawable/user_info_collopse"
-                    android:layout_centerVertical="true"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp" />
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/image_toggle_camera"
+                        android:src="@drawable/user_info_collopse"
+                        android:layout_centerVertical="true"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp" />
+
+                    <ImageView
+                        android:visibility="gone"
+                        android:id="@+id/image_select_speaker"
+                        android:src="@drawable/icon_arrow_select_speaker"
+                        android:layout_centerVertical="true"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp" />
+                </RelativeLayout>
+
             </LinearLayout>
 
 

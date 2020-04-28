@@ -64,10 +64,9 @@
 
     <ImageView
         android:id="@+id/img_mode"
-        android:layout_width="33dp"
-        android:layout_height="33dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:layout_centerVertical="true"
-        android:padding="6dp"
         android:src="@drawable/user_info_expanded"
         />
 
