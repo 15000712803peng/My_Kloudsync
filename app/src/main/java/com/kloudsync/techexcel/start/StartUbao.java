@@ -131,8 +131,7 @@ public class StartUbao extends Activity {
             editor.putBoolean("isFirst", false);
             editor.commit();
             Intent intent = new Intent(getApplicationContext(),
-                    LoginActivity
-                            .class);
+                    StartKloudActivity.class);
             /*Intent intent = new Intent(getApplicationContext(),
                     LoginActivity.class);*/
             startActivity(intent);
@@ -148,7 +147,7 @@ public class StartUbao extends Activity {
             } else {
                 Log.e("StartUbao", "step five");
                 Intent intent = new Intent(getApplicationContext(),
-                        LoginActivity.class);
+                        StartKloudActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -288,7 +287,7 @@ public class StartUbao extends Activity {
                             @Override
                             public void accept(String s) throws Exception {
                                 Intent intent = new Intent(getApplicationContext(),
-                                        LoginActivity.class);
+                                        StartKloudActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
