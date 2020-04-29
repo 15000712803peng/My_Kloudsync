@@ -20,8 +20,10 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.bean.params.EventSoundSync;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.help.SoundtrackManager;
 import com.kloudsync.techexcel.help.UploadAudioPopupdate;
 import com.kloudsync.techexcel.tool.GZipUtil;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
@@ -38,6 +40,7 @@ import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.UploadAudioListener;
 import com.ub.techexcel.tools.UploadAudioNoteActionTool;
 import com.ub.techexcel.tools.UploadAudioTool;
+import com.ub.techexcel.tools.UserSoundtrackDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -60,7 +63,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class SoundtrackRecordManager implements View.OnClickListener,UploadAudioListener{
+public class SoundtrackRecordManager implements View.OnClickListener,UploadAudioListener,UploadAudioPopupdate.UploadFileAbortListener{
 
     private Context mContext;
     private static Handler recordHandler;
@@ -72,6 +75,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         if(uploadAudioPopupdate==null){
             uploadAudioPopupdate=new UploadAudioPopupdate();
         }
+        uploadAudioPopupdate.setUploadFileAbortListener(this);
         uploadAudioPopupdate.getPopwindow(mContext);
         recordHandler=new Handler(Looper.getMainLooper()){
             @Override
@@ -474,6 +478,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
    private  File uploadAudiofile;
 
     private void stopAudioRecord() {
+        isAbort=false;
         uploadAudioPopupdate.StartPop(soundtrackBean);
         if (audioRecorder != null&&isrecordvoice) {
             audioRecorder.stopRecord(new RecordEndListener() {
@@ -524,13 +529,15 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
             @Override
             public void accept(DocumentAction documentAction) throws Exception {
                 if(documentAction!=null){
-                    if(isrecordvoice){
-                        uploadAudioPopupdate.setProgress1(documentAction.getTotal(), documentAction.getIndex());
-                    }else{
-                        uploadAudioPopupdate.setProgress(documentAction.getTotal(), documentAction.getIndex());
+                    if(!isAbort){
+                        if(isrecordvoice){
+                            uploadAudioPopupdate.setProgress1(documentAction.getTotal(), documentAction.getIndex());
+                        }else{
+                            uploadAudioPopupdate.setProgress(documentAction.getTotal(), documentAction.getIndex());
+                        }
                     }
                     if(documentAction.getIndex()==uploaddocumentActionsList.size()){ //  上传文档动作成功
-                        if (isrecordvoice) {   // 完成录音
+                        if (isrecordvoice&&!isAbort) {   // 完成录音
                             Log.e("syncing---docu","开始上传录音");
                             if (uploadAudiofile != null) {
                                 UploadAudioTool.getManager(mContext).uploadAudio(uploadAudiofile,soundtrackBean,uploadAudioPopupdate,meetingConfig,SoundtrackRecordManager.this);
@@ -551,6 +558,37 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
         }).subscribe();
     }
 
+    private boolean isAbort;
+    @Override
+    public void stopUpload() {  //终止上传
+        isAbort=true;
+        UploadAudioTool.getManager(mContext).cancelUploadAudio();
+        //删除这个音想
+        SoundTrack soundTrack=new SoundTrack();
+        soundTrack.setSoundtrackID(soundtrackBean.getSoundtrackID());
+        deleteSoundTrack(soundTrack);
+    }
+
+    public void deleteSoundTrack(SoundTrack soundTrack) {
+        Observable.just(soundTrack).observeOn(Schedulers.io()).map(new Function<SoundTrack, Integer>() {
+            @Override
+            public Integer apply(SoundTrack soundTrack) throws Exception {
+                JSONObject response = ServiceInterfaceTools.getinstance().syncDeleteSoundtrack(soundTrack);
+                int recode = -1;
+                if(response.has("RetCode")){
+                    recode = response.getInt("RetCode");
+                }
+                return recode;
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                if(integer == 0){
+                     uploadAudioPopupdate.dismiss();
+                }
+            }
+        }).subscribe();
+    }
 
 
     @Override
@@ -754,6 +792,7 @@ public class SoundtrackRecordManager implements View.OnClickListener,UploadAudio
     public int  getCurrentTime() {
         return  tttime;
     }
+
 
 
 }

@@ -34,6 +34,15 @@ public class UploadAudioPopupdate implements View.OnClickListener{
     private RoundProgressBar roundProgressBar;
     private SoundtrackBean soundtrackBean = new SoundtrackBean();
 
+    public interface UploadFileAbortListener{
+        void stopUpload();
+    }
+    private UploadFileAbortListener uploadFileAbortListener;
+
+    public  void setUploadFileAbortListener(UploadFileAbortListener uploadFileAbortListener){
+        this.uploadFileAbortListener=uploadFileAbortListener;
+    }
+
     public void getPopwindow(Context context) {
         this.mContext = context;
         width = mContext.getResources().getDisplayMetrics().widthPixels;
@@ -136,7 +145,8 @@ public class UploadAudioPopupdate implements View.OnClickListener{
                 });
                 break;
             case R.id.cancel:
-                dismiss();
+                uploadFileAbortListener.stopUpload();
+                roundProgressBar.setProgress(0);
                 break;
             default:
                 break;
