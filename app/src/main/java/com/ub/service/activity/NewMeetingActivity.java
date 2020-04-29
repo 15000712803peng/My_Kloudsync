@@ -110,7 +110,7 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
         initView();
         if(bean!=null){
             submit.setEnabled(true);
-            as_rl_contact.setEnabled(true);
+            as_rl_contact.setEnabled(false);
             meetingname.setText(bean.getName());
             if (!TextUtil.isEmpty(bean.getPlanedStartDate())) {
                 SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
@@ -173,7 +173,7 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             }
         }else {
             submit.setEnabled(false);
-            as_rl_contact.setEnabled(false);
+            as_rl_contact.setEnabled(true);
         }
     }
 
