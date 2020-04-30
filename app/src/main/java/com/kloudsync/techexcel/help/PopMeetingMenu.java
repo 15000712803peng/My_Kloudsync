@@ -18,9 +18,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventSelectSpeakerMode;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingPauseOrResumBean;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.PopSpeakerWindowMore;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.ToastUtils;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
@@ -50,10 +52,9 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
     private RelativeLayout menuInvite;
     private RelativeLayout menuMore;
     private RelativeLayout menuLeave;
-    private RelativeLayout webcamOptions;
+    private RelativeLayout videoSizeOptions;
     private ImageView microImage, voiceImage, cameraImage, switchCameraImage;
-
-    //----
+    //---
     private MeetingSettingCache settingCache;
     private RelativeLayout mMenuPause;
     private ImageView mIvPauseIcon;
@@ -61,11 +62,12 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
     private boolean mIsMeetingPause;
     private InputMethodManager mImm;
 
+
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.meeting_camera:
-
                 if (meetingConfig.getMeetingStatus() == 0) {
                     return;
                 }
@@ -177,14 +179,20 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 showMorePop();
                 break;
 
-            case R.id.meeting_webcan_view_options:
+            case R.id.meeting_change_speaker_size:
                 if (operationsListener != null) {
-                    operationsListener.menuWebcamOptionsClicked();
+                    operationsListener.menuChangeVideoSizeClicked();
                 }
-                showWebcamOtions();
+                EventSelectSpeakerMode selectSpeakerMode = new EventSelectSpeakerMode();
+                selectSpeakerMode.setContainer(videoSizeOptions);
+                EventBus.getDefault().post(selectSpeakerMode);
+//                showWebcamOtions();
+
                 break;
         }
     }
+
+
 
 
     @Override
@@ -219,7 +227,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
 
         void menuMoreClicked();
 
-        void menuWebcamOptionsClicked();
+        void menuChangeVideoSizeClicked();
 
     }
 
@@ -239,7 +247,6 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
             init();
         }
     }
-
 
     public void init() {
         mImm = (InputMethodManager) host.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -266,8 +273,8 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         menuEnd = view.findViewById(R.id.meeting_menu_end);
         menuEnd.setOnClickListener(this);
         menuLeave = view.findViewById(R.id.meeting_menu_leave);
-        webcamOptions = view.findViewById(R.id.meeting_webcan_view_options);
-        webcamOptions.setOnClickListener(this);
+        videoSizeOptions = view.findViewById(R.id.meeting_change_speaker_size);
+        videoSizeOptions.setOnClickListener(this);
         menuLeave.setOnClickListener(this);
         cameraImage.setOnClickListener(this);
         window.getWidth();
@@ -451,6 +458,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 } else {
                     return new MeetingPauseOrResumBean();
                 }
+
                 if (meetingPauseMessage == null) {
                     meetingPauseMessage = new MeetingPauseOrResumBean();
                 }
@@ -480,25 +488,6 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         popMeetingMore.show(menuMore, this);
     }
 
-    PopMeetingWebcamOptions popWebcamOptions;
-
-    private void showWebcamOtions() {
-        if (popWebcamOptions != null) {
-            if (popWebcamOptions.isShowing()) {
-                popWebcamOptions.dismiss();
-                popWebcamOptions = null;
-            }
-        }
-
-        popWebcamOptions = new PopMeetingWebcamOptions(host);
-
-        if (host instanceof DocAndMeetingActivity) {
-            DocAndMeetingActivity _host = (DocAndMeetingActivity) host;
-            popWebcamOptions.setOnDisplayModeChanged(_host);
-        }
-
-        popWebcamOptions.show(webcamOptions,meetingConfig);
-    }
 
     public void refreshStatus() {
         if (window != null && window.isShowing()) {

@@ -35,6 +35,7 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
 
     public interface OnDisplayModeChanged {
         void displayModeChanged(int mode);
+
         void onGoToVideoClicked();
     }
 
@@ -86,18 +87,22 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
     int displayMode;
 
     @SuppressLint("NewApi")
-    public void show(View v,MeetingConfig meetingConfig) {
+    public void show(View v, MeetingConfig meetingConfig) {
         this.meetingConfig = meetingConfig;
-        int mode  = meetingConfig.getCameraDiplayMode();
-        displayMode = mode;
-        if (mode == 0) {
-            twoLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
-        } else if (mode == 1) {
-            oneLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
-        } else if (mode == 2) {
-            oneLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
+        if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+            threeLayout.setVisibility(View.VISIBLE);
+        } else {
+            threeLayout.setVisibility(View.GONE);
         }
 
+        displayMode = meetingConfig.getCameraDiplayMode();
+        if (displayMode == 0) {
+            twoLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
+        } else if (displayMode == 1) {
+            oneLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
+        } else if (displayMode == 2) {
+            oneLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
+        }
         mPopupWindow.showAsDropDown(v, 0, dp2px(mContext, 5));
     }
 
@@ -131,13 +136,11 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
                 }
 
                 meetingConfig.setCameraDiplayMode(2);
-                if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){
-                    requestChangeDisplayMode(2);
-                }else {
-                    if (onDisplayModeChanged != null) {
-                        onDisplayModeChanged.displayModeChanged(2);
-                    }
+                if (onDisplayModeChanged != null) {
+                    onDisplayModeChanged.displayModeChanged(2);
                 }
+
+
                 dismiss();
                 break;
             case R.id.layout_two:
@@ -146,19 +149,16 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
                     return;
                 }
 
-                meetingConfig.setCameraDiplayMode(0);
 
-                if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){
-                    requestChangeDisplayMode(0);
-                }else {
-                    if (onDisplayModeChanged != null) {
-                        onDisplayModeChanged.displayModeChanged(0);
-                    }
+                meetingConfig.setCameraDiplayMode(0);
+                if (onDisplayModeChanged != null) {
+                    onDisplayModeChanged.displayModeChanged(0);
                 }
+
                 dismiss();
                 break;
             case R.id.layout_three:
-                if(onDisplayModeChanged != null){
+                if (onDisplayModeChanged != null) {
                     onDisplayModeChanged.onGoToVideoClicked();
                 }
                 dismiss();
@@ -178,13 +178,13 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
             @Override
             public void accept(JSONObject jsonObject) throws Exception {
                 if (jsonObject.has("code")) {
-                    if (jsonObject.getInt("code") == 0) {
-                        sharedPreferences.edit().putInt("display_mode", mode).commit();
-                        if (onDisplayModeChanged != null) {
-                            onDisplayModeChanged.displayModeChanged(mode);
-                        }
-                        dismiss();
-                    }
+//                    if (jsonObject.getInt("code") == 0) {
+//                        sharedPreferences.edit().putInt("display_mode", mode).commit();
+//                        if (onDisplayModeChanged != null) {
+//                            onDisplayModeChanged.displayModeChanged(mode);
+//                        }
+//                        dismiss();
+//                    }
                 }
             }
         }).subscribe();

@@ -599,6 +599,11 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
 
     private ConnectionChangedListener connectionChangedListener = new ConnectionChangedListener();
 
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
 
     private class ConnectionChangedListener implements ConnectionClassManager.ConnectionClassStateChangeListener {
         @Override

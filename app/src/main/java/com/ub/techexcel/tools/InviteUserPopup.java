@@ -88,6 +88,7 @@ public class InviteUserPopup implements View.OnClickListener {
     }
 
     public interface InvitePopupListener {
+
         void copyLink();
 
         void email(String url);

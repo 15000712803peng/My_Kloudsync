@@ -139,6 +139,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         getRtcManager().addEventHandler(this);
     }
 
+
     public void prepareJoin(Activity host, MeetingConfig meetingConfig) {
         this.host = host;
         this.meetingConfig = meetingConfig;
@@ -741,8 +742,10 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
 
     }
 
+
+
     @Override
-    public void menuWebcamOptionsClicked() {
+    public void menuChangeVideoSizeClicked() {
 
     }
 

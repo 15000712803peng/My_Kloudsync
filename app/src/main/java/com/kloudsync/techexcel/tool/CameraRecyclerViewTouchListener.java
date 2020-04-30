@@ -56,7 +56,7 @@ public class CameraRecyclerViewTouchListener implements RecyclerView.OnItemTouch
                 int move_bigX = moveX - startX;
                 int move_bigY = moveY - startY;
 
-                if (Math.abs(move_bigX) > 0 || Math.abs(move_bigY) > 0) {
+                if (Math.abs(move_bigX) > 10 || Math.abs(move_bigY) > 10) {
                     //拿到当前控件未移动的坐标
                     int left = cameraLayout.getLeft();
                     int top = cameraLayout.getTop();

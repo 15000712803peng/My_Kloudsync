@@ -44,7 +44,6 @@ public class PopSpeakerWindowMore extends PopupWindow implements View.OnClickLis
 
     private OnSizeSettingChanged onSizeSettingChanged;
 
-
     public PopSpeakerWindowMore(Context context) {
         super(context);
         this.context = context;
@@ -91,7 +90,13 @@ public class PopSpeakerWindowMore extends PopupWindow implements View.OnClickLis
             bigText.setTextColor(Color.parseColor("#999999"));
             largeText.setTextColor(Color.parseColor("#3D78FB"));
         }
-        showAsDropDown(view, -12, 25);
+        showAsDropDown(view, -dp2px(context, 220), -dp2px(context, 56f));
+
+    }
+
+    public int dp2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
     }
 
     @Override

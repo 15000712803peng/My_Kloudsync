@@ -5,16 +5,19 @@
     android:layout_width="@dimen/_speaker_normal_width"
     android:layout_height="@dimen/speaker_normal"
     android:clickable="true"
+    android:padding="2dp"
     android:descendantFocusability="blocksDescendants"
     android:orientation="horizontal">
 
     <RelativeLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:background="@drawable/gray_border">
 
         <FrameLayout
+
             android:id="@+id/speaker_view_container"
             android:layout_width="@dimen/_speaker_normal_width"
             android:layout_height="match_parent"

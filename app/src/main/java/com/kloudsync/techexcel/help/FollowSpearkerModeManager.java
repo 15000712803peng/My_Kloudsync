@@ -25,6 +25,7 @@ import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.tool.CameraRecyclerViewTouchListener;
 import com.kloudsync.techexcel.tool.CameraTouchListener;
 import com.kloudsync.techexcel.tool.FollowSpearkerTouchListener;
+import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.kloudsync.techexcel.view.CircleImageView;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.tools.PopMeetingWebcamOptions;
@@ -63,6 +64,11 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         void onSelectSpeakerClicked(ImageView selectedImage);
     }
 
+
+    public void setMeetingConfig(MeetingConfig meetingConfig) {
+        this.meetingConfig = meetingConfig;
+    }
+
     private OnSpeakerViewClickedListener onSpeakerViewClickedListener;
 
 
@@ -70,7 +76,8 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         this.onSpeakerViewClickedListener = onSpeakerViewClickedListener;
     }
 
-    public FollowSpearkerModeManager(CameraTouchListener cameraTouchListener, CameraRecyclerViewTouchListener cameraRecyclerViewTouchListener) {
+    public FollowSpearkerModeManager(CameraTouchListener cameraTouchListener, CameraRecyclerViewTouchListener cameraRecyclerViewTouchListener,MeetingConfig meetingConfig) {
+        this.meetingConfig = meetingConfig;
         this.cameraTouchListener = cameraTouchListener;
         this.cameraRecyclerViewTouchListener = cameraRecyclerViewTouchListener;
     }
@@ -170,24 +177,9 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         }
     }
 
-    PopSpeakerWindowMore windowMorePop;
-
-    private void showMorePopwindow(View view) {
-        if (windowMorePop != null) {
-            if (windowMorePop.isShowing()) {
-                windowMorePop.dismiss();
-            }
-            windowMorePop = null;
-        }
-        windowMorePop = new PopSpeakerWindowMore((Activity) context);
-        windowMorePop.setOnSizeSettingChanged(this);
-        windowMorePop.showAtBottom(view);
-
-    }
-
     @Override
     public void onSmallSelected() {
-
+        Log.e("check_size","onSmallSelected");
         Activity activity = (Activity) context;
         int width = 0, height = 0;
         speakerContainer.removeAllViews();
@@ -200,12 +192,14 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         }
         RelativeLayout speakerLayout = (RelativeLayout) activity.getLayoutInflater().inflate(R.layout.speaker_camera_small_item, null);
         speakerContainer.addView(speakerLayout, params);
-
         initViews(context);
+        notifySizeChanged(1);
+
     }
 
     @Override
     public void onBigSelected() {
+        Log.e("check_size","onBigSelected");
         Activity activity = (Activity) context;
         int width = 0, height = 0;
         speakerContainer.removeAllViews();
@@ -220,10 +214,12 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
 
         speakerContainer.addView(speakerLayout, params);
         initViews(context);
+        notifySizeChanged(2);
     }
 
     @Override
     public void onLargeSelected() {
+        Log.e("check_size","onLargeSelected");
         Activity activity = (Activity) context;
         int width = 0, height = 0;
         speakerContainer.removeAllViews();
@@ -235,10 +231,60 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
             params.topMargin = spearkerTouchListener.getTop();
             params.leftMargin = spearkerTouchListener.getLeft();
         }
-
         speakerContainer.addView(speakerLayout, params);
         initViews(context);
+        notifySizeChanged(3);
 
+    }
+
+    public void followChangeSize(int size){
+        if(context == null || speakerContainer == null){
+            return;
+        }
+        if(size == 1){
+            Activity activity = (Activity) context;
+            int width = 0, height = 0;
+            speakerContainer.removeAllViews();
+            width = context.getResources().getDimensionPixelSize(R.dimen._speaker_normal_width);
+            height = context.getResources().getDimensionPixelSize(R.dimen.speaker_normal);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
+            if (spearkerTouchListener != null) {
+                params.topMargin = spearkerTouchListener.getTop();
+                params.leftMargin = spearkerTouchListener.getLeft();
+            }
+            RelativeLayout speakerLayout = (RelativeLayout) activity.getLayoutInflater().inflate(R.layout.speaker_camera_small_item, null);
+            speakerContainer.addView(speakerLayout, params);
+            initViews(context);
+        }else if(size == 2){
+            Activity activity = (Activity) context;
+            int width = 0, height = 0;
+            speakerContainer.removeAllViews();
+            width = context.getResources().getDimensionPixelSize(R.dimen.speaker_big_width);
+            height = context.getResources().getDimensionPixelSize(R.dimen.speaker_big);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
+            RelativeLayout speakerLayout = (RelativeLayout) activity.getLayoutInflater().inflate(R.layout.speaker_camera_big_item, null);
+            if (spearkerTouchListener != null) {
+                params.topMargin = spearkerTouchListener.getTop();
+                params.leftMargin = spearkerTouchListener.getLeft();
+            }
+
+            speakerContainer.addView(speakerLayout, params);
+            initViews(context);
+        }else if(size == 3){
+            Activity activity = (Activity) context;
+            int width = 0, height = 0;
+            speakerContainer.removeAllViews();
+            width = context.getResources().getDimensionPixelSize(R.dimen.speaker_large_wdth);
+            height = context.getResources().getDimensionPixelSize(R.dimen.speaker_large);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
+            RelativeLayout speakerLayout = (RelativeLayout) activity.getLayoutInflater().inflate(R.layout.speaker_camera_large_item, null);
+            if (spearkerTouchListener != null) {
+                params.topMargin = spearkerTouchListener.getTop();
+                params.leftMargin = spearkerTouchListener.getLeft();
+            }
+            speakerContainer.addView(speakerLayout, params);
+            initViews(context);
+        }
     }
 
     public void showHostView(AgoraMember agoraMember) {
@@ -387,6 +433,23 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
 
     public void expandListForselectSpeakerMemer(){
 
+    }
+
+    private boolean isPresenter() {
+        if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+            return true;
+        }
+        return false;
+    }
+
+    private void notifySizeChanged(int mode){
+        Log.e("notifySizeChanged","meeting_config:" + meetingConfig);
+        if(meetingConfig == null){
+            return;
+        }
+        if(isPresenter() && !meetingConfig.isMeetingPause()){
+            SocketMessageManager.getManager(context).sendMessage_MySpeakerViewSizeChange(mode);
+        }
     }
 
 }

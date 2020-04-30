@@ -383,7 +383,7 @@
     <string name="month">M</string>
     <string name="day">D</string>
     <string name="newService">New Course</string>
-    <string name="join">Join Course</string>
+    <string name="join">Join Lesson</string>
     <string name="join2">Join Meeting</string>
     <string name="joinroom">Enter meeting room ID</string>
     <string name="joinmyclass">Enter My Classroom</string>
@@ -572,7 +572,7 @@
 
     <string name="inprogress">In Progress</string>
     <string name="Completed">Completed</string>
-    <string name="mycourse">My Courses</string>
+    <string name="mycourse">Start Lession</string>
 
     <string name="message">Message</string>
     <string name="modify">Modify</string>

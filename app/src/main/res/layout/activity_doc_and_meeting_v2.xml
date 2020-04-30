@@ -673,6 +673,7 @@
 
 
     <RelativeLayout
+        android:paddingLeft="@dimen/dp_12"
         android:id="@+id/layout_real_meeting"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

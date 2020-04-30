@@ -193,14 +193,14 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/meeting_webcan_view_options"
+                android:id="@+id/meeting_change_speaker_size"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:padding="2dp"
-                    android:id="@+id/image_webcan_view_options"
+                    android:id="@+id/image_change_speaker_size"
                     android:layout_width="17dp"
                     android:layout_height="20dp"
                     android:layout_centerVertical="true"
@@ -214,7 +214,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="30dp"
                     android:gravity="center"
-                    android:text="Webcan View Option"
+                    android:text="视频尺寸"
                     android:textColor="@color/white"
                     android:textSize="13sp" />
 

@@ -668,5 +668,16 @@ public class SocketMessageManager {
         EventBus.getDefault().post(joinMeetingMessage);
     }
 
+    public void sendMessage_MySpeakerViewSizeChange(int size) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("actionType", 32);
+            message.put("size", size);
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }
