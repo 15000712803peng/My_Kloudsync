@@ -106,7 +106,6 @@ public class JoinMeetingActivity extends Activity implements View.OnClickListene
             @Override
             public void getServiceReturnData(Object object) {
 
-
             }
         });
 
