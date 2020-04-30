@@ -314,37 +314,17 @@ public class ServiceInterfaceTools {
         }).start();
     }
 
-    public void createOrUpdateInstantAccout(final String url, final int code,final String name, ServiceInterfaceListener serviceInterfaceListener) {
-        putInterface(code, serviceInterfaceListener);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                JSONObject subjson=new JSONObject();
-                try {
-                    subjson.put("Guid",AppConfig.DEVICE_ID);
-                    subjson.put("UserName",name);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                JSONObject jsonObject1 = ConnectService.submitDataByJson(url, subjson);
-                Log.e("createOrUpdateInstantAccout", url + "  " + subjson.toString() + "   " + jsonObject1.toString());
-                try {
-                    if (jsonObject1.getInt("RetCode") == 0) {
-                        Message msg3 = Message.obtain();
-                        msg3.obj = "";
-                        msg3.what = code;
-                        handler.sendMessage(msg3);
-                    } else {
-                        Message msg3 = Message.obtain();
-                        msg3.what = ERRORMESSAGE;
-                        msg3.obj = jsonObject1.getString("ErrorMessage");
-                        handler.sendMessage(msg3);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+    public JSONObject createOrUpdateInstantAccout(final String url, final String name) {
+        JSONObject subjson=new JSONObject();
+        try {
+            subjson.put("Guid",AppConfig.DEVICE_ID);
+            subjson.put("UserName",name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonObject1 = ConnectService.submitDataByJson(url, subjson);
+        Log.e("createOrUpdateInstantAccout", url + "  " + subjson.toString() + "   " + jsonObject1.toString());
+        return jsonObject1;
     }
 
 

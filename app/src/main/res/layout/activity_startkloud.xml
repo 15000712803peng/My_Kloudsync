@@ -9,9 +9,9 @@
         android:scaleType="fitXY"
         android:src="@drawable/logokloud"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:layout_width="150dp"
-        android:layout_height="35dp" />
+        android:layout_height="30dp" />
 
 
     <LinearLayout
@@ -43,12 +43,11 @@
             android:paddingLeft="10dp"
             android:paddingRight="25dp"
             android:layout_height="wrap_content"/>
-
-
     </LinearLayout>
 
 
     <RelativeLayout
+        android:id="@+id/ttt"
         android:layout_width="125dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="120dp"
@@ -69,7 +68,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:textSize="16sp"
             android:layout_centerInParent="true"
             android:textColor="@color/white"
@@ -84,11 +83,11 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:paddingTop="120dp"
+        android:layout_marginTop="120dp"
         android:paddingLeft="40dp"
         android:paddingRight="40dp"
         android:src="@drawable/startkloudbianbg"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"/>
 
 
     <TextView
@@ -102,7 +101,7 @@
         android:text="@string/join_meeting"
         android:textColor="@color/white"
         android:gravity="center"
-        android:layout_marginBottom="90dp"
+        android:layout_marginBottom="100dp"
         />
 
 
