@@ -94,8 +94,18 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".start.LoginActivity"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:screenOrientation="sensor"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".start.StartKloudActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".start.JoinMeetingActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".start.ForgetPasswordActivity"

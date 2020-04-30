@@ -164,6 +164,7 @@ public class ServiceInterfaceTools {
     public static final int UPDATETITLEANDVISIBILITY = 0x1162;
     public static final int UPLOADALLACTIONS = 0x1163;
     public static final int BINDATTACHMENT = 0x1164;
+    public static final int CREATEORUPDATEINSTANTACCOUT = 0x1165;
 
     private ConcurrentHashMap<Integer, ServiceInterfaceListener> hashMap = new ConcurrentHashMap<>();
 
@@ -311,6 +312,19 @@ public class ServiceInterfaceTools {
                 }
             }
         }).start();
+    }
+
+    public JSONObject createOrUpdateInstantAccout(final String url, final String name) {
+        JSONObject subjson=new JSONObject();
+        try {
+            subjson.put("Guid",AppConfig.DEVICE_ID);
+            subjson.put("UserName",name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonObject1 = ConnectService.submitDataByJson(url, subjson);
+        Log.e("createOrUpdateInstantAccout", url + "  " + subjson.toString() + "   " + jsonObject1.toString());
+        return jsonObject1;
     }
 
 

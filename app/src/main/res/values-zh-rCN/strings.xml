@@ -841,9 +841,16 @@
     <string name="Send">发送</string>
     <string name="meeting_id">Meeting ID</string>
     <string name="input_new_meeing_id">输入新的会议ID </string>
+    <string name="input_startkloud_meeing_id">请输入会议ID</string>
+    <string name="input_startkloud_name">请输入姓名</string>
+    <string name="input_startkloud_meeing_id_head">会议ID</string>
+    <string name="input_startkloud_name_head">姓名</string>
+
     <string name="modify_meeting_id">修改你的会议ID</string>
     <string name="about">关于</string>
     <string name="privacy_statement">隐私声明</string>
+    <string name="and">和</string>
+    <string name="useteamandservice">服务协议</string>
     <string name="create_new_sync">创建音想</string>
     <string name="select_more_sync">+ 选择音想</string>
     <string name="sync">同步</string>
@@ -1005,6 +1012,7 @@
     <string name="_meeting_id">会议ID:</string>
     <string name="kick_off_from_meeting">请他离开会议</string>
     <string name="tips">提示</string>
+    <string name="join_start_company">加入机构</string>
 
     <string name="my_contact">我的联系人</string>
 

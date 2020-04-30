@@ -65,6 +65,7 @@ import com.kloudsync.techexcel.personal.TeacherProfileActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.start.LoginActivity;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.start.StartKloudActivity;
 import com.kloudsync.techexcel.tool.DensityUtil;
 import com.kloudsync.techexcel.tool.StringUtils;
 import com.kloudsync.techexcel.ui.CurrentPenStatusActivity;
@@ -636,7 +637,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                     AppConfig.HASUPDATAINFO = false;
                     RongIM.getInstance().logout();
                     RongIM.getInstance().disconnect();
-                    intent = new Intent(getActivity(), LoginActivity.class);
+                    intent = new Intent(getActivity(), StartKloudActivity.class);
                     startActivity(intent);
                     MainActivity.instance.finish();
                     getActivity().overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);
