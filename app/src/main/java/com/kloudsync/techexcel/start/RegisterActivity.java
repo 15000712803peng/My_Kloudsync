@@ -663,6 +663,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
     }
 
     private void saveLoginData(JSONObject data) {
+        sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
+                MODE_PRIVATE);
+        editor = sharedPreferences.edit();
         try {
             AppConfig.UserToken = data.getString("UserToken");
             AppConfig.UserID = data.getInt("UserID") + "";
