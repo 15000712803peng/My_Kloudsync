@@ -94,6 +94,7 @@
         android:id="@+id/joinmeeting"
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:visibility="gone"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:background="@drawable/peertimeselect_bg2"
@@ -103,6 +104,51 @@
         android:gravity="center"
         android:layout_marginBottom="100dp"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="@string/join_meeting"
+        android:layout_marginLeft="30dp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="140dp"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/peertimeselect_bg3"
+        android:layout_alignParentBottom="true"
+        android:text="@string/join_meeting"
+        android:textColor="@color/white"
+        android:layout_marginBottom="90dp">
+
+        <EditText
+            android:id="@+id/meetingidedit"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_centerVertical="true"
+            android:hint="@string/input_startkloud_meeing_id"
+            android:textSize="16sp"
+            android:background="@color/white"
+            android:layout_height="36dp"/>
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/nextstep"
+        android:layout_width="50dp"
+        android:layout_height="48dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="28dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:text="@string/join_meeting"
+        android:textColor="@color/white"
+        android:layout_marginBottom="83dp"
+        android:src="@drawable/startkloudjoinmeeting" />
 
 
     <LinearLayout

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +25,7 @@ import com.kloudsync.techexcel.response.NetworkResponse;
 import com.kloudsync.techexcel.ui.MainActivity;
 import com.kloudsync.techexcel.ui.WelcomeAndCreateActivity;
 import com.ub.techexcel.tools.JoinCompanyPopup;
+import com.ub.techexcel.tools.JoinMeetingUnLoginPopup;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -48,6 +51,8 @@ public class StartKloudActivity extends Activity implements View.OnClickListener
     private TextView registertv;
     private TextView joinmeeting;
     private RelativeLayout joincompanyTv;
+    private EditText meetingidedit;
+    private ImageView nextstep;
 
 
     @Override
@@ -75,6 +80,9 @@ public class StartKloudActivity extends Activity implements View.OnClickListener
         joinmeeting.setOnClickListener(this);
         joincompanyTv=findViewById(R.id.joincompanyTv);
         joincompanyTv.setOnClickListener(this);
+        nextstep=findViewById(R.id.nextstep);
+        nextstep.setOnClickListener(this);
+        meetingidedit=findViewById(R.id.meetingidedit);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -351,7 +359,31 @@ public class StartKloudActivity extends Activity implements View.OnClickListener
                 isDirectJoinCompany=true;
                 modifyKlassRoomID();
                 break;
+            case R.id.nextstep:
+                String meetingId=meetingidedit.getText().toString();
+                if(TextUtils.isEmpty(meetingId)){
+                    Toast.makeText(StartKloudActivity.this,getString(R.string.input_startkloud_meeing_id),Toast.LENGTH_LONG).show();
+                }else{
+                    showJoinmeeting(meetingId);
+                }
+                break;
         }
+    }
+
+
+    private JoinMeetingUnLoginPopup joinMeetingUnLoginPopup;
+
+    private void showJoinmeeting(String meetingId){
+        if (joinMeetingUnLoginPopup != null) {
+            if (joinMeetingUnLoginPopup.isShowing()) {
+                joinMeetingUnLoginPopup.dismiss();
+            }
+            joinMeetingUnLoginPopup = null;
+        }
+
+        joinMeetingUnLoginPopup = new JoinMeetingUnLoginPopup();
+        joinMeetingUnLoginPopup.getPopwindow(this);
+        joinMeetingUnLoginPopup.show(meetingId);
     }
 
     private  RegisterPromptDialog registerPromptDialog;
