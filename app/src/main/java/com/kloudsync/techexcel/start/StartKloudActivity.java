@@ -337,7 +337,6 @@ public class StartKloudActivity extends Activity implements View.OnClickListener
             case R.id.logintv:
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
-
                 break;
             case R.id.registertv:
                 isDirectJoinCompany=false;

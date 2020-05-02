@@ -38,6 +38,8 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import static com.kloudsync.techexcel.config.AppConfig.ClassRoomID;
+
 
 public class RegisterActivity extends Activity implements OnClickListener {
     private TextView tv_cphone, tv_sendcheckcode;
@@ -636,6 +638,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
                                     + "User/Register4Web", jsonobject);
                     String retcode = responsedata.getString("RetCode");
                     Log.e("User/Register4Web", "parmas：" + jsonobject + ",responsedata:" + responsedata);
+                    saveLoginData(responsedata.getJSONObject("RetData"));
                     Message msg = new Message();
                     if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
                         msg.what = AppConfig.REGISTER_SUCC;
@@ -659,6 +662,25 @@ public class RegisterActivity extends Activity implements OnClickListener {
         }).start(ThreadManager.getManager());
     }
 
+    private void saveLoginData(JSONObject data) {
+        try {
+            AppConfig.UserToken = data.getString("UserToken");
+            AppConfig.UserID = data.getInt("UserID") + "";
+            AppConfig.UserName = data.getString("Name");
+            AppConfig.SchoolID = 0;
+            AppConfig.Role = 0;
+            ClassRoomID = data.getString("ClassRoomID");
+            AppConfig.Mobile = data.getString("Mobile");
+            editor.putString("UserID", AppConfig.UserID);
+            editor.putString("UserToken", AppConfig.UserToken);
+            editor.putString("Name", AppConfig.UserName);
+            editor.putString("MeetingId",ClassRoomID);
+            editor.commit();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     private void registerSucc(JSONObject jsonobject) {
         Toast.makeText(this, getResources().getString(R.string.Register_Success),
                 Toast.LENGTH_SHORT).show();
