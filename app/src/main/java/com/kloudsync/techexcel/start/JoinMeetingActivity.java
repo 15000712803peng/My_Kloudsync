@@ -51,17 +51,8 @@ public class JoinMeetingActivity extends Activity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_joinmeeting);
         initView();
-        startWBService();
     }
-    Intent service;
-    private void startWBService() {
-        service = new Intent(getApplicationContext(), SocketService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(service);
-        } else {
-            startService(service);
-        }
-    }
+
     private void initView() {
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
@@ -284,8 +275,26 @@ public class JoinMeetingActivity extends Activity implements View.OnClickListene
             editor.putString("Name", AppConfig.UserName);
             editor.putString("MeetingId",ClassRoomID);
             editor.commit();
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    startWBService();
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    Intent service;
+    private void startWBService() {
+        service = new Intent(getApplicationContext(), SocketService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(service);
+        } else {
+            startService(service);
         }
     }
 

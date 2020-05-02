@@ -11,12 +11,13 @@
     android:background="@color/white">
 
     <include
-        android:visibility="invisible"
+        android:visibility="visible"
         layout="@layout/common_title"
         android:id="@+id/layout_title" />
 
     <ImageView
         android:id="@+id/drawerloginmenu"
+        android:visibility="gone"
         android:layout_margin="10dp"
         android:layout_alignParentRight="true"
         android:layout_width="25dp"
