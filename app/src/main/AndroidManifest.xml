@@ -978,6 +978,9 @@
             android:name=".start.RegisterActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".start.RegisterActivityStepOne"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".pc.ui.EditUserInfoActivity"
             android:screenOrientation="portrait" />
         <activity

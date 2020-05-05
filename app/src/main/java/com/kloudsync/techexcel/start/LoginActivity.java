@@ -153,7 +153,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         titleText = findViewById(R.id.tv_title);
         titleText.setText(R.string.Login);
         backLayout = findViewById(R.id.layout_back);
-        backLayout.setVisibility(View.GONE);
+        backLayout.setVisibility(View.VISIBLE);
         backLayout.setOnClickListener(this);
         rightTitleText = findViewById(R.id.txt_right_title);
         rightTitleText.setVisibility(View.GONE);
@@ -564,7 +564,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     }
 
     private void GoToSign() {
-        Intent intent = new Intent(LoginActivity.this, com.kloudsync.techexcel.start.RegisterActivity.class);
+        Intent intent = new Intent(LoginActivity.this, com.kloudsync.techexcel.start.RegisterActivityStepOne.class);
         startActivityForResult(intent, REQUEST_RETISTER);
     }
 

@@ -1,131 +1,179 @@
-package com.kloudsync.techexcel.start;
+package com.ub.techexcel.tools;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventJoinMeeting;
-import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.LoadingDialog;
+import com.kloudsync.techexcel.help.ApiTask;
+import com.kloudsync.techexcel.help.ThreadManager;
 import com.kloudsync.techexcel.service.ConnectService;
+import com.kloudsync.techexcel.start.JoinMeetingActivity;
 import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.service.activity.SocketService;
-import com.ub.techexcel.tools.ServiceInterfaceListener;
-import com.ub.techexcel.tools.ServiceInterfaceTools;
+import com.ub.techexcel.bean.UpcomingLesson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.kloudsync.techexcel.config.AppConfig.ClassRoomID;
 
-public class JoinMeetingActivity extends Activity implements View.OnClickListener {
+/**
+ * Created by wang on 2017/9/18.
+ */
 
-    private TextView joinmeeting;
-    private EditText meetingid;
-    private EditText meetingname;
-    private ImageView arrowback;
-    private TextView meetingidhead,meetingnamehead;
+public class JoinMeetingUnLoginPopup implements View.OnClickListener {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_joinmeeting);
-        initView();
+    public Context mContext;
+    public int width;
+    public Dialog mPopupWindow;
+    private View view;
+    private TextView joinroom2;
+    private EditText roomet;
+
+    private TextView cancelText;
+    private TextView meetingidcontent;
+
+
+    public void getPopwindow(Context context) {
+        this.mContext = context;
+        width = mContext.getResources().getDisplayMetrics().widthPixels;
+        getPopupWindowInstance();
+        mPopupWindow.getWindow().setWindowAnimations(R.style.PopupAnimation5);
     }
 
-    private void initView() {
-        sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
-                MODE_PRIVATE);
-        editor = sharedPreferences.edit();
-        meetingid = findViewById(R.id.meetingid);
-        meetingname = findViewById(R.id.meetingname);
-        joinmeeting = findViewById(R.id.joinmeeting);
-        meetingidhead = findViewById(R.id.meetingidhead);
-        meetingnamehead = findViewById(R.id.meetingnamehead);
-        joinmeeting.setOnClickListener(this);
-        arrowback = findViewById(R.id.arrowback);
-        arrowback.setOnClickListener(this);
-        meetingid.addTextChangedListener(new TextWatcher() {
+    public void getPopupWindowInstance() {
+        if (null != mPopupWindow) {
+            mPopupWindow.dismiss();
+            return;
+        } else {
+            initPopuptWindow();
+        }
+    }
+
+
+    @SuppressLint("WrongConstant")
+    public void initPopuptWindow() {
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        view = layoutInflater.inflate(R.layout.newmeetingunlogin, null);
+        joinroom2 = (TextView) view.findViewById(R.id.joinroom2);
+        roomet = (EditText) view.findViewById(R.id.roomet);
+        joinroom2.setOnClickListener(this);
+        cancelText = view.findViewById(R.id.cancel);
+        meetingidcontent = view.findViewById(R.id.meetingidcontent);
+        cancelText.setOnClickListener(this);
+        mPopupWindow = new Dialog(mContext, R.style.bottom_dialog);
+        mPopupWindow.setContentView(view);
+        mPopupWindow.getWindow().setGravity(Gravity.BOTTOM);
+        WindowManager.LayoutParams lp = mPopupWindow.getWindow().getAttributes();
+        lp.width = mContext.getResources().getDisplayMetrics().widthPixels;
+        mPopupWindow.getWindow().setAttributes(lp);
+        roomet.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.e("输入过程中执行该方法", "文字变化");
-                if (!TextUtils.isEmpty(s)&&s.length()>0){
-                    meetingidhead.setVisibility(View.VISIBLE);
-                }else{
-                    meetingidhead.setVisibility(View.INVISIBLE);
+                String meetingId = roomet.getText().toString().trim();
+                if (!TextUtils.isEmpty(meetingId)) {
+                    joinroom2.setBackgroundResource(R.drawable.do_join_bg);
+                } else {
+                    joinroom2.setBackgroundResource(R.drawable.join_bg);
                 }
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-                Log.e("输入前确认执行该方法", "开始输入");
-            }
-
-            @Override
             public void afterTextChanged(Editable s) {
-                Log.e("输入结束执行该方法", "输入结束");
+
             }
         });
-        meetingname.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!TextUtils.isEmpty(s)&&s.length()>0){
-                    meetingnamehead.setVisibility(View.VISIBLE);
-                }else{
-                    meetingnamehead.setVisibility(View.INVISIBLE);
-                }
-            }
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-            }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
     }
+
+
+    private String meetingId;
+
+    @SuppressLint("NewApi")
+    public void show(String meetingId) {
+        this.meetingId=meetingId;
+        meetingidcontent.setText(mContext.getString(R.string.Klassroom_ID)+": "+meetingId);
+        joinroom2.setBackgroundResource(R.drawable.join_bg);
+        if (mPopupWindow != null) {
+            mPopupWindow.show();
+        }
+    }
+
+
+    public boolean isShowing() {
+        return mPopupWindow.isShowing();
+    }
+
+    public void dismiss() {
+        if (mPopupWindow != null) {
+            mPopupWindow.dismiss();
+        }
+    }
+
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.joinmeeting:
-                joinmeeeting();
+        switch (view.getId()) {
+            case R.id.joinroom2:
+                if (!Tools.isFastClick()) {
+                    InputMethodManager imm = (InputMethodManager)
+                            mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(roomet.getWindowToken(), 0);
+                    joinmeeeting();
+                }
+                dismiss();
                 break;
-            case R.id.arrowback:
-                finish();
+            case R.id.cancel:
+                dismiss();
+                break;
+            default:
                 break;
         }
     }
 
     private void joinmeeeting() {
-          String meetingidc=meetingid.getText().toString();
-          if(!TextUtils.isEmpty(meetingidc)){
-              doJoin(meetingidc.toUpperCase());
-          }else {
-              Toast.makeText(this, getString(R.string.joinroom), Toast.LENGTH_LONG).show();
-          }
+        if(!TextUtils.isEmpty(meetingId)){
+            doJoin(meetingId.toUpperCase());
+        }
     }
 
     private void doJoin(final String meetingRoom) {
@@ -145,13 +193,13 @@ public class JoinMeetingActivity extends Activity implements View.OnClickListene
                                     @Override
                                     public void accept(EventJoinMeeting eventJoinMeeting) throws Exception {
                                         String url= AppConfig.URL_PUBLIC+"User/CreateOrUpdateInstantAccout";
-                                        JSONObject result =ServiceInterfaceTools.getinstance().createOrUpdateInstantAccout(url,  meetingname.getText().toString());
+                                        JSONObject result =ServiceInterfaceTools.getinstance().createOrUpdateInstantAccout(url,  roomet.getText().toString());
                                         Log.e("do_join", url+ ",result:" + result);
                                         if (result.has("RetCode")) {
                                             int code = result.getInt("RetCode");
                                             if (code == 0) {
-                                                  JSONObject data=result.getJSONObject("RetData");
-                                                  saveLoginData(data);
+                                                JSONObject data=result.getJSONObject("RetData");
+                                                saveLoginData(data);
                                             }
                                         }
                                     }
@@ -211,7 +259,7 @@ public class JoinMeetingActivity extends Activity implements View.OnClickListene
                                 Observable.just("loading_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                                     @Override
                                     public void accept(String s) throws Exception {
-                                        Toast.makeText(JoinMeetingActivity.this, "输入正确的会议ID", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(mContext, "输入正确的会议ID", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
@@ -221,7 +269,7 @@ public class JoinMeetingActivity extends Activity implements View.OnClickListene
                         Observable.just("loading_main_thread").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
                             @Override
                             public void accept(String s) throws Exception {
-                                Toast.makeText(JoinMeetingActivity.this, "输入正确的会议ID", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "输入正确的会议ID", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -237,25 +285,25 @@ public class JoinMeetingActivity extends Activity implements View.OnClickListene
             goToWatingMeeting(eventJoinMeeting);
             return;
         }
-        Intent intent = new Intent(JoinMeetingActivity.this, DocAndMeetingActivity.class);
+        Intent intent = new Intent(mContext, DocAndMeetingActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("meeting_id", eventJoinMeeting.getMeetingId());
         intent.putExtra("meeting_type", 0);
         intent.putExtra("lession_id", eventJoinMeeting.getLessionId());
         intent.putExtra("meeting_role", eventJoinMeeting.getRole());
         intent.putExtra("from_meeting", true);
-        startActivity(intent);
+        mContext.startActivity(intent);
     }
 
     private void goToWatingMeeting(EventJoinMeeting eventJoinMeeting){
-        Intent intent = new Intent(JoinMeetingActivity.this, DocAndMeetingActivity.class);
+        Intent intent = new Intent(mContext, DocAndMeetingActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("meeting_id", eventJoinMeeting.getMeetingId());
         intent.putExtra("meeting_type", 0);
         intent.putExtra("lession_id", -1);
         intent.putExtra("meeting_role", eventJoinMeeting.getRole());
         intent.putExtra("from_meeting", true);
-        startActivity(intent);
+        mContext.startActivity(intent);
     }
 
     private SharedPreferences sharedPreferences;
@@ -263,6 +311,10 @@ public class JoinMeetingActivity extends Activity implements View.OnClickListene
 
 
     private void saveLoginData(JSONObject data) {
+
+        sharedPreferences = mContext.getSharedPreferences(AppConfig.LOGININFO,
+                MODE_PRIVATE);
+        editor = sharedPreferences.edit();
         try {
             AppConfig.UserToken = data.getString("UserToken");
             AppConfig.UserID = data.getInt("UserID") + "";
@@ -276,7 +328,7 @@ public class JoinMeetingActivity extends Activity implements View.OnClickListene
             editor.putString("MeetingId",ClassRoomID);
             editor.commit();
 
-            runOnUiThread(new Runnable() {
+            ((Activity)mContext).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     startWBService();
@@ -290,12 +342,19 @@ public class JoinMeetingActivity extends Activity implements View.OnClickListene
 
     Intent service;
     private void startWBService() {
-        service = new Intent(getApplicationContext(), SocketService.class);
+        service = new Intent(mContext, SocketService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(service);
+            mContext.startForegroundService(service);
         } else {
-            startService(service);
+            mContext.startService(service);
         }
     }
+
+
+
+
+
+
+
 
 }

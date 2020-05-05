@@ -815,6 +815,7 @@
     <string name="Mobile_phone">手机号/用户名</string>、
     <string name="Mobile_phone2">手机号</string>
     <string name="Password_hint">请输入密码</string>
+    <string name="Password_con_hint">再次输入密码</string>
     <string name="register_means_you_agree_to">注册表示您同意\t\t</string>
     <string name="kloud_sync_terms"> KloudSync的条款</string>
     <string name="password_rules"> 8-14位密码,必须包含字母,数字,符号中两种</string>
@@ -823,6 +824,7 @@
     <string name="registration_failed">注册失败</string>
     <string name="area_code">+86</string>
     <string name="Name_info">姓名</string>
+    <string name="input_Name_info">请输入登录名</string>
     <string name="Vertification_Code">验证码</string>
     <string name="Send_code">发送验证码</string>
     <string name="reset_pwd">重置密码</string>

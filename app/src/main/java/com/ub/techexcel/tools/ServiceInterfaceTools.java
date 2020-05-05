@@ -3416,7 +3416,7 @@ public class ServiceInterfaceTools {
             e.printStackTrace();
         }
         JSONObject response = ConnectService.submitDataByJson(url, params);
-        Log.e("syncJoinCompanyWithInviteCode", "url:" + url + ",response:" + response);
+        Log.e("syncJoinCompanyWithInviteCode", AppConfig.UserToken+"   url:" + url + ",response:" + response);
         return response;
 
     }
