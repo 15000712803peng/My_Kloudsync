@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
-android:layout_width="180dp"
+android:layout_width="190dp"
 android:layout_height="wrap_content">
 
 <com.kloudsync.techexcel.view.BubbleLinearLayout
@@ -10,10 +10,10 @@ android:layout_height="wrap_content">
     android:orientation="vertical"
     app:angle="4dp"
     app:arrowHeight="12dp"
-    app:arrowLocation="right"
-    app:arrowPosition="33dp"
+    app:arrowLocation="left"
+    app:arrowPosition="38dp"
     app:arrowWidth="8dp"
-    app:bubbleColor="#99000000">
+    app:bubbleColor="#131415">
 
     <LinearLayout
         android:layout_width="200dp"
@@ -30,44 +30,98 @@ android:layout_height="wrap_content">
         android:weightSum="1">
 
         <LinearLayout
+            android:paddingLeft="10dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/txt_small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:paddingLeft="6dp"
-                android:textColor="#3D78FB"
+            <LinearLayout
                 android:layout_marginBottom="8dp"
-                android:text="Small size"
-                android:textSize="14sp" />
+
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/icon_webcan_options_four"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp" />
+
+                <TextView
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/txt_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:paddingLeft="6dp"
+                    android:textColor="@color/white"
+                    android:text="@string/small_size"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/txt_big"
                 android:layout_marginBottom="8dp"
-                android:textColor="#999999"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:layout_width="130dp"
+                android:layout_height="1dp"
+                android:background="#242429" />
+
+            <LinearLayout
+                android:layout_marginBottom="8dp"
+
+                android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingLeft="6dp"
-                android:text="Media size"
-                android:textSize="14sp" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/icon_webcan_options_four"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp" />
+                <TextView
+                    android:id="@+id/txt_big"
+                    android:textColor="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="6dp"
+                    android:text="@string/medium_size"
+                    android:textSize="14sp" /></LinearLayout>
+
+
 
             <TextView
-                android:id="@+id/txt_large"
                 android:layout_marginBottom="8dp"
-                android:textColor="#999999"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:layout_width="130dp"
+                android:layout_height="1dp"
+                android:background="#242429" />
+
+            <LinearLayout
+                android:layout_marginBottom="8dp"
+
+                android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingLeft="6dp"
-                android:text="Big size"
-                android:textSize="14sp" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/icon_webcan_options_four"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp" />
+
+                <TextView
+                    android:id="@+id/txt_large"
+                    android:textColor="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="6dp"
+                    android:text="@string/Large_size"
+                    android:textSize="14sp" /></LinearLayout>
+
+
 
         </LinearLayout>
 

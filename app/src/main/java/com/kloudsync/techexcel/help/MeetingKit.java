@@ -666,6 +666,12 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
         popMeetingMenu.show(host, menu, meetingConfig, this, isMeetingPause);
     }
 
+    public void hideMeetingMenu(){
+        if(popMeetingMenu != null && popMeetingMenu.isShowing()){
+            popMeetingMenu.hide();
+        }
+    }
+
     // --- meeting menu
 
     @Override

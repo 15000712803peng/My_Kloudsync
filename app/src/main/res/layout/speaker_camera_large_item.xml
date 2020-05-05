@@ -2,7 +2,7 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout_follow_speaker"
-    android:layout_width="@dimen/speaker_large_wdth"
+    android:layout_width="@dimen/_speaker_large_wdth"
     android:layout_height="@dimen/speaker_large"
     android:clickable="true"
     android:descendantFocusability="blocksDescendants"
@@ -10,17 +10,17 @@
 
 
     <RelativeLayout
+        android:layout_marginLeft="20dp"
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
-        android:background="@drawable/gray_border">
+        android:background="@drawable/bg_user_border">
 
         <FrameLayout
             android:id="@+id/speaker_view_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/gray_border"
+            android:background="@drawable/bg_user_border"
             android:padding="2dp"></FrameLayout>
 
         <LinearLayout
@@ -54,10 +54,10 @@
 
         <com.kloudsync.techexcel.view.CircleImageView
             android:id="@+id/member_icon"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
             android:layout_centerHorizontal="true"
-            android:layout_centerInParent="true"
+            android:layout_marginTop="22dp"
             android:layout_marginBottom="6dp"
             android:padding="2dp" />
     </RelativeLayout>
@@ -66,8 +66,8 @@
         android:layout_centerVertical="true"
         android:id="@+id/img_mode"
         android:src="@drawable/user_info_expanded"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
         android:layout_alignParentStart="true" />
 
 

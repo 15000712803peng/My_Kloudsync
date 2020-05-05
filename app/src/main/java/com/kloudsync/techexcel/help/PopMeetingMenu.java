@@ -275,6 +275,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         menuLeave = view.findViewById(R.id.meeting_menu_leave);
         videoSizeOptions = view.findViewById(R.id.meeting_change_speaker_size);
         videoSizeOptions.setOnClickListener(this);
+        videoSizeOptions.setVisibility(View.GONE);
         menuLeave.setOnClickListener(this);
         cameraImage.setOnClickListener(this);
         window.getWidth();

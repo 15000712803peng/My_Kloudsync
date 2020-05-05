@@ -698,14 +698,14 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/member_camera_list"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/speaker_normal"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:visibility="visible" />
 
             <LinearLayout
                 android:descendantFocusability="blocksDescendants"
                 android:id="@+id/layout_toggle_camera"
-                android:layout_width="30dp"
+                android:layout_width="wrap_content"
                 android:layout_height="@dimen/speaker_normal"
                 android:gravity="center"
                 android:orientation="horizontal"

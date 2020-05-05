@@ -1052,5 +1052,13 @@
 
     <string name="prompt">提醒</string>
     <string name="i_know">知道了</string>
+    <string name="small_size">视频尺寸-小</string>
+    <string name="medium_size">视频尺寸-中</string>
+    <string name="Large_size">视频尺寸-大</string>
+    <string name="video_size">视频尺寸</string>
+    <string name="Show_all_members" >显示所有人</string>
+    <string name="Show_active_speaker">聚焦当前讲话人</string>
+    <string name="Go_video">进入视频会议</string>
+    <string name="Hide_all">隐藏所有人</string>
 
 </resources>

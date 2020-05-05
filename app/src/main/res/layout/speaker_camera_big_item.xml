@@ -2,7 +2,7 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout_follow_speaker"
-    android:layout_width="@dimen/speaker_big_width"
+    android:layout_width="@dimen/_speaker_big_width"
     android:layout_height="@dimen/speaker_big"
     android:clickable="true"
     android:descendantFocusability="blocksDescendants"
@@ -14,13 +14,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="18dp"
-        android:background="@drawable/gray_border">
+        android:background="@drawable/bg_user_border">
 
         <FrameLayout
             android:id="@+id/speaker_view_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/gray_border"
+            android:background="@drawable/bg_user_border"
             android:padding="2dp"></FrameLayout>
 
         <LinearLayout
@@ -54,18 +54,18 @@
 
         <com.kloudsync.techexcel.view.CircleImageView
             android:id="@+id/member_icon"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_centerHorizontal="true"
-            android:layout_centerInParent="true"
+            android:layout_marginTop="22dp"
             android:layout_marginBottom="6dp"
             android:padding="2dp" />
     </RelativeLayout>
 
     <ImageView
         android:id="@+id/img_mode"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_centerVertical="true"
         android:src="@drawable/user_info_expanded"
         />

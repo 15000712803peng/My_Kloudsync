@@ -9,10 +9,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:angle="4dp"
-        app:arrowHeight="8dp"
+        app:arrowHeight="6dp"
         app:arrowLocation="top"
-        app:arrowPosition="16dp"
-        app:arrowWidth="12dp"
+        app:arrowPosition="18dp"
+        app:arrowWidth="15dp"
         app:bubbleColor="#131415">
 
         <LinearLayout
@@ -38,11 +38,12 @@
                 >
 
                 <ImageView
+                    android:id="@+id/image_option_one"
                     android:padding="2dp"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/icon_webcan_options" />
+                    android:src="@drawable/icon_webcan_options_one" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -50,7 +51,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="30dp"
                     android:gravity="center"
-                    android:text="Show all webcam"
+                    android:text="@string/Show_all_members"
                     android:textColor="@color/white"
                     android:textSize="14sp" />
 
@@ -69,11 +70,11 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:padding="@dimen/dp_2"
+                    android:id="@+id/image_option_two"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/icon_webcam_speaker" />
+                    android:src="@drawable/icon_webcan_options_two" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -81,7 +82,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="30dp"
                     android:gravity="center"
-                    android:text="Show active speaker"
+                    android:text="@string/Show_active_speaker"
                     android:textColor="@color/white"
                     android:textSize="14sp" />
 
@@ -91,6 +92,37 @@
                     android:layout_alignParentBottom="true"
                     android:background="#242429" />
             </RelativeLayout>
+
+            <RelativeLayout
+                android:paddingLeft="10dp"
+                android:id="@+id/layout_hide"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/eyeclose" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="30dp"
+                    android:gravity="center"
+                    android:text="@string/Hide_all"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="#242429" />
+            </RelativeLayout>
+
 
             <RelativeLayout
                 android:paddingLeft="10dp"
@@ -104,7 +136,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/icon_webcam_video" />
+                    android:src="@drawable/icon_webcan_options_three" />
 
                 <TextView
                     android:id="@+id/endtextview"
@@ -113,10 +145,45 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="30dp"
                     android:gravity="center"
-                    android:text="Go video"
+                    android:text="@string/Go_video"
                     android:textColor="@color/white"
                     android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="#242429" />
             </RelativeLayout>
+
+            <RelativeLayout
+                android:paddingLeft="10dp"
+                android:id="@+id/layout_four"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/image_option_four"
+                    android:padding="2dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/icon_webcan_options_four" />
+
+                <TextView
+                    android:id="@+id/txt_video_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="30dp"
+                    android:gravity="center"
+                    android:text="@string/video_size"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+
 
 
         </LinearLayout>

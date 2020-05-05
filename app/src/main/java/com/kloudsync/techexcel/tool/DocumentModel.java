@@ -182,7 +182,7 @@ public class DocumentModel {
         }).start(ThreadManager.getManager());
     }
 
-    public static EventRefreshDocs syncGetDocumentsInDocAndRefreshFileList(final MeetingConfig meetingConfig, final int itemId) {
+    public static EventRefreshDocs asyncGetDocuments(final MeetingConfig meetingConfig) {
 
         EventRefreshDocs refreshDocs = new EventRefreshDocs();
         JSONObject response = ConnectService.getIncidentbyHttpGet(AppConfig.URL_PUBLIC + "Lesson/Item?lessonID=" + meetingConfig.getLessionId());
@@ -233,10 +233,8 @@ public class DocumentModel {
                             documents.add(document);
                         }
 
-                        refreshDocs.setItemId(itemId);
-                        refreshDocs.setRefresh(true);
                         refreshDocs.setDocuments(documents);
-                        EventBus.getDefault().post(refreshDocs);
+                        return refreshDocs;
                     }
                 }
             } catch (JSONException e) {

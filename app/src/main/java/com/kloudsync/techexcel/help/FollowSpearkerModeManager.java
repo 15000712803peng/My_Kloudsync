@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.CompanySubsystem;
 import com.kloudsync.techexcel.bean.EventExpanedUserList;
+import com.kloudsync.techexcel.bean.EventHideMeetingMenu;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.PopSpeakerWindowMore;
@@ -194,6 +195,7 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         speakerContainer.addView(speakerLayout, params);
         initViews(context);
         notifySizeChanged(1);
+        EventBus.getDefault().post(new EventHideMeetingMenu());
 
     }
 
@@ -215,6 +217,7 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         speakerContainer.addView(speakerLayout, params);
         initViews(context);
         notifySizeChanged(2);
+        EventBus.getDefault().post(new EventHideMeetingMenu());
     }
 
     @Override
@@ -234,6 +237,7 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
         speakerContainer.addView(speakerLayout, params);
         initViews(context);
         notifySizeChanged(3);
+        EventBus.getDefault().post(new EventHideMeetingMenu());
 
     }
 

@@ -8,15 +8,19 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventSelectSpeakerMode;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 
 import com.kloudsync.techexcel.dialog.CenterToast;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import io.reactivex.Observable;
@@ -29,9 +33,12 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
     private Context mContext;
     private PopupWindow mPopupWindow;
     private View view;
-    private RelativeLayout oneLayout, twoLayout, threeLayout;
+    private RelativeLayout oneLayout, twoLayout, threeLayout, fourLayout;
+    private RelativeLayout hideAllLayout;
+    private ImageView oneImage, twoImage, fourImage;
     private SharedPreferences sharedPreferences;
     private MeetingConfig meetingConfig;
+    private TextView videoSizeText;
 
     public interface OnDisplayModeChanged {
         void displayModeChanged(int mode);
@@ -66,9 +73,17 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
         oneLayout = (RelativeLayout) view.findViewById(R.id.layout_one);
         twoLayout = (RelativeLayout) view.findViewById(R.id.layout_two);
         threeLayout = (RelativeLayout) view.findViewById(R.id.layout_three);
+        fourLayout = (RelativeLayout) view.findViewById(R.id.layout_four);
+        hideAllLayout = (RelativeLayout) view.findViewById(R.id.layout_hide);
+        videoSizeText = view.findViewById(R.id.txt_video_size);
+        oneImage = view.findViewById(R.id.image_option_one);
+        hideAllLayout.setOnClickListener(this);
+        twoImage = view.findViewById(R.id.image_option_two);
+        fourImage = view.findViewById(R.id.image_option_four);
         oneLayout.setOnClickListener(this);
         twoLayout.setOnClickListener(this);
         threeLayout.setOnClickListener(this);
+        fourLayout.setOnClickListener(this);
         mPopupWindow = new PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, false);
         mPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
@@ -95,13 +110,33 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
             threeLayout.setVisibility(View.GONE);
         }
 
+        if(meetingConfig.getCameraDiplayMode() == 0){
+            hideAllLayout.setVisibility(View.VISIBLE);
+        }else {
+            hideAllLayout.setVisibility(View.GONE);
+        }
+
+//        if (meetingConfig.getCameraDiplayMode() == 0) {
+//            fourLayout.setVisibility(View.VISIBLE);
+//        } else {
+//            fourLayout.setVisibility(View.GONE);
+//        }
+
         displayMode = meetingConfig.getCameraDiplayMode();
         if (displayMode == 0) {
-            twoLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
+            twoImage.setImageResource(R.drawable.icon_webcan_options_two_selected);
         } else if (displayMode == 1) {
-            oneLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
+            oneImage.setImageResource(R.drawable.icon_webcan_options_one_selected);
         } else if (displayMode == 2) {
-            oneLayout.setBackgroundColor(Color.parseColor("#9EBBFD"));
+            oneImage.setImageResource(R.drawable.icon_webcan_options_one_selected);
+        }
+        String sizeMode = sharedPreferences.getString("speaker_size_mode", "small");
+        if(sizeMode.equals("small")){
+            videoSizeText.setText(mContext.getString(R.string.video_size) + "-S");
+        }else if(sizeMode.equals("big")){
+            videoSizeText.setText(mContext.getString(R.string.video_size) + "-M");
+        }else if(sizeMode.equals("large")){
+            videoSizeText.setText(mContext.getString(R.string.video_size) + "-L");
         }
         mPopupWindow.showAsDropDown(v, 0, dp2px(mContext, 5));
     }
@@ -157,11 +192,31 @@ public class PopMeetingWebcamOptions implements View.OnClickListener {
 
                 dismiss();
                 break;
+
+            case R.id.layout_hide:
+                if (displayMode == 1) {
+                    dismiss();
+                    return;
+                }
+
+                meetingConfig.setCameraDiplayMode(1);
+                if (onDisplayModeChanged != null) {
+                    onDisplayModeChanged.displayModeChanged(1);
+                }
+
+                dismiss();
+                break;
             case R.id.layout_three:
                 if (onDisplayModeChanged != null) {
                     onDisplayModeChanged.onGoToVideoClicked();
                 }
                 dismiss();
+                break;
+            case R.id.layout_four:
+                fourImage.setImageResource(R.drawable.icon_webcan_options_four_selected);
+                EventSelectSpeakerMode selectSpeakerMode = new EventSelectSpeakerMode();
+                selectSpeakerMode.setContainer(fourLayout);
+                EventBus.getDefault().post(selectSpeakerMode);
                 break;
             default:
                 break;

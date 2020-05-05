@@ -1085,5 +1085,14 @@ Please input the cell phone number to add the contact
     <string name="admin">admin</string>
     <string name="prompt">Prompt</string>
     <string name="i_know">I know</string>
+    <string name="video_size">Video size</string>
+    <string name="small_size">Webcam Size - S</string>
+    <string name="medium_size">Webcam Size - M</string>
+    <string name="Large_size">Webcam Size - L</string>
+    <string name="Show_all_members" >Show all webcam</string>
+    <string name="Show_active_speaker">Show active speaker</string>
+    <string name="Go_video">Go video</string>
+    <string name="Hide_all">Hide all webcam</string>
+
 
 </resources>
