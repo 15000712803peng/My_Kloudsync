@@ -370,6 +370,7 @@ public class LoginActivity extends Activity implements OnClickListener {
             public String apply(String o) throws Exception {
                 try {
                     Response<NetworkResponse<LoginData>> response = ServiceInterfaceTools.getinstance().login(name, password).execute();
+                    Log.e("login",name+"  "+password+"  "+response.body());
                     if (response == null || !response.isSuccessful() || response.body() == null) {
                         sendEventLoginFail("network error");
                     } else {
