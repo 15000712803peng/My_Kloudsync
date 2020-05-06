@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.params.EventRegisterSuccess;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.ApiTask;
 import com.kloudsync.techexcel.help.ThreadManager;
@@ -30,17 +31,20 @@ import com.kloudsync.techexcel.tool.ToastUtils;
 import com.ub.techexcel.service.ConnectService;
 import com.umeng.analytics.MobclickAgent;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import static com.kloudsync.techexcel.config.AppConfig.ClassRoomID;
+
 
 public class RegisterActivity extends Activity implements OnClickListener {
     private TextView tv_cphone, tv_sendcheckcode;
     private EditText phoneEdit, codeEdit;
-    private EditText nameEdit, pwdEdit;
+    private EditText nameEdit, pwdEdit,pwdConfirmEdit;
     private TextView registerText;
     private LinearLayout lin_bottom;
 
@@ -56,7 +60,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
     public static final int CHANGE_COUNTRY_CODE = 0;
     private static final int PASSWORD_HIDE = 1;
     private static final int PASSWORD_NOT_HIDE = 2;
-    private ImageView mPwdEyeImage;
+    private ImageView mPwdEyeImage,mConfirmPwdEyeImage;
     private ImageView mBack;
     private TextView mTitleBarTitle;
     private TextView mTvPhoneTips;
@@ -64,6 +68,10 @@ public class RegisterActivity extends Activity implements OnClickListener {
     private TextView mTvPwdTips;
     private RelativeLayout mRlyRegisterPwd;
     private RelativeLayout mRlyRegisterPhone;
+
+    private String registerVertifyCode;
+    private String registerPhone;
+
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             String result;
@@ -162,7 +170,15 @@ public class RegisterActivity extends Activity implements OnClickListener {
         setContentView(R.layout.activity_sign_up_v2);
         instance = this;
         isVisible = getIntent().getBooleanExtra("isVisible", true);
+
         initView();
+
+        registerVertifyCode=getIntent().getStringExtra("registerVertifyCode");
+        registerPhone=getIntent().getStringExtra("registerPhone");
+        codeEdit.setText(registerVertifyCode);   //验证码
+        phoneEdit.setText(registerPhone);  // 手机号
+
+
     }
 
     private void initView() {
@@ -178,18 +194,22 @@ public class RegisterActivity extends Activity implements OnClickListener {
         mTvPwdTips = findViewById(R.id.tv_register_pwd_tips);
         nameEdit = findViewById(R.id.et_name);
         pwdEdit = findViewById(R.id.et_password);
+        pwdConfirmEdit = findViewById(R.id.et_con_password);
         pwdEdit.setTag(PASSWORD_HIDE);
+        pwdConfirmEdit.setTag(PASSWORD_HIDE);
         mPwdEyeImage = findViewById(R.id.iv_show_pwd);
+        mConfirmPwdEyeImage = findViewById(R.id.iv_show_con_pwd);
         registerText = findViewById(R.id.tv_sign_up);
         registerText.setEnabled(false);
         codeEdit = (EditText) findViewById(R.id.et_checkcode);
-        AppConfig.COUNTRY_CODE = 86;
+//        AppConfig.COUNTRY_CODE = 86;
         tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
         mTitleBarTitle.setText(getResources().getString(R.string.create_account));
         mTitleBarTitle.setTextColor(getResources().getColor(R.color.colorFont34));
         setEditChangeInput();
         mBack.setOnClickListener(this);
         mPwdEyeImage.setOnClickListener(this);
+        mConfirmPwdEyeImage.setOnClickListener(this);
         tv_sendcheckcode.setOnClickListener(this);
         tv_cphone.setOnClickListener(this);
         loginLayout = findViewById(R.id.ly_register_terms);
@@ -247,6 +267,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
             case R.id.iv_show_pwd:
                 toggleHidePwd();
                 break;
+            case R.id.iv_show_con_pwd:
+                toggleHidePwd2();
+                break;
             case R.id.tv_sign_up:
                 register();
                 break;
@@ -264,6 +287,12 @@ public class RegisterActivity extends Activity implements OnClickListener {
             togglePwdByType(type);
         }
     }
+    private void toggleHidePwd2() {
+        if (pwdConfirmEdit.getTag() != null) {
+            Integer type = (Integer) pwdConfirmEdit.getTag();
+            togglePwdByType2(type);
+        }
+    }
 
     private void togglePwdByType(int type) {
         if (type == PASSWORD_HIDE) {
@@ -274,6 +303,18 @@ public class RegisterActivity extends Activity implements OnClickListener {
             pwdEdit.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             mPwdEyeImage.setSelected(false);
             pwdEdit.setTag(PASSWORD_HIDE);
+        }
+    }
+
+    private void togglePwdByType2(int type) {
+        if (type == PASSWORD_HIDE) {
+            pwdConfirmEdit.setInputType(InputType.TYPE_CLASS_TEXT);
+            mConfirmPwdEyeImage.setSelected(true);
+            pwdConfirmEdit.setTag(PASSWORD_NOT_HIDE);
+        } else if (type == PASSWORD_NOT_HIDE) {
+            pwdConfirmEdit.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            mConfirmPwdEyeImage.setSelected(true);
+            pwdConfirmEdit.setTag(PASSWORD_HIDE);
         }
     }
 
@@ -563,6 +604,12 @@ public class RegisterActivity extends Activity implements OnClickListener {
             return null;
         }
 
+        String pwdConfirm = pwdConfirmEdit.getText().toString().trim();
+        if (TextUtils.isEmpty(pwdConfirm) || !(pwd.equals(pwdConfirm))) {
+            Toast.makeText(this, "密码输入不一致", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("Mobile", "+" + tv_cphone.getText().toString().replaceAll("\\+", "") + phone);
@@ -591,6 +638,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
                                     + "User/Register4Web", jsonobject);
                     String retcode = responsedata.getString("RetCode");
                     Log.e("User/Register4Web", "parmas：" + jsonobject + ",responsedata:" + responsedata);
+                    saveLoginData(responsedata.getJSONObject("RetData"));
                     Message msg = new Message();
                     if (retcode.equals(AppConfig.RIGHT_RETCODE)) {
                         msg.what = AppConfig.REGISTER_SUCC;
@@ -614,6 +662,28 @@ public class RegisterActivity extends Activity implements OnClickListener {
         }).start(ThreadManager.getManager());
     }
 
+    private void saveLoginData(JSONObject data) {
+        sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
+                MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        try {
+            AppConfig.UserToken = data.getString("UserToken");
+            AppConfig.UserID = data.getInt("UserID") + "";
+            AppConfig.UserName = data.getString("Name");
+            AppConfig.SchoolID = 0;
+            AppConfig.Role = 0;
+            ClassRoomID = data.getString("ClassRoomID");
+            AppConfig.Mobile = data.getString("Mobile");
+            editor.putString("UserID", AppConfig.UserID);
+            editor.putString("UserToken", AppConfig.UserToken);
+            editor.putString("Name", AppConfig.UserName);
+            editor.putString("MeetingId",ClassRoomID);
+            editor.commit();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     private void registerSucc(JSONObject jsonobject) {
         Toast.makeText(this, getResources().getString(R.string.Register_Success),
                 Toast.LENGTH_SHORT).show();
@@ -628,10 +698,15 @@ public class RegisterActivity extends Activity implements OnClickListener {
             editor.putInt("countrycode", countrycode);
             editor.putString("telephone", phoneEdit.getText().toString().trim());
             editor.putString("password", pwd);
+            editor.putString("name", tv_cphone.getText().toString()
+                    + phoneEdit.getText().toString());
             editor.commit();
             Intent resultData = new Intent();
             resultData.putExtra("password", pwdEdit.getText().toString().trim());
             setResult(RESULT_OK, resultData);
+
+            Log.e("EventRegisterSuccess",jsonobject.toString());
+            EventBus.getDefault().post(new EventRegisterSuccess());
             finish();
         } catch (JSONException e) {
             e.printStackTrace();

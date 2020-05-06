@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="@dimen/speaker_normal"
-    android:padding="1dp"
-    android:descendantFocusability="blocksDescendants"
-    android:clickable="true"
     android:id="@+id/layout_follow_speaker"
-    >
+    android:layout_width="@dimen/_speaker_normal_width"
+    android:layout_height="@dimen/speaker_normal"
+    android:clickable="true"
+    android:padding="2dp"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="horizontal">
 
     <RelativeLayout
-        android:layout_marginLeft="10dp"
-        android:background="@drawable/gray_border"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:background="@drawable/bg_user_border">
+
         <FrameLayout
-            android:padding="2dp"
+
             android:id="@+id/speaker_view_container"
-            android:layout_width="@dimen/speaker_normal_width"
-            android:layout_height="@dimen/speaker_normal"
-            android:background="@drawable/gray_border"></FrameLayout>
+            android:layout_width="@dimen/_speaker_normal_width"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_user_border"
+            android:padding="4dp"></FrameLayout>
 
         <LinearLayout
+            android:background="@drawable/bg_user_bottom_info"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_alignParentBottom="true"
-            android:layout_width="@dimen/speaker_normal_width"
+            android:layout_width="@dimen/_speaker_normal_width"
             android:layout_height="23dp">
 
             <ImageView
@@ -47,14 +51,10 @@
                 android:layout_height="wrap_content" />
 
 
-
-            <ImageView
-                android:id="@+id/image_speark_more"
-                android:src="@drawable/more_white"
-                android:layout_width="18dp"
-                android:layout_height="12dp" />
-
         </LinearLayout>
+
+
+
         <com.kloudsync.techexcel.view.CircleImageView
             android:id="@+id/member_icon"
             android:layout_marginBottom="6dp"
@@ -66,12 +66,12 @@
             />
     </RelativeLayout>
 
-
     <ImageView
-        android:id="@+id/arrow_expand"
+        android:id="@+id/img_mode"
+        android:src="@drawable/user_info_expanded"
         android:layout_centerVertical="true"
-        android:src="@drawable/follow_spkear_arrow_right"
-        android:layout_width="@dimen/dp_22"
-        android:layout_height="@dimen/dp_22" />
+        android:layout_width="30dp"
+        android:layout_height="30dp" />
+
 
 </RelativeLayout>

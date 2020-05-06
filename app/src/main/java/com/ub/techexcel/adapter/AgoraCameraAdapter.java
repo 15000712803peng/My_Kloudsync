@@ -1,6 +1,7 @@
 package com.ub.techexcel.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,6 +33,12 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     private List<AgoraMember> users;
     private Context mContext;
     private ImageLoader imageLoader;
+    private int viewType;
+
+
+    public void setViewType(int viewType) {
+        this.viewType = viewType;
+    }
 
     public List<AgoraMember> getUsers() {
         return users;
@@ -51,18 +58,32 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     }
 
     public interface OnCameraOptionsListener {
-        void onCameraFrameClick(AgoraMember member);
+        void onCameraFrameClick(View itemView, AgoraMember member, int position);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.small_camera_item, parent, false);
+        View view;
+        if (viewType == 0) {
+            view = inflater.inflate(R.layout.small_camera_item, parent, false);
+        }else if(viewType == 1){
+            view = inflater.inflate(R.layout.medium_camera_item, parent, false);
+        }else if(viewType == 2){
+            view = inflater.inflate(R.layout.large_camera_item, parent, false);
+        }else {
+            view = inflater.inflate(R.layout.small_camera_item, parent, false);
+        }
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        ViewHolder myHolder = holder;
+    public int getItemViewType(int position) {
+        return viewType;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        final ViewHolder myHolder = holder;
         final AgoraMember user = users.get(position);
         holder.vedioFrame.removeAllViews();
         if (holder.vedioFrame.getChildCount() == 0) {
@@ -90,13 +111,22 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                     target.setVisibility(View.INVISIBLE);
                 }
 
+            }
+
+            if (user.isSelect()) {
+                holder.selectMemberContainer.setBackgroundResource(R.drawable.bg_select_member);
+                holder.selectPeopleImage.setImageResource(R.drawable.icon_select_people);
+            } else {
+                holder.selectMemberContainer.setBackgroundResource(R.drawable.shape_transparent);
+                holder.selectPeopleImage.setImageResource(R.drawable.shape_transparent);
 
             }
+
             myHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (onCameraOptionsListener != null) {
-                        onCameraOptionsListener.onCameraFrameClick(user);
+                        onCameraOptionsListener.onCameraFrameClick(myHolder.itemView, user, position);
                     }
 //                    showFull(user);
 
@@ -208,12 +238,16 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             nameText = view.findViewById(R.id.txt_name);
             audioStatusImage = view.findViewById(R.id.image_audio_status);
             iconImage = view.findViewById(R.id.member_icon);
+            selectMemberContainer = view.findViewById(R.id.select_peple_container);
+            selectPeopleImage = view.findViewById(R.id.icon_select_people);
         }
 
         public FrameLayout vedioFrame;
         public TextView nameText;
         public ImageView audioStatusImage;
         public CircleImageView iconImage;
+        public RelativeLayout selectMemberContainer;
+        public ImageView selectPeopleImage;
     }
 
     public void reset() {
@@ -281,13 +315,13 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             AgoraMember agoraMember = this.users.get(index);
 
             if (!(agoraMember.isMuteAudio() == member.isMuteAudio())) {
-	            Log.e("refreshAudioStatus", "member:" + member.isMuteAudio() + ",agoraMember:" + agoraMember.isMuteAudio());
+                Log.e("refreshAudioStatus", "member:" + member.isMuteAudio() + ",agoraMember:" + agoraMember.isMuteAudio());
                 agoraMember.setMuteAudio(member.isMuteAudio());
                 notifyItemChanged(index);
 
             } else {
-	            Log.e("refreshAudioStatus", "member:" + member.isMuteAudio() + ",agoraMember:" + agoraMember.isMuteAudio());
-	            Log.e("refreshAudioStatus", "have_show_un_mute:" + agoraMember.isHaveShowUnMuteAudioImage());
+                Log.e("refreshAudioStatus", "member:" + member.isMuteAudio() + ",agoraMember:" + agoraMember.isMuteAudio());
+                Log.e("refreshAudioStatus", "have_show_un_mute:" + agoraMember.isHaveShowUnMuteAudioImage());
                 if (!agoraMember.isMuteAudio()) {
                     if (!agoraMember.isHaveShowUnMuteAudioImage()) {
                         notifyItemChanged(index);
@@ -320,16 +354,34 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         }
     }
 
-    public void refreshMyAgoraStatus(AgoraMember agoraMember){
+    public void refreshMyAgoraStatus(AgoraMember agoraMember) {
         int index = this.users.indexOf(agoraMember);
 //        Log.e("refreshMyAgoraStatus","notifyItemChanged,user:" + this.users.get(index));
-        if(index >= 0){
+        if (index >= 0) {
             AgoraMember _member = this.users.get(index);
             _member.setMuteAudio(agoraMember.isMuteAudio());
             _member.setMuteVideo(agoraMember.isMuteVideo());
-            Log.e("refreshMyAgoraStatus","notifyItemChanged,user:" + this.users.get(index));
+            Log.e("refreshMyAgoraStatus", "notifyItemChanged,user:" + this.users.get(index));
             notifyItemChanged(index);
         }
     }
+
+    public void clearSelectedMember() {
+        for (int i = 0; i < this.users.size(); ++i) {
+            AgoraMember member = this.users.get(i);
+            if (member.isSelect()) {
+                member.setSelect(false);
+                notifyItemChanged(i);
+                break;
+            }
+        }
+    }
+
+    public void refreshSize(int size){
+        viewType = size;
+        notifyDataSetChanged();
+    }
+
+
 
 }

@@ -17,6 +17,7 @@ import com.alibaba.sdk.android.oss.callback.OSSProgressCallback;
 import com.alibaba.sdk.android.oss.common.OSSLog;
 import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;
 import com.alibaba.sdk.android.oss.common.auth.OSSStsTokenCredentialProvider;
+import com.alibaba.sdk.android.oss.internal.OSSAsyncTask;
 import com.alibaba.sdk.android.oss.model.ResumableUploadRequest;
 import com.alibaba.sdk.android.oss.model.ResumableUploadResult;
 import com.amazonaws.auth.BasicSessionCredentials;
@@ -74,6 +75,9 @@ public class UploadAudioTool {
     private UploadAudioListener uploadAudioListener;
 
     public void uploadAudio(File file, SoundtrackBean soundtrackBean, UploadAudioPopupdate uploadAudioPopupdate, MeetingConfig meetingConfig, UploadAudioListener uploadAudioListener){
+
+        upload=null;
+        ossAsyncTask=null;
         this.soundtrackID=soundtrackBean.getSoundtrackID();
         this.fieldId=soundtrackBean.getFileId();
         this.fieldNewPath=soundtrackBean.getPath();
@@ -98,6 +102,7 @@ public class UploadAudioTool {
     }
 
 
+    private Upload upload;
     public void uploadWithTransferUtility(final LineItem attachmentBean, final Uploadao ud) {
         mfile = new File(attachmentBean.getUrl());
         fileName = mfile.getName();
@@ -120,7 +125,7 @@ public class UploadAudioTool {
                 request.setGeneralProgressListener(new ProgressListener() {
                     @Override
                     public void progressChanged(final ProgressEvent progressEvent) {
-                        Log.e("syncing---", mfile.length()+"   "+progressEvent.getBytesTransferred());
+                        Log.e("syncing---amazon", mfile.length()+"   "+progressEvent.getBytesTransferred());
                         ((Activity)mContext).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -129,7 +134,7 @@ public class UploadAudioTool {
                         });
                     }
                 });
-                Upload upload = tm.upload(request);
+                upload = tm.upload(request);
                 try {
                     upload.waitForCompletion();
                     ((Activity)mContext).runOnUiThread(new Runnable() {
@@ -173,7 +178,7 @@ public class UploadAudioTool {
     private File mfile;
     private String MD5Hash;
     private String fileName;
-
+    private OSSAsyncTask ossAsyncTask=null;
     private void uploadFile3(final LineItem attachmentBean, final Uploadao ud) {
         Log.e("syncing---", attachmentBean.getUrl() + "   " + attachmentBean.getFileName());
         String path = attachmentBean.getUrl();
@@ -193,6 +198,7 @@ public class UploadAudioTool {
         //设置false,取消时，不删除断点记录文件，如果不进行设置，默认true，是会删除断点记录文件，下次再进行上传时会重新上传。
         request.setDeleteUploadOnCancelling(false);
         request.setPartSize(1 * 100 * 1024);
+
         // 设置上传过程回调
         request.setProgressCallback(new OSSProgressCallback<ResumableUploadRequest>() {
             @Override
@@ -206,7 +212,7 @@ public class UploadAudioTool {
                 });
             }
         });
-        oss.asyncResumableUpload(request, new OSSCompletedCallback<ResumableUploadRequest, ResumableUploadResult>() {
+        ossAsyncTask= oss.asyncResumableUpload(request, new OSSCompletedCallback<ResumableUploadRequest, ResumableUploadResult>() {
             @Override
             public void onSuccess(ResumableUploadRequest request, ResumableUploadResult result) {
                 Log.e("syncing---", "  successsss");
@@ -217,14 +223,23 @@ public class UploadAudioTool {
                     }
                 });
             }
-
             @Override
             public void onFailure(ResumableUploadRequest request, ClientException clientExcepion, ServiceException serviceException) {
-
+                Log.e("syncing---", "  failure"+clientExcepion.getMessage());
             }
         });
-
     }
+
+
+    public void  cancelUploadAudio(){
+        if(ossAsyncTask!=null){
+            ossAsyncTask.cancel();
+        }
+        if(upload!=null){
+            upload.abort();
+        }
+    }
+
 
 
     private void yinxiangUploadNewFile(final Uploadao ud) {

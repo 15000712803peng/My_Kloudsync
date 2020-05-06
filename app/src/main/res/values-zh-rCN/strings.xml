@@ -331,6 +331,7 @@
 
     <string name="Edit">编辑</string>
     <string name="Delete">删除</string>
+    <string name="DeleteFavoritePromet">确认删除选择的文件?</string>
 
     <string name="Dialog_GunDan">同一时间只能有一端使用聊天功能，您有其他的设备正在使用聊天功能，本设备将暂时退出聊天</string>
 
@@ -425,8 +426,8 @@
     <string name="newService">新建课程</string>
     <string name="inprogress">进行中</string>
     <string name="Completed">已结束</string>
-    <string name="mycourse">我的课程</string>
-    <string name="join">加入课程</string>
+    <string name="mycourse">开始上课</string>
+    <string name="join">加入课堂</string>
     <string name="join2">加入会议</string>
     <string name="joinroom">输入会议室ID</string>
     <string name="joinmyclass">加入我的课程</string>
@@ -555,6 +556,7 @@
     <string name="accompanyfiletime">时长</string>
     <string name="accompanyfilewho">录制人</string>
     <string name="accompanyfilesize">文件大小</string>
+    <string name="addmeetingmysave">从我的收藏选择</string>
 
     <string name="makesyncaccompany">制作同步伴奏带</string>
     <string name="saveaccompany">保存为伴奏</string>
@@ -810,10 +812,12 @@
     <string name="addteamadmin">增加团队管理员</string>
     <string name="addspaceadmin">增加空间管理员</string>
     <string name="addnewmember">邀请新成员</string>
+    <string name="loginprompt">使用手机号或者用户名登录</string>
 
     <string name="Mobile_phone">手机号/用户名</string>、
     <string name="Mobile_phone2">手机号</string>
     <string name="Password_hint">请输入密码</string>
+    <string name="Password_con_hint">再次输入密码</string>
     <string name="register_means_you_agree_to">注册表示您同意\t\t</string>
     <string name="kloud_sync_terms"> KloudSync的条款</string>
     <string name="password_rules"> 8-14位密码,必须包含字母,数字,符号中两种</string>
@@ -822,6 +826,7 @@
     <string name="registration_failed">注册失败</string>
     <string name="area_code">+86</string>
     <string name="Name_info">姓名</string>
+    <string name="input_Name_info">请输入登录名</string>
     <string name="Vertification_Code">验证码</string>
     <string name="Send_code">发送验证码</string>
     <string name="reset_pwd">重置密码</string>
@@ -840,9 +845,16 @@
     <string name="Send">发送</string>
     <string name="meeting_id">Meeting ID</string>
     <string name="input_new_meeing_id">输入新的会议ID </string>
+    <string name="input_startkloud_meeing_id">请输入会议ID</string>
+    <string name="input_startkloud_name">请输入姓名</string>
+    <string name="input_startkloud_meeing_id_head">会议ID</string>
+    <string name="input_startkloud_name_head">姓名</string>
+
     <string name="modify_meeting_id">修改你的会议ID</string>
     <string name="about">关于</string>
     <string name="privacy_statement">隐私声明</string>
+    <string name="and">和</string>
+    <string name="useteamandservice">服务协议</string>
     <string name="create_new_sync">创建音想</string>
     <string name="select_more_sync">+ 选择音想</string>
     <string name="sync">同步</string>
@@ -1008,6 +1020,8 @@
 	<string name="_course_id">课程ID:</string>
     <string name="kick_off_from_meeting">请他离开会议</string>
     <string name="tips">提示</string>
+    <string name="join_start_company">加入机构</string>
+    <string name="new_start_company">创建机构</string>
 
     <string name="my_contact">我的联系人</string>
 
@@ -1047,5 +1061,13 @@
 
     <string name="prompt">提醒</string>
     <string name="i_know">知道了</string>
+    <string name="small_size">视频尺寸-小</string>
+    <string name="medium_size">视频尺寸-中</string>
+    <string name="Large_size">视频尺寸-大</string>
+    <string name="video_size">视频尺寸</string>
+    <string name="Show_all_members" >显示所有人</string>
+    <string name="Show_active_speaker">聚焦当前讲话人</string>
+    <string name="Go_video">进入视频会议</string>
+    <string name="Hide_all">隐藏所有人</string>
 
 </resources>

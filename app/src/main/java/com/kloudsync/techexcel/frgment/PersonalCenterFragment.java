@@ -53,6 +53,7 @@ import com.kloudsync.techexcel.pc.ui.SelfDescriptionActivity;
 import com.kloudsync.techexcel.personal.AboutActivity2;
 import com.kloudsync.techexcel.personal.AccountSettingActivity;
 import com.kloudsync.techexcel.personal.CreateOrganizationActivityV2;
+import com.kloudsync.techexcel.personal.DrawerLayoutActivity;
 import com.kloudsync.techexcel.personal.HelpCenterActivity;
 import com.kloudsync.techexcel.personal.LanguageActivity;
 import com.kloudsync.techexcel.personal.MyCourseTemplateActivity;
@@ -64,6 +65,7 @@ import com.kloudsync.techexcel.personal.TeacherProfileActivity;
 import com.kloudsync.techexcel.school.SwitchOrganizationActivity;
 import com.kloudsync.techexcel.start.LoginActivity;
 import com.kloudsync.techexcel.start.LoginGet;
+import com.kloudsync.techexcel.start.StartKloudActivity;
 import com.kloudsync.techexcel.tool.DensityUtil;
 import com.kloudsync.techexcel.tool.StringUtils;
 import com.kloudsync.techexcel.ui.CurrentPenStatusActivity;
@@ -461,6 +463,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
 
     private void GoToAbout() {
         intent = new Intent(getActivity(), AboutActivity2.class);
+//        intent = new Intent(getActivity(), DrawerLayoutActivity.class);
         startActivity(intent);
         /*intent = new Intent(getActivity(), AboutActivity2.class);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),

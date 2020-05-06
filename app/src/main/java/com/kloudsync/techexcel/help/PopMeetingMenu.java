@@ -18,15 +18,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.EventSelectSpeakerMode;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingPauseOrResumBean;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.PopSpeakerWindowMore;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.ToastUtils;
+import com.kloudsync.techexcel.ui.DocAndMeetingActivity;
 import com.ub.techexcel.bean.EventMuteAll;
 import com.ub.techexcel.bean.EventUnmuteAll;
 import com.ub.techexcel.tools.MeetingServiceTools;
 import com.ub.techexcel.tools.PopMeetingMore;
+import com.ub.techexcel.tools.PopMeetingWebcamOptions;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -36,7 +40,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickListener,PopMeetingMore.OnMoreActionsListener {
+public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickListener, PopMeetingMore.OnMoreActionsListener {
 
     int width;
     private Activity host;
@@ -48,27 +52,28 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
     private RelativeLayout menuInvite;
     private RelativeLayout menuMore;
     private RelativeLayout menuLeave;
+    private RelativeLayout videoSizeOptions;
     private ImageView microImage, voiceImage, cameraImage, switchCameraImage;
-
-    //----
+    //---
     private MeetingSettingCache settingCache;
-	private RelativeLayout mMenuPause;
+    private RelativeLayout mMenuPause;
     private ImageView mIvPauseIcon;
     private TextView mTvPauseText;
     private boolean mIsMeetingPause;
     private InputMethodManager mImm;
 
+
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.meeting_camera:
-
-                if(meetingConfig.getMeetingStatus() == 0){
+                if (meetingConfig.getMeetingStatus() == 0) {
                     return;
                 }
 
-                if(meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE){
-                    Toast.makeText(host,"没有权限操作",Toast.LENGTH_SHORT).show();
+                if (meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE) {
+                    Toast.makeText(host, "没有权限操作", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 boolean isCameraOn = !getSettingCache(host).getMeetingSetting().isCameraOn();
@@ -82,12 +87,12 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
 
             case R.id.meeting_camera_switch:
 
-                if(meetingConfig.getMeetingStatus() == 0){
+                if (meetingConfig.getMeetingStatus() == 0) {
                     return;
                 }
 
-                if(meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE){
-                    Toast.makeText(host,"没有权限操作",Toast.LENGTH_SHORT).show();
+                if (meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE) {
+                    Toast.makeText(host, "没有权限操作", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (operationsListener != null) {
@@ -95,27 +100,27 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 }
                 break;
             case R.id.meeting_menu_end:
-                if(meetingConfig.getMeetingStatus() == 0){
+                if (meetingConfig.getMeetingStatus() == 0) {
                     return;
                 }
-                if(operationsListener != null){
+                if (operationsListener != null) {
                     operationsListener.menuEndClicked();
                 }
                 hide();
                 break;
             case R.id.meeting_menu_leave:
-                if(operationsListener != null){
+                if (operationsListener != null) {
                     operationsListener.menuLeaveClicked();
                 }
                 hide();
 
                 break;
             case R.id.meeting_mic_enabel: {
-                if(meetingConfig.getMeetingStatus() == 0){
+                if (meetingConfig.getMeetingStatus() == 0) {
                     return;
                 }
-                if(meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE){
-                    Toast.makeText(host,"没有权限操作",Toast.LENGTH_SHORT).show();
+                if (meetingConfig.getRole() == MeetingConfig.MeetingRole.AUDIENCE) {
+                    Toast.makeText(host, "没有权限操作", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 boolean isMicroOn = !getSettingCache(host).getMeetingSetting().isMicroOn();
@@ -130,7 +135,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
             break;
 
             case R.id.meeting_voice: {
-                if(meetingConfig.getMeetingStatus() == 0){
+                if (meetingConfig.getMeetingStatus() == 0) {
                     return;
                 }
                 int voiceStatus = getSettingCache(host).getMeetingSetting().getVoiceStatus();
@@ -151,7 +156,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
             break;
 
             case R.id.meeting_menu_invite:
-                if(meetingConfig.getMeetingStatus() == 0){
+                if (meetingConfig.getMeetingStatus() == 0) {
                     return;
                 }
                 if (operationsListener != null) {
@@ -159,13 +164,13 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 }
                 hide();
                 break;
-	        case R.id.meeting_menu_pause:
+            case R.id.meeting_menu_pause:
                 if (mImm.isActive()) mImm.hideSoftInputFromWindow(mMenuPause.getWindowToken(), 0);
                 meetingPauseOrResume();
                 hide();
                 break;
             case R.id.meeting_menu_more:
-                if(meetingConfig.getMeetingStatus() == 0){
+                if (meetingConfig.getMeetingStatus() == 0) {
                     return;
                 }
                 if (operationsListener != null) {
@@ -173,8 +178,21 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 }
                 showMorePop();
                 break;
+
+            case R.id.meeting_change_speaker_size:
+                if (operationsListener != null) {
+                    operationsListener.menuChangeVideoSizeClicked();
+                }
+                EventSelectSpeakerMode selectSpeakerMode = new EventSelectSpeakerMode();
+                selectSpeakerMode.setContainer(videoSizeOptions);
+                EventBus.getDefault().post(selectSpeakerMode);
+//                showWebcamOtions();
+
+                break;
         }
     }
+
+
 
 
     @Override
@@ -209,6 +227,8 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
 
         void menuMoreClicked();
 
+        void menuChangeVideoSizeClicked();
+
     }
 
     private MeetingMenuOperationsListener operationsListener;
@@ -228,7 +248,6 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         }
     }
 
-
     public void init() {
         mImm = (InputMethodManager) host.getSystemService(Context.INPUT_METHOD_SERVICE);
         LayoutInflater layoutInflater = LayoutInflater.from(host);
@@ -242,7 +261,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         voiceImage.setOnClickListener(this);
         menuInvite = view.findViewById(R.id.meeting_menu_invite);
         menuInvite.setOnClickListener(this);
-	    mMenuPause = view.findViewById(R.id.meeting_menu_pause);
+        mMenuPause = view.findViewById(R.id.meeting_menu_pause);
         mIvPauseIcon = view.findViewById(R.id.iv_meeting_pause_icon);
         mTvPauseText = view.findViewById(R.id.tv_meeting_pause_text);
         mMenuPause.setOnClickListener(this);
@@ -254,6 +273,9 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         menuEnd = view.findViewById(R.id.meeting_menu_end);
         menuEnd.setOnClickListener(this);
         menuLeave = view.findViewById(R.id.meeting_menu_leave);
+        videoSizeOptions = view.findViewById(R.id.meeting_change_speaker_size);
+        videoSizeOptions.setOnClickListener(this);
+        videoSizeOptions.setVisibility(View.GONE);
         menuLeave.setOnClickListener(this);
         cameraImage.setOnClickListener(this);
         window.getWidth();
@@ -370,7 +392,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
             }
         }
 
-        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID) || meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+        if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID) || meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
             menuMore.setVisibility(View.VISIBLE);
 	        mMenuPause.setVisibility(View.VISIBLE);
         }else{
@@ -435,6 +457,7 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
                 } else {
                     return new MeetingPauseOrResumBean();
                 }
+
                 if (meetingPauseMessage == null) {
                     meetingPauseMessage = new MeetingPauseOrResumBean();
                 }
@@ -451,7 +474,8 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
     }
 
     PopMeetingMore popMeetingMore;
-    private void showMorePop(){
+
+    private void showMorePop() {
         if (popMeetingMore != null) {
             if (popMeetingMore.isShowing()) {
                 popMeetingMore.dismiss();
@@ -460,11 +484,12 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         }
 
         popMeetingMore = new PopMeetingMore(host);
-        popMeetingMore.show(menuMore,this);
+        popMeetingMore.show(menuMore, this);
     }
 
-    public void refreshStatus(){
-        if(window != null && window.isShowing()){
+
+    public void refreshStatus() {
+        if (window != null && window.isShowing()) {
             initBySetting();
         }
 

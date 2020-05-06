@@ -131,8 +131,7 @@ public class StartUbao extends Activity {
             editor.putBoolean("isFirst", false);
             editor.commit();
             Intent intent = new Intent(getApplicationContext(),
-                    LoginActivity
-                            .class);
+                    StartKloudActivity.class);
             /*Intent intent = new Intent(getApplicationContext(),
                     LoginActivity.class);*/
             startActivity(intent);
@@ -148,7 +147,7 @@ public class StartUbao extends Activity {
             } else {
                 Log.e("StartUbao", "step five");
                 Intent intent = new Intent(getApplicationContext(),
-                        LoginActivity.class);
+                        StartKloudActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -288,7 +287,7 @@ public class StartUbao extends Activity {
                             @Override
                             public void accept(String s) throws Exception {
                                 Intent intent = new Intent(getApplicationContext(),
-                                        LoginActivity.class);
+                                        StartKloudActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
@@ -421,6 +420,7 @@ public class StartUbao extends Activity {
                         Gson gson = new Gson();
                         List<AppName> appCNNameList=new ArrayList<AppName>();
                         List<AppName> appENNameList=new ArrayList<AppName>();
+                        //JSONObject jsonObjectData=new JSONObject(jsonObject.getString("data"));
                         List<AppName> appNameList= gson.fromJson(jsonObject.getString("data"), new TypeToken<List<AppName>>(){}.getType());
                         App.appNames=appNameList;
                         for(AppName appName:appNameList){

@@ -330,15 +330,19 @@
                 return false;
             });
             $("#div_btn_video").click(function (e) {
+                // ResetTools($("#div_btn_video"));
+                //     if($(".video-choose").css('display')=='none'){
+                //         $(".video-choose").show();
+                //         $(".addText").hide();
+                //     }else{
+                //         $(".video-choose").hide();
+                //     }
+                CloseToolsEx();
+                whiteboard.SetDrawTool("ToolVideo");
+                CanScroll = false;
                 ResetTools($("#div_btn_video"));
-                    if($(".video-choose").css('display')=='none'){
-                        $(".video-choose").show();
-                        $(".addText").hide();
-                    }else{
-                        $(".video-choose").hide();
-                    }
-             
-                
+                iconChange("#addLocalVideo")
+                return false;                
             });
             $("#liveActionAddPage").click(function (e) {
                 _activeButton("#liveActionAddPage");
@@ -687,11 +691,11 @@
             {
                 if (ISANDROID)
                 {
-                    window.AnalyticsWebInterface.videoSelectFunction(null);
+                    window.AnalyticsWebInterface.videoSelectFunction(id);
                 }
                 else
                 {
-                    window.webkit.messageHandlers.VideoSelectFunction.postMessage(null);
+                    window.webkit.messageHandlers.VideoSelectFunction.postMessage(id);
                 }
             }
             catch (ex) { }

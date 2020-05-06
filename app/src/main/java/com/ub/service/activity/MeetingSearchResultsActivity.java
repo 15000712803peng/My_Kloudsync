@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.config.AppConfig;
-import com.kloudsync.techexcel.ui.MeetingViewActivity;
 import com.ub.techexcel.adapter.ServiceAdapter2;
 import com.ub.techexcel.bean.ServiceBean;
 import com.ub.techexcel.tools.MeetingMoreOperationPopup;
@@ -47,7 +46,7 @@ public class MeetingSearchResultsActivity extends Activity implements View.OnCli
 
     private List<ServiceBean> mList1 = new ArrayList<>();
 
-    private int type=0;   //
+    private int type=0;
 
     private ServiceAdapter2 serviceAdapter;
 
@@ -58,6 +57,7 @@ public class MeetingSearchResultsActivity extends Activity implements View.OnCli
             super.handleMessage(msg);
             switch (msg.what) {
                 case AppConfig.LOAD_FINISH:
+                    ListSort(mList1);
                     serviceAdapter = new ServiceAdapter2(MeetingSearchResultsActivity.this, mList1, true, type);
 
                     serviceAdapter.setFromSearch(true, keyword);
@@ -87,15 +87,15 @@ public class MeetingSearchResultsActivity extends Activity implements View.OnCli
 
                                 @Override
                                 public void startMeeting() {
-                                    Intent intent = new Intent(MeetingSearchResultsActivity.this, MeetingViewActivity.class);
-                                    intent.putExtra("userid", bean.getUserId());
-                                    intent.putExtra("meetingId", bean.getId() + "");
-                                    intent.putExtra("filemeetingId", bean.getId() + "");
-                                    intent.putExtra("teacherid", bean.getTeacherId());
-                                    intent.putExtra("identity", bean.getRoleinlesson());
-                                    intent.putExtra("isInstantMeeting", 0);
-                                    intent.putExtra("isStartCourse", true);
-                                    startActivity(intent);
+//                                    Intent intent = new Intent(MeetingSearchResultsActivity.this, WatchCourseActivity2.class);
+//                                    intent.putExtra("userid", bean.getUserId());
+//                                    intent.putExtra("meetingId", bean.getId() + "");
+//                                    intent.putExtra("filemeetingId", bean.getId() + "");
+//                                    intent.putExtra("teacherid", bean.getTeacherId());
+//                                    intent.putExtra("identity", bean.getRoleinlesson());
+//                                    intent.putExtra("isInstantMeeting", 0);
+//                                    intent.putExtra("isStartCourse", true);
+//                                    startActivity(intent);
                                 }
 
                                 @Override
@@ -291,6 +291,28 @@ public class MeetingSearchResultsActivity extends Activity implements View.OnCli
                 imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             }
         }
+    }
+
+    private static void ListSort(List<ServiceBean> list) {
+        Collections.sort(list, new Comparator<ServiceBean>() {
+            @Override
+            public int compare(ServiceBean o1, ServiceBean o2) {
+                try {
+                    String x1 = o1.getPlanedStartDate();
+                    String x2 = o2.getPlanedStartDate();
+                    if (Long.parseLong(x1) < Long.parseLong(x2)) {
+                        return -1;
+                    } else if (Long.parseLong(x1) > Long.parseLong(x2)) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        });
     }
 
 

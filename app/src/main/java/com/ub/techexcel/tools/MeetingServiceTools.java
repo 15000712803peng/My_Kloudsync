@@ -184,6 +184,12 @@ public class MeetingServiceTools {
                         handler.sendMessage(msg3);
                     }
                 } catch (Exception e) {
+                    AccountSettingBean accountSettingBean = new AccountSettingBean();
+                    accountSettingBean.setSystemType(0);
+                    Message msg = Message.obtain();
+                    msg.obj = accountSettingBean;
+                    msg.what = code;
+                    handler.sendMessage(msg);
                     e.printStackTrace();
                 }
             }

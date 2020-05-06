@@ -28,30 +28,21 @@
             android:layout_centerInParent="true"
             />
     </RelativeLayout>
+    <ImageView
+        android:id="@+id/iv_logo_icon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="75dp"
+        android:src="@drawable/register_icon" />
     <RelativeLayout
         android:id="@+id/rly_register"
         android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/dp_55"
-        android:layout_height="match_parent"
-        android:layout_below="@id/lly_title_bar">
-        <!-- <ImageView
-             android:id="@+id/iv_logo_icon"
-             android:layout_width="56dp"
-             android:layout_height="56dp"
-             android:layout_centerHorizontal="true"
-             android:layout_marginTop="75dp"
-             android:src="@drawable/app_icon" />
 
-         <TextView
-             android:id="@+id/tv_login_info"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:layout_below="@+id/iv_logo_icon"
-             android:layout_centerInParent="true"
-             android:layout_marginTop="10dp"
-             android:text="@string/KloudSync"
-             android:textColor="@color/txt_color1"
-             android:textSize="20sp" />-->
+        android:layout_height="match_parent"
+        android:layout_below="@id/iv_logo_icon">
+
 
         <com.kloudsync.techexcel.ui.MaskViewGroup
             android:id="@+id/mvg_edit_phone"
@@ -61,6 +52,7 @@
             app:containerShadowColor="#1f27347d"
             app:containerShadowRadius="@dimen/dp_6"
             app:deltaX="0dp"
+            android:visibility="gone"
             app:deltaY="@dimen/dp_3"
             app:enable="true">
 
@@ -119,7 +111,7 @@
             android:layout_marginLeft="@dimen/dp_19"
             android:drawablePadding="@dimen/dp_6"
             android:textSize="@dimen/sp_11"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:drawableLeft="@drawable/selector_register_tips_icon"
             android:textColor="@color/selector_register_tips_text"
             android:layout_below="@id/mvg_edit_phone"
@@ -134,6 +126,7 @@
             app:containerShadowColor="#1f27347d"
             app:containerShadowRadius="@dimen/dp_6"
             app:deltaX="0dp"
+            android:visibility="gone"
             app:deltaY="@dimen/dp_3"
             app:enable="true">
 
@@ -185,7 +178,7 @@
             android:layout_marginLeft="@dimen/dp_19"
             android:drawablePadding="@dimen/dp_6"
             android:textSize="@dimen/sp_11"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:drawableLeft="@drawable/selector_register_tips_icon"
             android:textColor="@color/selector_register_tips_text"
             android:layout_below="@id/mvg_edit_code"
@@ -211,7 +204,7 @@
                 android:layout_marginLeft="@dimen/dp_19"
                 android:layout_marginRight="@dimen/dp_19"
                 android:background="@drawable/selector_register_edit_frame"
-                android:hint="@string/Name_info"
+                android:hint="@string/input_Name_info"
                 android:maxLines="1"
                 android:paddingLeft="20dp"
                 android:textColor="@color/black"
@@ -300,13 +293,72 @@
             android:layout_below="@id/mvg_edit_pwd"
             android:layout_height="wrap_content"/>
 
+        <com.kloudsync.techexcel.ui.MaskViewGroup
+            android:id="@+id/mvg_edit_confired_pwd"
+            style="@style/RegisterMvgLayoutStyle"
+            android:layout_below="@+id/mvg_edit_pwd"
+            android:layout_marginTop="20dp"
+            app:containerCornerRadius="@dimen/dp_16"
+            app:containerDeltaLength="@dimen/dp_12"
+            app:containerShadowColor="#1f27347d"
+            app:containerShadowRadius="@dimen/dp_6"
+            app:deltaX="0dp"
+            app:deltaY="@dimen/dp_3"
+            app:enable="true">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_below="@+id/et_name"
+                android:layout_marginLeft="@dimen/dp_19"
+                android:layout_marginRight="@dimen/dp_19"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:id="@+id/rly_register_con_pwd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_register_edit_frame">
+
+
+                    <EditText
+                        android:id="@+id/et_con_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_48"
+                        android:layout_toLeftOf="@+id/iv_show_con_pwd"
+                        android:background="@null"
+                        android:hint="@string/Password_con_hint"
+                        android:inputType="textPassword"
+                        android:maxLength="20"
+                        android:maxLines="1"
+                        android:paddingLeft="20dp"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/newgrey"
+                        android:textSize="@dimen/sp_16" />
+
+
+                    <ImageView
+                        android:id="@+id/iv_show_con_pwd"
+                        android:layout_width="@dimen/dp_20"
+                        android:layout_height="@dimen/dp_20"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/dp_16"
+                        android:layout_marginRight="@dimen/dp_16"
+                        android:src="@drawable/selector_register_show_pwd_img2" />
+                </RelativeLayout>
+
+
+            </RelativeLayout>
+        </com.kloudsync.techexcel.ui.MaskViewGroup>
+
+
         <TextView
             android:id="@+id/tv_sign_up"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_below="@id/mvg_edit_pwd"
+            android:layout_below="@id/mvg_edit_confired_pwd"
             android:layout_marginLeft="@dimen/dp_24"
-            android:layout_marginTop="@dimen/dp_90"
+            android:layout_marginTop="@dimen/dp_70"
             android:layout_marginRight="@dimen/dp_24"
             android:background="@drawable/bg_login_btn"
             android:gravity="center"

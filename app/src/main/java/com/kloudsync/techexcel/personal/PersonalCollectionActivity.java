@@ -360,13 +360,16 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
             }
 
             @Override
-            public void uploadFinished(Object result) {
+            public void uploadFinished(final Object result) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (uploadFileDialog != null && uploadFileDialog.isShowing()) {
                             uploadFileDialog.cancel();
-                            getFavoriteDocuments(true);
+                            if(result!=null){
+                                Document document= (Document) result;
+                                getFavoriteDocuments(document.getItemID());
+                            }
                         }
                     }
                 });
@@ -407,11 +410,11 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
 
 
     private void getData() {
-        getFavoriteDocuments(false);
+        getFavoriteDocuments("");
 
     }
 
-    private void getFavoriteDocuments(final boolean isShow) {
+    private void getFavoriteDocuments(final String itemId) {
         ServiceInterfaceTools.getinstance().getFavoriteDocuments().enqueue(new Callback<NetworkResponse<FavoriteDocumentResponse>>() {
             @Override
             public void onResponse(Call<NetworkResponse<FavoriteDocumentResponse>> call, Response<NetworkResponse<FavoriteDocumentResponse>> response) {
@@ -422,8 +425,14 @@ public class PersonalCollectionActivity extends Activity implements View.OnClick
                             favoriteList = new ArrayList<>();
                         }
                         fAdapter.UpdateRV(favoriteList);
-                        if(favoriteList.size()>0&&isShow){
-                            onItemClick(favoriteList.get(favoriteList.size()-1));
+                        if(favoriteList.size()>0&&!TextUtils.isEmpty(itemId)){
+                            Log.e("getFavoriteDocuments",itemId);
+                            for (Document document : favoriteList) {
+                                if(document.getItemID().equals(itemId)){
+                                    onItemClick(favoriteList.get(favoriteList.size()-1));
+                                    break;
+                                }
+                            }
                         }
 
                     } else {

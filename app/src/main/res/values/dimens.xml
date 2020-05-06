@@ -111,10 +111,13 @@
     <dimen name="sp_40">40sp</dimen>
     
     <dimen name="speaker_normal">70dp</dimen>
-    <dimen name="speaker_normal_width">85dp</dimen>
-    <dimen name="speaker_big">110dp</dimen>
-    <dimen name="speaker_big_width">125dp</dimen>
+    <dimen name="_speaker_normal_width">112dp</dimen>
+    <dimen name="speaker_normal_width">95dp</dimen>
+    <dimen name="speaker_big">130dp</dimen>
+    <dimen name="speaker_big_width">145dp</dimen>
+    <dimen name="_speaker_big_width">163dp</dimen>
     <dimen name="speaker_large">150dp</dimen>
-    <dimen name="speaker_large_wdth">160dp</dimen>
+    <dimen name="speaker_large_wdth">180dp</dimen>
+    <dimen name="_speaker_large_wdth">200dp</dimen>
 
 </resources>

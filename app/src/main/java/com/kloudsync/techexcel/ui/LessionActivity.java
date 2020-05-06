@@ -611,6 +611,11 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
 
     private ConnectionChangedListener connectionChangedListener = new ConnectionChangedListener();
 
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
 
     private class ConnectionChangedListener implements ConnectionClassManager.ConnectionClassStateChangeListener {
         @Override
@@ -4843,7 +4848,7 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
     //------Camera vedio options
 
     @Override
-    public void onCameraFrameClick(AgoraMember member) {
+    public void onCameraFrameClick(View itemView,AgoraMember member,int position) {
         if (!isPresenter()) {
             return;
         }

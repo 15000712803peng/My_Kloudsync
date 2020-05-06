@@ -58,6 +58,7 @@ public class SocketMessageManager {
     public static final String MEETING_CHANGE = "MEETING_CHANGE";
     public static final String MEETING_MEMBER_SPEAKING = "MEMBER_SPEAKING";
     public static final String MEETING_USER_JOIN_MEETING_ON_OTHER_DEVICE = "USER_JOIN_MEETING_ON_OTHER_DEVICE";
+    public static final String MEETING_DISPLAY_SPEAKING_CAMERA = "DISPLAY_SPEAKING_CAMERA";
     public static final int MESSAGE_VIDEO_PAUSE = 0;
     public static final int MESSAGE_VIDEO_PLAY = 1;
     public static final int MESSAGE_VIDEO_CLOSE = 2;
@@ -530,6 +531,17 @@ public class SocketMessageManager {
         }
     }
 
+    public void sendMessage_SelectSpeaker(String userId) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("actionType", 31);
+            message.put("userId", userId);
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", ""), ""));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendMessage_myNoteData(String pageIdentiﬁer, int noteId, SendWebScoketNoteBean sendWebNoteData) {
         String dataStr = Tools.getBase64(new Gson().toJson(sendWebNoteData));
         Log.e("SocketMessageManage", "sendMessage_myNoteData_dataStr = " + dataStr);
@@ -654,6 +666,17 @@ public class SocketMessageManager {
         EventSendJoinMeetingMessage joinMeetingMessage = new EventSendJoinMeetingMessage();
         joinMeetingMessage.setNewMeetingId(newMeetingId);
         EventBus.getDefault().post(joinMeetingMessage);
+    }
+
+    public void sendMessage_MySpeakerViewSizeChange(int size) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("actionType", 32);
+            message.put("size", size);
+            doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 

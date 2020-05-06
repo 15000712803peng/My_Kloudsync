@@ -674,12 +674,14 @@
 
 
     <RelativeLayout
+        android:paddingLeft="@dimen/dp_12"
         android:id="@+id/layout_real_meeting"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
 
         <RelativeLayout
+            android:visibility="gone"
             android:id="@+id/layout_speaker_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -687,41 +689,54 @@
             <include layout="@layout/speaker_camera_large_item" />
         </RelativeLayout>
 
+
         <RelativeLayout
+            android:visibility="gone"
             android:id="@+id/layout_camera"
-            android:layout_width="wrap_content"
-            android:layout_height="70dp"
-            android:layout_marginLeft="10dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <android.support.v7.widget.RecyclerView
-
                 android:id="@+id/member_camera_list"
                 android:layout_width="wrap_content"
-                android:layout_height="70dp"
-                android:layout_marginLeft="11dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
                 android:visibility="visible" />
 
             <LinearLayout
+                android:descendantFocusability="blocksDescendants"
                 android:id="@+id/layout_toggle_camera"
                 android:layout_width="wrap_content"
-                android:layout_height="70dp"
+                android:layout_height="@dimen/speaker_normal"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:textColor="@color/white"
                 android:visibility="visible">
 
-                <ImageView
-                    android:id="@+id/image_toggle_camera"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/spkear_arrow_left" />
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/image_toggle_camera"
+                        android:src="@drawable/user_info_collopse"
+                        android:layout_centerVertical="true"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp" />
+
+                    <ImageView
+                        android:visibility="gone"
+                        android:id="@+id/image_select_speaker"
+                        android:src="@drawable/icon_arrow_select_speaker"
+                        android:layout_centerVertical="true"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp" />
+                </RelativeLayout>
+
             </LinearLayout>
+
+
         </RelativeLayout>
+
 
         <RelativeLayout
             android:id="@+id/layout_full_camera"
@@ -972,36 +987,33 @@
         android:visibility="gone" />
 
 
-
     <LinearLayout
-        android:gravity="center_vertical"
-        android:layout_marginBottom="12dp"
-        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_marginBottom="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <ImageView
-            android:visibility="gone"
             android:id="@+id/image_meeting_hands_up"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginRight="2dp"
-            android:src="@drawable/no_hands_up" />
+            android:src="@drawable/no_hands_up"
+            android:visibility="gone" />
 
         <ImageView
-            android:padding="3dp"
             android:id="@+id/meeting_menu_member"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginRight="56dp"
+            android:padding="3dp"
             android:src="@drawable/icon_menu_audience"
             android:visibility="gone" />
 
     </LinearLayout>
-
-
 
 
     <com.kloudsync.techexcel.view.TipTextView

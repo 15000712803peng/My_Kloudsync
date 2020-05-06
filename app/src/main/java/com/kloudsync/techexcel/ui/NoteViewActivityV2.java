@@ -3982,7 +3982,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 	//------Camera vedio options
 
 	@Override
-	public void onCameraFrameClick(AgoraMember member) {
+	public void onCameraFrameClick(View itemView,AgoraMember member,int position) {
 		handleFullScreenCamera(cameraAdapter);
 //        showAgoraFull(member);
 	}

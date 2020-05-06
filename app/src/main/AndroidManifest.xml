@@ -94,8 +94,18 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".start.LoginActivity"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:screenOrientation="sensor"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".start.StartKloudActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".start.JoinMeetingActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".start.ForgetPasswordActivity"
@@ -448,6 +458,10 @@
         <activity
             android:launchMode="singleTop"
             android:name=".personal.AboutActivity2"
+            android:screenOrientation="portrait" />
+        <activity
+            android:launchMode="singleTop"
+            android:name=".personal.DrawerLayoutActivity"
             android:screenOrientation="portrait" />
         <activity
             android:launchMode="singleTop"
@@ -962,6 +976,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".start.RegisterActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".start.RegisterActivityStepOne"
             android:screenOrientation="portrait" />
         <activity
             android:name=".pc.ui.EditUserInfoActivity"
