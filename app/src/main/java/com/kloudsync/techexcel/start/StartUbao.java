@@ -147,7 +147,7 @@ public class StartUbao extends Activity {
             } else {
                 Log.e("StartUbao", "step five");
                 Intent intent = new Intent(getApplicationContext(),
-                        StartKloudActivity.class);
+                        LoginActivity.class);
                 startActivity(intent);
                 finish();
             }
