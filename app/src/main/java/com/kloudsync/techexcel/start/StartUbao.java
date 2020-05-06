@@ -287,7 +287,7 @@ public class StartUbao extends Activity {
                             @Override
                             public void accept(String s) throws Exception {
                                 Intent intent = new Intent(getApplicationContext(),
-                                        StartKloudActivity.class);
+                                        LoginActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
