@@ -823,6 +823,7 @@ Please input the cell phone number to add the contact
 
 
     <string name="KloudSync">Kloud</string>
+    <string name="loginprompt">Login With Phone Number or User Name</string>
 
     <string name="Mobile_phone">Mobile phone /User name</string>
     <string name="Mobile_phone2">Mobile phone</string>

@@ -338,7 +338,9 @@ public class LoginActivity extends Activity implements OnClickListener {
             return;
         }
         if (StringUtils.isPhoneNumber(telephone)) {
-            telephone = "+86" + telephone;
+//            telephone = "+86" + telephone;
+            String code=  tv_cphone.getText().toString();
+            telephone = code + telephone;
         }
         processLogin(telephone, password, et_telephone.getText().toString().trim());
 
@@ -576,6 +578,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case com.kloudsync.techexcel.start.RegisterActivity.CHANGE_COUNTRY_CODE:
+                    Log.e("COUNTRY_CODE", AppConfig.COUNTRY_CODE+"");
                     tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
                     editor.putInt("countrycode", AppConfig.COUNTRY_CODE).commit();
                     break;

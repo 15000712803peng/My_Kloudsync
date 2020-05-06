@@ -28,6 +28,7 @@
         android:id="@+id/iv_logo_icon"
         android:layout_width="56dp"
         android:layout_height="56dp"
+        android:visibility="gone"
         android:layout_below="@+id/layout_title"
         android:layout_centerInParent="true"
         android:layout_marginTop="22dp"
@@ -38,15 +39,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/iv_logo_icon"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="10dp"
-        android:inputType="phone"
-        android:text="@string/KloudSync"
+        android:layout_marginLeft="19dp"
+        android:layout_marginRight="80dp"
+        android:layout_marginTop="80dp"
+        android:textStyle="bold"
+        android:text="@string/loginprompt"
         android:textColor="@color/txt_color1"
         android:textSize="20sp" />
 
     <com.kloudsync.techexcel.ui.MaskViewGroup
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="50dp"
         android:id="@+id/layout_edit_phone"
         app:containerCornerRadius="16dp"
         app:containerDeltaLength="12dp"
@@ -68,7 +70,7 @@
             android:background="@drawable/bg_edit_line">
 
             <TextView
-                android:visibility="gone"
+                android:visibility="visible"
                 android:id="@+id/tv_cphone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -108,6 +110,7 @@
     </com.kloudsync.techexcel.ui.MaskViewGroup>
     <TextView
         android:id="@+id/tv_loginname_tip"
+        android:visibility="invisible"
         android:layout_marginLeft="27dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -177,7 +180,7 @@
         android:layout_below="@+id/rl_password"
         android:layout_centerHorizontal="true"
         android:text="@string/Forget_Password"
-        android:textColor="#B4B6C2"
+        android:textColor="#3D78FB"
         android:textSize="14sp" />
 
 

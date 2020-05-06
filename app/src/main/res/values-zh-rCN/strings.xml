@@ -811,6 +811,7 @@
     <string name="addteamadmin">增加团队管理员</string>
     <string name="addspaceadmin">增加空间管理员</string>
     <string name="addnewmember">邀请新成员</string>
+    <string name="loginprompt">使用手机号或者用户名登录</string>
 
     <string name="Mobile_phone">手机号/用户名</string>、
     <string name="Mobile_phone2">手机号</string>
