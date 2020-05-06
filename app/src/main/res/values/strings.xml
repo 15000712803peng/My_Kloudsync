@@ -1026,6 +1026,7 @@ Please input the cell phone number to add the contact
 
     <string name="my_contact">My contact</string>
     <string name="join_start_company">Join Company</string>
+    <string name="new_start_company">New Company</string>
 
     <string-array name="time_duration">
         <item>15min</item>
