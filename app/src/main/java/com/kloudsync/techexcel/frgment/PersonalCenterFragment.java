@@ -637,7 +637,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                     AppConfig.HASUPDATAINFO = false;
                     RongIM.getInstance().logout();
                     RongIM.getInstance().disconnect();
-                    intent = new Intent(getActivity(), StartKloudActivity.class);
+                    intent = new Intent(getActivity(), LoginActivity.class);
                     startActivity(intent);
                     MainActivity.instance.finish();
                     getActivity().overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);
