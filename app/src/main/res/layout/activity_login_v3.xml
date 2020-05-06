@@ -48,7 +48,7 @@
         android:textSize="20sp" />
 
     <com.kloudsync.techexcel.ui.MaskViewGroup
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="80dp"
         android:id="@+id/layout_edit_phone"
         app:containerCornerRadius="16dp"
         app:containerDeltaLength="12dp"
@@ -81,7 +81,7 @@
                 android:layout_marginLeft="17dp" />
 
             <View
-                android:visibility="gone"
+                android:visibility="visible"
                 android:id="@+id/v_line"
                 android:layout_width="1.5px"
                 android:layout_height="17dp"
