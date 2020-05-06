@@ -423,6 +423,7 @@
     <string name="shYcan">As host,you can</string>
     <string name="shAcan">As attendee,you can</string>
     <string name="miProgress">meeting in progress,</string>
+	<string name="course_in_progress">Course in progress,</string>
     <!--右上侧按钮-->
     <string name="mtMore">More</string>
     <string name="saTv">Scan a TV</string>
@@ -887,6 +888,8 @@ Please input the cell phone number to add the contact
     <string name="title_to_leave">Are you sure to leave?</string>
     <string name="title_to_leave_meeting">Are you sure to leave meeting?</string>
     <string name="title_to_end_meeting">Are you sure to end meeting?</string>
+	<string name="title_to_leave_course">Are you sure to leave course?</string>
+	<string name="title_to_end_course">Are you sure to end course?</string>
     <string name="presenter">presenter</string>
     <string name="End">End</string>
     <string name="Me">Me</string>
@@ -979,6 +982,8 @@ Please input the cell phone number to add the contact
     <string name="please_enter_a_pen_name">Please enter a pen name</string>
     <string name="setup_failed">Setup failed</string>
     <string name="no_notes_currently">No notes currently</string>
+	<string name="course_id">Course ID</string>
+	<string name="start_course">Start Course</string>
 
 
     <string name="prompt_is_my_personal_contact">该用户已存在我的"个人联系人中"\n点击对话与对方聊天</string>
@@ -1004,6 +1009,7 @@ Please input the cell phone number to add the contact
     <string name="hint_input_invite_code">Please type in company invite code</string>
     <string name="scan_tv">Scanning TV devices</string>
     <string name="_meeting_id">Meeting id:</string>
+	<string name="_course_id">Course ID:</string>
     <string name="kick_off_from_meeting">kick off from meeting</string>
     <string name="tips">tips</string>
     <string name="share_kloudsync">Share Kloud</string>

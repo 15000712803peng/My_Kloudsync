@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -7073,7 +7074,18 @@ public class SyncBookActivity extends BaseActivity implements View.OnClickListen
         finish();
     }
 
-
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		/*创建音想弹窗*/
+		if (yinxiangCreatePopup != null && currentAttachmentId != null && yinxiangCreatePopup.isShowing()) {
+			yinxiangCreatePopup.StartPop(wv_show, currentAttachmentId);
+		}
+		/*选择音想背景音乐弹窗*/
+		if (favoritePopup != null && favoritePopup.isShowing()) {
+			favoritePopup.StartPop(findViewById(R.id.layout));
+		}
+	}
 }
 
 

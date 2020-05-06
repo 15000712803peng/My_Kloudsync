@@ -80,6 +80,7 @@
                 android:orientation="horizontal"
                 android:layout_height="wrap_content">
             <TextView
+	            android:id="@+id/tv_doc_and_meeting_progress"
                 android:layout_marginLeft="15dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -291,6 +292,7 @@
                 android:orientation="horizontal"
                 android:layout_height="wrap_content">
                 <TextView
+	                android:id="@+id/tv_doc_and_meeting_progress2"
                     android:layout_marginLeft="15dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

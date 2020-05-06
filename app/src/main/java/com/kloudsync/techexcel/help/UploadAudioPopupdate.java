@@ -4,24 +4,31 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.SoundTrack;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.view.RoundProgressBar;
 import com.ub.techexcel.bean.SoundtrackBean;
 import com.ub.techexcel.tools.ServiceInterfaceListener;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 import com.ub.techexcel.tools.Tools;
+
+import org.json.JSONObject;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class UploadAudioPopupdate implements View.OnClickListener{
 
@@ -136,7 +143,27 @@ public class UploadAudioPopupdate implements View.OnClickListener{
                 });
                 break;
             case R.id.cancel:
-                dismiss();
+	            Observable.just(soundtrackBean).observeOn(Schedulers.io()).map(new Function<SoundtrackBean, Integer>() {
+		            @Override
+		            public Integer apply(SoundtrackBean soundtrackBean) throws Exception {
+			            SoundTrack soundTrack = new SoundTrack();
+			            soundTrack.setSoundtrackID(soundtrackBean.getSoundtrackID());
+			            JSONObject response = ServiceInterfaceTools.getinstance().syncDeleteSoundtrack(soundTrack);
+			            int recode = -1;
+			            if (response.has("RetCode")) {
+				            recode = response.getInt("RetCode");
+			            }
+			            return recode;
+		            }
+	            }).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<Integer>() {
+		            @Override
+		            public void accept(Integer integer) throws Exception {
+			            if (integer == 0) {
+//                            Toast.makeText(mContext,R.string.operate_success,Toast.LENGTH_SHORT).show();
+				            dismiss();
+			            }
+		            }
+	            }).subscribe();
                 break;
             default:
                 break;

@@ -901,7 +901,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
     }
 
     private void joinMeetingBeforeCheckPession() {
-        if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
+	    if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity()) &&
+			    KloudPerssionManger.isPermissionRecordAudioGranted(getActivity())) {
             showJoinMeetingDialog();
         } else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{
@@ -911,7 +912,8 @@ public class ServiceFragment extends MyFragment implements View.OnClickListener{
 
     private void startMeetingBeforeCheckPession() {
 
-        if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())) {
+	    if (KloudPerssionManger.isPermissionCameraGranted(getActivity()) && KloudPerssionManger.isPermissionExternalStorageGranted(getActivity())
+			    && KloudPerssionManger.isPermissionRecordAudioGranted(getActivity())) {
 //            showStartMeetingDialog();
             if (!Tools.isFastClick()) {
                 if (TextUtils.isEmpty(AppConfig.ClassRoomID)) {

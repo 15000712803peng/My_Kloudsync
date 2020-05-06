@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
@@ -39,6 +40,7 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
     //----
     private MeetingConfig meetingConfig;
     private boolean isShowMeetingRecordPlay;
+	private TextView mTvStartMeetingOrCourse;
 
 
     public void setShowMeetingRecordPlay(boolean showMeetingRecordPlay) {
@@ -57,11 +59,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_file:
-                if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
+               /* if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
                     if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
                         return;
                     }
-                }
+                }*/
                 hide();
                 if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuFileClicked();
@@ -80,11 +82,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_notes:
-                if (meetingConfig.getType() == MeetingType.MEETING) {
+               /* if (meetingConfig.getType() == MeetingType.MEETING) {
                     if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
                         return;
                     }
-                }
+                }*/
                 hide();
                 if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuNoteClicked();
@@ -210,6 +212,12 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
         menuShare.setOnClickListener(this);
         menuPlayMeetingRecord = popupWindow.findViewById(R.id.bottom_menu_play_meeting_record);
         menuPlayMeetingRecord.setOnClickListener(this);
+	    mTvStartMeetingOrCourse = popupWindow.findViewById(R.id.tv_start_meeting_or_course);
+	    if (AppConfig.systemType == 0) {
+		    mTvStartMeetingOrCourse.setText(R.string.sMeeting);
+	    } else {
+		    mTvStartMeetingOrCourse.setText(R.string.start_course);
+	    }
         width = (int) (mContext.getResources().getDisplayMetrics().widthPixels);
         bottomMenuWindow = new PopupWindow(popupWindow, LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, false);

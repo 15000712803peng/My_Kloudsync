@@ -4,16 +4,15 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingType;
+import com.kloudsync.techexcel.config.AppConfig;
 
 public class ExitDialog extends Dialog implements DialogInterface.OnDismissListener,View.OnClickListener{
 
@@ -100,6 +99,7 @@ public class ExitDialog extends Dialog implements DialogInterface.OnDismissListe
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.dialog_exit_doc, null);
         setContentView(view);
+	    getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         saveAndLeaveText = view.findViewById(R.id.save_and_leave);
         leaveText = view.findViewById(R.id.leave);
         cancelText = view.findViewById(R.id.cancel);
@@ -109,11 +109,11 @@ public class ExitDialog extends Dialog implements DialogInterface.OnDismissListe
         leaveText.setOnClickListener(this);
         cancelText.setOnClickListener(this);
         initByConfig();
-        Window dialogWindow = getWindow();
+        /*Window dialogWindow = getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         DisplayMetrics d = context.getResources().getDisplayMetrics();
         lp.width = (int) (d.widthPixels * 0.8);
-        dialogWindow.setAttributes(lp);
+        dialogWindow.setAttributes(lp);*/
 
     }
 
@@ -131,11 +131,19 @@ public class ExitDialog extends Dialog implements DialogInterface.OnDismissListe
             }
         }else {
             if(isEndMeeting){
-                titleText.setText(context.getString(R.string.title_to_end_meeting));
+	            if (AppConfig.systemType == 0) {
+		            titleText.setText(R.string.title_to_end_meeting);
+	            } else {
+		            titleText.setText(R.string.title_to_end_course);
+	            }
                 saveAndLeaveText.setText(R.string.save_and_End);
                 leaveText.setText(R.string.End);
             }else {
-                titleText.setText(context.getString(R.string.title_to_leave_meeting));
+	            if (AppConfig.systemType == 0) {
+		            titleText.setText(R.string.title_to_leave_meeting);
+	            } else {
+		            titleText.setText(R.string.title_to_leave_course);
+	            }
                 saveAndLeaveText.setText(R.string.save_and_leave);
                 leaveText.setText(R.string.mtLeave);
             }
