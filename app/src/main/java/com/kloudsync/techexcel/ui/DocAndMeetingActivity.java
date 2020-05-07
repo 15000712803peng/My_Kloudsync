@@ -3598,11 +3598,41 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @JavascriptInterface
     public void videoSelectFunction(String video) {
         Log.e("JavascriptInterface", "videoSelectFunction,id:  " + video);
-        if (selectVideoDialog != null) {
-            selectVideoDialog.dismiss();
-            selectVideoDialog = null;
+        if (selectVideoDialog == null) {
+            selectVideoDialog = new FavoriteVideoPopup(this);
+            selectVideoDialog.setFavoritePoPListener(new FavoriteVideoPopup.FavoriteVideoPoPListener() {
+                @Override
+                public void selectFavorite(int position) {
+
+                }
+
+                @Override
+                public void cancel() {
+
+                }
+
+                @Override
+                public void save(int type, boolean isYinxiang) {
+
+                }
+
+                @Override
+                public void uploadFile(int type) {
+
+                }
+
+                @Override
+                public void dismiss() {
+
+                }
+
+                @Override
+                public void open() {
+
+                }
+            });
         }
-        selectVideoDialog = new FavoriteVideoPopup(this);
+        selectVideoDialog.show();
     }
 
     // 录制
