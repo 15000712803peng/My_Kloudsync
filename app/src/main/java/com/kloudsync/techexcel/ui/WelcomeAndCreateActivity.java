@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -186,9 +185,9 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
                     joinMeetingBeforeCheckPession(meetingId);
                 }
                 break;
-            case R.id.txt_back:
+            /*case R.id.txt_back:
                 finish();
-                break;
+                break;*/
             case R.id.ll_welcome_join:
                 showJoinCompanyDialog();
                 break;
