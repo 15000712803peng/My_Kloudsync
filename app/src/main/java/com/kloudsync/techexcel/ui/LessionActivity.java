@@ -160,6 +160,7 @@ import com.ub.service.activity.AddMeetingMemberActivity;
 import com.ub.service.activity.FloatingWindowNoteManager;
 import com.ub.service.activity.SocketService;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
+import com.ub.techexcel.adapter.AgoraCameraAdapterV2;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
 import com.ub.techexcel.adapter.MeetingMembersAdapter;
@@ -227,7 +228,7 @@ import retrofit2.Response;
  */
 
 public class LessionActivity extends BaseLessionActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
-        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener, PrepareLessionDialog.OnPreparedOptionsListener, StudentLessionDialog.OnStudentPreparedOptionsListener {
+        BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapterV2.OnCameraOptionsListener, PrepareLessionDialog.OnPreparedOptionsListener, StudentLessionDialog.OnStudentPreparedOptionsListener {
 
     public static final String SUNDTRACKBEAN = "sundtrackbean";
     public static MeetingConfig meetingConfig;
@@ -334,7 +335,7 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
 
     @Bind(R.id.layout_waiting_meeting)
     RelativeLayout waitingMeetingLayout;
-    AgoraCameraAdapter cameraAdapter;
+    AgoraCameraAdapterV2 cameraAdapter;
     FullAgoraCameraAdapter fullCameraAdapter;
     Gson gson;
     private SharedPreferences sharedPreferences;
@@ -1972,7 +1973,7 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
                 }
             }
 
-            cameraAdapter = new AgoraCameraAdapter(this);
+            cameraAdapter = new AgoraCameraAdapterV2(this);
             cameraAdapter.setMembers(copyMembers);
             cameraAdapter.setOnCameraOptionsListener(this);
 //            fitCameraList();
@@ -2015,7 +2016,7 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
                 cameraAdapter = null;
             }
 
-            cameraAdapter = new AgoraCameraAdapter(this);
+            cameraAdapter = new AgoraCameraAdapterV2(this);
             cameraAdapter.setMembers(copyMembers);
             cameraAdapter.setOnCameraOptionsListener(this);
 //            fitCameraList();
@@ -3434,7 +3435,7 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
         preparedShareLayout.setOnClickListener(this);
         meetingMenuMemberImage.setOnClickListener(this);
         CameraTouchListener cameraTouchListener = new CameraTouchListener();
-        cameraTouchListener.setCameraLayout(cameraLayout);
+        cameraTouchListener.setCameraLayout(cameraLayout,this);
         toggleCameraLayout.setOnTouchListener(cameraTouchListener);
     }
 
@@ -4836,7 +4837,7 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
 //        showAgoraFull(member);
     }
 
-    private void handleFullScreenCamera(AgoraCameraAdapter cameraAdapter) {
+    private void handleFullScreenCamera(AgoraCameraAdapterV2 cameraAdapter) {
         if (cameraAdapter == null || cameraAdapter.getUsers().size() == 0) {
             return;
         }

@@ -66,7 +66,7 @@ public class MeetingConfig {
     private boolean isThirdAudio=false;
     private AgoraMember hostAgora;
     private int handStatus;
-    private int cameraDiplayMode;
+    private int cameraDiplayMode = -1;
 
     public int getCameraDiplayMode() {
         return cameraDiplayMode;

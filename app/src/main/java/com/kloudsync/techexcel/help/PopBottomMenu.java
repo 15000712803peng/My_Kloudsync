@@ -58,9 +58,9 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 break;
             case R.id.bottom_menu_file:
                 if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
-                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                        return;
-                    }
+//                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+//                        return;
+//                    }
                 }
                 hide();
                 if (bottomMenuOperationsListener != null) {

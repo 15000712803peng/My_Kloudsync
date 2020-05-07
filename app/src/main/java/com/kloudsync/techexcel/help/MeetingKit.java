@@ -24,6 +24,7 @@ import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.SocketMessageManager;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
+import com.ub.techexcel.adapter.AgoraCameraAdapterV2;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
 import com.ub.techexcel.bean.AgoraMember;
 import com.ub.techexcel.tools.InviteUserPopup;
@@ -70,11 +71,11 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
     private ImageView menu;
     private PopMeetingMenu popMeetingMenu;
     private boolean isStarted;
-    private AgoraCameraAdapter cameraAdapter;
+    private AgoraCameraAdapterV2 cameraAdapter;
     private FullAgoraCameraAdapter fullCameraAdapter;
     private int role;
 
-    public void setCameraAdapter(AgoraCameraAdapter cameraAdapter) {
+    public void setCameraAdapter(AgoraCameraAdapterV2 cameraAdapter) {
         this.cameraAdapter = cameraAdapter;
     }
 
