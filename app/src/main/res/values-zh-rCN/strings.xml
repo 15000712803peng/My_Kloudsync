@@ -926,9 +926,9 @@
     <string name="close_speech">关闭发言</string>
     <string name="put_your_hand_down">把手放下</string>
     <string name="become_a_presenter">成为主讲人</string>
-    <string name="set_as_host">设置为主持人</string>
-    <string name="set_as_participant">设置为参会者</string>
-    <string name="set_as_talkable_participant">设置为可讲话参会者</string>
+    <string name="set_as_host">设为演示人</string>
+    <string name="set_as_participant">设为参会者</string>
+    <string name="set_as_talkable_participant">设为临时发言人</string>
     <string name="password_reset">密码已重置</string>
     <string name="base_enter">确定</string>
     <string name="base_cancel">取消</string>
@@ -1028,7 +1028,7 @@
     <string name="scan_tv">扫描电视设备</string>
     <string name="_meeting_id">会议ID:</string>
 	<string name="_course_id">课程ID:</string>
-    <string name="kick_off_from_meeting">请他离开会议</string>
+    <string name="kick_off_from_meeting">请他离开会议室</string>
     <string name="tips">提示</string>
     <string name="join_start_company">加入机构</string>
     <string name="new_start_company">创建机构</string>
