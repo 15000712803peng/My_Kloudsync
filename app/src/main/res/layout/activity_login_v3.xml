@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/iv_logo_icon"
-        android:layout_marginLeft="19dp"
+        android:layout_marginLeft="31dp"
         android:layout_marginRight="80dp"
         android:layout_marginTop="80dp"
         android:textStyle="bold"
@@ -47,129 +47,164 @@
         android:textColor="@color/txt_color1"
         android:textSize="20sp" />
 
-    <com.kloudsync.techexcel.ui.MaskViewGroup
-        android:layout_marginTop="80dp"
-        android:id="@+id/layout_edit_phone"
-        app:containerCornerRadius="16dp"
-        app:containerDeltaLength="12dp"
-        app:containerShadowColor="#1f27347d"
-        app:containerShadowRadius="6dp"
-        app:deltaX="0dp"
-        app:deltaY="3dp"
-        app:enable="true"
-        android:layout_below="@+id/tv_login_info"
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:id="@+id/lly_forgetpassword_code"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="19dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginRight="19dp"
-            android:background="@drawable/bg_edit_line">
-
-            <TextView
-                android:visibility="visible"
-                android:id="@+id/tv_cphone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/area_code"
-                android:textSize="14sp"
-                android:textColor="@color/newgrey"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="17dp" />
-
-            <View
-                android:visibility="visible"
-                android:id="@+id/v_line"
-                android:layout_width="1.5px"
-                android:layout_height="17dp"
-                android:background="#ffd3d3d3"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="17dp"
-                android:layout_toRightOf="@+id/tv_cphone"
-                android:layout_marginStart="17dp" />
-
-            <EditText
-                android:layout_marginRight="36dp"
-                android:layout_toRightOf="@id/v_line"
-                android:layout_centerVertical="true"
-                android:id="@+id/et_telephone"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@android:color/transparent"
-                android:hint="@string/Mobile_phone"
-                android:maxLines="1"
-                android:paddingLeft="19dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/newgrey"
-                android:textSize="14sp" />
-        </RelativeLayout>
-
-    </com.kloudsync.techexcel.ui.MaskViewGroup>
-    <TextView
-        android:id="@+id/tv_loginname_tip"
-        android:visibility="invisible"
-        android:layout_marginLeft="27dp"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_edit_phone"
-        android:text="@string/login_name_tip"
-        android:textColor="#B4B6C2"
-        android:textSize="14sp" />
+        android:layout_below="@id/tv_login_info"
+        android:background="@color/white"
+        android:orientation="vertical">
 
-
-    <com.kloudsync.techexcel.ui.MaskViewGroup
-        android:id="@+id/rl_password"
-        app:containerCornerRadius="16dp"
-        app:containerDeltaLength="12dp"
-        app:containerShadowColor="#1f27347d"
-        app:containerShadowRadius="6dp"
-        app:deltaX="0dp"
-        app:deltaY="3dp"
-        app:enable="true"
-        android:layout_below="@+id/tv_loginname_tip"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <RelativeLayout
-            android:background="@drawable/bg_edit_line"
+        <com.kloudsync.techexcel.ui.MaskViewGroup
+            android:id="@+id/layout_edit_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/layout_edit_phone"
-            android:layout_marginLeft="19dp"
-            android:layout_marginRight="19dp">
+            android:layout_marginTop="@dimen/dp_68"
+            app:containerCornerRadius="@dimen/dp_24"
+            app:containerDeltaLength="@dimen/dp_7"
+            app:containerShadowColor="@color/color1f27347d"
+            app:containerShadowRadius="@dimen/dp_6"
+            app:deltaX="0dp"
+            app:deltaY="@dimen/dp_2"
+            app:enable="true">
 
-            <EditText
-                android:layout_marginRight="48dp"
-                android:layout_marginLeft="8dp"
-                android:id="@+id/et_password"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@android:color/transparent"
-                android:hint="@string/Password_hint"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                android:paddingLeft="8dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/newgrey"
-                android:textSize="14sp" />
+                android:layout_height="@dimen/dp_48"
+                android:layout_marginLeft="@dimen/dp_31"
+                android:layout_marginRight="@dimen/dp_31"
+                android:background="@drawable/shape_white_all_radius_24"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/dp_16">
+
+                <!--<TextView
+                    android:layout_weight="1"
+                    android:textColor="#3E3F42"
+                    android:textSize="14sp"
+                    android:text="@string/phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />-->
+
+                <TextView
+                    android:id="@+id/tv_cphone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/mobile_phone_country_code"
+                    android:textColor="@color/colorB2C0CF"
+                    android:textSize="14sp" />
+
+                <View
+                    android:id="@+id/v_line"
+                    android:layout_width="@dimen/dp_1"
+                    android:layout_height="17dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dp_12"
+                    android:layout_marginRight="@dimen/dp_12"
+                    android:background="@color/schedule_line" />
+
+                <EditText
+                    android:id="@+id/et_telephone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:gravity="center_vertical"
+                    android:hint="@string/Input_Telephone"
+                    android:inputType="phone"
+                    android:singleLine="true"
+                    android:textColor="@color/color191836"
+                    android:textColorHint="@color/colorB2C0CF"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </com.kloudsync.techexcel.ui.MaskViewGroup>
+
+        <TextView
+            android:id="@+id/tv_loginname_tip"
+            android:visibility="invisible"
+            android:layout_marginLeft="27dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layout_edit_phone"
+            android:text="@string/login_name_tip"
+            android:textColor="#B4B6C2"
+            android:textSize="14sp" />
+
+        <com.kloudsync.techexcel.ui.MaskViewGroup
+            android:id="@+id/rl_password"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            app:containerCornerRadius="@dimen/dp_24"
+            app:containerDeltaLength="@dimen/dp_7"
+            app:containerShadowColor="@color/color1f27347d"
+            app:containerShadowRadius="@dimen/dp_6"
+            app:deltaX="0dp"
+            app:deltaY="@dimen/dp_2"
+            app:enable="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_48"
+                android:layout_marginLeft="@dimen/dp_31"
+                android:layout_marginRight="@dimen/dp_31"
+                android:background="@drawable/shape_white_all_radius_24"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/dp_16"
+                android:paddingRight="@dimen/dp_16">
+
+                <!--<TextView
+                    android:gravity="left"
+                    android:textColor="#3E3F42"
+                    android:textSize="14sp"
+                    android:text="@string/Vertification_Code"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content" />-->
+
+                <EditText
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="@string/please_input_verify_code"
+                    android:inputType="number"
+                    android:singleLine="true"
+                    android:textColor="@color/color191836"
+                    android:textColorHint="@color/colorB2C0CF"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:visibility="visible"
+                    android:id="@+id/image_pwd_eye"
+                    android:layout_width="17dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:src="@drawable/pwd_eye_open" />
 
 
-            <ImageView
-                android:visibility="visible"
-                android:id="@+id/image_pwd_eye"
-                android:layout_width="17dp"
-                android:layout_height="48dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="12dp"
-                android:src="@drawable/pwd_eye_open" />
 
 
-        </RelativeLayout>
+            </LinearLayout>
 
-    </com.kloudsync.techexcel.ui.MaskViewGroup>
+        </com.kloudsync.techexcel.ui.MaskViewGroup>
+        <!--<TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightgrey" />-->
+
+        <!--<TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightgrey" />-->
+    </LinearLayout>
+
+
 
     <TextView
         android:layout_marginRight="27dp"
@@ -177,7 +212,7 @@
         android:id="@+id/txt_forget_pwd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/rl_password"
+        android:layout_below="@+id/lly_forgetpassword_code"
         android:layout_centerHorizontal="true"
         android:text="@string/Forget_Password"
         android:textColor="#3D78FB"
