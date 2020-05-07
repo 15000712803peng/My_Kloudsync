@@ -292,11 +292,11 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
     }
     private void setBindViewText(){
         String member=getBindViewText(1024);
-        tab1.setText(TextUtils.isEmpty(member)? "主讲人" +"(" + meetingConfig.getMeetingMembers().size() + ")":member+"(" + meetingConfig.getMeetingMembers().size() + ")");
+        tab1.setText(TextUtils.isEmpty(member)? getString(R.string.wxf_speakers)+"(" + meetingConfig.getMeetingMembers().size() + ")":member+"(" + meetingConfig.getMeetingMembers().size() + ")");
         String auditor=getBindViewText(1025);
-        tab2.setText(TextUtils.isEmpty(auditor)? "参会者" +"(" + meetingConfig.getMeetingAuditor().size() + ")":auditor +"(" + meetingConfig.getMeetingAuditor().size() + ")");
+        tab2.setText(TextUtils.isEmpty(auditor)? getString(R.string.wxf_attendee) +"(" + meetingConfig.getMeetingAuditor().size() + ")":auditor +"(" + meetingConfig.getMeetingAuditor().size() + ")");
         String invitors=getBindViewText(1026);
-        tab3.setText(TextUtils.isEmpty(auditor)? "被邀请人" +"(" + meetingConfig.getMeetingInvitors().size() + ")":invitors +"(" + meetingConfig.getMeetingInvitors().size() + ")");
+        tab3.setText(TextUtils.isEmpty(auditor)? getString(R.string.wxf_invite) +"(" + meetingConfig.getMeetingInvitors().size() + ")":invitors +"(" + meetingConfig.getMeetingInvitors().size() + ")");
 
     }
 }

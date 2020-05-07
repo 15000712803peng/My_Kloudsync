@@ -80,6 +80,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+	                android:id="@+id/tv_doc_and_meeting_progress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"

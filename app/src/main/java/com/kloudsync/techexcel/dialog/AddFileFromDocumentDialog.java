@@ -33,6 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -205,9 +207,15 @@ public class AddFileFromDocumentDialog implements View.OnClickListener, HeaderRe
             case R.id.save:
                 if (onDocSelectedListener != null) {
                     if (documentAdapter != null) {
-                        Document document = documentAdapter.getSelectFile();
-                        if (document != null) {
-                            onDocSelectedListener.onDocSelected(document.getItemID());
+                        List<Document> documentList = documentAdapter.getSelectFile();
+                        if (documentList.size() != 0) {
+                            Observable.fromIterable(documentList).doOnNext(new Consumer<Document>() {
+                                @Override
+                                public void accept(Document document) throws Exception {
+                                    onDocSelectedListener.onDocSelected(document.getItemID());
+                                }
+                            }).subscribe();
+                            documentList.clear();
                             dismiss();
                         } else {
                             Toast.makeText(mContext, "no file selected", Toast.LENGTH_SHORT).show();
@@ -427,8 +435,8 @@ public class AddFileFromDocumentDialog implements View.OnClickListener, HeaderRe
     public class DocumentAdapter extends RecyclerView.Adapter<DocHolder> {
         private Context mContext;
         private List<Document> mDatas;
-        int selectPosition = -1;
-
+        //        int selectPosition = -1;
+        private List<Document> mSelectDoc = new ArrayList<>();
 
         public DocumentAdapter(Context context, List<Document> mDatas) {
             this.mContext = context;
@@ -442,11 +450,8 @@ public class AddFileFromDocumentDialog implements View.OnClickListener, HeaderRe
             return mDatas.size();
         }
 
-        public Document getSelectFile() {
-            if (selectPosition == -1) {
-                return null;
-            }
-            return mDatas.get(selectPosition);
+        public List<Document> getSelectFile() {
+            return mSelectDoc;
         }
 
 
@@ -466,7 +471,7 @@ public class AddFileFromDocumentDialog implements View.OnClickListener, HeaderRe
                 createdate = new SimpleDateFormat("yyyy.MM.dd").format(dd);
             }
             holder.size.setText(createdate);
-            if (selectPosition == position) {
+            if (mDatas.get(position).isCheck()) {
                 holder.imageview.setImageResource(R.drawable.finish_a);
             } else {
                 holder.imageview.setImageResource(R.drawable.finish_d);
@@ -474,7 +479,14 @@ public class AddFileFromDocumentDialog implements View.OnClickListener, HeaderRe
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    selectPosition = position;
+                    Document document = mDatas.get(position);
+                    boolean isCheck = document.isCheck();
+                    document.setCheck(!isCheck);
+                    if (document.isCheck()) {
+                        mSelectDoc.add(document);
+                    } else {
+                        mSelectDoc.remove(document);
+                    }
                     notifyDataSetChanged();
                 }
             });

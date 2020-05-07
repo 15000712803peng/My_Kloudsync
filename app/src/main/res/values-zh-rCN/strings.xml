@@ -467,6 +467,7 @@
     <string name="shYcan">作为主持人，你可以</string>
     <string name="shAcan">作为参会者，你可以</string>
     <string name="miProgress">会议正在进行中，</string>
+	<string name="course_in_progress">课程正在进行中，</string>
     <string name="attendees">参会者</string>
 
     <!--右上侧按钮-->
@@ -733,6 +734,15 @@
     <string name="supporttype">支持 png ,jpg,maximize 2MB</string>
     <string name="opencompanycode">启动公司邀请码</string>
     <string name="companycode">公司邀请码</string>
+
+    <string name="wxf_speakers">发言人</string>
+    <string name="wxf_attendee">参会者</string>
+    <string name="wxf_invite">被邀请者</string>
+    <string name="wxf_team_speaker">临时发言人</string>
+    <string name="wxf_request_speaker">申请发言</string>
+
+
+
     <!-- 俊瑞  张 -->
     <string name="personInfo">资料设置</string>
     <string name="right">右加号</string>
@@ -811,6 +821,8 @@
     <string name="addteamadmin">增加团队管理员</string>
     <string name="addspaceadmin">增加空间管理员</string>
     <string name="addnewmember">邀请新成员</string>
+    <string name="loginprompt">使用手机号或者用户名登录</string>
+
 
     <string name="Mobile_phone">手机号/用户名</string>、
     <string name="Mobile_phone2">手机号</string>
@@ -884,6 +896,8 @@
 
     <string name="title_to_leave_meeting">你确定要离开会议吗?</string>
     <string name="title_to_end_meeting">你确定要结束会议吗?</string>
+	<string name="title_to_leave_course">你确定要离开课程吗?</string>
+	<string name="title_to_end_course">你确定要结束课程吗?</string>
     <string name="save_and_End">保存并结束</string>
     <string name="End">结束</string>
     <string name="Me">我</string>
@@ -912,9 +926,9 @@
     <string name="close_speech">关闭发言</string>
     <string name="put_your_hand_down">把手放下</string>
     <string name="become_a_presenter">成为主讲人</string>
-    <string name="set_as_host">设置为主持人</string>
-    <string name="set_as_participant">设置为参会者</string>
-    <string name="set_as_talkable_participant">设置为可讲话参会者</string>
+    <string name="set_as_host">设为演示人</string>
+    <string name="set_as_participant">设为参会者</string>
+    <string name="set_as_talkable_participant">设为临时发言人</string>
     <string name="password_reset">密码已重置</string>
     <string name="base_enter">确定</string>
     <string name="base_cancel">取消</string>
@@ -981,7 +995,8 @@
     <string name="please_enter_a_pen_name">请输入笔名</string>
     <string name="setup_failed">设置失败</string>
     <string name="no_notes_currently">当前无笔记</string>
-
+	<string name="course_id">课程ID</string>
+	<string name="start_course">开始上课</string>
 
     <string name="contract_company">联系人 (公司)</string>
     <string name="contract_all">联系人(所有)</string>
@@ -1012,9 +1027,11 @@
     <string name="Create">创建</string>
     <string name="scan_tv">扫描电视设备</string>
     <string name="_meeting_id">会议ID:</string>
-    <string name="kick_off_from_meeting">请他离开会议</string>
+	<string name="_course_id">课程ID:</string>
+    <string name="kick_off_from_meeting">请他离开会议室</string>
     <string name="tips">提示</string>
     <string name="join_start_company">加入机构</string>
+    <string name="new_start_company">创建机构</string>
 
     <string name="my_contact">我的联系人</string>
 

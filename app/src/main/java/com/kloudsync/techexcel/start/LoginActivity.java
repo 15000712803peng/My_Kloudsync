@@ -320,6 +320,7 @@ public class LoginActivity extends Activity implements OnClickListener {
         String code = tv_cphone.getText().toString();
         code = code.replaceAll("\\+", "");
         AppConfig.COUNTRY_CODE = Integer.parseInt(code);
+        Log.e("COUNTRY_CODE", AppConfig.COUNTRY_CODE+"");
         startActivityForResult(intent, com.kloudsync.techexcel.start.RegisterActivity.CHANGE_COUNTRY_CODE);
         overridePendingTransition(R.anim.tran_in4, R.anim.tran_out4);
 
@@ -338,7 +339,9 @@ public class LoginActivity extends Activity implements OnClickListener {
             return;
         }
         if (StringUtils.isPhoneNumber(telephone)) {
-            telephone = "+86" + telephone;
+//            telephone = "+86" + telephone;
+            String code=  tv_cphone.getText().toString();
+            telephone = code + telephone;
         }
         processLogin(telephone, password, et_telephone.getText().toString().trim());
 
@@ -370,6 +373,7 @@ public class LoginActivity extends Activity implements OnClickListener {
             public String apply(String o) throws Exception {
                 try {
                     Response<NetworkResponse<LoginData>> response = ServiceInterfaceTools.getinstance().login(name, password).execute();
+                    Log.e("login",name+"  "+password+"  "+response.body());
                     if (response == null || !response.isSuccessful() || response.body() == null) {
                         sendEventLoginFail("network error");
                     } else {
@@ -572,9 +576,11 @@ public class LoginActivity extends Activity implements OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
+        Log.e("COUNTRY_CODE", AppConfig.COUNTRY_CODE+"  "+resultCode);
+        if (resultCode == 0) {
             switch (requestCode) {
                 case com.kloudsync.techexcel.start.RegisterActivity.CHANGE_COUNTRY_CODE:
+                    Log.e("COUNTRY_CODE", AppConfig.COUNTRY_CODE+"");
                     tv_cphone.setText("+" + AppConfig.COUNTRY_CODE);
                     editor.putInt("countrycode", AppConfig.COUNTRY_CODE).commit();
                     break;

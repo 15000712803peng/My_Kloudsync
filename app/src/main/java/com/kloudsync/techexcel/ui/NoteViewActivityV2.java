@@ -247,7 +247,8 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 
 	@Bind(R.id.txt_meeting_id)
 	TextView meetingIdText;
-
+	@Bind(R.id.tv_doc_and_meeting_progress)
+	TextView mTvMeetingInProgress;
 	@Bind(R.id.layout_remote_share)
 	RelativeLayout remoteShareLayout;
 	@Bind(R.id.frame_remote_share)
@@ -374,6 +375,15 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
+		/*创建音想弹窗*/
+		if (yinxiangCreatePopup != null && meetingConfig != null && meetingConfig.getDocument() != null && yinxiangCreatePopup.isShowing()) {
+			yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
+		}
+		/*选择音想背景音乐弹窗*/
+		if (favoritePopup != null && favoritePopup.isShowing()) {
+			favoritePopup.StartPop(web);
+		}
+
 		if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
 //            Toast.makeText(DocAndMeetingActivity.this,"现在是竖屏", Toast.LENGTH_SHORT).show();
 		}
@@ -681,7 +691,13 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 			menuIcon.setVisibility(View.VISIBLE);
 			if (meetingConfig.getType() == MeetingType.MEETING) {
 				meetingDefaultDocument.setVisibility(View.VISIBLE);
-				meetingIdText.setText(getString(R.string._meeting_id) + meetingConfig.getMeetingId());
+				if (AppConfig.systemType == 0) {
+					meetingIdText.setText(getString(R.string._meeting_id) + meetingConfig.getMeetingId());
+					mTvMeetingInProgress.setText(R.string.miProgress);
+				} else {
+					meetingIdText.setText(getString(R.string._course_id) + meetingConfig.getMeetingId());
+					mTvMeetingInProgress.setText(R.string.course_in_progress);
+				}
 				handleMeetingDefaultDocument();
 			}
 		}

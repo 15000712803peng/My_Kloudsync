@@ -387,6 +387,7 @@ public class StartKloudActivity extends Activity implements View.OnClickListener
     }
 
     private  RegisterPromptDialog registerPromptDialog;
+
     private void modifyKlassRoomID() {
         if (registerPromptDialog == null) {
             registerPromptDialog = new RegisterPromptDialog(this);

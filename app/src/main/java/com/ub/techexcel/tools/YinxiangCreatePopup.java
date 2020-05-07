@@ -16,14 +16,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
@@ -262,17 +260,19 @@ public class YinxiangCreatePopup implements View.OnClickListener {
 
 	        WindowManager.LayoutParams params = mPopupWindow.getWindow().getAttributes();
 	        if (Tools.isOrientationPortrait((Activity) mContext)) {
-		        View root = ((Activity) mContext).getWindow().getDecorView();
-		        params.width = root.getMeasuredWidth() * 9 / 10;
+//		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 9 / 10;
 		        // params.height =mContext.getResources().getDisplayMetrics().heightPixels * 3 / 5;
 	        } else {
 		        params.width = mContext.getResources().getDisplayMetrics().widthPixels * 3 / 5;
-		        View root = ((Activity) mContext).getWindow().getDecorView();
-		        params.height = root.getMeasuredHeight() * 4 / 5 + 30;
+//		        View root = ((Activity) mContext).getWindow().getDecorView();
+		        params.height = mContext.getResources().getDisplayMetrics().heightPixels * 4 / 5 + 30;
 	        }
 	        mPopupWindow.getWindow().setAttributes(params);
             this.attachmentId = attachmentId;
-            mPopupWindow.show();
+	        if (!isShowing()) {
+		        mPopupWindow.show();
+	        }
         }
     }
 

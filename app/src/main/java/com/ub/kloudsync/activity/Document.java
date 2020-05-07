@@ -44,6 +44,7 @@ public class Document implements Serializable {
     private boolean isSyncExpanded;
     private String CreatedByName;
     private int tempItemId;
+	private boolean isCheck;
 
     public int getTempItemId() {
         return tempItemId;
@@ -326,6 +327,14 @@ public class Document implements Serializable {
     public void setQueryToken(String queryToken) {
         QueryToken = queryToken;
     }
+
+	public boolean isCheck() {
+		return isCheck;
+	}
+
+	public void setCheck(boolean check) {
+		isCheck = check;
+	}
 
     @Override
     public boolean equals(Object o) {

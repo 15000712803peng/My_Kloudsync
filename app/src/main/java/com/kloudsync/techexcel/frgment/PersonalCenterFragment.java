@@ -166,6 +166,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
     private TextView mPenSource;
     private TextView mCurrentPenStatus;
 	private EverPen mCurrentPen;
+    private TextView mTvClassOrMeetingId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -353,6 +354,12 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
         tv_teacher_profile = (TextView) view.findViewById(R.id.tv_teacher_profile);
         tv_pc_hc = (TextView) view.findViewById(R.id.tv_pc_hc);
         tv_pc_about = view.findViewById(R.id.tv_pc_about);
+        mTvClassOrMeetingId = view.findViewById(R.id.tv_class_or_meeting_id);
+        if (AppConfig.systemType == 0) {
+            mTvClassOrMeetingId.setText(R.string.Klassroom_ID);
+        } else {
+            mTvClassOrMeetingId.setText(R.string.course_id);
+        }
         if (!TextUtils.isEmpty(AppConfig.ClassRoomID)) {
             tv_roomid.setText(AppConfig.ClassRoomID.replaceAll("-", "").toUpperCase());
         }else {
@@ -637,7 +644,7 @@ public class PersonalCenterFragment extends Fragment implements OnClickListener,
                     AppConfig.HASUPDATAINFO = false;
                     RongIM.getInstance().logout();
                     RongIM.getInstance().disconnect();
-                    intent = new Intent(getActivity(), StartKloudActivity.class);
+                    intent = new Intent(getActivity(), LoginActivity.class);
                     startActivity(intent);
                     MainActivity.instance.finish();
                     getActivity().overridePendingTransition(R.anim.tran_in_null, R.anim.tran_out_null);

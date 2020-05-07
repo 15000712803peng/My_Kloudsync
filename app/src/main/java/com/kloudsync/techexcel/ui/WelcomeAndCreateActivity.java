@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,6 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +35,7 @@ import com.kloudsync.techexcel.start.LoginGet;
 import com.ub.service.activity.SocketService;
 import com.ub.techexcel.tools.JoinCompanyPopup;
 import com.ub.techexcel.tools.JoinMeetingPopup;
+import com.ub.techexcel.tools.JoinMeetingUnLoginPopup;
 import com.ub.techexcel.tools.ServiceInterfaceTools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -65,7 +68,7 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
     private TextView joinMeetingText;
     private TextView backText;
     private SharedPreferences sharedPreferences;
-    private TextView joinCompanyText;
+    //private TextView joinCompanyText;
 
 	private PopupWindow guidePopupWindow;
 	private View guideView;
@@ -74,6 +77,10 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
 	private String content = "";
 	private String about = "";
 	private int guideStep = 0;
+
+	private LinearLayout ll_welcome_new,ll_welcome_join;
+	private ImageView iv_welcome_next;
+	private EditText ed_welcome_id;
 
 	private void initWelcomeGuidePop() {
 		View guideView = LayoutInflater.from(this).inflate(R.layout.pop_welcome_guide, null);
@@ -129,22 +136,33 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
                 MODE_PRIVATE);
         startWBService();
         EventBus.getDefault().register(this);
-        createText = findViewById(R.id.txt_create);
-        createText.setOnClickListener(this);
-        joinMeetingText = findViewById(R.id.txt_join_meeting);
-        joinCompanyText = findViewById(R.id.txt_join_company);
-        joinCompanyText.setOnClickListener(this);
-        joinMeetingText.setOnClickListener(this);
-        backText = findViewById(R.id.txt_back);
-        backText.setOnClickListener(this);
+        iv_welcome_next=findViewById(R.id.iv_welcome_next);
+        ed_welcome_id=findViewById(R.id.ed_welcome_id);
+        ll_welcome_join=findViewById(R.id.ll_welcome_join);
+        ll_welcome_new=findViewById(R.id.ll_welcome_new);
+        ll_welcome_join.setOnClickListener(this);
+        ll_welcome_new.setOnClickListener(this);
+        iv_welcome_next.setOnClickListener(this);
+//        createText = findViewById(R.id.txt_create);
+//        createText.setOnClickListener(this);
+//        joinMeetingText = findViewById(R.id.txt_join_meeting);
+//        joinCompanyText = findViewById(R.id.txt_join_company);
+//        joinCompanyText.setOnClickListener(this);
+//        joinMeetingText.setOnClickListener(this);
+//        backText = findViewById(R.id.txt_back);
+//        backText.setOnClickListener(this);
 
-	    initWelcomeGuidePop();
-	    new Handler().postDelayed(new Runnable() {
-		    @Override
-		    public void run() {
-			    showWelcomeGuidePop(joinMeetingText);
-		    }
-	    }, 1000);
+
+	    /**
+         initWelcomeGuidePop();
+         new Handler().postDelayed(new Runnable() {
+        @Override
+        public void run() {
+        showWelcomeGuidePop(joinMeetingText);
+        }
+        }, 1000);
+         * */
+
     }
 
     @Override
@@ -156,23 +174,28 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.txt_create:
+            case R.id.ll_welcome_new:
                 goToCreate();
                 break;
-            case R.id.txt_join_meeting:
-                joinMeetingBeforeCheckPession();
+            case R.id.iv_welcome_next:
+                String meetingId=ed_welcome_id.getText().toString();
+                if(TextUtils.isEmpty(meetingId)){
+                    Toast.makeText(this,getString(R.string.input_startkloud_meeing_id),Toast.LENGTH_LONG).show();
+                }else{
+                    joinMeetingBeforeCheckPession(meetingId);
+                }
                 break;
-            case R.id.txt_back:
+            /*case R.id.txt_back:
                 finish();
-                break;
-            case R.id.txt_join_company:
+                break;*/
+            case R.id.ll_welcome_join:
                 showJoinCompanyDialog();
                 break;
 	        case R.id.tv_guide_next:
-		        doGuideNext();
+		        //doGuideNext();
 		        break;
 	        case R.id.tv_guide_previous:
-		        doGuidePrevious();
+		        //doGuidePrevious();
 		        break;
             default:
                 break;
@@ -465,13 +488,28 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
         finish();
     }
 
-    private void joinMeetingBeforeCheckPession() {
+    private void joinMeetingBeforeCheckPession(String id) {
         if (KloudPerssionManger.isPermissionCameraGranted(this) && KloudPerssionManger.isPermissionExternalStorageGranted(this)) {
-            showJoinDialog();
+            //showJoinDialog();
+            showJoinmeeting(id);
         } else {
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_FOR_JOIN_MEETING);
         }
+    }
+
+    private JoinMeetingUnLoginPopup joinMeetingUnLoginPopup;
+    private void showJoinmeeting(String meetingId){
+        if (joinMeetingUnLoginPopup != null) {
+            if (joinMeetingUnLoginPopup.isShowing()) {
+                joinMeetingUnLoginPopup.dismiss();
+            }
+            joinMeetingUnLoginPopup = null;
+        }
+
+        joinMeetingUnLoginPopup = new JoinMeetingUnLoginPopup();
+        joinMeetingUnLoginPopup.getPopwindow(this);
+        joinMeetingUnLoginPopup.show(meetingId);
     }
 
     @Override
@@ -526,30 +564,30 @@ public class WelcomeAndCreateActivity extends BaseActivity implements View.OnCli
 		tv_guide_title.setText(title);
 	}
 
-	private void doGuideNext() {
-		switch (guideStep) {
-			case 0:
-				guidePopupWindow.dismiss();
-				showWelcomeGuidePop(joinCompanyText);
-				break;
-			case 1:
-				guidePopupWindow.dismiss();
-				showWelcomeGuidePop(createText);
-				break;
-			case 2:
-				guidePopupWindow.dismiss();
-				break;
-		}
-		if (guideStep < 2) {
-			guideStep += 1;
-			setGuideStep();
-		}
-	}
-
-	private void doGuidePrevious() {
-		guidePopupWindow.dismiss();
-		showWelcomeGuidePop(joinMeetingText);
-		guideStep = 0;
-		setGuideStep();
-	}
+//	private void doGuideNext() {
+//		switch (guideStep) {
+//			case 0:
+//				guidePopupWindow.dismiss();
+//				showWelcomeGuidePop(joinCompanyText);
+//				break;
+//			case 1:
+//				guidePopupWindow.dismiss();
+//				showWelcomeGuidePop(createText);
+//				break;
+//			case 2:
+//				guidePopupWindow.dismiss();
+//				break;
+//		}
+//		if (guideStep < 2) {
+//			guideStep += 1;
+//			setGuideStep();
+//		}
+//	}
+//
+//	private void doGuidePrevious() {
+//		guidePopupWindow.dismiss();
+//		showWelcomeGuidePop(joinMeetingText);
+//		guideStep = 0;
+//		setGuideStep();
+//	}
 }

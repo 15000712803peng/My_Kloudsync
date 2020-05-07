@@ -251,6 +251,7 @@
                     android:src="@drawable/qun" />
 
                 <TextView
+	                android:id="@+id/tv_start_meeting_or_course"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"

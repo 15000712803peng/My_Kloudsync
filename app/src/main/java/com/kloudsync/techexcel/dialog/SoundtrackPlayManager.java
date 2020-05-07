@@ -328,7 +328,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             Log.e("check_permisson", "meeting_type:" + meetingConfig.getType());
             if (!TextUtils.isEmpty(meetingConfig.getPresenterId())) {
                 Log.e("check_permisson", "presenter_id:" + meetingConfig.getPresenterId());
-                if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+                if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || meetingConfig.isMeetingPause()) {
                     return true;
                 } else {
                     return false;
@@ -1240,7 +1240,7 @@ public class SoundtrackPlayManager implements View.OnClickListener, SeekBar.OnSe
             return;
         }
         if (seekBar != null) {
-            if (isPresenter()) {
+            if (isPresenter() || meetingConfig.isMeetingPause()) {
                 seekBar.setEnabled(true);
                 seekBar.setClickable(true);
             } else {

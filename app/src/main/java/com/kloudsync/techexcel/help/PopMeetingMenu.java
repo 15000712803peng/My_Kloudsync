@@ -387,19 +387,17 @@ public class PopMeetingMenu implements PopupWindow.OnDismissListener, OnClickLis
         if (meetingConfig != null) {
             if (TextUtils.isEmpty(meetingConfig.getMeetingHostId()) || !meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {
                 menuEnd.setVisibility(View.GONE);
-                mMenuPause.setVisibility(View.GONE);
-
             } else {
                 menuEnd.setVisibility(View.VISIBLE);
-                mMenuPause.setVisibility(View.VISIBLE);
-
             }
         }
 
         if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID) || meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
             menuMore.setVisibility(View.VISIBLE);
-        } else {
+	        mMenuPause.setVisibility(View.VISIBLE);
+        }else{
             menuMore.setVisibility(View.GONE);
+	        mMenuPause.setVisibility(View.GONE);
         }
 
         int voiceStatus = getSettingCache(host).getMeetingSetting().getVoiceStatus();

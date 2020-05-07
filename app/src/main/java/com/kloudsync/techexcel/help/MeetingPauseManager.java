@@ -193,7 +193,7 @@ public class MeetingPauseManager implements View.OnClickListener {
 	 * @return
 	 */
 	private boolean isHost() {
-		if (mMeetingConfig.getMeetingHostId().equals(AppConfig.UserID) /*||mMeetingConfig.getPresenterId().equals(AppConfig.UserID)*/) {
+		if (mMeetingConfig.getMeetingHostId().equals(AppConfig.UserID) || mMeetingConfig.getPresenterId().equals(AppConfig.UserID)) {
 			return true;
 		}
 		return false;

@@ -684,7 +684,10 @@ public class SoundtrackActionsManagerV2 {
         Observable.just(meetingConfig.getDocument()).observeOn(Schedulers.io()).map(new Function<MeetingDocument, Object>() {
             @Override
             public Object apply(MeetingDocument document) throws Exception {
-                DocumentPage page = document.getDocumentPages().get(pageNumber - 1);
+	            int index = pageNumber - 1;
+	            if (index > document.getDocumentPages().size() - 1 || index < 0)
+		            return new DocumentPage();
+	            DocumentPage page = document.getDocumentPages().get(index);
                 queryAndDownLoadPageToShow(page, true);
                 return page;
             }
