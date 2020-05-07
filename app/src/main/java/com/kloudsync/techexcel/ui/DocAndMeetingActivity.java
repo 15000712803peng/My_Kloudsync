@@ -1809,15 +1809,15 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 // 自己不是host也不是主讲人
                 if (menuIcon.getVisibility() == View.VISIBLE && meetingConfig.getMeetingStatus() != 0) {
                     MeetingKit.getInstance().disableAudioAndVideoStream();
-                    menuIcon.setVisibility(View.GONE);
-                    meetingMenuMemberImage.setVisibility(View.VISIBLE);
+                    /*menuIcon.setVisibility(View.GONE);
+                    meetingMenuMemberImage.setVisibility(View.VISIBLE);*/
                 }
 
             } else {
                 if (meetingConfig.getMeetingStatus() != 0) {
-                    if (meetingMenuMemberImage.getVisibility() == View.VISIBLE) {
-                        menuIcon.setVisibility(View.VISIBLE);
-                        meetingMenuMemberImage.setVisibility(View.GONE);
+	                if (menuIcon.getVisibility() == View.GONE) {
+                       /* menuIcon.setVisibility(View.VISIBLE);
+                        meetingMenuMemberImage.setVisibility(View.GONE);*/
                         handsUpImage.setVisibility(View.GONE);
                     }
                 }
@@ -2721,8 +2721,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //                    MeetingKit.getInstance().disableVedioStream();
 //                }
                 isMember = true;
-                menuIcon.setVisibility(View.VISIBLE);
-                meetingMenuMemberImage.setVisibility(View.GONE);
+                /*menuIcon.setVisibility(View.VISIBLE);
+                meetingMenuMemberImage.setVisibility(View.GONE);*/
                 handsUpImage.setTag(TAG_NO_HANDS_UP);
                 handsUpImage.setImageResource(R.drawable.no_hands_up);
                 handsUpImage.setVisibility(View.GONE);
@@ -2743,8 +2743,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 Log.e("refreshMemberStatus", "refresh,ismember,false");
                 Log.e("check_disable", "disable,2");
                 MeetingKit.getInstance().disableAudioAndVideoStream();
-                menuIcon.setVisibility(View.GONE);
-                meetingMenuMemberImage.setVisibility(View.VISIBLE);
+               /* menuIcon.setVisibility(View.GONE);
+                meetingMenuMemberImage.setVisibility(View.VISIBLE);*/
                 handsUpImage.setVisibility(View.VISIBLE);
             }
         }
@@ -6084,8 +6084,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             if (meetingConfig.getRole() != MeetingConfig.MeetingRole.HOST && meetingConfig.getRole() != MeetingConfig.MeetingRole.MEMBER) {
                                 // 进来自己不是host也不是主讲人
                                 MeetingKit.getInstance().disableAudioAndVideoStream();
-                                menuIcon.setVisibility(View.GONE);
-                                meetingMenuMemberImage.setVisibility(View.VISIBLE);
+                               /* menuIcon.setVisibility(View.GONE);
+                                meetingMenuMemberImage.setVisibility(View.VISIBLE);*/
                             }
 
                             if (dataJson.has("playAudioData")) {
