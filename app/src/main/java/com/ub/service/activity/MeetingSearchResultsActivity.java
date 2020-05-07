@@ -57,7 +57,10 @@ public class MeetingSearchResultsActivity extends Activity implements View.OnCli
             super.handleMessage(msg);
             switch (msg.what) {
                 case AppConfig.LOAD_FINISH:
-                    ListSort(mList1);
+                    if(type==1){
+                        ListSort(mList1);
+                    }
+
                     serviceAdapter = new ServiceAdapter2(MeetingSearchResultsActivity.this, mList1, true, type);
 
                     serviceAdapter.setFromSearch(true, keyword);

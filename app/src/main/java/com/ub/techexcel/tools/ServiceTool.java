@@ -40,7 +40,7 @@ public class ServiceTool implements Runnable {
                 break;
             case 1:
                 roleId = 3;
-                type = 1;
+                type = 2;
                 break;
             case 2:
                 roleId = 3;
