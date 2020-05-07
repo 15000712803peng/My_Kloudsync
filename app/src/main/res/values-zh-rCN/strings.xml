@@ -734,6 +734,15 @@
     <string name="supporttype">支持 png ,jpg,maximize 2MB</string>
     <string name="opencompanycode">启动公司邀请码</string>
     <string name="companycode">公司邀请码</string>
+
+    <string name="wxf_speakers">发言人</string>
+    <string name="wxf_attendee">参会者</string>
+    <string name="wxf_invite">被邀请者</string>
+    <string name="wxf_team_speaker">临时发言人</string>
+    <string name="wxf_request_speaker">申请发言</string>
+
+
+
     <!-- 俊瑞  张 -->
     <string name="personInfo">资料设置</string>
     <string name="right">右加号</string>
@@ -813,6 +822,7 @@
     <string name="addspaceadmin">增加空间管理员</string>
     <string name="addnewmember">邀请新成员</string>
     <string name="loginprompt">使用手机号或者用户名登录</string>
+
 
     <string name="Mobile_phone">手机号/用户名</string>、
     <string name="Mobile_phone2">手机号</string>

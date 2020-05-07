@@ -738,6 +738,12 @@ Please input the cell phone number to add the contact
     <string name="opencompanycode">Start company invitation code</string>
     <string name="companycode">Company invitation code</string>
 
+    <string name="wxf_speakers">Speakers</string>
+    <string name="wxf_attendee">Attendee</string>
+    <string name="wxf_invite">Invited</string>
+    <string name="wxf_team_speaker">Team Speakers</string>
+    <string name="wxf_request_speaker">Request to Speak</string>
+
 
     <!-- 俊瑞  张 -->
     <string name="personInfo">My profile</string>

@@ -182,7 +182,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 title.setViewType(MeetingMember.TYPE_SPARKER_TITLE);
                 //title.setTitle("可讲话参会者");
                 String str=getBindViewText(1030);
-                title.setTitle(TextUtils.isEmpty(str)? "可讲话参会者":str);
+                title.setTitle(TextUtils.isEmpty(str)? getString(R.string.wxf_team_speaker):str);
                 tabSpeakersMembers.add(title);
                 tabSpeakersMembers.addAll(tempStageMembers);
 
@@ -203,7 +203,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 title.setViewType(MeetingMember.TYPE_HANDSUP_TITLE);
                 //title.setTitle("已举手参会者");
                 String str=getBindViewText(1029);
-                title.setTitle(TextUtils.isEmpty(str)? "已举手参会者":str);
+                title.setTitle(TextUtils.isEmpty(str)? getString(R.string.wxf_request_speaker):str);
                 tabSpeakersMembers.add(title);
                 tabSpeakersMembers.addAll(handsUpMembers);
             }

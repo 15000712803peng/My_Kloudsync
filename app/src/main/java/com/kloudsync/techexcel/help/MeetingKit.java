@@ -868,7 +868,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             @Override
             public MeetingConfig apply(MeetingConfig meetingConfig) throws Exception {
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.MEMBER);
-
+                Log.e("999主讲人",result.toString());
                 if (result.has("code")) {
                     if (result.getInt("code") == 0) {
                         List<MeetingMember> members = new Gson().fromJson(result.getJSONArray("data").toString(), new TypeToken<List<MeetingMember>>() {
@@ -898,6 +898,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             @Override
             public MeetingConfig apply(MeetingConfig meetingConfig) throws Exception {
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.AUDIENCE);
+                Log.e("999参会者",result.toString());
                 if (result.has("code")) {
                     if (result.getInt("code") == 0) {
                         Log.e("check_auditor", "json_array" + result.getJSONArray("data").toString());
@@ -920,6 +921,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             @Override
             public MeetingConfig apply(MeetingConfig meetingConfig) throws Exception {
                 JSONObject result = ServiceInterfaceTools.getinstance().syncGetMeetingMembers(meetingConfig.getMeetingId(), MeetingConfig.MeetingRole.BE_INVITED);
+                Log.e("999被邀请的人",result.toString());
                 if (result.has("code")) {
                     if (result.getInt("code") == 0) {
 
