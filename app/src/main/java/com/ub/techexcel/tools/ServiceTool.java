@@ -34,15 +34,15 @@ public class ServiceTool implements Runnable {
         this.keyWord=keyWord;
 
         switch (i) {
-            case 0:
+            case 1:
                 roleId = 3;
                 type = 1;
                 break;
-            case 1:
+            case 2:
                 roleId = 3;
                 type = 2;
                 break;
-            case 2:
+            case 3:
                 roleId = 3;
                 type = 3;
                 break;
@@ -55,11 +55,11 @@ public class ServiceTool implements Runnable {
         String url="";
         if (keyWord == null || keyWord.equals("")) {
             url = AppConfig.URL_PUBLIC
-                    + "Lesson/List?roleID=3&isPublish=1&pageIndex=0&pageSize=20&type=" + type;
+                    + "Lesson/List?roleID=3&isPublish=1&pageIndex=0&pageSize=100&type=" + type;
         } else {
             try {
                 url = AppConfig.URL_PUBLIC
-                        + "Lesson/List?roleID=3&isPublish=1&pageIndex=0&pageSize=20&type=" + type + "&keyword=" + URLEncoder.encode(LoginGet.getBase64Password(keyWord), "UTF-8") ;
+                        + "Lesson/List?roleID=3&isPublish=1&pageIndex=0&pageSize=100&type=" + type + "&keyword=" + URLEncoder.encode(LoginGet.getBase64Password(keyWord), "UTF-8") ;
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
