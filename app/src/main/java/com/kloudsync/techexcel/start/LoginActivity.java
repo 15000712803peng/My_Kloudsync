@@ -569,7 +569,9 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     private void GoToSign() {
         Intent intent = new Intent(LoginActivity.this, com.kloudsync.techexcel.start.RegisterActivityStepOne.class);
-        startActivityForResult(intent, REQUEST_RETISTER);
+//        startActivityForResult(intent, REQUEST_RETISTER);
+        startActivity(intent);
+        
     }
 
     @Override
