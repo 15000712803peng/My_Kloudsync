@@ -26,6 +26,7 @@ import com.kloudsync.techexcel.bean.EventSetPresenter;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.dialog.PopMeetingAuditorMemberSetting;
 import com.kloudsync.techexcel.dialog.PopMeetingHandsMemberSetting;
 import com.kloudsync.techexcel.dialog.PopMeetingMemberSetting;
 import com.kloudsync.techexcel.dialog.PopMeetingSpeakMemberSetting;
@@ -55,7 +56,7 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by tonyan on 2019/11/9.
  */
 
-public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged, PopMeetingSpeakMemberSetting.OnSpeakMemberSettingChanged, PopMeetingHandsMemberSetting.OnHandsMemberSettingChanged {
+public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged, PopMeetingSpeakMemberSetting.OnSpeakMemberSettingChanged, PopMeetingHandsMemberSetting.OnHandsMemberSettingChanged ,PopMeetingAuditorMemberSetting.AuditorMemberSettingChanged{
 
     private RecyclerView membersList;
     int type;
@@ -281,6 +282,11 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     }
 
     @Override
+    public void setTeamSpeaker(MeetingMember meetingMember) {  //设为临时发言人
+        setSpeakMember(meetingMember);
+    }
+
+    @Override
     public void setHandsDown(final MeetingMember meetingMember) {
         Observable.just("hands_up").observeOn(Schedulers.io()).doOnNext(new Consumer<String>() {
             @Override
@@ -294,6 +300,11 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
             }
         }).subscribe();
+    }
+
+    @Override
+    public void setSpeaker(MeetingMember meetingMember) {  // 设为发言人
+        setMember(meetingMember);
     }
 
     @Override
@@ -547,9 +558,9 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 } else {
                     // 不是HOST，如果自己是HOST
                     if (AppConfig.UserID.equals(meetingConfig.getMeetingHostId())) {
-                        holder.kickOffMemberText.setVisibility(View.VISIBLE);
-                    } else {
                         holder.kickOffMemberText.setVisibility(View.GONE);
+                    } else {
+//                        holder.kickOffMemberText.setVisibility(View.VISIBLE);
                     }
                 }
                 fillViewByRoleForAuditors(member, holder);
@@ -849,6 +860,23 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     }
 
 
+    private PopMeetingAuditorMemberSetting mPopMeetingAuditorMemberSetting  ;
+
+    private void showAuditorMemberSetting(MeetingMember member, View view) {
+        if (mPopMeetingAuditorMemberSetting != null) {
+            if (mPopMeetingAuditorMemberSetting.isShowing()) {
+                mPopMeetingAuditorMemberSetting.dismiss();
+            }
+            mPopMeetingAuditorMemberSetting = null;
+        }
+        mPopMeetingAuditorMemberSetting = new PopMeetingAuditorMemberSetting(getActivity());
+        mPopMeetingAuditorMemberSetting.setOnMemberSettingChanged(this);
+        mPopMeetingAuditorMemberSetting.showAtBottom(member, view, meetingConfig);
+    }
+
+
+
+
     private void fillViewByRoleForMainSpeakingMembers(final MeetingMember meetingMember, final MainSpeakerViewHolder holder) {
 
         int role = meetingMember.getRole();
@@ -943,12 +971,19 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     private void fillViewByRoleForAuditors(final MeetingMember meetingMember, final ViewHolder holder) {
 
         holder.settingImage.setVisibility(View.VISIBLE);
+        holder.settingImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAuditorMemberSetting(meetingMember, holder.settingImage);
+            }
+        });
+
         if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
             // 当前的member不是自己
             if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || (meetingConfig.getMeetingHostId() + "").equals(AppConfig.UserID) || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
                 // 如果自己是presenter
                 holder.handsUpText.setVisibility(View.GONE);
-                holder.changeToMember.setVisibility(View.VISIBLE);
+//                holder.changeToMember.setVisibility(View.VISIBLE);
                 holder.changeToMember.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -1078,7 +1113,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
 
     @Override
-    public void setPresenter(MeetingMember meetingMember) {
+    public void setPresenter(MeetingMember meetingMember) { // 设置演示者
         Observable.just(meetingMember).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<MeetingMember>() {
             @Override
             public void accept(MeetingMember meetingMember) throws Exception {
@@ -1097,7 +1132,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     }
 
     @Override
-    public void setAuditor(MeetingMember meetingMember) {
+    public void setAuditor(MeetingMember meetingMember) {  //设置为参会者
         Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
             @Override
             public void accept(MeetingMember meetingMember) throws Exception {
@@ -1120,7 +1155,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     }
 
     @Override
-    public void setSpeakMember(MeetingMember meetingMember) {
+    public void setSpeakMember(MeetingMember meetingMember) {  //  设置为临时发言人
         Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
             @Override
             public void accept(MeetingMember meetingMember) throws Exception {
@@ -1143,7 +1178,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     }
 
 
-    public void setMember(MeetingMember meetingMember) {
+    public void setMember(MeetingMember meetingMember) {  //设为发言人
         Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
             @Override
             public void accept(MeetingMember meetingMember) throws Exception {
