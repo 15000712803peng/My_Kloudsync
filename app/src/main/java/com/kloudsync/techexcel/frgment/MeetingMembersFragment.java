@@ -942,6 +942,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
     private void fillViewByRoleForAuditors(final MeetingMember meetingMember, final ViewHolder holder) {
 
+        holder.settingImage.setVisibility(View.VISIBLE);
         if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
             // 当前的member不是自己
             if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || (meetingConfig.getMeetingHostId() + "").equals(AppConfig.UserID) || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
