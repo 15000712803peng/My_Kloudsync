@@ -2415,13 +2415,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             cameraAdapter = new AgoraCameraAdapterV2(this);
             String sizeStr = sharedPreferences.getString("speaker_size_mode", "small");
-            int size = 0;
+            int size = 1;
             if (sizeStr.equals("small")) {
-                size = 0;
-            } else if (sizeStr.equals("big")) {
                 size = 1;
-            } else if (sizeStr.equals("large")) {
+            } else if (sizeStr.equals("big")) {
                 size = 2;
+            } else if (sizeStr.equals("large")) {
+                size = 3;
             }
 
             cameraAdapter.setViewType(size);
@@ -2473,13 +2473,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             cameraAdapter = new AgoraCameraAdapterV2(this);
             String sizeStr = sharedPreferences.getString("speaker_size_mode", "small");
-            int size = 0;
+            int size = 1;
             if (sizeStr.equals("small")) {
-                size = 0;
-            } else if (sizeStr.equals("big")) {
                 size = 1;
-            } else if (sizeStr.equals("large")) {
+            } else if (sizeStr.equals("big")) {
                 size = 2;
+            } else if (sizeStr.equals("large")) {
+                size = 3;
             }
             cameraAdapter.setViewType(size);
             cameraAdapter.setMembers(copyMembers);
@@ -5827,11 +5827,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 if (data.has("size")) {
                     int size = data.getInt("size");
                     String _sizeMode = "small";
-                    if (size == 0) {
+                    if (size == 1) {
                         _sizeMode = "small";
-                    } else if (size == 1) {
-                        _sizeMode = "big";
                     } else if (size == 2) {
+                        _sizeMode = "big";
+                    } else if (size == 3) {
                         _sizeMode = "large";
                     }
                     sharedPreferences.edit().putString("speaker_size_mode", _sizeMode).commit();
@@ -6202,11 +6202,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                         if (dataJson.has("sizeMode")) {
                             int sizeMode = dataJson.getInt("sizeMode");
                             String _sizeMode = "small";
-                            if (sizeMode == 0) {
+                            if (sizeMode == 1) {
                                 _sizeMode = "small";
-                            } else if (sizeMode == 1) {
-                                _sizeMode = "big";
                             } else if (sizeMode == 2) {
+                                _sizeMode = "big";
+                            } else if (sizeMode == 3) {
                                 _sizeMode = "large";
                             }
                             sharedPreferences.edit().putString("speaker_size_mode", _sizeMode).commit();
