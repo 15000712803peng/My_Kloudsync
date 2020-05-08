@@ -12,12 +12,11 @@
         android:layout_height="wrap_content">
 
 
-            <com.kloudsync.techexcel.view.CircleImageView
-                android:id="@+id/member_icon"
-                android:padding="2dp"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                />
+        <com.kloudsync.techexcel.view.CircleImageView
+            android:id="@+id/member_icon"
+            android:layout_width="47dp"
+            android:layout_height="42dp"
+            android:padding="2dp" />
 
         <TextView
 
@@ -100,7 +99,7 @@
         <ImageView
             android:visibility="gone"
             android:id="@+id/image_setting"
-            android:layout_marginRight="16dp"
+            android:layout_marginRight="0dp"
             android:padding="3dp"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
@@ -120,7 +119,7 @@
                 android:id="@+id/txt_change_to_member"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="成为参会者"
+                android:text="设为发言人"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:paddingTop="3dp"
