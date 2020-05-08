@@ -186,13 +186,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                         if (mDocAndMeetingFileListPopupwindow == null) {
                             mDocAndMeetingFileListPopupwindow = new DocAndMeetingFileListPopupwindow(context);
                         }
-                       /* holder.mIvItemDocMore.post(new Runnable() {
-                            @Override
-                            public void run() {*/
                         mDocAndMeetingFileListPopupwindow.show(holder.mIvItemDocMore);
-                          /*  }
-                        });*/
-//                        ToastUtils.show(context,"点击了更多");
                     }
                 });
             }

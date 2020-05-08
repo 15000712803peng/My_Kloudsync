@@ -2,7 +2,6 @@ package com.kloudsync.techexcel.help;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -15,6 +14,7 @@ public class DocAndMeetingFileListPopupwindow implements View.OnClickListener {
 
 	private Context mContext;
 	private PopupWindow mPpw;
+	private View mView;
 
 	public DocAndMeetingFileListPopupwindow(Context context) {
 		mContext = context;
@@ -22,14 +22,14 @@ public class DocAndMeetingFileListPopupwindow implements View.OnClickListener {
 	}
 
 	private void initPopupwindow() {
-		View view = LayoutInflater.from(mContext).inflate(R.layout.ppw_doc_file_more, null);
-		RelativeLayout docMoreShare = view.findViewById(R.id.moreshare);
-		RelativeLayout docMoreEdit = view.findViewById(R.id.moreedit);
-		RelativeLayout docMoreDelete = view.findViewById(R.id.moredelete);
+		mView = LayoutInflater.from(mContext).inflate(R.layout.ppw_doc_file_more, null);
+		RelativeLayout docMoreShare = mView.findViewById(R.id.moreshare);
+		RelativeLayout docMoreEdit = mView.findViewById(R.id.moreedit);
+		RelativeLayout docMoreDelete = mView.findViewById(R.id.moredelete);
 		docMoreShare.setOnClickListener(this);
 		docMoreEdit.setOnClickListener(this);
 		docMoreDelete.setOnClickListener(this);
-		mPpw = new PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		mPpw = new PopupWindow(mView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		mPpw.setBackgroundDrawable(new ColorDrawable());
 		mPpw.setOutsideTouchable(true);
 		mPpw.setFocusable(true);
@@ -37,7 +37,13 @@ public class DocAndMeetingFileListPopupwindow implements View.OnClickListener {
 
 	public void show(final View view) {
 		if (mPpw != null) {
-			mPpw.showAtLocation(view, Gravity.LEFT, 0, 0);
+			mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+			view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+			int popupWidth = mView.getMeasuredWidth();    //  获取测量后的宽度
+			int popupHeight = mView.getMeasuredHeight();  //获取测量后的高度
+			int viewWidth = view.getMeasuredWidth();    //  获取测量后的宽度
+			int viewHeight = view.getMeasuredHeight();  //获取测量后的高度
+			mPpw.showAsDropDown(view, -popupWidth, -popupHeight + viewHeight / 2);
 		}
 	}
 
@@ -56,6 +62,6 @@ public class DocAndMeetingFileListPopupwindow implements View.OnClickListener {
 			case R.id.moredelete:
 				break;
 		}
-//		dismiss();
+		dismiss();
 	}
 }
