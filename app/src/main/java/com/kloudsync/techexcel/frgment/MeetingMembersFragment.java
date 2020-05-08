@@ -343,6 +343,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             changeToMember = view.findViewById(R.id.txt_change_to_member);
             handsUpText = view.findViewById(R.id.txt_hands_up);
             kickOffMemberText = view.findViewById(R.id.txt_kick_off);
+            microImage = view.findViewById(R.id.image_micro);
         }
 
         public CircleImageView icon;
@@ -355,6 +356,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         public TextView changeToMember;
         public TextView handsUpText;
         public TextView kickOffMemberText;
+        public ImageView microImage;
 
     }
 
@@ -512,7 +514,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             } else {
                 holder.me.setVisibility(View.GONE);
             }
-
+            holder.microImage.setVisibility(View.GONE);
             fillDeviceType(member.getDeviceType(), holder.type);
 
             holder.kickOffMemberText.setOnClickListener(new View.OnClickListener() {
@@ -552,17 +554,17 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 fillViewByRoleForMembers(member, holder);
                 //------
             } else if (type == 2) {
-                if (meetingConfig.getMeetingHostId().equals(member.getUserId() + "")) {
-                    // 操作的成员是HOST
-                    holder.kickOffMemberText.setVisibility(View.GONE);
-                } else {
-                    // 不是HOST，如果自己是HOST
-                    if (AppConfig.UserID.equals(meetingConfig.getMeetingHostId())) {
-                        holder.kickOffMemberText.setVisibility(View.GONE);
-                    } else {
+//                if (meetingConfig.getMeetingHostId().equals(member.getUserId() + "")) {
+//                    // 操作的成员是HOST
+//                    holder.kickOffMemberText.setVisibility(View.GONE);
+//                } else {
+//                    // 不是HOST，如果自己是HOST
+//                    if (AppConfig.UserID.equals(meetingConfig.getMeetingHostId())) {
+//                        holder.kickOffMemberText.setVisibility(View.GONE);
+//                    } else {
 //                        holder.kickOffMemberText.setVisibility(View.VISIBLE);
-                    }
-                }
+//                    }
+//                }
                 fillViewByRoleForAuditors(member, holder);
 
             } else if (type == 3) {
@@ -983,22 +985,26 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || (meetingConfig.getMeetingHostId() + "").equals(AppConfig.UserID) || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
                 // 如果自己是presenter
                 holder.handsUpText.setVisibility(View.GONE);
+                holder.settingImage.setVisibility(View.VISIBLE);
 //                holder.changeToMember.setVisibility(View.VISIBLE);
-                holder.changeToMember.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        setMember(meetingMember);
-                    }
-                });
+//                holder.changeToMember.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        setMember(meetingMember);
+//                    }
+//                });
             } else {
 
                 holder.handsUpText.setVisibility(View.GONE);
-                holder.changeToMember.setVisibility(View.GONE);
-                holder.changeToMember.setOnClickListener(null);
+                holder.settingImage.setVisibility(View.VISIBLE);
+//                holder.changeToMember.setVisibility(View.GONE);
+//                holder.changeToMember.setOnClickListener(null);
             }
 
         } else {
             holder.handsUpText.setVisibility(View.VISIBLE);
+            holder.settingImage.setVisibility(View.GONE);
+
         }
 
         if (meetingMember.getHandStatus() == 0) {
