@@ -565,6 +565,11 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 	    if (favoritePopup != null && favoritePopup.isShowing()) {
 		    favoritePopup.StartPop(web);
 	    }
+        if (bottomFilePop != null && bottomFilePop.isShowing()) {
+            bottomFilePop.hide();
+            bottomFilePop.show(web, this);
+        }
+
 	    /*会议暂停界面*/
         RelativeLayout.LayoutParams layoutParams = null;
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {

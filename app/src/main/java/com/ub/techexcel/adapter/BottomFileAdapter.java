@@ -1,22 +1,24 @@
 package com.ub.techexcel.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingDocument;
+import com.kloudsync.techexcel.help.DocAndMeetingFileListPopupwindow;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
-import com.kloudsync.techexcel.view.CircleImageView;
 import com.kloudsync.techexcel.view.RoundProgressBar;
-import com.ub.techexcel.bean.LineItem;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
     public Context context;
     private int documentId;
     private MeetingDocument tempDocument;
+    private DocAndMeetingFileListPopupwindow mDocAndMeetingFileListPopupwindow;
 
     public void addTempDocument(MeetingDocument tempDocument){
         this.tempDocument = tempDocument;
@@ -85,10 +88,11 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
             super(a);
         }
 
-        CircleImageView icon;
-        TextView name, identlyTv;
-        LinearLayout headll, bgisshow, bgisshow2;
+        SimpleDraweeView icon;
+        TextView name/*, identlyTv*/, mTvYinXiangCount, mTvCreateDate;
+        LinearLayout headll/*, bgisshow*/, bgisshow2, mLlyYinXiangCount;
         RoundProgressBar rpb_update;
+        ImageView mIvItemDocMore;
     }
 
 
@@ -102,31 +106,34 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.recycler_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
-        viewHolder.icon = (CircleImageView) view.findViewById(R.id.studenticon);
+        viewHolder.icon = view.findViewById(R.id.studenticon);
         viewHolder.name = (TextView) view.findViewById(R.id.studentname);
-        viewHolder.identlyTv = (TextView) view.findViewById(R.id.identlyTv);
+//        viewHolder.identlyTv = (TextView) view.findViewById(R.id.identlyTv);
         viewHolder.headll = (LinearLayout) view.findViewById(R.id.headll);
-        viewHolder.bgisshow = (LinearLayout) view.findViewById(R.id.bgisshow);
+//        viewHolder.bgisshow = (LinearLayout) view.findViewById(R.id.bgisshow);
         viewHolder.bgisshow2 = (LinearLayout) view.findViewById(R.id.bgisshow2);
         viewHolder.rpb_update = (RoundProgressBar) view.findViewById(R.id.rpb_update);
-
+        viewHolder.mIvItemDocMore = view.findViewById(R.id.iv_item_doc_more);
+        viewHolder.mTvCreateDate = view.findViewById(R.id.tv_item_cteate_date);
+        viewHolder.mLlyYinXiangCount = view.findViewById(R.id.lly_item_doc_yin_xiang_count);
+        viewHolder.mTvYinXiangCount = view.findViewById(R.id.tv_item_yin_xiang_count);
         return viewHolder;
     }
 
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         final MeetingDocument document = mDatas.get(position);
             if(document.isTemp()){
                 holder.itemView.setOnClickListener(null);
                 holder.bgisshow2.setVisibility(View.VISIBLE);
                 holder.rpb_update.setVisibility(View.VISIBLE);
-                holder.bgisshow.setVisibility(View.GONE);
-                holder.icon.setVisibility(View.GONE);
+//                holder.bgisshow.setVisibility(View.GONE);
+//                holder.icon.setVisibility(View.GONE);
                 if(TextUtils.isEmpty(document.getTempDocPrompt())){
                     holder.name.setText("");
                 }else {
-                    holder.name.setText(document.getTempDocPrompt());
+                    holder.name.setText(/*document.getTempDocPrompt()*/document.getFileName());
                 }
                 holder.rpb_update.setProgress(document.getProgress());
             }else {
@@ -143,15 +150,51 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                 });
                 holder.bgisshow2.setVisibility(View.GONE);
                 holder.rpb_update.setVisibility(View.GONE);
-                holder.bgisshow.setVisibility(View.VISIBLE);
-                holder.icon.setVisibility(View.VISIBLE);
-                holder.name.setText((position + 1) + "");
-                holder.icon.setImageResource(R.drawable.documento);
-                if (document.isSelect()) {
-                    holder.bgisshow.setBackgroundResource(R.drawable.course_bg1);
-                } else {
-                    holder.bgisshow.setBackgroundResource(R.drawable.course_bg2);
+//                holder.bgisshow.setVisibility(View.VISIBLE);
+//                holder.icon.setVisibility(View.VISIBLE);
+                int syncCount = document.getSyncCount();
+                if (syncCount > 0) {
+                    holder.mLlyYinXiangCount.setVisibility(View.VISIBLE);
+                    holder.mLlyYinXiangCount.getBackground().setAlpha(26);
+                    holder.mTvYinXiangCount.setText(String.valueOf(syncCount));
                 }
+                holder.name.setText(/*(position + 1) + ""*/document.getFileName());
+                String url = document.getAttachmentUrl();
+                if (!TextUtils.isEmpty(url)) {
+                    url = url.substring(0, url.lastIndexOf("<")) + "1" + url.substring(url.lastIndexOf("."), url.length());
+                    Uri imageUri = null;
+                    if (!TextUtils.isEmpty(url)) {
+                        imageUri = Uri.parse(url);
+                    }
+                    holder.icon.setImageURI(imageUri);
+                }
+                String date = document.getCreatedDate();
+                if (!TextUtils.isEmpty(date)) {
+                    long dd = Long.parseLong(date);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm:ss");
+                    String haha = simpleDateFormat.format(dd);
+                    holder.mTvCreateDate.setText(haha);
+                }
+                if (document.isSelect()) {
+                    holder.headll.setSelected(true);
+                } else {
+                    holder.headll.setSelected(false);
+                }
+                holder.mIvItemDocMore.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mDocAndMeetingFileListPopupwindow == null) {
+                            mDocAndMeetingFileListPopupwindow = new DocAndMeetingFileListPopupwindow(context);
+                        }
+                       /* holder.mIvItemDocMore.post(new Runnable() {
+                            @Override
+                            public void run() {*/
+                        mDocAndMeetingFileListPopupwindow.show(holder.mIvItemDocMore);
+                          /*  }
+                        });*/
+//                        ToastUtils.show(context,"点击了更多");
+                    }
+                });
             }
 
 

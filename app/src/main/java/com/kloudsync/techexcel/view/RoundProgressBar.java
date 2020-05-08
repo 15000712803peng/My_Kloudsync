@@ -115,7 +115,7 @@ public class RoundProgressBar extends View {
 
         int percent = (int) (((float) progress / (float) max) * 100);  //中间的进度百分比，先转换成float在进行除法运算，不然都为0
 
-        paint.setColor(Color.WHITE); //设置圆环的颜色
+	    paint.setColor(Color.TRANSPARENT); //设置圆环的颜色
         paint.setStyle(Paint.Style.FILL); //设置空心
         canvas.drawCircle(centre, centre, radius, paint); //画出圆环背景
 
