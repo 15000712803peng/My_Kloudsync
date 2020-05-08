@@ -59,11 +59,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_file:
-               /* if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
-                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                        return;
-                    }
-                }*/
+                if (meetingConfig.getType() == MeetingType.MEETING && !meetingConfig.isMeetingPause()) {
+//                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+//                        return;
+//                    }
+                }
                 hide();
                 if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuFileClicked();
@@ -82,11 +82,11 @@ public class PopBottomMenu implements PopupWindow.OnDismissListener, OnClickList
                 }
                 break;
             case R.id.bottom_menu_notes:
-               /* if (meetingConfig.getType() == MeetingType.MEETING) {
-                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                        return;
-                    }
-                }*/
+                if (meetingConfig.getType() == MeetingType.MEETING) {
+//                    if (!meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+//                        return;
+//                    }
+                }
                 hide();
                 if (bottomMenuOperationsListener != null) {
                     bottomMenuOperationsListener.menuNoteClicked();

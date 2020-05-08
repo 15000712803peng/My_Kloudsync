@@ -1,7 +1,6 @@
 package com.ub.techexcel.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,17 +26,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.ViewHolder> {
+public class AgoraCameraAdapterV2 extends RecyclerView.Adapter<AgoraCameraAdapterV2.ViewHolder> {
 
     private LayoutInflater inflater;
     private List<AgoraMember> users;
     private Context mContext;
     private ImageLoader imageLoader;
     private int viewType;
-
-    public AgoraCameraAdapter() {
-    }
-
+    private int displayType = TYPE_ACTIVIE_SPEAKER;
+    public static final int TYPE_ALL = 1;
+    public static final int TYPE_ACTIVIE_SPEAKER = 2;
+    public static final int TYPE_SELECT_SPEAKER = 3;
+    private AgoraMember speakerMember;
 
     public void setViewType(int viewType) {
         this.viewType = viewType;
@@ -47,7 +47,7 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         return users;
     }
 
-    public AgoraCameraAdapter(Context context) {
+    public AgoraCameraAdapterV2(Context context) {
         this.mContext = context;
         inflater = LayoutInflater.from(mContext);
         users = new ArrayList<>();
@@ -67,13 +67,13 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        if (viewType == 0) {
+        if (viewType == 1) {
             view = inflater.inflate(R.layout.small_camera_item, parent, false);
-        }else if(viewType == 1){
+        } else if (viewType == 2) {
             view = inflater.inflate(R.layout.medium_camera_item, parent, false);
-        }else if(viewType == 2){
+        } else if (viewType == 3) {
             view = inflater.inflate(R.layout.large_camera_item, parent, false);
-        }else {
+        } else {
             view = inflater.inflate(R.layout.small_camera_item, parent, false);
         }
         return new ViewHolder(view);
@@ -87,7 +87,18 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final ViewHolder myHolder = holder;
-        final AgoraMember user = users.get(position);
+        AgoraMember user = null;
+        if (displayType == TYPE_ALL || displayType == TYPE_SELECT_SPEAKER) {
+            user = users.get(position);
+        } else {
+            user = speakerMember;
+        }
+        Log.e("check_speaker", "onBindViewHolder,display_type:" + displayType + ",speakerMember:" + speakerMember);
+
+        if (user == null) {
+            return;
+        }
+
         holder.vedioFrame.removeAllViews();
         if (holder.vedioFrame.getChildCount() == 0) {
             View d = inflater.inflate(R.layout.framelayout_head, null);
@@ -125,11 +136,12 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
 
             }
 
+            final AgoraMember _user = user;
             myHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (onCameraOptionsListener != null) {
-                        onCameraOptionsListener.onCameraFrameClick(myHolder.itemView, user, position);
+                        onCameraOptionsListener.onCameraFrameClick(myHolder.itemView, _user, position);
                     }
 //                    showFull(user);
 
@@ -158,7 +170,6 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
 
             if (user.isMuteVideo()) {
                 holder.iconImage.setVisibility(View.VISIBLE);
-
             } else {
                 holder.iconImage.setVisibility(View.GONE);
             }
@@ -167,11 +178,22 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
 
     @Override
     public int getItemCount() {
-        return users.size();
+        if (displayType == TYPE_ALL || displayType == TYPE_SELECT_SPEAKER) {
+            return users.size();
+        } else {
+            return 1;
+        }
     }
 
     public AgoraMember getItem(int position) {
-        return users.get(position);
+        if (displayType == TYPE_ALL || displayType == TYPE_SELECT_SPEAKER) {
+            return users.get(position);
+        } else if (displayType == TYPE_ACTIVIE_SPEAKER) {
+            return speakerMember;
+        }
+
+        return speakerMember;
+
     }
 
     protected final void stripSurfaceView(SurfaceView view) {
@@ -196,11 +218,13 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
             this.users.addAll(users);
             Collections.sort(users);
         }
-        notifyDataSetChanged();
+        if (displayType == TYPE_ALL) {
+            notifyDataSetChanged();
+        }
+
     }
 
     public void addUser(AgoraMember user) {
-
         int index = users.indexOf(user);
         if (index >= 0) {
             AgoraMember member = users.get(index);
@@ -210,7 +234,9 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
                 member.setSurfaceView(user.getSurfaceView());
                 if (!user.isMuteVideo()) {
                     member.setMuteVideo(user.isMuteVideo());
-                    notifyItemChanged(index);
+                    if (displayType == TYPE_ALL) {
+                        notifyItemChanged(index);
+                    }
                 }
             }
             Log.e("AgoraCameraAdapter", "contain,user,return");
@@ -220,7 +246,10 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
 
         this.users.add(user);
         Collections.sort(users);
-        notifyItemInserted(this.users.indexOf(user));
+        if (displayType == TYPE_ALL) {
+            notifyItemInserted(this.users.indexOf(user));
+        }
+
     }
 
     public void removeUser(AgoraMember user) {
@@ -370,6 +399,12 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
     }
 
     public void clearSelectedMember() {
+
+        if (speakerMember != null) {
+            speakerMember.setSelect(false);
+            notifyItemChanged(0);
+        }
+
         for (int i = 0; i < this.users.size(); ++i) {
             AgoraMember member = this.users.get(i);
             if (member.isSelect()) {
@@ -380,11 +415,36 @@ public class AgoraCameraAdapter extends RecyclerView.Adapter<AgoraCameraAdapter.
         }
     }
 
-    public void refreshSize(int size){
+    public void refreshSize(int size) {
         viewType = size;
         notifyDataSetChanged();
     }
 
+    public void changeDisplayType(int displayType, AgoraMember agoraMember) {
+        if (this.displayType != displayType) {
+            notifyDataSetChanged();
+            this.displayType = displayType;
+        }
+        this.speakerMember = agoraMember;
+
+    }
+
+    public void initSpeakerMember(AgoraMember speakerMember) {
+        this.speakerMember = speakerMember;
+        this.speakerMember.setSelect(false);
+    }
 
 
+    public void setSpeakerMember(AgoraMember speakerMember) {
+        this.speakerMember = speakerMember;
+        this.speakerMember.setSelect(false);
+        Log.e("check_speaker", "setSpeakerMember,display_type:" + displayType + ",speakerMember:" + speakerMember);
+        notifyItemChanged(0);
+    }
+
+    public void expandedListForSelected() {
+        this.displayType = TYPE_SELECT_SPEAKER;
+        clearSelectedMember();
+        notifyDataSetChanged();
+    }
 }

@@ -11,7 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-
             <com.kloudsync.techexcel.view.CircleImageView
                 android:id="@+id/member_icon"
                 android:padding="2dp"
@@ -97,16 +96,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <ImageView
-            android:visibility="gone"
-            android:id="@+id/image_setting"
-            android:layout_marginRight="16dp"
-            android:padding="3dp"
+        <RelativeLayout
+            android:layout_marginRight="@dimen/dp_8"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:src="@drawable/member_more"
-            android:layout_width="16dp"
-            android:layout_height="20dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/image_micro"
+                android:padding="2dp"
+                android:src="@drawable/member_micro_on"
+                android:layout_width="18dp"
+                android:layout_height="22dp" />
+
+            <ImageView
+                android:layout_toRightOf="@id/image_micro"
+                android:id="@+id/image_setting"
+                android:padding="2dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/member_more"
+                android:layout_width="18dp"
+                android:layout_height="22dp" />
+        </RelativeLayout>
+
         <RelativeLayout
             android:layout_marginRight="16dp"
 

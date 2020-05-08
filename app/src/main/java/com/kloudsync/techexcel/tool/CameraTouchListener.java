@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.tool;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,13 +18,17 @@ public class CameraTouchListener implements View.OnTouchListener {
     private int endX, endY;
     private RelativeLayout cameraLayout;
     private FollowSpearkerTouchListener followSpearkerTouchListener;
+    int screenWidth, screenHeight;
+
 
     public void setFollowSpearkerTouchListener(FollowSpearkerTouchListener followSpearkerTouchListener) {
         this.followSpearkerTouchListener = followSpearkerTouchListener;
     }
 
-    public void setCameraLayout(RelativeLayout cameraLayout) {
+    public void setCameraLayout(RelativeLayout cameraLayout,Context context) {
         this.cameraLayout = cameraLayout;
+        screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        screenHeight = context.getResources().getDisplayMetrics().heightPixels;
     }
 
     boolean isMove;
@@ -52,8 +57,12 @@ public class CameraTouchListener implements View.OnTouchListener {
                     top += move_bigY;
                     int right = left + cameraLayout.getWidth();
                     int bottom = top + cameraLayout.getHeight();
-                    cameraLayout.layout(left, top, right, bottom);
-                    isMove = true;
+                    Log.e("check_move","left:" + left + ",top:" + top + ",right:" + right + ",bottom:" + bottom);
+
+                    if (left > 0 && top > 0 && right < screenWidth && bottom < screenHeight) {
+                        cameraLayout.layout(left, top, right, bottom);
+                        isMove = true;
+                    }
                 }
                 startX = moveX;
                 startY = moveY;

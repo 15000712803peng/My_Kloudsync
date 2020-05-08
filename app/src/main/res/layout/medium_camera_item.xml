@@ -4,7 +4,7 @@
     android:layout_width="@dimen/speaker_big_width"
     android:layout_height="@dimen/speaker_big"
     android:padding="1dp"
-    android:background="@drawable/bg_select_member"
+    android:background="@drawable/shape_transparent"
     android:id="@+id/select_peple_container"
     >
 
@@ -75,7 +75,7 @@
         android:id="@+id/icon_select_people"
         android:layout_alignParentRight="true"
         android:layout_margin="8dp"
-        android:src="@drawable/icon_select_people"
+        android:src="@drawable/shape_transparent"
         android:layout_width="12dp"
         android:layout_height="12dp" />
 

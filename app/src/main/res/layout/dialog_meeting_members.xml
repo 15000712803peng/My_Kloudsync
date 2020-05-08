@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="10dp"
-                android:text="会议成员"
+                android:text=""
                 android:textColor="@color/black" />
 
             <ImageView

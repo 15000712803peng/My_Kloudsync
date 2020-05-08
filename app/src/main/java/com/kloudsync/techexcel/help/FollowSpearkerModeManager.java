@@ -134,9 +134,6 @@ public class FollowSpearkerModeManager implements View.OnClickListener, PopSpeak
             cameraTouchListener.setFollowSpearkerTouchListener(spearkerTouchListener);
         }
 
-        if (cameraRecyclerViewTouchListener != null) {
-            cameraRecyclerViewTouchListener.setFollowSpearkerTouchListener(spearkerTouchListener);
-        }
 
         vedioFrame = speakerLayout.findViewById(R.id.speaker_view_container);
         nameText = speakerLayout.findViewById(R.id.txt_name);

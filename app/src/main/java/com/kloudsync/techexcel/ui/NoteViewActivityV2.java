@@ -147,6 +147,7 @@ import com.ub.service.activity.AddMeetingMemberActivity;
 import com.ub.service.activity.FloatingWindowNoteManager;
 import com.ub.service.activity.SocketService;
 import com.ub.techexcel.adapter.AgoraCameraAdapter;
+import com.ub.techexcel.adapter.AgoraCameraAdapterV2;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.adapter.FullAgoraCameraAdapter;
 import com.ub.techexcel.adapter.MeetingMembersAdapter;
@@ -209,7 +210,7 @@ import retrofit2.Response;
  */
 
 public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements PopBottomMenu.BottomMenuOperationsListener, PopBottomFile.BottomFileOperationsListener, AddFileFromFavoriteDialog.OnFavoriteDocSelectedListener,
-		BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapter.OnCameraOptionsListener {
+		BottomFileAdapter.OnDocumentClickListener, View.OnClickListener, AddFileFromDocumentDialog.OnDocSelectedListener, MeetingMembersAdapter.OnMemberClickedListener, AgoraCameraAdapterV2.OnCameraOptionsListener {
 
 	public static MeetingConfig meetingConfig;
 	private SocketMessageManager messageManager;
@@ -292,7 +293,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 	@Bind(R.id.layout_note_container)
 	LinearLayout noteContainer;
 
-	AgoraCameraAdapter cameraAdapter;
+	AgoraCameraAdapterV2 cameraAdapter;
 	FullAgoraCameraAdapter fullCameraAdapter;
 	Gson gson;
 	private SharedPreferences sharedPreferences;
@@ -1564,7 +1565,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 				}
 			}
 
-			cameraAdapter = new AgoraCameraAdapter(this);
+			cameraAdapter = new AgoraCameraAdapterV2(this);
 			cameraAdapter.setMembers(copyMembers);
 			cameraAdapter.setOnCameraOptionsListener(this);
 //            fitCameraList();
@@ -1607,7 +1608,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 				cameraAdapter = null;
 			}
 
-			cameraAdapter = new AgoraCameraAdapter(this);
+			cameraAdapter = new AgoraCameraAdapterV2(this);
 			cameraAdapter.setMembers(copyMembers);
 			cameraAdapter.setOnCameraOptionsListener(this);
 //            fitCameraList();
@@ -3987,7 +3988,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 //        showAgoraFull(member);
 	}
 
-	private void handleFullScreenCamera(AgoraCameraAdapter cameraAdapter) {
+	private void handleFullScreenCamera(AgoraCameraAdapterV2 cameraAdapter) {
 		if (cameraAdapter == null || cameraAdapter.getUsers().size() == 0) {
 			return;
 		}

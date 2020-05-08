@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.tool;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -17,14 +18,13 @@ public class CameraRecyclerViewTouchListener implements RecyclerView.OnItemTouch
     private int startX;
     private int endX, endY;
     private RelativeLayout cameraLayout;
-    private FollowSpearkerTouchListener followSpearkerTouchListener;
+    int screenWidth, screenHeight;
 
-    public void setFollowSpearkerTouchListener(FollowSpearkerTouchListener followSpearkerTouchListener) {
-        this.followSpearkerTouchListener = followSpearkerTouchListener;
-    }
 
-    public void setCameraLayout(RelativeLayout cameraLayout) {
+    public void setCameraLayout(RelativeLayout cameraLayout,Context context) {
         this.cameraLayout = cameraLayout;
+        screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        screenHeight = context.getResources().getDisplayMetrics().heightPixels;
     }
 
     boolean isMove;
@@ -64,8 +64,10 @@ public class CameraRecyclerViewTouchListener implements RecyclerView.OnItemTouch
                     top += move_bigY;
                     int right = left + cameraLayout.getWidth();
                     int bottom = top + cameraLayout.getHeight();
-                    cameraLayout.layout(left, top, right, bottom);
-                    isMove = true;
+                    if (left > 0 && top > 0 && right < screenWidth && bottom < screenHeight) {
+                        cameraLayout.layout(left, top, right, bottom);
+                        isMove = true;
+                    }
                 }
                 startX = moveX;
                 startY = moveY;
@@ -79,9 +81,7 @@ public class CameraRecyclerViewTouchListener implements RecyclerView.OnItemTouch
                     params.topMargin = cameraLayout.getTop();
                     params.setMargins(cameraLayout.getLeft(), cameraLayout.getTop(), 0, 0);
                     cameraLayout.setLayoutParams(params);
-                    if(followSpearkerTouchListener != null){
-                        followSpearkerTouchListener.layoutSpeaker(cameraLayout.getLeft(),cameraLayout.getTop());
-                    }
+
                     return true;
                 }else {
                     return false;

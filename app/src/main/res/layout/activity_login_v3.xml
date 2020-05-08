@@ -170,9 +170,9 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:hint="@string/please_input_verify_code"
-                    android:inputType="number"
+                    android:hint="@string/please_input_password"
                     android:singleLine="true"
+                    android:inputType="textPassword"
                     android:textColor="@color/color191836"
                     android:textColorHint="@color/colorB2C0CF"
                     android:textSize="14sp" />

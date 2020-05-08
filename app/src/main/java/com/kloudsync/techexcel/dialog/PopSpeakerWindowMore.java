@@ -133,7 +133,7 @@ public class PopSpeakerWindowMore implements View.OnClickListener {
                     onSizeSettingChanged.onSmallSelected();
                 }
                 EventChangeCameraSize changeCameraSize  = new EventChangeCameraSize();
-                changeCameraSize.setSize(0);
+                changeCameraSize.setSize(1);
                 EventBus.getDefault().post(changeCameraSize);
                 mPopupWindow.dismiss();
                 break;
@@ -145,7 +145,7 @@ public class PopSpeakerWindowMore implements View.OnClickListener {
 
                 sharedPreferences.edit().putString("speaker_size_mode", "big").commit();
                 EventChangeCameraSize changeCameraSize1  = new EventChangeCameraSize();
-                changeCameraSize1.setSize(1);
+                changeCameraSize1.setSize(2);
                 EventBus.getDefault().post(changeCameraSize1);
                 mPopupWindow.dismiss();
                 if (onSizeSettingChanged != null) {
@@ -159,7 +159,7 @@ public class PopSpeakerWindowMore implements View.OnClickListener {
                     return;
                 }
                 EventChangeCameraSize changeCameraSize2  = new EventChangeCameraSize();
-                changeCameraSize2.setSize(2);
+                changeCameraSize2.setSize(3);
                 EventBus.getDefault().post(changeCameraSize2);
                 sharedPreferences.edit().putString("speaker_size_mode", "large").commit();
                 if (onSizeSettingChanged != null) {
