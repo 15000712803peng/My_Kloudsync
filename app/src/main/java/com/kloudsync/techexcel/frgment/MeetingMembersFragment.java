@@ -359,6 +359,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             host = view.findViewById(R.id.txt_host);
             changeToMember = view.findViewById(R.id.txt_change_to_member);
             handsUpText = view.findViewById(R.id.txt_hands_up);
+            microImage = view.findViewById(R.id.image_micro);
+
         }
 
         public CircleImageView icon;
@@ -370,6 +372,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         public TextView host;
         public TextView changeToMember;
         public TextView handsUpText;
+        public ImageView microImage;
 
     }
 
@@ -385,6 +388,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             speakImage = view.findViewById(R.id.image_speak);
             host = view.findViewById(R.id.txt_host);
             stageDown = view.findViewById(R.id.txt_stage_down);
+            microImage = view.findViewById(R.id.image_micro);
         }
 
         public CircleImageView icon;
@@ -396,6 +400,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         public ImageView settingImage;
         public TextView host;
         public ImageView speakImage;
+        public ImageView microImage;
 
     }
 
@@ -691,6 +696,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     mainSpeakerViewHolder.settingImage.setVisibility(View.VISIBLE);
                     mainSpeakerViewHolder.presenter.setVisibility(View.GONE);
                 }
+                if(member.getMicrophoneStatus() != 2){
+                    // 麦克风关闭
+                    mainSpeakerViewHolder.microImage.setImageResource(R.drawable.member_micro_off);
+                }else{
+                    mainSpeakerViewHolder.microImage.setImageResource(R.drawable.member_micro_on);
+                }
 
                 fillViewByRoleForMainSpeakingMembers(member, mainSpeakerViewHolder);
                 //------
@@ -710,6 +721,13 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     speakerViewHolder.me.setVisibility(View.VISIBLE);
                 } else {
                     speakerViewHolder.me.setVisibility(View.GONE);
+                }
+
+                if(member.getMicrophoneStatus() != 2){
+                    // 麦克风关闭
+                    speakerViewHolder.microImage.setImageResource(R.drawable.member_micro_off);
+                }else{
+                    speakerViewHolder.microImage.setImageResource(R.drawable.member_micro_on);
                 }
 
                 fillDeviceType(member.getDeviceType(), speakerViewHolder.type);
@@ -861,6 +879,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             }
         }
 
+
+
 //        if (role == MeetingConfig.MeetingRole.MEMBER || ) {
 //            holder.changeToMember.setVisibility(View.GONE);
 //
@@ -922,6 +942,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
     private void fillViewByRoleForAuditors(final MeetingMember meetingMember, final ViewHolder holder) {
 
+        holder.settingImage.setVisibility(View.VISIBLE);
         if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
             // 当前的member不是自己
             if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || (meetingConfig.getMeetingHostId() + "").equals(AppConfig.UserID) || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {

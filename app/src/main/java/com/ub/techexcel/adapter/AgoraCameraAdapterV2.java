@@ -218,7 +218,7 @@ public class AgoraCameraAdapterV2 extends RecyclerView.Adapter<AgoraCameraAdapte
             this.users.addAll(users);
             Collections.sort(users);
         }
-        if(displayType == TYPE_ALL){
+        if (displayType == TYPE_ALL) {
             notifyDataSetChanged();
         }
 
@@ -400,7 +400,7 @@ public class AgoraCameraAdapterV2 extends RecyclerView.Adapter<AgoraCameraAdapte
 
     public void clearSelectedMember() {
 
-        if(speakerMember != null){
+        if (speakerMember != null) {
             speakerMember.setSelect(false);
             notifyItemChanged(0);
         }
@@ -429,11 +429,10 @@ public class AgoraCameraAdapterV2 extends RecyclerView.Adapter<AgoraCameraAdapte
 
     }
 
-    public void initSpeakerMember(AgoraMember speakerMember){
+    public void initSpeakerMember(AgoraMember speakerMember) {
         this.speakerMember = speakerMember;
         this.speakerMember.setSelect(false);
     }
-
 
 
     public void setSpeakerMember(AgoraMember speakerMember) {
