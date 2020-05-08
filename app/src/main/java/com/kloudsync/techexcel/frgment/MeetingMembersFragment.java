@@ -283,7 +283,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
     @Override
     public void setTeamSpeaker(MeetingMember meetingMember) {  //设为临时发言人
-        setSpeakMember(meetingMember);
+        setHandsAllowSpeak(meetingMember);
     }
 
     @Override
