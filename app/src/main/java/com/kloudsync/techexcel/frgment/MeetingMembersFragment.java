@@ -521,7 +521,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     holder.host.setVisibility(View.GONE);
                 }
                 if (member.getPresenter() == 1) {
-                    holder.settingImage.setVisibility(View.GONE);
+                    holder.settingImage.setVisibility(View.INVISIBLE);
                     holder.presenter.setVisibility(View.VISIBLE);
                 } else {
                     holder.settingImage.setVisibility(View.VISIBLE);
@@ -688,7 +688,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     mainSpeakerViewHolder.host.setVisibility(View.GONE);
                 }
                 if (member.getPresenter() == 1) {
-                    mainSpeakerViewHolder.settingImage.setVisibility(View.GONE);
+                    mainSpeakerViewHolder.settingImage.setVisibility(View.INVISIBLE);
                     mainSpeakerViewHolder.presenter.setVisibility(View.VISIBLE);
                     String host=getBindViewText(1027);
                     if(!TextUtils.isEmpty(host))mainSpeakerViewHolder.presenter.setText(host);
@@ -868,12 +868,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 // 如果自己是presenter
                 holder.settingImage.setVisibility(View.VISIBLE);
             } else {
-                holder.settingImage.setVisibility(View.GONE);
+                holder.settingImage.setVisibility(View.INVISIBLE);
             }
 
         } else {
             if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                holder.settingImage.setVisibility(View.GONE);
+                holder.settingImage.setVisibility(View.INVISIBLE);
             } else {
                 holder.settingImage.setVisibility(View.VISIBLE);
             }
@@ -915,12 +915,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 // 如果自己是presenter
                 holder.settingImage.setVisibility(View.VISIBLE);
             } else {
-                holder.settingImage.setVisibility(View.GONE);
+                holder.settingImage.setVisibility(View.INVISIBLE);
             }
 
         } else {
             if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                holder.settingImage.setVisibility(View.GONE);
+                holder.settingImage.setVisibility(View.INVISIBLE);
             } else {
                 holder.settingImage.setVisibility(View.VISIBLE);
             }
@@ -1005,12 +1005,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 // 如果自己是presenter
                 holder.settingImage.setVisibility(View.VISIBLE);
             } else {
-                holder.settingImage.setVisibility(View.GONE);
+                holder.settingImage.setVisibility(View.INVISIBLE);
             }
 
         } else {
             if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                holder.settingImage.setVisibility(View.GONE);
+                holder.settingImage.setVisibility(View.INVISIBLE);
             } else {
                 holder.settingImage.setVisibility(View.VISIBLE);
             }
@@ -1063,12 +1063,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 // 如果自己是presenter
                 holder.settingImage.setVisibility(View.VISIBLE);
             } else {
-                holder.settingImage.setVisibility(View.GONE);
+                holder.settingImage.setVisibility(View.INVISIBLE);
             }
 
         } else {
             if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                holder.settingImage.setVisibility(View.GONE);
+                holder.settingImage.setVisibility(View.INVISIBLE);
             } else {
                 holder.settingImage.setVisibility(View.VISIBLE);
             }

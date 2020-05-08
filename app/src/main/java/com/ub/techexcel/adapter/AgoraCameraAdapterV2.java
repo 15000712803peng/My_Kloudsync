@@ -67,11 +67,11 @@ public class AgoraCameraAdapterV2 extends RecyclerView.Adapter<AgoraCameraAdapte
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        if (viewType == 0) {
+        if (viewType == 1) {
             view = inflater.inflate(R.layout.small_camera_item, parent, false);
-        } else if (viewType == 1) {
-            view = inflater.inflate(R.layout.medium_camera_item, parent, false);
         } else if (viewType == 2) {
+            view = inflater.inflate(R.layout.medium_camera_item, parent, false);
+        } else if (viewType == 3) {
             view = inflater.inflate(R.layout.large_camera_item, parent, false);
         } else {
             view = inflater.inflate(R.layout.small_camera_item, parent, false);

@@ -112,7 +112,6 @@
             <ImageView
                 android:layout_toRightOf="@id/image_micro"
                 android:id="@+id/image_setting"
-                android:layout_marginRight="16dp"
                 android:padding="2dp"
                 android:layout_centerVertical="true"
                 android:src="@drawable/member_more"
