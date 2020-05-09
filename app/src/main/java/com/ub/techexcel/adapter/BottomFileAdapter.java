@@ -15,6 +15,8 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
+import com.kloudsync.techexcel.bean.MeetingType;
+import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DocAndMeetingFileListPopupwindow;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.view.RoundProgressBar;
