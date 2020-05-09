@@ -212,8 +212,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 tabSpeakersMembers.addAll(handsUpMembers);
             }
         }
-
-
         meetingConfig.setViewType(0);
         for (MeetingMember tabSpeakersMember : tabSpeakersMembers) {
             if((tabSpeakersMember.getUserId()+"").equals(AppConfig.UserID)){
@@ -221,6 +219,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 break;
             }
         }
+        Log.e("getViewType",meetingConfig.getViewType()+"");
     }
 
     @Override

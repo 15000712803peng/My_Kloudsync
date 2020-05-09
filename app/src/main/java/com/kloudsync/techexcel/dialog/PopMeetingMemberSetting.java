@@ -149,8 +149,16 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
             }
 
         }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
-            setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
-            setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
+
+            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+                setPresenter.setVisibility(View.VISIBLE); //设为演示人
+                setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
+                setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
+            }else{
+
+                setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
+                setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
+            }
 
         }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
 
