@@ -1001,6 +1001,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         this.documents.addAll(documents.getDocuments());
         if (this.documents != null && this.documents.size() > 0) {
             int index = this.documents.indexOf(new MeetingDocument(meetingConfig.getFileId()));
+            meetingConfig.setAllDocuments(this.documents);
+            hideEnterLoading();
+            Log.e("check_document_index","index:" + index);
             if (index < 0) {
                 if (meetingConfig.getType() == MeetingType.MEETING) {
                     meetingDefaultDocument.setVisibility(View.VISIBLE);
@@ -1014,11 +1017,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     handleMeetingDefaultDocument();
                 } else {
                     index = 0;
-                    meetingConfig.setAllDocuments(this.documents);
                     meetingConfig.setDocument(this.documents.get(index));
                     downLoadDocumentPageAndShow();
                 }
 
+            }else {
+                meetingConfig.setDocument(this.documents.get(index));
+                downLoadDocumentPageAndShow();
             }
 
         } else {
