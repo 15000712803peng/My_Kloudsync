@@ -282,6 +282,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Bind(R.id.layout_meeting_default_document)
     RelativeLayout meetingDefaultDocument;
 
+    @Bind(R.id.tv_doc_organiser_name)
+    TextView organiserNameTxt;
     @Bind(R.id.txt_meeting_id)
     TextView meetingIdText;
     @Bind(R.id.tv_doc_and_meeting_progress)
@@ -4053,6 +4055,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //        followSpearkerModeManager.setSpeakerContainer(speakerContainer);
 //        followSpearkerModeManager.setOnSpeakerViewClickedListener(this);
 //        followSpearkerModeManager.initViews(this, true);
+        organiserNameTxt.setText(sharedPreferences.getString("SchoolName", ""));
     }
 
     @Override
