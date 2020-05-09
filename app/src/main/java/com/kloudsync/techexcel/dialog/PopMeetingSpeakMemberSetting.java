@@ -17,6 +17,10 @@ import com.kloudsync.techexcel.config.AppConfig;
 
 import org.greenrobot.eventbus.EventBus;
 
+import static com.kloudsync.techexcel.bean.MeetingMember.TYPE_ITEM_HANDSUP_MEMBER;
+import static com.kloudsync.techexcel.bean.MeetingMember.TYPE_ITEM_MAIN_SPEAKER;
+import static com.kloudsync.techexcel.bean.MeetingMember.TYPE_ITEM_SPEAKING_SPEAKER;
+
 /**
  * Created by tonyan on 2019/12/20.
  */
@@ -73,20 +77,42 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
     public void showAtBottom(MeetingMember meetingMember,View view,MeetingConfig meetingConfig) {
         this.meetingMember = meetingMember;
         this.meetingConfig = meetingConfig;
-        if((meetingMember.getUserId() +"").equals(AppConfig.UserID)){
-            setMainMember.setVisibility(View.GONE);
-        }
-        if(meetingConfig.getMeetingHostId().equals(meetingMember.getUserId()+"")){
-            // 操作的成员是HOST
-            kickOffMember.setVisibility(View.GONE);
+//        if((meetingMember.getUserId() +"").equals(AppConfig.UserID)){
+//            setMainMember.setVisibility(View.GONE);
+//        }
+//        if(meetingConfig.getMeetingHostId().equals(meetingMember.getUserId()+"")){
+//            // 操作的成员是HOST
+//            kickOffMember.setVisibility(View.GONE);
+//        }else {
+//            // 不是HOST，如果自己是HOST
+//            if(AppConfig.UserID.equals(meetingConfig.getMeetingHostId())){
+//                kickOffMember.setVisibility(View.VISIBLE);
+//            }else {
+//                kickOffMember.setVisibility(View.GONE);
+//            }
+//        }
+
+
+        //判断自己的身份
+        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
+            setMainMember.setVisibility(View.VISIBLE); //设为发言人
+            setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
+            kickOffMember.setVisibility(View.VISIBLE); //请他离开会议
+        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
+            setMainMember.setVisibility(View.VISIBLE); //设为发言人
+            setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
+            setMainMember.setVisibility(View.VISIBLE); //设为发言人
+            setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+            setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+
         }else {
-            // 不是HOST，如果自己是HOST
-            if(AppConfig.UserID.equals(meetingConfig.getMeetingHostId())){
-                kickOffMember.setVisibility(View.VISIBLE);
-            }else {
-                kickOffMember.setVisibility(View.GONE);
-            }
+
         }
+
+
         mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int popupHeight = mView.getMeasuredHeight();
         int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_180);

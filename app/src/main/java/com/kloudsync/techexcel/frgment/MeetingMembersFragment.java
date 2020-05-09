@@ -902,31 +902,27 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 //        meetingConfig.getMeetingHostId().equals(member.getUserId() + "")  是否是host
         //
 
-        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
-            // 当前的member不是自己
-            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                // 如果自己是presenter
-                holder.settingImage.setVisibility(View.VISIBLE);
-            } else {
-                holder.settingImage.setVisibility(View.INVISIBLE);
-            }
-
-        } else {
-            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                holder.settingImage.setVisibility(View.INVISIBLE);
-            } else {
-                holder.settingImage.setVisibility(View.VISIBLE);
-            }
-        }
+//        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
+//            // 当前的member不是自己
+//            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+//                // 如果自己是presenter
+//                holder.settingImage.setVisibility(View.VISIBLE);
+//            } else {
+//                holder.settingImage.setVisibility(View.INVISIBLE);
+//            }
+//
+//        } else {
+//            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+//                holder.settingImage.setVisibility(View.INVISIBLE);
+//            } else {
+//                holder.settingImage.setVisibility(View.VISIBLE);
+//            }
+//        }
 
 
         //判断自己的身份
         if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
-            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
-
-            }else{
-                holder.settingImage.setVisibility(View.VISIBLE);
-            }
+            holder.settingImage.setVisibility(View.VISIBLE);
         }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
             holder.settingImage.setVisibility(View.VISIBLE);
         }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
@@ -940,19 +936,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }
 
 
-
-//        if (role == MeetingConfig.MeetingRole.MEMBER || ) {
-//            holder.changeToMember.setVisibility(View.GONE);
-//
-//        } else if (role == MeetingConfig.MeetingRole.AUDIENCE) {
-//            holder.settingImage.setVisibility(View.GONE);
-//            holder.changeToMember.setVisibility(View.VISIBLE);
-
-//
-//        } else if (role == MeetingConfig.MeetingRole.BE_INVITED) {
-//            holder.settingImage.setVisibility(View.GONE);
-//            holder.changeToMember.setVisibility(View.GONE);
-//        }
     }
 
 
@@ -1015,7 +998,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || (meetingConfig.getMeetingHostId() + "").equals(AppConfig.UserID) || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
                 // 如果自己是presenter
                 holder.handsUpText.setVisibility(View.GONE);
-                holder.settingImage.setVisibility(View.VISIBLE);
+//                holder.settingImage.setVisibility(View.VISIBLE);
 //                holder.changeToMember.setVisibility(View.VISIBLE);
 //                holder.changeToMember.setOnClickListener(new View.OnClickListener() {
 //                    @Override
@@ -1026,16 +1009,34 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             } else {
 
                 holder.handsUpText.setVisibility(View.GONE);
-                holder.settingImage.setVisibility(View.VISIBLE);
+//                holder.settingImage.setVisibility(View.VISIBLE);
 //                holder.changeToMember.setVisibility(View.GONE);
 //                holder.changeToMember.setOnClickListener(null);
             }
 
         } else {
             holder.handsUpText.setVisibility(View.VISIBLE);
-            holder.settingImage.setVisibility(View.GONE);
+//            holder.settingImage.setVisibility(View.GONE);
 
         }
+
+
+        //判断自己的身份
+        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
+            holder.settingImage.setVisibility(View.VISIBLE);
+        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
+            holder.settingImage.setVisibility(View.VISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
+            holder.settingImage.setVisibility(View.INVISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+            holder.settingImage.setVisibility(View.INVISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+            holder.settingImage.setVisibility(View.INVISIBLE);
+        }else {
+            holder.settingImage.setVisibility(View.INVISIBLE);
+        }
+
+
 
         if (meetingMember.getHandStatus() == 0) {
             holder.handsUpText.setText("举手");
@@ -1069,23 +1070,42 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
 //        meetingConfig.getMeetingHostId().equals(member.getUserId() + "")  是否是host
         //
+//
+//        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
+//            // 当前的member不是自己
+//            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {
+//                // 如果自己是presenter
+//                holder.settingImage.setVisibility(View.VISIBLE);
+//            } else {
+//                holder.settingImage.setVisibility(View.INVISIBLE);
+//            }
+//
+//        } else {
+//            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+//                holder.settingImage.setVisibility(View.INVISIBLE);
+//            } else {
+//                holder.settingImage.setVisibility(View.VISIBLE);
+//            }
+//        }
 
-        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
-            // 当前的member不是自己
-            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {
-                // 如果自己是presenter
-                holder.settingImage.setVisibility(View.VISIBLE);
-            } else {
-                holder.settingImage.setVisibility(View.INVISIBLE);
-            }
 
-        } else {
-            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                holder.settingImage.setVisibility(View.INVISIBLE);
-            } else {
-                holder.settingImage.setVisibility(View.VISIBLE);
-            }
+
+        //判断自己的身份
+        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
+            holder.settingImage.setVisibility(View.VISIBLE);
+        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
+            holder.settingImage.setVisibility(View.VISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
+            holder.settingImage.setVisibility(View.VISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+            holder.settingImage.setVisibility(View.VISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+            holder.settingImage.setVisibility(View.INVISIBLE);
+        }else {
+            holder.settingImage.setVisibility(View.INVISIBLE);
         }
+
+
 
         MeetingMember me = meetingConfig.getMe();
         if (me != null) {
@@ -1128,22 +1148,39 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 //        meetingConfig.getMeetingHostId().equals(member.getUserId() + "")  是否是host
         //
 
-        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
-            // 当前的member不是自己
-            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                // 如果自己是presenter
-                holder.settingImage.setVisibility(View.VISIBLE);
-            } else {
-                holder.settingImage.setVisibility(View.INVISIBLE);
-            }
+//        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
+//            // 当前的member不是自己
+//            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+//                // 如果自己是presenter
+//                holder.settingImage.setVisibility(View.VISIBLE);
+//            } else {
+//                holder.settingImage.setVisibility(View.INVISIBLE);
+//            }
+//
+//        } else {
+//            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+//                holder.settingImage.setVisibility(View.INVISIBLE);
+//            } else {
+//                holder.settingImage.setVisibility(View.VISIBLE);
+//            }
+//        }
 
-        } else {
-            if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-                holder.settingImage.setVisibility(View.INVISIBLE);
-            } else {
-                holder.settingImage.setVisibility(View.VISIBLE);
-            }
+
+        //判断自己的身份
+        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
+            holder.settingImage.setVisibility(View.VISIBLE);
+        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
+            holder.settingImage.setVisibility(View.VISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
+            holder.settingImage.setVisibility(View.VISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+            holder.settingImage.setVisibility(View.INVISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+            holder.settingImage.setVisibility(View.INVISIBLE);
+        }else {
+            holder.settingImage.setVisibility(View.INVISIBLE);
         }
+
 
     }
 
