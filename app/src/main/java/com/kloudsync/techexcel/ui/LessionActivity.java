@@ -399,7 +399,7 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
         handleRejoinMeetingBecauseFailed();
         initWeb();
         soundtrackPlayManager = new SoundtrackPlayManager(this, meetingConfig, soundtrackPlayLayout);
-        bottomFilePop = new PopBottomFile(this);
+        bottomFilePop = new PopBottomFile(this,meetingConfig);
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         handleRejoinMeetingBecauseFailed();
@@ -3181,7 +3181,7 @@ public class LessionActivity extends BaseLessionActivity implements PopBottomMen
     @Override
     public void menuFileClicked() {
         if (bottomFilePop == null) {
-            bottomFilePop = new PopBottomFile(this);
+            bottomFilePop = new PopBottomFile(this,meetingConfig);
         }
         if (documents != null && documents.size() > 0) {
             bottomFilePop.setDocuments(documents, meetingConfig.getDocument().getItemID(), this);

@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 
@@ -44,6 +45,7 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
     private RecyclerView fileList;
     private BottomFileAdapter adapter;
     private LinearLayout uploadLayout;
+    private MeetingConfig meetingConfig;
 
     @Override
     public void onClick(View v) {
@@ -128,7 +130,8 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
 
     private BottomFileOperationsListener bottomFileOperationsListener;
 
-    public PopBottomFile(Context context) {
+    public PopBottomFile(Context context,MeetingConfig meetingConfig) {
+        this.meetingConfig = meetingConfig;
         this.mContext = context;
         getPopupWindow();
         bottomFileWindow.setAnimationStyle(R.style.PopupAnimation5);
@@ -226,7 +229,7 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
 
     public void setDocuments(List<MeetingDocument> documents, int documentId, BottomFileAdapter.OnDocumentClickListener clickListener) {
         if (adapter == null) {
-            adapter = new BottomFileAdapter(mContext, documents);
+            adapter = new BottomFileAdapter(mContext, documents,meetingConfig);
             adapter.setOnDocumentClickListener(clickListener);
             adapter.setDocumentId(documents,documentId);
             fileList.setAdapter(adapter);

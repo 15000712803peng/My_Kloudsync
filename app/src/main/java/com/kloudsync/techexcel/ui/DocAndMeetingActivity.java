@@ -406,7 +406,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         menuManager.setMenuIcon(menuIcon);
         initWeb();
         soundtrackPlayManager = new SoundtrackPlayManager(this, meetingConfig, soundtrackPlayLayout);
-        bottomFilePop = new PopBottomFile(this);
+        bottomFilePop = new PopBottomFile(this,meetingConfig);
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         /*获取机构类型*/
@@ -3715,7 +3715,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Override
     public void menuFileClicked() {
         if (bottomFilePop == null) {
-            bottomFilePop = new PopBottomFile(this);
+            bottomFilePop = new PopBottomFile(this,meetingConfig);
         }
         if (documents != null && documents.size() > 0) {
             int itemId = 0;
