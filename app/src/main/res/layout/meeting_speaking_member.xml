@@ -100,6 +100,7 @@
         <ImageView
             android:layout_marginLeft="8dp"
             android:layout_toRightOf="@id/txt_type"
+            android:visibility="invisible"
             android:layout_centerVertical="true"
             android:id="@+id/image_speak"
             android:src="@drawable/image_can_speak"

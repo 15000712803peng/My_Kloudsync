@@ -1059,23 +1059,23 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }
 
         MeetingMember me = meetingConfig.getMe();
-//        if (me != null) {
-//            if (me.getRole() == MeetingConfig.MeetingRole.HOST || (me.getRole() == MeetingConfig.MeetingRole.MEMBER && me.getTempOnStage() == 0)) {
-//                //是主讲人
-//                holder.stageDown.setVisibility(View.VISIBLE);
-//                holder.stageDown.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        setSpeakToAuditor(meetingMember);
-//                    }
-//                });
-//            } else {
-//                holder.stageDown.setVisibility(View.GONE);
-//            }
-//        } else {
-//            holder.stageDown.setVisibility(View.GONE);
-//        }
-        holder.stageDown.setVisibility(View.GONE);
+        if (me != null) {
+            if (me.getRole() == MeetingConfig.MeetingRole.HOST || (me.getRole() == MeetingConfig.MeetingRole.MEMBER && me.getTempOnStage() == 0)) {
+                //是主讲人
+                holder.stageDown.setVisibility(View.VISIBLE);
+                holder.stageDown.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setSpeakToAuditor(meetingMember);
+                    }
+                });
+            } else {
+                holder.stageDown.setVisibility(View.GONE);
+            }
+        } else {
+            holder.stageDown.setVisibility(View.GONE);
+        }
+//        holder.stageDown.setVisibility(View.GONE);
 
         if (meetingMember.getMicrophoneStatus() == 2) {
             //打开状态
