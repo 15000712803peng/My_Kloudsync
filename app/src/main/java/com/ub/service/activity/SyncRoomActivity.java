@@ -4346,6 +4346,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         WindowManager m = getWindowManager();
         Display d = m.getDefaultDisplay();
         WindowManager.LayoutParams p = dialogWindow.getAttributes();
+//        p.width = ViewGroup.LayoutParams.MATCH_PARENT;
         p.width = (int) (d.getWidth() * 0.8);
         dialogWindow.setAttributes(p);
         dialog.setCanceledOnTouchOutside(true);
