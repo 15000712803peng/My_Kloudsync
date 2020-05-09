@@ -67,6 +67,15 @@ public class MeetingConfig {
     private AgoraMember hostAgora;
     private int handStatus;
     private int cameraDiplayMode = -1;
+    private int viewType;
+
+    public int getViewType() {
+        return viewType;
+    }
+
+    public void setViewType(int viewType) {
+        this.viewType = viewType;
+    }
 
     public int getCameraDiplayMode() {
         return cameraDiplayMode;

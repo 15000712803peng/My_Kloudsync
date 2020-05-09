@@ -51,6 +51,9 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.kloudsync.techexcel.bean.MeetingMember.TYPE_ITEM_HANDSUP_MEMBER;
+import static com.kloudsync.techexcel.bean.MeetingMember.TYPE_ITEM_MAIN_SPEAKER;
+import static com.kloudsync.techexcel.bean.MeetingMember.TYPE_ITEM_SPEAKING_SPEAKER;
 
 /**
  * Created by tonyan on 2019/11/9.
@@ -210,6 +213,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             }
         }
 
+        meetingConfig.setViewType(0);
+        for (MeetingMember tabSpeakersMember : tabSpeakersMembers) {
+            if((tabSpeakersMember.getUserId()+"")==AppConfig.UserID){
+                meetingConfig.setViewType(tabSpeakersMember.getViewType());
+            }
+        }
     }
 
     @Override
@@ -911,6 +920,26 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }
 
 
+        //判断自己的身份
+        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
+            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+
+            }else{
+                holder.settingImage.setVisibility(View.VISIBLE);
+            }
+        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
+            holder.settingImage.setVisibility(View.VISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
+            holder.settingImage.setVisibility(View.VISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+            holder.settingImage.setVisibility(View.INVISIBLE);
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+            holder.settingImage.setVisibility(View.INVISIBLE);
+        }else {
+            holder.settingImage.setVisibility(View.INVISIBLE);
+        }
+
+
 
 //        if (role == MeetingConfig.MeetingRole.MEMBER || ) {
 //            holder.changeToMember.setVisibility(View.GONE);
@@ -1075,7 +1104,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         } else {
             holder.stageDown.setVisibility(View.GONE);
         }
-//        holder.stageDown.setVisibility(View.GONE);
 
         if (meetingMember.getMicrophoneStatus() == 2) {
             //打开状态
