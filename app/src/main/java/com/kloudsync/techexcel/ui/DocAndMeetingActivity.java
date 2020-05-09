@@ -6209,6 +6209,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             } else if (sizeMode == 3) {
                                 _sizeMode = "large";
                             }
+
                             sharedPreferences.edit().putString("speaker_size_mode", _sizeMode).commit();
                         }
 
@@ -6324,6 +6325,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         }
     }
+
 
     /**
      * 暂停,恢复会议,更新暂停会议信息
