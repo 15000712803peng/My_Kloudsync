@@ -892,7 +892,7 @@
     <string name="_Camera">相机</string>
     <string name="save_and_leave">保存并离开</string>
     <string name="title_to_leave">你确定要离开吗?</string>
-    <string name="presenter">主持人</string>
+    <string name="presenter">演示人</string>
 
     <string name="title_to_leave_meeting">你确定要离开会议吗?</string>
     <string name="title_to_end_meeting">你确定要结束会议吗?</string>
@@ -901,7 +901,7 @@
     <string name="save_and_End">保存并结束</string>
     <string name="End">结束</string>
     <string name="Me">我</string>
-    <string name="Starter">发起者</string>
+    <string name="Starter">主持人</string>
 
     <string name="playing">播放中</string>
     <string name="paused">已暂停</string>

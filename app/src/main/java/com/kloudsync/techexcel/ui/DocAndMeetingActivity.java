@@ -573,14 +573,19 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-            /*创建音想弹窗*/
-        if (yinxiangCreatePopup != null && meetingConfig != null && meetingConfig.getDocument() != null && yinxiangCreatePopup.isShowing()) {
-            yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
+	    /*创建音想弹窗*/
+	    if (yinxiangCreatePopup != null && meetingConfig != null && meetingConfig.getDocument() != null && yinxiangCreatePopup.isShowing()) {
+		    yinxiangCreatePopup.StartPop(web, meetingConfig.getDocument().getAttachmentID() + "");
+	    }
+	    /*选择音想背景音乐弹窗*/
+	    if (favoritePopup != null && favoritePopup.isShowing()) {
+		    favoritePopup.StartPop(web);
+	    }
+        if (bottomFilePop != null && bottomFilePop.isShowing()) {
+            bottomFilePop.hide();
+            bottomFilePop.show(web, this);
         }
-            /*选择音想背景音乐弹窗*/
-        if (favoritePopup != null && favoritePopup.isShowing()) {
-            favoritePopup.StartPop(web);
-        }
+
 	    /*会议暂停界面*/
         RelativeLayout.LayoutParams layoutParams = null;
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {

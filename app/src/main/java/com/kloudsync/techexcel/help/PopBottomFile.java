@@ -1,22 +1,16 @@
 package com.kloudsync.techexcel.help;
 
-import android.content.ContentValues;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.MediaStore;
+import android.content.DialogInterface;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -28,6 +22,7 @@ import com.kloudsync.techexcel.bean.EventShowMenuIcon;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.ub.techexcel.adapter.BottomFileAdapter;
+import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -36,9 +31,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickListener {
+public class PopBottomFile implements DialogInterface.OnDismissListener, OnClickListener {
 
-    private PopupWindow bottomFileWindow;
+	private Dialog bottomFileWindow;
     int width;
     private Context mContext;
     //--
@@ -46,6 +41,7 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
     private BottomFileAdapter adapter;
     private LinearLayout uploadLayout;
     private MeetingConfig meetingConfig;
+    private RelativeLayout mRllListFile;
 
     @Override
     public void onClick(View v) {
@@ -134,7 +130,7 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
         this.meetingConfig = meetingConfig;
         this.mContext = context;
         getPopupWindow();
-        bottomFileWindow.setAnimationStyle(R.style.PopupAnimation5);
+//        bottomFileWindow.setAnimationStyle(R.style.PopupAnimation5);
     }
 
 
@@ -153,12 +149,13 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
         View view = layoutInflater
                 .inflate(R.layout.pop_bottom_file, null);
         RelativeLayout filePop = (RelativeLayout) view.findViewById(R.id.popup_bottom_file);
+	    mRllListFile = view.findViewById(R.id.rll_list_file);
         uploadLayout = (LinearLayout) view.findViewById(R.id.upload_linearlayout);
         filePop.setOnClickListener(this);
 
         fileList = (RecyclerView) view.findViewById(R.id.list_file);
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(mContext);
-        linearLayoutManager3.setOrientation(LinearLayoutManager.HORIZONTAL);
+//        linearLayoutManager3.setOrientation(LinearLayoutManager.HORIZONTAL);
         fileList.setLayoutManager(linearLayoutManager3);
 
         RelativeLayout take_photo = (RelativeLayout) view.findViewById(R.id.take_photo);
@@ -185,13 +182,18 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
 
         blank_file.setOnClickListener(this);
 
-        bottomFileWindow = new PopupWindow(view, LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT, false);
-        bottomFileWindow.setOnDismissListener(this);
-        bottomFileWindow.setBackgroundDrawable(new BitmapDrawable());
-        bottomFileWindow.setAnimationStyle(R.style.anination2);
-        bottomFileWindow.setFocusable(true);
 
+//        if (Tools.isOrientationPortrait((Activity) mContext)) {
+	    bottomFileWindow = new Dialog(mContext, R.style.my_dialog);
+	    bottomFileWindow.setContentView(view);
+	    bottomFileWindow.setCanceledOnTouchOutside(true);
+      /*  } else {
+            bottomFileWindow = new PopupWindow(view, mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360), RelativeLayout.LayoutParams.MATCH_PARENT, false);
+        }*/
+        bottomFileWindow.setOnDismissListener(this);
+//        bottomFileWindow.setBackgroundDrawable(new BitmapDrawable());
+//        bottomFileWindow.setAnimationStyle(R.style.anination2);
+//        bottomFileWindow.setFocusable(true);
     }
 
 
@@ -201,9 +203,38 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
             init();
         }
 
-        bottomFileWindow.setOnDismissListener(this);
+        /*if (Tools.isOrientationPortrait((Activity) mContext)) {
+            mRllListFile.setBackgroundResource(R.drawable.shape_white_top_radius_15);
+        } else {
+            mRllListFile.setBackgroundResource(R.drawable.shape_white_left_radius_15);
+        }*/
+//        if (bottomFileWindow.isShowing()) {
+	    WindowManager.LayoutParams layoutParams = bottomFileWindow.getWindow().getAttributes();
+	    if (Tools.isOrientationPortrait((Activity) mContext)) {
+		    mRllListFile.setBackgroundResource(R.drawable.shape_white_top_radius_15);
+		    bottomFileWindow.getWindow().setGravity(Gravity.BOTTOM);
+		    layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+		    layoutParams.height = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360);
+//                bottomFileWindow.update(RelativeLayout.LayoutParams.MATCH_PARENT, mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360));
+	    } else {
+		    mRllListFile.setBackgroundResource(R.drawable.shape_white_left_radius_15);
+		    bottomFileWindow.getWindow().setGravity(Gravity.RIGHT);
+		    layoutParams.width = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360);
+		    layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
+		    bottomFileWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                bottomFileWindow.update(mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360), RelativeLayout.LayoutParams.MATCH_PARENT);
+	    }
+	    bottomFileWindow.getWindow().setAttributes(layoutParams);
+//        }
+      /*  if (!bottomFileWindow.isShowing()) {
+            if (Tools.isOrientationPortrait((Activity) mContext)) {
+                bottomFileWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
+            } else {
+                bottomFileWindow.showAtLocation(view, Gravity.RIGHT, 0, 0);
+            }
+        }*/
         if (!bottomFileWindow.isShowing()) {
-            bottomFileWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
+	        bottomFileWindow.show();
         }
     }
 
@@ -223,7 +254,7 @@ public class PopBottomFile implements PopupWindow.OnDismissListener, OnClickList
     }
 
     @Override
-    public void onDismiss() {
+    public void onDismiss(DialogInterface dialog) {
         EventBus.getDefault().post(new EventShowMenuIcon());
     }
 

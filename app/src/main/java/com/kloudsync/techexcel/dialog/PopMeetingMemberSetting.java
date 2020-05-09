@@ -22,6 +22,10 @@ import com.kloudsync.techexcel.tool.DensityUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
+import static com.kloudsync.techexcel.bean.MeetingMember.TYPE_ITEM_HANDSUP_MEMBER;
+import static com.kloudsync.techexcel.bean.MeetingMember.TYPE_ITEM_MAIN_SPEAKER;
+import static com.kloudsync.techexcel.bean.MeetingMember.TYPE_ITEM_SPEAKING_SPEAKER;
+
 /**
  * Created by tonyan on 2019/12/20.
  */
@@ -100,30 +104,54 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
                 kickOffMember.setVisibility(View.GONE);
             }
         }
-
         showAsDropDown(view, -context.getResources().getDimensionPixelOffset(R.dimen.meeting_members_setting_width) + context.getResources().getDimensionPixelOffset(R.dimen.pop_setting_left_margin), 10);
     }
 
     public void showAtLeft(MeetingMember meetingMember, View view, MeetingConfig meetingConfig) {
         this.meetingMember = meetingMember;
         this.meetingConfig = meetingConfig;
-        if (meetingMember.getPresenter() == 1) {
-            setPresenter.setVisibility(View.GONE);
-        }
-        if (meetingMember.getPresenter() == 1 || meetingMember.getRole() == 2) {
-            setAuditor.setVisibility(View.GONE);
-        }
-        if (meetingConfig.getMeetingHostId().equals(meetingMember.getUserId() + "")) {
-            // 操作的成员是HOST
-            kickOffMember.setVisibility(View.GONE);
-        } else {
-            // 不是HOST，如果自己是HOST
-            if (AppConfig.UserID.equals(meetingConfig.getMeetingHostId())) {
-                kickOffMember.setVisibility(View.VISIBLE);
-            } else {
-                kickOffMember.setVisibility(View.GONE);
+//        if (meetingMember.getPresenter() == 1) {
+//            setPresenter.setVisibility(View.GONE);
+//        }
+//        if (meetingMember.getPresenter() == 1 || meetingMember.getRole() == 2) {
+//            setAuditor.setVisibility(View.GONE);
+//        }
+//        if (meetingConfig.getMeetingHostId().equals(meetingMember.getUserId() + "")) {
+//            // 操作的成员是HOST
+//            kickOffMember.setVisibility(View.GONE);
+//        } else {
+//            // 不是HOST，如果自己是HOST
+//            if (AppConfig.UserID.equals(meetingConfig.getMeetingHostId())) {
+//                kickOffMember.setVisibility(View.VISIBLE);
+//            } else {
+//                kickOffMember.setVisibility(View.GONE);
+//            }
+//        }
+
+        //判断自己的身份
+        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
+            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+
+            }else{
+                setPresenter.setVisibility(View.VISIBLE); //设为演示人
+                setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
+                setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
+                kickOffMember.setVisibility(View.VISIBLE); //请他离开会议
             }
+        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
+            setPresenter.setVisibility(View.VISIBLE); //设为演示人
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
+            setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
+            setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
+
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+
+        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+
+        }else {
+
         }
+
 
         this.view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int popupWidth = this.view.getMeasuredWidth();
@@ -132,7 +160,6 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
         view.getLocationOnScreen(location);
 
         showAtLocation(view, Gravity.NO_GRAVITY, location[0] - popupWidth - DensityUtil.dp2px(context, 40), location[1] + view.getHeight() / 2 - popupHeight / 2);
-//        showAsDropDown(view, -context.getResources().getDimensionPixelOffset(R.dimen.meeting_members_setting_width) + context.getResources().getDimensionPixelOffset(R.dimen.pop_setting_left_margin), 10);
     }
 
 

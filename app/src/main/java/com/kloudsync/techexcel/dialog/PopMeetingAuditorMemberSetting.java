@@ -138,7 +138,7 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
                 }
                 dismiss();
                 break;
-            case R.id.txt_kick_off:  // 请他离开会议室
+            case R.id.txt_kick_off:  // 请他离开会议室`````````````````````````
                 if(meetingMember != null && onMemberSettingChanged != null){
                     Log.e("check_post_kick_off","post_2");
                     EventKickOffMember kickOffMember = new EventKickOffMember();

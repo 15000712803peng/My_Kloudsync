@@ -96,26 +96,38 @@
             android:paddingTop="3dp"
             android:textSize="12sp" />
 
-        <ImageView
-            android:layout_marginLeft="8dp"
-            android:layout_toRightOf="@id/txt_type"
-            android:id="@+id/image_hands_up"
-            android:layout_width="15dp"
-            android:layout_height="16dp"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="58dp"
-            android:src="@drawable/icon_hands_up" />
 
-        <ImageView
-            android:id="@+id/image_setting"
-            android:layout_width="16dp"
-            android:layout_height="20dp"
-            android:layout_alignParentRight="true"
+
+
+        <RelativeLayout
+            android:layout_marginRight="@dimen/dp_8"
             android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
-            android:padding="3dp"
-            android:src="@drawable/member_more"
-            android:visibility="gone" />
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+
+                android:id="@+id/image_hands_up"
+                android:layout_width="15dp"
+                android:layout_height="16dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/icon_hands_up" />
+
+            <ImageView
+                android:id="@+id/image_setting"
+                android:layout_width="16dp"
+                android:layout_height="20dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:padding="3dp"
+                android:src="@drawable/member_more"
+                android:visibility="invisible" />
+        </RelativeLayout>
+
+
 
 
     </RelativeLayout>
