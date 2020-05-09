@@ -213,10 +213,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             }
         }
 
+
         meetingConfig.setViewType(0);
         for (MeetingMember tabSpeakersMember : tabSpeakersMembers) {
-            if((tabSpeakersMember.getUserId()+"")==AppConfig.UserID){
+            if((tabSpeakersMember.getUserId()+"").equals(AppConfig.UserID)){
                 meetingConfig.setViewType(tabSpeakersMember.getViewType());
+                break;
             }
         }
     }
@@ -918,6 +920,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 //                holder.settingImage.setVisibility(View.VISIBLE);
 //            }
 //        }
+
 
 
         //判断自己的身份
