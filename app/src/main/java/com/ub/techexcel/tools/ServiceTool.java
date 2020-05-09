@@ -93,6 +93,8 @@ public class ServiceTool implements Runnable {
                         bean.setTeacherName(service.getString("TeacherNames"));
                         bean.setFinished(service.getInt("IsFinished") == 1 ? true : false);
                         bean.setStudentCount(service.getInt("StudentCount"));
+                        JSONArray jsonArray = service.getJSONArray("MemberList");
+                        bean.setMembers(jsonArray.toString());
                         mList.add(bean);
                     }
                     break;

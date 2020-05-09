@@ -40,7 +40,7 @@
         android:id="@+id/layout_meeting_default_document"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/lightgrey"
+        android:background="@color/white"
         android:gravity="center"
         android:visibility="gone">
 
@@ -52,52 +52,61 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="bottom"
+                android:layout_height="16dp"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <ImageView
                     android:layout_marginLeft="10dp"
-                    android:text="Kloud"
-                    android:textColor="@color/black"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
+                    android:src="@drawable/icon_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <View
+                    android:background="#9DA6B7"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="1dp"
+                    android:layout_height="12dp"/>
                 <TextView
-                    android:id="@+id/txt_meeting_id"
+                    android:id="@+id/tv_doc_organiser_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:text=""
-                    android:textSize="16sp" />
+                    android:layout_gravity="bottom"
+                    android:textColor="#75788A"
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
                 android:orientation="horizontal">
-
+                <TextView
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:id="@+id/txt_meeting_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text=""
+                    android:textSize="12sp" />
                 <TextView
 	                android:id="@+id/tv_doc_and_meeting_progress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginLeft="6dp"
                     android:text="@string/miProgress"
                     android:textColor="@color/darkblack"
-                    android:textSize="14sp" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/txt_role"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="6dp"
                     android:text="@string/shYcan"
                     android:textColor="@color/darkblack"
-                    android:textSize="14sp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <RelativeLayout
@@ -116,23 +125,28 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="center"
                         android:orientation="horizontal">
-
-
                         <LinearLayout
                             android:id="@+id/layout_create_blank_page"
-                            android:layout_width="110dp"
-                            android:layout_height="110dp"
-                            android:layout_marginLeft="10dp"
-                            android:background="@drawable/inviteuserleft"
-                            android:gravity="center"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:layout_width="100dp"
+                            android:gravity="center_horizontal"
+                            android:layout_height="wrap_content">
+                            <LinearLayout
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:background="@drawable/bg_meeting_operate"
+                                android:gravity="center"
+                                android:orientation="vertical">
 
-                            <ImageView
-                                android:layout_width="50dp"
-                                android:layout_height="50dp"
-                                android:src="@drawable/create_blank_page" />
-
+                                <ImageView
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:src="@drawable/create_blank_page" />
+                            </LinearLayout>
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -140,21 +154,26 @@
                                 android:singleLine="true"
                                 android:text="@string/cbPage" />
                         </LinearLayout>
-
                         <LinearLayout
                             android:id="@+id/layout_share"
-                            android:layout_width="110dp"
-                            android:layout_height="110dp"
-                            android:layout_marginLeft="20dp"
-                            android:background="@drawable/inviteuserleft"
-                            android:gravity="center"
-                            android:orientation="vertical">
+                            android:layout_marginRight="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:orientation="vertical"
+                            android:layout_width="100dp"
+                            android:gravity="center_horizontal"
+                            android:layout_height="wrap_content">
+                            <LinearLayout
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:background="@drawable/bg_meeting_operate"
+                                android:gravity="center"
+                                android:orientation="vertical">
 
-                            <ImageView
-                                android:layout_width="50dp"
-                                android:layout_height="50dp"
-                                android:src="@drawable/upload_document" />
-
+                                <ImageView
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:src="@drawable/upload_document" />
+                            </LinearLayout>
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -162,34 +181,33 @@
                                 android:singleLine="true"
                                 android:text="@string/shDocument" />
                         </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/layout_invite"
+                            android:orientation="vertical"
+                            android:layout_width="100dp"
+                            android:gravity="center_horizontal"
+                            android:layout_height="wrap_content">
+                            <LinearLayout
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:background="@drawable/bg_meeting_operate"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:src="@drawable/invite_attende" />
+                            </LinearLayout>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:singleLine="true"
+                                android:text="@string/inAttendee" />
+                        </LinearLayout>
                     </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/layout_invite"
-                        android:layout_width="110dp"
-                        android:layout_height="110dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/inviteuserleft"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:src="@drawable/invite_attende" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:singleLine="true"
-                            android:text="@string/inAttendee" />
-                    </LinearLayout>
-
-
                 </LinearLayout>
-
 
                 <LinearLayout
                     android:id="@+id/layout_role_member"
@@ -244,6 +262,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:singleLine="true"
+
                             android:text="@string/shDocument" />
                     </LinearLayout>
                 </LinearLayout>
