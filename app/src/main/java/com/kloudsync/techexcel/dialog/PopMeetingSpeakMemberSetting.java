@@ -105,7 +105,7 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
                 }
                 dismiss();
                 break;
-            case R.id.txt_setting_auditor://关闭发言
+            case R.id.txt_setting_auditor://关闭发言(成为参会者 请他下台)
                 if(meetingMember != null && onMemberSettingChanged != null){
                     onMemberSettingChanged.setSpeakToAuditor(meetingMember);
                 }
