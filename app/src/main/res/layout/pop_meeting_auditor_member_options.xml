@@ -18,6 +18,8 @@
         android:visibility="gone"
         android:id="@+id/ppw_tv_main_members"
         android:layout_marginBottom="14dp"
+        android:drawableLeft="@drawable/wxf_speaker"
+        android:drawablePadding="5dp"
         android:textColor="#999999"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,6 +38,8 @@
         android:paddingLeft="6dp"
         android:textColor="#999999"
         android:layout_marginBottom="10dp"
+        android:drawableLeft="@drawable/wxf_speakermember"
+        android:drawablePadding="5dp"
         android:text="@string/set_as_talkable_participant"
         android:textSize="14sp" />
 
@@ -48,6 +52,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:gravity="center_vertical"
+        android:drawableLeft="@drawable/wxf_putdown"
+        android:drawablePadding="5dp"
         android:paddingLeft="6dp"
         android:text="@string/put_your_hand_down"
         android:textSize="14sp" />
@@ -57,6 +63,8 @@
     <TextView
         android:visibility="gone"
         android:id="@+id/txt_kick_off"
+        android:drawableLeft="@drawable/wxf_leave"
+        android:drawablePadding="5dp"
         android:layout_marginBottom="14dp"
         android:textColor="#999999"
         android:layout_width="wrap_content"

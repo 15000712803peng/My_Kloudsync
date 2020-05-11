@@ -129,39 +129,39 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
 //        }
 
         //判断自己的身份
-        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
-            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+        if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {  // 主持人身份
+            if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
                 setPresenter.setVisibility(View.VISIBLE); //设为演示人
-            }else{
+            } else {
                 setPresenter.setVisibility(View.VISIBLE); //设为演示人
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
                 kickOffMember.setVisibility(View.VISIBLE); //请他离开会议
             }
-        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
-            if((meetingMember.getUserId()+"").equals(meetingConfig.getMeetingHostId())){
+        } else if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {  //演示者身份
+            if ((meetingMember.getUserId() + "").equals(meetingConfig.getMeetingHostId())) {
                 setPresenter.setVisibility(View.VISIBLE); //设为演示人
-            }else{
+            } else {
                 setPresenter.setVisibility(View.VISIBLE); //设为演示人
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
             }
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
-            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_MAIN_SPEAKER) { //发言人身份
+            if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
                 setPresenter.setVisibility(View.VISIBLE); //设为演示人
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
-            }else if((meetingMember.getUserId()+"").equals(meetingConfig.getMeetingHostId())){
+            } else if ((meetingMember.getUserId() + "").equals(meetingConfig.getMeetingHostId())) {
                 setPresenter.setVisibility(View.VISIBLE); //设为演示人
-            }else{
+            } else {
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
             }
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_SPEAKING_SPEAKER) { //临时发言人身份
 
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_HANDSUP_MEMBER) { //允许发言身份
 
-        }else {
+        } else {
 
         }
 

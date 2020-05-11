@@ -116,9 +116,9 @@ public class PopMeetingHandsMemberSetting extends PopupWindow implements View.On
             mSetMainMembers.setVisibility(View.VISIBLE);  //设为发言人
             mAllowSpeak.setVisibility(View.VISIBLE);   // 设为临时发言人
             mHandDown.setVisibility(View.VISIBLE); // 把手放下
-        } else if (meetingConfig.getViewType() == TYPE_ITEM_SPEAKING_SPEAKER) { //临时发言人
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_SPEAKING_SPEAKER) { //临时发言人身份
 
-        } else if (meetingConfig.getViewType() == TYPE_ITEM_HANDSUP_MEMBER) { //允许发言
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_HANDSUP_MEMBER) { //允许发言身份
 
         } else {
 
