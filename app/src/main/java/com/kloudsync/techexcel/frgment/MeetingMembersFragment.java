@@ -940,7 +940,15 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
         //判断自己的身份
         if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
-            holder.settingImage.setVisibility(View.VISIBLE);
+            if((meetingMember.getUserId()+"").equals(meetingConfig.getMeetingHostId())){ //
+                if((meetingMember.getUserId()+"").equals(meetingConfig.getPresenterId())){
+                    holder.settingImage.setVisibility(View.INVISIBLE);
+                }else{
+                    holder.settingImage.setVisibility(View.VISIBLE);
+                }
+            }else{
+                holder.settingImage.setVisibility(View.VISIBLE);
+            }
         }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
             holder.settingImage.setVisibility(View.VISIBLE);
         }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
