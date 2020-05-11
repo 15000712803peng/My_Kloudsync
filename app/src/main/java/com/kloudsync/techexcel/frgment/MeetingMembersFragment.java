@@ -356,6 +356,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             host = view.findViewById(R.id.txt_host);
             changeToMember = view.findViewById(R.id.txt_change_to_member);
             handsUpText = view.findViewById(R.id.txt_hands_up);
+            ishowhandsup = view.findViewById(R.id.ishowhandsup);
             kickOffMemberText = view.findViewById(R.id.txt_kick_off);
             microImage = view.findViewById(R.id.image_micro);
         }
@@ -370,6 +371,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         public TextView handsUpText;
         public TextView kickOffMemberText;
         public ImageView microImage;
+        public ImageView ishowhandsup;
 
     }
 
@@ -1009,32 +1011,32 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             }
         });
 
-        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
-            // 当前的member不是自己
-            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || (meetingConfig.getMeetingHostId() + "").equals(AppConfig.UserID) || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
-                // 如果自己是presenter
-                holder.handsUpText.setVisibility(View.GONE);
-//                holder.settingImage.setVisibility(View.VISIBLE);
-//                holder.changeToMember.setVisibility(View.VISIBLE);
-//                holder.changeToMember.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        setMember(meetingMember);
-//                    }
-//                });
-            } else {
-
-                holder.handsUpText.setVisibility(View.GONE);
-//                holder.settingImage.setVisibility(View.VISIBLE);
-//                holder.changeToMember.setVisibility(View.GONE);
-//                holder.changeToMember.setOnClickListener(null);
-            }
-
-        } else {
-            holder.handsUpText.setVisibility(View.VISIBLE);
-//            holder.settingImage.setVisibility(View.GONE);
-
-        }
+//        if (!(meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
+//            // 当前的member不是自己
+//            if (meetingConfig.getPresenterId().equals(AppConfig.UserID) || (meetingConfig.getMeetingHostId() + "").equals(AppConfig.UserID) || meetingConfig.getRole() == MeetingConfig.MeetingRole.MEMBER) {
+//                // 如果自己是presenter
+//                holder.handsUpText.setVisibility(View.GONE);
+////                holder.settingImage.setVisibility(View.VISIBLE);
+////                holder.changeToMember.setVisibility(View.VISIBLE);
+////                holder.changeToMember.setOnClickListener(new View.OnClickListener() {
+////                    @Override
+////                    public void onClick(View v) {
+////                        setMember(meetingMember);
+////                    }
+////                });
+//            } else {
+//
+//                holder.handsUpText.setVisibility(View.GONE);
+////                holder.settingImage.setVisibility(View.VISIBLE);
+////                holder.changeToMember.setVisibility(View.GONE);
+////                holder.changeToMember.setOnClickListener(null);
+//            }
+//
+//        } else {
+//            holder.handsUpText.setVisibility(View.VISIBLE);
+////            holder.settingImage.setVisibility(View.GONE);
+//
+//        }
 
 
         //判断自己的身份
@@ -1053,8 +1055,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }
 
 
-
         if (meetingMember.getHandStatus() == 0) {
+            holder.ishowhandsup.setVisibility(View.INVISIBLE);
             holder.handsUpText.setText("举手");
             holder.handsUpText.setBackground(getResources().getDrawable(R.drawable.change_auditor_bg));
             holder.handsUpText.setTextColor(Color.parseColor("#ff999999"));
@@ -1066,11 +1068,16 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             });
 
         } else {
+
+            holder.ishowhandsup.setVisibility(View.VISIBLE);
+
             holder.handsUpText.setOnClickListener(null);
             holder.handsUpText.setText("已举手");
             holder.handsUpText.setTextColor(getResources().getColor(R.color.white));
             holder.handsUpText.setBackground(getResources().getDrawable(R.drawable.has_handed_up_bg));
         }
+
+        holder.handsUpText.setVisibility(View.GONE);
     }
 
     private void fillViewByRoleForSpeakingMembers(final MeetingMember meetingMember, final SpeakerViewHolder holder) {
