@@ -910,6 +910,11 @@ Please input the cell phone number to add the contact
     <string name="presenter">presenter</string>
     <string name="End">End</string>
     <string name="Me">Me</string>
+    <string name="deviceweb">Web</string>
+    <string name="deviceandroid">Android</string>
+    <string name="deviceios">Ios</string>
+    <string name="devicetv">Tv</string>
+    <string name="xiatai">Off Stage</string>
     <string name="Starter">Organizer</string>
     <string name="playing">playing</string>
     <string name="paused">paused</string>

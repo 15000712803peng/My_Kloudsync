@@ -346,7 +346,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             icon = (CircleImageView) view.findViewById(R.id.member_icon);
             name = (TextView) view.findViewById(R.id.name);
             presenter = view.findViewById(R.id.txt_presenter);
-            me = view.findViewById(R.id.txt_is_me);
             type = view.findViewById(R.id.txt_type);
             settingImage = view.findViewById(R.id.image_setting);
             host = view.findViewById(R.id.txt_host);
@@ -359,7 +358,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         public CircleImageView icon;
         public TextView name;
         public TextView presenter;
-        public TextView me;
         public TextView type;
         public ImageView settingImage;
         public TextView host;
@@ -376,7 +374,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             icon = (CircleImageView) view.findViewById(R.id.member_icon);
             name = (TextView) view.findViewById(R.id.name);
             presenter = view.findViewById(R.id.txt_presenter);
-            me = view.findViewById(R.id.txt_is_me);
             type = view.findViewById(R.id.txt_type);
             settingImage = view.findViewById(R.id.image_setting);
             host = view.findViewById(R.id.txt_host);
@@ -389,7 +386,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         public CircleImageView icon;
         public TextView name;
         public TextView presenter;
-        public TextView me;
         public TextView type;
         public ImageView settingImage;
         public TextView host;
@@ -405,7 +401,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             icon = (CircleImageView) view.findViewById(R.id.member_icon);
             name = (TextView) view.findViewById(R.id.name);
             presenter = view.findViewById(R.id.txt_presenter);
-            me = view.findViewById(R.id.txt_is_me);
             type = view.findViewById(R.id.txt_type);
             settingImage = view.findViewById(R.id.image_setting);
             speakImage = view.findViewById(R.id.image_speak);
@@ -417,7 +412,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         public CircleImageView icon;
         public TextView name;
         public TextView presenter;
-        public TextView me;
         public TextView type;
         public TextView stageDown;
         public ImageView settingImage;
@@ -433,7 +427,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             icon = (CircleImageView) view.findViewById(R.id.member_icon);
             name = (TextView) view.findViewById(R.id.name);
             presenter = view.findViewById(R.id.txt_presenter);
-            me = view.findViewById(R.id.txt_is_me);
             type = view.findViewById(R.id.txt_type);
             settingImage = view.findViewById(R.id.image_setting);
             host = view.findViewById(R.id.txt_host);
@@ -442,7 +435,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         public CircleImageView icon;
         public TextView name;
         public TextView presenter;
-        public TextView me;
         public TextView type;
         public ImageView settingImage;
         public TextView host;
@@ -520,12 +512,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             }
 
             if ((member.getUserId() + "").equals(AppConfig.UserID)) {
-                holder.me.setVisibility(View.VISIBLE);
+                fillDeviceType(member.getDeviceType(), holder.type,true);
             } else {
-                holder.me.setVisibility(View.GONE);
+                fillDeviceType(member.getDeviceType(), holder.type,false);
             }
             holder.microImage.setVisibility(View.GONE);
-            fillDeviceType(member.getDeviceType(), holder.type);
+
 
             holder.kickOffMemberText.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -696,14 +688,14 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
 
                 if ((member.getUserId() + "").equals(AppConfig.UserID)) {
-                    mainSpeakerViewHolder.me.setVisibility(View.VISIBLE);
+                    fillDeviceType(member.getDeviceType(), mainSpeakerViewHolder.type,true);
                     String me=getBindViewText(1028);
                     if(!TextUtils.isEmpty(me))mainSpeakerViewHolder.presenter.setText(me);
                 } else {
-                    mainSpeakerViewHolder.me.setVisibility(View.GONE);
+                    fillDeviceType(member.getDeviceType(), mainSpeakerViewHolder.type,false);
                 }
 
-                fillDeviceType(member.getDeviceType(), mainSpeakerViewHolder.type);
+
 
                 if (meetingConfig.getMeetingHostId().equals(member.getUserId() + "")) {
                     mainSpeakerViewHolder.host.setVisibility(View.VISIBLE);
@@ -742,9 +734,9 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
 
                 if ((member.getUserId() + "").equals(AppConfig.UserID)) {
-                    speakerViewHolder.me.setVisibility(View.VISIBLE);
+                    fillDeviceType(member.getDeviceType(), speakerViewHolder.type,true);
                 } else {
-                    speakerViewHolder.me.setVisibility(View.GONE);
+                    fillDeviceType(member.getDeviceType(), speakerViewHolder.type,false);
                 }
 
                 if(member.getMicrophoneStatus() != 2){
@@ -754,7 +746,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     speakerViewHolder.microImage.setImageResource(R.drawable.member_micro_on);
                 }
 
-                fillDeviceType(member.getDeviceType(), speakerViewHolder.type);
+
                 fillViewByRoleForSpeakingMembers(member, speakerViewHolder);
             } else if (holder instanceof HandsupTitleViewHolder) {
 
@@ -770,12 +762,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
 
                 if ((member.getUserId() + "").equals(AppConfig.UserID)) {
-                    handsUpViewHolder.me.setVisibility(View.VISIBLE);
+                    fillDeviceType(member.getDeviceType(), handsUpViewHolder.type,true);
                 } else {
-                    handsUpViewHolder.me.setVisibility(View.GONE);
+                    fillDeviceType(member.getDeviceType(), handsUpViewHolder.type,false);
                 }
 
-                fillDeviceType(member.getDeviceType(), handsUpViewHolder.type);
+
                 fillViewByRoleForHandsMembers(member, handsUpViewHolder);
             }
         }
@@ -793,32 +785,47 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
     }
 
-    private void fillDeviceType(int deviceType, TextView typeText) {
+    private void fillDeviceType(int deviceType, TextView typeText,boolean isMe) {
         switch (deviceType) {
             case DeviceType.WEB:
                 typeText.setVisibility(View.VISIBLE);
-                typeText.setBackgroundResource(R.drawable.bg_web);
-                typeText.setTextColor(Color.parseColor("#6A6DEB"));
-                typeText.setText("Web");
+//                typeText.setBackgroundResource(R.drawable.bg_web);
+//                typeText.setTextColor(Color.parseColor("#6A6DEB"));
+                if(isMe){
+                    typeText.setText("("+getString(R.string.deviceweb)+","+getString(R.string.Me)+")");
+                }else{
+                    typeText.setText("("+getString(R.string.deviceweb)+")");
+                }
                 break;
             case DeviceType.ANDROID:
                 typeText.setVisibility(View.VISIBLE);
-                typeText.setBackgroundResource(R.drawable.bg_android);
-                typeText.setTextColor(Color.parseColor("#26C184"));
-                typeText.setText("Android");
-
+//                typeText.setBackgroundResource(R.drawable.bg_android);
+//                typeText.setTextColor(Color.parseColor("#26C184"));
+                if(isMe){
+                    typeText.setText("("+getString(R.string.deviceandroid)+","+getString(R.string.Me)+")");
+                }else{
+                    typeText.setText("("+getString(R.string.deviceandroid)+")");
+                }
                 break;
             case DeviceType.IPHONE:
                 typeText.setVisibility(View.VISIBLE);
-                typeText.setBackgroundResource(R.drawable.bg_iphone);
-                typeText.setTextColor(Color.parseColor("#999999"));
-                typeText.setText("IOS");
+//                typeText.setBackgroundResource(R.drawable.bg_iphone);
+//                typeText.setTextColor(Color.parseColor("#999999"));
+                if(isMe){
+                    typeText.setText("("+getString(R.string.deviceios)+","+getString(R.string.Me)+")");
+                }else{
+                    typeText.setText("("+getString(R.string.deviceios)+")");
+                }
                 break;
             case DeviceType.TV:
                 typeText.setVisibility(View.VISIBLE);
-                typeText.setBackgroundResource(R.drawable.bg_tv);
-                typeText.setTextColor(getActivity().getResources().getColor(R.color.darkblack2));
-                typeText.setText("TV");
+//                typeText.setBackgroundResource(R.drawable.bg_tv);
+//                typeText.setTextColor(getActivity().getResources().getColor(R.color.darkblack2));
+                if(isMe){
+                    typeText.setText("("+getString(R.string.devicetv)+","+getString(R.string.Me)+")");
+                }else{
+                    typeText.setText("("+getString(R.string.devicetv)+")");
+                }
                 break;
             default:
                 typeText.setText("");
