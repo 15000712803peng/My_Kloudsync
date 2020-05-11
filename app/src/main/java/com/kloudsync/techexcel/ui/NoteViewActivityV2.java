@@ -362,7 +362,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 		menuManager.setBottomMenuOperationsListener(this);
 		menuManager.setMenuIcon(menuIcon);
 		initWeb();
-		bottomFilePop = new PopBottomFile(this);
+		bottomFilePop = new PopBottomFile(this,meetingConfig);
 		gson = new Gson();
 		sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
 				MODE_PRIVATE);
@@ -2750,7 +2750,7 @@ public class NoteViewActivityV2 extends BaseDocAndMeetingActivity implements Pop
 	@Override
 	public void menuFileClicked() {
 		if (bottomFilePop == null) {
-			bottomFilePop = new PopBottomFile(this);
+			bottomFilePop = new PopBottomFile(this,meetingConfig);
 		}
 		if (documents != null && documents.size() > 0) {
 			bottomFilePop.setDocuments(documents, meetingConfig.getDocument().getItemID(), this);

@@ -421,7 +421,7 @@
     <string name="inAttendee">Invite attendee</string>
     <string name="cbPage">Create blank page</string>
     <string name="shDocument">Upload  document</string>
-    <string name="shYcan">As host,you can</string>
+    <string name="shYcan">As Organiser,you can</string>
     <string name="shAcan">As attendee,you can</string>
     <string name="miProgress">meeting in progress,</string>
 	<string name="course_in_progress">Course in progress,</string>
@@ -910,7 +910,12 @@ Please input the cell phone number to add the contact
     <string name="presenter">presenter</string>
     <string name="End">End</string>
     <string name="Me">Me</string>
-    <string name="Starter">Starter</string>
+    <string name="deviceweb">Web</string>
+    <string name="deviceandroid">Android</string>
+    <string name="deviceios">Ios</string>
+    <string name="devicetv">Tv</string>
+    <string name="xiatai">Off Stage</string>
+    <string name="Starter">Organizer</string>
     <string name="playing">playing</string>
     <string name="paused">paused</string>
     <string name="title_select_digital_pen">Select Digital Pen</string>
@@ -929,6 +934,7 @@ Please input the cell phone number to add the contact
     <string name="allow_to_speak">Allow to speak</string>
     <string name="close_speech">Close speech</string>
     <string name="put_your_hand_down">Put your hand down</string>
+    <string name="put_your_hand_on">Hands up</string>
     <string name="become_a_presenter">Make Speaker</string>
     <string name="set_as_host">Make Presenter</string>
     <string name="set_as_participant">Make Attendee</string>

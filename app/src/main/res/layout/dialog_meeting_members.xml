@@ -11,6 +11,12 @@
         android:orientation="vertical"
         android:layout_width="380dp"
         android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </LinearLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -29,15 +35,26 @@
                 android:layout_marginLeft="10dp"
                 android:text=""
                 android:textColor="@color/black" />
-
-            <ImageView
-                android:layout_marginRight="6dp"
-                android:id="@+id/image_add"
-                android:padding="10dp"
-                android:src="@drawable/icon_chat_add"
+            <LinearLayout
                 android:layout_alignParentRight="true"
-                android:layout_width="40dp"
-                android:layout_height="40dp" />
+
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_marginRight="6dp"
+                    android:id="@+id/image_add"
+                    android:padding="10dp"
+                    android:src="@drawable/icon_chat_add"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp" />
+                <View
+                    android:visibility="gone"
+                    android:id="@+id/view_divider"
+                    android:layout_width="12dp"
+                    android:layout_height="20dp"/>
+
+            </LinearLayout>
         </RelativeLayout>
         <View
             android:background="@color/divider"

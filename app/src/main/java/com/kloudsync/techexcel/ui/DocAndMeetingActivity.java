@@ -280,6 +280,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Bind(R.id.layout_meeting_default_document)
     RelativeLayout meetingDefaultDocument;
 
+    @Bind(R.id.tv_doc_organiser_name)
+    TextView organiserNameTxt;
     @Bind(R.id.txt_meeting_id)
     TextView meetingIdText;
     @Bind(R.id.tv_doc_and_meeting_progress)
@@ -347,6 +349,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Bind(R.id.image_meeting_hands_up)
     ImageView handsUpImage;
 
+    @Bind(R.id.view_root)
+    RelativeLayout rootView;
+
     AgoraCameraAdapterV2 cameraAdapter;
     FullAgoraCameraAdapter fullCameraAdapter;
     Gson gson;
@@ -404,7 +409,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         menuManager.setMenuIcon(menuIcon);
         initWeb();
         soundtrackPlayManager = new SoundtrackPlayManager(this, meetingConfig, soundtrackPlayLayout);
-        bottomFilePop = new PopBottomFile(this);
+        bottomFilePop = new PopBottomFile(this,meetingConfig);
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
         /*获取机构类型*/
@@ -1003,6 +1008,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         this.documents.addAll(documents.getDocuments());
         if (this.documents != null && this.documents.size() > 0) {
             int index = this.documents.indexOf(new MeetingDocument(meetingConfig.getFileId()));
+            meetingConfig.setAllDocuments(this.documents);
+            hideEnterLoading();
+            Log.e("check_document_index","index:" + index);
             if (index < 0) {
                 if (meetingConfig.getType() == MeetingType.MEETING) {
                     meetingDefaultDocument.setVisibility(View.VISIBLE);
@@ -1016,11 +1024,13 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                     handleMeetingDefaultDocument();
                 } else {
                     index = 0;
-                    meetingConfig.setAllDocuments(this.documents);
                     meetingConfig.setDocument(this.documents.get(index));
                     downLoadDocumentPageAndShow();
                 }
 
+            }else {
+                meetingConfig.setDocument(this.documents.get(index));
+                downLoadDocumentPageAndShow();
             }
 
         } else {
@@ -3749,7 +3759,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Override
     public void menuFileClicked() {
         if (bottomFilePop == null) {
-            bottomFilePop = new PopBottomFile(this);
+            bottomFilePop = new PopBottomFile(this,meetingConfig);
         }
         if (documents != null && documents.size() > 0) {
             int itemId = 0;
@@ -4026,6 +4036,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
         String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
         ChatManager.getManager(this, meetingIndetifier).joinChatRoom(getResources().getString(R.string.Classroom) + meetingConfig.getLessionId());
+        rootView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+            }
+        });
 //        Observable.just("delay_load").delay(2000,TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
 //            @Override
 //            public void accept(String s) throws Exception {
@@ -4077,6 +4093,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 //        followSpearkerModeManager.setSpeakerContainer(speakerContainer);
 //        followSpearkerModeManager.setOnSpeakerViewClickedListener(this);
 //        followSpearkerModeManager.initViews(this, true);
+        organiserNameTxt.setText(sharedPreferences.getString("SchoolName", ""));
     }
 
     @Override
@@ -6245,6 +6262,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                             } else if (sizeMode == 3) {
                                 _sizeMode = "large";
                             }
+
                             sharedPreferences.edit().putString("speaker_size_mode", _sizeMode).commit();
                         }
 
@@ -6360,6 +6378,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         }
     }
+
 
     /**
      * 暂停,恢复会议,更新暂停会议信息

@@ -198,7 +198,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
         menuManager.setShowMeetingRecordPlay(true);
         menuManager.setBottomMenuOperationsListener(this);
         menuManager.setMenuIcon(menu);
-        bottomFilePop = new PopBottomFile(this);
+        bottomFilePop = new PopBottomFile(this,meetingConfig);
         gson = new Gson();
     }
 
@@ -1838,7 +1838,7 @@ public class MeetingViewActivity extends BaseMeetingViewActivity implements PopB
     @Override
     public void menuFileClicked() {
         if (bottomFilePop == null) {
-            bottomFilePop = new PopBottomFile(this);
+            bottomFilePop = new PopBottomFile(this,meetingConfig);
         }
         if (documents != null && documents.size() > 0) {
             bottomFilePop.setDocuments(documents, meetingConfig.getDocument().getItemID(), this);

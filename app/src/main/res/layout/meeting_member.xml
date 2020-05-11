@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="12dp"
+    android:background="@color/white"
     android:paddingTop="14dp"
     android:orientation="vertical">
 
@@ -31,8 +32,24 @@
             android:layout_height="wrap_content" />
 
         <TextView
+            android:visibility="visible"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/txt_type"
+            android:textSize="14sp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:text=""
+            android:layout_toRightOf="@id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
             android:id="@+id/txt_host"
             android:textSize="12sp"
             android:paddingTop="3dp"
@@ -42,59 +59,30 @@
             android:visibility="gone"
             android:background="@drawable/starter_bg"
             android:textColor="#3D78FB"
-            android:layout_toRightOf="@id/name"
+            android:layout_toRightOf="@id/txt_type"
             android:text="@string/Starter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        
+
+
         <TextView
+            android:layout_toRightOf="@id/txt_host"
             android:layout_centerVertical="true"
             android:visibility="gone"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="5dp"
             android:id="@+id/txt_presenter"
             android:textSize="12sp"
             android:paddingTop="3dp"
             android:paddingBottom="3dp"
             android:paddingLeft="6dp"
             android:paddingRight="6dp"
-            android:background="@drawable/presenter_bg"
-            android:textColor="#FEA33D"
-            android:layout_toRightOf="@id/txt_host"
+            android:background="@drawable/starter_bg"
+            android:textColor="#3D78FB"
             android:text="@string/presenter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <TextView
-            android:layout_centerVertical="true"
-            android:visibility="gone"
-            android:layout_marginLeft="8dp"
-            android:id="@+id/txt_is_me"
-            android:textSize="12sp"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:paddingLeft="6dp"
-            android:paddingRight="6dp"
-            android:background="@drawable/me_bg"
-            android:textColor="#F3694C"
-            android:layout_toRightOf="@id/txt_presenter"
-            android:text="@string/Me"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
-        <TextView
-            android:visibility="gone"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="8dp"
-            android:id="@+id/txt_type"
-            android:textSize="12sp"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:paddingLeft="6dp"
-            android:paddingRight="6dp"
-            android:background="@drawable/me_bg"
-            android:layout_toRightOf="@id/txt_is_me"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
         <RelativeLayout
             android:layout_marginRight="@dimen/dp_8"
@@ -102,6 +90,12 @@
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
+          <RelativeLayout
+              android:id="@+id/ddd"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+
             <ImageView
                 android:id="@+id/image_micro"
                 android:padding="2dp"
@@ -109,8 +103,19 @@
                 android:layout_width="18dp"
                 android:layout_height="22dp" />
 
+
             <ImageView
-                android:layout_toRightOf="@id/image_micro"
+                android:id="@+id/ishowhandsup"
+                android:visibility="invisible"
+                android:src="@drawable/wxf_handup"
+                android:layout_width="18dp"
+                android:layout_height="22dp"
+                />
+          </RelativeLayout>
+
+
+            <ImageView
+                android:layout_toRightOf="@id/ddd"
                 android:id="@+id/image_setting"
                 android:padding="2dp"
                 android:layout_centerVertical="true"
@@ -156,6 +161,10 @@
                 android:textColor="#ff999999"
                 android:textSize="13sp"
                 />
+
+
+
+
 
             <TextView
                 android:layout_toRightOf="@id/txt_hands_up"

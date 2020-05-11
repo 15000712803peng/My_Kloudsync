@@ -13,7 +13,10 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kloudsync.techexcel.R;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
+import com.kloudsync.techexcel.bean.MeetingType;
+import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DocAndMeetingFileListPopupwindow;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.view.RoundProgressBar;
@@ -33,6 +36,11 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
     public Context context;
     private int documentId;
     private MeetingDocument tempDocument;
+    private MeetingConfig meetingConfig;
+
+    public void setMeetingConfig(MeetingConfig meetingConfig) {
+        this.meetingConfig = meetingConfig;
+    }
     private DocAndMeetingFileListPopupwindow mDocAndMeetingFileListPopupwindow;
 
     public void addTempDocument(MeetingDocument tempDocument){
@@ -74,7 +82,8 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
         this.onDocumentClickListener = onDocumentClickListener;
     }
 
-    public BottomFileAdapter(Context context, List<MeetingDocument> datas) {
+    public BottomFileAdapter(Context context, List<MeetingDocument> datas,MeetingConfig meetingConfig) {
+        this.meetingConfig = meetingConfig;
         inflater = LayoutInflater.from(context);
         mDatas.clear();
         mDatas.addAll(datas);
@@ -139,6 +148,13 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if(meetingConfig != null){
+                            if(meetingConfig.getType() == MeetingType.MEETING){
+                                if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+                                    return;
+                                }
+                            }
+                        }
                         if(onDocumentClickListener != null){
                             clearSelected();
                             document.setSelect(true);

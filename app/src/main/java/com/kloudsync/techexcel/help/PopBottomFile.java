@@ -17,11 +17,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.view.MyDialog;
 import com.ub.techexcel.adapter.BottomFileAdapter;
@@ -29,8 +32,11 @@ import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.File;
+import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
@@ -43,7 +49,8 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
     private RecyclerView fileList;
     private BottomFileAdapter adapter;
     private LinearLayout uploadLayout;
-	private RelativeLayout mRllListFile;
+    private MeetingConfig meetingConfig;
+    private RelativeLayout mRllListFile;
     private EditText mEtFileName;
     private InputMethodManager mImm;
     private List<MeetingDocument> mDocuments;
@@ -133,7 +140,8 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
 
     private BottomFileOperationsListener bottomFileOperationsListener;
 
-    public PopBottomFile(Context context) {
+    public PopBottomFile(Context context,MeetingConfig meetingConfig) {
+        this.meetingConfig = meetingConfig;
         this.mContext = context;
         getPopupWindow();
 //        bottomFileWindow.setAnimationStyle(R.style.PopupAnimation5);
@@ -301,7 +309,7 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
         mDocuments = documents;
         mDocumentId = documentId;
         if (adapter == null) {
-            adapter = new BottomFileAdapter(mContext, documents);
+            adapter = new BottomFileAdapter(mContext, documents,meetingConfig);
             adapter.setOnDocumentClickListener(clickListener);
             adapter.setDocumentId(documents,documentId);
             fileList.setAdapter(adapter);
