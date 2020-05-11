@@ -58,6 +58,7 @@ import com.kloudsync.techexcel.bean.EventClose;
 import com.kloudsync.techexcel.bean.EventCloseNoteView;
 import com.kloudsync.techexcel.bean.EventCloseShare;
 import com.kloudsync.techexcel.bean.EventCreateSync;
+import com.kloudsync.techexcel.bean.EventDeleteDocs;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventExpanedUserList;
 import com.kloudsync.techexcel.bean.EventFloatingNote;
@@ -112,7 +113,6 @@ import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.AddWxDocDialog;
 import com.kloudsync.techexcel.dialog.AddWxDocDialog.OnDocSavedListener;
-import com.kloudsync.techexcel.dialog.AddWxDocDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
@@ -152,11 +152,9 @@ import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.CameraRecyclerViewTouchListener;
-import com.kloudsync.techexcel.tool.CameraTouchListener;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
-import com.kloudsync.techexcel.tool.FollowSpearkerTouchListener;
 import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.QueryLocalNoteTool;
@@ -582,7 +580,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 		    favoritePopup.StartPop(web);
 	    }
         if (bottomFilePop != null && bottomFilePop.isShowing()) {
-            bottomFilePop.hide();
             bottomFilePop.show(web, this);
         }
 
@@ -1041,6 +1038,38 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 handleMeetingDefaultDocument();
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void deleteDocuments(EventDeleteDocs deleteDocs) {
+        int pageNumber = 1;
+        int currentItemId;
+        if (deleteDocs.getItemId() == meetingConfig.getDocument().getItemID()) {
+            if (deleteDocs.getItemId() == documents.get(0).getItemID()) {
+                if (documents.size() == 1) {
+                    documents.clear();
+                    /*if (bottomFilePop != null && bottomFilePop.isShowing()) {
+                        bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
+                        bottomFilePop.removeTempDoc();
+                    }*/
+                   /* EventMeetingDocuments meetingDocuments = new EventMeetingDocuments();
+                    meetingDocuments.setDocuments(documents);
+                    receiveDocuments(meetingDocuments);*/
+                    return;
+                } else {
+                    currentItemId = documents.get(1).getItemID();
+                }
+            } else {
+                currentItemId = documents.get(0).getItemID();
+            }
+        } else {
+            Integer itemPageNumber = mShowDocPageMap.get(deleteDocs.getItemId());
+            if (itemPageNumber != null) {
+                pageNumber = itemPageNumber;
+            }
+            currentItemId = meetingConfig.getDocument().getItemID();
+        }
+        DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, currentItemId, pageNumber);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -5799,6 +5828,8 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
             case 23:
                 handleSountrackMessages(data);
+                break;
+            case 26://文档删除消息
                 break;
             case 30:
                 // 被踢出会议

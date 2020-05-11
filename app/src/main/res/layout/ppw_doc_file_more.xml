@@ -4,73 +4,53 @@
 	android:layout_height="wrap_content"
 	android:layout_centerVertical="true"
 	android:alpha="0.8"
-	android:background="@drawable/icon_menu_bg"
-	android:orientation="vertical"
-	android:paddingBottom="2dp"
-	android:paddingLeft="10dp"
-	android:paddingRight="10dp"
-	android:paddingTop="2dp">
+	android:background="@drawable/shape_white_all_radius_5"
+	android:orientation="vertical">
 
 	<RelativeLayout
-		android:id="@+id/moreshare"
+		android:id="@+id/ppw_doc_more_save_team_space"
 		android:layout_width="match_parent"
+		android:paddingBottom="@dimen/dp_9"
+		android:paddingLeft="@dimen/dp_14"
+		android:paddingRight="@dimen/dp_14"
+		android:paddingTop="@dimen/dp_9"
 		android:layout_height="wrap_content">
 
 		<ImageView
 			android:layout_width="20dp"
 			android:layout_height="20dp"
+			android:layout_centerVertical="true"
+			android:layout_marginRight="@dimen/dp_8"
 			android:src="@drawable/icon_file_camera" />
 
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="30dp"
-			android:text="Share"
-			android:textColor="@color/white"
-			android:textSize="14sp" />
+			android:layout_centerVertical="true"
+			android:text="@string/save_to_team_space"
+			android:textColor="@color/color191836"
+			android:textSize="@dimen/sp_12" />
 	</RelativeLayout>
 
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="0.5dp"
-		android:background="@color/white" />
+		android:background="@color/colorDividerD8DCE6" />
 
 	<RelativeLayout
-		android:id="@+id/moreedit"
+		android:id="@+id/ppw_doc_more_delete"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal">
-
-		<ImageView
-			android:layout_width="20dp"
-			android:layout_height="20dp"
-			android:layout_centerVertical="true"
-			android:layout_gravity="center_vertical"
-			android:src="@drawable/icon_file_camera" />
-
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerVertical="true"
-			android:layout_marginLeft="30dp"
-			android:text="Edit"
-			android:textColor="@color/white"
-			android:textSize="14sp" />
-	</RelativeLayout>
-
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="0.5dp"
-		android:background="@color/white" />
-
-	<RelativeLayout
-		android:id="@+id/moredelete"
-		android:layout_width="match_parent"
+		android:paddingBottom="@dimen/dp_9"
+		android:paddingLeft="@dimen/dp_14"
+		android:paddingRight="@dimen/dp_14"
+		android:paddingTop="@dimen/dp_9"
 		android:layout_height="wrap_content">
 
 		<ImageView
 			android:layout_width="20dp"
 			android:layout_height="20dp"
+			android:layout_marginRight="@dimen/dp_8"
 			android:layout_centerVertical="true"
 			android:src="@drawable/icon_file_library" />
 
@@ -79,9 +59,9 @@
 			android:layout_height="wrap_content"
 			android:layout_centerVertical="true"
 			android:layout_marginLeft="30dp"
-			android:text="Delete"
-			android:textColor="@color/white"
-			android:textSize="14sp" />
+			android:text="@string/Delete"
+			android:textColor="@color/color191836"
+			android:textSize="@dimen/sp_12" />
 
 
 	</RelativeLayout>

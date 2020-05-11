@@ -42,8 +42,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
     }
 
 
-
-    public void setDocumentId(List<MeetingDocument> documents,int documentId) {
+    public void setDocumentId(List<MeetingDocument> documents, int documentId) {
         this.documentId = documentId;
         mDatas.clear();
         mDatas.addAll(documents);
@@ -133,7 +132,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                 if(TextUtils.isEmpty(document.getTempDocPrompt())){
                     holder.name.setText("");
                 }else {
-                    holder.name.setText(/*document.getTempDocPrompt()*/document.getFileName());
+                    holder.name.setText(/*document.getTempDocPrompt()*/document.getTitle());
                 }
                 holder.rpb_update.setProgress(document.getProgress());
             }else {
@@ -158,7 +157,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                     holder.mLlyYinXiangCount.getBackground().setAlpha(26);
                     holder.mTvYinXiangCount.setText(String.valueOf(syncCount));
                 }
-                holder.name.setText(/*(position + 1) + ""*/document.getFileName());
+                holder.name.setText(/*(position + 1) + ""*/document.getTitle());
                 String url = document.getAttachmentUrl();
                 if (!TextUtils.isEmpty(url)) {
                     url = url.substring(0, url.lastIndexOf("<")) + "1" + url.substring(url.lastIndexOf("."), url.length());
@@ -186,14 +185,13 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                         if (mDocAndMeetingFileListPopupwindow == null) {
                             mDocAndMeetingFileListPopupwindow = new DocAndMeetingFileListPopupwindow(context);
                         }
-                        mDocAndMeetingFileListPopupwindow.show(holder.mIvItemDocMore);
+                        mDocAndMeetingFileListPopupwindow.show(holder.mIvItemDocMore, document);
                     }
                 });
             }
 
-
-
     }
+
 
     public void refreshTempDoc(int progress,String prompt) {
         if(tempDocument != null){

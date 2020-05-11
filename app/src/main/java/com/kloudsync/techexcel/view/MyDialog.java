@@ -25,7 +25,7 @@ public class MyDialog extends Dialog {
 	public void dismiss() {
 		View view = getCurrentFocus();
 		InputMethodManager im = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-		if (im.isActive()) {
+		if (view != null && im.isActive()) {
 			im.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		}
 		super.dismiss();

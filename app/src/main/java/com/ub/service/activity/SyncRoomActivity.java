@@ -4351,6 +4351,7 @@ public class SyncRoomActivity extends BaseActivity implements View.OnClickListen
         dialog.setCanceledOnTouchOutside(true);
         dialog.setContentView(windov);
         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
 

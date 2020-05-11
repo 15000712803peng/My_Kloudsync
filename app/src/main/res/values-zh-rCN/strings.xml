@@ -957,6 +957,9 @@
     <string name="the_content_can_not_be_blank">内容不能为空</string>
     <string name="no_document">无文档</string>
     <string name="error_syncing_documents">同步文档出错</string>
+    <string name="delete_document">删除文档</string>
+    <string name="delete_document_tips_text">确定要删除选中的文档吗?</string>
+    <string name="save_to_team_space">保存至团队空间</string>
 
     <!--音想-->
     <!--我-->
