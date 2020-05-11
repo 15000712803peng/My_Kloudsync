@@ -656,12 +656,17 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
         this.durationData= duration;
         meetingduration.setText(duration.duration);
     }
+    int dateIndex=0;int noonIndex=0;int hourIndex=0;int durationIndex=0;
     public void showDatePop() {
         DatePickPop datePickPop=new DatePickPop(this);
         datePickPop.show();
         datePickPop.setOnTimeCallBackListener(new DatePickPop.OnTimeCallBackListener() {
             @Override
-            public void onTimeCallBack(String showTime, String valueTime) {
+            public void onTimeCallBack(String showTime, String valueTime,int a,int b,int c,int d) {
+//                dateIndex=a;
+//                noonIndex=b;
+//                hourIndex=c;
+//                durationIndex=d;
                 try{
                     if(bean==null){//新增会议
                         createMeetStartSecond = formatter.parse(valueTime).getTime();
