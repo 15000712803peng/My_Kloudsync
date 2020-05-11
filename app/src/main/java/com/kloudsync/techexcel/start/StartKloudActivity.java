@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.LoginData;
 import com.kloudsync.techexcel.bean.UserPreferenceData;
+import com.kloudsync.techexcel.bean.params.EventCloseStartKloud;
 import com.kloudsync.techexcel.bean.params.EventRegisterSuccess;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.dialog.ModifyMeetingIdDialog;
@@ -69,6 +70,8 @@ public class StartKloudActivity extends Activity implements View.OnClickListener
         EventBus.getDefault().unregister(this);
     }
 
+
+
     private void initView(){
         sharedPreferences = getSharedPreferences(AppConfig.LOGININFO,
                 MODE_PRIVATE);
@@ -84,6 +87,13 @@ public class StartKloudActivity extends Activity implements View.OnClickListener
         nextstep.setOnClickListener(this);
         meetingidedit=findViewById(R.id.meetingidedit);
     }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiverCloseSuccess(EventCloseStartKloud eventCloseStartKloud){
+        finish();
+    }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiverRegisterSuccess(EventRegisterSuccess eventRegisterSuccess){

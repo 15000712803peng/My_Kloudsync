@@ -53,6 +53,7 @@ import com.kloudsync.techexcel.bean.EventWxFilePath;
 import com.kloudsync.techexcel.bean.FollowInfo;
 import com.kloudsync.techexcel.bean.UserPath;
 import com.kloudsync.techexcel.bean.params.EventCamera;
+import com.kloudsync.techexcel.bean.params.EventCloseStartKloud;
 import com.kloudsync.techexcel.bean.params.EventProjectFragment;
 import com.kloudsync.techexcel.bean.params.EventTeamFragment;
 import com.kloudsync.techexcel.config.AppConfig;
@@ -289,6 +290,9 @@ public class MainActivity extends FragmentActivity implements AddWxDocDialog.OnD
         mPresenter.attachView(this);
         mEverPenManger.addListener(mPresenter);
         registerReceiver(exitMeetngPromptReceiver,new IntentFilter("show_exit_meeting_dialog"));
+
+        EventBus.getDefault().post(new EventCloseStartKloud());
+
     }
 
 

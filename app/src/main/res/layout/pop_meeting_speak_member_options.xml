@@ -9,11 +9,10 @@
     app:arrowLocation="right"
     app:arrowPosition="130dp"
     app:arrowWidth="16dp"
-
     app:bubbleColor="@color/divider_line">
     <View
         android:layout_width="match_parent"
-        android:layout_height="22dp"/>
+        android:layout_height="14dp"/>
 
 
     <TextView
