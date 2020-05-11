@@ -90,6 +90,12 @@
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
+          <RelativeLayout
+              android:id="@+id/ddd"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+
             <ImageView
                 android:id="@+id/image_micro"
                 android:padding="2dp"
@@ -100,16 +106,16 @@
 
             <ImageView
                 android:id="@+id/ishowhandsup"
-                android:visibility="gone"
+                android:visibility="invisible"
                 android:src="@drawable/wxf_handup"
                 android:layout_width="18dp"
                 android:layout_height="22dp"
                 />
-
+          </RelativeLayout>
 
 
             <ImageView
-                android:layout_toRightOf="@id/image_micro"
+                android:layout_toRightOf="@id/ddd"
                 android:id="@+id/image_setting"
                 android:padding="2dp"
                 android:layout_centerVertical="true"
