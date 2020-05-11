@@ -691,7 +691,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 if ((member.getUserId() + "").equals(AppConfig.UserID)) {
                     fillDeviceType(member.getDeviceType(), mainSpeakerViewHolder.type,true);
                     String me=getBindViewText(1028);
-                    if(!TextUtils.isEmpty(me))mainSpeakerViewHolder.presenter.setText(me);
+//                    if(!TextUtils.isEmpty(me))mainSpeakerViewHolder.presenter.setText(me);
                 } else {
                     fillDeviceType(member.getDeviceType(), mainSpeakerViewHolder.type,false);
                 }
@@ -707,11 +707,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     mainSpeakerViewHolder.settingImage.setVisibility(View.INVISIBLE);
                     mainSpeakerViewHolder.presenter.setVisibility(View.VISIBLE);
                     String host=getBindViewText(1027);
-                    if(!TextUtils.isEmpty(host))mainSpeakerViewHolder.presenter.setText(host);
+//                    if(!TextUtils.isEmpty(host))mainSpeakerViewHolder.presenter.setText(host);
                 } else {
                     mainSpeakerViewHolder.settingImage.setVisibility(View.VISIBLE);
                     mainSpeakerViewHolder.presenter.setVisibility(View.GONE);
                 }
+
                 if(member.getMicrophoneStatus() != 2){
                     // 麦克风关闭
                     mainSpeakerViewHolder.microImage.setImageResource(R.drawable.member_micro_off);

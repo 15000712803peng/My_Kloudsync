@@ -31,6 +31,7 @@ import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.frgment.MeetingMembersFragment;
 import com.ub.service.activity.AddMeetingMemberActivity;
+import com.ub.techexcel.tools.Tools;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -46,6 +47,7 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
     private TextView indicator1,indicator2,indicator3;
     private ImageView backImage;
     private ImageView addImage;
+    private View dividerView;
     private SharedPreferences sharedPreferences;
 
     public MeetingMembersDialog(){
@@ -62,6 +64,7 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NO_TITLE, R.style.my_dialog);
+
     }
 
     @Nullable
@@ -95,12 +98,13 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         membersTab.setOnClickListener(this);
         auditorsTab.setOnClickListener(this);
         invitorsTab.setOnClickListener(this);
+        dividerView = view.findViewById(R.id.view_divider);
         Log.e("check_members","members:" + meetingConfig.getMeetingMembers().size() + ",auditors:" + meetingConfig.getMeetingAuditor() +
                 ",invitors:" + meetingConfig.getMeetingInvitors().size());
         membersAdapter = new MeetingMembersAdapter(getChildFragmentManager(),this.meetingConfig);
         membersPager.setAdapter(membersAdapter);
-        getDialog().getWindow().setGravity(Gravity.RIGHT);
-        getDialog().getWindow().setWindowAnimations(R.style.anination3);
+
+
         init();
 
     }
@@ -112,7 +116,18 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         super.onStart();
         getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         WindowManager.LayoutParams lp = getDialog().getWindow().getAttributes();
-        lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+        if (Tools.isOrientationPortrait(host)) {
+            getDialog().getWindow().setGravity(Gravity.BOTTOM);
+            lp.height = Tools.dip2px(host, 420);
+            getDialog().getWindow().setWindowAnimations(R.style.PopupAnimation5);
+            dividerView.setVisibility(View.VISIBLE);
+        }else {
+            getDialog().getWindow().setGravity(Gravity.RIGHT);
+            lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+            getDialog().getWindow().setWindowAnimations(R.style.anination3);
+            dividerView.setVisibility(View.GONE);
+        }
+
         lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
         getDialog().getWindow().setAttributes(lp);
 
@@ -297,6 +312,12 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
         tab2.setText(TextUtils.isEmpty(auditor)? getString(R.string.wxf_attendee) +"(" + meetingConfig.getMeetingAuditor().size() + ")":auditor +"(" + meetingConfig.getMeetingAuditor().size() + ")");
         String invitors=getBindViewText(1026);
         tab3.setText(TextUtils.isEmpty(auditor)? getString(R.string.wxf_invite) +"(" + meetingConfig.getMeetingInvitors().size() + ")":invitors +"(" + meetingConfig.getMeetingInvitors().size() + ")");
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
     }
 }
