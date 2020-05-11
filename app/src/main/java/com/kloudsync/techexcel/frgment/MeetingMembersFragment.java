@@ -570,6 +570,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 fillViewByRoleForAuditors(member, holder);
 
             } else if (type == 3) {
+                holder.settingImage.setVisibility(View.INVISIBLE);
                 holder.kickOffMemberText.setVisibility(View.GONE);
             }
 

@@ -3,6 +3,7 @@ package com.kloudsync.techexcel.dialog;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.kloudsync.techexcel.bean.EventKickOffMember;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.tool.DensityUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -110,10 +112,18 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
         }else {
 
         }
-        mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int popupHeight = mView.getMeasuredHeight();
-        int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_180);
-        showAsDropDown(view,xoff,-popupHeight);
+//        mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//        int popupHeight = mView.getMeasuredHeight();
+//        int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_180);
+//        showAsDropDown(view,xoff,-popupHeight);
+
+        this.mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int popupWidth = this.mView.getMeasuredWidth();
+        int popupHeight = this.mView.getMeasuredHeight();
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+
+        showAtLocation(view, Gravity.NO_GRAVITY, location[0] - popupWidth - DensityUtil.dp2px(context, 40), location[1] + view.getHeight() / 2 - popupHeight / 2);
     }
 
 

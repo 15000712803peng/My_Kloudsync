@@ -15,6 +15,7 @@ import com.kloudsync.techexcel.bean.EventKickOffMember;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.config.AppConfig;
+import com.kloudsync.techexcel.tool.DensityUtil;
 import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -123,12 +124,19 @@ public class PopMeetingHandsMemberSetting extends PopupWindow implements View.On
         } else {
 
         }
+//        mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//        int popupHeight = mView.getMeasuredHeight();
+//        int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_160);
+//        showAsDropDown(view, xoff, -popupHeight);
 
+        this.mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int popupWidth = this.mView.getMeasuredWidth();
+        int popupHeight = this.mView.getMeasuredHeight();
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
 
-        mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int popupHeight = mView.getMeasuredHeight();
-        int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_160);
-        showAsDropDown(view, xoff, -popupHeight);
+        showAtLocation(view, Gravity.NO_GRAVITY, location[0] - popupWidth - DensityUtil.dp2px(context, 40), location[1] + view.getHeight() / 2 - popupHeight / 2);
+
 
     }
 
@@ -139,7 +147,6 @@ public class PopMeetingHandsMemberSetting extends PopupWindow implements View.On
             case R.id.ppw_tv_speak://允许发言  临时发言人
                 if (meetingMember != null && onMemberSettingChanged != null) {
                     onMemberSettingChanged.setHandsAllowSpeak(meetingMember);
-
                 }
                 dismiss();
                 break;

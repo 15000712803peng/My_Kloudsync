@@ -39,7 +39,7 @@
         android:textColor="#999999"
         android:drawableLeft="@drawable/wxf_speakermember"
         android:drawablePadding="5dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="14dp"
         android:text="@string/set_as_talkable_participant"
         android:textSize="14sp" />
 
