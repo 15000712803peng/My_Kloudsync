@@ -106,7 +106,9 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
             setMainMember.setVisibility(View.VISIBLE); //设为发言人
             setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
         }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人身份
-            setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
+            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+                setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
+            }
         }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言身份
 
         }else {

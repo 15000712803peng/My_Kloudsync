@@ -930,6 +930,7 @@
     <string name="allow_to_speak">允许发言</string>
     <string name="close_speech">关闭发言</string>
     <string name="put_your_hand_down">把手放下</string>
+    <string name="put_your_hand_on">举手发言</string>
     <string name="become_a_presenter">设为发言人</string>
     <string name="set_as_host">设为演示人</string>
     <string name="set_as_participant">设为参会者</string>

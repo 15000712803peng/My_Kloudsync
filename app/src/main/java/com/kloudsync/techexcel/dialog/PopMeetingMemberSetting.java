@@ -131,28 +131,30 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
         //判断自己的身份
         if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {  // 主持人身份
             if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
+
             } else {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
                 kickOffMember.setVisibility(View.VISIBLE); //请他离开会议
             }
+            isShowPresenter(meetingMember);
+
         } else if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {  //演示者身份
             if ((meetingMember.getUserId() + "").equals(meetingConfig.getMeetingHostId())) {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
+
             } else {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
             }
+            isShowPresenter(meetingMember);
+
         } else if (meetingConfig.getViewType() == TYPE_ITEM_MAIN_SPEAKER) { //发言人身份
             if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
+                isShowPresenter(meetingMember);
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
             } else if ((meetingMember.getUserId() + "").equals(meetingConfig.getMeetingHostId())) {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
+
             } else {
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
@@ -173,6 +175,16 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
 
         showAtLocation(view, Gravity.NO_GRAVITY, location[0] - popupWidth - DensityUtil.dp2px(context, 40), location[1] + view.getHeight() / 2 - popupHeight / 2);
     }
+
+    private void isShowPresenter( MeetingMember meetingMember){
+        if((meetingMember.getUserId()+"").equals(meetingConfig.getPresenterId())){
+            setPresenter.setVisibility(View.GONE); //设为演示人
+        }else{
+            setPresenter.setVisibility(View.VISIBLE); //设为演示人
+        }
+
+    }
+
 
 
     @Override

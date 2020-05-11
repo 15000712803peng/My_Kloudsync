@@ -32,7 +32,7 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
     private Context context;
 
     private MeetingMember meetingMember;
-    private TextView mAllowSpeak, mHandDown, mSetMainMembers,kickOffMember;
+    private TextView mAllowSpeak, mHandDown, mSetMainMembers,kickOffMember,ppt_hand_on;
     private MeetingConfig meetingConfig;
     private View mView;
 
@@ -40,6 +40,7 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
         void setTeamSpeaker(MeetingMember meetingMember);
         void setHandsDown(MeetingMember meetingMember);
         void setSpeaker(MeetingMember meetingMember);
+        void setHandOn(MeetingMember meetingMember);
     }
 
     private AuditorMemberSettingChanged onMemberSettingChanged;
@@ -61,10 +62,12 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
         mHandDown = mView.findViewById(R.id.ppw_tv_hand_down);
         mSetMainMembers = mView.findViewById(R.id.ppw_tv_main_members);
         kickOffMember = mView.findViewById(R.id.txt_kick_off);
+        ppt_hand_on = mView.findViewById(R.id.ppt_hand_on);
         kickOffMember.setOnClickListener(this);
         mSetMainMembers.setOnClickListener(this);
         mAllowSpeak.setOnClickListener(this);
         mHandDown.setOnClickListener(this);
+        ppt_hand_on.setOnClickListener(this);
         setContentView(mView);
         initWindow();
     }
@@ -128,8 +131,8 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
 
         }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言身份
 
-        }else {
-
+        }else {  //列表外举手发言
+            ppt_hand_on.setVisibility(View.VISIBLE);
         }
 
 //        mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -179,6 +182,12 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
                     EventBus.getDefault().post(kickOffMember);
                 }
                 dismiss();
+            case R.id.ppt_hand_on: //举手发言
+                if(meetingMember != null && onMemberSettingChanged != null){
+                    onMemberSettingChanged.setHandOn(meetingMember);
+                }
+                dismiss();
+                break;
             default:
                 break;
         }

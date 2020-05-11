@@ -318,6 +318,11 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     }
 
     @Override
+    public void setHandOn(MeetingMember meetingMember) {
+        handsUp();
+    }
+
+    @Override
     public void setHandsMember(MeetingMember meetingMember) {
         Observable.just(meetingMember).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingMember>() {
             @Override
@@ -1044,7 +1049,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
             holder.settingImage.setVisibility(View.INVISIBLE);
         }else {
-            holder.settingImage.setVisibility(View.INVISIBLE);
+            holder.settingImage.setVisibility(View.VISIBLE);
         }
 
 
