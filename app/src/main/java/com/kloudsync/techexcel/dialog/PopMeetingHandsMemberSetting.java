@@ -32,13 +32,15 @@ public class PopMeetingHandsMemberSetting extends PopupWindow implements View.On
     private Context context;
 
     private MeetingMember meetingMember;
-    private TextView mAllowSpeak, mHandDown, mSetMainMembers,kickOffMember;
+    private TextView mAllowSpeak, mHandDown, mSetMainMembers, kickOffMember;
     private MeetingConfig meetingConfig;
     private View mView;
 
-    public interface OnHandsMemberSettingChanged{
+    public interface OnHandsMemberSettingChanged {
         void setHandsAllowSpeak(MeetingMember meetingMember);
+
         void setHandsDown(MeetingMember meetingMember);
+
         void setHandsMember(MeetingMember meetingMember);
     }
 
@@ -79,7 +81,7 @@ public class PopMeetingHandsMemberSetting extends PopupWindow implements View.On
 
     }
 
-    public void showAtBottom(MeetingMember meetingMember,View view,MeetingConfig meetingConfig) {
+    public void showAtBottom(MeetingMember meetingMember, View view, MeetingConfig meetingConfig) {
         this.meetingMember = meetingMember;
         this.meetingConfig = meetingConfig;
 //        if(meetingMember.getPresenter() == 1){
@@ -100,66 +102,63 @@ public class PopMeetingHandsMemberSetting extends PopupWindow implements View.On
 //            }
 //        }
 
-
         //判断自己的身份
-        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
+        if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {  // 主持人身份
             mSetMainMembers.setVisibility(View.VISIBLE);  //设为发言人
             mAllowSpeak.setVisibility(View.VISIBLE);   // 设为临时发言人
             mHandDown.setVisibility(View.VISIBLE); // 把手放下
             kickOffMember.setVisibility(View.VISIBLE); // 请他离开会议
-        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
+        } else if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {  //演示者身份
             mSetMainMembers.setVisibility(View.VISIBLE);  //设为发言人
             mAllowSpeak.setVisibility(View.VISIBLE);   // 设为临时发言人
             mHandDown.setVisibility(View.VISIBLE); // 把手放下
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_MAIN_SPEAKER) { //发言人身份
             mSetMainMembers.setVisibility(View.VISIBLE);  //设为发言人
             mAllowSpeak.setVisibility(View.VISIBLE);   // 设为临时发言人
             mHandDown.setVisibility(View.VISIBLE); // 把手放下
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_SPEAKING_SPEAKER) { //临时发言人
 
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_HANDSUP_MEMBER) { //允许发言
 
-        }else {
+        } else {
 
         }
 
 
-
-      mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int popupHeight = mView.getMeasuredHeight();
         int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_160);
-        showAsDropDown(view,xoff,-popupHeight);
+        showAsDropDown(view, xoff, -popupHeight);
 
     }
-
 
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ppw_tv_speak://允许发言  临时发言人
-                if(meetingMember != null && onMemberSettingChanged != null){
+                if (meetingMember != null && onMemberSettingChanged != null) {
                     onMemberSettingChanged.setHandsAllowSpeak(meetingMember);
 
                 }
                 dismiss();
                 break;
             case R.id.ppw_tv_hand_down://把手放下
-                if(meetingMember != null && onMemberSettingChanged != null){
+                if (meetingMember != null && onMemberSettingChanged != null) {
                     onMemberSettingChanged.setHandsDown(meetingMember);
                 }
                 dismiss();
                 break;
             case R.id.ppw_tv_main_members://成为主讲人
-                if(meetingMember != null && onMemberSettingChanged != null){
+                if (meetingMember != null && onMemberSettingChanged != null) {
                     onMemberSettingChanged.setHandsMember(meetingMember);
 
                 }
                 dismiss();
                 break;
             case R.id.txt_kick_off:
-                if(meetingMember != null && onMemberSettingChanged != null){
-                    Log.e("check_post_kick_off","post_2");
+                if (meetingMember != null && onMemberSettingChanged != null) {
+                    Log.e("check_post_kick_off", "post_2");
                     EventKickOffMember kickOffMember = new EventKickOffMember();
                     kickOffMember.setMeetingMember(meetingMember);
                     EventBus.getDefault().post(kickOffMember);

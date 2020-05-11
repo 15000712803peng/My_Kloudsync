@@ -110,8 +110,6 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
 //            }
 //        }
 
-
-
         //判断自己的身份
         if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
             mSetMainMembers.setVisibility(View.VISIBLE);  //设为发言人

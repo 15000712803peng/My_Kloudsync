@@ -92,7 +92,6 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
 //            }
 //        }
 
-
         //判断自己的身份
         if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
             setMainMember.setVisibility(View.VISIBLE); //设为发言人
@@ -111,13 +110,10 @@ public class PopMeetingSpeakMemberSetting extends PopupWindow implements View.On
         }else {
 
         }
-
-
         mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int popupHeight = mView.getMeasuredHeight();
         int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_180);
         showAsDropDown(view,xoff,-popupHeight);
-
     }
 
 
