@@ -1,5 +1,6 @@
 package com.kloudsync.techexcel.dialog;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
@@ -16,6 +17,8 @@ import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.tool.DensityUtil;
+import com.kloudsync.techexcel.tool.PopupWindowUtil;
+import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -32,7 +35,7 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
     private Context context;
 
     private MeetingMember meetingMember;
-    private TextView mAllowSpeak, mHandDown, mSetMainMembers,kickOffMember;
+    private TextView mAllowSpeak, mHandDown, mSetMainMembers,kickOffMember,ppt_hand_on;
     private MeetingConfig meetingConfig;
     private View mView;
 
@@ -40,6 +43,7 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
         void setTeamSpeaker(MeetingMember meetingMember);
         void setHandsDown(MeetingMember meetingMember);
         void setSpeaker(MeetingMember meetingMember);
+        void setHandOn(MeetingMember meetingMember);
     }
 
     private AuditorMemberSettingChanged onMemberSettingChanged;
@@ -61,10 +65,12 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
         mHandDown = mView.findViewById(R.id.ppw_tv_hand_down);
         mSetMainMembers = mView.findViewById(R.id.ppw_tv_main_members);
         kickOffMember = mView.findViewById(R.id.txt_kick_off);
+        ppt_hand_on = mView.findViewById(R.id.ppt_hand_on);
         kickOffMember.setOnClickListener(this);
         mSetMainMembers.setOnClickListener(this);
         mAllowSpeak.setOnClickListener(this);
         mHandDown.setOnClickListener(this);
+        ppt_hand_on.setOnClickListener(this);
         setContentView(mView);
         initWindow();
     }
@@ -79,7 +85,7 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
 
     }
 
-    public void showAtBottom(MeetingMember meetingMember,View view,MeetingConfig meetingConfig) {
+    public void showAtBottom(MeetingMember meetingMember,View v,MeetingConfig meetingConfig) {
         this.meetingMember = meetingMember;
         this.meetingConfig = meetingConfig;
 
@@ -128,8 +134,8 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
 
         }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言身份
 
-        }else {
-
+        }else {  //列表外举手发言
+            ppt_hand_on.setVisibility(View.VISIBLE);
         }
 
 //        mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -137,15 +143,33 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
 //        int xoff = -context.getResources().getDimensionPixelOffset(R.dimen.dp_160);
 //        showAsDropDown(view,xoff,-popupHeight);
 
-        this.mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int popupWidth = this.mView.getMeasuredWidth();
-        int popupHeight = this.mView.getMeasuredHeight();
-        int[] location = new int[2];
-        view.getLocationOnScreen(location);
+//        this.mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//        int popupWidth = this.mView.getMeasuredWidth();
+//        int popupHeight = this.mView.getMeasuredHeight();
+//        int[] location = new int[2];
+//        view.getLocationOnScreen(location);
+//
+//        showAtLocation(view, Gravity.NO_GRAVITY, location[0] - popupWidth - DensityUtil.dp2px(context, 40), location[1] + view.getHeight() / 2 - popupHeight / 2);
 
-        showAtLocation(view, Gravity.NO_GRAVITY, location[0] - popupWidth - DensityUtil.dp2px(context, 40), location[1] + view.getHeight() / 2 - popupHeight / 2);
 
-
+        int topLength=50;
+        if(Tools.isOrientationPortrait((Activity)context )){
+            topLength=1230;
+            int windowPos[] = PopupWindowUtil.calculatePopWindowPos2(v, mView , topLength);
+            int height = context.getResources().getDisplayMetrics().heightPixels;
+            Log.e("duang", height + ":" + windowPos[1]+"  "+windowPos[0]);
+            int xOff = 20; // 可以自己调整偏移
+            windowPos[0] -= xOff;
+            showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+        }else{
+            topLength=50;
+            int windowPos[] = PopupWindowUtil.calculatePopWindowPos(v, mView , topLength);
+            int height = context.getResources().getDisplayMetrics().heightPixels;
+            Log.e("duang", height + ":" + windowPos[1]+"  "+windowPos[0]);
+            int xOff = 20; // 可以自己调整偏移
+            windowPos[0] -= xOff;
+            showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+        }
     }
 
 
@@ -179,6 +203,12 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
                     EventBus.getDefault().post(kickOffMember);
                 }
                 dismiss();
+            case R.id.ppt_hand_on: //举手发言
+                if(meetingMember != null && onMemberSettingChanged != null){
+                    onMemberSettingChanged.setHandOn(meetingMember);
+                }
+                dismiss();
+                break;
             default:
                 break;
         }

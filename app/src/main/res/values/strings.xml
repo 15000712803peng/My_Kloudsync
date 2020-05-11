@@ -934,6 +934,7 @@ Please input the cell phone number to add the contact
     <string name="allow_to_speak">Allow to speak</string>
     <string name="close_speech">Close speech</string>
     <string name="put_your_hand_down">Put your hand down</string>
+    <string name="put_your_hand_on">Hands up</string>
     <string name="become_a_presenter">Make Speaker</string>
     <string name="set_as_host">Make Presenter</string>
     <string name="set_as_participant">Make Attendee</string>

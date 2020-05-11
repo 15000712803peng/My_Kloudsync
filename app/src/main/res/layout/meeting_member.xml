@@ -97,6 +97,17 @@
                 android:layout_width="18dp"
                 android:layout_height="22dp" />
 
+
+            <ImageView
+                android:id="@+id/ishowhandsup"
+                android:visibility="gone"
+                android:src="@drawable/wxf_handup"
+                android:layout_width="18dp"
+                android:layout_height="22dp"
+                />
+
+
+
             <ImageView
                 android:layout_toRightOf="@id/image_micro"
                 android:id="@+id/image_setting"
@@ -144,6 +155,10 @@
                 android:textColor="#ff999999"
                 android:textSize="13sp"
                 />
+
+
+
+
 
             <TextView
                 android:layout_toRightOf="@id/txt_hands_up"

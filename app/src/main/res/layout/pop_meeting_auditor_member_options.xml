@@ -75,4 +75,19 @@
         android:text="@string/kick_off_from_meeting"
         android:textSize="14sp" />
 
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/ppt_hand_on"
+        android:drawableLeft="@drawable/wxf_putdown"
+        android:drawablePadding="5dp"
+        android:layout_marginBottom="14dp"
+        android:textColor="#999999"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="6dp"
+        android:text="@string/put_your_hand_on"
+        android:textSize="14sp" />
+
 </com.kloudsync.techexcel.view.BubbleLinearLayout>

@@ -1,6 +1,7 @@
 package com.kloudsync.techexcel.dialog;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
@@ -19,6 +20,8 @@ import com.kloudsync.techexcel.bean.MeetingMember;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.linshi.LinshiActivity;
 import com.kloudsync.techexcel.tool.DensityUtil;
+import com.kloudsync.techexcel.tool.PopupWindowUtil;
+import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -107,7 +110,7 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
         showAsDropDown(view, -context.getResources().getDimensionPixelOffset(R.dimen.meeting_members_setting_width) + context.getResources().getDimensionPixelOffset(R.dimen.pop_setting_left_margin), 10);
     }
 
-    public void showAtLeft(MeetingMember meetingMember, View view, MeetingConfig meetingConfig) {
+    public void showAtLeft(MeetingMember meetingMember, View v, MeetingConfig meetingConfig) {
         this.meetingMember = meetingMember;
         this.meetingConfig = meetingConfig;
 //        if (meetingMember.getPresenter() == 1) {
@@ -131,28 +134,30 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
         //判断自己的身份
         if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {  // 主持人身份
             if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
+
             } else {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
                 kickOffMember.setVisibility(View.VISIBLE); //请他离开会议
             }
+            isShowPresenter(meetingMember);
+
         } else if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {  //演示者身份
             if ((meetingMember.getUserId() + "").equals(meetingConfig.getMeetingHostId())) {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
+
             } else {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
             }
+            isShowPresenter(meetingMember);
+
         } else if (meetingConfig.getViewType() == TYPE_ITEM_MAIN_SPEAKER) { //发言人身份
             if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
+                isShowPresenter(meetingMember);
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
             } else if ((meetingMember.getUserId() + "").equals(meetingConfig.getMeetingHostId())) {
-                setPresenter.setVisibility(View.VISIBLE); //设为演示人
+
             } else {
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
@@ -165,14 +170,47 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
 
         }
 
-        this.view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int popupWidth = this.view.getMeasuredWidth();
-        int popupHeight = this.view.getMeasuredHeight();
-        int[] location = new int[2];
-        view.getLocationOnScreen(location);
+//        this.view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//        int popupWidth = this.view.getMeasuredWidth();
+//        int popupHeight = this.view.getMeasuredHeight();
+//        int[] location = new int[2];
+//        view.getLocationOnScreen(location);
+//
+//        showAtLocation(view, Gravity.NO_GRAVITY, location[0] - popupWidth - DensityUtil.dp2px(context, 40), location[1] + view.getHeight() / 2 - popupHeight / 2);
 
-        showAtLocation(view, Gravity.NO_GRAVITY, location[0] - popupWidth - DensityUtil.dp2px(context, 40), location[1] + view.getHeight() / 2 - popupHeight / 2);
+
+        int topLength=50;
+        if(Tools.isOrientationPortrait((Activity)context )){
+            topLength=1230;
+            int windowPos[] = PopupWindowUtil.calculatePopWindowPos2(v, view , topLength);
+            int height = context.getResources().getDisplayMetrics().heightPixels;
+            Log.e("duang", height + ":" + windowPos[1]+"  "+windowPos[0]);
+            int xOff = 20; // 可以自己调整偏移
+            windowPos[0] -= xOff;
+            showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+        }else{
+            topLength=50;
+            int windowPos[] = PopupWindowUtil.calculatePopWindowPos(v, view , topLength);
+            int height = context.getResources().getDisplayMetrics().heightPixels;
+            Log.e("duang", height + ":" + windowPos[1]+"  "+windowPos[0]);
+            int xOff = 20; // 可以自己调整偏移
+            windowPos[0] -= xOff;
+            showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+        }
+
+
+
     }
+
+    private void isShowPresenter( MeetingMember meetingMember){
+        if((meetingMember.getUserId()+"").equals(meetingConfig.getPresenterId())){
+            setPresenter.setVisibility(View.GONE); //设为演示人
+        }else{
+            setPresenter.setVisibility(View.VISIBLE); //设为演示人
+        }
+
+    }
+
 
 
     @Override
