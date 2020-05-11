@@ -103,8 +103,6 @@ public class MeetingMembersDialog extends DialogFragment implements View.OnClick
                 ",invitors:" + meetingConfig.getMeetingInvitors().size());
         membersAdapter = new MeetingMembersAdapter(getChildFragmentManager(),this.meetingConfig);
         membersPager.setAdapter(membersAdapter);
-
-
         init();
 
     }

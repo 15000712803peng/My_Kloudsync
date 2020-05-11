@@ -351,6 +351,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
     @Bind(R.id.image_meeting_hands_up)
     ImageView handsUpImage;
 
+    @Bind(R.id.view_root)
+    RelativeLayout rootView;
+
     AgoraCameraAdapterV2 cameraAdapter;
     FullAgoraCameraAdapter fullCameraAdapter;
     Gson gson;
@@ -4004,6 +4007,12 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         }
         String meetingIndetifier = meetingConfig.getMeetingId() + "-" + meetingConfig.getLessionId();
         ChatManager.getManager(this, meetingIndetifier).joinChatRoom(getResources().getString(R.string.Classroom) + meetingConfig.getLessionId());
+        rootView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+            }
+        });
 //        Observable.just("delay_load").delay(2000,TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
 //            @Override
 //            public void accept(String s) throws Exception {
