@@ -2,68 +2,86 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="@dimen/dp_150"
 	android:layout_height="wrap_content"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_centerVertical="true"
-	android:alpha="0.8"
-	android:background="@drawable/shape_white_all_radius_5"
 	android:orientation="vertical">
 
-	<RelativeLayout
-		android:id="@+id/ppw_doc_more_save_team_space"
+	<com.kloudsync.techexcel.ui.MaskViewGroup
 		android:layout_width="match_parent"
-		android:paddingBottom="@dimen/dp_9"
-		android:paddingLeft="@dimen/dp_14"
-		android:paddingRight="@dimen/dp_14"
-		android:paddingTop="@dimen/dp_9"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		app:containerCornerRadius="@dimen/dp_5"
+		app:containerDeltaLength="@dimen/dp_7"
+		app:containerShadowColor="@color/colorShadowBG1A00"
+		app:containerShadowRadius="@dimen/dp_5"
+		app:deltaX="0dp"
+		app:deltaY="@dimen/dp_2"
+		app:enable="true">
 
-		<ImageView
-			android:layout_width="20dp"
-			android:layout_height="20dp"
-			android:layout_centerVertical="true"
-			android:layout_marginRight="@dimen/dp_8"
-			android:src="@drawable/icon_file_camera" />
-
-		<TextView
+		<LinearLayout
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="30dp"
-			android:layout_centerVertical="true"
-			android:text="@string/save_to_team_space"
-			android:textColor="@color/color191836"
-			android:textSize="@dimen/sp_12" />
-	</RelativeLayout>
+			android:orientation="vertical"
+			android:background="@drawable/shape_white_all_radius_5"
+			android:layout_height="wrap_content">
 
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="0.5dp"
-		android:background="@color/colorDividerD8DCE6" />
+			<RelativeLayout
+				android:id="@+id/ppw_doc_more_save_team_space"
+				android:layout_width="match_parent"
+				android:paddingBottom="@dimen/dp_9"
+				android:paddingLeft="@dimen/dp_14"
+				android:paddingRight="@dimen/dp_14"
+				android:paddingTop="@dimen/dp_9"
+				android:layout_height="wrap_content">
 
-	<RelativeLayout
-		android:id="@+id/ppw_doc_more_delete"
-		android:layout_width="match_parent"
-		android:paddingBottom="@dimen/dp_9"
-		android:paddingLeft="@dimen/dp_14"
-		android:paddingRight="@dimen/dp_14"
-		android:paddingTop="@dimen/dp_9"
-		android:layout_height="wrap_content">
+				<ImageView
+					android:layout_width="20dp"
+					android:layout_height="20dp"
+					android:layout_centerVertical="true"
+					android:layout_marginRight="@dimen/dp_8"
+					android:src="@drawable/icon_file_camera" />
 
-		<ImageView
-			android:layout_width="20dp"
-			android:layout_height="20dp"
-			android:layout_marginRight="@dimen/dp_8"
-			android:layout_centerVertical="true"
-			android:src="@drawable/icon_file_library" />
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="30dp"
+					android:layout_centerVertical="true"
+					android:text="@string/save_to_team_space"
+					android:textColor="@color/color191836"
+					android:textSize="@dimen/sp_12" />
+			</RelativeLayout>
 
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerVertical="true"
-			android:layout_marginLeft="30dp"
-			android:text="@string/Delete"
-			android:textColor="@color/color191836"
-			android:textSize="@dimen/sp_12" />
+			<TextView
+				android:id="@+id/tv_ppw_doc_more_divider"
+				android:layout_width="match_parent"
+				android:layout_height="0.5dp"
+				android:background="@color/colorDividerD8DCE6" />
+
+			<RelativeLayout
+				android:id="@+id/ppw_doc_more_delete"
+				android:layout_width="match_parent"
+				android:paddingBottom="@dimen/dp_9"
+				android:paddingLeft="@dimen/dp_14"
+				android:paddingRight="@dimen/dp_14"
+				android:paddingTop="@dimen/dp_9"
+				android:layout_height="wrap_content">
+
+				<ImageView
+					android:layout_width="20dp"
+					android:layout_height="20dp"
+					android:layout_marginRight="@dimen/dp_8"
+					android:layout_centerVertical="true"
+					android:src="@drawable/icon_file_library" />
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_centerVertical="true"
+					android:layout_marginLeft="30dp"
+					android:text="@string/Delete"
+					android:textColor="@color/color191836"
+					android:textSize="@dimen/sp_12" />
 
 
-	</RelativeLayout>
-
+			</RelativeLayout>
+		</LinearLayout>
+	</com.kloudsync.techexcel.ui.MaskViewGroup>
 </LinearLayout>

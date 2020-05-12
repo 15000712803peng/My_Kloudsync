@@ -19,6 +19,7 @@ import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DocAndMeetingFileListPopupwindow;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
+import com.kloudsync.techexcel.tool.ToastUtils;
 import com.kloudsync.techexcel.view.RoundProgressBar;
 
 import java.text.SimpleDateFormat;
@@ -151,6 +152,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                         if(meetingConfig != null){
                             if(meetingConfig.getType() == MeetingType.MEETING){
                                 if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+	                                ToastUtils.show(context, R.string.you_are_not_the_presenter_and_cannot_operate);
                                     return;
                                 }
                             }
@@ -201,7 +203,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                         if (mDocAndMeetingFileListPopupwindow == null) {
                             mDocAndMeetingFileListPopupwindow = new DocAndMeetingFileListPopupwindow(context);
                         }
-                        mDocAndMeetingFileListPopupwindow.show(holder.mIvItemDocMore, document);
+	                    mDocAndMeetingFileListPopupwindow.show(holder.mIvItemDocMore, document, meetingConfig);
                     }
                 });
             }

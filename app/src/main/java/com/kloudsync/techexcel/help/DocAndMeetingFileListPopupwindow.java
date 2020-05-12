@@ -12,10 +12,12 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventDeleteDocs;
+import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.service.ConnectService;
@@ -31,6 +33,9 @@ public class DocAndMeetingFileListPopupwindow implements View.OnClickListener {
 	private View mView;
 	private MeetingDocument mMeetingDocument;
 	private Dialog mDialog;
+	private MeetingConfig mMeetingConfig;
+	private RelativeLayout mDocMoreDelete;
+	private TextView mDocMoreDivider;
 
 	public DocAndMeetingFileListPopupwindow(Context context) {
 		mContext = context;
@@ -40,17 +45,27 @@ public class DocAndMeetingFileListPopupwindow implements View.OnClickListener {
 	private void initPopupwindow() {
 		mView = LayoutInflater.from(mContext).inflate(R.layout.ppw_doc_file_more, null);
 		RelativeLayout docMoreSaveTeamSpace = mView.findViewById(R.id.ppw_doc_more_save_team_space);
-		RelativeLayout docMoreDelete = mView.findViewById(R.id.ppw_doc_more_delete);
+		mDocMoreDelete = mView.findViewById(R.id.ppw_doc_more_delete);
+		mDocMoreDivider = mView.findViewById(R.id.tv_ppw_doc_more_divider);
 		docMoreSaveTeamSpace.setOnClickListener(this);
-		docMoreDelete.setOnClickListener(this);
+		mDocMoreDelete.setOnClickListener(this);
 		mPpw = new PopupWindow(mView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		mPpw.setBackgroundDrawable(new ColorDrawable());
 		mPpw.setOutsideTouchable(true);
 		mPpw.setFocusable(true);
 	}
 
-	public void show(final View view, MeetingDocument document) {
+	public void show(final View view, MeetingDocument document, MeetingConfig meetingConfig) {
 		if (mPpw != null) {
+			mMeetingDocument = document;
+			mMeetingConfig = meetingConfig;
+			if (!mMeetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+				mDocMoreDelete.setVisibility(View.GONE);
+				mDocMoreDivider.setVisibility(View.GONE);
+			} else {
+				mDocMoreDelete.setVisibility(View.VISIBLE);
+				mDocMoreDivider.setVisibility(View.VISIBLE);
+			}
 			mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 			view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 			int popupWidth = mView.getMeasuredWidth();    //  获取测量后的宽度
@@ -58,7 +73,7 @@ public class DocAndMeetingFileListPopupwindow implements View.OnClickListener {
 			int viewWidth = view.getMeasuredWidth();    //  获取测量后的宽度
 			int viewHeight = view.getMeasuredHeight();  //获取测量后的高度
 			mPpw.showAsDropDown(view, -popupWidth, -popupHeight + viewHeight / 2);
-			mMeetingDocument = document;
+
 		}
 	}
 

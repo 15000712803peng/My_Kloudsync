@@ -247,6 +247,24 @@ public class SocketMessageManager {
         sendMessage_UpdateAttchment(config);
     }
 
+	/**
+	 * 发送删除文档消息
+	 *
+	 * @param document
+	 */
+	public void sendMessage_DocumentDelete(MeetingDocument document) {
+
+		try {
+			JSONObject message = new JSONObject();
+			message.put("actionType", 26);
+			message.put("attachmentId", document.getAttachmentID());
+			doSendMessage(wrapperSendMessage(AppConfig.UserToken, 0, Tools.getBase64(message.toString()).replaceAll("[\\s*\t\n\r]", "")));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+//        sendMessage_UpdateAttchment(config);
+	}
+
     public void sendMessage_ViewNote(MeetingConfig config, Note note) {
 
         try {

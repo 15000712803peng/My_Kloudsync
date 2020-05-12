@@ -966,6 +966,7 @@
     <string name="delete_document">删除文档</string>
     <string name="delete_document_tips_text">确定要删除选中的文档吗?</string>
     <string name="save_to_team_space">保存至团队空间</string>
+	<string name="you_are_not_the_presenter_and_cannot_operate">你不是演示人,不能操作!</string>
 
     <!--音想-->
     <!--我-->

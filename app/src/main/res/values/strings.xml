@@ -970,6 +970,7 @@ Please input the cell phone number to add the contact
 	<string name="delete_document">Delete document</string>
 	<string name="delete_document_tips_text">Are you sure you want to delete the selected document?</string>
 	<string name="save_to_team_space">Save to team space</string>
+    <string name="you_are_not_the_presenter_and_cannot_operate">You are not the presenter  and cannot operate!</string>
 
     <!--音想-->
     <!--我-->
