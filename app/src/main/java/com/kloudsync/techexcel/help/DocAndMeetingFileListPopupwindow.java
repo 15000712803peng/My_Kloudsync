@@ -19,6 +19,7 @@ import com.kloudsync.techexcel.app.App;
 import com.kloudsync.techexcel.bean.EventDeleteDocs;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
+import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.service.ConnectService;
 
@@ -59,12 +60,14 @@ public class DocAndMeetingFileListPopupwindow implements View.OnClickListener {
 		if (mPpw != null) {
 			mMeetingDocument = document;
 			mMeetingConfig = meetingConfig;
-			if (!mMeetingConfig.getPresenterId().equals(AppConfig.UserID)) {
-				mDocMoreDelete.setVisibility(View.GONE);
-				mDocMoreDivider.setVisibility(View.GONE);
-			} else {
-				mDocMoreDelete.setVisibility(View.VISIBLE);
-				mDocMoreDivider.setVisibility(View.VISIBLE);
+			if (meetingConfig.getType() == MeetingType.MEETING) {
+				if (!mMeetingConfig.getPresenterId().equals(AppConfig.UserID)) {
+					mDocMoreDelete.setVisibility(View.GONE);
+					mDocMoreDivider.setVisibility(View.GONE);
+				} else {
+					mDocMoreDelete.setVisibility(View.VISIBLE);
+					mDocMoreDivider.setVisibility(View.VISIBLE);
+				}
 			}
 			mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 			view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
