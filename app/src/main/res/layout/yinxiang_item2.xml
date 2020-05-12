@@ -3,60 +3,48 @@
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
+    android:id="@+id/all"
     android:background="@color/white"
     android:orientation="vertical">
 
 
     <LinearLayout
+        android:id="@+id/layout_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:id="@+id/layout_top"
-        android:paddingLeft="12dp"
         android:paddingBottom="3dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <CheckBox
-            android:id="@+id/checkbox"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:button="@drawable/rc_cs_group_checkbox_selector" />
-
+        android:paddingLeft="12dp">
 
         <TextView
-            android:layout_marginLeft="8dp"
-            android:layout_toRightOf="@id/checkbox"
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@id/checkbox"
             android:text="5 Reasons to purchase desktop(02:23)" />
     </LinearLayout>
 
 
     <LinearLayout
-        android:paddingLeft="12dp"
-        android:paddingBottom="12dp"
         android:id="@+id/layout_center"
-        android:layout_below="@id/layout_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/layout_top"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingBottom="12dp"
+        android:paddingLeft="12dp">
 
-        <CheckBox
-            android:visibility="invisible"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:button="@drawable/rc_cs_group_checkbox_selector" />
 
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/image"
             android:layout_width="30dp"
-            android:layout_marginLeft="8dp"
             android:layout_height="30dp"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:layout_marginLeft="8dp"
             android:scaleType="center"
             fresco:fadeDuration="500"
             fresco:failureImage="@drawable/hello"
@@ -69,11 +57,11 @@
         <LinearLayout
             android:id="@+id/lll"
             android:layout_width="wrap_content"
-            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/image"
-            android:layout_centerVertical="true"
-            android:layout_height="wrap_content">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/username"
@@ -84,12 +72,18 @@
 
             <TextView
                 android:id="@+id/soundtype"
-                android:layout_marginLeft="5dp"
                 android:layout_width="wrap_content"
-                android:visibility="gone"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/peertimeselect_bg3"
+                android:paddingBottom="2dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="2dp"
                 android:text="演唱"
-                android:textColor="@color/green" />
+                android:textColor="@color/skyblue"
+                android:textSize="12sp"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -104,11 +98,20 @@
 
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/checkbox"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:src="@drawable/accompany_unselect"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp" />
+
     <View
-        android:layout_below="@id/layout_center"
         android:layout_width="match_parent"
-        android:background="@color/divider"
-        android:layout_height="1.5px" />
+        android:layout_height="1.5px"
+        android:layout_below="@id/layout_center"
+        android:background="@color/divider" />
 
 
 </RelativeLayout>

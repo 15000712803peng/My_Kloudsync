@@ -7,8 +7,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -32,7 +32,6 @@ public class YinXiangAdapter2 extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.mlist = mlist;
         this.allList = allList;
 		this.meetingConfig = meetingConfig;
-
         for (int i = 0; i < allList.size(); i++) {
             SoundtrackBean soundtrackBean = allList.get(i);
             for (int i1 = 0; i1 < mlist.size(); i1++) {
@@ -55,32 +54,28 @@ public class YinXiangAdapter2 extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         final ViewHolder holder = (ViewHolder) viewHolder;
-
         final SoundtrackBean soundtrackBean = allList.get(position);
         holder.title.setText(soundtrackBean.getTitle());
         holder.username.setText(soundtrackBean.getUserName());
         holder.duration.setText(soundtrackBean.getDuration());
-
-        holder.checkbox.setChecked(soundtrackBean.isCheck());
-
-
+        holder.checkbox.setBackgroundResource(R.drawable.accompany_unselect);
 	    if (meetingConfig.getSystemType() == 0) {
 		    holder.soundtype.setVisibility(View.GONE);
 	    } else {  //教育
 		    holder.soundtype.setVisibility(View.VISIBLE);
 	    }
 	    holder.soundtype.setText(soundtrackBean.getMusicType() == 0 ? "伴奏音乐" : "演唱");
-
-        if (soundtrackBean.isCheck()) {
-            holder.checkbox.setEnabled(false);
-        } else {
-            holder.checkbox.setEnabled(true);
-        }
-
-        holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.all.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                soundtrackBean.setCheck(b);
+            public void onClick(View v) {
+                if(soundtrackBean.isCheck()){
+                    soundtrackBean.setCheck(false);
+                    holder.checkbox.setBackgroundResource(R.drawable.accompany_unselect);
+                }else{
+                    soundtrackBean.setCheck(true);
+                    holder.checkbox.setBackgroundResource(R.drawable.accompany_select);
+                }
+                notifyDataSetChanged();
             }
         });
 
@@ -105,7 +100,8 @@ public class YinXiangAdapter2 extends RecyclerView.Adapter<RecyclerView.ViewHold
 	    TextView soundtype;
         TextView duration;
         SimpleDraweeView image;
-        CheckBox checkbox;
+        ImageView checkbox;
+        RelativeLayout all;
 
         ViewHolder(View view) {
             super(view);
@@ -114,7 +110,8 @@ public class YinXiangAdapter2 extends RecyclerView.Adapter<RecyclerView.ViewHold
 	        soundtype = (TextView) view.findViewById(R.id.soundtype);
             duration = (TextView) view.findViewById(R.id.duration);
             image = (SimpleDraweeView) view.findViewById(R.id.image);
-            checkbox = (CheckBox) view.findViewById(R.id.checkbox);
+            checkbox = (ImageView) view.findViewById(R.id.checkbox);
+            all = (RelativeLayout) view.findViewById(R.id.all);
         }
     }
 }

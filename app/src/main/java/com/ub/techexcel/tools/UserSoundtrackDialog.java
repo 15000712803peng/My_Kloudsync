@@ -142,7 +142,7 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
             Log.e("check_oritation", "oritation:landscape");
             dialog.getWindow().setGravity(Gravity.RIGHT);
             params.height = root.getMeasuredHeight();
-            params.width = Tools.dip2px(host, 300);
+            params.width = Tools.dip2px(host, 350);
             dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             dialog.getWindow().setWindowAnimations(R.style.anination3);
         }
