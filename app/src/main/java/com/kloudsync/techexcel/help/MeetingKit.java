@@ -123,7 +123,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             }
             settingDialog = null;
         }
-        settingDialog = new MeetingSettingDialog(host);
+        settingDialog = new MeetingSettingDialog(host,this);
         settingDialog.setOnUserOptionsListener(this);
         settingDialog.setStartMeeting(true);
         if (settingDialog.isShowing()) {
@@ -153,7 +153,7 @@ public class MeetingKit implements MeetingSettingDialog.OnUserOptionsListener, A
             }
             settingDialog = null;
         }
-        settingDialog = new MeetingSettingDialog(host);
+        settingDialog = new MeetingSettingDialog(host,this);
         settingDialog.setOnUserOptionsListener(this);
         settingDialog.setStartMeeting(false);
         if (settingDialog.isShowing()) {

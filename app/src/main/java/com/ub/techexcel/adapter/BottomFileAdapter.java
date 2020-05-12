@@ -19,6 +19,7 @@ import com.kloudsync.techexcel.bean.MeetingType;
 import com.kloudsync.techexcel.config.AppConfig;
 import com.kloudsync.techexcel.help.DocAndMeetingFileListPopupwindow;
 import com.kloudsync.techexcel.httpgetimage.ImageLoader;
+import com.kloudsync.techexcel.tool.ToastUtils;
 import com.kloudsync.techexcel.view.RoundProgressBar;
 
 import java.text.SimpleDateFormat;
@@ -50,8 +51,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
     }
 
 
-
-    public void setDocumentId(List<MeetingDocument> documents,int documentId) {
+    public void setDocumentId(List<MeetingDocument> documents, int documentId) {
         this.documentId = documentId;
         mDatas.clear();
         mDatas.addAll(documents);
@@ -173,7 +173,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                 if(TextUtils.isEmpty(document.getTempDocPrompt())){
                     holder.name.setText("");
                 }else {
-                    holder.name.setText(/*document.getTempDocPrompt()*/document.getFileName());
+                    holder.name.setText(/*document.getTempDocPrompt()*/document.getTitle());
                 }
                 holder.rpb_update.setProgress(document.getProgress());
             }else {
@@ -183,6 +183,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                         if(meetingConfig != null){
                             if(meetingConfig.getType() == MeetingType.MEETING){
                                 if(!meetingConfig.getPresenterId().equals(AppConfig.UserID)){
+	                                ToastUtils.show(context, R.string.you_are_not_the_presenter_and_cannot_operate);
                                     return;
                                 }
                             }
@@ -205,7 +206,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                     holder.mLlyYinXiangCount.getBackground().setAlpha(26);
                     holder.mTvYinXiangCount.setText(String.valueOf(syncCount));
                 }
-                holder.name.setText(/*(position + 1) + ""*/document.getFileName());
+                holder.name.setText(/*(position + 1) + ""*/document.getTitle());
                 String url = document.getAttachmentUrl();
                 if (!TextUtils.isEmpty(url)) {
                     url = url.substring(0, url.lastIndexOf("<")) + "1" + url.substring(url.lastIndexOf("."), url.length());
@@ -233,14 +234,13 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                         if (mDocAndMeetingFileListPopupwindow == null) {
                             mDocAndMeetingFileListPopupwindow = new DocAndMeetingFileListPopupwindow(context);
                         }
-                        mDocAndMeetingFileListPopupwindow.show(holder.mIvItemDocMore);
+	                    mDocAndMeetingFileListPopupwindow.show(holder.mIvItemDocMore, document, meetingConfig);
                     }
                 });
             }
 
-
-
     }
+
 
     public void refreshTempDoc(int progress,String prompt) {
         if(tempDocument != null){

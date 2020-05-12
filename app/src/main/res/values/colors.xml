@@ -180,6 +180,8 @@
     <color name="colorRegisterEditRedFrame">#FB6363</color>
     <color name="colorDividerDa">#DADADE</color>
     <color name="colorDividerEc">#ECECEC</color>
+	<color name="colorDividerD8DCE6">#D8DCE6</color>
+	<color name="colorShadowBG1A00">#1A000000</color>
 
 
     <color name="colorPrimary">#3F51B5</color>

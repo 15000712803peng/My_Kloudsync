@@ -23,9 +23,21 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
     private View view;
     private LoopView lv_pick_date,lv_pick_one,lv_pick_hour,lv_pick_duration;
     private TextView tv_pick_cancel,tv_pick_confirm;
-    private String curDateInfo="",curDayInfo="",curHour="", curDuration="",curDate="";
+    private String curDateInfo="",curDayInfo="",curHour="", curDuration="",curDate="",curShowDate="";
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat sdfShow = new SimpleDateFormat("yyyy/M/d");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-H-m-s");
+    String timeInfo[]=null;
     private List<String> dateList=new ArrayList<String>();
+    private ArrayList<String> hourList = new ArrayList<>();
+    private ArrayList<String> noons = new ArrayList<>();
+    private ArrayList<String> durations = new ArrayList<>();
+    public boolean mIsOverToday=false;//当前选中日期是否超过今天
+    public boolean mIsOverHours=false;//当前选中小时是否超过
+    public boolean mIsOverNoon=false;//
+    public boolean mIsAfterNoon=false;// false 表示当前是上午 true 表示下午
+    public boolean mSelectAfterNoon=false;// false 选中上午  true 选中下午
+    private int currentDatePosition,currentNoonPosition,currentHourPosition,currentDurationPosition;
     private void init() {
         if (null != dialog) {
             dialog.dismiss();
@@ -35,12 +47,22 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
         }
     }
 
-    public DatePickPop(Activity host) {
+    public DatePickPop(Activity host,int currentDatePosition,int currentNoonPosition,int currentHourPosition,int currentDurationPosition) {
         this.host = host;
+        this.currentDatePosition=currentDatePosition;
+        this.currentNoonPosition=currentNoonPosition;
+        this.currentHourPosition=currentHourPosition;
+        this.currentDurationPosition=currentDurationPosition;
+        if(currentDatePosition>0) mIsOverToday=true;
         init();
     }
 
     public void initPopuptWindow() {
+        String dateNowStr = sdf.format(new Date());
+        timeInfo=dateNowStr.split("-");
+        if(Integer.parseInt(timeInfo[3])>12){
+            mIsAfterNoon=true;
+        }
         LayoutInflater layoutInflater = LayoutInflater.from(host);
         view = layoutInflater.inflate(R.layout.pick_looper_date, null);
         tv_pick_cancel=(TextView) view.findViewById(R.id.tv_pick_cancel);
@@ -71,14 +93,33 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
         tv_pick_cancel.setOnClickListener(this);
         tv_pick_confirm.setOnClickListener(this);
         setDates();
-        setDurations();
-        setHours();
-        setOneDays();
+        setCurrentDurations();
+        setCurrentHours();
+        setCurrentNoons();
         dialog.getWindow().setAttributes(params);
+    }
+
+    public void show(int a,int b,int c,int d) {
+        if (dialog != null) {
+//            lv_pick_date.setInitPosition(currentDatePosition);
+//            lv_pick_one.setInitPosition(currentNoonPosition);
+//            lv_pick_hour.setInitPosition(currentHourPosition);
+//            lv_pick_duration.setInitPosition(currentDurationPosition);
+
+            lv_pick_date.setInitPosition(a);
+            lv_pick_one.setInitPosition(b);
+            lv_pick_hour.setInitPosition(c);
+            lv_pick_duration.setInitPosition(d);
+            dialog.show();
+        }
     }
 
     public void show() {
         if (dialog != null) {
+            lv_pick_date.setInitPosition(currentDatePosition);
+            lv_pick_one.setInitPosition(currentNoonPosition);
+            lv_pick_hour.setInitPosition(currentHourPosition);
+            lv_pick_duration.setInitPosition(currentDurationPosition);
             dialog.show();
         }
     }
@@ -100,7 +141,7 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_pick_confirm:
-                String value="",show=curDateInfo+curDayInfo+curHour+":"+curDuration;
+                String value="",show=curShowDate+curDayInfo+curHour+":"+curDuration;
                 if(curDayInfo.equals("下午")){
                     int time=Integer.parseInt(curHour)+12;
                     value=curDate+" "+time+":"+curDuration;
@@ -111,7 +152,7 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
                     value=curDate+" "+curHour+":"+curDuration;
                 }
                 if(onTimeCallBackListener!=null){
-                    onTimeCallBackListener.onTimeCallBack(show,value);
+                    onTimeCallBackListener.onTimeCallBack(show,value,currentDatePosition,currentNoonPosition,currentHourPosition,currentDurationPosition);
                 }
                 dismiss();
             case R.id.tv_pick_cancel:
@@ -129,7 +170,8 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
 
     private void setDates(){
         final ArrayList<String> list = new ArrayList<>();
-        for(int i=0;i<=30;i++){
+        final ArrayList<String> showList = new ArrayList<>();
+        for(int i=0;i<=30*12*10;i++){
             Date date=new Date();//取时间
             Calendar calendar = new GregorianCalendar();
             calendar.setTime(date);
@@ -139,8 +181,13 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
             String dateString = formatter.format(date);
             String[] dates=dateString.split("-");
             String dateInfo=dates[0]+"月"+dates[1]+"日"+" "+getWeekOfDate(date);
-            list.add(dateInfo);
+            if(i==0){
+                list.add("今天");
+            }else {
+                list.add(dateInfo);
+            }
             dateList.add(simpleDateFormat.format(date));
+            showList.add(sdfShow.format(date));
         }
         lv_pick_date.setItems(list);
         lv_pick_date.setNotLoop();
@@ -149,68 +196,168 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
             public void onItemSelected(int index) {
                 curDateInfo=list.get(index);
                 curDate=dateList.get(index);
+                curShowDate=showList.get(index);
+                currentDatePosition=index;
+                if(index>0){
+                    mIsOverToday=true;
+                    setCurrentHours();
+                    setCurrentNoons();
+                    setCurrentDurations();
+                }else {
+                    mIsOverToday=false;
+                    currentNoonPosition=0;
+                    currentHourPosition=0;
+                    currentDurationPosition=0;
+                    setCurrentHours();
+                    setCurrentNoons();
+                    setCurrentDurations();
+                    lv_pick_date.setInitPosition(currentDatePosition);
+                    lv_pick_one.setInitPosition(currentNoonPosition);
+                    lv_pick_hour.setInitPosition(currentHourPosition);
+                    lv_pick_duration.setInitPosition(currentDurationPosition);
+                }
+
             }
         });
-        curDateInfo=list.get(0);
-        curDate=dateList.get(0);
+        curDateInfo=list.get(currentDatePosition);
+        curDate=dateList.get(currentDatePosition);
+        curShowDate=showList.get(currentDatePosition);
     }
 
-    private void setDurations(){
-        final ArrayList<String> list = new ArrayList<>();
-        list.add("00");
-        for (int i = 15; i < 60;) {
-            list.add(String.valueOf(i));
-            i=i+15;
+    private void setCurrentDurations(){
+        durations.clear();
+        int mins=Integer.parseInt(timeInfo[4]);
+        if(mIsOverToday||mIsOverHours||mIsOverNoon){
+            durations.add("00");
+            durations.add("15");
+            durations.add("30");
+            durations.add("45");
+        }else{
+            if(mins>45){
+                durations.add("00");
+                durations.add("15");
+                durations.add("30");
+                durations.add("45");
+            }else if(mins<=45&&mins>30){
+                durations.add("45");
+            }else if(mins<=30&&mins>15){
+                durations.add("30");
+                durations.add("45");
+            }else if(mins<=15&&mins>0){
+                durations.add("15");
+                durations.add("30");
+                durations.add("45");
+            }
         }
         // 滚动监听
         lv_pick_duration.setListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(int index) {
-                curDuration=list.get(index);
+                curDuration=durations.get(index);
+                currentDurationPosition=index;
             }
         });
         // 设置原始数据
-        lv_pick_duration.setItems(list);
+        lv_pick_duration.setItems(durations);
         lv_pick_duration.setNotLoop();
-        curDuration=list.get(0);
+        curDuration=durations.get(currentDurationPosition);
     }
 
-    private void setHours(){
-        final ArrayList<String> list = new ArrayList<>();
-        for (int i = 1; i <=12;i++) {
-            list.add(String.valueOf(i));
+    /**
+     * 设置当前小时集合
+     * */
+    private void setCurrentHours(){
+        hourList.clear();
+        if(mIsOverToday){
+            int start=1;
+            for (int i = start; i <=12;i++) {
+                hourList.add(String.valueOf(i));
+            }
+        }else {//今天
+            if(mIsAfterNoon){//今天下午
+                int start=1;
+                if(Integer.parseInt(timeInfo[3])>12){
+                    start=Integer.parseInt(timeInfo[3])-12;
+                    if(Integer.parseInt(timeInfo[4])>45)
+                        start+=1;
+                }
+                for (int i = start; i <=12;i++) {
+                    hourList.add(String.valueOf(i));
+                }
+            }else {//今天上午
+                if(mSelectAfterNoon){// 选中下午
+                    for (int i = 1; i <=12;i++) {
+                        hourList.add(String.valueOf(i));
+                    }
+
+                }else {//选中上午
+                    int start=Integer.parseInt(timeInfo[3]);
+                    if(Integer.parseInt(timeInfo[4])>45)
+                        start+=1;
+                    for (int i = start; i <=12;i++) {
+                        hourList.add(String.valueOf(i));
+                    }
+                }
+            }
         }
         // 滚动监听
         lv_pick_hour.setListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(int index) {
-                curHour=list.get(index);
+                curHour=hourList.get(index);
+                currentHourPosition=index;
+                if(index>0){
+                    mIsOverHours=true;
+                }else {
+                    mIsOverHours=false;
+                }
+                setCurrentDurations();
             }
         });
         // 设置原始数据
-        lv_pick_hour.setItems(list);
+        lv_pick_hour.setItems(hourList);
         lv_pick_hour.setNotLoop();
-        curHour=list.get(0);
+        curHour=hourList.get(currentHourPosition);
     }
 
-    private void setOneDays(){
-        final ArrayList<String> list = new ArrayList<>();
-        list.add("上午");
-        list.add("下午");
-        // 滚动监听
+    /**
+     * 设置上午 下午
+     * */
+    private void setCurrentNoons(){
+        noons.clear();
+        if(mIsOverToday){
+            noons.add("上午");
+            noons.add("下午");
+        }else {
+           if(!mIsAfterNoon){
+               noons.add("上午");
+               noons.add("下午");
+           }else {
+               noons.add("下午");
+           }
+        }
         lv_pick_one.setListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(int index) {
-                curDayInfo=list.get(index);
+                curDayInfo=noons.get(index);
+                currentNoonPosition=index;
+                if(curDayInfo.equals("下午")){
+                    mSelectAfterNoon=true;
+                }
+                if(index>0){
+                    mIsOverNoon=true;
+                }else {
+                    mIsOverNoon=false;
+                }
+                setCurrentHours();
+                setCurrentDurations();
             }
         });
         // 设置原始数据
-        lv_pick_one.setItems(list);
+        lv_pick_one.setItems(noons);
         lv_pick_one.setNotLoop();
-        curDayInfo=list.get(0);
+        curDayInfo=noons.get(currentNoonPosition);
     }
-
-
     /**
      * 获取当前日期是星期几
      * @param date
@@ -227,11 +374,23 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
     }
 
     public interface OnTimeCallBackListener{
-        void onTimeCallBack(String showTime,String valueTime);
+        void onTimeCallBack(String showTime,String valueTime,int dataIndex,int noonIndex, int hourIndex,int durationIndex);
     }
     OnTimeCallBackListener onTimeCallBackListener;
 
     public void setOnTimeCallBackListener(OnTimeCallBackListener onTimeCallBackListener) {
         this.onTimeCallBackListener = onTimeCallBackListener;
+    }
+//
+//    public void setPositions(int dateIndex,int noonIndex,int hourIndex,int durationIndex){
+//        this.currentDatePosition=dateIndex;
+//        this.currentNoonPosition=noonIndex;
+//        this.currentHourPosition=hourIndex;
+//        this.currentDatePosition=durationIndex;
+//    }
+
+
+    public void setIsOverToday(boolean mIsOverToday) {
+        this.mIsOverToday = mIsOverToday;
     }
 }

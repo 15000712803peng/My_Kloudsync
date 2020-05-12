@@ -58,6 +58,7 @@ import com.kloudsync.techexcel.bean.EventClose;
 import com.kloudsync.techexcel.bean.EventCloseNoteView;
 import com.kloudsync.techexcel.bean.EventCloseShare;
 import com.kloudsync.techexcel.bean.EventCreateSync;
+import com.kloudsync.techexcel.bean.EventDeleteDocs;
 import com.kloudsync.techexcel.bean.EventExit;
 import com.kloudsync.techexcel.bean.EventExpanedUserList;
 import com.kloudsync.techexcel.bean.EventFloatingNote;
@@ -112,7 +113,6 @@ import com.kloudsync.techexcel.dialog.AddFileFromDocumentDialog;
 import com.kloudsync.techexcel.dialog.AddFileFromFavoriteDialog;
 import com.kloudsync.techexcel.dialog.AddWxDocDialog;
 import com.kloudsync.techexcel.dialog.AddWxDocDialog.OnDocSavedListener;
-import com.kloudsync.techexcel.dialog.AddWxDocDialog;
 import com.kloudsync.techexcel.dialog.CenterToast;
 import com.kloudsync.techexcel.dialog.KickOffMemberDialog;
 import com.kloudsync.techexcel.dialog.MeetingMembersDialog;
@@ -152,11 +152,9 @@ import com.kloudsync.techexcel.info.Uploadao;
 import com.kloudsync.techexcel.response.DevicesResponse;
 import com.kloudsync.techexcel.service.ConnectService;
 import com.kloudsync.techexcel.tool.CameraRecyclerViewTouchListener;
-import com.kloudsync.techexcel.tool.CameraTouchListener;
 import com.kloudsync.techexcel.tool.DocumentModel;
 import com.kloudsync.techexcel.tool.DocumentPageCache;
 import com.kloudsync.techexcel.tool.DocumentUploadTool;
-import com.kloudsync.techexcel.tool.FollowSpearkerTouchListener;
 import com.kloudsync.techexcel.tool.LocalNoteManager;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 import com.kloudsync.techexcel.tool.QueryLocalNoteTool;
@@ -587,7 +585,6 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 		    favoritePopup.StartPop(web);
 	    }
         if (bottomFilePop != null && bottomFilePop.isShowing()) {
-            bottomFilePop.hide();
             bottomFilePop.show(web, this);
         }
 
@@ -1050,6 +1047,55 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
                 }
                 handleMeetingDefaultDocument();
             }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void deleteDocuments(EventDeleteDocs deleteDocs) {
+        int pageNumber = 1;
+	    int currentItemId = 0;
+	    if (deleteDocs.getItemId() == meetingConfig.getDocument().getItemID()) {//如果是当前正在演示的文档
+		    if (deleteDocs.getItemId() == documents.get(0).getItemID()) {//是文档列表的第一个
+			    if (documents.size() == 1) {//文档列表只有这一个文档
+				    if (messageManager != null) {
+					    messageManager.sendMessage_DocumentDelete(meetingConfig.getDocument());
+				    }
+                    documents.clear();
+				    if (bottomFilePop != null && bottomFilePop.isShowing()) {
+                        bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
+                        bottomFilePop.removeTempDoc();
+				    }
+				    meetingConfig.setDocument(null);
+				    meetingConfig.setCurrentDocumentPage(null);
+				    meetingConfig.setPageNumber(1);
+				    EventMeetingDocuments meetingDocuments = new EventMeetingDocuments();
+                    meetingDocuments.setDocuments(documents);
+				    receiveDocuments(meetingDocuments);
+                    return;
+                } else {
+                    currentItemId = documents.get(1).getItemID();
+                }
+            } else {
+                currentItemId = documents.get(0).getItemID();
+            }
+		    if (messageManager != null) {
+			    messageManager.sendMessage_DocumentDelete(meetingConfig.getDocument());
+		    }
+		    DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, currentItemId, pageNumber);
+	    } else {//不是当前正在演示的文档
+		    MeetingDocument document = null;
+		    for (int i = 0; i < documents.size(); i++) {
+			    if (documents.get(i).getItemID() == deleteDocs.getItemId()) {
+				    document = documents.remove(i);
+			    }
+            }
+		    if (bottomFilePop != null && bottomFilePop.isShowing()) {
+			    bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
+			    bottomFilePop.removeTempDoc();
+		    }
+		    if (messageManager != null && document != null) {
+			    messageManager.sendMessage_DocumentDelete(document);
+		    }
         }
     }
 
@@ -5817,6 +5863,9 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             case 23:
                 handleSountrackMessages(data);
                 break;
+            case 26://文档删除消息
+	            handleMessageAttchmentDelete(data);
+                break;
             case 30:
                 // 被踢出会议
                 if (meetingConfig.getType() != MeetingType.MEETING) {
@@ -6197,6 +6246,54 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
             }
         }).subscribe();
     }
+
+	private void handleMessageAttchmentDelete(JSONObject data) {
+		Log.e("handle_attchment_delete", "data;" + data);
+		int pageNumber = 1;
+		int currentItemId = 0;
+		try {
+			int attachmentId = data.getInt("attachmentId");
+			if (attachmentId == meetingConfig.getDocument().getAttachmentID()) {
+				if (attachmentId == documents.get(0).getAttachmentID()) {
+					if (documents.size() == 1) {
+						documents.clear();
+						if (bottomFilePop != null && bottomFilePop.isShowing()) {
+							bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
+							bottomFilePop.removeTempDoc();
+						}
+						meetingConfig.setDocument(null);
+						meetingConfig.setCurrentDocumentPage(null);
+						meetingConfig.setPageNumber(1);
+						EventMeetingDocuments meetingDocuments = new EventMeetingDocuments();
+						meetingDocuments.setDocuments(documents);
+						receiveDocuments(meetingDocuments);
+						return;
+					} else {
+						currentItemId = documents.get(1).getItemID();
+					}
+				} else {
+					currentItemId = documents.get(0).getItemID();
+				}
+				DocumentModel.asyncGetDocumentsInDocAndRefreshFileList(meetingConfig, currentItemId, pageNumber);
+			} else {
+				for (int i = 0; i < documents.size(); i++) {
+					if (documents.get(i).getAttachmentID() == attachmentId) {
+						documents.remove(i);
+						break;
+					}
+				}
+				if (bottomFilePop != null && bottomFilePop.isShowing()) {
+					bottomFilePop.setDocuments(this.documents, meetingConfig.getDocument().getItemID(), this);
+					bottomFilePop.removeTempDoc();
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+
 
     public void handleMessageJoinMeeting(JSONObject data) {
         Log.e("check_join_message", "removeMessages");

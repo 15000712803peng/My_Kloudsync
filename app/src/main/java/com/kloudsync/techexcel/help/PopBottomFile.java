@@ -1,26 +1,32 @@
 package com.kloudsync.techexcel.help;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventShowMenuIcon;
 import com.kloudsync.techexcel.bean.MeetingConfig;
 import com.kloudsync.techexcel.bean.MeetingDocument;
+import com.kloudsync.techexcel.view.MyDialog;
 import com.ub.techexcel.adapter.BottomFileAdapter;
 import com.ub.techexcel.tools.Tools;
 
@@ -28,12 +34,15 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class PopBottomFile implements DialogInterface.OnDismissListener, OnClickListener {
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
-	private Dialog bottomFileWindow;
+public class PopBottomFile implements DialogInterface.OnDismissListener, OnClickListener, TextView.OnEditorActionListener {
+
+    private MyDialog bottomFileWindow;
     int width;
     private Context mContext;
     //--
@@ -42,6 +51,10 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
     private LinearLayout uploadLayout;
     private MeetingConfig meetingConfig;
     private RelativeLayout mRllListFile;
+    private EditText mEtFileName;
+    private InputMethodManager mImm;
+    private List<MeetingDocument> mDocuments;
+    private int mDocumentId;
 
     @Override
     public void onClick(View v) {
@@ -115,6 +128,7 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
         }
     }
 
+
     public interface BottomFileOperationsListener {
         void addFromTeam();
         void addFromCamera();
@@ -145,6 +159,7 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
 
 
     public void init() {
+        mImm = (InputMethodManager) mContext.getSystemService(INPUT_METHOD_SERVICE);
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         View view = layoutInflater
                 .inflate(R.layout.pop_bottom_file, null);
@@ -152,7 +167,7 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
 	    mRllListFile = view.findViewById(R.id.rll_list_file);
         uploadLayout = (LinearLayout) view.findViewById(R.id.upload_linearlayout);
         filePop.setOnClickListener(this);
-
+        mEtFileName = view.findViewById(R.id.et_dialog_bottom_file_file_name);
         fileList = (RecyclerView) view.findViewById(R.id.list_file);
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(mContext);
 //        linearLayoutManager3.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -168,6 +183,7 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
 
         ImageView selectfile = (ImageView) view.findViewById(R.id.img_add);
 
+        mEtFileName.setOnEditorActionListener(this);
         selectfile.setOnClickListener(this);
 
         take_photo.setOnClickListener(this);
@@ -184,7 +200,7 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
 
 
 //        if (Tools.isOrientationPortrait((Activity) mContext)) {
-	    bottomFileWindow = new Dialog(mContext, R.style.my_dialog);
+        bottomFileWindow = new MyDialog(mContext, R.style.my_dialog);
 	    bottomFileWindow.setContentView(view);
 	    bottomFileWindow.setCanceledOnTouchOutside(true);
       /*  } else {
@@ -222,9 +238,9 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
 		    layoutParams.width = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360);
 		    layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
 		    bottomFileWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//                bottomFileWindow.update(mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360), RelativeLayout.LayoutParams.MATCH_PARENT);
+            //                bottomFileWindow.update(mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360), RelativeLayout.LayoutParams.MATCH_PARENT);
 	    }
-	    bottomFileWindow.getWindow().setAttributes(layoutParams);
+        bottomFileWindow.getWindow().setAttributes(layoutParams);
 //        }
       /*  if (!bottomFileWindow.isShowing()) {
             if (Tools.isOrientationPortrait((Activity) mContext)) {
@@ -253,12 +269,45 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
 
     }
 
+    private void hideKeyBoard() {
+        mImm.hideSoftInputFromWindow(mEtFileName.getWindowToken(), 0);
+    }
     @Override
     public void onDismiss(DialogInterface dialog) {
+        mEtFileName.setText("");
         EventBus.getDefault().post(new EventShowMenuIcon());
     }
 
+    List<MeetingDocument> mSearchList = new ArrayList<>();
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                (event != null && event.getKeyCode() == KeyEvent.KEYCODE_SEARCH && event.getAction() == KeyEvent.ACTION_DOWN)) {
+            hideKeyBoard();
+            String searchText = mEtFileName.getText().toString();
+            if (TextUtils.isEmpty(searchText)) {
+//                ToastUtils.show(mContext,R.string.the_content_can_not_be_blank);
+                adapter.setDocumentId(mDocuments, mDocumentId);
+                adapter.notifyDataSetChanged();
+                return true;
+            }
+            mSearchList.clear();
+            for (MeetingDocument meetingDocument : mDocuments) {
+                if (meetingDocument.getFileName().contains(searchText)) {
+                    mSearchList.add(meetingDocument);
+                }
+            }
+            adapter.setDocumentId(mSearchList, mDocumentId);
+            adapter.notifyDataSetChanged();
+            return true;
+        }
+        return false;
+    }
+
     public void setDocuments(List<MeetingDocument> documents, int documentId, BottomFileAdapter.OnDocumentClickListener clickListener) {
+        mDocuments = documents;
+        mDocumentId = documentId;
         if (adapter == null) {
             adapter = new BottomFileAdapter(mContext, documents,meetingConfig);
             adapter.setOnDocumentClickListener(clickListener);

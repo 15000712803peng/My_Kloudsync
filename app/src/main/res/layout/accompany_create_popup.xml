@@ -35,7 +35,7 @@
                 <TextView
                     android:id="@+id/recordsync"
                     android:layout_width="100dp"
-                    android:layout_height="40dp"
+                    android:layout_height="38dp"
                     android:background="@drawable/bg_create_sync"
                     android:gravity="center"
                     android:text="@string/mtRecordSync"
@@ -45,7 +45,7 @@
                     android:layout_marginLeft="10dp"
                     android:id="@+id/cancel"
                     android:layout_width="100dp"
-                    android:layout_height="40dp"
+                    android:layout_height="38dp"
                     android:background="@drawable/peertimeselect_bg3"
                     android:gravity="center"
                     android:text="@string/Cancel"
