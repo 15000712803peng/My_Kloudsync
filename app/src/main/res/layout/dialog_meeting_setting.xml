@@ -41,13 +41,13 @@
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/systemtv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/satSystem"
-            android:textColor="@color/skyblue" />
+            <TextView
+                android:id="@+id/systemtv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/satSystem"
+                android:textColor="@color/skyblue" />
 
             <TextView
                 android:id="@+id/systemtvline"
@@ -63,15 +63,15 @@
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/thirdaudiotv"
-            android:visibility="invisible"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textColor="@color/black"
-            android:text="@string/thirdaudio"
-            />
+            <TextView
+                android:id="@+id/thirdaudiotv"
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:text="@string/thirdaudio"
+                />
 
             <TextView
                 android:id="@+id/thirdaudiotvline"
@@ -111,17 +111,37 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:id="@+id/iv_dms_speaker"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/icon_audio_on" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/audio" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginLeft="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
                     android:id="@+id/image_micro"
                     android:layout_width="52dp"
                     android:layout_height="52dp"
-                    android:src="@drawable/sound_on1" />
+                    android:src="@drawable/icon_micro_off" />
 
                 <TextView
                     android:id="@+id/txt_micro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/satOn" />
+                    android:text="@string/micro" />
 
             </LinearLayout>
 
@@ -136,42 +156,17 @@
                     android:id="@+id/image_camera"
                     android:layout_width="52dp"
                     android:layout_height="52dp"
-                    android:src="@drawable/cam_off2" />
+                    android:src="@drawable/icon_camera_off" />
 
                 <TextView
                     android:id="@+id/txt_camera"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/satOff" />
+                    android:text="@string/video" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/layout_recording"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:layout_marginLeft="30dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
 
-                <CheckBox
-                    android:id="@+id/isOpenRecord"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:checked="false"
-                    android:text=""
-                    android:textColor="@color/black" />
-
-                <TextView
-                    android:textSize="14sp"
-                    android:layout_marginTop="10dp"
-                    android:text="开启录制"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
 
         </LinearLayout>
 
@@ -241,7 +236,7 @@
 
                         <ImageView
                             android:layout_width="30dp"
-                            android:src="@drawable/weixinimage"
+
                             android:layout_height="30dp"/>
 
                     </LinearLayout>
@@ -266,8 +261,43 @@
 
 
 
+
+
     </RelativeLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_recording"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_dms_check"
+            android:layout_marginLeft="26.5dp"
+            android:src="@drawable/icon_uncheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <CheckBox
+            android:visibility="gone"
+            android:layout_marginLeft="26.5dp"
+            android:id="@+id/isOpenRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:checked="false"
+            android:text=""
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_marginLeft="5dp"
+            android:textSize="14sp"
+            android:text="开启录制"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
     <TextView
         android:layout_marginTop="2dp"
         android:layout_width="match_parent"

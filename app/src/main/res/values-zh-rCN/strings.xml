@@ -1092,4 +1092,7 @@
     <string name="Go_video">进入视频会议</string>
     <string name="Hide_all">隐藏所有人</string>
 
+    <string name="micro">麦克风</string>
+    <string name="video">摄像头</string>
+    <string name="audio">扬声器</string>
 </resources>

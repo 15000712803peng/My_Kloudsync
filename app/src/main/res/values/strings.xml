@@ -1121,5 +1121,7 @@ Please input the cell phone number to add the contact
     <string name="Go_video">Go video</string>
     <string name="Hide_all">Hide all webcam</string>
 
-
+    <string name="micro">Microphone</string>
+    <string name="video">camera </string>
+    <string name="audio">speaker</string>
 </resources>

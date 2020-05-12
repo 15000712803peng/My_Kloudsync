@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.usage.UsageEvents;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import com.kloudsync.techexcel.R;
 import com.kloudsync.techexcel.bean.EventClose;
 import com.kloudsync.techexcel.bean.MeetingConfig;
+import com.kloudsync.techexcel.help.PopMeetingMenu;
 import com.kloudsync.techexcel.tool.MeetingSettingCache;
 
 import org.greenrobot.eventbus.EventBus;
@@ -46,6 +48,9 @@ public class MeetingSettingDialog implements View.OnClickListener {
     private LinearLayout systemaudioll,thirdaudioll;
     private TextView systemtv,systemtvline,thirdaudiotv,thirdaudiotvline;
     private LinearLayout openwenxin;
+    private boolean mIsCheck=false;
+    private ImageView iv_dms_check,iv_dms_speaker;
+    private PopMeetingMenu.MeetingMenuOperationsListener operationsListener;
 
     public boolean isStartMeeting() {
         return isStartMeeting;
@@ -67,8 +72,9 @@ public class MeetingSettingDialog implements View.OnClickListener {
         this.onUserOptionsListener = onUserOptionsListener;
     }
 
-    public MeetingSettingDialog(Activity host) {
+    public MeetingSettingDialog(Activity host,PopMeetingMenu.MeetingMenuOperationsListener operationsListener) {
         this.host = host;
+        this.operationsListener=operationsListener;
         getPopupWindowInstance(host);
     }
 
@@ -85,6 +91,9 @@ public class MeetingSettingDialog implements View.OnClickListener {
     public void initPopuptWindow(Activity host) {
         LayoutInflater layoutInflater = LayoutInflater.from(host);
         view = layoutInflater.inflate(R.layout.dialog_meeting_setting, null);
+        iv_dms_check = view.findViewById(R.id.iv_dms_check);
+        iv_dms_speaker = view.findViewById(R.id.iv_dms_speaker);
+        iv_dms_speaker.setOnClickListener(this);
         microImage = view.findViewById(R.id.image_micro);
         microImage.setOnClickListener(this);
         closeText = view.findViewById(R.id.txt_cancel);
@@ -118,25 +127,38 @@ public class MeetingSettingDialog implements View.OnClickListener {
         lp.width = host.getResources().getDimensionPixelSize(R.dimen.meeting_setting_dialog_width);
         settingDialog.getWindow().setAttributes(lp);
 
+        recordingLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!mIsCheck){
+                    mIsCheck=true;
+                    iv_dms_check.setImageResource(R.drawable.icon_check);
+                }else {
+                    mIsCheck=false;
+                    iv_dms_check.setImageResource(R.drawable.icon_uncheck);
+                }
+            }
+        });
+
 
     }
 
     private void init(MeetingSettingCache settingCache) {
 
         if (settingCache.getMeetingSetting().isMicroOn()) {
-            microImage.setImageResource(R.drawable.sound_on1);
-            microText.setText(R.string.satOn);
+            microImage.setImageResource(R.drawable.icon_micro_on);
+            //microText.setText(R.string.satOn);
         } else {
-            microImage.setImageResource(R.drawable.sound_off1);
-            microText.setText(R.string.satOff);
+            microImage.setImageResource(R.drawable.icon_micro_off);
+            //microText.setText(R.string.satOff);
         }
 
         if (settingCache.getMeetingSetting().isCameraOn()) {
-            cameraImage.setImageResource(R.drawable.cam_on2);
-            cameraText.setText(R.string.satOn);
+            cameraImage.setImageResource(R.drawable.icon_camera_on);
+            //cameraText.setText(R.string.satOn);
         } else {
-            cameraImage.setImageResource(R.drawable.cam_off2);
-            cameraText.setText(R.string.satOff);
+            cameraImage.setImageResource(R.drawable.icon_camera_off);
+            //cameraText.setText(R.string.satOff);
         }
 
         if (meetingConfig.isFromMeeting() && !meetingConfig.isHost()) {
@@ -147,6 +169,16 @@ public class MeetingSettingDialog implements View.OnClickListener {
             recordingLayout.setVisibility(View.VISIBLE);
 //            tabTitlesLayout.setVisibility(View.VISIBLE);
             closeText.setVisibility(View.VISIBLE);
+        }
+
+        int voiceStatus = getSettingCache(host).getMeetingSetting().getVoiceStatus();
+        Log.e("PopMeetingMenu", "voice_status:" + voiceStatus);
+        if (voiceStatus == 0) {
+            iv_dms_speaker.setImageResource(R.drawable.icon_ear_on);
+        } else if (voiceStatus == 1) {
+            iv_dms_speaker.setImageResource(R.drawable.icon_audio_off);
+        } else if (voiceStatus == 2) {
+            iv_dms_speaker.setImageResource(R.drawable.icon_audio_on);
         }
 
     }
@@ -179,14 +211,33 @@ public class MeetingSettingDialog implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.iv_dms_speaker:
+//                if (meetingConfig.getMeetingStatus() == 0) {
+//                    return;
+//                }
+                int voiceStatus = getSettingCache(host).getMeetingSetting().getVoiceStatus();
+                Log.e("PopMeetingMenu", "voice_status:" + voiceStatus);
+                if (voiceStatus == 0) {
+                    iv_dms_speaker.setImageResource(R.drawable.icon_ear_on);
+                } else if (voiceStatus == 1) {
+                    iv_dms_speaker.setImageResource(R.drawable.icon_audio_off);
+                } else if (voiceStatus == 2) {
+                    iv_dms_speaker.setImageResource(R.drawable.icon_audio_on);
+                }
+                if (operationsListener != null) {
+                    operationsListener.menuChangeVoiceStatus(voiceStatus);
+                }
+                break;
             case R.id.txt_start:
                 if (isStartMeeting) {
                     if (onUserOptionsListener != null) {
-                        onUserOptionsListener.onUserStart(isOpenRecord.isChecked());
+                        //boolean isCheck=isOpenRecord.isChecked();
+                        onUserOptionsListener.onUserStart(mIsCheck);
                     }
                 } else {
                     if (onUserOptionsListener != null) {
-                        onUserOptionsListener.onUserJoin(isOpenRecord.isChecked());
+                        //boolean isCheck=isOpenRecord.isChecked();
+                        onUserOptionsListener.onUserJoin(mIsCheck);
                     }
                 }
                 dismiss();
@@ -194,11 +245,11 @@ public class MeetingSettingDialog implements View.OnClickListener {
             case R.id.image_micro:
                 boolean isMicroOn = getSettingCache(host).getMeetingSetting().isMicroOn();
                 if (!isMicroOn) {
-                    microImage.setImageResource(R.drawable.sound_on1);
-                    microText.setText(R.string.satOn);
+                    microImage.setImageResource(R.drawable.icon_micro_on);
+                    //microText.setText(R.string.satOn);
                 } else {
-                    microImage.setImageResource(R.drawable.sound_off1);
-                    microText.setText(R.string.satOff);
+                    microImage.setImageResource(R.drawable.icon_micro_off);
+                    //microText.setText(R.string.satOff);
                 }
                 getSettingCache(host).setMicroOn(!isMicroOn);
 
@@ -206,11 +257,11 @@ public class MeetingSettingDialog implements View.OnClickListener {
             case R.id.image_camera:
                 boolean isCameraOn = getSettingCache(host).getMeetingSetting().isCameraOn();
                 if (!isCameraOn) {
-                    cameraImage.setImageResource(R.drawable.cam_on2);
-                    cameraText.setText(R.string.satOn);
+                    cameraImage.setImageResource(R.drawable.icon_camera_on);
+                    //cameraText.setText(R.string.satOn);
                 } else {
-                    cameraImage.setImageResource(R.drawable.cam_off2);
-                    cameraText.setText(R.string.satOff);
+                    cameraImage.setImageResource(R.drawable.icon_camera_off);
+                    //cameraText.setText(R.string.satOff);
                 }
                 getSettingCache(host).setCameraOn(!isCameraOn);
                 break;
