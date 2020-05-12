@@ -180,6 +180,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
             }
 
+            resetSortMembers(notTempStageMembers);
             tabSpeakersMembers.addAll(notTempStageMembers);
             if (tempStageMembers.size() > 0) {
                 MeetingMember title = new MeetingMember();
@@ -221,6 +222,41 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }
         Log.e("getViewType",meetingConfig.getViewType()+"");
     }
+
+    /**
+     * 参会者排序应该是：演示者第一个，Host第二天，用户自己第三个。
+     * @param notTempStageMembers
+     */
+    private void resetSortMembers(List<MeetingMember> notTempStageMembers){
+        if(notTempStageMembers.size()>0){
+            for (int i = 0; i < notTempStageMembers.size(); i++) {
+                MeetingMember notTempStageMember=notTempStageMembers.get(i);
+                if((notTempStageMember.getUserId()+"").equals(AppConfig.UserID)){
+                    notTempStageMembers.remove(i);
+                    notTempStageMembers.add(0,notTempStageMember);
+                    break;
+                }
+            }
+            for (int i = 0; i < notTempStageMembers.size(); i++) {
+                  MeetingMember notTempStageMember=notTempStageMembers.get(i);
+                  if((notTempStageMember.getUserId()+"").equals(meetingConfig.getMeetingHostId())){
+                        notTempStageMembers.remove(i);
+                        notTempStageMembers.add(0,notTempStageMember);
+                        break;
+                  }
+            }
+            for (int i = 0; i < notTempStageMembers.size(); i++) {
+                MeetingMember notTempStageMember=notTempStageMembers.get(i);
+                if((notTempStageMember.getUserId()+"").equals(meetingConfig.getPresenterId())){
+                    notTempStageMembers.remove(i);
+                    notTempStageMembers.add(0,notTempStageMember);
+                    break;
+                }
+            }
+        }
+    }
+
+
 
     @Override
     public void setSpeakToAuditor(MeetingMember meetingMember) {
