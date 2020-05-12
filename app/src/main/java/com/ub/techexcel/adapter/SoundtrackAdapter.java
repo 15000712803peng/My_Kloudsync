@@ -83,7 +83,7 @@ public class SoundtrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 	    } else {  //教育
 		    holder.soundtype.setVisibility(View.VISIBLE);
 	    }
-	    holder.soundtype.setText(soundTrack.getMusicType() == 0 ? "伴奏音乐" : "演唱");
+        holder.soundtype.setText(soundTrack.getMusicType() == 0 ? mContext.getString(R.string.accompanymusicss) : mContext.getString(R.string.accompanysoundss) );
 
         String url = soundTrack.getAvatarUrl();
         Uri imageUri2;

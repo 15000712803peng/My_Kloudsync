@@ -71,7 +71,7 @@ public class YinXiangAdapter2 extends RecyclerView.Adapter<RecyclerView.ViewHold
         } else {  //教育
             holder.soundtype.setVisibility(View.VISIBLE);
         }
-        holder.soundtype.setText(soundtrackBean.getMusicType() == 0 ? "伴奏音乐" : "演唱");
+        holder.soundtype.setText(soundtrackBean.getMusicType() == 0 ? mContext.getString(R.string.accompanymusicss) : mContext.getString(R.string.accompanysoundss) );
 
         holder.all.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -517,6 +517,8 @@
     <string name="resyncaccompany">Resync</string>
     <string name="saveaccompany">Save</string>
     <string name="selectcompanimenmusicfile">Select the accompaniment music file</string>
+    <string name="accompanymusicss">Accompaniment sync</string>
+    <string name="accompanysoundss">Singing</string>
 
 
     <!--yinxiangoperatorpopup界面-->

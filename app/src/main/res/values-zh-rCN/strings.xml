@@ -562,6 +562,9 @@
     <string name="saveaccompany">保存为伴奏</string>
     <string name="resyncaccompany">重新同步伴奏带</string>
     <string name="selectcompanimenmusicfile">选择伴奏音乐文件</string>
+    <string name="accompanymusicss">伴奏音乐</string>
+    <string name="accompanysoundss">演唱</string>
+
 
 
     <!--yinxiangoperatorpopup界面-->
