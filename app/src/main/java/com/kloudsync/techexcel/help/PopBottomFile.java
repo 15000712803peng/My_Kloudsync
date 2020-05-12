@@ -271,6 +271,17 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
         }
     }
 
+    public void setDocuments(List<MeetingDocument> documents, BottomFileAdapter.OnDocumentClickListener clickListener) {
+        if (adapter == null) {
+            adapter = new BottomFileAdapter(mContext, documents,meetingConfig);
+            adapter.setOnDocumentClickListener(clickListener);
+            fileList.setAdapter(adapter);
+        } else {
+            adapter.setOnDocumentClickListener(clickListener);
+            adapter.refreshFiles(documents);
+        }
+    }
+
     public void addTempDoc(MeetingDocument tempDoc){
         if(adapter != null){
             adapter.addTempDocument(tempDoc);

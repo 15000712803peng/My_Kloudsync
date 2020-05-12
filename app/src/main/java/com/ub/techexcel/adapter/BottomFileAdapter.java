@@ -92,6 +92,37 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
         this.context = context;
     }
 
+    public void refreshFiles(List<MeetingDocument> documents){
+        mDatas.clear();
+
+        mDatas.addAll(fillSelected(documents));
+        notifyDataSetChanged();
+    }
+
+    private List<MeetingDocument> fillSelected(List<MeetingDocument> documents){
+
+        int itemId = 0;
+        if(mDatas != null && mDatas.size() > 0){
+            for(MeetingDocument document : mDatas){
+                if(document.isSelect()){
+                    itemId = document.getItemID();
+                    break;
+                }
+            }
+        }
+        if(itemId > 0){
+            if(documents != null && documents.size() > 0){
+                int index = documents.indexOf(new MeetingDocument(itemId));
+                if(index >= 0){
+                    documents.get(index).setSelect(true);
+                }
+
+            }
+        }
+        return documents;
+
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ViewHolder(View a) {
             super(a);

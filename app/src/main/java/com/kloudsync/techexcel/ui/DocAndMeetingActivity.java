@@ -4010,7 +4010,7 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+
             }
         });
 //        Observable.just("delay_load").delay(2000,TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
@@ -6166,22 +6166,33 @@ public class DocAndMeetingActivity extends BaseWebActivity implements PopBottomM
 
     private void handleMessageAttchmentUploaded(JSONObject data) {
         Log.e("handle_attchment_upload", "data;" + data);
-        String newDocumentId = "";
-        try {
-            newDocumentId = data.getString("itemId");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        if (TextUtils.isEmpty(newDocumentId)) {
-            return;
-        }
-        final String _id = newDocumentId;
+//        String newDocumentId = "";
+//        try {
+//            newDocumentId = data.getString("itemId");
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+////        if (TextUtils.isEmpty(newDocumentId)) {
+////            return;
+////        }
+////        final String _id = newDocumentId;
         Observable.just(meetingConfig).observeOn(Schedulers.io()).doOnNext(new Consumer<MeetingConfig>() {
             @Override
             public void accept(MeetingConfig meetingConfig) throws Exception {
                 EventRefreshDocs docs = DocumentModel.asyncGetDocuments(meetingConfig);
                 if (docs.getDocuments() != null) {
                     DocAndMeetingActivity.this.documents = docs.getDocuments();
+                    Observable.just("refresh").observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+                        @Override
+                        public void accept(String s) throws Exception {
+                            Log.e("check_refersh_file","refresh_file_one");
+                            if (bottomFilePop != null && bottomFilePop.isShowing()) {
+                                Log.e("check_refersh_file","refresh_file_two");
+                                bottomFilePop.setDocuments(DocAndMeetingActivity.this.documents, DocAndMeetingActivity.this);
+                            }
+                        }
+                    });
+
                 }
             }
         }).subscribe();
