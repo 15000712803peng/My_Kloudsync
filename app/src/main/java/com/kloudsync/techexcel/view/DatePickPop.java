@@ -32,11 +32,11 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
     private ArrayList<String> hourList = new ArrayList<>();
     private ArrayList<String> noons = new ArrayList<>();
     private ArrayList<String> durations = new ArrayList<>();
-    private boolean mIsOverToday=false;//当前选中日期是否超过今天
-    private boolean mIsOverHours=false;//当前选中小时是否超过
-    private boolean mIsOverNoon=false;//
-    private boolean mIsAfterNoon=false;// false 表示当前是上午 true 表示下午
-    private boolean mSelectAfterNoon=false;// false 选中上午  true 选中下午
+    public boolean mIsOverToday=false;//当前选中日期是否超过今天
+    public boolean mIsOverHours=false;//当前选中小时是否超过
+    public boolean mIsOverNoon=false;//
+    public boolean mIsAfterNoon=false;// false 表示当前是上午 true 表示下午
+    public boolean mSelectAfterNoon=false;// false 选中上午  true 选中下午
     private int currentDatePosition,currentNoonPosition,currentHourPosition,currentDurationPosition;
     private void init() {
         if (null != dialog) {
@@ -47,8 +47,13 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
         }
     }
 
-    public DatePickPop(Activity host) {
+    public DatePickPop(Activity host,int currentDatePosition,int currentNoonPosition,int currentHourPosition,int currentDurationPosition) {
         this.host = host;
+        this.currentDatePosition=currentDatePosition;
+        this.currentNoonPosition=currentNoonPosition;
+        this.currentHourPosition=currentHourPosition;
+        this.currentDurationPosition=currentDurationPosition;
+        if(currentDatePosition>0) mIsOverToday=true;
         init();
     }
 
@@ -94,22 +99,27 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
         dialog.getWindow().setAttributes(params);
     }
 
-//    public void show(int a,int b,int c,int d) {
-//        if (dialog != null) {
+    public void show(int a,int b,int c,int d) {
+        if (dialog != null) {
 //            lv_pick_date.setInitPosition(currentDatePosition);
 //            lv_pick_one.setInitPosition(currentNoonPosition);
 //            lv_pick_hour.setInitPosition(currentHourPosition);
 //            lv_pick_duration.setInitPosition(currentDurationPosition);
-//            lv_pick_date.setInitPosition(a);
-//            lv_pick_one.setInitPosition(b);
-//            lv_pick_hour.setInitPosition(c);
-//            lv_pick_duration.setInitPosition(d);
-//            dialog.show();
-//        }
-//    }
+
+            lv_pick_date.setInitPosition(a);
+            lv_pick_one.setInitPosition(b);
+            lv_pick_hour.setInitPosition(c);
+            lv_pick_duration.setInitPosition(d);
+            dialog.show();
+        }
+    }
 
     public void show() {
         if (dialog != null) {
+            lv_pick_date.setInitPosition(currentDatePosition);
+            lv_pick_one.setInitPosition(currentNoonPosition);
+            lv_pick_hour.setInitPosition(currentHourPosition);
+            lv_pick_duration.setInitPosition(currentDurationPosition);
             dialog.show();
         }
     }
@@ -190,17 +200,28 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
                 currentDatePosition=index;
                 if(index>0){
                     mIsOverToday=true;
+                    setCurrentHours();
+                    setCurrentNoons();
+                    setCurrentDurations();
                 }else {
                     mIsOverToday=false;
+                    currentNoonPosition=0;
+                    currentHourPosition=0;
+                    currentDurationPosition=0;
+                    setCurrentHours();
+                    setCurrentNoons();
+                    setCurrentDurations();
+                    lv_pick_date.setInitPosition(currentDatePosition);
+                    lv_pick_one.setInitPosition(currentNoonPosition);
+                    lv_pick_hour.setInitPosition(currentHourPosition);
+                    lv_pick_duration.setInitPosition(currentDurationPosition);
                 }
-                setCurrentHours();
-                setCurrentNoons();
-                setCurrentDurations();
+
             }
         });
-        curDateInfo=list.get(0);
-        curDate=dateList.get(0);
-        curShowDate=showList.get(0);
+        curDateInfo=list.get(currentDatePosition);
+        curDate=dateList.get(currentDatePosition);
+        curShowDate=showList.get(currentDatePosition);
     }
 
     private void setCurrentDurations(){
@@ -239,7 +260,7 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
         // 设置原始数据
         lv_pick_duration.setItems(durations);
         lv_pick_duration.setNotLoop();
-        curDuration=durations.get(0);
+        curDuration=durations.get(currentDurationPosition);
     }
 
     /**
@@ -296,7 +317,7 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
         // 设置原始数据
         lv_pick_hour.setItems(hourList);
         lv_pick_hour.setNotLoop();
-        curHour=hourList.get(0);
+        curHour=hourList.get(currentHourPosition);
     }
 
     /**
@@ -335,7 +356,7 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
         // 设置原始数据
         lv_pick_one.setItems(noons);
         lv_pick_one.setNotLoop();
-        curDayInfo=noons.get(0);
+        curDayInfo=noons.get(currentNoonPosition);
     }
     /**
      * 获取当前日期是星期几
@@ -367,4 +388,9 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
 //        this.currentHourPosition=hourIndex;
 //        this.currentDatePosition=durationIndex;
 //    }
+
+
+    public void setIsOverToday(boolean mIsOverToday) {
+        this.mIsOverToday = mIsOverToday;
+    }
 }

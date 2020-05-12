@@ -517,6 +517,8 @@
     <string name="resyncaccompany">Resync</string>
     <string name="saveaccompany">Save</string>
     <string name="selectcompanimenmusicfile">Select the accompaniment music file</string>
+    <string name="accompanymusicss">Accompaniment sync</string>
+    <string name="accompanysoundss">Singing</string>
 
 
     <!--yinxiangoperatorpopup界面-->
@@ -880,7 +882,7 @@ Please input the cell phone number to add the contact
     <string name="and">and</string>
     <string name="useteamandservice">User Teams of Service</string>
     <string name="create_new_sync">Create New Sync</string>
-    <string name="select_more_sync">+ Select Mode Sound</string>
+    <string name="select_more_sync">Select Sync</string>
     <string name="sync">Sync</string>
     <string name="soundsync">Sync</string>
     <string name="invite_new">invite new</string>
@@ -1120,5 +1122,7 @@ Please input the cell phone number to add the contact
     <string name="Go_video">Go video</string>
     <string name="Hide_all">Hide all webcam</string>
 
-
+    <string name="micro">Microphone</string>
+    <string name="video">camera </string>
+    <string name="audio">speaker</string>
 </resources>

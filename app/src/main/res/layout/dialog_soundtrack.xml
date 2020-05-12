@@ -56,7 +56,6 @@
 
                 <RelativeLayout
                     android:padding="10dp"
-
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -108,49 +107,43 @@
             </RelativeLayout>
 
             <LinearLayout
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
                 android:layout_alignParentBottom="true"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
                 <TextView
-                    android:visibility="gone"
-                    android:id="@+id/selectmore"
-                    android:layout_width="match_parent"
+                    android:id="@+id/createsynctext"
                     android:gravity="center"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_width="100dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/bg_create_sync"
+                    android:layout_weight="1"
+                    android:text="@string/create_new_sync"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_marginLeft="20dp"
+                    android:visibility="gone"
+                    android:layout_weight="1"
+                    android:id="@+id/selectmore"
+                    android:layout_width="100dp"
+                    android:layout_height="38dp"
+                    android:gravity="center"
+                    android:background="@drawable/peertimeselect_bg3"
                     android:text="@string/select_more_sync"
                     android:textColor="@color/skyblue"
                     android:textSize="14sp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/divider_line" />
-
-
-                <LinearLayout
-                    android:id="@+id/layout_create"
-                    android:layout_width="match_parent"
-                    android:layout_height="42dp"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:background="@color/txt_blue"
-                    android:padding="5dp">
-                    <TextView
-                        android:id="@+id/createsynctext"
-                        android:gravity="center"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="@string/create_new_sync"
-                        android:textColor="@color/white"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
             </LinearLayout>
+
+
         </RelativeLayout>
 
 
@@ -174,6 +167,26 @@
                     android:src="@drawable/arrow_back2" />
             </RelativeLayout>
 
+            <TextView
+                android:layout_toRightOf="@+id/layout_back"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:text="@string/select_more_sync"
+                android:layout_height="42dp" />
+
+            <TextView
+                android:id="@+id/ok"
+                android:layout_marginTop="5dp"
+                android:layout_width="80dp"
+                android:layout_marginRight="10dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_create_sync"
+                android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:text="@string/base_enter"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
             <View
                 android:id="@+id/view_divider"
                 android:layout_below="@id/layout_back"
@@ -185,21 +198,11 @@
                 android:layout_below="@id/view_divider"
                 android:id="@+id/allrecycleview"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="70dp"
+                android:layout_height="match_parent"
                 android:layout_marginTop="5dp"
                 android:visibility="visible"></android.support.v7.widget.RecyclerView>
 
-            <TextView
-                android:id="@+id/ok"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_alignParentBottom="true"
-                android:background="@color/skyblue"
-                android:gravity="center"
-                android:text="@string/OK"
-                android:textColor="@color/white"
-                android:textSize="14sp" />
+
         </RelativeLayout>
 
     </RelativeLayout>

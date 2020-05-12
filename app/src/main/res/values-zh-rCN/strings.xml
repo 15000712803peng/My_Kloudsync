@@ -562,6 +562,9 @@
     <string name="saveaccompany">保存为伴奏</string>
     <string name="resyncaccompany">重新同步伴奏带</string>
     <string name="selectcompanimenmusicfile">选择伴奏音乐文件</string>
+    <string name="accompanymusicss">伴奏音乐</string>
+    <string name="accompanysoundss">演唱</string>
+
 
 
     <!--yinxiangoperatorpopup界面-->
@@ -866,7 +869,7 @@
     <string name="and">和</string>
     <string name="useteamandservice">服务协议</string>
     <string name="create_new_sync">创建音想</string>
-    <string name="select_more_sync">+ 选择音想</string>
+    <string name="select_more_sync">选择音想</string>
     <string name="sync">同步</string>
     <string name="soundsync">音想</string>
     <string name="invite_new">邀请</string>
@@ -1090,4 +1093,7 @@
     <string name="Go_video">进入视频会议</string>
     <string name="Hide_all">隐藏所有人</string>
 
+    <string name="micro">麦克风</string>
+    <string name="video">摄像头</string>
+    <string name="audio">扬声器</string>
 </resources>

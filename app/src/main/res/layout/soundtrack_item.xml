@@ -80,9 +80,15 @@
                     android:layout_marginLeft="5dp"
                     android:layout_width="wrap_content"
                     android:visibility="gone"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:textSize="12sp"
+                    android:background="@drawable/peertimeselect_bg3"
                     android:layout_height="wrap_content"
                     android:text="演唱"
-                    android:textColor="@color/green" />
+                    android:textColor="@color/skyblue" />
 
             </LinearLayout>
             <TextView
