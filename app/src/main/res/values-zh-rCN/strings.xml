@@ -866,7 +866,7 @@
     <string name="and">和</string>
     <string name="useteamandservice">服务协议</string>
     <string name="create_new_sync">创建音想</string>
-    <string name="select_more_sync">+ 选择音想</string>
+    <string name="select_more_sync">选择音想</string>
     <string name="sync">同步</string>
     <string name="soundsync">音想</string>
     <string name="invite_new">邀请</string>
