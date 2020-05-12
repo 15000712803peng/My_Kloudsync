@@ -237,6 +237,7 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
 
     private List<SoundtrackBean> allList=new ArrayList<>();
     private YinXiangAdapter2 yinXiangAdapter2;
+
     public void getSoundtrack2(final String attachmentid) {
         if (TextUtils.isEmpty(attachmentid)) {
             return;
@@ -249,7 +250,7 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
                         List<SoundtrackBean> oo = (List<SoundtrackBean>) object;
                         allList.clear();
                         allList.addAll(oo);
-	                    yinXiangAdapter2 = new YinXiangAdapter2(host, new ArrayList<SoundtrackBean>(), allList, meetingConfig);
+	                    yinXiangAdapter2 = new YinXiangAdapter2(host, displayList, allList, meetingConfig);
                         allrecycleview.setAdapter(yinXiangAdapter2);
                     }
                 }, false, true);
@@ -271,6 +272,8 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
 
     }
 
+    private List<SoundTrack> displayList=new ArrayList<>();
+
     @Override
     public void soundtrackList(EventSoundtrackList soundtrackList) {
         Observable.just(soundtrackList).observeOn(AndroidSchedulers.mainThread()).doOnNext(new Consumer<EventSoundtrackList>() {
@@ -279,6 +282,9 @@ public class UserSoundtrackDialog implements View.OnClickListener, DialogInterfa
 	            loadingLayout.setVisibility(View.GONE);
 	            if (soundtrackList.getSoundTracks() != null) {
 		            if (soundtrackList.getSoundTracks().size() >= 0) {
+		                displayList.clear();
+                        displayList.addAll(soundtrackList.getSoundTracks());
+
 			            soundtrackListView.setVisibility(View.VISIBLE);
 			            noDataText.setVisibility(View.GONE);
 			            if (soundtrackAdapter == null) {
