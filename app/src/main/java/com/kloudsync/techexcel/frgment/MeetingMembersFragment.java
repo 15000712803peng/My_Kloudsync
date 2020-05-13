@@ -1097,6 +1097,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }else {
             if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
                 holder.settingImage.setVisibility(View.VISIBLE);
+            }else{
+                holder.settingImage.setVisibility(View.INVISIBLE);
             }
 
         }
