@@ -2,12 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/popup_bottom_file"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/dp_187"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_360"
+        android:layout_height="match_parent"
         android:id="@+id/rll_list_file"
         android:focusable="true"
         android:focusableInTouchMode="true"
@@ -16,10 +16,10 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_marginLeft="@dimen/dp_20"
+            android:layout_marginLeft="@dimen/dp_10"
             android:layout_toLeftOf="@+id/addauditor"
             android:layout_marginTop="@dimen/dp_9"
-            android:layout_marginRight="@dimen/dp_15"
+            android:layout_marginRight="@dimen/dp_10"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:background="@drawable/shape_stroke_gray_white_all_radius_4"
@@ -28,7 +28,7 @@
             <ImageView
                 android:layout_width="@dimen/dp_10"
                 android:src="@drawable/searchicon"
-                android:layout_marginLeft="@dimen/dp_13"
+                android:layout_marginLeft="@dimen/dp_10"
                 android:layout_height="@dimen/dp_10" />
 
             <EditText
@@ -54,7 +54,7 @@
             android:layout_marginTop="@dimen/dp_9"
             android:layout_marginBottom="@dimen/dp_9"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/dp_9"
+            android:layout_marginRight="@dimen/dp_10"
             android:gravity="center_vertical"
             android:orientation="vertical">
 

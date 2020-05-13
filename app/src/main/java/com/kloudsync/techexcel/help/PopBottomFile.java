@@ -17,9 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 import android.widget.TextView;
 
 import com.kloudsync.techexcel.R;
@@ -32,11 +30,8 @@ import com.ub.techexcel.tools.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.File;
-import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
@@ -199,17 +194,10 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
         blank_file.setOnClickListener(this);
 
 
-//        if (Tools.isOrientationPortrait((Activity) mContext)) {
         bottomFileWindow = new MyDialog(mContext, R.style.my_dialog);
 	    bottomFileWindow.setContentView(view);
 	    bottomFileWindow.setCanceledOnTouchOutside(true);
-      /*  } else {
-            bottomFileWindow = new PopupWindow(view, mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360), RelativeLayout.LayoutParams.MATCH_PARENT, false);
-        }*/
         bottomFileWindow.setOnDismissListener(this);
-//        bottomFileWindow.setBackgroundDrawable(new BitmapDrawable());
-//        bottomFileWindow.setAnimationStyle(R.style.anination2);
-//        bottomFileWindow.setFocusable(true);
     }
 
 
@@ -219,36 +207,21 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
             init();
         }
 
-        /*if (Tools.isOrientationPortrait((Activity) mContext)) {
-            mRllListFile.setBackgroundResource(R.drawable.shape_white_top_radius_15);
-        } else {
-            mRllListFile.setBackgroundResource(R.drawable.shape_white_left_radius_15);
-        }*/
-//        if (bottomFileWindow.isShowing()) {
 	    WindowManager.LayoutParams layoutParams = bottomFileWindow.getWindow().getAttributes();
 	    if (Tools.isOrientationPortrait((Activity) mContext)) {
 		    mRllListFile.setBackgroundResource(R.drawable.shape_white_top_radius_15);
 		    bottomFileWindow.getWindow().setGravity(Gravity.BOTTOM);
 		    layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
-		    layoutParams.height = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360);
-//                bottomFileWindow.update(RelativeLayout.LayoutParams.MATCH_PARENT, mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360));
+		    layoutParams.height = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_187);
 	    } else {
 		    mRllListFile.setBackgroundResource(R.drawable.shape_white_left_radius_15);
 		    bottomFileWindow.getWindow().setGravity(Gravity.RIGHT);
-		    layoutParams.width = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360);
+		    layoutParams.width = mContext.getResources().getDimensionPixelOffset(R.dimen.dp_187);
 		    layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
 		    bottomFileWindow.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            //                bottomFileWindow.update(mContext.getResources().getDimensionPixelOffset(R.dimen.dp_360), RelativeLayout.LayoutParams.MATCH_PARENT);
 	    }
         bottomFileWindow.getWindow().setAttributes(layoutParams);
-//        }
-      /*  if (!bottomFileWindow.isShowing()) {
-            if (Tools.isOrientationPortrait((Activity) mContext)) {
-                bottomFileWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
-            } else {
-                bottomFileWindow.showAtLocation(view, Gravity.RIGHT, 0, 0);
-            }
-        }*/
+
         if (!bottomFileWindow.isShowing()) {
 	        bottomFileWindow.show();
         }
@@ -294,7 +267,7 @@ public class PopBottomFile implements DialogInterface.OnDismissListener, OnClick
             }
             mSearchList.clear();
             for (MeetingDocument meetingDocument : mDocuments) {
-                if (meetingDocument.getFileName().contains(searchText)) {
+	            if (meetingDocument.getTitle().contains(searchText)) {
                     mSearchList.add(meetingDocument);
                 }
             }

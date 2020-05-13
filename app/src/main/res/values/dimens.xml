@@ -95,11 +95,13 @@
     <dimen name="dp_179">179dp</dimen>
     <dimen name="dp_180">180dp</dimen>
     <dimen name="dp_181">181dp</dimen>
+    <dimen name="dp_187">187dp</dimen>
     <dimen name="dp_288">288dp</dimen>
-	<dimen name="dp_360">360dp</dimen>
     <dimen name="dp_375">375dp</dimen>
     <dimen name="dp_438">438dp</dimen>
 
+    <dimen name="sp_8">8sp</dimen>
+    <dimen name="sp_9">9sp</dimen>
 	<dimen name="sp_10">10sp</dimen>
     <dimen name="sp_11">11sp</dimen>
     <dimen name="sp_12">12sp</dimen>

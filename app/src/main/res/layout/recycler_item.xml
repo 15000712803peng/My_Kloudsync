@@ -1,162 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fresco="http://schemas.android.com/tools"
-    android:id="@+id/headll"
-    android:layout_width="match_parent"
-    android:paddingLeft="@dimen/dp_9"
-    android:layout_marginLeft="@dimen/dp_6"
-    android:layout_marginRight="@dimen/dp_4"
-    android:paddingRight="@dimen/dp_9"
-    android:paddingTop="@dimen/dp_6"
-    android:background="@drawable/selector_blue_white_all_radius_5"
-    android:paddingBottom="@dimen/dp_6"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    android:orientation="horizontal">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:fresco="http://schemas.android.com/tools"
+	android:id="@+id/headll"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_marginLeft="@dimen/dp_4"
+	android:layout_marginTop="@dimen/dp_5"
+	android:layout_marginBottom="@dimen/dp_5"
+	android:layout_marginRight="@dimen/dp_4"
+	android:background="@drawable/selector_blue_white_all_radius_5"
+	android:gravity="center"
+	android:orientation="horizontal"
+	android:paddingLeft="@dimen/dp_6"
+	android:paddingTop="@dimen/dp_5"
+	android:paddingRight="@dimen/dp_6"
+	android:paddingBottom="@dimen/dp_5">
 
-    <!--<TextView
-        android:id="@+id/identlyTv"
-        android:singleLine="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="10dp"
-        android:textColor="@color/black"
-        android:visibility="visible" />-->
+	<!--<TextView
+		android:id="@+id/identlyTv"
+		android:singleLine="true"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:textSize="10dp"
+		android:textColor="@color/black"
+		android:visibility="visible" />-->
 
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+	<RelativeLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content">
 
-        <!--<LinearLayout
-            android:paddingTop="2dp"
-            android:id="@+id/bgisshow"
-            android:layout_width="@dimen/dp_60"
-            android:layout_height="@dimen/dp_45"
-            android:layout_gravity="center"
-            android:layout_marginBottom="2dp"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/course_bg2"
-            android:orientation="horizontal"
-            android:padding="2dp">-->
+		<!--<LinearLayout
+			android:paddingTop="2dp"
+			android:id="@+id/bgisshow"
+			android:layout_width="@dimen/dp_60"
+			android:layout_height="@dimen/dp_45"
+			android:layout_gravity="center"
+			android:layout_marginBottom="2dp"
+			android:layout_marginTop="2dp"
+			android:background="@drawable/course_bg2"
+			android:orientation="horizontal"
+			android:padding="2dp">-->
 
-        <!--<com.kloudsync.techexcel.view.CircleImageView
+		<!--<com.kloudsync.techexcel.view.CircleImageView
 			android:id="@+id/studenticon"
 			android:padding="2dp"
 			android:layout_width="28dp"
 			android:layout_height="28dp"
 			android:src="@drawable/icon_menu" />-->
 
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/studenticon"
-            android:layout_width="@dimen/dp_60"
-            android:layout_height="@dimen/dp_45"
-            android:layout_gravity="center_vertical"
-            android:scaleType="fitXY"
-            fresco:fadeDuration="500"
-            fresco:failureImage="@drawable/placeholderimg"
-            fresco:failureImageScaleType="centerInside"
-            fresco:placeholderImage="@drawable/placeholderimg"
-            fresco:placeholderImageScaleType="fitCenter"
+		<com.facebook.drawee.view.SimpleDraweeView
+			android:id="@+id/studenticon"
+			android:layout_width="@dimen/dp_40"
+			android:layout_height="@dimen/dp_45"
+			android:layout_gravity="center_vertical"
+			android:scaleType="fitXY"
+			fresco:fadeDuration="500"
+			fresco:failureImage="@drawable/placeholderimg"
+			fresco:failureImageScaleType="centerInside"
+			fresco:placeholderImage="@drawable/placeholderimg"
+			fresco:placeholderImageScaleType="fitCenter"
 
-            />
-        <!--        </LinearLayout>-->
-
-
-        <LinearLayout
-            android:id="@+id/bgisshow2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="2dp"
-            android:layout_marginTop="2dp"
-            android:layout_centerInParent="true"
-            android:orientation="horizontal"
-            android:padding="1.4dp"
-            android:visibility="gone">
-
-            <com.kloudsync.techexcel.view.RoundProgressBar
-                android:padding="2dp"
-                android:id="@+id/rpb_update"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                app:roundColor="@color/qiangrey"
-                app:roundProgressColor="@color/skyblue"
-                app:roundWidth="3dp"
-                app:textColor="@color/white"
-                app:textSize="12sp" />
-        </LinearLayout>
-
-    </RelativeLayout>
+			/>
+		<!--        </LinearLayout>-->
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_marginLeft="@dimen/dp_10"
-        android:layout_height="wrap_content">
+		<LinearLayout
+			android:id="@+id/bgisshow2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerInParent="true"
+			android:layout_gravity="center"
+			android:layout_marginTop="2dp"
+			android:layout_marginBottom="2dp"
+			android:orientation="horizontal"
+			android:padding="1.4dp"
+			android:visibility="gone">
 
-        <TextView
-            android:id="@+id/studentname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:layout_toLeftOf="@+id/iv_item_doc_more"
-            android:textColor="@color/colorFont33"
-            android:textSize="12sp" />
+			<com.kloudsync.techexcel.view.RoundProgressBar
+				android:id="@+id/rpb_update"
+				android:layout_width="30dp"
+				android:layout_height="30dp"
+				android:layout_gravity="center"
+				android:padding="2dp"
+				app:roundColor="@color/qiangrey"
+				app:roundProgressColor="@color/skyblue"
+				app:roundWidth="3dp"
+				app:textColor="@color/white"
+				app:textSize="12sp" />
+		</LinearLayout>
 
-        <ImageView
-            android:layout_width="@dimen/dp_15"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/member_more"
-            android:id="@+id/iv_item_doc_more"
-            android:layout_alignBottom="@id/studentname"
-            android:layout_height="@dimen/dp_15" />
+	</RelativeLayout>
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:id="@+id/tv_item_cteate_date"
-            android:layout_marginTop="@dimen/dp_5"
-            android:layout_below="@id/studentname"
-            android:textSize="@dimen/sp_10"
-            android:textColor="@color/colorFont99"
-            android:layout_height="wrap_content" />
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="@dimen/dp_10">
 
-        <LinearLayout
-            android:id="@+id/lly_item_doc_yin_xiang_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_10"
-            android:layout_toRightOf="@id/tv_item_cteate_date"
-            android:gravity="center_vertical"
-            android:paddingLeft="@dimen/dp_6"
-            android:paddingRight="@dimen/dp_4"
-            android:paddingBottom="@dimen/dp_2"
-            android:paddingTop="@dimen/dp_2"
-            android:visibility="gone"
-            android:layout_below="@id/studentname"
-            android:background="@drawable/shape_blue_all_radius_7"
-            android:layout_marginTop="@dimen/dp_5"
-            android:orientation="horizontal">
+		<TextView
+			android:id="@+id/studentname"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:ellipsize="end"
+			android:maxLines="2"
+			android:textColor="@color/colorFont33"
+			android:textSize="@dimen/sp_9" />
 
-            <ImageView
-                android:layout_width="@dimen/dp_8"
-                android:src="@drawable/teamusic"
-                android:layout_height="@dimen/dp_9" />
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/studentname"
+			android:layout_marginTop="@dimen/dp_5"
+			android:gravity="center_vertical"
+			android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tv_item_yin_xiang_count"
-                android:layout_width="wrap_content"
-                android:textSize="@dimen/sp_10"
-                android:text="110"
+			<LinearLayout
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
 
-                android:textColor="@color/color3d78fb"
-                android:layout_marginLeft="@dimen/dp_4"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </RelativeLayout>
+				<ImageView
+					android:layout_width="@dimen/dp_6"
+					android:layout_height="@dimen/dp_6"
+					android:src="@drawable/doc_list_user_icon" />
+
+				<TextView
+					android:id="@+id/tv_item_create_user_name"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="@dimen/dp_2"
+					android:layout_marginRight="@dimen/dp_2"
+					android:ellipsize="end"
+					android:singleLine="true"
+					android:text="用户名"
+					android:textColor="@color/colorFont99"
+					android:textSize="@dimen/sp_8" />
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/lly_item_doc_yin_xiang_count"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="2"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+
+				<ImageView
+					android:layout_width="@dimen/dp_7"
+					android:layout_height="@dimen/dp_7"
+					android:src="@drawable/doc_list_yin_xiang_icon" />
+
+				<TextView
+					android:id="@+id/tv_item_yin_xiang_count"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="@dimen/dp_2"
+					android:text="110"
+					android:textColor="@color/color3d78fb"
+					android:textSize="@dimen/sp_8" />
+			</LinearLayout>
+
+			<RelativeLayout
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1">
+
+				<ImageView
+					android:id="@+id/iv_item_doc_more"
+					android:layout_width="@dimen/dp_15"
+					android:paddingLeft="@dimen/dp_3"
+					android:paddingRight="@dimen/dp_3"
+					android:layout_height="@dimen/dp_15"
+					android:layout_alignParentRight="true"
+					android:src="@drawable/doc_list_more_icon" />
+			</RelativeLayout>
+		</LinearLayout>
+	</RelativeLayout>
 
 </LinearLayout>

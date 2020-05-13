@@ -22,7 +22,6 @@ import com.kloudsync.techexcel.httpgetimage.ImageLoader;
 import com.kloudsync.techexcel.tool.ToastUtils;
 import com.kloudsync.techexcel.view.RoundProgressBar;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,7 +128,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
         }
 
         SimpleDraweeView icon;
-        TextView name/*, identlyTv*/, mTvYinXiangCount, mTvCreateDate;
+        TextView name/*, identlyTv*/, mTvYinXiangCount, mTvCreateUserName;
         LinearLayout headll/*, bgisshow*/, bgisshow2, mLlyYinXiangCount;
         RoundProgressBar rpb_update;
         ImageView mIvItemDocMore;
@@ -154,7 +153,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
         viewHolder.bgisshow2 = (LinearLayout) view.findViewById(R.id.bgisshow2);
         viewHolder.rpb_update = (RoundProgressBar) view.findViewById(R.id.rpb_update);
         viewHolder.mIvItemDocMore = view.findViewById(R.id.iv_item_doc_more);
-        viewHolder.mTvCreateDate = view.findViewById(R.id.tv_item_cteate_date);
+        viewHolder.mTvCreateUserName = view.findViewById(R.id.tv_item_create_user_name);
         viewHolder.mLlyYinXiangCount = view.findViewById(R.id.lly_item_doc_yin_xiang_count);
         viewHolder.mTvYinXiangCount = view.findViewById(R.id.tv_item_yin_xiang_count);
         return viewHolder;
@@ -203,8 +202,10 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                 int syncCount = document.getSyncCount();
                 if (syncCount > 0) {
                     holder.mLlyYinXiangCount.setVisibility(View.VISIBLE);
-                    holder.mLlyYinXiangCount.getBackground().setAlpha(26);
                     holder.mTvYinXiangCount.setText(String.valueOf(syncCount));
+                } else {
+                    holder.mLlyYinXiangCount.setVisibility(View.GONE);
+                    holder.mTvYinXiangCount.setText("");
                 }
                 holder.name.setText(/*(position + 1) + ""*/document.getTitle());
                 String url = document.getAttachmentUrl();
@@ -216,13 +217,7 @@ public class BottomFileAdapter extends RecyclerView.Adapter<BottomFileAdapter.Vi
                     }
                     holder.icon.setImageURI(imageUri);
                 }
-                String date = document.getCreatedDate();
-                if (!TextUtils.isEmpty(date)) {
-                    long dd = Long.parseLong(date);
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd HH:mm:ss");
-                    String haha = simpleDateFormat.format(dd);
-                    holder.mTvCreateDate.setText(haha);
-                }
+                holder.mTvCreateUserName.setText(null);
                 if (document.isSelect()) {
                     holder.headll.setSelected(true);
                 } else {

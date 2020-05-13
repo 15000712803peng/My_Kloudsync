@@ -75,7 +75,7 @@ public class DocAndMeetingFileListPopupwindow implements View.OnClickListener {
 			int popupHeight = mView.getMeasuredHeight();  //获取测量后的高度
 			int viewWidth = view.getMeasuredWidth();    //  获取测量后的宽度
 			int viewHeight = view.getMeasuredHeight();  //获取测量后的高度
-			mPpw.showAsDropDown(view, -popupWidth, -popupHeight + viewHeight / 2);
+			mPpw.showAsDropDown(view, -popupWidth, -popupHeight);
 
 		}
 	}
