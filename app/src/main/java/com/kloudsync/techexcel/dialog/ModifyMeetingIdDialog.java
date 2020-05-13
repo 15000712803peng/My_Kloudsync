@@ -29,6 +29,7 @@ public class ModifyMeetingIdDialog implements OnClickListener {
     public void setCurrentMeetingId(String currentMeetingId) {
         this.currentMeetingId = currentMeetingId;
         editText.setText(currentMeetingId);
+        editText.setSelection(currentMeetingId.length());
     }
 
     private Handler handler = new Handler() {

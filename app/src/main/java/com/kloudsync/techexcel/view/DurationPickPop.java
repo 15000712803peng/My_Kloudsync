@@ -25,6 +25,7 @@ public class DurationPickPop implements View.OnClickListener, DialogInterface.On
     int[] times;
     ArrayList<String> listDuration = new ArrayList<>();
     ArrayList<Long> valueList = new ArrayList<>();
+    private int position=0;
     private void init() {
         if (null != dialog) {
             dialog.dismiss();
@@ -34,8 +35,9 @@ public class DurationPickPop implements View.OnClickListener, DialogInterface.On
         }
     }
 
-    public DurationPickPop(Activity host) {
+    public DurationPickPop(Activity host,int index) {
         this.host = host;
+        this.position=index;
         init();
     }
 
@@ -45,7 +47,6 @@ public class DurationPickPop implements View.OnClickListener, DialogInterface.On
         times = host.getResources().getIntArray(R.array.time_millsecends);
         for(int i = 0 ; i < durations.length; ++i){
             valueList.add((long)(times[i] * 1000 * 60));
-
         }
         view = layoutInflater.inflate(R.layout.pick_looper_duration, null);
         tv_pick_cancel=(TextView) view.findViewById(R.id.tv_pick_cancel);
@@ -100,7 +101,7 @@ public class DurationPickPop implements View.OnClickListener, DialogInterface.On
         switch (view.getId()) {
             case R.id.tv_pick_confirm:
                 if(onDurationCallBackListener!=null){
-                    onDurationCallBackListener.onDurationCallBack(show,value);
+                    onDurationCallBackListener.onDurationCallBack(show,value,position);
                 }
                 dismiss();
             case R.id.tv_pick_cancel:
@@ -125,16 +126,17 @@ public class DurationPickPop implements View.OnClickListener, DialogInterface.On
             public void onItemSelected(int index) {
                 show=listDuration.get(index);
                 value=valueList.get(index);
+                position=index;
             }
         });
         // 设置原始数据
         lv_pick_duration.setItems(listDuration);
         lv_pick_duration.setNotLoop();
-        show=listDuration.get(2);
-        value=valueList.get(2);
+        show=listDuration.get(position);
+        value=valueList.get(position);
     }
     public interface OnDurationCallBackListener{
-        void onDurationCallBack(String show,long value);
+        void onDurationCallBack(String show,long value,int index);
     }
     OnDurationCallBackListener onDurationCallBackListener;
     public void setOnDurationCallBackListener(OnDurationCallBackListener onTimeCallBackListener) {

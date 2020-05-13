@@ -113,7 +113,7 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
             as_rl_contact.setEnabled(false);
             meetingname.setText(bean.getName());
             if (!TextUtil.isEmpty(bean.getPlanedStartDate())) {
-                SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat formatter = new SimpleDateFormat("H:mm");
                 SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd");
                 String start = "0:00", end = "0:00";
                 String year = "";
@@ -122,6 +122,13 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
                 Date curDate = new Date(editMeetStartSecond);
                 start = formatter.format(curDate);
                 year = formatter2.format(curDate);
+                String hours[]=start.split(":");
+                if(Integer.parseInt(hours[0])>12){
+                    int h=Integer.parseInt(hours[0])-12;
+                    start="下午"+h+":"+hours[1];
+                }else {
+                    start="上午"+start;
+                }
                 meetingstartdate.setText(year + " " + start);
                 curDuration=Long.parseLong(bean.getPlanedEndDate()) - Long.parseLong(bean.getPlanedStartDate());
                 setDurationText((int)(curDuration/ (1000 * 60)));
@@ -660,8 +667,6 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
     public void showDatePop() {
         DatePickPop datePickPop=new DatePickPop(this,dateIndex,noonIndex,hourIndex,durationIndex);
         datePickPop.show();
-//        if(durationIndex>0) datePickPop.setIsOverToday(true);
-//        datePickPop.show(dateIndex,noonIndex,hourIndex,durationIndex);
         datePickPop.setOnTimeCallBackListener(new DatePickPop.OnTimeCallBackListener() {
             @Override
             public void onTimeCallBack(String showTime, String valueTime,int a,int b,int c,int d) {
@@ -683,19 +688,34 @@ public class NewMeetingActivity extends Activity implements View.OnClickListener
         });
     }
 
+    private int position=-1;
     private void showDurationPop(){
-        DurationPickPop durationPickPop=new DurationPickPop(this);
-        if(bean!=null){
-            durationPickPop.setInitPosition(index);
+        DurationPickPop durationPickPop=null;
+        if(position==-1){
+            durationPickPop=new DurationPickPop(this,2);
         }else {
-            durationPickPop.setInitPosition(2);
+            durationPickPop=new DurationPickPop(this,position);
+        }
+        if(bean!=null){
+            if(position==-1){
+                durationPickPop.setInitPosition(index);
+            }else {
+                durationPickPop.setInitPosition(position);
+            }
+        }else {
+            if(position==-1){
+                durationPickPop.setInitPosition(2);
+            }else {
+                durationPickPop.setInitPosition(position);
+            }
         }
         durationPickPop.show();
         durationPickPop.setOnDurationCallBackListener(new DurationPickPop.OnDurationCallBackListener() {
             @Override
-            public void onDurationCallBack(String show, long value) {
+            public void onDurationCallBack(String show, long value,int index) {
                 meetingduration.setText(show);
                 curDuration=value;
+                position=index;
             }
         });
     }

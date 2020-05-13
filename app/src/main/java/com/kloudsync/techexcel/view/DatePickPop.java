@@ -99,17 +99,12 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
         dialog.getWindow().setAttributes(params);
     }
 
-    public void show(int a,int b,int c,int d) {
+    public void show(int dateIndex,int noonIndex,int hourIndex,int durationIndex) {
         if (dialog != null) {
-//            lv_pick_date.setInitPosition(currentDatePosition);
-//            lv_pick_one.setInitPosition(currentNoonPosition);
-//            lv_pick_hour.setInitPosition(currentHourPosition);
-//            lv_pick_duration.setInitPosition(currentDurationPosition);
-
-            lv_pick_date.setInitPosition(a);
-            lv_pick_one.setInitPosition(b);
-            lv_pick_hour.setInitPosition(c);
-            lv_pick_duration.setInitPosition(d);
+            lv_pick_date.setInitPosition(dateIndex);
+            lv_pick_one.setInitPosition(noonIndex);
+            lv_pick_hour.setInitPosition(hourIndex);
+            lv_pick_duration.setInitPosition(durationIndex);
             dialog.show();
         }
     }
@@ -312,6 +307,7 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
                     mIsOverHours=false;
                 }
                 setCurrentDurations();
+                setCurrentHours();
             }
         });
         // 设置原始数据
@@ -346,8 +342,10 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
                 }
                 if(index>0){
                     mIsOverNoon=true;
+                    mSelectAfterNoon=true;
                 }else {
                     mIsOverNoon=false;
+                    mSelectAfterNoon=false;
                 }
                 setCurrentHours();
                 setCurrentDurations();
@@ -380,17 +378,5 @@ public class DatePickPop implements View.OnClickListener, DialogInterface.OnDism
 
     public void setOnTimeCallBackListener(OnTimeCallBackListener onTimeCallBackListener) {
         this.onTimeCallBackListener = onTimeCallBackListener;
-    }
-//
-//    public void setPositions(int dateIndex,int noonIndex,int hourIndex,int durationIndex){
-//        this.currentDatePosition=dateIndex;
-//        this.currentNoonPosition=noonIndex;
-//        this.currentHourPosition=hourIndex;
-//        this.currentDatePosition=durationIndex;
-//    }
-
-
-    public void setIsOverToday(boolean mIsOverToday) {
-        this.mIsOverToday = mIsOverToday;
     }
 }
