@@ -138,6 +138,13 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
                 mHandDown.setVisibility(View.VISIBLE); // 把手放下
             }
         }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
+            mSetMainMembers.setVisibility(View.VISIBLE);  //设为发言人
+            mAllowSpeak.setVisibility(View.VISIBLE);   // 设为临时发言人
+            if (meetingMember.getHandStatus() == 0) {
+                mHandDown.setVisibility(View.GONE);
+            } else {
+                mHandDown.setVisibility(View.VISIBLE); // 把手放下
+            }
 
         }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人身份
 
