@@ -1095,7 +1095,10 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
             holder.settingImage.setVisibility(View.INVISIBLE);
         }else {
-            holder.settingImage.setVisibility(View.VISIBLE);
+            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+                holder.settingImage.setVisibility(View.VISIBLE);
+            }
+
         }
 
 
