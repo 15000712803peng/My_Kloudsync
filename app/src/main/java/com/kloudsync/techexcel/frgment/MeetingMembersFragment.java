@@ -986,9 +986,19 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 holder.settingImage.setVisibility(View.VISIBLE);
             }
         }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
-            holder.settingImage.setVisibility(View.VISIBLE);
+            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+                holder.settingImage.setVisibility(View.INVISIBLE);
+            }else{
+                holder.settingImage.setVisibility(View.VISIBLE);
+            }
         }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
-            holder.settingImage.setVisibility(View.VISIBLE);
+            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+                holder.settingImage.setVisibility(View.VISIBLE);
+            }else{
+                holder.settingImage.setVisibility(View.INVISIBLE);
+            }
+
+
         }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
             holder.settingImage.setVisibility(View.INVISIBLE);
         }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
