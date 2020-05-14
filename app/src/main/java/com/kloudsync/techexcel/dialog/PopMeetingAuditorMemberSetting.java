@@ -151,12 +151,12 @@ public class PopMeetingAuditorMemberSetting extends PopupWindow implements View.
         }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言身份
 
         }else {  //列表外举手发言
-            ppt_hand_on.setVisibility(View.VISIBLE);
+            if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {  //进入是参会者
+                ppt_hand_on.setVisibility(View.VISIBLE);
+            } else {
+                ppt_hand_on.setVisibility(View.INVISIBLE);
+            }
         }
-
-
-
-
 
 
 //        mView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);

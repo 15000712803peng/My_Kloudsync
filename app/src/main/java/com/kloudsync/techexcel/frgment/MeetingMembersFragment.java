@@ -59,7 +59,7 @@ import static com.kloudsync.techexcel.bean.MeetingMember.TYPE_ITEM_SPEAKING_SPEA
  * Created by tonyan on 2019/11/9.
  */
 
-public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged, PopMeetingSpeakMemberSetting.OnSpeakMemberSettingChanged, PopMeetingHandsMemberSetting.OnHandsMemberSettingChanged ,PopMeetingAuditorMemberSetting.AuditorMemberSettingChanged{
+public class MeetingMembersFragment extends MyFragment implements PopMeetingMemberSetting.OnMemberSettingChanged, PopMeetingSpeakMemberSetting.OnSpeakMemberSettingChanged, PopMeetingHandsMemberSetting.OnHandsMemberSettingChanged, PopMeetingAuditorMemberSetting.AuditorMemberSettingChanged {
 
     private RecyclerView membersList;
     int type;
@@ -75,7 +75,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
-        sharedPreferences = getActivity().getSharedPreferences(AppConfig.LOGININFO,MODE_PRIVATE);
+        sharedPreferences = getActivity().getSharedPreferences(AppConfig.LOGININFO, MODE_PRIVATE);
     }
 
     @Override
@@ -138,20 +138,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 } else {
                     mainSpeakersAdapter.updateMembers(tabSpeakersMembers);
                 }
-
             } else if (type == 2) {
-
-                List<MeetingMember> meetingMembersList=meetingConfig.getMeetingAuditor();
-                for (int i = 0; i < meetingMembersList.size(); i++) {
-                    MeetingMember meetingMember=meetingMembersList.get(i);
-                    if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
-                        if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
-                            meetingMembersList.remove(i);
-                            meetingMembersList.add(0,meetingMember);
-                            break;
-                        }
-                    }
-                }
+                resetSelfMembers(meetingConfig.getMeetingAuditor());
                 meetingMembers.addAll(meetingConfig.getMeetingAuditor());
                 if (membersAdapter == null) {
                     membersAdapter = new MeetingMembersAdapter(getActivity(), meetingMembers);
@@ -160,6 +148,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                     membersAdapter.updateMembers(meetingMembers);
                 }
             } else if (type == 3) {
+                resetSelfMembers(meetingConfig.getMeetingAuditor());
                 meetingMembers.addAll(meetingConfig.getMeetingInvitors());
                 if (membersAdapter == null) {
                     membersAdapter = new MeetingMembersAdapter(getActivity(), meetingMembers);
@@ -198,8 +187,8 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 MeetingMember title = new MeetingMember();
                 title.setViewType(MeetingMember.TYPE_SPARKER_TITLE);
                 //title.setTitle("可讲话参会者");
-                String str=getBindViewText(1030);
-                title.setTitle(TextUtils.isEmpty(str)? getString(R.string.wxf_team_speaker):str);
+                String str = getBindViewText(1030);
+                title.setTitle(TextUtils.isEmpty(str) ? getString(R.string.wxf_team_speaker) : str);
                 tabSpeakersMembers.add(title);
                 tabSpeakersMembers.addAll(tempStageMembers);
 
@@ -219,55 +208,73 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 MeetingMember title = new MeetingMember();
                 title.setViewType(MeetingMember.TYPE_HANDSUP_TITLE);
                 //title.setTitle("已举手参会者");
-                String str=getBindViewText(1029);
-                title.setTitle(TextUtils.isEmpty(str)? getString(R.string.wxf_request_speaker):str);
+                String str = getBindViewText(1029);
+                title.setTitle(TextUtils.isEmpty(str) ? getString(R.string.wxf_request_speaker) : str);
                 tabSpeakersMembers.add(title);
                 tabSpeakersMembers.addAll(handsUpMembers);
             }
         }
         meetingConfig.setViewType(0);
         for (MeetingMember tabSpeakersMember : tabSpeakersMembers) {
-            if((tabSpeakersMember.getUserId()+"").equals(AppConfig.UserID)){
+            if ((tabSpeakersMember.getUserId() + "").equals(AppConfig.UserID)) {
                 meetingConfig.setViewType(tabSpeakersMember.getViewType());
                 break;
             }
         }
-        Log.e("getViewType",meetingConfig.getViewType()+"");
+        Log.e("getViewType", meetingConfig.getViewType() + "");
     }
 
     /**
-     * 参会者排序应该是：演示者第一个，Host第二天，用户自己第三个。
+     * 发言人排序应该是：演示者第一个，Host第二天，用户自己第三个。
+     *
      * @param notTempStageMembers
      */
-    private void resetSortMembers(List<MeetingMember> notTempStageMembers){
-        if(notTempStageMembers.size()>0){
+    private void resetSortMembers(List<MeetingMember> notTempStageMembers) {
+        if (notTempStageMembers.size() > 0) {
             for (int i = 0; i < notTempStageMembers.size(); i++) {
-                MeetingMember notTempStageMember=notTempStageMembers.get(i);
-                if((notTempStageMember.getUserId()+"").equals(AppConfig.UserID)){
+                MeetingMember notTempStageMember = notTempStageMembers.get(i);
+                if ((notTempStageMember.getUserId() + "").equals(AppConfig.UserID)) {
                     notTempStageMembers.remove(i);
-                    notTempStageMembers.add(0,notTempStageMember);
+                    notTempStageMembers.add(0, notTempStageMember);
                     break;
                 }
             }
             for (int i = 0; i < notTempStageMembers.size(); i++) {
-                  MeetingMember notTempStageMember=notTempStageMembers.get(i);
-                  if((notTempStageMember.getUserId()+"").equals(meetingConfig.getMeetingHostId())){
-                        notTempStageMembers.remove(i);
-                        notTempStageMembers.add(0,notTempStageMember);
-                        break;
-                  }
+                MeetingMember notTempStageMember = notTempStageMembers.get(i);
+                if ((notTempStageMember.getUserId() + "").equals(meetingConfig.getMeetingHostId())) {
+                    notTempStageMembers.remove(i);
+                    notTempStageMembers.add(0, notTempStageMember);
+                    break;
+                }
             }
             for (int i = 0; i < notTempStageMembers.size(); i++) {
-                MeetingMember notTempStageMember=notTempStageMembers.get(i);
-                if((notTempStageMember.getUserId()+"").equals(meetingConfig.getPresenterId())){
+                MeetingMember notTempStageMember = notTempStageMembers.get(i);
+                if ((notTempStageMember.getUserId() + "").equals(meetingConfig.getPresenterId())) {
                     notTempStageMembers.remove(i);
-                    notTempStageMembers.add(0,notTempStageMember);
+                    notTempStageMembers.add(0, notTempStageMember);
                     break;
                 }
             }
         }
     }
 
+    /**
+     * 参会者排序  用户自己第三个。
+     *
+     * @param meetingMembersList
+     */
+    private void resetSelfMembers(List<MeetingMember> meetingMembersList) {
+        for (int i = 0; i < meetingMembersList.size(); i++) {  //参会者列表自己排在第一位
+            MeetingMember meetingMember = meetingMembersList.get(i);
+            if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
+                if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
+                    meetingMembersList.remove(i);
+                    meetingMembersList.add(0, meetingMember);
+                    break;
+                }
+            }
+        }
+    }
 
 
     @Override
@@ -567,9 +574,9 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             }
 
             if ((member.getUserId() + "").equals(AppConfig.UserID)) {
-                fillDeviceType(member.getDeviceType(), holder.type,true);
+                fillDeviceType(member.getDeviceType(), holder.type, true);
             } else {
-                fillDeviceType(member.getDeviceType(), holder.type,false);
+                fillDeviceType(member.getDeviceType(), holder.type, false);
             }
             holder.microImage.setVisibility(View.GONE);
 
@@ -708,28 +715,29 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
             return viewHolder;
         }
 
-        private String getBindViewText(int fileId){
-            String appBindName="";
-            int language = sharedPreferences.getInt("language",1);
-            if(language==1&&App.appENNames!=null){
-                for(int i=0;i<App.appENNames.size();i++){
-                    if(fileId==App.appENNames.get(i).getFieldId()){
-                        System.out.println("Name->"+App.appENNames.get(i).getFieldName());
-                        appBindName=App.appENNames.get(i).getFieldName();
+        private String getBindViewText(int fileId) {
+            String appBindName = "";
+            int language = sharedPreferences.getInt("language", 1);
+            if (language == 1 && App.appENNames != null) {
+                for (int i = 0; i < App.appENNames.size(); i++) {
+                    if (fileId == App.appENNames.get(i).getFieldId()) {
+                        System.out.println("Name->" + App.appENNames.get(i).getFieldName());
+                        appBindName = App.appENNames.get(i).getFieldName();
                         break;
                     }
                 }
-            }else if(language==2&&App.appCNNames!=null){
-                for(int i=0;i<App.appCNNames.size();i++){
-                    if(fileId==App.appCNNames.get(i).getFieldId()){
-                        System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
-                        appBindName=App.appCNNames.get(i).getFieldName();
+            } else if (language == 2 && App.appCNNames != null) {
+                for (int i = 0; i < App.appCNNames.size(); i++) {
+                    if (fileId == App.appCNNames.get(i).getFieldId()) {
+                        System.out.println("Name->" + App.appCNNames.get(i).getFieldName());
+                        appBindName = App.appCNNames.get(i).getFieldName();
                         break;
                     }
                 }
             }
             return appBindName;
         }
+
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             if (holder instanceof MainSpeakerViewHolder) {
@@ -744,13 +752,12 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
 
                 if ((member.getUserId() + "").equals(AppConfig.UserID)) {
-                    fillDeviceType(member.getDeviceType(), mainSpeakerViewHolder.type,true);
-                    String me=getBindViewText(1028);
+                    fillDeviceType(member.getDeviceType(), mainSpeakerViewHolder.type, true);
+                    String me = getBindViewText(1028);
 //                    if(!TextUtils.isEmpty(me))mainSpeakerViewHolder.presenter.setText(me);
                 } else {
-                    fillDeviceType(member.getDeviceType(), mainSpeakerViewHolder.type,false);
+                    fillDeviceType(member.getDeviceType(), mainSpeakerViewHolder.type, false);
                 }
-
 
 
                 if (meetingConfig.getMeetingHostId().equals(member.getUserId() + "")) {
@@ -761,17 +768,17 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 if (member.getPresenter() == 1) {
                     mainSpeakerViewHolder.settingImage.setVisibility(View.INVISIBLE);
                     mainSpeakerViewHolder.presenter.setVisibility(View.VISIBLE);
-                    String host=getBindViewText(1027);
+                    String host = getBindViewText(1027);
 //                    if(!TextUtils.isEmpty(host))mainSpeakerViewHolder.presenter.setText(host);
                 } else {
                     mainSpeakerViewHolder.settingImage.setVisibility(View.VISIBLE);
                     mainSpeakerViewHolder.presenter.setVisibility(View.GONE);
                 }
 
-                if(member.getMicrophoneStatus() != 2){
+                if (member.getMicrophoneStatus() != 2) {
                     // 麦克风关闭
                     mainSpeakerViewHolder.microImage.setImageResource(R.drawable.member_micro_off);
-                }else{
+                } else {
                     mainSpeakerViewHolder.microImage.setImageResource(R.drawable.member_micro_on);
                 }
 
@@ -791,15 +798,15 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
 
                 if ((member.getUserId() + "").equals(AppConfig.UserID)) {
-                    fillDeviceType(member.getDeviceType(), speakerViewHolder.type,true);
+                    fillDeviceType(member.getDeviceType(), speakerViewHolder.type, true);
                 } else {
-                    fillDeviceType(member.getDeviceType(), speakerViewHolder.type,false);
+                    fillDeviceType(member.getDeviceType(), speakerViewHolder.type, false);
                 }
 
-                if(member.getMicrophoneStatus() != 2){
+                if (member.getMicrophoneStatus() != 2) {
                     // 麦克风关闭
                     speakerViewHolder.microImage.setImageResource(R.drawable.member_micro_off);
-                }else{
+                } else {
                     speakerViewHolder.microImage.setImageResource(R.drawable.member_micro_on);
                 }
 
@@ -819,9 +826,9 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
 
                 if ((member.getUserId() + "").equals(AppConfig.UserID)) {
-                    fillDeviceType(member.getDeviceType(), handsUpViewHolder.type,true);
+                    fillDeviceType(member.getDeviceType(), handsUpViewHolder.type, true);
                 } else {
-                    fillDeviceType(member.getDeviceType(), handsUpViewHolder.type,false);
+                    fillDeviceType(member.getDeviceType(), handsUpViewHolder.type, false);
                 }
 
 
@@ -842,46 +849,46 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
     }
 
-    private void fillDeviceType(int deviceType, TextView typeText,boolean isMe) {
+    private void fillDeviceType(int deviceType, TextView typeText, boolean isMe) {
         switch (deviceType) {
             case DeviceType.WEB:
                 typeText.setVisibility(View.VISIBLE);
 //                typeText.setBackgroundResource(R.drawable.bg_web);
 //                typeText.setTextColor(Color.parseColor("#6A6DEB"));
-                if(isMe){
-                    typeText.setText("("+getString(R.string.deviceweb)+","+getString(R.string.Me)+")");
-                }else{
-                    typeText.setText("("+getString(R.string.deviceweb)+")");
+                if (isMe) {
+                    typeText.setText("(" + getString(R.string.deviceweb) + "," + getString(R.string.Me) + ")");
+                } else {
+                    typeText.setText("(" + getString(R.string.deviceweb) + ")");
                 }
                 break;
             case DeviceType.ANDROID:
                 typeText.setVisibility(View.VISIBLE);
 //                typeText.setBackgroundResource(R.drawable.bg_android);
 //                typeText.setTextColor(Color.parseColor("#26C184"));
-                if(isMe){
-                    typeText.setText("("+getString(R.string.deviceandroid)+","+getString(R.string.Me)+")");
-                }else{
-                    typeText.setText("("+getString(R.string.deviceandroid)+")");
+                if (isMe) {
+                    typeText.setText("(" + getString(R.string.deviceandroid) + "," + getString(R.string.Me) + ")");
+                } else {
+                    typeText.setText("(" + getString(R.string.deviceandroid) + ")");
                 }
                 break;
             case DeviceType.IPHONE:
                 typeText.setVisibility(View.VISIBLE);
 //                typeText.setBackgroundResource(R.drawable.bg_iphone);
 //                typeText.setTextColor(Color.parseColor("#999999"));
-                if(isMe){
-                    typeText.setText("("+getString(R.string.deviceios)+","+getString(R.string.Me)+")");
-                }else{
-                    typeText.setText("("+getString(R.string.deviceios)+")");
+                if (isMe) {
+                    typeText.setText("(" + getString(R.string.deviceios) + "," + getString(R.string.Me) + ")");
+                } else {
+                    typeText.setText("(" + getString(R.string.deviceios) + ")");
                 }
                 break;
             case DeviceType.TV:
                 typeText.setVisibility(View.VISIBLE);
 //                typeText.setBackgroundResource(R.drawable.bg_tv);
 //                typeText.setTextColor(getActivity().getResources().getColor(R.color.darkblack2));
-                if(isMe){
-                    typeText.setText("("+getString(R.string.devicetv)+","+getString(R.string.Me)+")");
-                }else{
-                    typeText.setText("("+getString(R.string.devicetv)+")");
+                if (isMe) {
+                    typeText.setText("(" + getString(R.string.devicetv) + "," + getString(R.string.Me) + ")");
+                } else {
+                    typeText.setText("(" + getString(R.string.devicetv) + ")");
                 }
                 break;
             default:
@@ -937,7 +944,7 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
     }
 
 
-    private PopMeetingAuditorMemberSetting mPopMeetingAuditorMemberSetting  ;
+    private PopMeetingAuditorMemberSetting mPopMeetingAuditorMemberSetting;
 
     private void showAuditorMemberSetting(MeetingMember member, View view) {
         if (mPopMeetingAuditorMemberSetting != null) {
@@ -950,8 +957,6 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         mPopMeetingAuditorMemberSetting.setOnMemberSettingChanged(this);
         mPopMeetingAuditorMemberSetting.showAtBottom(member, view, meetingConfig);
     }
-
-
 
 
     private void fillViewByRoleForMainSpeakingMembers(final MeetingMember meetingMember, final MainSpeakerViewHolder holder) {
@@ -985,37 +990,34 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 //        }
 
 
-
         //判断自己的身份
-        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
-            if((meetingMember.getUserId()+"").equals(meetingConfig.getMeetingHostId())){ //
-                if((meetingMember.getUserId()+"").equals(meetingConfig.getPresenterId())){
+        if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {  // 主持人身份
+            if ((meetingMember.getUserId() + "").equals(meetingConfig.getMeetingHostId())) {
+                if ((meetingMember.getUserId() + "").equals(meetingConfig.getPresenterId())) {
                     holder.settingImage.setVisibility(View.INVISIBLE);
-                }else{
+                } else {
                     holder.settingImage.setVisibility(View.VISIBLE);
                 }
-            }else{
+            } else {
                 holder.settingImage.setVisibility(View.VISIBLE);
             }
-        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
-            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+        } else if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {  //演示者身份 不能设置自己
+            if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
                 holder.settingImage.setVisibility(View.INVISIBLE);
-            }else{
+            } else {
                 holder.settingImage.setVisibility(View.VISIBLE);
             }
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
-            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_MAIN_SPEAKER) { //发言人身份 只能设置自己的身份
+            if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
                 holder.settingImage.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 holder.settingImage.setVisibility(View.INVISIBLE);
             }
-
-
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_SPEAKING_SPEAKER) { //临时发言人
             holder.settingImage.setVisibility(View.INVISIBLE);
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_HANDSUP_MEMBER) { //允许发言
             holder.settingImage.setVisibility(View.INVISIBLE);
-        }else {
+        } else {
             holder.settingImage.setVisibility(View.INVISIBLE);
         }
 
@@ -1106,20 +1108,20 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
 
         //判断自己的身份
-        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
+        if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {  // 主持人身份
             holder.settingImage.setVisibility(View.VISIBLE);
-        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
+        } else if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {  //演示者身份
             holder.settingImage.setVisibility(View.VISIBLE);
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_MAIN_SPEAKER) { //发言人身份
             holder.settingImage.setVisibility(View.VISIBLE);
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_SPEAKING_SPEAKER) { //临时发言人
             holder.settingImage.setVisibility(View.INVISIBLE);
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_HANDSUP_MEMBER) { //允许发言
             holder.settingImage.setVisibility(View.INVISIBLE);
-        }else {
-            if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+        } else {
+            if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {  //进入是参会者
                 holder.settingImage.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 holder.settingImage.setVisibility(View.INVISIBLE);
             }
 
@@ -1183,22 +1185,20 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 //        }
 
 
-
         //判断自己的身份
-        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
+        if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {  // 主持人身份
             holder.settingImage.setVisibility(View.VISIBLE);
-        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
+        } else if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {  //演示者身份
             holder.settingImage.setVisibility(View.VISIBLE);
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_MAIN_SPEAKER) { //发言人身份
             holder.settingImage.setVisibility(View.VISIBLE);
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_SPEAKING_SPEAKER) { //临时发言人
             holder.settingImage.setVisibility(View.VISIBLE);
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_HANDSUP_MEMBER) { //允许发言
             holder.settingImage.setVisibility(View.INVISIBLE);
-        }else {
+        } else {
             holder.settingImage.setVisibility(View.INVISIBLE);
         }
-
 
 
         MeetingMember me = meetingConfig.getMe();
@@ -1261,17 +1261,17 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
 
 
         //判断自己的身份
-        if(meetingConfig.getMeetingHostId().equals(AppConfig.UserID)){  // 主持人身份
+        if (meetingConfig.getMeetingHostId().equals(AppConfig.UserID)) {  // 主持人身份
             holder.settingImage.setVisibility(View.VISIBLE);
-        }else if(meetingConfig.getPresenterId().equals(AppConfig.UserID)){  //演示者身份
+        } else if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {  //演示者身份
             holder.settingImage.setVisibility(View.VISIBLE);
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_MAIN_SPEAKER){ //发言人身份
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_MAIN_SPEAKER) { //发言人身份
             holder.settingImage.setVisibility(View.VISIBLE);
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_SPEAKING_SPEAKER){ //临时发言人
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_SPEAKING_SPEAKER) { //临时发言人
             holder.settingImage.setVisibility(View.INVISIBLE);
-        }else if(meetingConfig.getViewType()==TYPE_ITEM_HANDSUP_MEMBER){ //允许发言
+        } else if (meetingConfig.getViewType() == TYPE_ITEM_HANDSUP_MEMBER) { //允许发言
             holder.settingImage.setVisibility(View.INVISIBLE);
-        }else {
+        } else {
             holder.settingImage.setVisibility(View.INVISIBLE);
         }
 
@@ -1375,22 +1375,22 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
         }).subscribe();
     }
 
-    private String getBindViewText(int fileId){
-        String appBindName="";
-        int language = sharedPreferences.getInt("language",1);
-        if(language==1&&App.appENNames!=null){
-            for(int i=0;i<App.appENNames.size();i++){
-                if(fileId==App.appENNames.get(i).getFieldId()){
-                    System.out.println("Name->"+App.appENNames.get(i).getFieldName());
-                    appBindName=App.appENNames.get(i).getFieldName();
+    private String getBindViewText(int fileId) {
+        String appBindName = "";
+        int language = sharedPreferences.getInt("language", 1);
+        if (language == 1 && App.appENNames != null) {
+            for (int i = 0; i < App.appENNames.size(); i++) {
+                if (fileId == App.appENNames.get(i).getFieldId()) {
+                    System.out.println("Name->" + App.appENNames.get(i).getFieldName());
+                    appBindName = App.appENNames.get(i).getFieldName();
                     break;
                 }
             }
-        }else if(language==2&&App.appCNNames!=null){
-            for(int i=0;i<App.appCNNames.size();i++){
-                if(fileId==App.appCNNames.get(i).getFieldId()){
-                    System.out.println("Name->"+App.appCNNames.get(i).getFieldName());
-                    appBindName=App.appCNNames.get(i).getFieldName();
+        } else if (language == 2 && App.appCNNames != null) {
+            for (int i = 0; i < App.appCNNames.size(); i++) {
+                if (fileId == App.appCNNames.get(i).getFieldId()) {
+                    System.out.println("Name->" + App.appCNNames.get(i).getFieldName());
+                    appBindName = App.appCNNames.get(i).getFieldName();
                     break;
                 }
             }

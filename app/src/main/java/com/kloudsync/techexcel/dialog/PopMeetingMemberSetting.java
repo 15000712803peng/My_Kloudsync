@@ -141,7 +141,6 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
                 kickOffMember.setVisibility(View.VISIBLE); //请他离开会议
             }
             isShowPresenter(meetingMember);
-
         } else if (meetingConfig.getPresenterId().equals(AppConfig.UserID)) {  //演示者身份
             if ((meetingMember.getUserId() + "").equals(meetingConfig.getMeetingHostId())) {
 
@@ -150,15 +149,9 @@ public class PopMeetingMemberSetting extends PopupWindow implements View.OnClick
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
             }
             isShowPresenter(meetingMember);
-
         } else if (meetingConfig.getViewType() == TYPE_ITEM_MAIN_SPEAKER) { //发言人身份
             if ((meetingMember.getUserId() + "").equals(AppConfig.UserID)) {
                 isShowPresenter(meetingMember);
-                setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
-                setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
-            } else if ((meetingMember.getUserId() + "").equals(meetingConfig.getMeetingHostId())) {
-
-            } else {
                 setSpeakMember.setVisibility(View.VISIBLE); // 设为临时发言人
                 setAuditor.setVisibility(View.VISIBLE);  // 设为参会者
             }
