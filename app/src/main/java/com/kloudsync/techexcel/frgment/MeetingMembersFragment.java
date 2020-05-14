@@ -140,6 +140,18 @@ public class MeetingMembersFragment extends MyFragment implements PopMeetingMemb
                 }
 
             } else if (type == 2) {
+
+                List<MeetingMember> meetingMembersList=meetingConfig.getMeetingAuditor();
+                for (int i = 0; i < meetingMembersList.size(); i++) {
+                    MeetingMember meetingMember=meetingMembersList.get(i);
+                    if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+                        if((meetingMember.getUserId()+"").equals(AppConfig.UserID)){
+                            meetingMembersList.remove(i);
+                            meetingMembersList.add(0,meetingMember);
+                            break;
+                        }
+                    }
+                }
                 meetingMembers.addAll(meetingConfig.getMeetingAuditor());
                 if (membersAdapter == null) {
                     membersAdapter = new MeetingMembersAdapter(getActivity(), meetingMembers);
